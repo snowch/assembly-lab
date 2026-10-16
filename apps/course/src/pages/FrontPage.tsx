@@ -7,13 +7,17 @@
 import { PLAN } from "@al/content/plan";
 
 import { STRINGS } from "../strings";
+import { CoverFigure, MODULE_ICONS } from "./icons";
 
 function Cover() {
   return (
     <section className="cover-hero" aria-labelledby="cover-title">
-      <h1 id="cover-title">{STRINGS.title}</h1>
-      <p className="cover-subtitle">{STRINGS.subtitle}</p>
-      <p className="cover-intro">{STRINGS.intro}</p>
+      <div className="cover-text">
+        <h1 id="cover-title">{STRINGS.title}</h1>
+        <p className="cover-subtitle">{STRINGS.subtitle}</p>
+        <p className="cover-intro">{STRINGS.intro}</p>
+      </div>
+      <CoverFigure />
     </section>
   );
 }
@@ -31,6 +35,9 @@ export function FrontPage() {
           <ul className="plan-modules">
             {part.modules.map((m) => (
               <li key={m.id} className="plan-module" data-module={m.id}>
+                <span className="module-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">{MODULE_ICONS[m.id]}</svg>
+                </span>
                 <h3>
                   <span className="module-number">{STRINGS.module(m.label)}</span>
                   <span className="module-title">{m.title}</span>

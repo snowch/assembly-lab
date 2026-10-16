@@ -266,6 +266,87 @@ ol {
   max-width: var(--measure);
   margin-bottom: 0;
 }
+/* The cover's figure sits beside the words on a desk and under them on a phone. */
+.cover-hero {
+  display: grid;
+  gap: var(--space-5);
+  align-items: center;
+}
+@media (min-width: 56rem) {
+  .cover-hero {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+  }
+}
+.cover-figure {
+  width: 100%;
+  max-width: 22rem;
+  height: auto;
+}
+.cover-code,
+.cover-reg,
+.cover-value {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  fill: var(--hero-muted);
+}
+.cover-code:last-of-type {
+  fill: var(--hero-fg);
+}
+.cover-reg,
+.cover-value {
+  fill: var(--hero-fg);
+}
+.cover-marker {
+  fill: var(--hero-sub);
+}
+.cover-panel {
+  fill: #ffffff;
+  fill-opacity: 0.07;
+  stroke: var(--hero-muted);
+  stroke-opacity: 0.25;
+}
+.cover-bit {
+  fill: none;
+  stroke: var(--hero-muted);
+  stroke-opacity: 0.55;
+  stroke-width: 1;
+}
+.cover-bit.on {
+  fill: var(--hero-sub);
+  stroke: var(--hero-sub);
+  stroke-opacity: 1;
+}
+
+/* Each module's mark, in a soft tile beside its number and title. */
+.plan-module {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  column-gap: var(--space-3);
+}
+.plan-module > :not(.module-icon) {
+  grid-column: 2;
+}
+.module-icon {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+  align-self: start;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-lg);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.module-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
 /* The front page is one centred column as wide as the page, as digital-design's is: the cover and
    the plan share its left and right edges. Paragraphs inside keep the reading measure. */
