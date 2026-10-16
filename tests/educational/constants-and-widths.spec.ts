@@ -251,7 +251,7 @@ test.describe("the constant tester", () => {
   test("keeps the closed note closed until it is opened", async ({ page }) => {
     await openLesson(page);
     const note = page.locator("section[data-kind='investigation'] details.lesson-details");
-    await expect(note.locator("summary")).toHaveText("A few more numbers fit.");
+    await expect(note.locator("summary")).toHaveText("Some more numbers fit.");
     await expect(note).not.toHaveAttribute("open", "");
     await expect(note.locator(".prose")).toBeHidden();
     await press(page, note.locator("summary"));
