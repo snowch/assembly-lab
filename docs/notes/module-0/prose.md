@@ -13,13 +13,13 @@ After the lesson's first review (16 October 2026) six parts were redrafted by Ha
 
 ## 1. What does the processor do?
 
-The trip computer keeps a work log of distances driven. For one trip, the distance in the log is the three legs added together, minus a private detour. The log must not include that detour.
+The trip computer keeps a work log of distances driven. One trip was three legs, and the legs' distances include a private detour. The detour must not appear in the log, so the log is the three legs added together, minus the detour.
 
-The C function `trip_distance` computes that distance in three statements. The figure below shows it. GCC, a C compiler, version 16.1, set to `-O1`, turned it into four instructions for a 64-bit Arm processor. `-O1` is a setting chosen when the C is compiled, and optimisation means the compiler works to make the code shorter or faster. The course uses `-O1` so the code stays short enough to follow: at `-O0`, with no optimisation, GCC makes 20 instructions for this C, keeping every value in memory, the large store outside the processor where a program's data is kept. At `-O1` the values stay inside the processor, and four instructions do the work, one for each step of the arithmetic and one to return. They are shown beside the C. The question is what the processor does, instruction by instruction, when this function runs.
+The C function `trip_distance` computes that distance in three statements. The figure below shows it. The C compiler GCC (version 16.1), set to `-O1`, turned it into four instructions for a 64-bit Arm processor. `-O1` is a setting chosen when the C is compiled; optimisation means the compiler works to make the code shorter or faster. The course uses `-O1` to keep the code short. At `-O0`, with no optimisation, GCC makes twenty instructions and keeps every value in memory, the large store outside the processor where a program's data is kept. At `-O1` the values stay inside the processor, and four instructions do the work: one for each step of the arithmetic, and one to return. They are shown beside the C. The question is what the processor does, instruction by instruction, when this function runs.
 
 *The C function and the four instructions GCC made from it. Each instruction sits beside the C line GCC recorded for it.*
 
-Line 7 beside `sub w0, w0, w3` is not a mistake. `w0`, `w1`, `w2` and `w3` are places inside the processor that hold the function's four values; part 3 names them. `sub` subtracts, and the function's result is left in `w0`. The figure shows the line GCC recorded for each instruction, unchanged. GCC records `sub w0, w0, w3` and `ret` against line 7, the closing brace. That one `sub` does the work of two lines: line 5, `total = total - detour;`, and line 6, `return total;`. It subtracts straight into `w0`, where the result leaves the function. So no instruction is left for `return total;`. If GCC is set to `-O0`, with no optimisation, it records its subtraction against line 5. The record of lines is there to help you find your way from an instruction back to the C. When the compiler merges lines, the line it records can move.
+Line 7 beside `sub w0, w0, w3` is not a mistake. `w0`, `w1`, `w2` and `w3` are places inside the processor that hold the function's four values; part 3 names them. `sub` subtracts. The figure shows the line GCC recorded for each instruction, unchanged. GCC records both `sub w0, w0, w3` and `ret` as line 7, the closing brace. That one `sub` does the work of two lines: line 5, `total = total - detour;`, and line 6, `return total;`. The `sub` writes its answer straight into `w0`, where a function's result goes. So `return total;` needs no instruction of its own. If GCC is set to `-O0`, with no optimisation, it records its subtraction as line 5. The record of lines is there to help you find your way from an instruction back to the C. When the compiler merges lines, the line it records can move.
 
 ## 2. Why the instructions matter
 
@@ -46,11 +46,11 @@ The first instruction, `add w0, w0, w1`, writes its result into `w0`. So `total`
 
 The simulator is a program in this page that imitates the processor, one instruction at a time. The instructions are GCC's real output, and only the running is imitated. The course calls the simulator its model of the processor, as the heading "The model and the real processor" at the end of each lesson does.
 
-The figure runs `trip_distance(120, 85, 42, 15)` on the simulator in the page. These registers are used here at 32 bits, the size of an `int`. Module 1 shows the rest of each register. The figure draws each one as bits and as a decimal number.
+The figure runs `trip_distance(120, 85, 42, 15)` on the simulator in the page. Here each register is shown as 32 bits, the size of an `int`. Module 1 shows the rest of each register. The figure draws each one as bits and as a decimal number.
 
 The marker shows which instruction runs next. The processor keeps that position in a register of its own, the **program counter**. Press Next to run one instruction. The C line GCC recorded for each instruction is lit as it runs.
 
-An instruction's parts after its name are its **operands**. In `add w0, w0, w1`, the first operand is where the result goes, and the other two are what it is made from. After that instruction runs, `w0` holds 205, which is 120 plus 85. `w1` still holds 85. After the second instruction `w0` holds 247; after the third, 232. `ret` ends the function. Its result is whatever `w0` holds then: 232.
+An instruction's parts after its name are its **operands**. In `add w0, w0, w1`, the first operand is where the result goes, and the other two are the values it adds. After that instruction runs, `w0` holds 205, which is 120 plus 85. `w1` still holds 85. After the second instruction `w0` holds 247; after the third, 232. `ret` ends the function. Its result is whatever `w0` holds then: 232.
 
 *`trip_distance(120, 85, 42, 15)`, one instruction at a time. A register with an outline has just changed.*
 
@@ -72,7 +72,9 @@ Change the instructions so the function returns `at_start` minus `at_end`. Three
 
 ## 6. Removing `ret`
 
-The processor keeps a program's instructions and values outside its registers, in a place called **memory**. In memory, `fuel_used`'s instructions come straight after `trip_distance`'s. The figure uses GCC's output from correct C, so `fuel_used` is `sub w0, w0, w1`, then `ret`. The figure has a switch. It deletes `ret` from `trip_distance`, then runs `trip_distance(120, 85, 42, 15)` again.
+The processor keeps a program's instructions and values outside its registers, in a place called **memory**. In memory, `fuel_used`'s instructions come straight after `trip_distance`'s.
+
+The figure uses GCC's output from correct C, so `fuel_used` is `sub w0, w0, w1`, then `ret`. The figure has a switch. It deletes `ret` from `trip_distance`, then runs `trip_distance(120, 85, 42, 15)` again.
 
 **With `ret` deleted, what does `w0` hold when the run ends?**
 
@@ -91,17 +93,17 @@ A program is a list of instructions, kept one after another. The program counter
 
 Each instruction here reads registers and writes one register. These instructions work only with the values in registers. The names `leg1` and `total` are not in the instructions.
 
-A function's arguments arrive in `w0`, `w1` and onwards, and its result leaves in `w0`. `ret` ends the function and goes back to the code that called it. The written form of instructions, one per line, is **assembly language**. A compiler's instructions, written one per line, are its **listing**; GCC's listing is written in assembly language.
+A function's arguments arrive in `w0`, `w1` and onwards, and its result leaves in `w0`. `ret` ends the function and goes back to the code that called it. Instructions written one per line are **assembly language**. A compiler's output, written that way, is its **listing**.
 
 ## 8. Other functions
 
-Every function in this course works this way. Longer functions have more instructions. Later modules add instructions that choose which instruction runs next, and instructions that read and write memory.
+Every function in this course works this way. Longer functions have more instructions. Later modules add instructions that change which one runs next, and instructions that read and write memory.
 
 The compiler chooses the registers and the instructions. With the setting `-O0`, GCC makes twenty instructions from the same C, and they keep every variable in memory, outside the registers. So a listing belongs to one compiler at one setting.
 
 ## 9. Kilometres to service
 
-The car needs a service when its odometer reaches a set reading. The odometer reading does not yet include the trip so far. `km_to_service` returns the kilometres left before the service, after the trip so far and a planned trip. It keeps 50 km spare. Its four arguments are `service_at`, `odometer`, `trip_so_far` and `planned`, in `w0` to `w3`. GCC made five instructions from it, shown in the challenge below. The `#50` in the last `sub` is the number 50 written inside the instruction.
+The car needs a service when its odometer reaches a set reading. The odometer reading does not yet include the trip so far. `km_to_service` returns the kilometres left before the service, once the trip so far and a planned trip are counted. It keeps 50 km spare. Its four arguments are `service_at`, `odometer`, `trip_so_far` and `planned`, in `w0` to `w3`. GCC made five instructions from it, shown in the challenge below. The `#50` in the last `sub` is the number 50 written inside the instruction.
 
 **Trace the call**
 
