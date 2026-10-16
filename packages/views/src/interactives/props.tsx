@@ -52,6 +52,13 @@ export function introducedOf(challenge: {
   return parsed.success ? new Set(parsed.data) : undefined;
 }
 
+/** A labelled bit or field of a word, lowest bit first (the same bit twice for a single bit). */
+export const KeyEntrySchema = z.object({
+  from: z.number().int().min(0).max(31),
+  to: z.number().int().min(0).max(31),
+  label: z.string(),
+});
+
 export function withProps<T>(
   schema: ZodType<T>,
   Inner: ComponentType<InteractiveProps & { data: T }>,

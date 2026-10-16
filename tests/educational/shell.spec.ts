@@ -113,6 +113,18 @@ test("each lesson of a module with several is reached from the front page", asyn
   }
 });
 
+test("Module 3 is published and lists its two lessons in order", async ({ page }) => {
+  await page.goto("#/");
+  await ready(page);
+  const module3 = page.locator('.plan-module[data-module="logic-shifts-masks"]');
+  await expect(module3.locator(".module-status")).toHaveText(STRINGS.status.published);
+  await expect(module3.locator("h3 a")).toHaveCount(0);
+  const ids = await module3
+    .locator(".module-lessons li")
+    .evaluateAll((els) => els.map((el) => el.getAttribute("data-lesson")));
+  expect(ids).toEqual(["masks", "shifts"]);
+});
+
 test("the tab is named for the page, and the course has an address for a lesson", async ({
   page,
 }) => {

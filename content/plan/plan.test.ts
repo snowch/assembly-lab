@@ -72,10 +72,11 @@ describe("the course's plan", () => {
     expect(published.map((m) => m.title)).toEqual(
       MODULES.filter((m) => LESSONS.some((l) => String(l.module) === m.label)).map((m) => m.title),
     );
-    expect(published.slice(0, 3).map((m) => m.title)).toEqual([
+    expect(published.slice(0, 4).map((m) => m.title)).toEqual([
       "Meet the machine",
       "Registers and readings",
       "Adding, subtracting and the flags",
+      "Logic, shifts and masks",
     ]);
     for (const m of MODULES.filter((m) => !published.includes(m)))
       expect(statusOf(m, LESSONS), m.title).toBe("planned");
@@ -93,6 +94,8 @@ describe("the course's plan", () => {
       "adding-and-the-flags",
       "subtracting-and-the-tick-counter",
     ]);
+    // Module 3 has two lessons, in the order they are taught.
+    expect(lessonsOf(moduleByNumber(3)!, LESSONS).map((l) => l.id)).toEqual(["masks", "shifts"]);
     expect(lessonsOf(moduleByNumber(11)!, LESSONS)).toEqual([]);
     expect(statusOf(meet, [])).toBe("planned");
     expect(statusOf(meet, [{ id: "x", module: 0 }])).toBe("published");

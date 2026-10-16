@@ -13,6 +13,10 @@ import { RunPrediction } from "./RunPrediction";
 import { ListingCompare } from "./ListingCompare";
 import { ModelPrediction } from "./ModelPrediction";
 import { RegisterReader } from "./RegisterReader";
+import { BitOpsFigure } from "./BitOpsFigure";
+import { ListingPairFigure } from "./ListingPairFigure";
+import { ProbePrediction } from "./ProbePrediction";
+import { ShiftFigure } from "./ShiftFigure";
 import { StepperFigure } from "./StepperFigure";
 import { ConstantTester } from "./ConstantTester";
 import { TracePrediction } from "./TracePrediction";
@@ -23,6 +27,8 @@ import { CountPrediction } from "./CountPrediction";
 import { ListingChange } from "./ListingChange";
 import { ListingDiff } from "./ListingDiff";
 import { ListingRuns } from "./ListingRuns";
+import { WarningWordFigure } from "./WarningWordFigure";
+import { WordStepperFigure } from "./WordStepperFigure";
 
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
   listing: ListingFigure,
@@ -42,4 +48,10 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   "condition-table": ConditionTable,
   "count-prediction": CountPrediction,
   "branch-listing": BranchListing,
+  "warning-word": WarningWordFigure,
+  "bit-ops": BitOpsFigure,
+  shift: ShiftFigure,
+  "probe-prediction": ProbePrediction,
+  "word-stepper": WordStepperFigure,
+  "listing-pair": ListingPairFigure,
 };

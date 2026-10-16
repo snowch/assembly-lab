@@ -80,6 +80,7 @@ describe("the page before any script runs", () => {
     expect(written.has("0")).toBe(true);
     expect(written.has("1")).toBe(true);
     expect(written.has("2")).toBe(true);
+    expect(written.has("3")).toBe(true);
   });
 
   it("shows the footer: the sentence with its two titles in italics, the three links and the copyright", () => {

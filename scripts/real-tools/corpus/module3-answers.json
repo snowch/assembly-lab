@@ -1,0 +1,65 @@
+{
+  "entry": "after_orr",
+  "calls": [
+    {
+      "entry": "after_orr",
+      "args": [["42", 32]]
+    },
+    {
+      "entry": "after_and",
+      "args": [["42", 32]]
+    },
+    {
+      "entry": "the_gear",
+      "args": [["42", 32]]
+    },
+    {
+      "entry": "asr_by_2",
+      "args": [["21", 32]]
+    },
+    {
+      "entry": "asr_by_2",
+      "args": [["-21", 32]]
+    },
+    {
+      "entry": "asr_by_2",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "asr_by_2",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "lsr_by_2",
+      "args": [["21", 32]]
+    },
+    {
+      "entry": "lsr_by_2",
+      "args": [["-21", 32]]
+    },
+    {
+      "entry": "lsr_by_2",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "lsr_by_2",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "div_by_4",
+      "args": [["21", 32]]
+    },
+    {
+      "entry": "div_by_4",
+      "args": [["-21", 32]]
+    },
+    {
+      "entry": "div_by_4",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "div_by_4",
+      "args": [["0", 32]]
+    }
+  ]
+}
