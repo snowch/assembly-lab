@@ -9,7 +9,7 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { INTERACTIVES, STEPS, createBook, grade, parseListing } from "@al/views";
+import { INTERACTIVES, STEPS, VIEW_STRINGS, createBook, grade, parseListing } from "@al/views";
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
 import {
   SECTION_KINDS,
@@ -150,7 +150,7 @@ describe("the challenges", () => {
     });
     expect(verdict.passed).toBe(false);
     expect(verdict.failures.map((f) => f.label)).toEqual(["the bits of w0"]);
-    expect(verdict.failures[0]?.detail).toBe("Your bits read as −12 when signed.");
+    expect(verdict.failures[0]?.detail).toBe(VIEW_STRINGS.readings.bitsRead("−12"));
     expect(JSON.stringify(verdict)).not.toContain("4294967295");
   });
 

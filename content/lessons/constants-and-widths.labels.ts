@@ -28,15 +28,14 @@ export const LABELS = {
     listing: "The two functions and GCC's listings for them.",
     tester: "Type a number; the figure shows whether one mov can hold it, and what w0 then holds.",
     halves: "x3 drawn as two halves of 32 bits, with w3 its lower half.",
-    // The prose file gives no caption for these four figures; they are DRAFT.
-    // DRAFT
-    predictFits: "A prediction about which number one mov can put in w0.",
-    // DRAFT
-    build: "The assembly editor, with the text that does not assemble.",
-    // DRAFT
-    predictWidth: "A prediction about what x3 holds after mov w3, -1.",
-    // DRAFT
-    predictTwo: "Work out two registers by hand, then give a number for each.",
+    // The prose file gives no caption for these four figures; Haiku drafted them (16 October 2026).
+    predictFits:
+      "A prediction about which of several numbers a single mov instruction can put in w0.",
+    build:
+      "The assembly editor starts with text the assembler refuses: one mov with a number it cannot hold. Write instructions that put that number in w0.",
+    predictWidth: "A prediction about what all 64 bits of x3 hold after mov w3, -1.",
+    predictTwo:
+      "Work out by hand what x1 and w2 hold after the short listing, then type a number for each.",
   },
   options: {
     fits: [

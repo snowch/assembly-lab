@@ -98,9 +98,8 @@ export const strings = {
     "Line {line}, `{text}`, stored to the address {address}. That address is in read-only data.",
   "fault.notInstruction":
     "The run went to the address {address}, from line {line}, `{text}`. No instruction is at that address.",
-  // DRAFT: "fault.ranOffEnd" and "syntax.missingComma" have not been through the prose process.
   "fault.ranOffEnd":
-    "The run reached the end of the instructions without a `ret`. The last instruction it ran was line {line}, `{text}`.",
+    "The run went past the end of the instructions without running a `ret`. The last instruction it ran was line {line}, `{text}`.",
   "fault.entry": "The call starts at the address {address}. No instruction is at that address.",
   "stop.returned": "The function returned.",
   "stop.limit": "The run stopped after {steps} instructions. It may be a loop that does not end.",

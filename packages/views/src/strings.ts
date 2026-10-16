@@ -39,7 +39,7 @@ export const VIEW_STRINGS = {
     start: "Press Next to run the first instruction.",
     ran: (text: string) => `Ran \`${text}\`.`,
     upNext: (text: string) => `Next: \`${text}\`.`,
-    // DRAFT: when the instruction that runs next is under another label than the one that just ran.
+    // When the instruction that runs next is under another label than the one that just ran.
     upNextIn: (text: string, label: string) => `Next: \`${text}\`, in \`${label}\`.`,
     ended: "The function returned.",
     /** The switch that takes one line out of the listing and runs it again. */
@@ -64,8 +64,7 @@ export const VIEW_STRINGS = {
     endedWithError: "The simulator ran the program. The run stopped with an error.",
   },
 
-  // DRAFT: Module 1's figures. These strings have not been through the Haiku redraft that the
-  // others above had, and are listed for it.
+  // Module 1's figures (drafted by Haiku and checked, 16 October 2026).
   toggles: {
     /** The name of one bit's button, for a screen reader: its number, 31 for the top bit. */
     bit: (n: number) => `Bit ${n}`,
@@ -75,7 +74,6 @@ export const VIEW_STRINGS = {
     group: (register: string) => `Bits of ${register}`,
   },
 
-  // DRAFT
   reader: {
     hex: "Hexadecimal",
     unsigned: "Unsigned reading",
@@ -83,38 +81,34 @@ export const VIEW_STRINGS = {
     readings: "Readings of the bits",
   },
 
-  // DRAFT
   compare: {
-    cPane: (name: string) => `The C of ${name}`,
+    cPane: (name: string) => `The C for ${name}`,
     table: "The two listings, line by line",
     same: "Same",
     differs: "Different",
     allSame: (n: number) => `All ${n} instructions are the same.`,
     notAllSame: "The instructions are not all the same.",
     /** The simulator's result for a question about two listings. */
-    resultSame: "The course's assembler read both listings. Their instructions are the same.",
-    resultDiffer: "The course's assembler read both listings. Their instructions are not the same.",
+    resultSame: "Both listings give the same instructions.",
+    resultDiffer: "The two listings do not give the same instructions.",
   },
 
-  // DRAFT
   fits: {
     /** The result for a question about which constants one `mov` can hold. */
     one: (accepted: string, refused: number) =>
-      `The course's assembler took \`mov w0, ${accepted}\` as one instruction. It refused the other ${refused}.`,
-    none: "The course's assembler refused every one of these.",
-    several: (accepted: string) =>
-      `The course's assembler took more than one of these as one instruction: ${accepted}.`,
+      `\`mov w0, ${accepted}\` is one instruction. The other numbers give an error: ${refused} of them.`,
+    none: "Every one of these gives an error.",
+    several: (accepted: string) => `More than one of these is a single instruction: ${accepted}.`,
   },
 
-  // DRAFT
   tester: {
     input: "The number after mov w0",
     empty: "Type a number to see whether one `mov` can hold it.",
-    notNumber: "Type a whole number, in decimal or in hexadecimal with 0x in front.",
-    fits: (text: string) => `\`mov w0, ${text}\` is one instruction. After it, \`w0\` holds this:`,
+    notNumber: "Type a whole number, in decimal or in hexadecimal with `0x` in front.",
+    fits: (text: string) =>
+      `\`mov w0, ${text}\` is one instruction. After it, \`w0\` holds these bits:`,
   },
 
-  // DRAFT
   wide: {
     upper: "Upper 32 bits",
     lower: (name: string) => `${name}, the lower 32 bits`,
@@ -123,10 +117,11 @@ export const VIEW_STRINGS = {
       `The simulator ran the program. \`${register}\` held \`${hex}\` when the run ended.`,
   },
 
-  // DRAFT: the sentence under a wrong answer in the readings challenges. None of them says the
-  // right value.
+  // The sentence under a wrong answer in the readings challenges. None of them says the right
+  // value.
   readings: {
-    bitsRead: (value: string) => `Your bits read as ${value} when signed.`,
+    bitsRead: (value: string) =>
+      `Your bits have a signed reading of ${value}, and that is not the number asked for.`,
     notThis: "That is not what these bits give when read this way.",
     registerWrong: (name: string) =>
       `${name} does not hold that number once all the instructions have run.`,
@@ -164,11 +159,11 @@ export const VIEW_STRINGS = {
 
   grader: {
     nothingWritten: "Write at least one instruction first.",
-    // DRAFT: `fields` is the fields' names as a list ("a", "a and b", "a, b and c"), `count` how many.
+    // `fields` is the fields' names as a list ("a", "a and b", "a, b and c"), `count` how many.
     unanswered: (fields: string, count: number) =>
       count === 1
-        ? `${fields} needs a whole number first.`
-        : `${fields} each need a whole number first.`,
+        ? `Nothing is graded until ${fields} has a whole number.`
+        : `Nothing is graded until each of ${fields} has a whole number.`,
     /** Between the last two names in a list. */
     and: "and",
     notWhole: (field: string) => `The answer for ${field} must be a whole number.`,

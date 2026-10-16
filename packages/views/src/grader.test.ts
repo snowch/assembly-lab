@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest";
 
 import { sentence } from "./messages";
 import { grade, gradeAnswers, gradeWritten } from "./grader";
-import { quoted } from "./strings";
+import { VIEW_STRINGS as S, quoted } from "./strings";
 import { answers, written } from "./testing";
 
 describe("grading written assembly", () => {
@@ -85,7 +85,7 @@ describe("grading written assembly", () => {
   it("prints the code in a detail inside curly quotes, never in backticks", () => {
     const detail = gradeWritten(written, { text: "sub w0, w0, w1" }).failures[0]?.detail;
     expect(detail).toBe(
-      "The run reached the end of the instructions without a \u201cret\u201d. The last instruction it ran was line 1, \u201csub w0, w0, w1\u201d.",
+      "The run went past the end of the instructions without running a \u201cret\u201d. The last instruction it ran was line 1, \u201csub w0, w0, w1\u201d.",
     );
     expect(detail).not.toContain("`");
     expect(detail).toContain("\u201csub w0, w0, w1\u201d");
@@ -140,15 +140,15 @@ describe("grading answers", () => {
   it("is blocked, naming the fields, when one is left empty", () => {
     const verdict = gradeAnswers(answers, { answers: { w0: "65", w1: "  " } });
     expect(verdict.passed).toBe(false);
-    expect(verdict.blocked).toBe("\u201cw1 at the end\u201d needs a whole number first.");
+    expect(verdict.blocked).toBe(S.grader.unanswered("\u201cw1 at the end\u201d", 1));
   });
 
   it("reads as one sentence whether one field is empty or all of them", () => {
     expect(gradeAnswers(answers, {}).blocked).toBe(
-      "\u201cw0 at the end\u201d and \u201cw1 at the end\u201d each need a whole number first.",
+      S.grader.unanswered("\u201cw0 at the end\u201d and \u201cw1 at the end\u201d", 2),
     );
     expect(gradeAnswers(answers, { answers: { w0: " " } }).blocked).toBe(
-      "\u201cw0 at the end\u201d and \u201cw1 at the end\u201d each need a whole number first.",
+      S.grader.unanswered("\u201cw0 at the end\u201d and \u201cw1 at the end\u201d", 2),
     );
   });
 

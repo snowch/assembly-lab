@@ -272,7 +272,7 @@ describe("faults", () => {
     expect(s.key).toBe("fault.ranOffEnd");
     expect(s.params).toEqual({ line: 3, text: "add w0, w0, w1" });
     expect(message(s.key, s.params)).toBe(
-      "The run reached the end of the instructions without a `ret`. The last instruction it ran was line 3, `add w0, w0, w1`.",
+      "The run went past the end of the instructions without running a `ret`. The last instruction it ran was line 3, `add w0, w0, w1`.",
     );
     expect(message(s.key, s.params)).not.toMatch(/0x/);
     // A branch, or a return, to a bad place keeps the address.

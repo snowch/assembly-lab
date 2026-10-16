@@ -70,7 +70,7 @@ describe("the lesson's words", () => {
     expect(chunks.filter((c) => c.trim() !== "" && !fileFlat.includes(flat(c)))).toEqual([]);
   });
 
-  it("have the captions the file gives, and only four captions of their own, each marked DRAFT", () => {
+  it("have the captions the file gives, and only four captions of their own, each through the prose process", () => {
     expect(fileFlat).toContain(flat(LABELS.captions.fuelRun));
     expect(fileFlat).toContain(flat(LABELS.captions.reader));
     expect(fileFlat).toContain(flat(LABELS.captions.compare));
@@ -88,7 +88,7 @@ describe("the lesson's words", () => {
     );
     // Each of the four is marked; one that goes through the prose process loses its mark, and the
     // count here goes down with it.
-    expect(source.match(/^\s*\/\/ DRAFT$/gm) ?? []).toHaveLength(4);
+    expect(source.match(/^\s*\/\/ DRAFT$/gm) ?? []).toHaveLength(0);
   });
 
   it("keep the figures' captions as plain text, and the objectives as the file has them", () => {

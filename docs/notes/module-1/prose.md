@@ -161,13 +161,13 @@ Only 65536. Its bits fit in one of the register's two 16-bit halves, the lower o
 
 The figure assembles `mov w0, ` followed by the number you type. Assembling turns that text into an instruction. The course's assembler accepts and rejects the same numbers as the GNU assembler. The GNU assembler is the program that GCC itself uses to turn its listings into instructions.
 
-A `mov` with a constant works when the number's set bits all fall within one 16-bit half of the register. For a number that needs both halves, the assembler says no single instruction can put it in a register.
+A `mov` with a constant works when the number's set bits all fall within one 16-bit half of the register. For a number that needs both halves, the assembler usually says no single instruction can put it in a register.
 
 *Type a number; the figure shows whether one `mov` can hold it, and what `w0` then holds.*
 
 **A few more numbers fit.**
 
-A number whose bits are all ones except within one 16-bit half fits, such as `-1`. So does a number whose bits repeat one short pattern, such as 65537, which is `0x00010001`.
+A number whose bits are all ones except within one 16-bit half fits, such as `-1`. So do some numbers whose bits repeat one short pattern, such as 65537, which is `0x00010001`.
 
 ## 5. Building 1000000
 

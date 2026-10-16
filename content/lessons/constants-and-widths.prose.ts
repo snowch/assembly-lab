@@ -19,10 +19,10 @@ export const PROSE = {
 
   investigation:
     "The figure assembles `mov w0, ` followed by the number you type. Assembling turns that text into an instruction. The course's assembler accepts and rejects the same numbers as the GNU assembler. The GNU assembler is the program that GCC itself uses to turn its listings into instructions.\n\n" +
-    "A `mov` with a constant works when the number's set bits all fall within one 16-bit half of the register. For a number that needs both halves, the assembler says no single instruction can put it in a register.",
+    "A `mov` with a constant works when the number's set bits all fall within one 16-bit half of the register. For a number that needs both halves, the assembler usually says no single instruction can put it in a register.",
   investigationDetailsSummary: "A few more numbers fit.",
   investigationDetails:
-    "A number whose bits are all ones except within one 16-bit half fits, such as `-1`. So does a number whose bits repeat one short pattern, such as 65537, which is `0x00010001`.",
+    "A number whose bits are all ones except within one 16-bit half fits, such as `-1`. So do some numbers whose bits repeat one short pattern, such as 65537, which is `0x00010001`.",
 
   construction:
     "`movk` replaces one 16-bit half of a register and keeps the rest. `lsl 16` names the upper half. 1000000 is `0x000f4240`: the lower half is `0x4240`, which is 16960, and the upper half is `0xf`, which is 15.",

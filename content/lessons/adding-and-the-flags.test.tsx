@@ -136,7 +136,7 @@ describe("the challenges", () => {
   it("smallest-overflow: an answer that is not a whole number is asked for again", () => {
     const c = challenge("smallest-overflow");
     expect(grade(c, { answers: { number: "two" } }).blocked).toContain("whole number");
-    expect(grade(c, { answers: {} }).blocked).toContain("first");
+    expect(grade(c, { answers: {} }).blocked).toMatch(/^Nothing is graded until /);
   });
 });
 

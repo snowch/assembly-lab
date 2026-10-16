@@ -29,16 +29,13 @@ export const LABELS = {
     reader:
       "One register, set bit by bit; hexadecimal, unsigned and signed readings, each with its sum.",
     compare: "The two functions side by side, with GCC's listing for each.",
-    // The prose file gives no caption for these four figures; they are DRAFT.
-    // DRAFT
-    predictAdd12: "A prediction about what w0 holds after the added instruction.",
-    // DRAFT
+    // The prose file gives no caption for these four figures; Haiku drafted them (16 October 2026).
+    predictAdd12:
+      "A prediction about what w0 holds after the new instruction runs. The new instruction, add w0, w0, 12, sits before ret in fuel_used.",
     stepAdd12:
       "fuel_used(50, 38) again, with add w0, w0, 12 before ret. A register with an outline has just changed.",
-    // DRAFT
-    make: "Set the 32 bits of w0, then give one number.",
-    // DRAFT
-    read: "Give a number for each reading of each pattern.",
+    make: "Set each of the 32 bits of w0 with its button, then type one number in the field.",
+    read: "Several bit patterns are shown. Type the unsigned reading and the signed reading of each.",
   },
   options: {
     add12: [

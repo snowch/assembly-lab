@@ -127,7 +127,7 @@ describe("the outcomes at return, for flags", () => {
     delete answers["b-n"];
     const verdict = grade(flags, { answers });
     expect(verdict.blocked).toBe(S.grader.unanswered(fieldList(["N for b"]), 1));
-    expect(grade(flags, { answers: {} }).blocked).toContain("first");
+    expect(grade(flags, { answers: {} }).blocked).toMatch(/^Nothing is graded until /);
   });
 
   it("fails the starting point, which has answered nothing", () => {
@@ -188,7 +188,9 @@ describe("the smallest number that sets a flag", () => {
   });
 
   it("asks for a whole number first", () => {
-    expect(grade(smallest, { answers: { number: "" } }).blocked).toContain("first");
+    expect(grade(smallest, { answers: { number: "" } }).blocked).toMatch(
+      /^Nothing is graded until /,
+    );
     expect(grade(smallest, { answers: { number: "2.5" } }).blocked).toContain("whole number");
   });
 });
