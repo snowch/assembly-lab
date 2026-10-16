@@ -9,6 +9,8 @@ import "@fontsource-variable/archivo/wdth.css";
 import "@fontsource-variable/jetbrains-mono";
 import "./styles/tokens.css";
 import "./styles/app.css";
+import "./styles/lesson.css";
+import "@al/views/views.css";
 
 const root = document.getElementById("root");
 if (!root) throw new Error("index.html has no #root element");

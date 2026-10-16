@@ -8,7 +8,8 @@ import { resolve } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { MODULES, PLAN } from "@al/content/plan";
+import { LESSONS } from "@al/content";
+import { MODULES, PLAN, statusOf } from "@al/content/plan";
 
 import { pageTitle, parseRoute } from "./route";
 import { courseTitle, staticPage } from "./static-page";
@@ -58,12 +59,19 @@ describe("the page before any script runs", () => {
     }
   });
 
-  it("shows each module's status label beside it, from the plan's data", () => {
+  it("shows each module's status label beside it, worked out from the lessons that are written", () => {
     const items = noscript.split("<li>").filter((i) => i.startsWith("<strong>"));
     expect(items).toHaveLength(MODULES.length);
     MODULES.forEach((m, i) => {
-      expect(text(items[i]!), m.title).toContain(`${m.line} (${STRINGS.status[m.status]})`);
+      const status = statusOf(m, LESSONS);
+      expect(text(items[i]!), m.title).toContain(`${m.line} (${STRINGS.status[status]})`);
     });
+  });
+
+  it("says Module 0 is published and every other module planned", () => {
+    const items = noscript.split("<li>").filter((i) => i.startsWith("<strong>"));
+    const labels = items.map((item) => /\(([A-Za-z ]+)\)<\/li>/.exec(item)?.[1]);
+    expect(labels).toEqual(MODULES.map((m) => (m.label === "0" ? "Published" : "Planned")));
   });
 
   it("shows the footer: the sentence with its two titles in italics, the three links and the copyright", () => {

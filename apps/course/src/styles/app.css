@@ -289,8 +289,42 @@ ol {
   font-size: 15px;
   fill: var(--hero-muted);
 }
-.cover-code:last-of-type {
+/* The instruction that runs next is the brightest. */
+.cover-code[data-next="true"] {
   fill: var(--hero-fg);
+}
+.cover-stepper {
+  width: 100%;
+  max-width: 22rem;
+}
+.cover-controls {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.cover-button {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--hero-action);
+  border-radius: var(--radius);
+  background: var(--hero-action);
+  color: var(--hero-action-fg);
+  font-weight: 600;
+  cursor: pointer;
+}
+.cover-button.quiet {
+  background: transparent;
+  border-color: var(--hero-muted);
+  color: var(--hero-fg);
+}
+.cover-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.cover-changed {
+  fill: none;
+  stroke: var(--hero-sub);
+  stroke-width: 1.5;
 }
 .cover-reg,
 .cover-value {
@@ -398,6 +432,12 @@ ol {
   font-weight: 400;
   letter-spacing: normal;
   color: var(--fg-muted);
+}
+/* A module with a lesson links its title to it: a full-size target. */
+.module-title a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .module-line {
   max-width: var(--measure);

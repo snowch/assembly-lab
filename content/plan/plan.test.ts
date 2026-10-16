@@ -6,7 +6,17 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
-import { MODULES, OPTIONAL_PART, PARTS, PLAN, STATUSES, moduleByNumber } from "./plan";
+import { LESSONS } from "../lessons";
+import {
+  MODULES,
+  OPTIONAL_PART,
+  PARTS,
+  PLAN,
+  STATUSES,
+  lessonsOf,
+  moduleByNumber,
+  statusOf,
+} from "./plan";
 
 describe("the course's plan", () => {
   it("has four parts, then the optional chapter", () => {
@@ -40,8 +50,13 @@ describe("the course's plan", () => {
     for (const m of MODULES) {
       expect(m.title.trim(), `module ${m.label}`).not.toBe("");
       expect(m.line.trim(), `module ${m.label}`).not.toBe("");
-      expect(STATUSES, `module ${m.label}`).toContain(m.status);
+      expect(STATUSES, `module ${m.label}`).toContain(statusOf(m, LESSONS));
     }
+  });
+
+  it("types no status: the plan's data has none, and statusOf works it out from the lessons", () => {
+    for (const m of MODULES)
+      expect(Object.keys(m).sort(), m.title).toEqual(["id", "label", "line", "title"]);
   });
 
   it("gives every module a title nobody else has", () => {
@@ -49,8 +64,23 @@ describe("the course's plan", () => {
     expect(new Set(titles).size).toBe(titles.length);
   });
 
-  it("has every module planned, until the author approves the plan", () => {
-    expect(MODULES.filter((m) => m.status !== "planned")).toEqual([]);
+  it("publishes a module exactly when a lesson of it is written, and plans every other", () => {
+    const published = MODULES.filter((m) => statusOf(m, LESSONS) === "published");
+    expect(published.map((m) => m.label)).toEqual([
+      ...new Set(LESSONS.map((l) => String(l.module))),
+    ]);
+    expect(published.map((m) => m.title)).toEqual(["Meet the machine"]);
+    for (const m of MODULES.filter((m) => !published.includes(m)))
+      expect(statusOf(m, LESSONS), m.title).toBe("planned");
+  });
+
+  it("finds a module's lessons by the module number a lesson holds", () => {
+    const meet = moduleByNumber(0)!;
+    expect(lessonsOf(meet, LESSONS).map((l) => l.id)).toEqual(["meet-the-machine"]);
+    expect(lessonsOf(moduleByNumber(1)!, LESSONS)).toEqual([]);
+    expect(statusOf(meet, [])).toBe("planned");
+    expect(statusOf(meet, [{ id: "x", module: 0 }])).toBe("published");
+    expect(statusOf(meet, [{ id: "y", module: 1 }])).toBe("planned");
   });
 
   it("finds a module by the number a lesson holds", () => {

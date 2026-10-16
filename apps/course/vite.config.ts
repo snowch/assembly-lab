@@ -8,35 +8,64 @@
 // reader whose browser runs no scripts are written into index.html from the cover's own words
 // (static-page.ts), and the manifest a browser installs the course from is written beside it
 // (web-manifest.ts). The icons themselves are files in public/, drawn by scripts/icons.mjs.
+//
+// static-page.ts reads the lessons, to say which modules are published, and Node cannot load the
+// lessons by itself: they import TypeScript sources by paths without an extension. So Vite loads
+// static-page.ts, as it loads the app, when the page or the manifest is first wanted.
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 import react from "@vitejs/plugin-react";
-import { defineConfig, type Plugin } from "vite";
+import { createServer, defineConfig, type Plugin } from "vite";
 
-import { courseTitle, staticPage } from "./src/static-page";
 import { MANIFEST_FILE, webManifest } from "./src/web-manifest";
+
+type StaticPage = typeof import("./src/static-page");
+
+async function loadStaticPage(root: string): Promise<StaticPage> {
+  const server = await createServer({
+    root,
+    configFile: false,
+    logLevel: "silent",
+    appType: "custom",
+    server: { middlewareMode: true, hmr: false, watch: null },
+    optimizeDeps: { noDiscovery: true, include: [] },
+  });
+  try {
+    return (await server.ssrLoadModule("/src/static-page.ts")) as StaticPage;
+  } finally {
+    await server.close();
+  }
+}
 
 function coverWords(): Plugin {
   let base = "/";
-  let manifest = "";
+  let root = process.cwd();
+  let page: Promise<StaticPage> | undefined;
+  const staticPage = () => (page ??= loadStaticPage(root));
+  const manifest = async () => {
+    const { courseTitle } = await staticPage();
+    const title = courseTitle(readFileSync(resolve(root, "index.html"), "utf8"));
+    return `${JSON.stringify(webManifest(title), null, 2)}\n`;
+  };
   return {
     name: "cover-words",
     configResolved(config) {
       base = config.base;
-      const title = courseTitle(readFileSync(resolve(config.root, "index.html"), "utf8"));
-      manifest = `${JSON.stringify(webManifest(title), null, 2)}\n`;
+      root = config.root;
     },
-    transformIndexHtml: (html) => staticPage(html, base),
+    transformIndexHtml: async (html) => (await staticPage()).staticPage(html, base),
     // The development server has no bundle to write the manifest into, so it answers for it.
     configureServer(server) {
-      server.middlewares.use(`${base}${MANIFEST_FILE}`, (_request, response) => {
-        response.setHeader("Content-Type", "application/manifest+json");
-        response.end(manifest);
+      server.middlewares.use(`${base}${MANIFEST_FILE}`, (_request, response, next) => {
+        manifest().then((body) => {
+          response.setHeader("Content-Type", "application/manifest+json");
+          response.end(body);
+        }, next);
       });
     },
-    generateBundle() {
-      this.emitFile({ type: "asset", fileName: MANIFEST_FILE, source: manifest });
+    async generateBundle() {
+      this.emitFile({ type: "asset", fileName: MANIFEST_FILE, source: await manifest() });
     },
   };
 }

@@ -1,0 +1,16 @@
+{
+  "name": "@al/views",
+  "author": "Christopher Snow",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "The course's figures, assembly editor and grader: views of the machine's trace, never scripted animations.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./views.css": "./src/views.css"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "zod": "^4.6.5"
+  }
+}

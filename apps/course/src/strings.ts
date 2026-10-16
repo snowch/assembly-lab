@@ -45,9 +45,11 @@ export const STRINGS = {
   noLesson: (id: string) => `The course has no lesson named ${id}.`,
   backToPlan: "Back to the course plan",
 
-  // the book's stand-ins while no lesson has an interactive, an editor or a challenge.
-  noEditor: "The course has no challenges yet, so there is nothing to edit.",
-  noGrader: "The course has no challenges yet, so nothing can be checked.",
+  // the cover's live figure: the name a screen reader gives it, and what it says as it runs.
+  cover: {
+    figure: "Step through trip_distance(120, 85, 42, 15)", // DRAFT
+    register: (value: number) => `w0 holds ${value}.`, // DRAFT
+  },
 
   /** Under the plan, on every page. */
   copyright: "© 2026 Christopher Snow",

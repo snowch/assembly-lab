@@ -3,8 +3,9 @@
 // The course plan as data: the parts, each with its modules, each module with its number, its
 // title, one line on what the learner does, and where it stands. The front page and the page for
 // a reader whose browser runs no scripts both list the course from here, so they cannot drift
-// from each other. A module is `planned` until its lessons are being written, `drafting` while
-// they are, and `published` once they are on the site.
+// from each other. A module's status is never typed here: it is worked out from the lessons that
+// are written (`statusOf`), so the plan cannot say a module has a lesson it does not have. A module
+// is `published` once a lesson of it is on the site and `planned` until then.
 
 export const STATUSES = ["planned", "drafting", "published"] as const;
 export type ModuleStatus = (typeof STATUSES)[number];
@@ -17,7 +18,6 @@ export interface PlannedModule {
   readonly title: string;
   /** One line on what the learner does in the module. */
   readonly line: string;
-  readonly status: ModuleStatus;
 }
 
 export interface PlanPart {
@@ -26,13 +26,12 @@ export interface PlanPart {
   readonly modules: readonly PlannedModule[];
 }
 
-const M = (
-  label: string,
-  id: string,
-  title: string,
-  line: string,
-  status: ModuleStatus = "planned",
-): PlannedModule => ({ id, label, title, line, status });
+const M = (label: string, id: string, title: string, line: string): PlannedModule => ({
+  id,
+  label,
+  title,
+  line,
+});
 
 /** The course's parts, in order. */
 export const PARTS: readonly PlanPart[] = [
@@ -152,4 +151,24 @@ export const MODULES: readonly PlannedModule[] = PLAN.flatMap((p) => p.modules);
 /** A module by its number: the label a lesson's `module` field holds. */
 export function moduleByNumber(n: number): PlannedModule | undefined {
   return MODULES.find((m) => m.label === String(n));
+}
+
+/** What the plan needs to know of a lesson: where it is, and which module it belongs to. */
+export interface LessonRef {
+  readonly id: string;
+  /** The module's number: the label of a numbered module. */
+  readonly module: number;
+}
+
+/** The lessons of a module, in the order given. The optional chapter has none yet. */
+export function lessonsOf<L extends LessonRef>(
+  module: PlannedModule,
+  lessons: readonly L[],
+): readonly L[] {
+  return lessons.filter((l) => String(l.module) === module.label);
+}
+
+/** A module's status, worked out from the lessons that are written. */
+export function statusOf(module: PlannedModule, lessons: readonly LessonRef[]): ModuleStatus {
+  return lessonsOf(module, lessons).length > 0 ? "published" : "planned";
 }

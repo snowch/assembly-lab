@@ -8,7 +8,10 @@
 
 import { expect, test, type Page } from "@playwright/test";
 
-import { MODULES, PLAN } from "@al/content/plan";
+import { LESSONS } from "@al/content";
+import { MODULES, PLAN, statusOf } from "@al/content/plan";
+
+import { VIEW_STRINGS } from "../../packages/views/src/strings";
 
 import { COMPANION_LINKS, STRINGS } from "../../apps/course/src/strings";
 
@@ -47,9 +50,28 @@ test("the front page lists the plan, every part and every module", async ({ page
     await expect(item.locator("h3")).toContainText(m.title);
     await expect(item.locator("h3")).toContainText(STRINGS.module(m.label));
     await expect(item.locator(".module-line")).toHaveText(m.line);
-    await expect(item.locator(".module-status")).toHaveText(STRINGS.status[m.status]);
+    // The status is worked out from the lessons: a module with a lesson is published.
+    await expect(item.locator(".module-status")).toHaveText(STRINGS.status[statusOf(m, LESSONS)]);
   }
   expect(errors).toEqual([]);
+});
+
+test("Module 0 is published and its entry links to its lesson; no other entry is a link", async ({
+  page,
+}) => {
+  await page.goto("#/");
+  await ready(page);
+  const published = page.locator(".plan-module .module-status[data-status='published']");
+  await expect(published).toHaveCount(1);
+  const entry = page.locator('.plan-module[data-module="meet-the-machine"]');
+  await expect(entry.locator(".module-status")).toHaveText(STRINGS.status.published);
+  const link = entry.locator("h3 a");
+  await expect(link).toHaveText("Meet the machine");
+  await expect(link).toHaveAttribute("href", "#/lesson/meet-the-machine");
+  await expect(page.locator(".plan-module h3 a")).toHaveCount(1);
+  await link.click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Meet the machine");
+  expect(new URL(page.url()).hash).toBe("#/lesson/meet-the-machine");
 });
 
 test("the tab is named for the page, and the course has an address for a lesson", async ({
@@ -59,10 +81,13 @@ test("the tab is named for the page, and the course has an address for a lesson"
   await page.goto("#/");
   await expect(page).toHaveTitle(STRINGS.title);
   await page.goto("#/lesson/meet-the-machine");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Meet the machine");
+  await expect(page).toHaveTitle(STRINGS.pageTitle("Meet the machine"));
+  await page.goto("#/lesson/no-such-lesson");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    STRINGS.noLesson("meet-the-machine"),
+    STRINGS.noLesson("no-such-lesson"),
   );
-  await expect(page).toHaveTitle(STRINGS.pageTitle(STRINGS.noLesson("meet-the-machine")));
+  await expect(page).toHaveTitle(STRINGS.pageTitle(STRINGS.noLesson("no-such-lesson")));
   await page.goto("#/nowhere");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(STRINGS.missing("/nowhere"));
   await page.getByRole("link", { name: STRINGS.backToPlan }).click();
@@ -190,6 +215,46 @@ test("prose keeps its measure: no line of about 85 characters or more", async ({
     return out;
   });
   expect(long).toEqual([]);
+});
+
+test("the cover runs trip_distance(120, 85, 42, 15) live, one instruction at a time", async ({
+  page,
+}) => {
+  const errors = watchErrors(page);
+  await page.goto("#/");
+  await ready(page);
+  const cover = page.locator(".cover-stepper");
+  const value = cover.locator(".cover-value");
+  const next = cover.getByRole("button", { name: VIEW_STRINGS.stepper.next });
+  const reset = cover.getByRole("button", { name: VIEW_STRINGS.stepper.reset });
+  await expect(value).toHaveText("= 120");
+  await expect(reset).toBeDisabled();
+  await expect(cover.locator(".cover-code")).toHaveText([
+    "add w0, w0, w1",
+    "add w0, w0, w2",
+    "sub w0, w0, w3",
+    "ret",
+  ]);
+  await expect(cover.locator(".cover-code[data-next='true']")).toHaveText("add w0, w0, w1");
+  // Each press runs one instruction: the values are the simulator's.
+  for (const [shown, running] of [
+    ["= 205", "add w0, w0, w2"],
+    ["= 247", "sub w0, w0, w3"],
+    ["= 232", "ret"],
+  ] as const) {
+    await next.click();
+    await expect(value).toHaveText(shown);
+    await expect(cover.locator(".cover-code[data-next='true']")).toHaveText(running);
+  }
+  // ret ends the run: nothing is next, and the value stays.
+  await next.click();
+  await expect(value).toHaveText("= 232");
+  await expect(cover.locator(".cover-code[data-next='true']")).toHaveCount(0);
+  await expect(next).toBeDisabled();
+  await reset.click();
+  await expect(value).toHaveText("= 120");
+  await expect(next).toBeEnabled();
+  expect(errors).toEqual([]);
 });
 
 test("the footer carries the copyright and links to the companion courses", async ({ page }) => {

@@ -10,7 +10,8 @@
 // also names the course's icon, for a tab and a phone's home screen, and the manifest a browser
 // installs the course from (web-manifest.ts), each under the site's base path.
 
-import { PLAN } from "@al/content/plan";
+import { LESSONS } from "@al/content";
+import { PLAN, statusOf } from "@al/content/plan";
 
 import { COMPANION_LINKS, STRINGS } from "./strings";
 import { BACKGROUND, ICONS, MANIFEST_FILE, shortName } from "./web-manifest";
@@ -50,7 +51,7 @@ export function staticPage(html: string, base = "/"): string {
     const modules = part.modules.map(
       (m) =>
         `<li><strong>${escape(m.title)}</strong> (${escape(STRINGS.module(m.label))}): ` +
-        `${escape(m.line)} (${escape(STRINGS.status[m.status])})</li>`,
+        `${escape(m.line)} (${escape(STRINGS.status[statusOf(m, LESSONS)])})</li>`,
     );
     return `<h2>${escape(part.title)}</h2>\n    <ul>${modules.join("")}</ul>`;
   });

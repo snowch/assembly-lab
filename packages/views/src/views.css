@@ -1,0 +1,411 @@
+/* Copyright © 2026 Christopher Snow */
+
+/* The course's figures, assembly editor and answer boxes. Phone first: the C sits above the
+   instructions and a register's 32 cells fit 375 pixels. Every colour is a token of the app, so a
+   figure follows the theme. */
+
+.al-figure {
+  display: grid;
+  gap: var(--space-4);
+}
+
+/* The C beside the instructions */
+.al-listing {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+@media (min-width: 48rem) {
+  .al-listing {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+.al-pane {
+  padding: var(--space-2) 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+.al-pane-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0 var(--space-3) var(--space-1);
+  font-family: var(--font-text);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg-muted);
+}
+.al-listing code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+.al-cline {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  align-items: baseline;
+  padding: 0.1rem var(--space-3) 0.1rem 0;
+  border-left: 3px solid transparent;
+}
+.al-cline[data-lit="true"] {
+  background: var(--accent-soft);
+  border-left-color: var(--accent);
+}
+.al-ln {
+  text-align: right;
+  padding-right: var(--space-3);
+  color: var(--fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+.al-src {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.al-label {
+  padding: var(--space-1) var(--space-3) 0 1.75rem;
+  color: var(--fg-muted);
+  font-weight: 600;
+}
+.al-insn {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2rem;
+  padding: 0 var(--space-3) 0 var(--space-1);
+}
+.al-insn[data-next="true"] {
+  background: var(--accent-soft);
+}
+.al-mark {
+  justify-self: center;
+}
+.al-insn[data-next="true"] .al-mark::before {
+  content: "";
+  display: block;
+  border-left: 0.6rem solid var(--accent);
+  border-top: 0.4rem solid transparent;
+  border-bottom: 0.4rem solid transparent;
+}
+.al-text {
+  white-space: pre-wrap;
+}
+.al-ctag {
+  min-width: 1.75rem;
+  padding: 0 0.4rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  color: var(--fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+.al-ctag[data-lit="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+
+/* The stepper */
+.al-switch {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 2.75rem;
+  font-weight: 600;
+}
+.al-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.al-status {
+  margin: 0;
+  min-height: 3.2em;
+}
+.al-locked {
+  margin: 0;
+  color: var(--fg-muted);
+}
+.al-registers {
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* A register: its name, its 32 bits in four groups of eight, its value as a number */
+.al-reg {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "name value"
+    "bits bits";
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-1);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+}
+.al-reg[data-changed="true"] {
+  border-color: var(--accent);
+}
+.al-reg-name {
+  grid-area: name;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+.al-reg-value {
+  grid-area: value;
+  justify-self: end;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.al-bits {
+  grid-area: bits;
+  display: flex;
+  gap: 6px;
+}
+.al-bit-group {
+  flex: 1 1 0;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 1px;
+}
+.al-bit {
+  border-radius: 2px;
+  background: var(--bg-sunken);
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.8;
+  text-align: center;
+}
+.al-bit[data-on="true"] {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+@media (min-width: 48rem) {
+  .al-reg {
+    grid-template-columns: 2.5rem minmax(0, 1fr) 7rem;
+    grid-template-areas: "name bits value";
+    align-items: center;
+    padding: var(--space-1) var(--space-2);
+  }
+  .al-bits {
+    max-width: 38rem;
+  }
+  .al-bit {
+    font-size: var(--text-xs);
+  }
+}
+
+/* A prediction's result */
+.al-outcome {
+  margin-top: var(--space-3);
+}
+.al-chose {
+  display: block;
+  color: var(--fg);
+  font-weight: 400;
+}
+.al-match {
+  color: var(--ok);
+  font-weight: 600;
+}
+.al-nomatch {
+  color: var(--bad);
+  font-weight: 600;
+}
+
+/* The editor */
+.asm-editor {
+  display: grid;
+  gap: var(--space-3);
+}
+.asm-mode {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.asm-mode-label {
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+}
+.asm-mode .button[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+.asm-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.asm-key {
+  min-width: 2.75rem;
+  padding: 0 var(--space-3);
+  font-family: var(--font-mono);
+}
+.asm-text {
+  width: 100%;
+  min-height: 6rem;
+  padding: var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 1.55;
+  tab-size: 8;
+  resize: vertical;
+}
+.asm-problems {
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) var(--space-3);
+  list-style: none;
+  border-left: 4px solid var(--bad);
+  background: var(--bad-bg);
+  border-radius: var(--radius-sm);
+}
+.asm-problems li + li {
+  margin-top: var(--space-1);
+}
+.asm-lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.asm-line + .asm-line {
+  border-top: 1px solid var(--border);
+}
+.asm-line-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 var(--space-3);
+  border: 0;
+  background: none;
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+}
+.asm-line-button code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+.asm-line[data-open="true"] > .asm-line-button {
+  background: var(--accent-soft);
+}
+.asm-ln {
+  min-width: 1.5ch;
+  color: var(--fg-muted);
+}
+.asm-error {
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  border-left: 4px solid var(--bad);
+  background: var(--bad-bg);
+  font-size: var(--text-sm);
+}
+.asm-note {
+  margin: 0;
+  color: var(--fg-muted);
+}
+.asm-line-editor {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-top: 1px dashed var(--border);
+}
+.asm-field {
+  display: grid;
+  gap: var(--space-1);
+}
+.asm-field-label {
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.asm-chips,
+.asm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.chip {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.chip[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+.numpad {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+.numpad-shown {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+.numpad-keys {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 4.5rem));
+  gap: var(--space-2);
+}
+.numpad-keys .button {
+  padding: 0;
+  font-family: var(--font-mono);
+}
+
+/* The answers */
+.answer-editor {
+  display: grid;
+  gap: var(--space-3);
+}
+.answer-field {
+  display: grid;
+  gap: var(--space-1);
+}
+.answer-label {
+  font-weight: 650;
+}
+.answer-input {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.answer-input input {
+  width: 12rem;
+  max-width: 100%;
+  min-height: 2.75rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}

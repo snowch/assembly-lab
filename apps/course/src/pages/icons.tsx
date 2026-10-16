@@ -1,11 +1,16 @@
 // Copyright © 2026 Christopher Snow
 
-// The front page's pictures: a small line mark for each module, and the cover's figure.
+// The front page's pictures: a small line mark for each module, and the cover's live figure.
 //
 // The marks are the course's own, drawn on a 24-unit grid as digital-design's stage marks are, so
 // the two courses' lists look like one family; none is copied from it.
 
-import type { ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
+
+import { TRIP_DISTANCE } from "@al/content";
+import { VIEW_STRINGS, bitsOf, traceOf, viewAt, wValue } from "@al/views";
+
+import { STRINGS } from "../strings";
 
 /** One mark per module, by the module's id in content/plan/plan.ts. */
 export const MODULE_ICONS: Readonly<Record<string, ReactNode>> = {
@@ -43,52 +48,88 @@ export const MODULE_ICONS: Readonly<Record<string, ReactNode>> = {
   "the-same-programs-on-32-bit-arm": <path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4" />,
 };
 
+/** The cover's program and call: Module 0's first, `trip_distance(120, 85, 42, 15)`. */
+const COVER_CALL = { entry: "trip_distance", args: [120, 85, 42, 15] } as const;
+
 /**
- * The cover's figure: `trip_distance`'s four instructions, and `w0` after the third has run, its
- * 32 bits drawn as cells. Its values are Module 0's (`trip_distance(120, 85, 42, 15)` leaves 232 in
- * `w0`; docs/notes/module-0-plan.md); the figure is decoration until the Module 0 build replaces it
- * with the live stepper, as digital-design's cover runs its live circuit.
+ * The cover's figure, live: `trip_distance`'s four instructions with a marker at the one that runs
+ * next, and `w0` as 32 cells and a number. Next runs one instruction and Reset starts again. Every
+ * value comes from the course's simulator (packages/views, the same run Module 0's stepper
+ * draws), as digital-design's cover runs its live circuit.
  */
 export function CoverFigure() {
-  const value = 232;
-  const lines = ["add  w0, w0, w1", "add  w0, w0, w2", "sub  w0, w0, w3", "ret"];
+  const trace = useMemo(() => traceOf(TRIP_DISTANCE, COVER_CALL), []);
+  const [k, setK] = useState(0);
+  const view = viewAt(trace, k);
+  const value = wValue(view.state, 0);
+  const instructions = trace.lines.flatMap((line, index) =>
+    line.kind === "instruction" ? [{ index, text: line.text }] : [],
+  );
   const cell = 8;
   const pitch = 9;
   const byteGap = 6;
   const x0 = 44;
+  const bits = bitsOf(value);
   const cells: ReactNode[] = [];
   for (let i = 0; i < 32; i++) {
-    const bit = 31 - i;
-    const on = ((value >>> bit) & 1) === 1;
     const x = x0 + i * pitch + Math.floor(i / 8) * byteGap;
     cells.push(
       <rect
-        key={bit}
+        key={i}
         x={x}
         y={136}
         width={cell}
         height={16}
         rx={1.5}
-        className={on ? "cover-bit on" : "cover-bit"}
+        className={bits[i] === "1" ? "cover-bit on" : "cover-bit"}
       />,
     );
   }
+  const atEnd = view.k >= view.total;
+  const next = instructions.findIndex((ins) => ins.index === view.next);
   return (
-    <svg className="cover-figure" viewBox="-14 -6 388 206" aria-hidden="true" focusable="false">
-      <rect x={-14} y={-6} width={388} height={206} rx={10} className="cover-panel" />
-      {lines.map((text, i) => (
-        <text key={text} x={44} y={30 + i * 25} className="cover-code">
-          {text}
+    <div className="cover-stepper" role="group" aria-label={STRINGS.cover.figure}>
+      <svg className="cover-figure" viewBox="-14 -6 388 206" aria-hidden="true" focusable="false">
+        <rect x={-14} y={-6} width={388} height={206} rx={10} className="cover-panel" />
+        {instructions.map((ins, i) => (
+          <text
+            key={ins.index}
+            x={44}
+            y={30 + i * 25}
+            className="cover-code"
+            data-next={i === next}
+          >
+            {ins.text}
+          </text>
+        ))}
+        {next >= 0 && <path d={`M26 ${17 + next * 25}l9 6-9 6z`} className="cover-marker" />}
+        <text x={0} y={149} className="cover-reg">
+          w0
         </text>
-      ))}
-      <path d="M26 92l9 6-9 6z" className="cover-marker" />
-      <text x={0} y={149} className="cover-reg">
-        w0
-      </text>
-      {cells}
-      <text x={44} y={180} className="cover-value">
-        = {value}
-      </text>
-    </svg>
+        {view.written.has(0) && (
+          <rect x={x0 - 4} y={132} width={313} height={24} rx={3} className="cover-changed" />
+        )}
+        {cells}
+        <text x={44} y={180} className="cover-value">
+          = {value}
+        </text>
+      </svg>
+      <div className="cover-controls">
+        <button type="button" className="cover-button" disabled={atEnd} onClick={() => setK(k + 1)}>
+          {VIEW_STRINGS.stepper.next}
+        </button>
+        <button
+          type="button"
+          className="cover-button quiet"
+          disabled={view.k === 0}
+          onClick={() => setK(0)}
+        >
+          {VIEW_STRINGS.stepper.reset}
+        </button>
+      </div>
+      <p className="visually-hidden" role="status">
+        {STRINGS.cover.register(value)} {atEnd ? VIEW_STRINGS.stepper.ended : ""}
+      </p>
+    </div>
   );
 }

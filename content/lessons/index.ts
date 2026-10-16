@@ -1,8 +1,12 @@
 // Copyright © 2026 Christopher Snow
 
-// The lessons that are written. None are yet: the plan (../plan/plan.ts) is under the author's
-// review. A lesson is one module of this folder, typed by the lesson schema, added to this list.
+// The lessons that are written, in course order. Each is a module of this folder, typed by the
+// lesson schema; adding one here is what publishes it. Every lesson is parsed when the app starts,
+// so an invalid lesson fails fast with its problems listed, and the content tests parse the same
+// list. The plan (../plan/plan.ts) works out each module's status from this list.
 
-import type { Lesson } from "@platform/lesson-schema";
+import { parseLesson, type Lesson } from "@platform/lesson-schema";
 
-export const LESSONS: readonly Lesson[] = [];
+import { meetTheMachine } from "./meet-the-machine";
+
+export const LESSONS: readonly Lesson[] = [meetTheMachine].map(parseLesson);
