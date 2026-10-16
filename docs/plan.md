@@ -285,8 +285,10 @@ No agent gives the verdict on its own work, the managing session's included.
 The author asked the managing session to keep working without stopping. The four decisions are
 still the author's. Until the author takes them, the work assumes each recommendation (A64; the
 name; the trip computer; the optional chapter as recorded listings), and says so where it depends
-on one: `docs/machine.md` assumes A64. Each assumption is reversible, and checkpoint 2 asks the
-author to confirm or change them before Module 0 is published.
+on one: `docs/machine.md` assumes A64. Each assumption is reversible. Module 0 is published as a
+draft as soon as its full check passes, so the author can try the lesson the decisions shape; its
+review (reader, sceptic, checker) runs on the published draft, and checkpoint 2 asks the author to
+confirm or change the decisions with the lesson in front of them.
 
 ### 16 October 2026: the plan's review
 

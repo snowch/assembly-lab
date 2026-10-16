@@ -66,7 +66,18 @@ describe("grading written assembly", () => {
     const verdict = gradeWritten(written, { text: "sub w0, w0, w1" });
     expect(verdict.blocked).toBeUndefined();
     expect(verdict.failures).toHaveLength(3);
-    expect(verdict.failures[0]?.detail).toContain("There is no instruction there");
+    // The machine's own sentence for a run that went past its last instruction, whatever its
+    // wording: the template, with each parameter allowed to be anything.
+    const template = sentence("fault.notInstruction", {
+      address: "\u0000",
+      line: "\u0000",
+      text: "\u0000",
+    });
+    const pattern = template
+      .split("\u0000")
+      .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+      .join(".*");
+    expect(verdict.failures[0]?.detail).toMatch(new RegExp(`^${pattern}$`));
   });
 
   it("is what grade() does for a challenge that names the run-registers grader", () => {
