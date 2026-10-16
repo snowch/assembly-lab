@@ -1,0 +1,143 @@
+{
+  "entry": "elapsed",
+  "calls": [
+    {
+      "entry": "elapsed",
+      "args": [
+        ["1000", 32],
+        ["4294966296", 32]
+      ]
+    },
+    {
+      "entry": "elapsed",
+      "args": [
+        ["5000", 32],
+        ["1000", 32]
+      ]
+    },
+    {
+      "entry": "elapsed",
+      "args": [
+        ["0", 32],
+        ["4294967295", 32]
+      ]
+    },
+    {
+      "entry": "tick_wrapped",
+      "args": [
+        ["1000", 32],
+        ["4294966296", 32]
+      ]
+    },
+    {
+      "entry": "tick_wrapped",
+      "args": [
+        ["5", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "tick_wrapped",
+      "args": [
+        ["5", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "sum_carried",
+      "args": [
+        ["4294967295", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "sum_carried",
+      "args": [
+        ["1", 32],
+        ["2", 32]
+      ]
+    },
+    {
+      "entry": "sum_carried",
+      "args": [
+        ["4294967295", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "add_overflows",
+      "args": [
+        ["2147483647", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "add_overflows",
+      "args": [
+        ["5", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "add_overflows",
+      "args": [
+        ["2147483648", 32],
+        ["2147483648", 32]
+      ]
+    },
+    {
+      "entry": "add_overflows",
+      "args": [
+        ["2147483648", 32],
+        ["4294967295", 32]
+      ]
+    },
+    {
+      "entry": "add_overflows",
+      "args": [
+        ["4294967295", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "sub_overflows",
+      "args": [
+        ["2147483648", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "sub_overflows",
+      "args": [
+        ["5", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "sub_overflows",
+      "args": [
+        ["0", 32],
+        ["2147483648", 32]
+      ]
+    },
+    {
+      "entry": "sub_overflows",
+      "args": [
+        ["1000", 32],
+        ["4294966296", 32]
+      ]
+    },
+    {
+      "entry": "negate",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "negate",
+      "args": [["5", 32]]
+    },
+    {
+      "entry": "negate",
+      "args": [["0", 32]]
+    }
+  ]
+}

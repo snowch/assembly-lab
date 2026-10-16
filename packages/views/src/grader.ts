@@ -17,6 +17,12 @@ import { TEXT_BASE, assemble, run } from "@al/machine";
 import type { Verdict, VerdictFailure } from "@platform/lesson-runtime";
 import type { AnswerField, Artifact, Challenge } from "@platform/lesson-schema";
 
+import {
+  OUTCOMES_AT_RETURN,
+  SMALLEST_SETTING_FLAG,
+  gradeOutcomes,
+  gradeSmallest,
+} from "./grader-arith";
 import { RecordedSchema } from "./interactives/props";
 import { errorSentence, stopSentence } from "./messages";
 import { VIEW_STRINGS as S, plain } from "./strings";
@@ -155,5 +161,7 @@ export function grade(challenge: Challenge, artifact: Artifact): Verdict {
   const { grader } = answerTests(challenge);
   if (grader === RUN_REGISTERS) return gradeWritten(challenge, artifact);
   if (grader === REGISTERS_AT_RETURN) return gradeAnswers(challenge, artifact);
+  if (grader === OUTCOMES_AT_RETURN) return gradeOutcomes(challenge, artifact);
+  if (grader === SMALLEST_SETTING_FLAG) return gradeSmallest(challenge, artifact);
   throw new Error(`${challenge.id}: there is no grader called ${grader}`);
 }

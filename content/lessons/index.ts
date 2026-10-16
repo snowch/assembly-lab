@@ -7,6 +7,12 @@
 
 import { parseLesson, type Lesson } from "@platform/lesson-schema";
 
+import { addingAndTheFlags } from "./adding-and-the-flags";
 import { meetTheMachine } from "./meet-the-machine";
+import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
 
-export const LESSONS: readonly Lesson[] = [meetTheMachine].map(parseLesson);
+export const LESSONS: readonly Lesson[] = [
+  meetTheMachine,
+  addingAndTheFlags,
+  subtractingAndTheTickCounter,
+].map(parseLesson);

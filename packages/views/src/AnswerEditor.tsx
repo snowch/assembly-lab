@@ -28,6 +28,27 @@ export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
       )}
       {challenge.fields.map((f) => {
         const id = `answer-${challenge.id}-${f.id}`;
+        // A choice is a row of radio buttons, none chosen until the learner chooses.
+        if (f.kind === "choice" && f.options)
+          return (
+            <fieldset key={f.id} className="answer-field answer-choice" data-field={f.id}>
+              <legend className="answer-label">{withCode(f.label)}</legend>
+              <span className="answer-options">
+                {f.options.map((o) => (
+                  <label key={o.value} className="answer-option">
+                    <input
+                      type="radio"
+                      name={id}
+                      value={o.value}
+                      checked={answers[f.id] === o.value}
+                      onChange={() => set(f.id, o.value)}
+                    />
+                    <span>{withCode(o.label)}</span>
+                  </label>
+                ))}
+              </span>
+            </fieldset>
+          );
         return (
           <label key={f.id} className="answer-field" data-field={f.id} htmlFor={id}>
             <span className="answer-label">{withCode(f.label)}</span>

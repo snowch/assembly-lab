@@ -10,6 +10,7 @@ import { PLAN, lessonsOf, statusOf } from "@al/content/plan";
 import { lessonHref } from "../route";
 import { STRINGS } from "../strings";
 import { CoverFigure, MODULE_ICONS } from "./icons";
+import "../styles/module-lessons.css";
 
 function Cover() {
   return (
@@ -38,7 +39,10 @@ export function FrontPage() {
             {part.modules.map((m) => {
               // A module's status and its link come from the lessons that are written.
               const status = statusOf(m, LESSONS);
-              const first = lessonsOf(m, LESSONS)[0];
+              const lessons = lessonsOf(m, LESSONS);
+              const first = lessons[0];
+              // A module with one lesson links its title to it; a module with several lists them.
+              const several = lessons.length > 1;
               return (
                 <li key={m.id} className="plan-module" data-module={m.id}>
                   <span className="module-icon" aria-hidden="true">
@@ -47,10 +51,19 @@ export function FrontPage() {
                   <h3>
                     <span className="module-number">{STRINGS.module(m.label)}</span>
                     <span className="module-title">
-                      {first ? <a href={lessonHref(first.id)}>{m.title}</a> : m.title}
+                      {first && !several ? <a href={lessonHref(first.id)}>{m.title}</a> : m.title}
                     </span>
                   </h3>
                   <p className="module-line">{m.line}</p>
+                  {several && (
+                    <ol className="module-lessons">
+                      {lessons.map((l) => (
+                        <li key={l.id} data-lesson={l.id}>
+                          <a href={lessonHref(l.id)}>{l.title}</a>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
                   <span className="module-status" data-status={status}>
                     {STRINGS.status[status]}
                   </span>
