@@ -4,8 +4,10 @@
 // plan itself, listed from content/plan/plan.ts: each part with its modules, each module with its
 // number, its title, one line on what the learner does, and its status.
 
-import { PLAN } from "@al/content/plan";
+import { LESSONS } from "@al/content";
+import { PLAN, lessonsOf, statusOf } from "@al/content/plan";
 
+import { lessonHref } from "../route";
 import { STRINGS } from "../strings";
 import { CoverFigure, MODULE_ICONS } from "./icons";
 
@@ -33,21 +35,28 @@ export function FrontPage() {
         <section key={part.id} className="plan-part" aria-labelledby={`part-${part.id}`}>
           <h2 id={`part-${part.id}`}>{part.title}</h2>
           <ul className="plan-modules">
-            {part.modules.map((m) => (
-              <li key={m.id} className="plan-module" data-module={m.id}>
-                <span className="module-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24">{MODULE_ICONS[m.id]}</svg>
-                </span>
-                <h3>
-                  <span className="module-number">{STRINGS.module(m.label)}</span>
-                  <span className="module-title">{m.title}</span>
-                </h3>
-                <p className="module-line">{m.line}</p>
-                <span className="module-status" data-status={m.status}>
-                  {STRINGS.status[m.status]}
-                </span>
-              </li>
-            ))}
+            {part.modules.map((m) => {
+              // A module's status and its link come from the lessons that are written.
+              const status = statusOf(m, LESSONS);
+              const first = lessonsOf(m, LESSONS)[0];
+              return (
+                <li key={m.id} className="plan-module" data-module={m.id}>
+                  <span className="module-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">{MODULE_ICONS[m.id]}</svg>
+                  </span>
+                  <h3>
+                    <span className="module-number">{STRINGS.module(m.label)}</span>
+                    <span className="module-title">
+                      {first ? <a href={lessonHref(first.id)}>{m.title}</a> : m.title}
+                    </span>
+                  </h3>
+                  <p className="module-line">{m.line}</p>
+                  <span className="module-status" data-status={status}>
+                    {STRINGS.status[status]}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </section>
       ))}

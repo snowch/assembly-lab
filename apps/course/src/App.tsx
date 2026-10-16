@@ -1,8 +1,8 @@
 // Copyright © 2026 Christopher Snow
 
 // The course shell: header, routes, footer. Lessons render through the platform's runtime with
-// the course's book; the shell itself knows nothing about the machine. With no lessons yet, every
-// lesson address says so, and the front page lists the plan.
+// the course's book; the shell itself knows nothing about the machine. The front page lists the
+// plan, a lesson address shows the lesson with a way back, and an address with no lesson says so.
 
 import { useEffect, useMemo } from "react";
 
@@ -11,6 +11,7 @@ import { browserStorage, LessonView } from "@platform/lesson-runtime";
 import { createBook } from "./book";
 import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
+import { RUNTIME_STRINGS } from "./runtime-strings";
 import { COMPANION_LINKS, STRINGS } from "./strings";
 import { useTheme, type Theme } from "./theme";
 
@@ -43,13 +44,21 @@ export function App() {
   else if (route.kind === "lesson") {
     const lesson = book.lessons.find((l) => l.id === route.id);
     page = lesson ? (
-      <LessonView
-        key={lesson.id}
-        book={book}
-        lesson={lesson}
-        storage={storage}
-        lessonHref={lessonHref}
-      />
+      <>
+        <p className="lesson-back">
+          <a className="back-link" href="#/">
+            {STRINGS.backToPlan}
+          </a>
+        </p>
+        <LessonView
+          key={lesson.id}
+          book={book}
+          lesson={lesson}
+          storage={storage}
+          lessonHref={lessonHref}
+          strings={RUNTIME_STRINGS}
+        />
+      </>
     ) : (
       <>
         <h1>{STRINGS.noLesson(route.id)}</h1>
