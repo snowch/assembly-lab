@@ -112,6 +112,12 @@
   border-bottom-color: var(--accent);
   border-bottom-width: 4px;
 }
+/* What the two thick underlines mark, in words a touch screen can read. */
+.al-adder-key {
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+}
 .al-adder-cell[data-current="true"] {
   outline: 2px solid var(--fg);
   outline-offset: 1px;
@@ -131,6 +137,9 @@
   }
   .al-adder-carry {
     font-size: var(--text-xs);
+  }
+  .al-adder-key {
+    grid-column: 2;
   }
 }
 

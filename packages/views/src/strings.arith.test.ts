@@ -33,11 +33,14 @@ describe("the arithmetic figures' words", () => {
     expect(all.filter(([, s]) => s.includes("—")).map(([p]) => p)).toEqual([]);
   });
 
-  it("went through the prose process: none is marked DRAFT, so a new one marked so is seen", () => {
-    // Redrafted by Haiku and checked for meaning, 16 October 2026.
+  it("went through the prose process, but the six added after Module 2's review: each is marked DRAFT, so it is seen", () => {
+    // The rest were redrafted by Haiku and checked for meaning, 16 October 2026. The six marked
+    // are the top bit's status sentence and the key under the carry row, the lock on a figure
+    // that waits for a challenge, the fixed sentence for a wrong flag and for a wrong value, and
+    // the sentence for flags chosen from but not yet chosen.
     const source = readFileSync(new URL("./strings.arith.ts", import.meta.url), "utf8");
     const marked = source.match(/\/\/ DRAFT/g) ?? [];
-    expect(marked).toHaveLength(0);
+    expect(marked).toHaveLength(6);
   });
 });
 

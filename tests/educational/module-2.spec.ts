@@ -14,13 +14,14 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { LESSONS } from "@al/content";
 import { ARITH_STRINGS as A } from "../../packages/views/src/strings.arith";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
-import { additionSteps, bitAt } from "../../packages/views/src/arith";
+import { additionSteps, bitAt, flagDigits } from "../../packages/views/src/arith";
 import { traceOf, viewAt, wValue } from "../../packages/views/src/trace";
 import { DEFAULT_STRINGS as S, format } from "../../platform/lesson-runtime/src/strings";
 
 import { PLUS, SUM_FLAGS } from "../../content/lessons/adding-and-the-flags.listings";
 import {
   ELAPSED,
+  ELAPSED_SUBS,
   NEGATE_FLAGS,
 } from "../../content/lessons/subtracting-and-the-tick-counter.listings";
 import { designProblems } from "./design";
@@ -141,22 +142,27 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       page.locator("#ix-predict-readings").getByRole("button", { name: V.prediction.commit }),
     );
     await expect(readings).toContainText(A.prediction.readings(true, false));
+    // The adds before the add leaves N and V at 1, so the model says V is 1 and the add keeps it.
+    const flags = flagDigits(
+      traceOf(SUM_FLAGS, { entry: "sum_flags", args: [0x7fffffff, 1] }).result.final.flags,
+    );
+    expect(flags).toEqual([1, 0, 0, 1]);
     await predictionCommitsBeforeItReveals(
       page,
       "predict-add-flags",
-      "All four are still 0",
       /^V is 1/,
+      "All four are still 0",
     );
     await page
       .locator("#ix-predict-add-flags")
-      .getByRole("radio", { name: "All four are still 0" })
+      .getByRole("radio", { name: /^V is 1/ })
       .check();
     await press(
       page,
       page.locator("#ix-predict-add-flags").getByRole("button", { name: V.prediction.commit }),
     );
     await expect(page.locator("#ix-predict-add-flags .al-match")).toContainText(
-      A.prediction.flagsAt(0, 0, 0, 0),
+      A.prediction.flagsAt(...flags),
     );
   });
 
@@ -240,13 +246,13 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     });
   });
 
-  test("the stepper after the failure experiment's prediction: adds, then add, flags all 0 and w0 the model's", async ({
+  test("the stepper after the failure experiment's prediction: adds, then add, the flags the adds left kept and w0 the model's", async ({
     page,
   }) => {
     await openLesson(page, ONE);
     const stepper = page.locator("#ix-step-add");
     await expect(stepper.locator(".al-locked")).toBeVisible();
-    await commit(page, "predict-add-flags", "All four are still 0");
+    await commit(page, "predict-add-flags", /^V is 1/);
     await stepper.scrollIntoViewIfNeeded();
     const model = traceOf(SUM_FLAGS, { entry: "sum_flags", args: [0x7fffffff, 1] });
     const next = stepper.getByRole("button", { name: V.stepper.next });
@@ -261,7 +267,11 @@ test.describe("lesson 1, Adding, and the four flags", () => {
         await expect(registerValue(stepper, name)).toHaveText(
           String(wValue(viewAt(model, k).state, n)),
         );
-      expect(await flagValues(stepper)).toEqual(["0", "0", "0", "0"]);
+      // The adds sets N and V; the add and the ret leave them as they were.
+      expect(await flagValues(stepper)).toEqual(
+        flagDigits(viewAt(model, k).state.flags).map(String),
+      );
+      expect(await flagValues(stepper)).toEqual(["1", "0", "0", "1"]);
     }
     await expect(registerValue(stepper, "w0")).toHaveText("2147483648");
     await expect(next).toBeDisabled();
@@ -322,7 +332,50 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       await choose(page, c, rest);
       await press(page, run(c));
       await expect(status(c)).toHaveText(S.challenge.blocked);
-      await expect(c.locator(".verdict.blocked")).toContainText("V for 0x80000000 plus 0x80000000");
+      // Twelve choices are not listed: the sentence says to choose, and names none of them.
+      await expect(c.locator(".verdict.blocked")).toHaveText(A.grader.chooseFirst);
+    });
+
+    test("opens the adder on 1 plus 0xffffffff only once the choices pass, and draws C 1 and Z 1", async ({
+      page,
+    }) => {
+      await openLesson(page, ONE);
+      const adder = page.locator("#ix-add-carry-out");
+      const c = challenge(page, "predict-flags");
+      await adder.scrollIntoViewIfNeeded();
+      await expect(adder.locator(".al-locked")).toHaveText(A.adder.lockedUntilPassed);
+      await expect(adder.getByRole("button", { name: A.adder.next })).toHaveCount(0);
+      // A wrong choice leaves it shut.
+      await c.scrollIntoViewIfNeeded();
+      await choose(page, c, { ...ANSWERS, "third-v": "0" });
+      await press(page, run(c));
+      await expect(adder.locator(".al-locked")).toBeVisible();
+      await choose(page, c, ANSWERS);
+      await press(page, run(c));
+      await expect(c.locator(".challenge-complete")).toBeVisible();
+      await expect(adder.locator(".al-locked")).toHaveCount(0);
+      await adder.scrollIntoViewIfNeeded();
+      const model = traceOf(PLUS, { entry: "plus", args: [1, 0xffffffff] });
+      const record = additionSteps(model)[0]!.addition!;
+      await press(page, adder.getByRole("button", { name: A.adder.all }));
+      expect(await flagValues(adder)).toEqual(flagDigits(model.result.final.flags).map(String));
+      expect(await flagValues(adder)).toEqual(["0", "1", "1", "0"]);
+      await expect(adder.locator('[data-top="in"]')).toHaveAttribute(
+        "data-value",
+        String(bitAt(record.carries, 31)),
+      );
+      await expect(adder.locator('[data-top="out"]')).toHaveAttribute(
+        "data-value",
+        String(record.carryOut),
+      );
+      await expect(adder.locator('[data-top="out"]')).toHaveAttribute("data-value", "1");
+      // The last status says this is the top bit and what V compares, and the key is visible text.
+      await expect(adder.locator("[role=status]")).toContainText(A.adder.topBit);
+      await expect(adder.locator(".al-adder-key")).toBeVisible();
+      await expect(adder.locator(".al-adder-key")).toHaveText(A.adder.topKey);
+      // A reload grades the saved work again, and the adder is still open.
+      await page.reload();
+      await expect(page.locator("#ix-add-carry-out .al-locked")).toHaveCount(0);
     });
 
     test("rejects a wrong flag, names the addition and not the flag, and does not complete", async ({
@@ -336,6 +389,9 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       await press(page, run(c));
       await expect(status(c)).toHaveText(failing(2, 3));
       await expect(c.locator(".verdict-failure h4")).toHaveText(["0x80000000 plus 0x80000000"]);
+      // The failure says a flag is wrong, in a sentence, and shows no empty lists.
+      await expect(c.locator(".verdict-failure .verdict-detail")).toHaveText(A.grader.flagWrong);
+      await expect(c.locator(".verdict-values")).toHaveCount(0);
       await expect(c.locator(".verdict")).not.toContainText(/third-v|V for/);
       await expect(c.locator(".challenge-complete")).toHaveCount(0);
     });
@@ -420,7 +476,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       const c = challenge(page, "smallest-overflow");
       await c.scrollIntoViewIfNeeded();
       await press(page, run(c));
-      await expect(c.locator(".verdict.blocked")).toContainText("first");
+      await expect(c.locator(".verdict.blocked")).toContainText("Nothing is graded until");
       await answer(c, "two");
       await press(page, run(c));
       await expect(c.locator(".verdict.blocked")).toContainText("whole number");
@@ -589,6 +645,49 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     expect(box.x + box.width).toBeLessThanOrEqual(page.viewportSize()!.width);
   });
 
+  test.describe("the adder drawing elapsed_subs", () => {
+    const SUBS = { c: "", listing: ELAPSED_SUBS.listing };
+    const drawn = [
+      { id: "subtract-wrapped", args: [1000, 4294966296], flags: ["0", "0", "0", "0"], out: "0" },
+      { id: "subtract-no-wrap", args: [9000, 2500], flags: ["0", "0", "1", "0"], out: "1" },
+    ];
+
+    for (const d of drawn) {
+      test(`${d.id}: shut until the prediction is checked, then draws the model's subtraction and C ${d.flags[2]}`, async ({
+        page,
+      }) => {
+        await openLesson(page, TWO);
+        const adder = page.locator(`#ix-${d.id}`);
+        await adder.scrollIntoViewIfNeeded();
+        await expect(adder.locator(".al-locked")).toBeVisible();
+        await commit(page, "predict-elapsed", /^2000$/);
+        await expect(adder.locator(".al-locked")).toHaveCount(0);
+        const model = traceOf(SUBS, { entry: "elapsed_subs", args: d.args });
+        const record = additionSteps(model)[0]!.addition!;
+        expect(record.subtraction).toBe(true);
+        const cell = (row: string, column: number) =>
+          adder.locator(`[data-row="${row}"][data-col="${column}"]`);
+        // The second number is drawn turned over, bit for bit as the model has it, and 1 is carried in.
+        await expect(adder.locator('[data-row="b"]').first()).toContainText(
+          A.adder.turnedOver("w1"),
+        );
+        for (const column of [0, 3, 10, 20, 31])
+          await expect(cell("b", column)).toHaveAttribute(
+            "data-value",
+            String(bitAt(record.b, column)),
+          );
+        await press(page, adder.getByRole("button", { name: A.adder.next }));
+        await expect(cell("carry", 0)).toHaveAttribute("data-value", "1");
+        await press(page, adder.getByRole("button", { name: A.adder.all }));
+        expect(await flagValues(adder)).toEqual(d.flags);
+        expect(await flagValues(adder)).toEqual(flagDigits(model.result.final.flags).map(String));
+        await expect(adder.locator('[data-top="out"]')).toHaveAttribute("data-value", d.out);
+        await expect(adder.locator("[role=status]")).toContainText(A.adder.topBit);
+        await expect(adder.locator(".al-adder-key")).toBeVisible();
+      });
+    }
+  });
+
   test.describe("the construction challenge", () => {
     test("is completed by typing, at the desktop width", async ({ page }, info) => {
       test.skip(info.project.name !== "desktop", "typing is the desktop width's way in");
@@ -648,14 +747,8 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
         c.getByRole("group", { name: group, exact: true }).locator("button.chip");
       // A line that holds ret has no operands; choose an instruction that has them.
       await press(page, chips(V.editor.instruction).filter({ hasText: /^sub$/ }));
-      await expect(chips(V.editor.instruction)).toHaveText([
-        "add",
-        "sub",
-        "adds",
-        "subs",
-        "neg",
-        "ret",
-      ]);
+      // neg is not met until the failure experiment, so the gate and the chips leave it out.
+      await expect(chips(V.editor.instruction)).toHaveText(["add", "sub", "adds", "subs", "ret"]);
       await expect(chips(V.editor.operand(1))).toHaveText(["w0", "w1"]);
     });
 
@@ -688,6 +781,10 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       await press(page, run(c));
       await expect(status(c)).not.toHaveText(passing(4));
       await expect(c.locator(".challenge-complete")).toHaveCount(0);
+      // The values of a failure are shown as the unsigned numbers they are, never negative.
+      await expect(c.locator(".verdict-failure").first()).toContainText("w0=4294963296");
+      await expect(c.locator(".verdict-failure").first()).toContainText("w0=4000");
+      await expect(c.locator(".verdict")).not.toContainText("w0=-");
       await box.fill("add w0, w0, w1\nret");
       await press(page, run(c));
       await expect(c.locator(".challenge-complete")).toHaveCount(0);

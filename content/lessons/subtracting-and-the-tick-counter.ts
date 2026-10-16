@@ -32,6 +32,12 @@ const OUTCOMES_AT_RETURN = "outcomes-at-return";
 /** The call the prediction and the ring run: the counter wraps between the two readings. */
 const WRAPPED_CALL = { entry: "elapsed", args: [1000, 4294966296] } as const;
 
+/** The same two readings through `subs`: the adder draws it, and C is 0 (a borrow). */
+const BORROW_CALL = { entry: "elapsed_subs", args: [1000, 4294966296] } as const;
+
+/** A subtraction that does not wrap, through `subs`: C is 1 (no borrow). No challenge calls it. */
+const NO_BORROW_CALL = { entry: "elapsed_subs", args: [9000, 2500] } as const;
+
 export const subtractingAndTheTickCounter: LessonInput = {
   id: "subtracting-and-the-tick-counter",
   title: "Subtracting, and the tick counter",
@@ -81,6 +87,20 @@ export const subtractingAndTheTickCounter: LessonInput = {
             borrowEntry: "elapsed_subs",
             after: "predict-elapsed",
           },
+        },
+        {
+          id: "subtract-wrapped",
+          kind: "adder",
+          timeModel: STEPS,
+          caption: LABELS.captions.subtractWrapped,
+          props: { program: ELAPSED_SUBS, call: BORROW_CALL, after: "predict-elapsed" },
+        },
+        {
+          id: "subtract-no-wrap",
+          kind: "adder",
+          timeModel: STEPS,
+          caption: LABELS.captions.subtractNoWrap,
+          props: { program: ELAPSED_SUBS, call: NO_BORROW_CALL, after: "predict-elapsed" },
         },
       ],
     },
@@ -159,7 +179,7 @@ export const subtractingAndTheTickCounter: LessonInput = {
       gradedDirection: "write",
       // The registers the tap editor offers, and the instructions the lesson's assembler allows.
       palette: ["w0", "w1"],
-      allowedConstructs: ["add", "sub", "adds", "subs", "neg", "ret"],
+      allowedConstructs: ["add", "sub", "adds", "subs", "ret"],
       initial: { text: ELAPSED_STARTING_TEXT },
       tests: {
         kind: "answers",
@@ -167,20 +187,24 @@ export const subtractingAndTheTickCounter: LessonInput = {
         // Two calls that do not wrap, then two that do. `now` is in `w0` and `then` in `w1`. The
         // challenge after this one asks about the step from 4294967295 to 0, so no call here does.
         cases: [
-          { label: "elapsed(5000, 1000)", given: { w0: 5000, w1: 1000 }, expect: { w0: 4000 } },
+          {
+            label: "elapsed(5000, 1000)",
+            given: { w0: 5000, w1: 1000, reading: "unsigned" },
+            expect: { w0: 4000 },
+          },
           {
             label: "elapsed(86400000, 3600000)",
-            given: { w0: 86400000, w1: 3600000 },
+            given: { w0: 86400000, w1: 3600000, reading: "unsigned" },
             expect: { w0: 82800000 },
           },
           {
             label: "elapsed(250, 4294967046)",
-            given: { w0: 250, w1: 4294967046 },
+            given: { w0: 250, w1: 4294967046, reading: "unsigned" },
             expect: { w0: 500 },
           },
           {
             label: "elapsed(30, 4294966296)",
-            given: { w0: 30, w1: 4294966296 },
+            given: { w0: 30, w1: 4294966296, reading: "unsigned" },
             expect: { w0: 1030 },
           },
         ],

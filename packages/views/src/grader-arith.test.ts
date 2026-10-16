@@ -114,20 +114,29 @@ describe("the outcomes at return, for flags", () => {
     expect(JSON.stringify(verdict)).not.toContain('"1"');
   });
 
-  it("fails a case with no sentence of its own by naming the case only", () => {
+  it("fails a case with no sentence of its own with a fixed one, which names no flag and no value", () => {
     const answers = { ...flags.reference.answers, "b-v": "0" };
     const verdict = grade(flags, { answers });
     expect(verdict.failures).toEqual([
-      { index: 1, label: "b", inputs: {}, actual: {}, expected: {} },
+      { index: 1, label: "b", inputs: {}, actual: {}, expected: {}, detail: A.grader.flagWrong },
     ]);
+    expect(A.grader.flagWrong).not.toMatch(/\b[NZCV]\b|\d/);
+    // Two wrong flags in one case are still said once.
+    const two = grade(flags, { answers: { ...flags.reference.answers, "b-n": "0", "b-v": "0" } });
+    expect(two.failures.map((f) => f.detail)).toEqual([A.grader.flagWrong]);
+    // A sentence of the case's own is said for its field, and the fixed one for a field without.
+    const own = grade(flags, { answers: { ...flags.reference.answers, "a-c": "0", "a-n": "1" } });
+    expect(own.failures[0]?.detail).toBe(`${A.grader.flagWrong} Look at the carry.`);
   });
 
-  it("asks for every answer before it grades any", () => {
+  it("asks for every answer before it grades any, without listing choices", () => {
     const answers = { ...flags.reference.answers };
     delete answers["b-n"];
     const verdict = grade(flags, { answers });
-    expect(verdict.blocked).toBe(S.grader.unanswered(fieldList(["N for b"]), 1));
-    expect(grade(flags, { answers: {} }).blocked).toMatch(/^Nothing is graded until /);
+    expect(verdict.blocked).toBe(A.grader.chooseFirst);
+    expect(grade(flags, { answers: {} }).blocked).toBe(A.grader.chooseFirst);
+    // The sentence lists no field.
+    expect(A.grader.chooseFirst).not.toContain("“");
   });
 
   it("fails the starting point, which has answered nothing", () => {
@@ -153,10 +162,25 @@ describe("the outcomes at return, for a register and a flag", () => {
     expect(grade(gap, { answers: { result: "-4294967295", c: "0" } }).passed).toBe(false);
   });
 
-  it("asks for a whole number before it grades", () => {
+  it("asks for a whole number before it grades, with the field's name in curly quotes", () => {
     expect(grade(gap, { answers: { result: "one", c: "0" } }).blocked).toBe(
-      S.grader.notWhole("The result"),
+      S.grader.notWhole(fieldList(["The result"])),
     );
+    expect(grade(gap, { answers: { result: "one", c: "0" } }).blocked).toBe(
+      "The answer for “The result” must be a whole number.",
+    );
+  });
+
+  it("lists the fields still empty when they are numbers, not choices", () => {
+    expect(grade(gap, { answers: { c: "0" } }).blocked).toBe(
+      S.grader.unanswered(fieldList(["The result"]), 1),
+    );
+  });
+
+  it("says a fixed sentence for a wrong value, which names no value", () => {
+    const verdict = grade(gap, { answers: { result: "2", c: "0" } });
+    expect(verdict.failures.map((f) => f.detail)).toEqual([A.grader.valueWrong]);
+    expect(A.grader.valueWrong).not.toMatch(/\d/);
   });
 
   it("says a run that does not return is a mistake in the lesson, not in the answer", () => {

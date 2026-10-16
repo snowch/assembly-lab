@@ -63,19 +63,24 @@ describe("the lesson", () => {
     expect(modelProblems(LESSONS, [STEPS])).toEqual([]);
   });
 
-  it("gates the ring and the stepper behind the prediction before each, in the same lesson", () => {
+  it("gates the ring, the two adders and the stepper behind the prediction before each, in the same lesson", () => {
     const ids = lesson.sections.flatMap((s) => s.interactives.map((x) => x.id));
     const gated = lesson.sections
       .flatMap((s) => s.interactives)
       .filter((x) => typeof x.props["after"] === "string");
-    expect(gated.map((x) => x.id)).toEqual(["counter-ring", "step-negs"]);
+    expect(gated.map((x) => x.id)).toEqual([
+      "counter-ring",
+      "subtract-wrapped",
+      "subtract-no-wrap",
+      "step-negs",
+    ]);
     for (const x of gated)
       expect(ids.indexOf(x.props["after"] as string), x.id).toBeLessThan(ids.indexOf(x.id));
   });
 
-  it("gives the construction challenge the gate add, sub, adds, subs, neg and ret", () => {
+  it("gives the construction challenge the gate add, sub, adds, subs and ret, and not neg", () => {
     const c = challenge("write-elapsed");
-    expect(c.allowedConstructs).toEqual(["add", "sub", "adds", "subs", "neg", "ret"]);
+    expect(c.allowedConstructs).toEqual(["add", "sub", "adds", "subs", "ret"]);
     expect(c.palette).toEqual(["w0", "w1"]);
     expect(c.initial.text).toBe("ret");
     expect(c.reference.text).toBe("sub w0, w0, w1\nret");
@@ -111,9 +116,28 @@ describe("the challenges", () => {
     const c = challenge("write-elapsed");
     expect(grade(c, { text: "sub w0, w1, w0\nret" }).passed).toBe(false);
     expect(grade(c, { text: "add w0, w0, w1\nret" }).passed).toBe(false);
-    // The flag-setting form and the negated sum also answer it, which is fine.
+    // The flag-setting form also answers it, which is fine.
     expect(grade(c, { text: "subs w0, w0, w1\nret" }).passed).toBe(true);
-    expect(grade(c, { text: "neg w1, w1\nadd w0, w0, w1\nret" }).passed).toBe(true);
+  });
+
+  it("write-elapsed: neg is not met yet, so the gate refuses it before the failure experiment", () => {
+    const c = challenge("write-elapsed");
+    const verdict = grade(c, { text: "neg w1, w1\nadd w0, w0, w1\nret" });
+    expect(verdict.passed).toBe(false);
+    expect(verdict.blocked).toContain("You have not met `neg`");
+  });
+
+  it("write-elapsed: a wrong answer shows its values as unsigned numbers, not negative ones", () => {
+    const c = challenge("write-elapsed");
+    // sub the other way round: 1000 minus 5000 is −4000 signed and 4294963296 unsigned.
+    const verdict = grade(c, { text: "sub w0, w1, w0\nret" });
+    const first = verdict.failures[0]!;
+    expect(first.label).toBe("elapsed(5000, 1000)");
+    expect(first.actual).toEqual({ w0: "4294963296" });
+    expect(first.expected).toEqual({ w0: "4000" });
+    for (const f of verdict.failures)
+      for (const v of [...Object.values(f.actual), ...Object.values(f.expected)])
+        expect(v, f.label).not.toMatch(/^-/);
   });
 
   it("write-elapsed: the tempting answer, a test for the wrap and 2^32 added, cannot be written", () => {
@@ -163,8 +187,9 @@ describe("the page", () => {
     expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
-    // The ring and the stepper wait for their predictions; nothing of either run is on the page.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
+    // The ring, the two adders and the stepper wait for their predictions; nothing of any run is
+    // on the page.
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(4);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
   });

@@ -76,6 +76,20 @@ describe("the lesson", () => {
       expect(ids.indexOf(x.props["after"] as string), x.id).toBeLessThan(ids.indexOf(x.id));
   });
 
+  it("gates a second adder behind the flags challenge, after the challenge in the page", () => {
+    const figures = lesson.sections.flatMap((s) => s.interactives);
+    const ids = figures.map((x) => x.id);
+    const gated = figures.filter((x) => typeof x.props["afterChallenge"] === "string");
+    expect(gated.map((x) => x.id)).toEqual(["add-carry-out"]);
+    for (const x of gated) {
+      const challengeId = x.props["afterChallenge"] as string;
+      expect(lesson.challenges.map((c) => c.id)).toContain(challengeId);
+      // The challenge is mounted by a figure of the same id as its mount, earlier in the page.
+      const mount = figures.find((m) => m.props["challengeId"] === challengeId)!;
+      expect(ids.indexOf(mount.id), x.id).toBeLessThan(ids.indexOf(x.id));
+    }
+  });
+
   it("asks the prediction challenge for twelve flags, in four letters for each of three additions", () => {
     const c = challenge("predict-flags");
     expect(c.fields.map((f) => f.id)).toEqual(
@@ -115,7 +129,16 @@ describe("the challenges", () => {
     delete answers["third-v"];
     const verdict = grade(c, { answers });
     expect(verdict.passed).toBe(false);
-    expect(verdict.blocked).toContain("V for 0x80000000 plus 0x80000000");
+    // Twelve choices are not listed: the sentence says to choose, and names none of them.
+    expect(verdict.blocked).toBe(ARITH_STRINGS.grader.chooseFirst);
+  });
+
+  it("predict-flags: a wrong flag is told in a fixed sentence, so no verdict shows empty lists", () => {
+    const c = challenge("predict-flags");
+    const verdict = grade(c, { answers: { ...c.reference.answers, "second-z": "1" } });
+    expect(verdict.failures.map((f) => [f.label, f.detail])).toEqual([
+      ["5 plus 3", ARITH_STRINGS.grader.flagWrong],
+    ]);
   });
 
   it("smallest-overflow: only 2 passes, and a wrong answer is told only what it got wrong", () => {
@@ -148,8 +171,9 @@ describe("the page", () => {
     expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
-    // The adder and the stepper wait for their predictions; nothing of either run is on the page.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
+    // The adder and the stepper wait for their predictions, and the second adder for the flags
+    // challenge; nothing of any run is on the page.
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(3);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
     expect(container.querySelectorAll("details.lesson-details")).toHaveLength(1);

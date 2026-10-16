@@ -91,6 +91,30 @@ describe("grading written assembly", () => {
     expect(detail).toContain("\u201csub w0, w0, w1\u201d");
   });
 
+  it("shows a value as signed by default, and as unsigned when the case's reading says so", () => {
+    const unsigned = {
+      ...written,
+      tests: {
+        ...written.tests,
+        cases:
+          written.tests.kind === "answers"
+            ? written.tests.cases.map((c) => ({
+                ...c,
+                given: { ...c.given, reading: "unsigned" },
+              }))
+            : [],
+      },
+    } as typeof written;
+    // The same wrong text, `sub w0, w1, w0`: 38 minus 50 is −12 signed and 4294967284 unsigned.
+    const signed = gradeWritten(written, written.initial).failures[0];
+    const plain = gradeWritten(unsigned, unsigned.initial).failures[0];
+    expect(signed).toMatchObject({ actual: { w0: "-12" }, expected: { w0: "12" } });
+    expect(plain).toMatchObject({ actual: { w0: "4294967284" }, expected: { w0: "12" } });
+    // The reading changes only what is shown: the same calls fail, and the reference passes.
+    expect(gradeWritten(unsigned, unsigned.initial).failures.map((f) => f.index)).toEqual([0, 2]);
+    expect(gradeWritten(unsigned, unsigned.reference).passed).toBe(true);
+  });
+
   it("is what grade() does for a challenge that names the run-registers grader", () => {
     expect(grade(written, written.reference).passed).toBe(true);
   });

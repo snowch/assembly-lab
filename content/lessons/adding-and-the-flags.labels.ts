@@ -27,6 +27,9 @@ export const LABELS = {
   captions: {
     adder:
       "adds w0, w0, w1 column by column, with the carry into each column above it, and the four flags after it.",
+    // A placeholder for the figure after the flags challenge: the prose process replaces it.
+    adderCarryOut:
+      "adds w0, w0, w1 on 1 and 0xffffffff, column by column, with the four flags after it.", // DRAFT
     predictReadings: "A prediction about which readings of the answer are right.",
     predictAdd: "A prediction about what the flags show after add.",
     stepAdd:

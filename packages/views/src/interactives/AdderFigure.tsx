@@ -10,10 +10,12 @@ import { useMemo, useState } from "react";
 import { z } from "zod";
 
 import type { Step } from "@al/machine";
-import { useSlot } from "@platform/lesson-runtime";
+import { useSlot, useStored, type StoredLesson } from "@platform/lesson-runtime";
+import type { Lesson } from "@platform/lesson-schema";
 
 import { additionSteps, bitAt, hex32 } from "../arith";
 import { FlagsRow } from "../FlagsRow";
+import { grade } from "../grader";
 import { withCode } from "../parts";
 import { ARITH_STRINGS as A } from "../strings.arith";
 import { VIEW_STRINGS as S } from "../strings";
@@ -27,6 +29,11 @@ const Props = z.object({
   which: z.number().int().min(0).default(0),
   /** The id of a prediction in this lesson. The figure stays shut until it has been checked. */
   after: z.string().optional(),
+  /**
+   * The id of a challenge in this lesson. The figure stays shut until the learner's saved work for
+   * it passes its tests (graded afresh, never read as a mark).
+   */
+  afterChallenge: z.string().optional(),
 });
 
 /** The columns, left to right: the 33rd place for the carry out, then four groups of eight. */
@@ -105,14 +112,34 @@ function namesOf(trace: Trace, step: Step) {
   return ops.length === 3 ? { answer: ops[0]!, a: ops[1]!, b: ops[2]! } : null;
 }
 
-export const AdderFigure = withProps(Props, function AdderFigure({ data, store }) {
+/** Whether the learner's saved work for a challenge passes its tests now. */
+function passed(lesson: Lesson, stored: StoredLesson, id: string): boolean {
+  const challenge = lesson.challenges?.find((c) => c.id === id);
+  const saved = stored.challenges[id];
+  if (!challenge || !saved) return false;
+  try {
+    return grade(challenge, saved.artifact).passed;
+  } catch {
+    return false;
+  }
+}
+
+export const AdderFigure = withProps(Props, function AdderFigure({ data, store, lesson }) {
   const [done, setDone] = useState(0);
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
+  const stored = useStored(store);
   const trace = useMemo(() => traceOf(data.program, data.call), [data.program, data.call]);
   if (data.after !== undefined && prediction === undefined) {
     return (
       <p role="note" className="al-locked">
         {S.stepper.locked}
+      </p>
+    );
+  }
+  if (data.afterChallenge !== undefined && !passed(lesson, stored, data.afterChallenge)) {
+    return (
+      <p role="note" className="al-locked">
+        {A.adder.lockedUntilPassed}
       </p>
     );
   }
@@ -152,7 +179,7 @@ export const AdderFigure = withProps(Props, function AdderFigure({ data, store }
             bitAt(record.carries, 31),
             bitAt(record.result, 31),
             record.carryOut,
-          )} ${A.adder.done}`
+          )} ${A.adder.done} ${A.adder.topBit}`
         : A.adder.column(
             done,
             bitAt(record.a, j),
@@ -174,6 +201,7 @@ export const AdderFigure = withProps(Props, function AdderFigure({ data, store }
         <div className="al-adder-row" data-row="carry">
           <Head name={A.adder.carryRow} />
           <Cells row="carry" cells={carryCells} justDone={justDone} carry />
+          <p className="al-adder-key">{A.adder.topKey}</p>
         </div>
         <div className="al-adder-row" data-row="a">
           <Head name={names?.a ?? "a"} detail={hex32(record.a)} />

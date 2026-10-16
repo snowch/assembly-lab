@@ -111,8 +111,10 @@ export function gradeWritten(challenge: Challenge, artifact: Artifact): Verdict 
     for (const [name, want] of Object.entries(c.expect)) {
       const n = registerNumber(name);
       if (n === null) throw new Error(`${challenge.id}: ${name} is not a w register`);
-      actual[name] = String(wValueAsInt(result.final, n));
-      expected[name] = String(want);
+      // A test whose `given.reading` is "unsigned" shows its values as the unsigned numbers they are.
+      const unsigned = c.given["reading"] === "unsigned";
+      actual[name] = String(unsigned ? wValue(result.final, n) : wValueAsInt(result.final, n));
+      expected[name] = String(unsigned ? pattern(want) : want);
       if (pattern(want) !== BigInt.asUintN(32, result.final.x[n] ?? 0n)) ok = false;
     }
     if (!ok) failures.push({ index, label: c.label, inputs, actual, expected });
@@ -147,7 +149,12 @@ export function gradeAnswers(challenge: Challenge, artifact: Artifact): Verdict 
   }
   const notWhole = checked.find((id) => answerPattern(answers[id]) === null);
   if (notWhole !== undefined)
-    return { passed: false, total, failures: [], blocked: S.grader.notWhole(named(notWhole)) };
+    return {
+      passed: false,
+      total,
+      failures: [],
+      blocked: S.grader.notWhole(fieldList([named(notWhole)])),
+    };
 
   const program = RecordedSchema.safeParse(challenge.initial.data?.["program"]);
   if (!program.success) throw new Error(`${challenge.id}: ${S.grader.noProgram}`);

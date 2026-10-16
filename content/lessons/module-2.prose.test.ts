@@ -52,6 +52,7 @@ const cases = [
     // The captions, field labels and test names the file does not give: each was drafted for the
     // page, and the file's parts name none of them.
     own: [
+      L1.captions.adderCarryOut,
       L1.captions.predictReadings,
       L1.captions.predictAdd,
       L1.captions.stepAdd,
@@ -64,8 +65,9 @@ const cases = [
         ["N", "Z", "C", "V"].map((flag) => L1.challenges.flags.field(flag, a.text)),
       ),
     ],
-    // Those, and the template that makes a field's label from a flag and an addition.
-    marks: 0,
+    // Those, and the template that makes a field's label from a flag and an addition. The one mark
+    // is the placeholder caption of the figure after the flags challenge.
+    marks: 1,
   },
   {
     n: 2,
@@ -75,6 +77,8 @@ const cases = [
     labels: L2,
     labelsFile: "./subtracting-and-the-tick-counter.labels.ts",
     own: [
+      L2.captions.subtractWrapped,
+      L2.captions.subtractNoWrap,
       L2.captions.predictElapsed,
       L2.captions.predictNegs,
       L2.captions.stepNegs,
@@ -85,7 +89,8 @@ const cases = [
       L2.challenges.step.tests.result,
       L2.challenges.step.tests.c,
     ],
-    marks: 0,
+    // The two marks are the placeholder captions of the two subtractions the adder draws.
+    marks: 2,
   },
 ] as const;
 

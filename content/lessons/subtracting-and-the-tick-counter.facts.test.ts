@@ -6,9 +6,11 @@
 // The listings are held to docs/notes/module-2/listings.md (ARM64 GCC 16.1.0, -O1), and the lesson's
 // own assembly to the differential test's corpus.
 
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
-import { additionSteps, parseListing, traceOf } from "@al/views";
+import { additionSteps, bitAt, parseListing, traceOf } from "@al/views";
 
 import { LESSONS } from ".";
 import {
@@ -114,7 +116,8 @@ describe("elapsed(1000, 4294966296)", () => {
   it("returns 2000, and none of the other three options", () => {
     expect(elapsed(1000, 4294966296).w0).toBe(2000);
     const options = lesson.sections[2]!.interactives[0]!.props["options"] as { label: string }[];
-    expect(options.map((o) => o.label)).toEqual(["2000", "−4294965296", "4294965296", "0"]);
+    // The right option is not first.
+    expect(options.map((o) => o.label)).toEqual(["−4294965296", "4294965296", "2000", "0"]);
     // The other options are what a subtraction without the wrap would say, and the wrong turns.
     expect(1000 - 4294966296).toBe(-4294965296);
     expect(4294966296 - 1000).toBe(4294965296);
@@ -137,6 +140,89 @@ describe("elapsed(1000, 4294966296)", () => {
     expect(record.carryIn).toBe(1);
     expect(record.result).toBe(2000n);
     expect((record.a + record.b + BigInt(record.carryIn)) % 2n ** 32n).toBe(2000n);
+  });
+});
+
+describe("the adder drawing elapsed_subs", () => {
+  const figures = lesson.sections.flatMap((s) => s.interactives);
+  const figure = (id: string) => figures.find((x) => x.id === id)!;
+  const recordOf = (a: number, b: number) =>
+    additionSteps(traceOf(ELAPSED_SUBS, { entry: "elapsed_subs", args: [a, b] }))[0]!.addition!;
+  const bits = (v: bigint) => v.toString(2).padStart(32, "0");
+
+  it("draws 1000 minus 4294966296: b turned over is 999, 1 carried in, the answer 2000, no carry out, C 0", () => {
+    expect(figure("subtract-wrapped").kind).toBe("adder");
+    expect(figure("subtract-wrapped").props["call"]).toEqual({
+      entry: "elapsed_subs",
+      args: [1000, 4294966296],
+    });
+    const record = recordOf(1000, 4294966296);
+    expect(record.subtraction).toBe(true);
+    expect(record.a).toBe(1000n);
+    expect(record.b).toBe(999n);
+    expect(bits(record.b)).toBe("00000000000000000000001111100111");
+    expect(record.carryIn).toBe(1);
+    expect(bitAt(record.carries, 0)).toBe(1);
+    expect(record.result).toBe(2000n);
+    expect(record.carryOut).toBe(0);
+    expect(nzcv(subs(1000, 4294966296).flags)).toBe("0000");
+  });
+
+  it("carries only in the low columns: nothing runs into the top bit or out of it, and the carries into columns 0 to 4 and 6 to 10 are 1", () => {
+    const record = recordOf(1000, 4294966296);
+    // 1000 is 1111101000 and 999 is 1111100111, with 1 carried in: the carry into column 5 is 0.
+    expect(bitAt(record.carries, 31)).toBe(0);
+    expect(
+      [...Array(33).keys()].filter(
+        (c) => (c === 32 ? record.carryOut : bitAt(record.carries, c)) === 1,
+      ),
+    ).toEqual([0, 1, 2, 3, 4, 6, 7, 8, 9, 10]);
+  });
+
+  it("draws 9000 minus 2500 as a second case, where C is 1: no wrap, no borrow", () => {
+    expect(figure("subtract-no-wrap").kind).toBe("adder");
+    expect(figure("subtract-no-wrap").props["call"]).toEqual({
+      entry: "elapsed_subs",
+      args: [9000, 2500],
+    });
+    const record = recordOf(9000, 2500);
+    expect(record.subtraction).toBe(true);
+    expect(record.a).toBe(9000n);
+    expect(record.b).toBe(BigInt.asUintN(32, ~2500n));
+    expect(record.b).toBe(4294964795n);
+    expect(record.carryIn).toBe(1);
+    expect(record.result).toBe(6500n);
+    expect(record.carryOut).toBe(1);
+    expect(nzcv(subs(9000, 2500).flags)).toBe("0010");
+    expect(elapsed(9000, 2500).w0).toBe(6500);
+  });
+
+  it("is a call no challenge tests, and both adders open after the prediction about elapsed", () => {
+    const calls = lesson.challenges.flatMap((c) =>
+      c.tests.kind === "answers"
+        ? c.tests.cases.map((t) => [t.given["w0"], t.given["w1"]].join(","))
+        : [],
+    );
+    expect(calls).not.toContain("9000,2500");
+    // The wrapped call is the prediction's and the ring's, not a challenge's.
+    expect(calls).not.toContain("1000,4294966296");
+    for (const id of ["subtract-wrapped", "subtract-no-wrap"])
+      expect(figure(id).props["after"]).toBe("predict-elapsed");
+  });
+
+  it("are in the differential test's corpus, as calls of elapsed_subs", () => {
+    const json = JSON.parse(
+      readFileSync(
+        new URL("../../scripts/real-tools/corpus/module2-subs.json", import.meta.url),
+        "utf8",
+      ),
+    ) as { calls: { entry: string; args: [string, number][] }[] };
+    const has = (a: string, b: string) =>
+      json.calls.some(
+        (c) => c.entry === "elapsed_subs" && c.args[0]?.[0] === a && c.args[1]?.[0] === b,
+      );
+    expect(has("1000", "4294966296")).toBe(true);
+    expect(has("9000", "2500")).toBe(true);
   });
 });
 
@@ -209,6 +295,21 @@ describe("the construction challenge", () => {
     expect(functionIn(text, "f")).toEqual(functionIn(assembly(ELAPSED.listing), "elapsed"));
   });
 
+  it("allows no neg, which its reference does not need, and reads its values as unsigned", () => {
+    expect(c.allowedConstructs).not.toContain("neg");
+    const mnemonics = functionIn(text, "f").map((l) => l.split(" ")[0]);
+    for (const m of mnemonics) expect(c.allowedConstructs).toContain(m);
+    if (c.tests.kind !== "answers") throw new Error("answers");
+    expect(c.tests.cases.map((t) => t.given["reading"])).toEqual([
+      "unsigned",
+      "unsigned",
+      "unsigned",
+      "unsigned",
+    ]);
+    // Every expected answer is a number the unsigned reading writes as it is.
+    for (const t of c.tests.cases) expect(Number(t.expect["w0"])).toBeGreaterThanOrEqual(0);
+  });
+
   it("is told that now arrives in w0 and then in w1", () => {
     const args = callText("f:\n  ret\n", "f", [1000, 4294966296]).result.initial.x;
     expect([args[0], args[1]]).toEqual([1000n, 4294966296n]);
@@ -217,6 +318,18 @@ describe("the construction challenge", () => {
 
 describe("negs on 0x80000000", () => {
   const negs = (x: number) => callText(assembly(NEGATE_FLAGS.listing), "negate_flags", [x]);
+
+  it("lists the right option second, not first", () => {
+    const section = lesson.sections.find((s) => s.kind === "failureExperiment")!;
+    const options = section.interactives[0]!.props["options"] as { value: string }[];
+    expect(options.map((o) => o.value)).toEqual([
+      "0x7fffffff",
+      "0x80000000",
+      "0x00000000",
+      "error",
+    ]);
+    expect(options[1]!.value).toBe("0x" + negs(0x80000000).w0.toString(16).padStart(8, "0"));
+  });
 
   it("holds 0x80000000 afterwards, unchanged, and sets V 1", () => {
     const out = negs(0x80000000);

@@ -26,6 +26,11 @@ export const LABELS = {
   },
   captions: {
     ring: "The counter as a ring: then, now, and the distance between them.",
+    // Placeholders for the two subtractions the adder draws: the prose process replaces them.
+    subtractWrapped:
+      "subs w0, w0, w1 on 1000 and 4294966296, column by column, with the second number turned over.", // DRAFT
+    subtractNoWrap:
+      "subs w0, w0, w1 on 9000 and 2500, column by column, with the second number turned over.", // DRAFT
     predictElapsed: "A prediction about what elapsed returns across the wrap.",
     predictNegs: "A prediction about what w0 holds after negs.",
     stepNegs:
@@ -35,14 +40,14 @@ export const LABELS = {
   },
   options: {
     elapsed: [
-      { value: "2000", label: "2000" },
       { value: "-4294965296", label: "−4294965296" },
       { value: "4294965296", label: "4294965296" },
+      { value: "2000", label: "2000" },
       { value: "0", label: "0" },
     ],
     negs: [
-      { value: "0x80000000", label: "`0x80000000`, unchanged" },
       { value: "0x7fffffff", label: "`0x7fffffff`" },
+      { value: "0x80000000", label: "`0x80000000`, unchanged" },
       { value: "0x00000000", label: "0" },
       { value: "error", label: "The run stops with an error" },
     ],
