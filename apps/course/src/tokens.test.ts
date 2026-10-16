@@ -58,6 +58,7 @@ const TEXT: readonly [string, readonly string[]][] = [
   ["accent", ["bg", "bg-raised", "accent-soft"]],
   ["accent-strong", ["bg"]],
   ["accent-fg", ["accent"]],
+  ["icon-mark", ["icon-tile"]],
   ["hero-fg", ["hero-bg-1", "hero-bg-2"]],
   ["hero-sub", ["hero-bg-1", "hero-bg-2"]],
   ["hero-muted", ["hero-bg-1", "hero-bg-2"]],

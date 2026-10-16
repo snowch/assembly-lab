@@ -42,8 +42,8 @@
   --accent-soft: #dcefec;
   --accent-fg: #ffffff;
   /* A module's mark on the front page: a solid tile in the light theme, a soft one in the dark. */
-  --icon-tile: var(--accent);
-  --icon-mark: var(--accent-fg);
+  --icon-tile: #075a4f;
+  --icon-mark: #ffffff;
   --focus: #c2410c;
 
   /* Verdicts */
@@ -113,7 +113,7 @@
     --accent-soft: #153029;
     --accent-fg: #07120f;
     --icon-tile: #1b3d36;
-    --icon-mark: var(--accent);
+    --icon-mark: #5fd3c0;
     --focus: #fb923c;
     --ok: #4ade80;
     --ok-bg: #12301b;
@@ -146,7 +146,7 @@
   --accent-soft: #153029;
   --accent-fg: #07120f;
   --icon-tile: #1b3d36;
-  --icon-mark: var(--accent);
+  --icon-mark: #5fd3c0;
   --focus: #fb923c;
   --ok: #4ade80;
   --ok-bg: #12301b;
