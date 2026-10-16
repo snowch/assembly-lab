@@ -1,0 +1,268 @@
+/* Copyright © 2026 Christopher Snow */
+
+/* The figures Module 4 adds: what two functions return, two listings with the differing item marked,
+   every condition after one compare, the count of instructions run, and a listing with an arrow from
+   each branch to its label. They are in a file of their own, which views.css imports. Phone first: a
+   row of the listing, a condition and an arrow's lane all fit 375 pixels. Every colour is a token of
+   the app, and nothing is told by colour alone. */
+
+/* What the functions return */
+.al-runs {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.al-run {
+  font-size: var(--text-sm);
+}
+.al-run code {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* The count of instructions run */
+.al-count {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+/* Two listings, the differing item marked */
+.al-diff-code {
+  background: none;
+  padding: 0;
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.al-diff-item {
+  padding: 0 0.25em;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--fg);
+  font-weight: 700;
+}
+.al-diff-row[data-differs="true"] {
+  border-left-color: var(--accent);
+}
+
+/* Every condition after one compare */
+.al-cond-values {
+  display: grid;
+  gap: var(--space-3);
+}
+@media (min-width: 48rem) {
+  .al-cond-values {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.al-cond-value {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.al-cond-value label {
+  font-weight: 650;
+}
+.al-cond-value .al-tester-input {
+  width: 100%;
+}
+.al-cond-readings {
+  min-height: 1.5em;
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.al-cond-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.al-cond-presets .button[aria-pressed="true"],
+.al-branch-presets .button[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+.al-cond-heading {
+  margin: 0;
+  font-weight: 650;
+}
+.al-cond-list {
+  display: grid;
+  gap: var(--space-3);
+}
+.al-cond-group-head {
+  margin: 0 0 var(--space-1);
+  color: var(--fg-muted);
+  font-size: var(--text-xs);
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.al-cond-group ul {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.al-cond {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) 3rem;
+  grid-template-areas:
+    "name means verdict"
+    "name reads verdict";
+  gap: 0 var(--space-3);
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-sunken);
+}
+.al-cond[data-holds="true"] {
+  border-left-color: var(--ok);
+}
+.al-cond[data-holds="false"] {
+  border-left-color: var(--border-strong);
+}
+.al-cond-name {
+  grid-area: name;
+  background: none;
+  padding: 0;
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+.al-cond-means {
+  grid-area: means;
+  font-weight: 600;
+}
+.al-cond-reads {
+  grid-area: reads;
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+}
+.al-cond-verdict {
+  grid-area: verdict;
+  justify-self: end;
+  font-weight: 700;
+}
+.al-cond[data-holds="true"] .al-cond-verdict {
+  color: var(--ok);
+}
+.al-cond[data-holds="false"] .al-cond-verdict {
+  color: var(--fg-muted);
+}
+@media (min-width: 48rem) {
+  .al-cond-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+/* A listing with an arrow from each branch to its label */
+.al-branch-chooser {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+.al-branch-label {
+  font-weight: 650;
+}
+.al-branch-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.al-blist {
+  display: grid;
+  grid-template-columns: var(--gutter) minmax(0, 1fr);
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+.al-barrows {
+  display: block;
+  flex: none;
+  color: var(--fg);
+}
+.al-arrow-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.al-arrow-head {
+  fill: currentColor;
+}
+.al-arrow[data-state="taken"] {
+  color: var(--accent);
+}
+.al-arrow[data-state="not-taken"] {
+  color: var(--fg-muted);
+}
+.al-arrow[data-state="not-taken"] .al-arrow-line {
+  stroke-dasharray: 5 4;
+  stroke-width: 2;
+}
+.al-arrow[data-state="not-run"] {
+  color: var(--border-strong);
+}
+.al-arrow[data-state="not-run"] .al-arrow-line {
+  stroke-dasharray: 2 4;
+  stroke-width: 2;
+}
+.al-brows {
+  display: grid;
+  grid-auto-rows: var(--row-h);
+  min-width: 0;
+}
+.al-brow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-width: 0;
+  height: var(--row-h);
+  overflow: hidden;
+}
+.al-brow code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  white-space: pre;
+}
+.al-brow-label {
+  color: var(--fg-muted);
+  font-weight: 600;
+}
+.al-brow[data-ran="false"] {
+  opacity: 0.45;
+}
+.al-brow[data-ran="true"].al-brow-insn code {
+  font-weight: 600;
+}
+.al-btag {
+  flex: none;
+  padding: 0 0.4rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-text);
+  font-size: var(--text-xs);
+}
+.al-brow[data-branch="taken"] .al-btag {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+.al-branch-result {
+  margin: 0;
+  font-weight: 600;
+}

@@ -1,0 +1,435 @@
+{
+  "entry": "tst_service",
+  "calls": [
+    {
+      "entry": "tst_service",
+      "args": [["42", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "ands_service",
+      "args": [["42", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "and_service",
+      "args": [["42", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "tst_service",
+      "args": [["42", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "ands_service",
+      "args": [["42", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "and_service",
+      "args": [["42", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "tst_service",
+      "args": [["40", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "ands_service",
+      "args": [["40", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "and_service",
+      "args": [["40", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "tst_service",
+      "args": [["40", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "ands_service",
+      "args": [["40", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "and_service",
+      "args": [["40", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "tst_service",
+      "args": [["0", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "ands_service",
+      "args": [["0", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "and_service",
+      "args": [["0", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "tst_service",
+      "args": [["0", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "ands_service",
+      "args": [["0", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "and_service",
+      "args": [["0", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "tst_service",
+      "args": [["2", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "ands_service",
+      "args": [["2", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "and_service",
+      "args": [["2", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "tst_service",
+      "args": [["2", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "ands_service",
+      "args": [["2", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "and_service",
+      "args": [["2", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "tst_service",
+      "args": [["128", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "ands_service",
+      "args": [["128", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "and_service",
+      "args": [["128", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "tst_service",
+      "args": [["128", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "ands_service",
+      "args": [["128", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "and_service",
+      "args": [["128", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "ands_top",
+      "args": [["4026531840", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "ands_top",
+      "args": [["4026531840", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "ands_top",
+      "args": [["2147483647", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "ands_top",
+      "args": [["2147483647", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "ands_top",
+      "args": [["4294967295", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "ands_top",
+      "args": [["4294967295", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "ands_top",
+      "args": [["0", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "ands_top",
+      "args": [["0", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "ands_top",
+      "args": [["2147483648", 32]],
+      "flags": "0000"
+    },
+    {
+      "entry": "ands_top",
+      "args": [["2147483648", 32]],
+      "flags": "1111"
+    },
+    {
+      "entry": "cmp_const",
+      "args": [["10", 32]]
+    },
+    {
+      "entry": "cmn_const",
+      "args": [["10", 32]]
+    },
+    {
+      "entry": "cmp_const",
+      "args": [["9", 32]]
+    },
+    {
+      "entry": "cmn_const",
+      "args": [["9", 32]]
+    },
+    {
+      "entry": "cmp_const",
+      "args": [["11", 32]]
+    },
+    {
+      "entry": "cmn_const",
+      "args": [["11", 32]]
+    },
+    {
+      "entry": "cmp_const",
+      "args": [["4294967286", 32]]
+    },
+    {
+      "entry": "cmn_const",
+      "args": [["4294967286", 32]]
+    },
+    {
+      "entry": "cmp_const",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "cmn_const",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "cmp_const",
+      "args": [["4294967295", 32]]
+    },
+    {
+      "entry": "cmn_const",
+      "args": [["4294967295", 32]]
+    },
+    {
+      "entry": "cmp_cmn",
+      "args": [
+        ["4294967295", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "cmp_cmn",
+      "args": [
+        ["3", 32],
+        ["7", 32]
+      ]
+    },
+    {
+      "entry": "cmp_cmn",
+      "args": [
+        ["7", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "cmp_cmn",
+      "args": [
+        ["5", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "cmp_cmn",
+      "args": [
+        ["2147483648", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "cmp_cmn",
+      "args": [
+        ["1", 32],
+        ["2147483648", 32]
+      ]
+    },
+    {
+      "entry": "cmp_cmn",
+      "args": [
+        ["0", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "cmp_cmn",
+      "args": [
+        ["2147483647", 32],
+        ["4294967295", 32]
+      ]
+    },
+    {
+      "entry": "cmp_cmn",
+      "args": [
+        ["4294967291", 32],
+        ["2", 32]
+      ]
+    },
+    {
+      "entry": "cmp_cmn",
+      "args": [
+        ["2", 32],
+        ["4294967291", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["4294967295", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["3", 32],
+        ["7", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["7", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["5", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["2147483648", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["1", 32],
+        ["2147483648", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["0", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["2147483647", 32],
+        ["4294967295", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["4294967291", 32],
+        ["2", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["2", 32],
+        ["4294967291", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["8", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["2147483647", 32],
+        ["4294967295", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["0", 32],
+        ["4294967295", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["4294967295", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["2147483648", 32],
+        ["2147483647", 32]
+      ]
+    },
+    {
+      "entry": "every_condition",
+      "args": [
+        ["2147483647", 32],
+        ["2147483648", 32]
+      ]
+    }
+  ]
+}

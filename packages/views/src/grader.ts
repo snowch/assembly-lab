@@ -24,6 +24,7 @@ import {
   gradeOutcomes,
   gradeSmallest,
 } from "./grader-arith";
+import { BRANCH_OUTCOMES, gradeBranchOutcomes } from "./grader-branch";
 import { RecordedSchema } from "./interactives/props";
 import { errorSentence, stopSentence } from "./messages";
 import {
@@ -195,5 +196,6 @@ export function grade(challenge: Challenge, artifact: Artifact): Verdict {
   if (grader === BIT_READINGS) return gradeBitReadings(challenge, artifact);
   if (grader === PATTERN_READINGS) return gradePatternReadings(challenge, artifact);
   if (grader === REGISTERS_AFTER) return gradeRegistersAfter(challenge, artifact);
+  if (grader === BRANCH_OUTCOMES) return gradeBranchOutcomes(challenge, artifact);
   throw new Error(`${challenge.id}: there is no grader called ${grader}`);
 }

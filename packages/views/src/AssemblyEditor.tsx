@@ -26,12 +26,14 @@ import { errorSentence } from "./messages";
 import { withCode } from "./parts";
 import { VIEW_STRINGS as S } from "./strings";
 import {
+  CONDITIONS,
   SHIFTS,
-  SLOTS,
+  labelNameOf,
   linesOf,
   lineText,
   numberOf,
   parseLine,
+  slotsOf,
   textOf,
   withInstruction,
   withOperand,
@@ -216,6 +218,8 @@ function LineEditor({
   instructions,
   registers,
   numberPad,
+  labels,
+  conditions,
   count,
   onText,
   onAdd,
@@ -228,6 +232,10 @@ function LineEditor({
   instructions: readonly string[];
   registers: readonly string[];
   numberPad: boolean;
+  /** The labels the editor offers, as a branch writes them; each is also a line that defines it. */
+  labels: readonly string[];
+  /** The conditions offered for the last item of `csel` and `cset`. */
+  conditions: readonly string[];
   count: number;
   onText: (text: string) => void;
   onAdd: () => void;
@@ -236,7 +244,8 @@ function LineEditor({
   onDone: () => void;
 }) {
   const line = parseLine(text);
-  const slots = SLOTS[line.mnemonic];
+  const slots = slotsOf(line.mnemonic);
+  const isLabelLine = labelNameOf(text) !== null;
   // The number pad is open for an operand that is a number, or after the learner asks for it.
   const [padFor, setPadFor] = useState<number | null>(null);
   const set = (next: Line) => onText(lineText(next));
@@ -257,9 +266,21 @@ function LineEditor({
               {m}
             </Chip>
           ))}
+          {labels.map((name) => (
+            <Chip
+              key={name}
+              pressed={line.mnemonic === `${name}:`}
+              onClick={() => {
+                setPadFor(null);
+                set(withInstruction(line, `${name}:`));
+              }}
+            >
+              {`${name}:`}
+            </Chip>
+          ))}
         </div>
       </div>
-      {line.mnemonic !== "" && slots === undefined && (
+      {line.mnemonic !== "" && slots === undefined && !isLabelLine && (
         <p className="asm-note" role="note">
           {S.editor.notEditable}
         </p>
@@ -270,6 +291,25 @@ function LineEditor({
         const takesNumber = slot === "registerOrNumber" && numberPad;
         // A number is always open for a slot that can only be a number.
         const open = slot === "number" || (takesNumber && (digits !== null || padFor === j));
+        if (slot === "label" || slot === "condition") {
+          const names = slot === "label" ? labels : conditions;
+          return (
+            <div key={j} className="asm-field" role="group" aria-label={S.editor.operand(j + 1)}>
+              <span className="asm-field-label">{S.editor.operand(j + 1)}</span>
+              <div className="asm-chips">
+                {names.map((name) => (
+                  <Chip
+                    key={name}
+                    pressed={operand === name}
+                    onClick={() => set(withOperand(line, j, operand === name ? "" : name))}
+                  >
+                    {name}
+                  </Chip>
+                ))}
+              </div>
+            </div>
+          );
+        }
         if (slot === "shift") {
           return (
             <div key={j} className="asm-field" role="group" aria-label={S.editor.operand(j + 1)}>
@@ -369,6 +409,8 @@ function TapMode({
   instructions,
   registers,
   numberPad,
+  labels,
+  conditions,
 }: {
   lines: readonly string[];
   setLines: (lines: string[]) => void;
@@ -376,6 +418,8 @@ function TapMode({
   instructions: readonly string[];
   registers: readonly string[];
   numberPad: boolean;
+  labels: readonly string[];
+  conditions: readonly string[];
 }) {
   const [open, setOpen] = useState<number | null>(null);
   const replace = (i: number, text: string) => setLines(lines.map((l, k) => (k === i ? text : l)));
@@ -431,6 +475,8 @@ function TapMode({
                     instructions={instructions}
                     registers={registers}
                     numberPad={numberPad}
+                    labels={labels}
+                    conditions={conditions}
                     count={lines.length}
                     onText={(t) => replace(i, t)}
                     onAdd={() => insertBelow(i)}
@@ -466,17 +512,23 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
   onChange,
 }) => {
   const text = artifact.text ?? challenge.initial.text ?? "";
-  const instructions = challenge.allowedConstructs;
+  // The chips: the instructions the challenge allows, a conditional branch under each condition.
+  const allowed = challenge.allowedConstructs;
   // The challenge may choose its keys (`initial.data.editor`); without, the editor offers all.
   const keys = EditorKeysSchema.safeParse(challenge.initial.data?.["editor"]);
   const chosen = keys.success ? keys.data : {};
   const registers = chosen.registers ?? challenge.palette;
   const symbols = chosen.symbols ?? SYMBOLS;
   const numberPad = chosen.numberPad ?? true;
+  const labels = chosen.labels ?? [];
+  const conditions = chosen.conditions ?? CONDITIONS;
+  const instructions = allowed.flatMap((m) =>
+    m === "b.cond" ? conditions.map((c) => `b.${c}`) : [m],
+  );
   const [mode, setMode] = useState<Mode>(rememberedMode);
   const errors = useMemo(
-    () => assemble(text, { allowed: new Set(instructions) }).errors,
-    [text, instructions],
+    () => assemble(text, { allowed: new Set(allowed) }).errors,
+    [text, allowed],
   );
   const setText = (next: string) => onChange({ ...artifact, text: next });
   const choose = (next: Mode) => {
@@ -509,6 +561,8 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
           instructions={instructions}
           registers={registers}
           numberPad={numberPad}
+          labels={labels}
+          conditions={conditions}
         />
       )}
     </div>

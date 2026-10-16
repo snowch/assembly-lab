@@ -1,0 +1,307 @@
+{
+  "entry": "steeper_s",
+  "calls": [
+    {
+      "entry": "steeper_s",
+      "args": [
+        ["4294967295", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "steeper_s",
+      "args": [
+        ["3", 32],
+        ["7", 32]
+      ]
+    },
+    {
+      "entry": "steeper_s",
+      "args": [
+        ["7", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "steeper_s",
+      "args": [
+        ["5", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "steeper_s",
+      "args": [
+        ["2147483648", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "steeper_s",
+      "args": [
+        ["1", 32],
+        ["2147483648", 32]
+      ]
+    },
+    {
+      "entry": "steeper_s",
+      "args": [
+        ["0", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "steeper_s",
+      "args": [
+        ["2147483647", 32],
+        ["4294967295", 32]
+      ]
+    },
+    {
+      "entry": "steeper_s",
+      "args": [
+        ["4294967291", 32],
+        ["2", 32]
+      ]
+    },
+    {
+      "entry": "steeper_s",
+      "args": [
+        ["2", 32],
+        ["4294967291", 32]
+      ]
+    },
+    {
+      "entry": "steeper_u",
+      "args": [
+        ["4294967295", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "steeper_u",
+      "args": [
+        ["3", 32],
+        ["7", 32]
+      ]
+    },
+    {
+      "entry": "steeper_u",
+      "args": [
+        ["7", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "steeper_u",
+      "args": [
+        ["5", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "steeper_u",
+      "args": [
+        ["2147483648", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "steeper_u",
+      "args": [
+        ["1", 32],
+        ["2147483648", 32]
+      ]
+    },
+    {
+      "entry": "steeper_u",
+      "args": [
+        ["0", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "steeper_u",
+      "args": [
+        ["2147483647", 32],
+        ["4294967295", 32]
+      ]
+    },
+    {
+      "entry": "steeper_u",
+      "args": [
+        ["4294967291", 32],
+        ["2", 32]
+      ]
+    },
+    {
+      "entry": "steeper_u",
+      "args": [
+        ["2", 32],
+        ["4294967291", 32]
+      ]
+    },
+    {
+      "entry": "fuel_low",
+      "args": [
+        ["5", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "warning_light",
+      "args": [
+        ["5", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "fuel_low",
+      "args": [
+        ["8", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "warning_light",
+      "args": [
+        ["8", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "fuel_low",
+      "args": [
+        ["9", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "warning_light",
+      "args": [
+        ["9", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "fuel_low",
+      "args": [
+        ["0", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "warning_light",
+      "args": [
+        ["0", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "fuel_low",
+      "args": [
+        ["2147483648", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "warning_light",
+      "args": [
+        ["2147483648", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "downhill",
+      "args": [["4294967293", 32]]
+    },
+    {
+      "entry": "downhill",
+      "args": [["4", 32]]
+    },
+    {
+      "entry": "downhill",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "downhill",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "downhill",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["42", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["40", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["4294967295", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["15", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["11", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["10", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["9", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["4294967287", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["4294967286", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["4294967285", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["4294967281", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "maybe_beep",
+      "args": [["5", 32]]
+    },
+    {
+      "entry": "maybe_beep",
+      "args": [["0", 32]]
+    }
+  ]
+}
