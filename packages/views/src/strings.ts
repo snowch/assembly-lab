@@ -39,6 +39,8 @@ export const VIEW_STRINGS = {
     start: "Press Next to run the first instruction.",
     ran: (text: string) => `Ran \`${text}\`.`,
     upNext: (text: string) => `Next: \`${text}\`.`,
+    // DRAFT: when the instruction that runs next is under another label than the one that just ran.
+    upNextIn: (text: string, label: string) => `Next: \`${text}\`, in \`${label}\`.`,
     ended: "The function returned.",
     /** The switch that takes one line out of the listing and runs it again. */
     deleteLine: (text: string) => `Delete the \`${text}\` line`,
@@ -94,7 +96,13 @@ export const VIEW_STRINGS = {
 
   grader: {
     nothingWritten: "Write at least one instruction first.",
-    unanswered: (fields: string) => `Give a whole number for ${fields} first.`,
+    // DRAFT: `fields` is the fields' names as a list ("a", "a and b", "a, b and c"), `count` how many.
+    unanswered: (fields: string, count: number) =>
+      count === 1
+        ? `${fields} needs a whole number first.`
+        : `${fields} each need a whole number first.`,
+    /** Between the last two names in a list. */
+    and: "and",
     notWhole: (field: string) => `The answer for ${field} must be a whole number.`,
     noProgram: "This challenge has no program to run.",
   },
@@ -102,3 +110,9 @@ export const VIEW_STRINGS = {
 
 /** Text with `code` in backticks, as plain text: a verdict heading and a select show no Markdown. */
 export const plain = (text: string): string => text.replace(/`([^`]*)`/g, "$1");
+
+/**
+ * Text with `code` in backticks, as the code inside curly quotes: a verdict's detail is printed as
+ * plain text by the platform, which cannot render markup there, so the quotes set the code apart.
+ */
+export const quoted = (text: string): string => text.replace(/`([^`]*)`/g, "“$1”");

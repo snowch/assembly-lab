@@ -12,6 +12,8 @@ export const strings = {
   // --- reading a line
   "syntax.expression": "`{text}` is not a number or an address the machine can read.",
   "syntax.tooBig": "`{text}` is too big for 64 bits.",
+  "syntax.missingComma":
+    "`{text}` needs a comma after `{after}`. Operands are separated by commas.",
   "syntax.divideByZero": "This line divides a number by zero.",
   "symbol.undefined": "There is no label called `{name}`.",
   "symbol.notNumber": "`{text}` is an address, but here the machine needs a plain number.",
@@ -96,6 +98,9 @@ export const strings = {
     "Line {line}, `{text}`, stored to the address {address}. That address is in read-only data.",
   "fault.notInstruction":
     "The run went to the address {address}, from line {line}, `{text}`. No instruction is at that address.",
+  // DRAFT: "fault.ranOffEnd" and "syntax.missingComma" have not been through the prose process.
+  "fault.ranOffEnd":
+    "The run reached the end of the instructions without a `ret`. The last instruction it ran was line {line}, `{text}`.",
   "fault.entry": "The call starts at the address {address}. No instruction is at that address.",
   "stop.returned": "The function returned.",
   "stop.limit": "The run stopped after {steps} instructions. It may be a loop that does not end.",

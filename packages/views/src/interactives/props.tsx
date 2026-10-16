@@ -19,6 +19,19 @@ export const CallSchema = z.object({ entry: z.string(), args: z.array(z.number()
 /** One line of a listing that a figure can take out. */
 export const DeleteSchema = z.object({ label: z.string(), text: z.string() });
 
+/**
+ * The keys a written challenge's editor offers, in the challenge's `initial.data.editor`. Every
+ * field is optional and a challenge without it gets today's editor: the symbol bar's characters
+ * (`symbols`), the registers the tap mode offers (`registers`, else the challenge's palette), and
+ * whether the tap mode offers a number pad (`numberPad`, true unless it says false).
+ */
+export const EditorKeysSchema = z.object({
+  symbols: z.array(z.string().min(1)).optional(),
+  registers: z.array(z.string().min(1)).optional(),
+  numberPad: z.boolean().optional(),
+});
+export type EditorKeys = z.infer<typeof EditorKeysSchema>;
+
 export function withProps<T>(
   schema: ZodType<T>,
   Inner: ComponentType<InteractiveProps & { data: T }>,

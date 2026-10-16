@@ -11,7 +11,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { LESSONS } from "@al/content";
-import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
+import { VIEW_STRINGS as V, quoted } from "../../packages/views/src/strings";
 import { traceOf, viewAt, wValue } from "../../packages/views/src/trace";
 import { DEFAULT_STRINGS as S, format } from "../../platform/lesson-runtime/src/strings";
 
@@ -279,7 +279,23 @@ test.describe("the construction challenge", () => {
     expect(errors).toEqual([]);
   });
 
-  test("builds the whole answer from chips and the number pad, from nothing", async ({ page }) => {
+  test("offers the keys this challenge needs: `,` and `w`, registers w0 to w3, no number pad", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const c = challenge(page, FIX);
+    await c.scrollIntoViewIfNeeded();
+    await expect(c.getByRole("group", { name: V.editor.symbols }).getByRole("button")).toHaveText([
+      ",",
+      "w",
+    ]);
+    await press(page, c.getByRole("button", { name: V.editor.tap, exact: true }));
+    await press(page, c.locator(".asm-line-button").first());
+    const third = c.getByRole("group", { name: V.editor.operand(3), exact: true });
+    await expect(third.getByRole("button")).toHaveText(["w0", "w1", "w2", "w3"]);
+  });
+
+  test("builds the whole answer from chips, from nothing", async ({ page }) => {
     await openLesson(page);
     const c = challenge(page, FIX);
     await c.scrollIntoViewIfNeeded();
@@ -389,9 +405,7 @@ test.describe("the answers challenge", () => {
     await expect(status(c)).toHaveText(format(S.challenge.failing, { passed: 1, total: 2 }));
     const failure = c.locator(".verdict-failure");
     await expect(failure).toHaveCount(1);
-    await expect(failure.locator(".verdict-detail")).toHaveText(
-      PROSE.traceFeedbackW1.replaceAll("`", ""),
-    );
+    await expect(failure.locator(".verdict-detail")).toHaveText(quoted(PROSE.traceFeedbackW1));
     await expect(c.locator(".verdict")).not.toContainText("28750");
     await expect(c.locator(".challenge-complete")).toHaveCount(0);
   });
@@ -404,9 +418,7 @@ test.describe("the answers challenge", () => {
     await c.scrollIntoViewIfNeeded();
     await fill(c, "1250", "28750");
     await press(page, run(c));
-    await expect(c.locator(".verdict-detail")).toHaveText(
-      PROSE.traceFeedbackW0.replaceAll("`", ""),
-    );
+    await expect(c.locator(".verdict-detail")).toHaveText(quoted(PROSE.traceFeedbackW0));
     await expect(c.locator(".verdict")).not.toContainText("670");
   });
 
@@ -519,12 +531,10 @@ test.describe("the look of the lesson page", () => {
     const fix = challenge(page, FIX);
     await press(page, fix.getByRole("button", { name: V.editor.tap, exact: true }));
     await press(page, fix.locator(".asm-line-button").first());
-    await press(
-      page,
-      fix
-        .getByRole("group", { name: V.editor.operand(3) })
-        .getByRole("button", { name: V.editor.number }),
-    );
+    // This challenge needs no constant: the third operand offers registers and no number pad.
+    const third = fix.getByRole("group", { name: V.editor.operand(3) });
+    await expect(third.getByRole("button", { name: V.editor.number })).toHaveCount(0);
+    await press(page, third.getByRole("button", { name: "w3" }));
     await press(page, run(fix));
     const trace = challenge(page, TRACE);
     await trace.locator('[data-field="w0"] input').fill("1");

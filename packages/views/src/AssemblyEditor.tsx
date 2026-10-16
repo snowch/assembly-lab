@@ -21,6 +21,7 @@ import {
 import { assemble, type AsmError } from "@al/machine";
 import type { ChallengeEditorProps } from "@platform/lesson-runtime";
 
+import { EditorKeysSchema } from "./interactives/props";
 import { errorSentence } from "./messages";
 import { withCode } from "./parts";
 import { VIEW_STRINGS as S } from "./strings";
@@ -80,10 +81,12 @@ function TextMode({
   text,
   setText,
   errors,
+  symbols,
 }: {
   text: string;
   setText: (text: string) => void;
   errors: readonly AsmError[];
+  symbols: readonly string[];
 }) {
   const box = useRef<HTMLTextAreaElement>(null);
   const cursor = useRef<number | null>(null);
@@ -107,7 +110,7 @@ function TextMode({
   return (
     <div className="asm-text-mode">
       <div className="asm-bar" role="group" aria-label={S.editor.symbols}>
-        {SYMBOLS.map((c) => (
+        {symbols.map((c) => (
           <button
             key={c}
             type="button"
@@ -211,6 +214,7 @@ function LineEditor({
   text,
   instructions,
   registers,
+  numberPad,
   count,
   onText,
   onAdd,
@@ -222,6 +226,7 @@ function LineEditor({
   text: string;
   instructions: readonly string[];
   registers: readonly string[];
+  numberPad: boolean;
   count: number;
   onText: (text: string) => void;
   onAdd: () => void;
@@ -261,7 +266,8 @@ function LineEditor({
       {(slots ?? []).map((slot, j) => {
         const operand = line.operands[j] ?? "";
         const digits = numberOf(operand);
-        const open = slot === "registerOrNumber" && (digits !== null || padFor === j);
+        const takesNumber = slot === "registerOrNumber" && numberPad;
+        const open = takesNumber && (digits !== null || padFor === j);
         return (
           <div key={j} className="asm-field" role="group" aria-label={S.editor.operand(j + 1)}>
             <span className="asm-field-label">{S.editor.operand(j + 1)}</span>
@@ -278,7 +284,7 @@ function LineEditor({
                   {r}
                 </Chip>
               ))}
-              {slot === "registerOrNumber" && (
+              {takesNumber && (
                 <Chip
                   pressed={open}
                   onClick={() => {
@@ -338,12 +344,14 @@ function TapMode({
   errors,
   instructions,
   registers,
+  numberPad,
 }: {
   lines: readonly string[];
   setLines: (lines: string[]) => void;
   errors: readonly AsmError[];
   instructions: readonly string[];
   registers: readonly string[];
+  numberPad: boolean;
 }) {
   const [open, setOpen] = useState<number | null>(null);
   const replace = (i: number, text: string) => setLines(lines.map((l, k) => (k === i ? text : l)));
@@ -398,6 +406,7 @@ function TapMode({
                     text={text}
                     instructions={instructions}
                     registers={registers}
+                    numberPad={numberPad}
                     count={lines.length}
                     onText={(t) => replace(i, t)}
                     onAdd={() => insertBelow(i)}
@@ -434,7 +443,12 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
 }) => {
   const text = artifact.text ?? challenge.initial.text ?? "";
   const instructions = challenge.allowedConstructs;
-  const registers = challenge.palette;
+  // The challenge may choose its keys (`initial.data.editor`); without, the editor offers all.
+  const keys = EditorKeysSchema.safeParse(challenge.initial.data?.["editor"]);
+  const chosen = keys.success ? keys.data : {};
+  const registers = chosen.registers ?? challenge.palette;
+  const symbols = chosen.symbols ?? SYMBOLS;
+  const numberPad = chosen.numberPad ?? true;
   const [mode, setMode] = useState<Mode>(rememberedMode);
   const errors = useMemo(
     () => assemble(text, { allowed: new Set(instructions) }).errors,
@@ -462,7 +476,7 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
         ))}
       </div>
       {mode === "text" ? (
-        <TextMode text={text} setText={setText} errors={errors} />
+        <TextMode text={text} setText={setText} errors={errors} symbols={symbols} />
       ) : (
         <TapMode
           lines={linesOf(text)}
@@ -470,6 +484,7 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
           errors={errors}
           instructions={instructions}
           registers={registers}
+          numberPad={numberPad}
         />
       )}
     </div>

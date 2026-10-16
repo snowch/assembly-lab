@@ -11,7 +11,7 @@ import { z } from "zod";
 
 import { useSlot } from "@platform/lesson-runtime";
 
-import { cLinesOf } from "../listing";
+import { cLinesOf, labelOf } from "../listing";
 import { stopSentence } from "../messages";
 import { ListingView, RegisterRow, withCode } from "../parts";
 import { VIEW_STRINGS as S } from "../strings";
@@ -38,7 +38,16 @@ function statusOf(trace: Trace, view: StepView) {
   const parts: string[] = [];
   if (ran) parts.push(S.stepper.ran(ran.text));
   if (view.stop !== null) parts.push(stopSentence(view.stop) ?? S.stepper.ended);
-  else if (next) parts.push(S.stepper.upNext(next.text));
+  else if (next) {
+    // Say which function the run has crossed into, only when the label changes.
+    const into = labelOf(trace.lines, view.next as number);
+    const from = view.ran === null ? null : labelOf(trace.lines, view.ran);
+    parts.push(
+      into !== null && from !== null && into !== from
+        ? S.stepper.upNextIn(next.text, into)
+        : S.stepper.upNext(next.text),
+    );
+  }
   return parts.join(" ");
 }
 

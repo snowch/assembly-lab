@@ -9,7 +9,7 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { INTERACTIVES, STEPS, createBook, grade } from "@al/views";
+import { INTERACTIVES, STEPS, createBook, grade, quoted } from "@al/views";
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
 import {
   SECTION_KINDS,
@@ -112,7 +112,7 @@ describe("the challenges", () => {
     const verdict = grade(c, { answers: { w0: "670", w1: "30000" } });
     expect(verdict.passed).toBe(false);
     expect(verdict.failures).toHaveLength(1);
-    expect(verdict.failures[0]?.detail).toBe(PROSE.traceFeedbackW1.replaceAll("`", ""));
+    expect(verdict.failures[0]?.detail).toBe(quoted(PROSE.traceFeedbackW1));
     expect(JSON.stringify(verdict)).not.toContain("28750");
   });
 
@@ -120,7 +120,7 @@ describe("the challenges", () => {
     const c = challenge("trace-the-call");
     const verdict = grade(c, { answers: { w0: "1250", w1: "28750" } });
     expect(verdict.failures).toHaveLength(1);
-    expect(verdict.failures[0]?.detail).toBe(PROSE.traceFeedbackW0.replaceAll("`", ""));
+    expect(verdict.failures[0]?.detail).toBe(quoted(PROSE.traceFeedbackW0));
     expect(JSON.stringify(verdict)).not.toContain("670");
   });
 });
@@ -137,5 +137,22 @@ describe("the page", () => {
     expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
+  });
+});
+
+describe("the editor's keys", () => {
+  it("fix-fuel-used offers , and w, the registers w0 to w3, and no number pad", () => {
+    const c = challenge("fix-fuel-used");
+    expect(c.initial.data?.["editor"]).toEqual({
+      symbols: [",", "w"],
+      registers: ["w0", "w1", "w2", "w3"],
+      numberPad: false,
+    });
+    expect(c.palette).toEqual(["w0", "w1", "w2", "w3"]);
+  });
+
+  it("still accepts x typed, because the machine takes it", () => {
+    const c = challenge("fix-fuel-used");
+    expect(grade(c, { text: "sub x0, x0, x1\nret" }).passed).toBe(true);
   });
 });

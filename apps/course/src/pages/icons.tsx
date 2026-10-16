@@ -7,7 +7,7 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 
-import { TRIP_DISTANCE } from "@al/content";
+import { COVER_CALL, COVER_PROGRAM } from "@al/content";
 import { VIEW_STRINGS, bitsOf, traceOf, viewAt, wValue } from "@al/views";
 
 import { STRINGS } from "../strings";
@@ -48,17 +48,14 @@ export const MODULE_ICONS: Readonly<Record<string, ReactNode>> = {
   "the-same-programs-on-32-bit-arm": <path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4" />,
 };
 
-/** The cover's program and call: Module 0's first, `trip_distance(120, 85, 42, 15)`. */
-const COVER_CALL = { entry: "trip_distance", args: [120, 85, 42, 15] } as const;
-
 /**
- * The cover's figure, live: `trip_distance`'s four instructions with a marker at the one that runs
+ * The cover's figure, live: `fuel_on_board`'s three instructions with a marker at the one that runs
  * next, and `w0` as 32 cells and a number. Next runs one instruction and Reset starts again. Every
  * value comes from the course's simulator (packages/views, the same run Module 0's stepper
  * draws), as digital-design's cover runs its live circuit.
  */
 export function CoverFigure() {
-  const trace = useMemo(() => traceOf(TRIP_DISTANCE, COVER_CALL), []);
+  const trace = useMemo(() => traceOf(COVER_PROGRAM, COVER_CALL), []);
   const [k, setK] = useState(0);
   const view = viewAt(trace, k);
   const value = wValue(view.state, 0);

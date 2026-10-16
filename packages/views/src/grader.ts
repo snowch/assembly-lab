@@ -19,7 +19,7 @@ import type { AnswerField, Artifact, Challenge } from "@platform/lesson-schema";
 
 import { RecordedSchema } from "./interactives/props";
 import { errorSentence, stopSentence } from "./messages";
-import { VIEW_STRINGS as S, plain } from "./strings";
+import { VIEW_STRINGS as S, plain, quoted } from "./strings";
 import { traceOf, wValue, wValueAsInt } from "./trace";
 
 export const RUN_REGISTERS = "run-registers";
@@ -78,8 +78,16 @@ export function gradeWritten(challenge: Challenge, artifact: Artifact): Verdict 
       args: args.map((value) => ({ value: BigInt(value), width: 32 })),
     });
     const stopped = stopSentence(result.stop);
+    // (A verdict's detail is plain text, so the code in the machine's sentence is set in quotes.)
     if (stopped !== null) {
-      failures.push({ index, label: c.label, inputs, actual: {}, expected: {}, detail: stopped });
+      failures.push({
+        index,
+        label: c.label,
+        inputs,
+        actual: {},
+        expected: {},
+        detail: quoted(stopped),
+      });
       return;
     }
     const actual: Record<string, string> = {};
@@ -114,8 +122,15 @@ export function gradeAnswers(challenge: Challenge, artifact: Artifact): Verdict 
   const checked = [...new Set(cases.flatMap((c) => Object.keys(c.expect)))];
   const missing = checked.filter((id) => (answers[id] ?? "").trim() === "");
   if (missing.length > 0) {
-    const fields = missing.map(named).join(", ");
-    return { passed: false, total, failures: [], blocked: S.grader.unanswered(fields) };
+    const names = missing.map((id) => `\u201c${named(id)}\u201d`);
+    const last = names.pop() as string;
+    const fields = names.length === 0 ? last : `${names.join(", ")} ${S.grader.and} ${last}`;
+    return {
+      passed: false,
+      total,
+      failures: [],
+      blocked: S.grader.unanswered(fields, missing.length),
+    };
   }
   const notWhole = checked.find((id) => answerPattern(answers[id]) === null);
   if (notWhole !== undefined)
@@ -133,10 +148,10 @@ export function gradeAnswers(challenge: Challenge, artifact: Artifact): Verdict 
       return answerPattern(answers[field]) !== BigInt(wValue(trace.result.final, n));
     });
     if (wrong.length === 0) return;
-    // The case's own sentence for each wrong field, as plain text (a verdict shows no code marks).
-    // It says what to look at, never the value.
+    // The case's own sentence for each wrong field, with its code in quotes (a verdict shows no
+    // code marks). It says what to look at, never the value.
     const detail = wrong
-      .map(([field]) => plain(String(c.given[`feedback.${field}`] ?? "")))
+      .map(([field]) => quoted(String(c.given[`feedback.${field}`] ?? "")))
       .filter((s) => s !== "")
       .join(" ");
     failures.push({

@@ -78,7 +78,8 @@ export const STRINGS = {
 
   // the cover's live figure: the name a screen reader gives it, and what it says as it runs.
   cover: {
-    figure: "Step through trip_distance(120, 85, 42, 15)",
+    // DRAFT: names the cover's call, which is in no lesson (content/cover.ts).
+    figure: "Step through fuel_on_board(38, 6, 10)",
     register: (value: number) => `w0 holds ${value}.`,
   },
 
