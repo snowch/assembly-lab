@@ -6,7 +6,7 @@
 
 export const PROSE = {
   question:
-    "In Module 0, `fuel_used` was first written the wrong way round, as `return at_end - at_start;`. The figure runs it again, with `fuel_used(50, 38)`. The C says the answer is 38 minus 50, and its type is `int`. So the answer should be −12.\n\n" +
+    "In Module 0, `fuel_used` was first written the wrong way round, as `return at_end - at_start;`. The figure runs that wrong version again, under the name `fuel_used_wrong`, called as `fuel_used_wrong(50, 38)`. The C says the answer is 38 minus 50, and its type is `int`. So the answer should be −12.\n\n" +
     "After `sub w0, w1, w0`, `w0` holds 32 bits. Read as a number, they give 4294967284.",
 
   motivation:
@@ -21,9 +21,10 @@ export const PROSE = {
   investigation:
     "Thirty-two ones and zeros are hard to read. A shorter way to write them is **hexadecimal**. Each group of four bits becomes one digit: 0 to 9, then `a` to `f` for ten to fifteen. A `0x` in front marks a number as hexadecimal.\n\n" +
     "The pattern in `w0` is `1111 1111 1111 1111 1111 1111 1111 0100`, written `0xfffffff4`. The **unsigned reading** adds up the worth of every bit that is 1. Each bit is worth twice the bit to its right, so the worths run 1, 2, 4, 8 and so on, up to 2147483648 for the leftmost bit. That leftmost bit is the **top bit**. For this pattern the unsigned reading gives 4294967284.\n\n" +
-    "The **signed reading** counts the top bit as minus 2147483648 instead, and every other bit the same. For this pattern it gives −12. Both −12 and 4294967284 are right. They are two readings of the same 32 bits. The figure lets you set any bit, and shows all three readings, each with the sum that gives it.",
+    "The **signed reading** counts the top bit as minus 2147483648 instead, and every other bit the same. For this pattern it gives −12. Both −12 and 4294967284 are right. They are two readings of the same 32 bits. The figure lets you set any bit, and shows the hexadecimal and both readings, each with the sum that gives it.",
 
-  construction: "Set the bits yourself, in the figure, and read all three readings as you go.",
+  construction:
+    "Set the bits yourself, in this challenge's register. The figure in part 4 shows the hexadecimal and both readings of any bits you set there.",
   makeTask:
     "Set `w0`'s bits so that its signed reading is −1, then give the unsigned reading of the same bits.",
   makeHints: [
@@ -35,7 +36,7 @@ export const PROSE = {
   ] as const,
 
   failureExperiment:
-    "The figure shows two functions side by side: `fuel_used_wrong`, with `int`, and `fuel_used_wrong_u`, the same C with `unsigned`.",
+    "The figure shows two functions side by side: `fuel_used_wrong`, with `int`, and `fuel_used_wrong_u`, the same C with `unsigned`. GCC 16.1 at `-O1` made both listings, as it did in Module 0.",
   failureQuestion: "**What does GCC do differently for the `unsigned` version?**",
   failureExplain:
     "Both listings are `sub w0, w1, w0` then `ret`. The figure compares them line by line. The type changes how a program reads the result, not the subtraction.",
@@ -47,7 +48,7 @@ export const PROSE = {
 
   generalisation:
     "Every 32-bit pattern has an unsigned reading from 0 to 4294967295, and a signed reading from −2147483648 to 2147483647.\n\n" +
-    "Some instructions depend on the reading. One kind chooses what runs next after a comparison. Another kind widens a value to more bits. The comparison itself does not depend on the reading: the instruction that follows it chooses the reading. Later modules meet these instructions, and they are where a C type finally shows in the instructions.",
+    "Some instructions depend on the reading. Later modules meet these instructions, and they are where a C type finally shows in the instructions.",
 
   challenge: "Use what you have learned to read three new patterns.",
   readTask: "Give both readings of three patterns: `0x0000002a`, `0x80000000` and `0xffffff38`.",
@@ -65,5 +66,5 @@ export const PROSE = {
     "- Where in a program does the type `int` or `unsigned` exist, if not in the instructions?",
 
   modelVsReality:
-    "A real processor's registers hold bits with no type, as the simulator's do. Nothing in this lesson is simplified.",
+    "A real processor's registers hold bits with no type, as the simulator's do. Each register holds 64 bits; this lesson's figures show only the lower 32, which the `w` names use. Lesson 2 shows the rest.",
 } as const;

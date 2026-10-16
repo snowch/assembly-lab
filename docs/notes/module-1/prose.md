@@ -6,17 +6,17 @@ Drafted by Haiku from the fact brief in `docs/notes/module-1/brief.md`, a part a
 
 ## 0. Objectives
 
-- write a register's 32 bits in hexadecimal, and convert hexadecimal back to bits;
+- read a register's 32 bits in hexadecimal, and convert hexadecimal back to bits;
 - read one pattern of bits as an unsigned number and as a signed number;
-- explain why the same instructions serve `int` and `unsigned`.
+- say what changes, or does not, in the instructions GCC makes when a function's C type changes from `int` to `unsigned`.
 
 ## 1. Which is right, −12 or 4294967284?
 
-In Module 0, `fuel_used` was first written the wrong way round, as `return at_end - at_start;`. The figure runs it again, with `fuel_used(50, 38)`. The C says the answer is 38 minus 50, and its type is `int`. So the answer should be −12.
+In Module 0, `fuel_used` was first written the wrong way round, as `return at_end - at_start;`. The figure runs that wrong version again, under the name `fuel_used_wrong`, called as `fuel_used_wrong(50, 38)`. The C says the answer is 38 minus 50, and its type is `int`. So the answer should be −12.
 
 After `sub w0, w1, w0`, `w0` holds 32 bits. Read as a number, they give 4294967284.
 
-*`fuel_used(50, 38)` as first written; `w0` after its subtraction.*
+*`fuel_used_wrong(50, 38)` as first written; `w0` after its subtraction.*
 
 ## 2. Why the readings matter
 
@@ -45,13 +45,13 @@ Thirty-two ones and zeros are hard to read. A shorter way to write them is **hex
 
 The pattern in `w0` is `1111 1111 1111 1111 1111 1111 1111 0100`, written `0xfffffff4`. The **unsigned reading** adds up the worth of every bit that is 1. Each bit is worth twice the bit to its right, so the worths run 1, 2, 4, 8 and so on, up to 2147483648 for the leftmost bit. That leftmost bit is the **top bit**. For this pattern the unsigned reading gives 4294967284.
 
-The **signed reading** counts the top bit as minus 2147483648 instead, and every other bit the same. For this pattern it gives −12. Both −12 and 4294967284 are right. They are two readings of the same 32 bits. The figure lets you set any bit, and shows all three readings, each with the sum that gives it.
+The **signed reading** counts the top bit as minus 2147483648 instead, and every other bit the same. For this pattern it gives −12. Both −12 and 4294967284 are right. They are two readings of the same 32 bits. The figure lets you set any bit, and shows the hexadecimal and both readings, each with the sum that gives it.
 
 *One register, set bit by bit; hexadecimal, unsigned and signed readings, each with its sum.*
 
 ## 5. Setting the bits
 
-Set the bits yourself, in the figure, and read all three readings as you go.
+Set the bits yourself, in this challenge's register. The figure in part 4 shows the hexadecimal and both readings of any bits you set there.
 
 **Make −1**
 
@@ -67,7 +67,7 @@ Field labels: "the bits of `w0`" and "its unsigned reading".
 
 ## 6. The `unsigned` version
 
-The figure shows two functions side by side: `fuel_used_wrong`, with `int`, and `fuel_used_wrong_u`, the same C with `unsigned`.
+The figure shows two functions side by side: `fuel_used_wrong`, with `int`, and `fuel_used_wrong_u`, the same C with `unsigned`. GCC 16.1 at `-O1` made both listings, as it did in Module 0.
 
 *The two functions side by side, with GCC's listing for each.*
 
@@ -94,7 +94,7 @@ A subtraction or an addition gives the same bits, whichever reading the program 
 
 Every 32-bit pattern has an unsigned reading from 0 to 4294967295, and a signed reading from −2147483648 to 2147483647.
 
-Some instructions depend on the reading. One kind chooses what runs next after a comparison. Another kind widens a value to more bits. The comparison itself does not depend on the reading: the instruction that follows it chooses the reading. Later modules meet these instructions, and they are where a C type finally shows in the instructions.
+Some instructions depend on the reading. Later modules meet these instructions, and they are where a C type finally shows in the instructions.
 
 ## 9. Three more patterns
 
@@ -120,7 +120,7 @@ Field labels, in order: "unsigned reading of `0x0000002a`"; "signed reading of `
 
 ## 11. The model and the real processor
 
-A real processor's registers hold bits with no type, as the simulator's do. Nothing in this lesson is simplified.
+A real processor's registers hold bits with no type, as the simulator's do. Each register holds 64 bits; this lesson's figures show only the lower 32, which the `w` names use. Lesson 2 shows the rest.
 
 # Lesson 2: Constants and widths
 
@@ -134,9 +134,9 @@ A real processor's registers hold bits with no type, as the simulator's do. Noth
 
 The trip computer's service interval is 30000 kilometres. The odometer's limit is 1000000.
 
-GCC makes one instruction for `return 30000;`: `mov w0, 30000`. For `return 1000000;` it makes two: `mov w0, 16960`, then `movk w0, 0xf, lsl 16`.
+GCC 16.1 at `-O1` makes one instruction for `return 30000;`: `mov w0, 30000`. For `return 1000000;` it makes two instructions.
 
-*The two functions and GCC's listings for them.*
+*The C of both functions, and GCC's one instruction for service_interval.*
 
 ## 2. Numbers inside instructions
 
@@ -155,23 +155,23 @@ Each number below could be the constant in one `mov`.
 
 *Shown after the answer is checked.*
 
-Only 65536. Its bits fit in one of the register's two 16-bit halves, the lower or the upper: a single 1, with nothing else set. The other three need bits in both halves.
+Only 65536. Its bits are a single 1, in the upper half, so all its set bits are in one half. The other three need bits in both halves.
 
 ## 4. Trying a number
 
 The figure assembles `mov w0, ` followed by the number you type. Assembling turns that text into an instruction. The course's assembler accepts and rejects the same numbers as the GNU assembler. The GNU assembler is the program that GCC itself uses to turn its listings into instructions.
 
-A `mov` with a constant works when the number's set bits all fall within one 16-bit half of the register. For a number that needs both halves, the assembler usually says no single instruction can put it in a register.
+A `mov` with a constant works when all the number's set bits fall within one 16-bit half of the register. Other numbers fit too, though their bits are in both halves. `-1`, with all 32 bits set, fits. So does 1048575, which is `0x000fffff`: twenty 1s in a row across both halves. For most other numbers with bits in both halves, the assembler says no single instruction can put them in a register. The figure below is the way to find out for any number.
 
 *Type a number; the figure shows whether one `mov` can hold it, and what `w0` then holds.*
 
-**A few more numbers fit.**
+**Some more numbers fit.**
 
 A number whose bits are all ones except within one 16-bit half fits, such as `-1`. So do some numbers whose bits repeat one short pattern, such as 65537, which is `0x00010001`.
 
 ## 5. Building 1000000
 
-`movk` replaces one 16-bit half of a register and keeps the rest. `lsl 16` names the upper half. 1000000 is `0x000f4240`: the lower half is `0x4240`, which is 16960, and the upper half is `0xf`, which is 15.
+`movk` replaces one 16-bit half of a register and keeps the rest. `lsl 16` names the upper half. You split 1000000 into its two halves yourself, as hexadecimal makes easy. Writing `#` before a number in an instruction is optional: `mov w0, 30000` and `mov w0, #30000` are the same instruction (Module 0 met `#50`).
 
 **Build 1000000**
 
@@ -185,7 +185,7 @@ Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The start
 
 ## 6. Two names, one register
 
-The registers so far have been drawn as 32 bits, because the lessons used their `w` names. Each register holds 64 bits, and it has two names. The **`x` register** name is `x3`, and it names all 64 bits. The **`w` register** name is `w3`, and it names the lower 32 bits of the same register. A `long` in C uses the `x` name: GCC turns `return -1;` with `long` into `mov x0, -1`. The figure runs `mov x3, -1`, which sets all 64 bits, then `mov w3, -1`.
+The registers so far have been drawn as 32 bits, because the lessons used their `w` names. Each register holds 64 bits, and it has two names. The **`x` register** name is `x3`, and it names all 64 bits. The **`w` register** name is `w3`, and it names the lower 32 bits of the same register. The figure runs `mov x3, -1`, which sets all 64 bits, then `mov w3, -1`.
 
 *`x3` drawn as two halves of 32 bits, with `w3` its lower half.*
 
@@ -206,7 +206,7 @@ One `mov` fits a number in one 16-bit half. `movk` fills in another half without
 
 ## 8. Constants and C types
 
-GCC turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.
+A `long` in C uses the `x` name: GCC turns `return -1;` with `long` into `mov x0, -1`. GCC turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.
 
 Every constant in every listing is a pattern of bits. The C type only decides how the program reads it later.
 

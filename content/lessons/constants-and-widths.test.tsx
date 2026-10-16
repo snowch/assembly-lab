@@ -114,7 +114,7 @@ describe("the lesson", () => {
 
   it("puts the closed note after the tester's section prose, as a note the learner opens", () => {
     const investigation = lesson.sections[3]!;
-    expect(investigation.details?.summary).toBe("A few more numbers fit.");
+    expect(investigation.details?.summary).toBe("Some more numbers fit.");
     expect(investigation.details?.prose).toContain("65537");
   });
 });

@@ -251,6 +251,10 @@ describe("every number the lesson states", () => {
     65537, 1, 4294967295,
     // mov w1, 5, and x1 at the end.
     5,
+    // A number one mov holds though its bits are in both halves (the model takes it, below).
+    1048575,
+    // Module 0, by its number, and its #50, a constant in Module 0's recorded listing.
+    0, 50,
   ]);
 
   const text = learnerText(lesson).join("\n");
@@ -267,13 +271,13 @@ describe("every number the lesson states", () => {
 
   it("writes each hexadecimal number as a value the model holds", () => {
     expect([...new Set(hexes)].sort()).toEqual(
-      ["0x00000000ffffffff", "0x000f4240", "0x00010001", "0x4240", "0xf"].sort(),
+      ["0x00000000ffffffff", "0x000f4240", "0x000fffff", "0x00010001", "0xf"].sort(),
     );
     const value: Record<string, bigint> = {
       "0x00000000ffffffff": x(stateAfterWidths(), 3),
       "0x000f4240": 1000000n,
+      "0x000fffff": x(runText("mov w0, 1048575\nret").final, 0),
       "0x00010001": 65537n,
-      "0x4240": 16960n,
       "0xf": 15n,
     };
     for (const h of hexes) expect(BigInt(h), h).toBe(value[h]);
@@ -288,6 +292,7 @@ describe("every number the lesson states", () => {
       x(odometer.final, 0),
       x(runText("mov w0, 30000\nret").final, 0),
       x(runText("mov w0, -1\nret").final, 0),
+      x(runText("mov w0, 1048575\nret").final, 0),
     ].map(Number);
     for (const n of results) expect(model.has(n), String(n)).toBe(true);
   });

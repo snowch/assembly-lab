@@ -8,9 +8,9 @@
 
 export const LABELS = {
   objectives: [
-    "write a register's 32 bits in hexadecimal, and convert hexadecimal back to bits;",
+    "read a register's 32 bits in hexadecimal, and convert hexadecimal back to bits;",
     "read one pattern of bits as an unsigned number and as a signed number;",
-    "explain why the same instructions serve `int` and `unsigned`.",
+    "say what changes, or does not, in the instructions GCC makes when a function's C type changes from `int` to `unsigned`.",
   ],
   titles: {
     question: "Which is right, −12 or 4294967284?",
@@ -25,15 +25,15 @@ export const LABELS = {
     reflection: "Looking back",
   },
   captions: {
-    fuelRun: "fuel_used(50, 38) as first written; w0 after its subtraction.",
+    fuelRun: "fuel_used_wrong(50, 38) as first written; w0 after its subtraction.",
     reader:
       "One register, set bit by bit; hexadecimal, unsigned and signed readings, each with its sum.",
     compare: "The two functions side by side, with GCC's listing for each.",
     // The prose file gives no caption for these four figures; Haiku drafted them (16 October 2026).
     predictAdd12:
-      "A prediction about what w0 holds after the new instruction runs. The new instruction, add w0, w0, 12, sits before ret in fuel_used.",
+      "A prediction about what w0 holds after the new instruction runs. The new instruction, add w0, w0, 12, sits before ret in fuel_used_wrong.",
     stepAdd12:
-      "fuel_used(50, 38) again, with add w0, w0, 12 before ret. A register with an outline has just changed.",
+      "fuel_used_wrong(50, 38) again, with add w0, w0, 12 before ret. A register with an outline has just changed.",
     make: "Set each of the 32 bits of w0 with its button, then type one number in the field.",
     read: "Several bit patterns are shown. Type the unsigned reading and the signed reading of each.",
   },

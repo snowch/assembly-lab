@@ -237,8 +237,12 @@ describe("every number the lesson states", () => {
     50, 38, 12,
     // w0 after sub w0, w1, w0, read unsigned; and plus 12.
     4294967284, 4294967296,
-    // The 32 bits of a register, and the 33 bits that 4294967296 needs.
-    32, 33,
+    // The 32 bits of a register, and the 33 bits that 4294967296 needs; the 64 bits it holds in all,
+    // which Lesson 2 shows.
+    32,
+    33, 64,
+    // GCC's version, 16.1 (its 1 is a bit's worth, below).
+    16,
     // The prediction's options: 0 is the right one, 24 is not one of the model's results.
     0, 24,
     // The worths of the bits: 1, 2, 4 and 8, and the top bit's.

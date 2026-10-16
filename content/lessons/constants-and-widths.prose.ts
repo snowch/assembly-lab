@@ -7,7 +7,7 @@
 export const PROSE = {
   question:
     "The trip computer's service interval is 30000 kilometres. The odometer's limit is 1000000.\n\n" +
-    "GCC makes one instruction for `return 30000;`: `mov w0, 30000`. For `return 1000000;` it makes two: `mov w0, 16960`, then `movk w0, 0xf, lsl 16`.",
+    "GCC 16.1 at `-O1` makes one instruction for `return 30000;`: `mov w0, 30000`. For `return 1000000;` it makes two instructions.",
 
   motivation:
     "Almost every function puts a fixed number in a register somewhere. The instruction `mov` does that: `mov w0, 30000` puts 30000 in `w0`. A number written inside an instruction is called a **constant**. An instruction is a fixed size, so only some numbers fit inside one.",
@@ -15,17 +15,17 @@ export const PROSE = {
   prediction: "Each number below could be the constant in one `mov`.",
   predictionQuestion: "**Which of these can one `mov` put in `w0`?**",
   predictionExplain:
-    "Only 65536. Its bits fit in one of the register's two 16-bit halves, the lower or the upper: a single 1, with nothing else set. The other three need bits in both halves.",
+    "Only 65536. Its bits are a single 1, in the upper half, so all its set bits are in one half. The other three need bits in both halves.",
 
   investigation:
     "The figure assembles `mov w0, ` followed by the number you type. Assembling turns that text into an instruction. The course's assembler accepts and rejects the same numbers as the GNU assembler. The GNU assembler is the program that GCC itself uses to turn its listings into instructions.\n\n" +
-    "A `mov` with a constant works when the number's set bits all fall within one 16-bit half of the register. For a number that needs both halves, the assembler usually says no single instruction can put it in a register.",
-  investigationDetailsSummary: "A few more numbers fit.",
+    "A `mov` with a constant works when all the number's set bits fall within one 16-bit half of the register. Other numbers fit too, though their bits are in both halves. `-1`, with all 32 bits set, fits. So does 1048575, which is `0x000fffff`: twenty 1s in a row across both halves. For most other numbers with bits in both halves, the assembler says no single instruction can put them in a register. The figure below is the way to find out for any number.",
+  investigationDetailsSummary: "Some more numbers fit.",
   investigationDetails:
     "A number whose bits are all ones except within one 16-bit half fits, such as `-1`. So do some numbers whose bits repeat one short pattern, such as 65537, which is `0x00010001`.",
 
   construction:
-    "`movk` replaces one 16-bit half of a register and keeps the rest. `lsl 16` names the upper half. 1000000 is `0x000f4240`: the lower half is `0x4240`, which is 16960, and the upper half is `0xf`, which is 15.",
+    "`movk` replaces one 16-bit half of a register and keeps the rest. `lsl 16` names the upper half. You split 1000000 into its two halves yourself, as hexadecimal makes easy. Writing `#` before a number in an instruction is optional: `mov w0, 30000` and `mov w0, #30000` are the same instruction (Module 0 met `#50`).",
   buildTask:
     "Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The starting text, `mov w0, 1000000` then `ret`, does not assemble.",
   buildHints: [
@@ -37,7 +37,7 @@ export const PROSE = {
   ] as const,
 
   failureExperiment:
-    "The registers so far have been drawn as 32 bits, because the lessons used their `w` names. Each register holds 64 bits, and it has two names. The **`x` register** name is `x3`, and it names all 64 bits. The **`w` register** name is `w3`, and it names the lower 32 bits of the same register. A `long` in C uses the `x` name: GCC turns `return -1;` with `long` into `mov x0, -1`. The figure runs `mov x3, -1`, which sets all 64 bits, then `mov w3, -1`.",
+    "The registers so far have been drawn as 32 bits, because the lessons used their `w` names. Each register holds 64 bits, and it has two names. The **`x` register** name is `x3`, and it names all 64 bits. The **`w` register** name is `w3`, and it names the lower 32 bits of the same register. The figure runs `mov x3, -1`, which sets all 64 bits, then `mov w3, -1`.",
   failureQuestion: "**After `mov w3, -1`, what does `x3` hold?**",
   failureExplain:
     "The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x00000000ffffffff`. Writing a `w` name always clears the upper half of the register.",
@@ -46,7 +46,7 @@ export const PROSE = {
     "One `mov` fits a number in one 16-bit half. `movk` fills in another half without disturbing the rest.",
 
   generalisation:
-    "GCC turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.\n\n" +
+    "A `long` in C uses the `x` name: GCC turns `return -1;` with `long` into `mov x0, -1`. GCC turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.\n\n" +
     "Every constant in every listing is a pattern of bits. The C type only decides how the program reads it later.",
 
   challenge:
