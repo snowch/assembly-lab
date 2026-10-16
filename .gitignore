@@ -6,3 +6,6 @@ test-results/
 .vite/
 *.local
 .DS_Store
+
+# Agent worktrees (Claude Code creates them here); never part of the course.
+.claude/
