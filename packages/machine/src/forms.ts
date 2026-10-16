@@ -1375,6 +1375,27 @@ export function gateName(mnemonic: string): string {
   return isConditionalBranch(mnemonic) ? "b.cond" : mnemonic;
 }
 
+/**
+ * Where a comment-like `#` tail starts in an instruction's text, or -1. The `#` follows a space, the
+ * text before it does not end in a comma (a `#` after a comma starts a number), and what follows is
+ * a space, the end of the text or a letter (a number is `#5`, `#-5`, `#0x10`; `add w0, w0 #5` is a
+ * missing comma, which has its own message).
+ */
+export function commentHashAt(text: string): number {
+  const re = /\s#(?=\s|$|[A-Za-z_.])/g;
+  for (let m = re.exec(text); m !== null; m = re.exec(text)) {
+    const before = text.slice(0, m.index).trimEnd();
+    if (before === "" || before.endsWith(",")) continue;
+    // Straight after the mnemonic, `#name` is the instruction's first operand (`b #L` is a branch
+    // to L); only a `#` and a space, or a `#` alone, is a comment there.
+    const afterMnemonic = !/\s/.test(before);
+    const next = text[m.index + 2] ?? "";
+    if (afterMnemonic && next !== "" && next.trim() !== "") continue;
+    return m.index + 1;
+  }
+  return -1;
+}
+
 /** Build the instruction. Throws `AsmFail` for the first thing wrong with it. */
 export function buildInstruction(ctx: FormContext): FormResult {
   const r = new Reader(ctx);
@@ -1384,7 +1405,20 @@ export function buildInstruction(ctx: FormContext): FormResult {
     const cond = parseCond(name) as Cond;
     handler = condBranch(cond);
   }
-  if (handler === undefined) return fail("notInMachine", { text: ctx.text }, ctx.col);
+  if (handler === undefined) {
+    // One bare word is most often a label written without its colon.
+    if (ctx.ops.length === 0 && /^[A-Za-z_.$][\w.$]*$/.test(ctx.text)) {
+      return fail("notInMachineWord", { text: ctx.text }, ctx.col);
+    }
+    return fail("notInMachine", { text: ctx.text }, ctx.col);
+  }
+  // `cmp w0, w1 # compare`: GNU as takes `#` after the start of a line as the start of a number, so
+  // the tail is an error there too. A `#` after a space, not at the start of an operand, and not
+  // followed by a number is a comment somebody wrote in another assembler's style.
+  const hash = commentHashAt(ctx.text);
+  if (hash >= 0) {
+    return fail("syntax.commentTail", { text: ctx.text.slice(hash).trim() }, ctx.col + hash);
+  }
   // `sub w0 w0 w1`: an operand that is a register followed by more words is two operands with no
   // comma between them. No valid operand starts with a register and a space (a shift is its own
   // operand, after a comma, and a memory operand starts with a bracket).

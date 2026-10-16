@@ -461,6 +461,8 @@ describe("every message key an error can have", () => {
   // The source that makes the assembler say it.
   const examples: [MessageKey, string][] = [
     ["syntax.expression", "f:\n  mov x0, 1 +"],
+    ["notInMachineWord", "f:\n  low"],
+    ["syntax.commentTail", "f:\n  cmp w0, w1 # compare"],
     ["syntax.tooBig", "f:\n  mov x0, 0x10000000000000000"],
     ["syntax.divideByZero", "f:\n  mov x0, 1/0"],
     ["symbol.undefined", "f:\n  b nowhere"],

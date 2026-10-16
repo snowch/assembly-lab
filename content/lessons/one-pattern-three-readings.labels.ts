@@ -45,8 +45,8 @@ export const LABELS = {
       { value: "error", label: "the run stops with an error" },
     ],
     compare: [
-      { value: "same", label: "Nothing: the instructions are the same." },
       { value: "other-sub", label: "It uses a different subtraction." },
+      { value: "same", label: "Nothing: the instructions are the same." },
       { value: "check", label: "It adds a check for a negative answer." },
       { value: "names", label: "It uses different register names." },
     ],

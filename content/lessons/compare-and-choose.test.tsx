@@ -92,6 +92,15 @@ describe("the lesson", () => {
     expect(testCount(c)).toBe(5);
   });
 
+  it("offers the keys the challenge uses: commas and w, no # and no number pad", () => {
+    const c = challenge("write-less-fuel");
+    expect(c.initial.data?.["editor"]).toEqual({
+      symbols: [",", "w"],
+      registers: ["w0", "w1"],
+      numberPad: false,
+    });
+  });
+
   it("starts the condition table at a pair the last challenge does not ask about", () => {
     const table = lesson.sections
       .flatMap((s) => s.interactives)

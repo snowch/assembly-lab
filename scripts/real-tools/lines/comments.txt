@@ -1,0 +1,17 @@
+// each line alone
+low
+cmp w0, w1 # compare
+cmp w0, w1 #compare
+cmp w0, w1 #
+ret # done
+add w0, w0, #1 # one
+cmp w0, w1 ; compare
+ret ; done
+cmp w0, w1 // compare
+cmp w0, w1 /* compare */
+mov w0, 1 ; ret
+ret;
+# a comment
+add w0, w0, # 1
+add w0, w0, w1, lsl #2
+add w0, w0 #5

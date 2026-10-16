@@ -1,0 +1,24 @@
+// each line alone
+and w0, w0, 0x8f
+and w0, w0, 0xf0
+and w0, w0, 0xffffff8f
+and w0, w0, -113
+and w0, w0, 0xf000000f
+and w0, w0, 0x55555555
+and w0, w0, 0x00ff00ff
+and w0, w0, 0x7fffffff
+and w0, w0, 0x49249249
+and w0, w0, 0x205
+and w0, w0, 0
+and w0, w0, 0xffffffff
+orr w0, w0, 0x8f
+eor w0, w0, 0x8f
+orr w0, w0, 0xf0
+eor w0, w0, 0xf0
+bic w0, w0, 0x70
+bic w0, w0, 0x8f
+bic w0, w0, 0x70f0
+bic w0, w0, 0xffffff0f
+ands w0, w0, 0x8f
+tst w0, 0x8f
+tst w0, 0xf0

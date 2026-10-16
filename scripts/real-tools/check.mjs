@@ -364,7 +364,12 @@ async function checkLines(file, text) {
     const l = lines[i];
     if (gnuRejects && ours) both++;
     else if (!gnuRejects && !ours) both++;
-    else if (!gnuRejects && ours && ours.key === "notInMachine") outside++;
+    else if (
+      !gnuRejects &&
+      ours &&
+      (ours.key === "notInMachine" || ours.key === "notInMachineWord")
+    )
+      outside++;
     else if (gnuRejects) {
       problems.push(
         `${file}:${origin[i]}: GNU as rejects \`${l}\` and the course's assembler accepts it`,

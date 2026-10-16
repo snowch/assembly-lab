@@ -20,6 +20,11 @@ export const strings = {
     "`{text}` is a label, which names a place in memory, but here the course's assembler needs a plain number.",
   "label.duplicate": "The label `{name}` is already defined.",
   notInMachine: "The course's simulator does not have `{text}`.",
+  // DRAFT: a line that is one word the machine does not know, most often a label with no colon.
+  notInMachineWord:
+    "The course's simulator does not have `{text}`. If it is a label, end it with a colon.",
+  // DRAFT: `{text}` is the tail from its `#` or `;` to the end of the line.
+  "syntax.commentTail": "`{text}` looks like a comment. A comment starts with `//`.",
   "gate.notYet": "You have not met `{name}` yet, so the course's assembler will not take `{text}`.",
   // DRAFT: `{allowed}` is the instructions the program may use, from `nameList`.
   "gate.notAllowedHere": "This challenge allows only {allowed}.",

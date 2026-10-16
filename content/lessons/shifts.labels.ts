@@ -31,14 +31,14 @@ export const LABELS = {
   options: {
     // A choice's value is the model's name for it (probe.ts); its label is the file's words.
     fill: [
-      { value: "copy", label: "A copy of the old top bit, which is 1" },
       { value: "zero", label: "A 0" },
       { value: "fell-off", label: "The bit that fell off the bottom" },
+      { value: "copy", label: "A copy of the old top bit, which is 1" },
       { value: "shorter", label: "Nothing: the word gets shorter" },
     ],
     firstAdd: [
-      { value: "sign", label: "1 when `g` is negative, 0 otherwise" },
       { value: "one", label: "always 1" },
+      { value: "sign", label: "1 when `g` is negative, 0 otherwise" },
       { value: "thirty-one", label: "31" },
       { value: "half", label: "half of `g`" },
     ],
