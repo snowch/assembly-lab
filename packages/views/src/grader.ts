@@ -24,7 +24,7 @@ import {
   gradeOutcomes,
   gradeSmallest,
 } from "./grader-arith";
-import { RecordedSchema } from "./interactives/props";
+import { RecordedSchema, introducedOf } from "./interactives/props";
 import { errorSentence, stopSentence } from "./messages";
 import {
   BIT_READINGS,
@@ -79,7 +79,10 @@ export function gradeWritten(challenge: Challenge, artifact: Artifact): Verdict 
   const text = artifact.text ?? challenge.initial.text ?? "";
   if (text.trim() === "")
     return { passed: false, total, failures: [], blocked: S.grader.nothingWritten };
-  const { program, errors } = assemble(text, { allowed: new Set(challenge.allowedConstructs) });
+  const { program, errors } = assemble(text, {
+    allowed: new Set(challenge.allowedConstructs),
+    introduced: introducedOf(challenge),
+  });
   if (program === null) {
     const lines = errors.map((e) => S.editor.lineProblem(e.line, errorSentence(e)));
     return { passed: false, total, failures: [], blocked: lines.join("\n") };

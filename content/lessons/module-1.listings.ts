@@ -9,6 +9,15 @@
 // module-1.listings.test.ts holds this copy to the recorded file. The white space of a recorded
 // line is not kept.
 
+/**
+ * The C and the listing of `service_interval` alone: recorded line 2. The Question shows this and
+ * not `odometer_limit`, whose two instructions are the answer to the first challenge.
+ */
+export const SERVICE_INTERVAL = {
+  c: "int service_interval(void) { return 30000; }",
+  listing: ["service_interval:", "  mov w0, 30000 C1", "  ret C1"].join("\n"),
+} as const;
+
 /** The C and the listing of `service_interval` and `odometer_limit`: recorded lines 2 and 3. */
 export const SERVICE_AND_ODOMETER = {
   c: [

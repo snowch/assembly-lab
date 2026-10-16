@@ -46,3 +46,5 @@ export { FlagsRow } from "./FlagsRow";
 export { additionSteps, bitAt, flagDigits, hex32 } from "./arith";
 export { OUTCOMES_AT_RETURN, SMALLEST_SETTING_FLAG } from "./grader-arith";
 export { COUNTER_VALUES, ringReading } from "./ring";
+export { MODULE1_STRINGS } from "./strings.module1";
+export { introducedOf } from "./interactives/props";

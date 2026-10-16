@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 
 import type { ListingLine } from "./listing";
 import { VIEW_STRINGS as S } from "./strings";
+import { MODULE1_STRINGS as M1 } from "./strings.module1";
 import { bitsOf } from "./trace";
 
 /** A sentence with `code` between backticks, the code drawn as code. */
@@ -16,19 +17,32 @@ export function withCode(text: string): ReactNode[] {
 
 /**
  * A `w` register: its name, its 32 bits in four groups of eight (a 1 filled), and its value as a
- * decimal number. A register that the last step wrote is outlined.
+ * decimal number. A register that the last step wrote is outlined. With `halves`, the two 16-bit
+ * halves are drawn apart and each is labelled, because a constant's bits fall in one half or the
+ * other.
  */
 export function RegisterRow({
   name,
   value,
   changed,
+  halves = false,
 }: {
   name: string;
   value: number;
   changed: boolean;
+  halves?: boolean;
 }) {
   const bits = bitsOf(value);
   const groups = [0, 8, 16, 24].map((from) => bits.slice(from, from + 8));
+  const group = (g: number) => (
+    <span className="al-bit-group" key={g}>
+      {[...(groups[g] ?? "")].map((bit, i) => (
+        <span className="al-bit" data-on={bit === "1"} key={i}>
+          {bit}
+        </span>
+      ))}
+    </span>
+  );
   return (
     <div
       className="al-reg"
@@ -41,17 +55,23 @@ export function RegisterRow({
       <span className="al-reg-value" title={changed ? S.register.changed : undefined}>
         {value}
       </span>
-      <span className="al-bits" aria-hidden="true">
-        {groups.map((group, g) => (
-          <span className="al-bit-group" key={g}>
-            {[...group].map((bit, i) => (
-              <span className="al-bit" data-on={bit === "1"} key={i}>
-                {bit}
-              </span>
-            ))}
-          </span>
-        ))}
-      </span>
+      {halves ? (
+        <span className="al-bits" data-halves="true" aria-hidden="true">
+          {[
+            { label: M1.register.upperHalf, from: 0 },
+            { label: M1.register.lowerHalf, from: 2 },
+          ].map(({ label, from }) => (
+            <span className="al-half16" key={from}>
+              <span className="al-half16-name">{label}</span>
+              <span className="al-half16-groups">{[from, from + 1].map(group)}</span>
+            </span>
+          ))}
+        </span>
+      ) : (
+        <span className="al-bits" aria-hidden="true">
+          {groups.map((_, g) => group(g))}
+        </span>
+      )}
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { parseLesson, type Lesson } from "@platform/lesson-schema";
 
 import { addingAndTheFlags } from "./adding-and-the-flags";
 import { constantsAndWidths } from "./constants-and-widths";
+import { withIntroduced } from "./introduced";
 import { meetTheMachine } from "./meet-the-machine";
 import { onePatternThreeReadings } from "./one-pattern-three-readings";
 import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
@@ -19,4 +20,6 @@ export const LESSONS: readonly Lesson[] = [
   constantsAndWidths,
   addingAndTheFlags,
   subtractingAndTheTickCounter,
-].map(parseLesson);
+]
+  .map(withIntroduced)
+  .map(parseLesson);

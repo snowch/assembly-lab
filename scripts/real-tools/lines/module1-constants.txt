@@ -26,6 +26,7 @@ mov w0, 0xffff1234
 mov w0, 0x12345
 mov w0, 0x80000000
 mov w0, 0x7fffffff
+mov w0, 1048575
 mov x0, -1
 mov x3, -1
 mov x1, 5

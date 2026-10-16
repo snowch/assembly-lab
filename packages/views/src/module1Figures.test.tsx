@@ -18,6 +18,7 @@ import { ModelPrediction } from "./interactives/ModelPrediction";
 import { RegisterReader } from "./interactives/RegisterReader";
 import { WideStepper } from "./interactives/WideStepper";
 import { VIEW_STRINGS as S } from "./strings";
+import { MODULE1_STRINGS } from "./strings.module1";
 
 function figure(
   View: typeof RegisterReader,
@@ -285,8 +286,31 @@ describe("the constant tester", () => {
   it("does not hand text that is not a number to the assembler", async () => {
     const { container } = figure(ConstantTester, "t", "constant-tester", {});
     await type("w1");
-    expect(container.querySelector(".al-tester-result")).toHaveTextContent(S.tester.notNumber);
+    // The sentence is set with its code marked, so no backtick shows.
+    expect(container.querySelector(".al-tester-result")).toHaveTextContent(
+      S.tester.notNumber.replaceAll("`", ""),
+    );
+    expect(container.querySelector(".al-tester-result")?.textContent).not.toContain("`");
+    expect(container.querySelector(".al-tester-result code")?.textContent).toBe("0x");
     expect(container.querySelector("[data-register]")).toBeNull();
+  });
+
+  it("draws w0 as two labelled 16-bit halves, the upper half's bits first, and no bits for a refused number", async () => {
+    const { container } = figure(ConstantTester, "t", "constant-tester", {});
+    await type("65536");
+    const halves = [...container.querySelectorAll('[data-register="w0"] .al-half16')];
+    expect(halves.map((h) => h.querySelector(".al-half16-name")?.textContent)).toEqual([
+      MODULE1_STRINGS.register.upperHalf,
+      MODULE1_STRINGS.register.lowerHalf,
+    ]);
+    const bitsOf = (h: Element) =>
+      [...h.querySelectorAll(".al-bit")].map((b) => b.textContent).join("");
+    // 65536 is the single bit 16: the lowest bit of the upper half.
+    expect(halves.map(bitsOf)).toEqual(["0000000000000001", "0000000000000000"]);
+    expect(container.querySelectorAll('[data-register="w0"] .al-bit-group')).toHaveLength(4);
+    await type("1000000");
+    expect(container.querySelector(".al-half16")).toBeNull();
+    expect(container.querySelector(".al-bit")).toBeNull();
   });
 
   it("stays shut until the prediction it names is checked", () => {

@@ -18,6 +18,7 @@ import {
   FUEL_USED_WRONG_U,
   ODOMETER_LIMIT_TEXT,
   SERVICE_AND_ODOMETER,
+  SERVICE_INTERVAL,
   WIDTHS,
 } from "./module-1.listings";
 
@@ -99,6 +100,12 @@ describe("the recorded file", () => {
 describe("the listings the lessons show", () => {
   it("show service_interval and odometer_limit as recorded, C line numbers one less", () => {
     expectShown(SERVICE_AND_ODOMETER, ["service_interval", "odometer_limit"]);
+  });
+
+  it("show service_interval alone as recorded, for the Question, which does not show odometer_limit", () => {
+    expectShown(SERVICE_INTERVAL, ["service_interval"]);
+    expect(SERVICE_INTERVAL.listing).not.toContain("odometer_limit");
+    expect(SERVICE_INTERVAL.listing).not.toContain("movk");
   });
 
   it("show fuel_used_wrong as recorded, with its one line of C numbered 1", () => {

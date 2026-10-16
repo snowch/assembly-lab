@@ -127,6 +127,28 @@ describe("which numbers one mov can put in w0", () => {
     if (m.ok) expect(m.op.k).toBe("movn");
   });
 
+  it("takes -1 and 1048575 (0x000fffff) in one instruction each, though their bits are in both 16-bit halves", () => {
+    for (const [n, bits] of [
+      [-1, 0xffffffff],
+      [1048575, 0x000fffff],
+    ] as const) {
+      // The bits are in both halves of the register...
+      expect(bits & 0xffff, String(n)).not.toBe(0);
+      expect(bits >>> 16, String(n)).not.toBe(0);
+      // ...and the assembler takes the number as one instruction, which leaves exactly those bits.
+      const { program, errors } = assemble(`mov w0, ${n}\nret\n`);
+      expect(errors, String(n)).toEqual([]);
+      expect(program!.instructions.map((i) => i.mnemonic)).toEqual(["mov", "ret"]);
+      expect(x(runText(`mov w0, ${n}\nret`).final, 0), String(n)).toBe(BigInt(bits));
+    }
+    expect(1048575).toBe(0x000fffff);
+    // Written in hexadecimal it is the same instruction.
+    expect(mov("0x000fffff")).toEqual(mov(1048575));
+    // The tester says so, with the register it leaves.
+    expect(tryMov("-1")).toEqual({ kind: "one", w0: 0xffffffff });
+    expect(tryMov("1048575")).toEqual({ kind: "one", w0: 0x000fffff });
+  });
+
   it("takes -1 and 4294967295 as the same instruction, and leaves the same 32 bits in w0", () => {
     const a = mov(-1);
     const b = mov(4294967295);
@@ -251,6 +273,8 @@ describe("every number the lesson states", () => {
     65537, 1, 4294967295,
     // mov w1, 5, and x1 at the end.
     5,
+    // 0x000fffff: a number one mov holds though its bits are in both 16-bit halves.
+    1048575,
   ]);
 
   const text = learnerText(lesson).join("\n");
@@ -266,16 +290,20 @@ describe("every number the lesson states", () => {
   });
 
   it("writes each hexadecimal number as a value the model holds", () => {
-    expect([...new Set(hexes)].sort()).toEqual(
-      ["0x00000000ffffffff", "0x000f4240", "0x00010001", "0x4240", "0xf"].sort(),
-    );
     const value: Record<string, bigint> = {
       "0x00000000ffffffff": x(stateAfterWidths(), 3),
       "0x000f4240": 1000000n,
       "0x00010001": 65537n,
       "0x4240": 16960n,
       "0xf": 15n,
+      // w0 after mov w0, 1048575.
+      "0x000fffff": x(runText("mov w0, 1048575\nret").final, 0),
+      // w0 after mov w0, -1.
+      "0xffffffff": x(runText("mov w0, -1\nret").final, 0),
     };
+    // Every hexadecimal number the lesson writes is one of these, and equals the model's value.
+    expect([...new Set(hexes)].filter((h) => !(h in value))).toEqual([]);
+    expect(hexes.length).toBeGreaterThan(0);
     for (const h of hexes) expect(BigInt(h), h).toBe(value[h]);
   });
 

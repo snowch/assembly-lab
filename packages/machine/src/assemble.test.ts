@@ -7,8 +7,8 @@ import { message, strings, type MessageKey } from "./strings.ts";
 import { build } from "./testing.ts";
 
 /** The first error of a source: its key, line and column. */
-function firstError(source: string, allowed?: Set<string>) {
-  const { errors, program } = assemble(source, allowed ? { allowed } : {});
+function firstError(source: string, allowed?: Set<string>, introduced?: Set<string>) {
+  const { errors, program } = assemble(source, allowed ? { allowed, introduced } : {});
   expect(program, `expected an error in: ${source}`).toBeNull();
   const e = errors[0];
   if (!e) throw new Error("no error");
@@ -350,6 +350,56 @@ describe("the instruction gate", () => {
     expect(errors.map((e) => e.key)).toEqual(["gate.notYet", "gate.notYet", "notInMachine"]);
   });
 
+  describe("an instruction the course has introduced but this program may not use", () => {
+    const allowed = new Set(["mov", "movk", "ret"]);
+    const introduced = new Set(["add", "sub", "ret", "mov", "movk"]);
+
+    it("is gate.notAllowedHere, and the sentence lists what is allowed", () => {
+      const e = firstError("f:\n  mov w0, 1\n  add w0, w0, 15\n  ret", allowed, introduced);
+      expect(e).toMatchObject({ key: "gate.notAllowedHere", line: 3 });
+      expect(e.params).toMatchObject({ name: "add", text: "add w0, w0, 15" });
+      expect(message(e.key, e.params)).toBe("This challenge allows only `mov`, `movk` and `ret`.");
+    });
+
+    it("is gate.notYet for an instruction no lesson has introduced", () => {
+      const e = firstError("f:\n  b f", allowed, introduced);
+      expect(e.key).toBe("gate.notYet");
+      expect(firstError("f:\n  adds w0, w0, 1", allowed, introduced).key).toBe("gate.notYet");
+    });
+
+    it("is told apart for each instruction of one program", () => {
+      const { errors } = assemble("f:\n  add w0, w0, 1\n  b f\n  sub w0, w0, 1\n  ret", {
+        allowed,
+        introduced,
+      });
+      expect(errors.map((e) => e.key)).toEqual([
+        "gate.notAllowedHere",
+        "gate.notYet",
+        "gate.notAllowedHere",
+      ]);
+    });
+
+    it("names one, two or three instructions as a list", () => {
+      const only = (names: string[]) =>
+        message(
+          "gate.notAllowedHere",
+          firstError("f:\n  sub w0, w0, 1", new Set(names), new Set([...names, "sub"])).params,
+        );
+      expect(only(["ret"])).toBe("This challenge allows only `ret`.");
+      expect(only(["mov", "ret"])).toBe("This challenge allows only `mov` and `ret`.");
+    });
+
+    it("keeps gate.notYet for everything when no list of introduced instructions is given", () => {
+      expect(firstError("f:\n  add w0, w0, 1", allowed).key).toBe("gate.notYet");
+    });
+
+    it("lets an allowed instruction through whether or not it is on the list", () => {
+      expect(assemble("f:\n  mov w0, 1\n  ret", { allowed, introduced: new Set() }).errors).toEqual(
+        [],
+      );
+    });
+  });
+
   it("without a gate, everything in the subset is allowed", () => {
     expect(assemble("f:\n  sub x0, x0, 1").errors).toEqual([]);
   });
@@ -397,6 +447,7 @@ describe("errors", () => {
       log: 3,
       limit: 1,
       steps: 2,
+      allowed: "`a`",
     };
     for (const key of Object.keys(strings) as MessageKey[]) {
       expect(message(key, params), key).not.toMatch(/\{/);
@@ -495,8 +546,16 @@ describe("every message key an error can have", () => {
     expect(firstError("f:\n  nop", new Set()).key).toBe("gate.notYet");
   });
 
+  it("gate.notAllowedHere", () => {
+    expect(firstError("f:\n  nop", new Set(), new Set(["nop"])).key).toBe("gate.notAllowedHere");
+  });
+
   it("every error key but the gate's has an example, and the others are the run's", () => {
-    const covered = new Set<string>([...examples.map(([k]) => k), "gate.notYet"]);
+    const covered = new Set<string>([
+      ...examples.map(([k]) => k),
+      "gate.notYet",
+      "gate.notAllowedHere",
+    ]);
     const run = [
       "fault.address",
       "fault.readInstruction",

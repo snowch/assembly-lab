@@ -10,14 +10,17 @@ import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import {
+  ChallengeEditor,
   INTERACTIVES,
   STEPS,
   VIEW_STRINGS,
   createBook,
   fieldList,
   grade,
+  introducedOf,
   parseListing,
 } from "@al/views";
+import { assemble, message } from "@al/machine";
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
 import {
   SECTION_KINDS,
@@ -154,7 +157,69 @@ describe("the challenges", () => {
     expect(lower.failures[0]?.actual).toEqual({ w0: "16960" });
     expect(grade(c, { text: "mov w0, 16960\nmovk w0, 15, lsl 16" }).passed).toBe(false);
     const gate = grade(c, { text: "mov w0, 16960\nadd w0, w0, 1\nret" });
-    expect(gate.blocked).toContain("add");
+    expect(gate.passed).toBe(false);
+    expect(gate.blocked).toContain("Line 2:");
+  });
+
+  it("build-1000000: add and sub are met (Module 0) but not allowed here, and the sentence says what is allowed", () => {
+    const c = challenge("build-1000000");
+    const allowedHere = message("gate.notAllowedHere", { allowed: "`mov`, `movk` and `ret`" });
+    expect(allowedHere).toBe("This challenge allows only `mov`, `movk` and `ret`.");
+    for (const line of ["add w0, w0, 15", "sub w0, w0, 1"]) {
+      const verdict = grade(c, { text: `mov w0, 16960\n${line}\nret` });
+      expect(verdict.blocked, line).toBe(`Line 2: ${allowedHere}`);
+      expect(verdict.blocked, line).not.toContain("not met");
+      expect(verdict.blocked, line).not.toContain("yet");
+    }
+  });
+
+  it("build-1000000: an instruction no lesson so far has introduced is still not met yet", () => {
+    const c = challenge("build-1000000");
+    // adds, subs and neg are Module 2's second lesson; b is in no lesson yet.
+    for (const line of ["adds w0, w0, 1", "neg w0, w0", "b done"]) {
+      const verdict = grade(c, { text: `mov w0, 16960\n${line}\nret` });
+      expect(verdict.blocked, line).toContain("You have not met");
+      expect(verdict.blocked, line).not.toContain("allows only");
+    }
+  });
+
+  it("build-1000000: the editor shows the same sentence against the line", () => {
+    const c = challenge("build-1000000");
+    expect(introducedOf(c)).toEqual(new Set(["add", "sub", "ret", "mov", "movk"]));
+    const errors = assemble("mov w0, 1\nadd w0, w0, 15\nret", {
+      allowed: new Set(c.allowedConstructs),
+      introduced: introducedOf(c),
+    }).errors;
+    expect(errors.map((e) => [e.line, e.key])).toEqual([[2, "gate.notAllowedHere"]]);
+  });
+
+  it("build-1000000: the keyboard row has the comma and w only, and the tap mode only w0", () => {
+    const c = challenge("build-1000000");
+    expect(c.initial.data?.["editor"]).toEqual({
+      symbols: [",", "w"],
+      registers: ["w0"],
+      numberPad: true,
+    });
+    const { container } = render(
+      <ChallengeEditor lesson={lesson} challenge={c} artifact={c.initial} onChange={() => {}} />,
+    );
+    expect([...container.querySelectorAll(".asm-bar .asm-key")].map((k) => k.textContent)).toEqual([
+      ",",
+      "w",
+    ]);
+  });
+
+  it("the figures before the challenge hold neither of odometer_limit's instructions", () => {
+    const construction = lesson.sections.findIndex((s) => s.kind === "construction");
+    const props = lesson.sections
+      .slice(0, construction)
+      .flatMap((s) => s.interactives.map((x) => JSON.stringify(x.props)))
+      .join("\n");
+    expect(props).not.toContain("16960");
+    expect(props).not.toContain("movk");
+    expect(props).not.toContain("odometer_limit");
+    // service_interval stays, with its test against the recorded listing.
+    expect(props).toContain("service_interval");
   });
 
   it("build-1000000: a second mov replaces the whole register, so mov then mov does not pass", () => {
@@ -169,6 +234,18 @@ describe("the challenges", () => {
     expect(JSON.stringify(kept)).not.toMatch(/\b5\b/);
     const wrapped = grade(c, { answers: { x1: "5", w2: String(1000000 + 2 ** 32) } });
     expect(wrapped.failures.map((f) => f.label)).toEqual(["w2 at the end"]);
+  });
+
+  it("predict-two-registers: a hexadecimal answer is refused as a number not written in decimal, not as 'not a whole number'", () => {
+    const c = challenge("predict-two-registers");
+    const verdict = grade(c, { answers: { x1: "0x5", w2: "1000000" } });
+    expect(verdict.passed).toBe(false);
+    expect(verdict.blocked).toBe(VIEW_STRINGS.grader.notWhole("x1 at the end"));
+    expect(verdict.blocked).toBe(
+      "The answer for x1 at the end must be a whole number written in decimal.",
+    );
+    // Hexadecimal is still not accepted.
+    expect(grade(c, { answers: { x1: "0x5", w2: "0x000f4240" } }).passed).toBe(false);
   });
 
   it("predict-two-registers: asks for both numbers before it grades anything", () => {

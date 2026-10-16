@@ -221,6 +221,13 @@ export interface AssembleOptions {
    * written with, so `cmp` and `subs` are separate entries.
    */
   allowed?: ReadonlySet<string>;
+  /**
+   * The mnemonics the course has introduced so far, in the same names as `allowed`. When it is
+   * given, an instruction in it that `allowed` leaves out gets `gate.notAllowedHere` (the learner
+   * has met it; this program may not use it), and only an instruction in neither gets
+   * `gate.notYet`. Without it, every instruction `allowed` leaves out gets `gate.notYet`.
+   */
+  introduced?: ReadonlySet<string>;
 }
 
 export interface AssembleResult {
