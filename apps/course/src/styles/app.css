@@ -461,3 +461,40 @@ ol {
     --gutter: 32px;
   }
 }
+
+/* "Before you start": what the course assumes, between the status note and the plan. */
+.prereqs h2 {
+  margin-top: var(--space-6);
+}
+.prereqs p,
+.prereqs ul {
+  max-width: var(--measure);
+}
+.prereqs-code {
+  max-width: var(--measure);
+  overflow-x: auto;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+.prereqs-answer {
+  max-width: var(--measure);
+  margin-bottom: var(--space-3);
+}
+.prereqs-answer summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  color: var(--accent);
+}
+/* On a phone the check's code wraps rather than hiding its ends behind a scroll. */
+@media (max-width: 40rem) {
+  .prereqs-code {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}

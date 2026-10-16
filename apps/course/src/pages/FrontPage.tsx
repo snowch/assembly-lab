@@ -11,6 +11,60 @@ import { lessonHref } from "../route";
 import { STRINGS } from "../strings";
 import { CoverFigure, MODULE_ICONS } from "./icons";
 
+/** Backticks become code, asterisks become emphasis: the only marks the front page's strings use. */
+function Marked({ text }: { text: string }) {
+  const parts = text.split(/(`[^`]+`|\*[^*]+\*)/);
+  return (
+    <>
+      {parts.map((p, i) =>
+        p.startsWith("`") ? (
+          <code key={i}>{p.slice(1, -1)}</code>
+        ) : p.startsWith("*") ? (
+          <em key={i}>{p.slice(1, -1)}</em>
+        ) : (
+          p
+        ),
+      )}
+    </>
+  );
+}
+
+function BeforeYouStart() {
+  const P = STRINGS.prereqs;
+  return (
+    <section className="prereqs" aria-labelledby="prereqs-title">
+      <h2 id="prereqs-title">{P.heading}</h2>
+      <p>{P.lead}</p>
+      <p>{P.cLead}</p>
+      <ul>
+        {P.cItems.map((item) => (
+          <li key={item}>
+            <Marked text={item} />
+          </li>
+        ))}
+      </ul>
+      <p>
+        <Marked text={P.cNot} />
+      </p>
+      <p>{P.numbers}</p>
+      <p>{P.assembly}</p>
+      <p>
+        <Marked text={P.checkLead} />
+      </p>
+      <pre className="prereqs-code">
+        <code>{P.checkCode}</code>
+      </pre>
+      <details className="prereqs-answer">
+        <summary>{P.checkShow}</summary>
+        <p>{P.checkAnswer}</p>
+      </details>
+      <p>
+        <Marked text={P.further} />
+      </p>
+    </section>
+  );
+}
+
 function Cover() {
   return (
     <section className="cover-hero" aria-labelledby="cover-title">
@@ -31,6 +85,7 @@ export function FrontPage() {
       <div className="plan-status" role="note">
         <p>{STRINGS.statusNote}</p>
       </div>
+      <BeforeYouStart />
       {PLAN.map((part) => (
         <section key={part.id} className="plan-part" aria-labelledby={`part-${part.id}`}>
           <h2 id={`part-${part.id}`}>{part.title}</h2>
