@@ -1,6 +1,7 @@
 # The course machine
 
-**Status: proposed for checkpoint 2** (16 October 2026). It assumes the plan's recommendation for
+**Status: proposed for checkpoint 2** (16 October 2026); built in `packages/machine`, and corrected
+where the build's runs of GNU as and QEMU contradicted it. It assumes the plan's recommendation for
 Decision 1, A64, which the author has not yet confirmed (`docs/plan.md`); if the author chooses
 otherwise, this file is rewritten before any lesson depends on it.
 
@@ -74,11 +75,30 @@ it rejects; the corpus pins each rule.
 
 **Conditions**: `eq`, `ne`, `cs` (also `hs`), `cc` (also `lo`), `mi`, `pl`, `vs`, `vc`, `hi`, `ls`,
 `ge`, `lt`, `gt`, `le`, `al`. Each is defined by the flags as the manual's condition table gives it
-[manual], and the corpus holds each one at the flag values where it changes.
+[manual], and the corpus holds each one at all sixteen settings of the flags. `al` is accepted by
+`csel` and `b.al`, but not by `cset`, `csetm`, `cinc` or `cneg`, and `bal` is not an instruction
+[gas].
+
+**Numbers that are distances.** In a branch, `cbz`, `tbz`, `adr` and `adrp`, a plain number is a
+distance from the instruction, not an address: `b 8` and `adr x0, 8` mean 8 bytes on [gas, qemu].
+A label, `.`, or an expression with either in it is an address. A label used where a plain number
+is needed (`mov w0, L`) is rejected: GNU as accepts it and assembles an offset within the section,
+which is not the label's address [gas].
 
 **Width rules**: the registers of one instruction agree in width except where a form says
 otherwise (an extended operand, `smull`, `ldrsw`); a mismatch is rejected with "operand mismatch"
 [gas].
+
+**Spelling.** A register, shift or condition name is all lower case or all upper case: `Ne`, `Sp`
+and `Lr` are rejected [gas]. `fp` (for `x29`), `ip0` and `ip1` (for `x16` and `x17`) are accepted
+as `lr` is [gas]. `adrp` takes no `#`. `:lo12:` is accepted by `add` and by a load's or store's
+offset, not by `sub`, `adds` or `subs` [gas].
+
+**What GNU as accepts beyond the table.** The assembler follows GNU as where the extra form uses
+only the subset's instructions: `bic` with an immediate (assembled as `and` with its inverse),
+`sp` as the destination of a logical immediate, `mov sp, <bitmask>`, `add x0, sp, x1` with no
+extend, and `uxtb x0, w1` [gas]. A form that is really another instruction (`mov x0, x1, lsl 2`)
+is outside the subset.
 
 ### Directives and program text
 
@@ -95,17 +115,24 @@ A lesson's program is a function (or several) and, if it needs them, data. The s
 **call**: it sets the arguments in `x0` to `x7` (writing a `w` argument clears the top half, as
 the hardware does), sets `sp` to the top of the stack and `x30` to a return address outside the
 program, and runs until `ret` reaches that address. Registers not set by the call start at 0, as
-QEMU's do at a program's entry [qemu].
+QEMU's do at a program's entry [qemu]. The flags start clear unless the call sets them; QEMU starts
+a program with Z set [qemu], so the differential test's `_start` sets the flags from the call with
+`msr nzcv` before it calls the function. A run also ends as returned when any branch, not only
+`ret`, reaches the return address.
 
 **Layout.** The course fixes the addresses, so a figure's addresses are the addresses a real run
-under QEMU has: text from `0x400000`, data and read-only data from `0x410000`, and a 64 KiB stack
-whose top is `0x430000` (the stack is a `.bss` region from `0x420000`). The differential test
-links with the same addresses (`ld -Ttext=0x400000 -Tdata=0x410000 -Tbss=0x420000`), and its
-`_start` sets `sp` to `0x430000`; QEMU's own starting `sp` is elsewhere [qemu].
+under QEMU has: text from `0x400000`; from `0x410000`, data, then read-only data, then zero-filled
+data (`.bss`), each aligned as `ld` aligns it; and a 64 KiB stack from `0x420000`, whose top is
+`0x430000`. The differential test links with a linker script that gives exactly this, because
+`ld`'s `-T` section options do not: with them, read-only data lands straight after the text and
+`.bss` lands on the stack [gas, qemu]. Its `_start` sets `sp` to `0x430000`; QEMU's own starting
+`sp` is elsewhere [qemu]. A run's return address is `0x440000`, outside every region.
 
 **Faults.** A run stops, with a sentence saying why and where, on: an address outside every
-region; a store into text or read-only data; a branch to an address that is not an instruction;
-or more steps than the run's limit (a loop that does not end). QEMU does not stop for a misaligned
+region; a store into text or read-only data; a load from an instruction's place in text (the
+machine keeps no encodings, so those bytes do not exist; data placed in text can be read); a
+branch to an address that is not an instruction; or more steps than the run's limit (a loop that
+does not end). QEMU does not stop for a misaligned
 `sp` [qemu]; neither does the simulator, but the trace marks it, because AAPCS64 requires `sp` to
 be a multiple of 16 at every call [aapcs].
 
@@ -119,6 +146,13 @@ instruction outside it is rejected with a message that names it and says the cou
 it yet. The message is learner-facing and goes through the prose process.
 
 ## What the machine leaves out
+
+Where GNU as accepts something the machine does not, the machine says it is not in the machine:
+numeric local labels (`1:`, `1b`), `.set`, `.equ`, macros, conditional assembly and `.include`;
+literal loads (`ldr x0, =5`); `cinv`, `smnegl` and similar; other relocations than `:lo12:`;
+other sections than text, data, read-only data, `.bss` and `.note*`. An undefined label is an
+error at once, where GNU as leaves it to the linker. GNU as's leniencies with malformed directives
+(a `.byte` with no value, an unterminated string) are errors.
 
 Encodings (no figure shows an instruction's bits; GNU as is the reference for which forms exist),
 floating point and SIMD, system registers and exceptions other than the run's own stops, atomics
