@@ -52,8 +52,14 @@ const bitsChallenge = Challenge.parse({
   reference: { answers: { bits: "1".repeat(32), unsigned: "4294967295" } },
 });
 
-function Harness({ seen }: { seen: (text: string | undefined) => void }) {
-  const [artifact, setArtifact] = useState<Artifact>({ text: "" });
+function Harness({
+  seen,
+  start = "",
+}: {
+  seen: (text: string | undefined) => void;
+  start?: string;
+}) {
+  const [artifact, setArtifact] = useState<Artifact>({ text: start });
   return (
     <AssemblyEditor
       lesson={{} as Lesson}
@@ -131,6 +137,21 @@ describe("tap mode with mov and movk", () => {
     );
     await user.click(screen.getByRole("button", { name: S.editor.tap }));
     expect(screen.getByText(/No single instruction can put/)).toBeInTheDocument();
+  });
+
+  it("keeps the pad open when the last digit of a number goes, so the number can be replaced", async () => {
+    const user = userEvent.setup({ delay: null });
+    let latest: string | undefined;
+    render(<Harness seen={(t) => (latest = t)} start={"mov w0, 1000000\nret"} />);
+    await user.click(screen.getByRole("button", { name: S.editor.tap }));
+    await user.click(screen.getAllByRole("button", { name: /mov w0, 1000000/ })[0]!);
+    await user.click(
+      within(group(S.editor.numberPad)).getByRole("button", { name: S.editor.clearNumber }),
+    );
+    expect(latest).toBe("mov w0\nret");
+    for (const d of "16960")
+      await user.click(within(group(S.editor.numberPad)).getByRole("button", { name: d }));
+    expect(latest).toBe("mov w0, #16960\nret");
   });
 
   it("opens an existing mov line with its number in the pad and its register pressed", async () => {

@@ -364,6 +364,18 @@
 .al-compare-row[data-same="false"] {
   border-left-color: var(--bad);
 }
+.al-compare-c .al-pane-head {
+  text-transform: none;
+  letter-spacing: normal;
+}
+@media (max-width: 47.99rem) {
+  .al-compare-row {
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+  }
+  .al-cmp-n {
+    grid-row: 1 / span 3;
+  }
+}
 .al-cmp-n {
   color: var(--fg-muted);
   font-family: var(--font-mono);
@@ -452,9 +464,14 @@
   border-color: var(--accent);
 }
 .al-wide .al-reg-name {
+  grid-area: auto;
   grid-column: 1;
 }
+.al-half .al-bits {
+  grid-area: auto;
+}
 .al-wide .al-reg-value {
+  grid-area: auto;
   grid-column: 2;
   background: none;
   padding: 0;
@@ -464,6 +481,7 @@
 .al-half {
   grid-column: 1 / -1;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-1);
 }
 .al-half-name {

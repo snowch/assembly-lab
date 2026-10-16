@@ -316,7 +316,11 @@ function LineEditor({
             {open && (
               <NumberPad
                 digits={digits ?? ""}
-                onDigits={(d) => set(withOperand(line, j, d === "" ? "" : `#${d}`))}
+                onDigits={(d) => {
+                  // The pad stays open when the last digit goes, so a number can be replaced.
+                  setPadFor(j);
+                  set(withOperand(line, j, d === "" ? "" : `#${d}`));
+                }}
               />
             )}
           </div>
