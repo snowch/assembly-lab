@@ -22,3 +22,8 @@ export { ListingView, RegisterRow, withCode } from "./parts";
 export { VIEW_STRINGS } from "./strings";
 export { bitsOf, traceOf, viewAt, wValue, wValueAsInt } from "./trace";
 export type { StepView, Trace, TraceCall } from "./trace";
+export { ARITH_STRINGS } from "./strings.arith";
+export { FlagsRow } from "./FlagsRow";
+export { additionSteps, bitAt, flagDigits, hex32 } from "./arith";
+export { OUTCOMES_AT_RETURN, SMALLEST_SETTING_FLAG } from "./grader-arith";
+export { COUNTER_VALUES, ringReading } from "./ring";

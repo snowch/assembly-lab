@@ -1,0 +1,98 @@
+{
+  "entry": "elapsed_subs",
+  "calls": [
+    {
+      "entry": "elapsed_subs",
+      "args": [
+        ["0", 32],
+        ["4294967295", 32]
+      ]
+    },
+    {
+      "entry": "elapsed_subs",
+      "args": [
+        ["1000", 32],
+        ["4294966296", 32]
+      ]
+    },
+    {
+      "entry": "elapsed_subs",
+      "args": [
+        ["5", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "elapsed_subs",
+      "args": [
+        ["3", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "elapsed_subs",
+      "args": [
+        ["3", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "negate_flags",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "negate_flags",
+      "args": [["5", 32]]
+    },
+    {
+      "entry": "negate_flags",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "negate_flags",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "elapsed_start",
+      "args": [
+        ["5000", 32],
+        ["1000", 32]
+      ]
+    },
+    {
+      "entry": "elapsed_fixed",
+      "args": [
+        ["5000", 32],
+        ["1000", 32]
+      ]
+    },
+    {
+      "entry": "elapsed_fixed",
+      "args": [
+        ["86400000", 32],
+        ["3600000", 32]
+      ]
+    },
+    {
+      "entry": "elapsed_fixed",
+      "args": [
+        ["250", 32],
+        ["4294967046", 32]
+      ]
+    },
+    {
+      "entry": "elapsed_fixed",
+      "args": [
+        ["30", 32],
+        ["4294966296", 32]
+      ]
+    },
+    {
+      "entry": "elapsed_fixed",
+      "args": [
+        ["0", 32],
+        ["4294967295", 32]
+      ]
+    }
+  ]
+}

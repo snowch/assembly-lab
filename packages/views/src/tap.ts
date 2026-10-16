@@ -15,6 +15,9 @@ export type Slot = "register" | "registerOrNumber";
 export const SLOTS: Readonly<Record<string, readonly Slot[]>> = {
   add: ["register", "register", "registerOrNumber"],
   sub: ["register", "register", "registerOrNumber"],
+  adds: ["register", "register", "registerOrNumber"],
+  subs: ["register", "register", "registerOrNumber"],
+  neg: ["register", "register"],
   ret: [],
 };
 

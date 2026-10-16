@@ -1,0 +1,228 @@
+/* Copyright © 2026 Christopher Snow */
+
+/* The figures Module 2 adds: the four flags, the addition drawn column by column, the counter's
+   ring, and the answers that are chosen rather than typed. They are in a file of their own, which
+   views.css imports. Phone first: the 33 places of an addition fit 375 pixels, as a register's 32
+   cells do. Every colour is a token of the app. */
+
+/* Instructions written for a lesson have no C beside them. */
+.al-listing[data-c="none"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* The four flags */
+.al-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.al-flag {
+  display: grid;
+  justify-items: center;
+  min-width: 3.25rem;
+  padding: var(--space-1) var(--space-2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+.al-flag[data-value="1"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+.al-flag[data-changed="true"] {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+.al-flag-name {
+  font-size: var(--text-xs);
+}
+.al-flag-value {
+  font-size: var(--text-md);
+  font-variant-numeric: tabular-nums;
+}
+.al-flags[data-known="false"] {
+  color: var(--fg-muted);
+}
+
+/* An addition, column by column */
+.al-adder-rows {
+  display: grid;
+  gap: var(--space-3);
+}
+.al-adder-row {
+  display: grid;
+  gap: var(--space-1);
+}
+.al-adder-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 1.5em;
+}
+.al-adder-name {
+  font-weight: 600;
+}
+.al-adder-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+.al-adder-cells {
+  display: flex;
+  gap: 6px;
+}
+.al-adder-group {
+  flex: 8 1 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 1px;
+  min-width: 0;
+}
+.al-adder-group[data-single="true"] {
+  flex: 1 1 0;
+}
+.al-adder-cell {
+  min-width: 0;
+}
+.al-adder-cell[data-shown="false"] {
+  opacity: 0.45;
+}
+/* The 33rd place holds only a carry. */
+.al-adder-row:not([data-row="carry"]) .al-adder-cell[data-col="32"] {
+  visibility: hidden;
+}
+.al-adder-carry {
+  border-bottom: 2px solid var(--border-strong);
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.8;
+  text-align: center;
+}
+.al-adder-carry[data-value="1"] {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+.al-adder-carry[data-top] {
+  border-bottom-color: var(--accent);
+  border-bottom-width: 4px;
+}
+.al-adder-cell[data-current="true"] {
+  outline: 2px solid var(--fg);
+  outline-offset: 1px;
+}
+@media (min-width: 48rem) {
+  .al-adder-row {
+    grid-template-columns: 11rem minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .al-adder-head {
+    flex-direction: column;
+    gap: 0;
+  }
+  .al-adder-cells {
+    max-width: 40rem;
+  }
+  .al-adder-carry {
+    font-size: var(--text-xs);
+  }
+}
+
+/* The counter as a ring */
+.al-ring-svg {
+  display: block;
+  width: 100%;
+  max-width: 30rem;
+  height: auto;
+  margin: 0 auto;
+}
+.al-ring-circle {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: 2;
+}
+.al-ring-wrap {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+.al-ring-lens {
+  stroke: var(--fg-muted);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+.al-ring-spot {
+  fill: var(--accent);
+}
+.al-ring-strip {
+  stroke: var(--bg-inset);
+  stroke-width: 10;
+}
+.al-ring-tick {
+  stroke: var(--fg);
+  stroke-width: 2;
+}
+.al-ring-span {
+  stroke: var(--fg-muted);
+  stroke-width: 1.5;
+}
+.al-ring-text {
+  fill: var(--fg-muted);
+  font-family: var(--font-text);
+  font-size: 0.8125rem;
+}
+.al-ring-value {
+  fill: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.al-ring-values {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+.al-ring-values > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--border);
+}
+.al-ring-values dt {
+  margin: 0;
+}
+.al-ring-values dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* An answer that is chosen */
+.answer-choice {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.answer-choice legend {
+  padding: 0;
+}
+.answer-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+}
+.answer-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 2.75rem;
+  font-family: var(--font-mono);
+}

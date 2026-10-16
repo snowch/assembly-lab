@@ -68,12 +68,17 @@ describe("the page before any script runs", () => {
     });
   });
 
-  it("says Module 0 is published and every other module planned", () => {
+  it("says a module with a lesson is published and every other module planned", () => {
     const items = noscript.split("<li>").filter((i) => i.startsWith("<strong>"));
     const labels = items.map((item) => /\(([A-Za-z ]+)\)<\/li>/.exec(item)?.[1]);
+    const written = new Set(LESSONS.map((l) => String(l.module)));
     expect(labels).toEqual(
-      MODULES.map((m) => (m.label === "0" ? STRINGS.status.published : STRINGS.status.planned)),
+      MODULES.map((m) =>
+        written.has(m.label) ? STRINGS.status.published : STRINGS.status.planned,
+      ),
     );
+    expect(written.has("0")).toBe(true);
+    expect(written.has("2")).toBe(true);
   });
 
   it("shows the footer: the sentence with its two titles in italics, the three links and the copyright", () => {

@@ -12,6 +12,7 @@ import { z } from "zod";
 import { useSlot } from "@platform/lesson-runtime";
 
 import { cLinesOf } from "../listing";
+import { FlagsRow } from "../FlagsRow";
 import { stopSentence } from "../messages";
 import { ListingView, RegisterRow, withCode } from "../parts";
 import { VIEW_STRINGS as S } from "../strings";
@@ -27,6 +28,8 @@ const Props = z.object({
   removable: DeleteSchema.optional(),
   /** The id of a prediction in this lesson. The figure stays shut until it has been checked. */
   after: z.string().optional(),
+  /** Draw the four flags under the registers, the one the last instruction changed outlined. */
+  flags: z.boolean().default(false),
 });
 
 /** What the status line says: what ran, what runs next, how the run ended. */
@@ -120,6 +123,12 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           />
         ))}
       </div>
+      {data.flags && (
+        <FlagsRow
+          flags={view.state.flags}
+          before={view.k > 0 ? viewAt(trace, view.k - 1).state.flags : null}
+        />
+      )}
     </div>
   );
 });

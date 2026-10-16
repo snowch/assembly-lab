@@ -1,0 +1,13 @@
+/* Copyright © 2026 Christopher Snow */
+
+/* A module with several lessons lists them under its line, each a full-size target. */
+.module-lessons {
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+.module-lessons a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
