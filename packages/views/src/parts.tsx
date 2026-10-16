@@ -83,6 +83,7 @@ export function ListingView({
   next = null,
   litC = null,
   ran = null,
+  showC = true,
 }: {
   cLines: readonly string[];
   lines: readonly ListingLine[];
@@ -92,9 +93,12 @@ export function ListingView({
   litC?: number | null;
   /** The index into `lines` of the instruction that ran last, whose C line tag is lit with it. */
   ran?: number | null;
+  /** False for instructions that no compiler made from any C: only the instructions are drawn. */
+  showC?: boolean;
 }) {
   // Assembly the lesson wrote itself has no C beside it: the listing is then the instructions alone.
-  const hasC = cLines.some((text) => text.trim() !== "");
+  // `showC` false asks for the same: the instructions alone, with no C pane.
+  const hasC = showC && cLines.some((text) => text.trim() !== "");
   return (
     <div className="al-listing" data-c={hasC ? "shown" : "none"}>
       {hasC && (

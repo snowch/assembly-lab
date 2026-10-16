@@ -7,10 +7,13 @@ export { BOOK_ID, ChallengeEditor, STEPS, createBook } from "./book";
 export { AssemblyEditor, SYMBOLS } from "./AssemblyEditor";
 export { AnswerEditor } from "./AnswerEditor";
 export {
+  HEX_REGISTERS_AT_RETURN,
+  INSTRUCTION_AT_ENTRY,
   REGISTERS_AT_RETURN,
   RUN_REGISTERS,
   grade,
   gradeAnswers,
+  gradeInstructions,
   gradeWritten,
   isWritten,
 } from "./grader";

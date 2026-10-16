@@ -31,12 +31,15 @@ import {
   labelNameOf,
   linesOf,
   lineText,
+  negated,
   numberOf,
   parseLine,
   slotsOf,
   textOf,
+  withDigit,
   withInstruction,
   withOperand,
+  withoutLastDigit,
   type Line,
 } from "./tap";
 
@@ -168,7 +171,16 @@ function Chip({
   );
 }
 
-function NumberPad({ digits, onDigits }: { digits: string; onDigits: (digits: string) => void }) {
+function NumberPad({
+  digits,
+  onDigits,
+  signed = false,
+}: {
+  digits: string;
+  onDigits: (digits: string) => void;
+  /** Offers a key that changes the number's sign: for a mask, which may be negative. */
+  signed?: boolean;
+}) {
   return (
     <div className="numpad" role="group" aria-label={S.editor.numberPad}>
       <output className="numpad-shown">{S.editor.numberShown(digits)}</output>
@@ -178,7 +190,7 @@ function NumberPad({ digits, onDigits }: { digits: string; onDigits: (digits: st
             key={d}
             type="button"
             className="button secondary"
-            onClick={() => onDigits((digits + d).replace(/^0+(?=\d)/, ""))}
+            onClick={() => onDigits(withDigit(digits, d))}
           >
             {d}
           </button>
@@ -194,7 +206,7 @@ function NumberPad({ digits, onDigits }: { digits: string; onDigits: (digits: st
         <button
           type="button"
           className="button secondary"
-          onClick={() => onDigits((digits + "0").replace(/^0+(?=\d)/, ""))}
+          onClick={() => onDigits(withDigit(digits, "0"))}
         >
           0
         </button>
@@ -202,10 +214,20 @@ function NumberPad({ digits, onDigits }: { digits: string; onDigits: (digits: st
           type="button"
           className="button secondary"
           aria-label={S.editor.deleteDigit}
-          onClick={() => onDigits(digits.slice(0, -1))}
+          onClick={() => onDigits(withoutLastDigit(digits))}
         >
           ⌫
         </button>
+        {signed && (
+          <button
+            type="button"
+            className="button secondary numpad-sign"
+            aria-label={S.tap.sign}
+            onClick={() => onDigits(negated(digits))}
+          >
+            +/−
+          </button>
+        )}
       </div>
     </div>
   );
@@ -287,8 +309,8 @@ function LineEditor({
       )}
       {(slots ?? []).map((slot, j) => {
         const operand = line.operands[j] ?? "";
-        const digits = numberOf(operand);
-        const takesNumber = slot === "registerOrNumber" && numberPad;
+        const digits = numberOf(operand, slot === "registerOrMask");
+        const takesNumber = (slot === "registerOrNumber" || slot === "registerOrMask") && numberPad;
         // A number is always open for a slot that can only be a number.
         const open = slot === "number" || (takesNumber && (digits !== null || padFor === j));
         if (slot === "label" || slot === "condition") {
@@ -361,6 +383,7 @@ function LineEditor({
             {open && (
               <NumberPad
                 digits={digits ?? ""}
+                signed={slot === "registerOrMask"}
                 onDigits={(d) => {
                   // The pad stays open when the last digit goes, so a number can be replaced.
                   setPadFor(j);

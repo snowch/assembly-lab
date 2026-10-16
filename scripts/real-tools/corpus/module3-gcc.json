@@ -1,0 +1,535 @@
+{
+  "entry": "warn_fuel",
+  "calls": [
+    {
+      "entry": "warn_fuel",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "warn_fuel",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "warn_fuel",
+      "args": [["15", 32]]
+    },
+    {
+      "entry": "warn_fuel",
+      "args": [["42", 32]]
+    },
+    {
+      "entry": "warn_fuel",
+      "args": [["53", 32]]
+    },
+    {
+      "entry": "warn_fuel",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "warn_fuel",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "warn_fuel",
+      "args": [["4294967295", 32]]
+    },
+    {
+      "entry": "warn_fuel",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "warn_fuel",
+      "args": [["-5", 32]]
+    },
+    {
+      "entry": "clear_door",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "clear_door",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "clear_door",
+      "args": [["15", 32]]
+    },
+    {
+      "entry": "clear_door",
+      "args": [["42", 32]]
+    },
+    {
+      "entry": "clear_door",
+      "args": [["53", 32]]
+    },
+    {
+      "entry": "clear_door",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "clear_door",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "clear_door",
+      "args": [["4294967295", 32]]
+    },
+    {
+      "entry": "clear_door",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "clear_door",
+      "args": [["-5", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["15", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["42", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["53", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["4294967295", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "service_due",
+      "args": [["-5", 32]]
+    },
+    {
+      "entry": "gear_of",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "gear_of",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "gear_of",
+      "args": [["15", 32]]
+    },
+    {
+      "entry": "gear_of",
+      "args": [["42", 32]]
+    },
+    {
+      "entry": "gear_of",
+      "args": [["53", 32]]
+    },
+    {
+      "entry": "gear_of",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "gear_of",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "gear_of",
+      "args": [["4294967295", 32]]
+    },
+    {
+      "entry": "gear_of",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "gear_of",
+      "args": [["-5", 32]]
+    },
+    {
+      "entry": "toggle_lights",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "toggle_lights",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "toggle_lights",
+      "args": [["15", 32]]
+    },
+    {
+      "entry": "toggle_lights",
+      "args": [["42", 32]]
+    },
+    {
+      "entry": "toggle_lights",
+      "args": [["53", 32]]
+    },
+    {
+      "entry": "toggle_lights",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "toggle_lights",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "toggle_lights",
+      "args": [["4294967295", 32]]
+    },
+    {
+      "entry": "toggle_lights",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "toggle_lights",
+      "args": [["-5", 32]]
+    },
+    {
+      "entry": "set_gear",
+      "args": [
+        ["53", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "set_gear",
+      "args": [
+        ["0", 32],
+        ["7", 32]
+      ]
+    },
+    {
+      "entry": "set_gear",
+      "args": [
+        ["4294967295", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "set_gear",
+      "args": [
+        ["4660", 32],
+        ["13", 32]
+      ]
+    },
+    {
+      "entry": "set_gear",
+      "args": [
+        ["4294967295", 32],
+        ["4294967295", 32]
+      ]
+    },
+    {
+      "entry": "set_gear",
+      "args": [
+        ["53", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "halve_gradient",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "halve_gradient",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "halve_gradient",
+      "args": [["7", 32]]
+    },
+    {
+      "entry": "halve_gradient",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "halve_gradient",
+      "args": [["-1", 32]]
+    },
+    {
+      "entry": "halve_gradient",
+      "args": [["100", 32]]
+    },
+    {
+      "entry": "halve_gradient",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "halve_gradient",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "halve_gradient",
+      "args": [["4294967289", 32]]
+    },
+    {
+      "entry": "halve_count",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "halve_count",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "halve_count",
+      "args": [["7", 32]]
+    },
+    {
+      "entry": "halve_count",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "halve_count",
+      "args": [["-1", 32]]
+    },
+    {
+      "entry": "halve_count",
+      "args": [["100", 32]]
+    },
+    {
+      "entry": "halve_count",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "halve_count",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "halve_count",
+      "args": [["4294967289", 32]]
+    },
+    {
+      "entry": "div2",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "div2",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "div2",
+      "args": [["7", 32]]
+    },
+    {
+      "entry": "div2",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "div2",
+      "args": [["-1", 32]]
+    },
+    {
+      "entry": "div2",
+      "args": [["100", 32]]
+    },
+    {
+      "entry": "div2",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "div2",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "div2",
+      "args": [["4294967289", 32]]
+    },
+    {
+      "entry": "times8",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "times8",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "times8",
+      "args": [["7", 32]]
+    },
+    {
+      "entry": "times8",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "times8",
+      "args": [["-1", 32]]
+    },
+    {
+      "entry": "times8",
+      "args": [["100", 32]]
+    },
+    {
+      "entry": "times8",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "times8",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "times8",
+      "args": [["4294967289", 32]]
+    },
+    {
+      "entry": "shr3_int",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "shr3_int",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "shr3_int",
+      "args": [["7", 32]]
+    },
+    {
+      "entry": "shr3_int",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "shr3_int",
+      "args": [["-1", 32]]
+    },
+    {
+      "entry": "shr3_int",
+      "args": [["100", 32]]
+    },
+    {
+      "entry": "shr3_int",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "shr3_int",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "shr3_int",
+      "args": [["4294967289", 32]]
+    },
+    {
+      "entry": "shr3_unsigned",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "shr3_unsigned",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "shr3_unsigned",
+      "args": [["7", 32]]
+    },
+    {
+      "entry": "shr3_unsigned",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "shr3_unsigned",
+      "args": [["-1", 32]]
+    },
+    {
+      "entry": "shr3_unsigned",
+      "args": [["100", 32]]
+    },
+    {
+      "entry": "shr3_unsigned",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "shr3_unsigned",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "shr3_unsigned",
+      "args": [["4294967289", 32]]
+    },
+    {
+      "entry": "shl3_int",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "shl3_int",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "shl3_int",
+      "args": [["7", 32]]
+    },
+    {
+      "entry": "shl3_int",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "shl3_int",
+      "args": [["-1", 32]]
+    },
+    {
+      "entry": "shl3_int",
+      "args": [["100", 32]]
+    },
+    {
+      "entry": "shl3_int",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "shl3_int",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "shl3_int",
+      "args": [["4294967289", 32]]
+    },
+    {
+      "entry": "shl3_unsigned",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "shl3_unsigned",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "shl3_unsigned",
+      "args": [["7", 32]]
+    },
+    {
+      "entry": "shl3_unsigned",
+      "args": [["-7", 32]]
+    },
+    {
+      "entry": "shl3_unsigned",
+      "args": [["-1", 32]]
+    },
+    {
+      "entry": "shl3_unsigned",
+      "args": [["100", 32]]
+    },
+    {
+      "entry": "shl3_unsigned",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "shl3_unsigned",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "shl3_unsigned",
+      "args": [["4294967289", 32]]
+    }
+  ]
+}

@@ -5,7 +5,8 @@
 // of it and puts a changed line back.
 
 /** What an operand of an instruction may be, so the editor knows which chips to offer. */
-export type Slot = "register" | "registerOrNumber" | "number" | "shift" | "condition" | "label";
+export type Slot =
+  "register" | "registerOrNumber" | "registerOrMask" | "number" | "shift" | "condition" | "label";
 
 /** The shifts the tap editor offers for a `shift` operand: `movk` puts a number in the upper half. */
 export const SHIFTS: readonly string[] = ["lsl 16"];
@@ -24,6 +25,16 @@ export const SLOTS: Readonly<Record<string, readonly Slot[]>> = {
   mov: ["register", "registerOrNumber"],
   movk: ["register", "number", "shift"],
   ret: [],
+  // Module 3. A mask may be negative: GCC writes the constant with every bit set but one by its
+  // signed reading (`and w0, w0, -5`), so the number pad offers a sign for these operands.
+  and: ["register", "register", "registerOrMask"],
+  orr: ["register", "register", "registerOrMask"],
+  eor: ["register", "register", "registerOrMask"],
+  bic: ["register", "register", "registerOrMask"],
+  mvn: ["register", "register"],
+  lsl: ["register", "register", "registerOrNumber"],
+  lsr: ["register", "register", "registerOrNumber"],
+  asr: ["register", "register", "registerOrNumber"],
   // Module 4: a compare, the choice between two registers by a condition, and the branches that
   // name a label. A conditional branch carries its condition in its name (`b.cc`), so it is found
   // by `slotsOf`, not listed here.
@@ -121,10 +132,31 @@ export function withOperand(line: Line, index: number, operand: string): Line {
   return { mnemonic: line.mnemonic, operands };
 }
 
-/** The digits of a constant operand (`#50` or `50`), or null when the operand is not a plain number. */
-export function numberOf(operand: string): string | null {
-  const m = /^#?(\d+)$/.exec(operand.trim());
+/**
+ * The digits of a constant operand (`#50` or `50`), or null when the operand is not a plain number.
+ * With `signed`, a leading minus is part of the number (`#-113`).
+ */
+export function numberOf(operand: string, signed = false): string | null {
+  const m = (signed ? /^#?(-?\d+)$/ : /^#?(\d+)$/).exec(operand.trim());
   return m ? (m[1] as string) : null;
+}
+
+/** The number on the pad after a digit is pressed: no leading zeros, and a minus sign is kept. */
+export function withDigit(number: string, digit: string): string {
+  const sign = number.startsWith("-") ? "-" : "";
+  return sign + (number.replace("-", "") + digit).replace(/^0+(?=\d)/, "");
+}
+
+/** The number on the pad after its last digit is deleted; a lone minus sign goes with it. */
+export function withoutLastDigit(number: string): string {
+  const next = number.slice(0, -1);
+  return next === "-" ? "" : next;
+}
+
+/** The number on the pad with its sign changed; an empty pad stays empty. */
+export function negated(number: string): string {
+  if (number === "") return "";
+  return number.startsWith("-") ? number.slice(1) : `-${number}`;
 }
 
 /** A program's text as the lines the tap editor lists. A final newline is not a line of its own. */

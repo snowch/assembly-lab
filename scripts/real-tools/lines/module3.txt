@@ -1,0 +1,24 @@
+// Module 3: the lines the lessons show and the tap editor writes.
+and w0, w0, -5
+and w0, w0, #-5
+and w0, w0, -9
+and w0, w0, -113
+and w0, w0, #-113
+and w1, w1, 7
+and w1, w1, #7
+orr w0, w0, 1
+orr w0, w0, #1
+orr w0, w0, w1
+eor w0, w0, 8
+eor w0, w0, #8
+lsl w1, w1, 4
+lsl w1, w1, #4
+lsr w0, w0, 1
+asr w0, w0, 1
+asr w0, w0, 8
+ubfx x0, x0, 4, 3
+ubfx x0, x0, 1, 1
+bfi w0, w1, 4, 3
+add w0, w0, w0, lsr 31
+mov w1, 4
+sdiv w0, w0, w1

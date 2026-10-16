@@ -40,6 +40,13 @@ import { traceOf, wValue, wValueAsInt } from "./trace";
 
 export const RUN_REGISTERS = "run-registers";
 export const REGISTERS_AT_RETURN = "registers-at-return";
+/** As "registers-at-return", for answers written in hexadecimal (`0x2b`, or `2b`). */
+export const HEX_REGISTERS_AT_RETURN = "hex-registers-at-return";
+/**
+ * Grades answers that name an instruction: each case runs the challenge's hidden program from the
+ * label `entry` and compares the answer with the mnemonic of the first instruction that runs.
+ */
+export const INSTRUCTION_AT_ENTRY = "instruction-at-entry";
 
 type Cases = Extract<Challenge["tests"], { kind: "answers" }>["cases"];
 type Case = Cases[number];
@@ -126,13 +133,33 @@ export function gradeWritten(challenge: Challenge, artifact: Artifact): Verdict 
   return { passed: failures.length === 0, total, failures };
 }
 
-/** An answer that is a whole number, as a 32-bit pattern; null if it is not one. */
-function answerPattern(answer: string | undefined): bigint | null {
-  if (answer === undefined || !/^\s*-?\d+\s*$/.test(answer)) return null;
+/**
+ * An answer that is a whole number, as a 32-bit pattern; null if it is not one. In radix 16 it is
+ * hexadecimal digits with an optional `0x`, and no sign.
+ */
+function answerPattern(answer: string | undefined, radix: 10 | 16 = 10): bigint | null {
+  if (answer === undefined) return null;
+  if (radix === 16) {
+    const m = /^\s*(?:0x)?([0-9a-f]{1,8})\s*$/i.exec(answer);
+    return m ? BigInt(`0x${m[1] as string}`) : null;
+  }
+  if (!/^\s*-?\d+\s*$/.test(answer)) return null;
   return pattern(answer.trim());
 }
 
-export function gradeAnswers(challenge: Challenge, artifact: Artifact): Verdict {
+/** The program a case of an answers challenge runs: the one it shows, or one it keeps to itself. */
+function programOf(challenge: Challenge) {
+  const data = challenge.initial.data;
+  const program = RecordedSchema.safeParse(data?.["program"] ?? data?.["model"]);
+  if (!program.success) throw new Error(`${challenge.id}: ${S.grader.noProgram}`);
+  return program.data;
+}
+
+export function gradeAnswers(
+  challenge: Challenge,
+  artifact: Artifact,
+  radix: 10 | 16 = 10,
+): Verdict {
   const { cases } = answerTests(challenge);
   const total = cases.length;
   const answers = { ...(challenge.initial.answers ?? {}), ...(artifact.answers ?? {}) };
@@ -148,34 +175,80 @@ export function gradeAnswers(challenge: Challenge, artifact: Artifact): Verdict 
       passed: false,
       total,
       failures: [],
-      blocked: S.grader.unanswered(fields, missing.length),
+      blocked:
+        radix === 16 ? S.answers.unanswered(fields) : S.grader.unanswered(fields, missing.length),
     };
   }
-  const notWhole = checked.find((id) => answerPattern(answers[id]) === null);
+  const notWhole = checked.find((id) => answerPattern(answers[id], radix) === null);
   if (notWhole !== undefined)
     return {
       passed: false,
       total,
       failures: [],
-      blocked: S.grader.notWhole(fieldList([named(notWhole)])),
+      blocked:
+        radix === 16
+          ? S.answers.notHex(fieldList([named(notWhole)]))
+          : S.grader.notWhole(fieldList([named(notWhole)])),
     };
 
-  const program = RecordedSchema.safeParse(challenge.initial.data?.["program"]);
-  if (!program.success) throw new Error(`${challenge.id}: ${S.grader.noProgram}`);
+  const program = programOf(challenge);
   const failures: VerdictFailure[] = [];
   cases.forEach((c, index) => {
     const entry = String(c.given["entry"] ?? "");
-    const trace = traceOf(program.data, { entry, args: argsOf(c.given) });
+    const trace = traceOf(program, { entry, args: argsOf(c.given) });
     const wrong = Object.entries(c.expect).filter(([field, reg]) => {
       const n = registerNumber(String(reg));
       if (n === null) throw new Error(`${challenge.id}: ${String(reg)} is not a w register`);
-      return answerPattern(answers[field]) !== BigInt(wValue(trace.result.final, n));
+      return answerPattern(answers[field], radix) !== BigInt(wValue(trace.result.final, n));
     });
     if (wrong.length === 0) return;
     // The case's own sentence for each wrong field, with its code in quotes (a verdict shows no
     // code marks). It says what to look at, never the value.
     const detail = wrong
       .map(([field]) => quoted(String(c.given[`feedback.${field}`] ?? "")))
+      .filter((s) => s !== "")
+      .join(" ");
+    failures.push({
+      index,
+      label: plain(c.label),
+      inputs: {},
+      actual: {},
+      expected: {},
+      ...(detail !== "" ? { detail } : {}),
+    });
+  });
+  return { passed: failures.length === 0, total, failures };
+}
+
+/** The instruction an answer names: its first word, in lower case, without code marks. */
+const mnemonicOf = (answer: string): string =>
+  answer.replace(/`/g, "").trim().split(/\s+/)[0]?.toLowerCase() ?? "";
+
+export function gradeInstructions(challenge: Challenge, artifact: Artifact): Verdict {
+  const { cases } = answerTests(challenge);
+  const total = cases.length;
+  const answers = { ...(challenge.initial.answers ?? {}), ...(artifact.answers ?? {}) };
+  const named = (id: string) => plain(challenge.fields.find((f) => f.id === id)?.label ?? id);
+  const checked = [...new Set(cases.flatMap((c) => Object.keys(c.expect)))];
+  const missing = checked.filter((id) => (answers[id] ?? "").trim() === "");
+  if (missing.length > 0)
+    return {
+      passed: false,
+      total,
+      failures: [],
+      blocked: S.answers.unanswered(missing.map(named).join(", ")),
+    };
+  const program = programOf(challenge);
+  const failures: VerdictFailure[] = [];
+  cases.forEach((c, index) => {
+    const entry = String(c.given["entry"] ?? "");
+    const trace = traceOf(program, { entry, args: argsOf(c.given) });
+    // The instruction the model ran first is the answer.
+    const ran = mnemonicOf(trace.result.steps[0]?.text ?? "");
+    const wrong = Object.keys(c.expect).filter((field) => mnemonicOf(answers[field] ?? "") !== ran);
+    if (wrong.length === 0) return;
+    const detail = wrong
+      .map((field) => plain(String(c.given[`feedback.${field}`] ?? "")))
       .filter((s) => s !== "")
       .join(" ");
     failures.push({
@@ -200,5 +273,7 @@ export function grade(challenge: Challenge, artifact: Artifact): Verdict {
   if (grader === PATTERN_READINGS) return gradePatternReadings(challenge, artifact);
   if (grader === REGISTERS_AFTER) return gradeRegistersAfter(challenge, artifact);
   if (grader === BRANCH_OUTCOMES) return gradeBranchOutcomes(challenge, artifact);
+  if (grader === HEX_REGISTERS_AT_RETURN) return gradeAnswers(challenge, artifact, 16);
+  if (grader === INSTRUCTION_AT_ENTRY) return gradeInstructions(challenge, artifact);
   throw new Error(`${challenge.id}: there is no grader called ${grader}`);
 }
