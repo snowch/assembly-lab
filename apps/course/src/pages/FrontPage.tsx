@@ -12,20 +12,28 @@ import { STRINGS } from "../strings";
 import { CoverFigure, MODULE_ICONS } from "./icons";
 import "../styles/module-lessons.css";
 
-/** Backticks become code, asterisks become emphasis: the only marks the front page's strings use. */
+/** Backticks become code, asterisks emphasis, and `[words](address)` a link: the only marks the front page's strings use. */
 function Marked({ text }: { text: string }) {
-  const parts = text.split(/(`[^`]+`|\*[^*]+\*)/);
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\)|`[^`]+`|\*[^*]+\*)/);
   return (
     <>
-      {parts.map((p, i) =>
-        p.startsWith("`") ? (
+      {parts.map((p, i) => {
+        // A link, `[words](address)`, whose words may hold the other marks.
+        const link = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(p);
+        if (link)
+          return (
+            <a key={i} href={link[2]}>
+              <Marked text={link[1]!} />
+            </a>
+          );
+        return p.startsWith("`") ? (
           <code key={i}>{p.slice(1, -1)}</code>
         ) : p.startsWith("*") ? (
           <em key={i}>{p.slice(1, -1)}</em>
         ) : (
           p
-        ),
-      )}
+        );
+      })}
     </>
   );
 }

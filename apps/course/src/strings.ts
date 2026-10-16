@@ -7,6 +7,13 @@
 /** A part of the footer's sentence: plain words, or the title of a work, set in italics. */
 export type CompanionIntroPart = string | { readonly title: string };
 
+/** Where the footer's links go, and the front page's links to the same works. */
+export const COMPANION_LINKS = {
+  digitalDesign: "https://snowch.github.io/digital-design/",
+  notes: "https://snowch.github.io/programmer-calculator/docs/notes.html",
+  hub: "https://snowch.github.io/",
+} as const;
+
 export const STRINGS = {
   title: "Assembly Lab",
   subtitle: "From a line of C to the bits in a register",
@@ -42,8 +49,7 @@ export const STRINGS = {
     /** The control that opens the check's answer. A standard control name. */
     checkShow: "Show the answer",
     checkAnswer: "It returns 2, because two of the three legs are longer than the limit.",
-    further:
-      "Two companion works go deeper. The course never relies on them. *Digital Design* builds the machine from gates. The notes *From gates to a compiled if* go further into what bits mean.",
+    further: `Two companion works go deeper. The course never relies on them. [*Digital Design*](${COMPANION_LINKS.digitalDesign}) builds the machine from gates. The notes [*From gates to a compiled if*](${COMPANION_LINKS.notes}) go further into what bits mean.`,
   },
   /** The label on a module that has no lessons yet. */
   status: {
@@ -106,10 +112,3 @@ export const STRINGS = {
     hub: "See all the author's courses and books",
   },
 };
-
-/** Where the footer's links go. */
-export const COMPANION_LINKS = {
-  digitalDesign: "https://snowch.github.io/digital-design/",
-  notes: "https://snowch.github.io/programmer-calculator/docs/notes.html",
-  hub: "https://snowch.github.io/",
-} as const;

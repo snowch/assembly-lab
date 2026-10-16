@@ -524,6 +524,11 @@ ol {
 .prereqs-further {
   margin-bottom: 0;
 }
+/* A link inside a sentence: padding above and below makes it a 40-pixel target for a finger
+   without moving the lines, since an inline box's padding does not change the line's height. */
+.prereqs-further a {
+  padding-block: 0.6em;
+}
 /* On a phone the check's code wraps rather than hiding its ends behind a scroll. */
 @media (max-width: 40rem) {
   .prereqs-code {

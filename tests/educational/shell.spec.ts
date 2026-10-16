@@ -323,6 +323,24 @@ test("the footer carries the copyright and links to the companion courses", asyn
   await expect(page.locator("footer.shell-footer .copyright")).toHaveText(STRINGS.copyright);
 });
 
+test("the note on further reading links each companion work by its title", async ({ page }) => {
+  await page.goto("#/");
+  await ready(page);
+  const further = page.locator(".prereqs-further");
+  await expect(further.getByRole("link", { name: "Digital Design" })).toHaveAttribute(
+    "href",
+    COMPANION_LINKS.digitalDesign,
+  );
+  await expect(further.getByRole("link", { name: "From gates to a compiled if" })).toHaveAttribute(
+    "href",
+    COMPANION_LINKS.notes,
+  );
+  // The titles stay in italics inside their links, and no mark shows as a character.
+  await expect(further.locator("a em")).toHaveCount(2);
+  await expect(further).not.toContainText("[");
+  await expect(further).not.toContainText("*");
+});
+
 test("every icon the page names loads from the course's own path", async ({ page, baseURL }) => {
   await page.goto("#/");
   const hrefs = await page
