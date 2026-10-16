@@ -2,6 +2,8 @@
 
 Drafted by Haiku from the fact brief in `docs/notes/module-0/brief.md`, a part at a time; checked for facts by the managing session, which sent parts 6 and 8 back once (a word used in two senses, and a missing fact) and changed one sentence of part 7 to keep it true once memory is introduced. The lesson's `.prose.ts` and `.labels.ts` files take their words from here.
 
+After the lesson's first review (16 October 2026) six parts were redrafted by Haiku from the review's surviving findings and checked for facts: the definition of a register moved before the first prediction, the closed note on the closing brace moved beside the first figure, the sentence that gave away the construction challenge's method was removed, and *listing*, `#50` and the odometer were explained.
+
 ## 0. Objectives
 
 - Step through a compiled function one instruction at a time, and say what each instruction changed.
@@ -17,11 +19,17 @@ The C function `trip_distance` computes that distance in three statements. The f
 
 *The C function and the four instructions GCC made from it. Each instruction sits beside the C line GCC recorded for it.*
 
+**Where the last subtraction is counted**
+
+In the figure, the last two instructions show C line 7, the closing brace. GCC records the last subtraction against the closing brace, not against the line `total = total - detour;`. The figure shows GCC's record as it is. The record says which line an instruction is counted against, and the compiler decides it.
+
 ## 2. Why the instructions matter
 
 The C is a description. The compiler translates it, and the instructions are what the processor runs. When a program does something its C does not seem to say, the difference shows in the instructions. Every later module reads instructions like these. This function has only four, which is few enough to follow one at a time.
 
-## 3. Prediction
+## 3. Where a variable is kept
+
+A **register** is a small store inside the processor that holds one value. `w0`, `w1`, `w2` and `w3` are four of them.
 
 The C names a variable, `total`. The instructions name no variable at all. They name `w0`, `w1`, `w2` and `w3`. The four arguments arrive in order: `leg1` in `w0`, `leg2` in `w1`, `leg3` in `w2` and `detour` in `w3`. Before you step through, commit to an answer.
 
@@ -38,7 +46,7 @@ The first instruction, `add w0, w0, w1`, writes its result into `w0`. So `total`
 
 ## 4. Stepping through
 
-The figure runs `trip_distance(120, 85, 42, 15)` on the simulator in the page. A **register** is a small store inside the processor that holds one value. Each one here holds 32 bits, drawn as bits and as a decimal number.
+The figure runs `trip_distance(120, 85, 42, 15)` on the simulator in the page. These registers are used here at 32 bits, the size of an `int`. Module 1 shows the rest of each register. The figure draws each one as bits and as a decimal number.
 
 The marker shows which instruction runs next. The processor keeps that position in a register of its own, the **program counter**. Press Next to run one instruction. The C line GCC recorded for each instruction is lit as it runs.
 
@@ -46,15 +54,11 @@ An instruction's parts after its name are its **operands**. In `add w0, w0, w1`,
 
 *`trip_distance(120, 85, 42, 15)`, one instruction at a time. A register with an outline has just changed.*
 
-**Where the last subtraction is counted**
-
-GCC records the last subtraction against the closing brace, not against the line `total = total - detour;`. The figure shows GCC's record as it is. The record says which line an instruction is counted against, and the compiler decides it.
-
 ## 5. The wrong way round
 
 A second function, `fuel_used`, should return the litres used on a trip. That is the fuel at the start minus the fuel at the end. Its C was written the wrong way round: `return at_end - at_start;`. GCC turned it into `sub w0, w1, w0` and `ret`.
 
-`at_start` arrives in `w0`, and `at_end` in `w1`. `sub` takes its third operand away from its second. It writes the answer into its first.
+`at_start` arrives in `w0`, and `at_end` in `w1`.
 
 **Fix the subtraction**
 
@@ -87,7 +91,7 @@ A program is a list of instructions, kept one after another. The program counter
 
 Each instruction here reads registers and writes one register. These instructions work only with the values in registers. The names `leg1` and `total` are not in the instructions.
 
-A function's arguments arrive in `w0`, `w1` and onwards, and its result leaves in `w0`. `ret` ends the function and goes back to the code that called it. The written form of instructions, one per line, is **assembly language**. GCC's listing is written in it.
+A function's arguments arrive in `w0`, `w1` and onwards, and its result leaves in `w0`. `ret` ends the function and goes back to the code that called it. The written form of instructions, one per line, is **assembly language**. A compiler's instructions, written one per line, are its **listing**; GCC's listing is written in assembly language.
 
 ## 8. Other functions
 
@@ -97,11 +101,11 @@ The compiler chooses the registers and the instructions. With the setting `-O0`,
 
 ## 9. Kilometres to service
 
-The car needs a service when its odometer reaches a set reading. `km_to_service` returns the kilometres left before the service, after the trip so far and a planned trip. It keeps 50 km spare. Its four arguments are `service_at`, `odometer`, `trip_so_far` and `planned`, in `w0` to `w3`. GCC made five instructions from it, shown in the challenge below.
+The car needs a service when its odometer reaches a set reading. The odometer reading does not yet include the trip so far. `km_to_service` returns the kilometres left before the service, after the trip so far and a planned trip. It keeps 50 km spare. Its four arguments are `service_at`, `odometer`, `trip_so_far` and `planned`, in `w0` to `w3`. GCC made five instructions from it, shown in the challenge below. The `#50` in the last `sub` is the number 50 written inside the instruction.
 
 **Trace the call**
 
-Trace the call `km_to_service(30000, 28750, 140, 390)` without running it, and give two values.
+Without running the call `km_to_service(30000, 28750, 140, 390)`, give two values.
 
 - `w0` when the function returns
 - `w1` when the function returns

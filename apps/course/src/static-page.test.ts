@@ -71,7 +71,9 @@ describe("the page before any script runs", () => {
   it("says Module 0 is published and every other module planned", () => {
     const items = noscript.split("<li>").filter((i) => i.startsWith("<strong>"));
     const labels = items.map((item) => /\(([A-Za-z ]+)\)<\/li>/.exec(item)?.[1]);
-    expect(labels).toEqual(MODULES.map((m) => (m.label === "0" ? "Published" : "Planned")));
+    expect(labels).toEqual(
+      MODULES.map((m) => (m.label === "0" ? STRINGS.status.published : STRINGS.status.planned)),
+    );
   });
 
   it("shows the footer: the sentence with its two titles in italics, the three links and the copyright", () => {

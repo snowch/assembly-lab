@@ -15,7 +15,7 @@ export const LABELS = {
   titles: {
     question: "What does the processor do?",
     motivation: "Why the instructions matter",
-    prediction: "Prediction",
+    prediction: "Where a variable is kept",
     investigation: "Stepping through",
     construction: "The wrong way round",
     failureExperiment: "Removing ret",
@@ -34,8 +34,8 @@ export const LABELS = {
     predictNoRet: "A prediction about what w0 holds when the run ends without ret.",
     noRet:
       "trip_distance(120, 85, 42, 15) again, with a switch that deletes ret. In memory, fuel_used comes after trip_distance.",
-    fix: "The assembly editor, with the instructions of fuel_used as GCC made them from the mistaken C.",
-    trace: "Trace the call by hand, then give two values.",
+    fix: "The editor holds the instructions GCC made for fuel_used from the mistaken C.",
+    trace: "The five instructions GCC made for km_to_service, and the call to trace.",
   },
   options: {
     total: [

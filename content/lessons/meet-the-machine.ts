@@ -51,6 +51,10 @@ export const meetTheMachine: LessonInput = {
       kind: "question",
       title: LABELS.titles.question,
       prose: PROSE.question,
+      details: {
+        summary: PROSE.questionDetailsSummary,
+        prose: PROSE.questionDetails,
+      },
       interactives: [
         {
           id: "trip-listing",
@@ -87,10 +91,6 @@ export const meetTheMachine: LessonInput = {
       kind: "investigation",
       title: LABELS.titles.investigation,
       prose: PROSE.investigation,
-      details: {
-        summary: PROSE.investigationDetailsSummary,
-        prose: PROSE.investigationDetails,
-      },
       interactives: [
         {
           id: "step-trip",

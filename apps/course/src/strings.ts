@@ -13,7 +13,7 @@ export const STRINGS = {
   intro:
     "You drive a real processor's instruction set, 64-bit Arm, one instruction at a time. After each instruction, you see what changed: the bits in each register, the four flags and memory, with the line of C it came from shown beside it. Before each run, you predict what will happen, and you write small programs that tests check. Everything runs in your browser.",
   statusNote:
-    "The plan below is under the author's review. Module 0 is written as a draft to try. The other modules are written after the plan is approved.",
+    'The plan below is under the author\'s review. A module labelled "Published draft" has lessons you can use now; the other modules are written after the plan is approved.',
   /** "Before you start", between the status note and the plan: what the course assumes. */
   prereqs: {
     heading: "Before you start",
@@ -49,7 +49,7 @@ export const STRINGS = {
   status: {
     planned: "Planned",
     drafting: "Being written",
-    published: "Published",
+    published: "Published draft",
   },
 
   // what a search result and a shared link's preview show under the title (at most 155

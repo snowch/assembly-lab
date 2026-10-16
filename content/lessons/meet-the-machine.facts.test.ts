@@ -299,6 +299,9 @@ describe("every number the lesson states", () => {
     0,
     // The compiler and the processor, from the recorded file's header.
     16.1, 64,
+    // C line 7, the closing brace that GCC records the last two instructions against (held to the
+    // recorded listing below), and Module 1, which the lesson points to for the rest of a register.
+    7, 1,
   ]);
 
   it("is pinned: each is an argument of a call, a result of the model, or a fact the recorded file states", () => {
@@ -309,6 +312,12 @@ describe("every number the lesson states", () => {
     const numbers = [...text.matchAll(/\d+(?:\.\d+)?/g)].map((m) => Number(m[0]));
     expect(numbers.length).toBeGreaterThan(20);
     expect(numbers.filter((n) => !model.has(n))).toEqual([]);
+  });
+
+  it("records the last two instructions of trip_distance against C line 7, the closing brace", () => {
+    const lines = parseListing(TRIP_DISTANCE.listing);
+    const lastTwo = lines.slice(-2).map((l) => (l.kind === "instruction" ? l.cLine : null));
+    expect(lastTwo).toEqual([7, 7]);
   });
 
   it("agrees with the model on every pinned result", () => {
