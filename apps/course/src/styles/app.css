@@ -1,0 +1,325 @@
+/* Copyright © 2026 Christopher Snow */
+
+/* Base layout and typography for the course shell. Phone first; the page widens on a desk, the
+   prose keeps its measure and the figures take the width. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-text);
+  font-size: 100%;
+  line-height: var(--line);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: var(--text-md);
+  min-height: 100vh;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+a:hover {
+  color: var(--accent-strong);
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+}
+code {
+  background: var(--bg-inset);
+  padding: 0.05em 0.35em;
+  border-radius: var(--radius-sm);
+}
+pre {
+  overflow-x: auto;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  line-height: 1.5;
+}
+pre code {
+  background: none;
+  padding: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* The mono face joins < and = into one arrow-like glyph. A learner who must type `<=` has to
+   see the two characters, so no code or text box anywhere draws ligatures. This rule comes after
+   the `font: inherit` above, because that shorthand resets the ligatures of a text box. */
+code,
+pre,
+kbd,
+samp,
+textarea,
+svg {
+  font-variant-ligatures: none;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--gutter);
+  top: -100px;
+  background: var(--bg-raised);
+  color: var(--fg);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  z-index: 10;
+}
+.skip-link:focus {
+  top: var(--space-2);
+}
+
+.shell-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  align-items: center;
+  min-height: 3.5rem;
+  padding: var(--space-2) var(--gutter);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-raised);
+}
+.shell-header .brand {
+  font-family: var(--font-display);
+  font-weight: 650;
+  font-stretch: 92%;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  color: var(--fg);
+}
+.shell-header .brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+/* The theme control sits at the header's far end. */
+.theme-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+}
+.theme-picker select {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  background: var(--bg-raised);
+  color: var(--fg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+}
+
+.shell-main {
+  padding: var(--space-5) var(--gutter) var(--space-8);
+  max-width: var(--page);
+  margin: 0 auto;
+}
+
+.shell-footer {
+  padding: var(--space-4) var(--gutter);
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.shell-footer p {
+  margin: 0;
+}
+.shell-footer p + p {
+  margin-top: var(--space-1);
+}
+.shell-footer .footer-intro {
+  max-width: 62ch;
+  margin: 0 auto var(--space-2);
+}
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 var(--space-5);
+  margin: 0;
+  padding: 0;
+}
+.footer-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+/* Headings are set in the display face, a little narrow and heavy, and balanced across lines. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-stretch: 92%;
+  text-wrap: balance;
+}
+h1 {
+  font-size: var(--text-xxl);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  margin: 0 0 var(--space-4);
+  max-width: var(--measure);
+}
+h2 {
+  font-size: var(--text-xl);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  font-weight: 650;
+  margin: var(--space-6) 0 var(--space-3);
+  max-width: var(--measure);
+}
+h3 {
+  font-size: var(--text-lg);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  font-weight: 650;
+  margin: var(--space-5) 0 var(--space-2);
+}
+h4 {
+  font-size: var(--text-md);
+  font-weight: 650;
+  margin: var(--space-3) 0 var(--space-2);
+}
+p,
+ul,
+ol {
+  margin: 0 0 var(--space-4);
+}
+
+/* The cover, at the top of the front page: a band in the accent's teal with the course's name,
+   what it is, and what you do in it. */
+.cover-hero {
+  padding: var(--space-6) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(140deg, var(--hero-bg-1), var(--hero-bg-2));
+  color: var(--hero-fg);
+}
+@media (min-width: 56rem) {
+  .cover-hero {
+    padding: var(--space-7) var(--space-6);
+  }
+}
+/* On a phone the band runs to the screen's edges. */
+@media (max-width: 56rem) {
+  .cover-hero {
+    margin-inline: calc(-1 * var(--gutter));
+    border-radius: 0;
+  }
+}
+.cover-hero h1 {
+  color: var(--hero-fg);
+  margin-bottom: var(--space-3);
+}
+.cover-hero .cover-subtitle {
+  font-family: var(--font-display);
+  font-stretch: 92%;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--hero-sub);
+  max-width: var(--measure);
+  margin-bottom: var(--space-3);
+}
+.cover-hero .cover-intro {
+  color: var(--hero-muted);
+  max-width: var(--measure);
+  margin-bottom: 0;
+}
+
+/* Where the plan stands, above the plan. */
+.plan-status {
+  max-width: var(--measure);
+  margin: var(--space-5) 0 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--note-bg);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+}
+
+/* The plan: each part a heading over its modules, one under another at every width. */
+.plan-part h2 {
+  margin-top: var(--space-6);
+}
+.plan-modules {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: var(--measure);
+}
+.plan-module {
+  padding: var(--space-3) var(--space-2);
+  border-bottom: 1px solid var(--border);
+}
+.plan-module:first-child {
+  border-top: 1px solid var(--border);
+}
+.plan-module h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+}
+.module-number {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  letter-spacing: normal;
+  color: var(--fg-muted);
+}
+.module-line {
+  margin: var(--space-1) 0 var(--space-2);
+}
+.module-status {
+  display: inline-block;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+}
+.module-status[data-status="published"] {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --gutter: 32px;
+  }
+}

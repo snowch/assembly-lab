@@ -1,0 +1,49 @@
+// Copyright © 2026 Christopher Snow
+
+// The front page: the cover (the course's name, what it is), where the plan stands, and then the
+// plan itself, listed from content/plan/plan.ts: each part with its modules, each module with its
+// number, its title, one line on what the learner does, and its status.
+
+import { PLAN } from "@al/content/plan";
+
+import { STRINGS } from "../strings";
+
+function Cover() {
+  return (
+    <section className="cover-hero" aria-labelledby="cover-title">
+      <h1 id="cover-title">{STRINGS.title}</h1>
+      <p className="cover-subtitle">{STRINGS.subtitle}</p>
+      <p className="cover-intro">{STRINGS.intro}</p>
+    </section>
+  );
+}
+
+export function FrontPage() {
+  return (
+    <>
+      <Cover />
+      <p className="plan-status" role="note">
+        {STRINGS.statusNote}
+      </p>
+      {PLAN.map((part) => (
+        <section key={part.id} className="plan-part" aria-labelledby={`part-${part.id}`}>
+          <h2 id={`part-${part.id}`}>{part.title}</h2>
+          <ul className="plan-modules">
+            {part.modules.map((m) => (
+              <li key={m.id} className="plan-module" data-module={m.id}>
+                <h3>
+                  <span className="module-number">{STRINGS.module(m.label)}</span>
+                  <span className="module-title">{m.title}</span>
+                </h3>
+                <p className="module-line">{m.line}</p>
+                <span className="module-status" data-status={m.status}>
+                  {STRINGS.status[m.status]}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </>
+  );
+}

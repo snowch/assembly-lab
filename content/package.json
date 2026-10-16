@@ -1,0 +1,12 @@
+{
+  "name": "@al/content",
+  "author": "Christopher Snow",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "The course as data: its plan, and the lessons that are written, typed by the lesson schema.",
+  "exports": {
+    ".": "./index.ts",
+    "./plan": "./plan/plan.ts"
+  }
+}

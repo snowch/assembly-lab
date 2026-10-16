@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Copyright © 2026 Christopher Snow -->
+  <!-- The course's icon: the bits of a register, eight cells in two rows of four, a one filled and
+       a zero an outline, on the cover's teal (tokens.css, hero-bg-1 to hero-bg-2), the zeros in the
+       cover's light teal (hero-sub). The cells keep within 25 units of the centre, inside the
+       circle a phone's mask leaves. The PNGs beside this file are drawn from it by
+       scripts/icons.mjs, which squares off its corners for the icons a phone shapes itself. -->
+  <defs>
+    <linearGradient id="cover" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#075a4f" />
+      <stop offset="1" stop-color="#022b26" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#cover)" />
+  <rect x="9.5" y="21.5" width="9" height="9" rx="2" fill="#ffffff" />
+  <rect x="22.5" y="22.5" width="7" height="7" rx="1.5" fill="none" stroke="#a6f0e0" stroke-width="2" />
+  <rect x="33.5" y="21.5" width="9" height="9" rx="2" fill="#ffffff" />
+  <rect x="45.5" y="21.5" width="9" height="9" rx="2" fill="#ffffff" />
+  <rect x="10.5" y="34.5" width="7" height="7" rx="1.5" fill="none" stroke="#a6f0e0" stroke-width="2" />
+  <rect x="21.5" y="33.5" width="9" height="9" rx="2" fill="#ffffff" />
+  <rect x="34.5" y="34.5" width="7" height="7" rx="1.5" fill="none" stroke="#a6f0e0" stroke-width="2" />
+  <rect x="45.5" y="33.5" width="9" height="9" rx="2" fill="#ffffff" />
+</svg>
