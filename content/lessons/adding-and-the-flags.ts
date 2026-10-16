@@ -25,6 +25,12 @@ const SMALLEST_SETTING_FLAG = "smallest-setting-flag";
 /** The call every figure of the investigation runs: `0x7fffffff` plus 1. */
 const PLUS_CALL = { entry: "plus", args: [0x7fffffff, 1] } as const;
 
+/**
+ * The call the figure after the flags challenge runs: 1 plus `0xffffffff`, which sets C and Z. It is
+ * none of the challenge's three calls (its first is `0xffffffff` plus 1, the other way round).
+ */
+const CARRY_OUT_CALL = { entry: "plus", args: [1, 0xffffffff] } as const;
+
 const FLAG_NAMES = ["N", "Z", "C", "V"] as const;
 
 /** The additions the prediction challenge asks about, with the arguments each is run with. */
@@ -100,6 +106,13 @@ export const addingAndTheFlags: LessonInput = {
           timeModel: STEPS,
           caption: LABELS.captions.flags,
           props: { challengeId: "predict-flags" },
+        },
+        {
+          id: "add-carry-out",
+          kind: "adder",
+          timeModel: STEPS,
+          caption: LABELS.captions.adderCarryOut,
+          props: { program: PLUS, call: CARRY_OUT_CALL, afterChallenge: "predict-flags" },
         },
       ],
     },

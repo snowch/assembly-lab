@@ -7,7 +7,7 @@
 // simulator; the stepper can draw the four flags; a listing with no C draws no C pane; a choice is a
 // row of radio buttons.
 
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
@@ -148,6 +148,147 @@ describe("the adder", () => {
     expect(container.querySelector(".al-locked")).toHaveTextContent(S.stepper.locked);
     expect(screen.queryAllByRole("button")).toHaveLength(0);
     expect(container.querySelector(".al-adder-cell")).toBeNull();
+  });
+
+  it("says in its last status that column 32 is the top bit and that V compares the two carries", async () => {
+    const user = userEvent.setup();
+    figure(AdderFigure, "adder", props);
+    await user.click(screen.getByRole("button", { name: A.adder.all }));
+    expect(screen.getByRole("status")).toHaveTextContent(A.adder.topBit);
+    expect(A.adder.topBit).toMatch(/top bit/);
+    expect(A.adder.topBit).toMatch(/V compares the carry into it with the carry out of it/);
+  });
+
+  it("says what the two thick underlines are in text a touch screen can read, not in a title alone", () => {
+    const { container } = figure(AdderFigure, "adder", props);
+    const key = container.querySelector(".al-adder-key");
+    expect(key).toHaveTextContent(A.adder.topKey);
+    // The key is visible text: not inside the aria-hidden rows of cells.
+    expect(key?.closest("[aria-hidden='true']")).toBeNull();
+    expect(A.adder.topKey).toMatch(/carry out of the top bit/);
+    expect(A.adder.topKey).toMatch(/carry into the top bit/);
+  });
+});
+
+describe("the adder, shut until a challenge is passed", () => {
+  const GATE = Challenge.parse({
+    id: "gate",
+    title: "Gate",
+    task: "Give N.",
+    gradedDirection: "answer",
+    fields: [
+      {
+        id: "n",
+        label: "N",
+        kind: "choice",
+        options: [
+          { value: "0", label: "0" },
+          { value: "1", label: "1" },
+        ],
+      },
+    ],
+    initial: { data: { program: PLUS } },
+    tests: {
+      kind: "answers",
+      grader: "outcomes-at-return",
+      cases: [{ label: "5 plus 3", given: { entry: "plus", w0: 5, w1: 3 }, expect: { n: "n" } }],
+    },
+    hints: ["a", "b", "c", "d", "e"],
+    reference: { answers: { n: "0" } },
+  });
+  const lesson = { challenges: [GATE] } as unknown as Lesson;
+  const props = {
+    program: PLUS,
+    call: { entry: "plus", args: [1, 0xffffffff] },
+    afterChallenge: "gate",
+  };
+  const interactive = Interactive.parse({
+    id: "f",
+    kind: "adder",
+    timeModel: "steps",
+    caption: "c",
+    props,
+  });
+
+  it("shows the lock, and no cell, while the work for the challenge is missing or wrong", () => {
+    const store = new LessonStore(memoryStorage(), "assembly-lab", "test");
+    const { container } = render(
+      <AdderFigure lesson={lesson} interactive={interactive} store={store} />,
+    );
+    expect(container.querySelector(".al-locked")).toHaveTextContent(A.adder.lockedUntilPassed);
+    expect(container.querySelector(".al-adder-cell")).toBeNull();
+    act(() => store.setChallenge("gate", (c) => ({ ...c, artifact: { answers: { n: "1" } } })));
+    expect(container.querySelector(".al-locked")).not.toBeNull();
+  });
+
+  it("opens once the saved work passes, and shuts again if it stops passing", () => {
+    const store = new LessonStore(memoryStorage(), "assembly-lab", "test");
+    const { container } = render(
+      <AdderFigure lesson={lesson} interactive={interactive} store={store} />,
+    );
+    act(() => store.setChallenge("gate", (c) => ({ ...c, artifact: { answers: { n: "0" } } })));
+    expect(container.querySelector(".al-locked")).toBeNull();
+    expect(container.querySelectorAll(".al-adder-cell").length).toBeGreaterThan(0);
+    act(() => store.setChallenge("gate", (c) => ({ ...c, artifact: { answers: { n: "1" } } })));
+    expect(container.querySelector(".al-locked")).not.toBeNull();
+  });
+
+  it("draws 1 plus 0xffffffff with a carry out of the top bit: Z 1, C 1, N 0, V 0", async () => {
+    const user = userEvent.setup();
+    const store = new LessonStore(memoryStorage(), "assembly-lab", "test");
+    store.setChallenge("gate", (c) => ({ ...c, artifact: { answers: { n: "0" } } }));
+    const { container } = render(
+      <AdderFigure lesson={lesson} interactive={interactive} store={store} />,
+    );
+    await user.click(screen.getByRole("button", { name: A.adder.all }));
+    expect(["n", "z", "c", "v"].map((f) => flag(container, f).dataset["value"])).toEqual([
+      "0",
+      "1",
+      "1",
+      "0",
+    ]);
+    expect(container.querySelector('[data-top="in"]')).toHaveAttribute("data-value", "1");
+    expect(container.querySelector('[data-top="out"]')).toHaveAttribute("data-value", "1");
+  });
+});
+
+describe("the adder drawing a subtraction", () => {
+  const sub = (args: number[]) => ({
+    program: { c: "", listing: ELAPSED_SUBS },
+    call: { entry: "elapsed_subs", args },
+  });
+
+  it("turns the second number over, carries 1 into the rightmost column, and ends with C 0 across a wrap", async () => {
+    const user = userEvent.setup();
+    const props = sub([1000, 4294966296]);
+    const record = additionSteps(traceOf(props.program, props.call))[0]!.addition!;
+    const { container } = figure(AdderFigure, "adder", props);
+    expect(container.querySelector('[data-row="b"]')).toHaveTextContent(A.adder.turnedOver("w1"));
+    expect(cell(container, "carry", 0).dataset["value"]).toBe("1");
+    for (let column = 0; column < 32; column++)
+      expect(cell(container, "b", column).dataset["value"]).toBe(String(bitAt(record.b, column)));
+    await user.click(screen.getByRole("button", { name: A.adder.all }));
+    expect(["n", "z", "c", "v"].map((f) => flag(container, f).dataset["value"])).toEqual([
+      "0",
+      "0",
+      "0",
+      "0",
+    ]);
+    expect(container.querySelector('[data-top="out"]')).toHaveAttribute("data-value", "0");
+    expect(screen.getByRole("status")).toHaveTextContent(A.adder.topBit);
+  });
+
+  it("ends with C 1 and a carry out of the top bit when nothing wrapped", async () => {
+    const user = userEvent.setup();
+    const { container } = figure(AdderFigure, "adder", sub([9000, 2500]));
+    await user.click(screen.getByRole("button", { name: A.adder.all }));
+    expect(["n", "z", "c", "v"].map((f) => flag(container, f).dataset["value"])).toEqual([
+      "0",
+      "0",
+      "1",
+      "0",
+    ]);
+    expect(container.querySelector('[data-top="out"]')).toHaveAttribute("data-value", "1");
   });
 });
 

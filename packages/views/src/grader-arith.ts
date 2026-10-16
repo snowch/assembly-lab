@@ -72,20 +72,27 @@ function unanswered(challenge: Challenge, answers: Record<string, string>, ids: 
   const named = (id: string) =>
     plain(challenge.fields.find((f: AnswerField) => f.id === id)?.label ?? id);
   const missing = ids.filter((id) => (answers[id] ?? "").trim() === "");
-  if (missing.length > 0)
+  if (missing.length > 0) {
+    // Choices are not typed, so a sentence that lists twelve of them helps nobody.
+    const choices = missing.every(
+      (id) => challenge.fields.find((f: AnswerField) => f.id === id)?.kind === "choice",
+    );
     return {
       passed: false,
       total,
       failures: [],
-      blocked: S.grader.unanswered(fieldList(missing.map(named)), missing.length),
+      blocked: choices
+        ? A.grader.chooseFirst
+        : S.grader.unanswered(fieldList(missing.map(named)), missing.length),
     } satisfies Verdict;
+  }
   const notWhole = ids.find((id) => wholeNumber(answers[id]) === null);
   if (notWhole !== undefined)
     return {
       passed: false,
       total,
       failures: [],
-      blocked: S.grader.notWhole(named(notWhole)),
+      blocked: S.grader.notWhole(fieldList([named(notWhole)])),
     } satisfies Verdict;
   return null;
 }
@@ -118,17 +125,26 @@ export function gradeOutcomes(challenge: Challenge, artifact: Artifact): Verdict
       return wholeNumber(answers[field]) !== expected;
     });
     if (wrong.length === 0) return;
-    const detail = wrong
-      .map(([field]) => plain(String(c.given[`feedback.${field}`] ?? "")))
-      .filter((s) => s !== "")
-      .join(" ");
+    // The case's own sentence for each wrong field; a field with none gets a fixed sentence that
+    // names no flag and no value, so a failure never shows empty lists.
+    const detail = [
+      ...new Set(
+        wrong.map(
+          ([field, what]) =>
+            plain(String(c.given[`feedback.${field}`] ?? "")) ||
+            (flagNamed(trace.result.final.flags, String(what)) !== null
+              ? A.grader.flagWrong
+              : A.grader.valueWrong),
+        ),
+      ),
+    ].join(" ");
     failures.push({
       index,
       label: plain(c.label),
       inputs: {},
       actual: {},
       expected: {},
-      ...(detail !== "" ? { detail } : {}),
+      detail,
     });
   });
   return { passed: failures.length === 0, total, failures };
