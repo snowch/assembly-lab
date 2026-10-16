@@ -260,7 +260,7 @@ test("the skip link moves focus to the main content and leaves the plan on the p
   expect(errors).toEqual([]);
 });
 
-test("on a desk the cover and the plan share one centred column, so their left edges line up", async ({
+test("on a desk the cover and the plan share one centred column as wide as the page", async ({
   page,
 }, info) => {
   // On a phone the cover is a band to both screen edges, by design; the plan keeps the gutter.
@@ -281,6 +281,8 @@ test("on a desk the cover and the plan share one centred column, so their left e
   });
   expect(edges.note).toEqual(edges.cover);
   expect(edges.list).toEqual(edges.cover);
+  // It uses the page's width, as digital-design's front page does, not the reading measure.
+  expect(edges.cover.right - edges.cover.left).toBeGreaterThan(900);
   // The column is centred.
   expect(edges.cover.left).toBe(edges.width - edges.cover.right);
 });

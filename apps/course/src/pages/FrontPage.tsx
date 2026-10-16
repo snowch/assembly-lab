@@ -22,9 +22,9 @@ export function FrontPage() {
   return (
     <div className="front-column">
       <Cover />
-      <p className="plan-status" role="note">
-        {STRINGS.statusNote}
-      </p>
+      <div className="plan-status" role="note">
+        <p>{STRINGS.statusNote}</p>
+      </div>
       {PLAN.map((part) => (
         <section key={part.id} className="plan-part" aria-labelledby={`part-${part.id}`}>
           <h2 id={`part-${part.id}`}>{part.title}</h2>

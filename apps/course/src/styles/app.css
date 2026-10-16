@@ -267,10 +267,10 @@ ol {
   margin-bottom: 0;
 }
 
-/* The front page is one centred column: the cover and the plan share its left and right edges.
-   It is as wide as the cover's words plus the cover's own padding on a desk. */
+/* The front page is one centred column as wide as the page, as digital-design's is: the cover and
+   the plan share its left and right edges. Paragraphs inside keep the reading measure. */
 .front-column {
-  max-width: calc(var(--measure) + 2 * var(--space-6));
+  max-width: var(--page);
   margin-inline: auto;
 }
 
@@ -282,8 +282,13 @@ ol {
   border-left: 4px solid var(--accent);
   border-radius: var(--radius-sm);
 }
+.plan-status p {
+  max-width: var(--measure);
+  margin: 0;
+}
 
-/* The plan: each part a heading over its modules, one under another at every width. */
+/* The plan: each part a heading over its modules; one under another on a phone, two side by side
+   on a desk, so the page's width is used without stretching a line past the measure. */
 .plan-part h2 {
   margin-top: var(--space-6);
 }
@@ -298,6 +303,17 @@ ol {
 }
 .plan-module:first-child {
   border-top: 1px solid var(--border);
+}
+@media (min-width: 56rem) {
+  .plan-modules {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-6);
+    border-top: 1px solid var(--border);
+  }
+  .plan-module:first-child {
+    border-top: none;
+  }
 }
 .plan-module h3 {
   display: flex;
