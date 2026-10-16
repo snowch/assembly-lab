@@ -26,7 +26,7 @@ export const LABELS = {
     reflection: "Looking back",
   },
   captions: {
-    warningWord: "The warning word's 32 bits, with bits 0 to 6 labelled.",
+    warningWord: "The warning word's 32 bits. The table beside it gives each bit's meaning.",
     maskBits: "A word and a mask, combined bit by bit.",
   },
   options: {

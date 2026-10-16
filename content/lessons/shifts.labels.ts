@@ -51,7 +51,7 @@ export const LABELS = {
         lsr21: "`lsr` of 21 by 2",
         div21: "`21 / 4`",
         asrNeg: "`asr` of −21 by 2",
-        lsrNeg: "`lsr` of −21 by 2, unsigned reading",
+        lsrNeg: "`lsr` of −21 by 2 (−21 taken as unsigned)",
         divNeg: "`-21 / 4`",
       },
       // Plain text, for the name of each test in a verdict.
@@ -60,7 +60,7 @@ export const LABELS = {
         lsr21: "lsr of 21 by 2",
         div21: "21 / 4",
         asrNeg: "asr of −21 by 2",
-        lsrNeg: "lsr of −21 by 2, unsigned reading",
+        lsrNeg: "lsr of −21 by 2 (−21 taken as unsigned)",
         divNeg: "-21 / 4",
       },
     },

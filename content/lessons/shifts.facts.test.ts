@@ -233,6 +233,10 @@ describe("every number the lesson states", () => {
     [7, "-7, the word the figure takes"],
     [8, "n * 8"],
     [21, "the positive value of the challenge"],
+    [
+      16,
+      "movk w0, 0xf, lsl 16 puts the 16-bit number 0xf in the upper half (held by the model, below)",
+    ],
     [31, "w0, lsr 31 moves the top bit to the bottom"],
     [1073741818, "lsr of -21 by 2, unsigned reading"],
     [2147483644, "lsr of -7 by 1, unsigned reading"],
@@ -274,6 +278,16 @@ describe("every number the lesson states", () => {
     expect(hexes).toEqual(
       new Set([hex(-7), hex(w0(gcc, "halve_gradient", -7)), hex(w0(gcc, "halve_count", -7))]),
     );
+  });
+});
+
+describe("movk with lsl 16", () => {
+  it("moves a 16-bit number into the upper half and keeps the lower half", () => {
+    const movk = build("f:\n movk w0, 0xf, lsl 16\n ret\n");
+    expect(hex(w0(movk, "f", 0x1234))).toBe("0xf1234");
+    // The shift is by 16: 0xf lands in bits 16 to 31.
+    expect(Math.log2((w0(movk, "f", 0) - 0) / 0xf)).toBe(16);
+    expect(w0(movk, "f", 0xffff)).toBe(0xfffff);
   });
 });
 

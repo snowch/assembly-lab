@@ -126,7 +126,12 @@ describe("the listings the lesson shows or describes", () => {
 
   it("show the C as recorded where the prose gives it", () => {
     const c = fencesOf(PROSE.question).find((f) => f.lang === "c")!;
-    expect(c.lines).toEqual([shownFunction("steeper_s").c, shownFunction("steeper_u").c]);
+    // The prose sets each function out over several lines; the words and symbols are the recorded
+    // one-line C's, so the two are compared with their layout (spaces and line breaks) removed.
+    const layout = (s: string) => s.replace(/\s+/g, " ").trim();
+    expect(layout(c.lines.join(" "))).toBe(
+      layout([shownFunction("steeper_s").c, shownFunction("steeper_u").c].join(" ")),
+    );
     expect(PROSE.generalisation).toContain(
       shownFunction("fuel_low")
         .c.replace(/^bool /, "bool ")

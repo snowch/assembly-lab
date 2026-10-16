@@ -17,11 +17,11 @@ export const LABELS = {
     question: "What does GCC change for unsigned?",
     motivation: "Why a decision needs the flags",
     prediction: "Predict the change in steeper_u",
-    investigation: "What the last item of csel asks",
+    investigation: "What the last operand of csel asks",
     construction: "Choosing the smaller of two values",
     failureExperiment: "Running steeper_u with ge",
     explanation: "What each condition reads",
-    generalisation: "What GCC does with the same two instructions",
+    generalisation: "What GCC does for a yes or no answer",
     challenge: "Read four conditions after one cmp",
     reflection: "Looking back",
   },
@@ -29,7 +29,7 @@ export const LABELS = {
     runs: "The C of both functions, steeper_s's three instructions, and what each function returns for 0xffffffff and 1.",
     // DRAFT
     predictChange: "A prediction about what GCC changes in steeper_s to make steeper_u.",
-    diff: "steeper_s and steeper_u side by side; the one item that differs is marked.",
+    diff: "steeper_s and steeper_u side by side; the one operand that differs is marked.",
     // DRAFT
     lessFuel: "The assembly editor, starting from a function that is only ret.",
     // DRAFT
@@ -46,7 +46,7 @@ export const LABELS = {
     change: [
       { value: "cmp:instruction", label: "`cmp` becomes an instruction made for unsigned values." },
       { value: "cmp:operands", label: "The operands of `cmp` change." },
-      { value: "csel:last", label: "Only the last item of `csel` changes." },
+      { value: "csel:last", label: "Only the last operand of `csel` changes." },
       { value: "csel:instruction", label: "`csel` becomes a different instruction." },
     ],
     ge: [

@@ -144,7 +144,9 @@ describe("the challenges", () => {
         div_neg: "-5",
       },
     });
-    expect(verdict.failures.map((f) => f.label)).toEqual(["lsr of −21 by 2, unsigned reading"]);
+    expect(verdict.failures.map((f) => f.label)).toEqual([
+      "lsr of −21 by 2 (−21 taken as unsigned)",
+    ]);
   });
 
   it("compare-shifts: asks for every answer first, and for whole numbers", () => {

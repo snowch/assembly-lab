@@ -272,6 +272,11 @@ describe("every number the lesson states", () => {
     [9, "-9, the mask that clears bit 3"],
     [11, "clear_door(0xf) is 0xb"],
     [32, "a register's 32 bits"],
+    // The compiler's version, from the recorded file's header (held in
+    // logic-shifts-masks.listings.test.ts), and the width of x0, which w0 names the low 32 bits of
+    // (held by the model, below).
+    [16.1, "GCC 16.1, the compiler of the recorded listings"],
+    [64, "x0 is the 64-bit name for the register; w0 names its low 32 bits"],
     [53, "0x35, an option's value"],
     [85, "0x55, an option's value"],
     [113, "-113, the mask that clears bits 4 to 6"],
@@ -324,6 +329,18 @@ describe("every number the lesson states", () => {
     expect([...hexes].filter((h) => !model.has(h))).toEqual([]);
   });
 
+  it("names the register x0 for all 64 bits and w0 for its low 32: the gear is the same either way", () => {
+    // x0 holds 64 bits: one less than 0 is 64 ones, and w0 is its low 32 bits.
+    const wide = call(build("f:\n sub x0, x0, 1\n ret\n"), "f", [0]).final.x[0] ?? 0n;
+    expect(wide).toBe(2n ** 64n - 1n);
+    expect(wValue(call(build("f:\n sub x0, x0, 1\n ret\n"), "f", [0]).final, 0)).toBe(0xffffffff);
+    // The gear lies in the low 32 bits, so ubfx on x0 and on w0 give the same result.
+    const gear = (reg: "x" | "w", word: number) =>
+      w0(build(`f:\n ubfx ${reg}0, ${reg}0, 4, 3\n ret\n`), "f", word);
+    for (const word of [0x35, 0x8f, 0xffffffff, 0x2a])
+      expect(gear("x", word)).toBe(gear("w", word));
+  });
+
   it("agrees with the model on every pinned decimal result", () => {
     const model = new Map<number, number>([
       [11, w0(gcc, "clear_door", 0xf)],
@@ -339,6 +356,10 @@ describe("every number the lesson states", () => {
       [1, immediate("orr w0, w0, 1")],
       [4, immediate("ubfx x0, x0, 4, 3")],
       [3, immediate("ubfx x0, x0, 4, 3", 3)],
+      [
+        64,
+        (call(build("f:\n sub x0, x0, 1\n ret\n"), "f", [0]).final.x[0] ?? 0n).toString(2).length,
+      ],
     ]);
     for (const [n, got] of model) expect(got, String(n)).toBe(n);
   });

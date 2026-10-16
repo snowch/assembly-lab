@@ -7,11 +7,11 @@
 
 export const PROSE = {
   question:
-    "C writes a shift right as `>>` and a shift left as `<<`. `g >> 1` shifts the bits of `g` one place right. GCC turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns `g >> 1` into `lsr w0, w0, 1`. This is the first place in the course where the C type changes the instruction.\n\n" +
+    "C writes a shift right as `>>` and a shift left as `<<`. `g >> 1` shifts the bits of `g` one place right. GCC turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns `g >> 1` into `lsr w0, w0, 1`. For a negative `int`, the C standard (C11, 6.5.7, paragraph 5) leaves the result of `>>` to the implementation, and GCC defines it as an arithmetic shift. This is the first place in the course where the C type changes the instruction.\n\n" +
     "The question is what each instruction does differently.",
 
   motivation:
-    "Moving every bit one place left doubles an `unsigned` value. Moving it one place right halves it, dropping any remainder. GCC turns `n * 8` into `lsl w0, w0, 3`.",
+    "Moving every bit one place left doubles an `unsigned` value, as long as no 1 moves off the top. Moving it one place right halves it, dropping any remainder. GCC turns `n * 8` into `lsl w0, w0, 3`.",
 
   prediction: "The figure takes −7, which is `0xfffffff9`, and moves its bits one place right.",
   predictionQuestion: "**What fills the top bit for an `int`?**",
@@ -26,7 +26,7 @@ export const PROSE = {
   construction:
     "C's `/` divides, and a shift can seem to do the same job. This challenge compares them for a positive value and for a negative one.",
   compareTask:
-    "Give `asr` by 2, `lsr` by 2, and C's `/ 4`, for 21 and for −21. Give each answer as a decimal number in its `int` reading, except where the field label says unsigned. On two `int`s, C's `/` gives a whole number and rounds towards zero. For example, `7 / 2` is 3, and `-7 / 2` is −3.",
+    "Give `asr` by 2, `lsr` by 2, and C's `/ 4`, for 21 and for −21. Give each answer as a decimal number in its signed reading. For two `int` values, C's `/` gives a whole number and rounds towards zero. For example, `7 / 2` is 3, and `-7 / 2` is −3.",
   compareHints: [
     "For a positive value all three agree; for a negative value they do not.",
     "`asr` rounds down; C's `/` rounds towards zero; `lsr` fills with zeros, so a negative value becomes a large positive one.",
@@ -36,7 +36,7 @@ export const PROSE = {
   ] as const,
 
   failureExperiment:
-    "C's `g / 2` for an `int` rounds towards zero: −7 / 2 is −3. GCC does not make it one `asr`. It makes `add w0, w0, w0, lsr 31`, then `asr w0, w0, 1`.",
+    "C's `g / 2` for an `int` rounds towards zero: −7 / 2 is −3. GCC does not make it one `asr`. It makes `add w0, w0, w0, lsr 31`, then `asr w0, w0, 1`. The shift happens inside the `add`: the `lsr 31` after the last register shifts that register's value first, and `w0` itself does not change.",
   failureQuestion: "**What does the first instruction add?**",
   failureExplain:
     "The operand `w0, lsr 31` moves the top bit to the bottom. So it adds 1 when `g` is negative, and 0 otherwise. Adding 1 to a negative value before `asr` makes the shift round towards zero, as C requires. `div2(-7)` gives −3.",
@@ -46,7 +46,7 @@ export const PROSE = {
     "So the C type decides which shift GCC uses. The add and subtract of earlier modules did not depend on the type. The right shift does.",
 
   generalisation:
-    "A shift can also be part of another instruction's operand, as `w0, lsr 31` was inside the `add` above. Listings use this often to scale or move a value on the way in.",
+    "A shift can also be part of another instruction's operand, as `w0, lsr 31` was inside the `add` above. Listings use this often to scale or move a value on the way in. `movk w0, 0xf, lsl 16` is another case: the `lsl 16` moves the 16-bit number `0xf` into the upper half before `movk` puts it there.",
 
   challenge: "This challenge uses the type alone to pick the instruction.",
   pickTask:
@@ -62,7 +62,7 @@ export const PROSE = {
   reflection:
     "- What fills the gap in `lsr`, and in `asr`?\n" +
     "- Why is `g / 2` not one `asr` for a negative `int`?\n" +
-    "- Where else might the C type change which instruction GCC uses?",
+    "- Why does the C type decide between `asr` and `lsr`?",
 
   modelVsReality:
     "The simulator's shifts follow the architecture's results, checked against QEMU. `lsl`, `lsr` and `asr` with a constant are names for more general instructions. The course uses the names GCC prints.",
