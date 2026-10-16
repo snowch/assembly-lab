@@ -255,7 +255,7 @@ Every listing so far ran from its first instruction to its `ret`, in order. This
 
 The figure puts each instruction beside the C line GCC recorded for it. `cmp` and `bgt` sit beside `if (gradient > 10)`. `cmn`, `mov w0, -2` and `csel` sit beside `return 0;`. `.L7:` and `ret` sit beside the closing brace `}`. `mov w0, 2` and `b .L7` sit beside `return 2;`. No instruction is recorded against `if (gradient < -10)` or `return -2;`.
 
-*`describe` in C and the eight instructions GCC made from it. Each instruction sits beside the C line GCC recorded for it.*
+*`describe` in C and the eight instructions GCC made from it. GCC notes, for each instruction, the C line it came from. Each instruction sits beside that line.*
 
 ## 2. Why a function needs to skip instructions
 

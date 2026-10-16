@@ -26,7 +26,7 @@ export const LABELS = {
   },
   captions: {
     listing:
-      "describe in C and the eight instructions GCC made from it. Each instruction sits beside the C line GCC recorded for it.",
+      "describe in C and the eight instructions GCC made from it. GCC notes, for each instruction, the C line it came from. Each instruction sits beside that line.",
     // DRAFT
     predictCount: "A prediction about how many instructions describe(15) runs.",
     // DRAFT

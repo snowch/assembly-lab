@@ -18,19 +18,19 @@ export const PROSE = {
     "The figure adds 2147483647 and 1 with `adds w0, w0, w1`, which is `0x7fffffff` plus `0x00000001` in hexadecimal.",
   predictionQuestion: "**Which readings of the answer are right?**",
   predictionExplain:
-    "The answer is `0x80000000`. Unsigned, it reads 2147483648, which is right. Signed, it reads −2147483648, which is wrong. 2147483647 plus 1 should be 2147483648. The signed reading cannot hold that number.",
+    "The answer is `0x80000000`. Unsigned, it reads 2147483648, which is right. Signed, it reads −2147483648, which is wrong. 2147483647 plus 1 should be 2147483648. The signed reading cannot hold that number. The largest signed reading is 2147483647 (Module 1).",
 
   investigation:
     "The part of the processor that adds two registers' bits is called the **adder**. The figure draws the addition column by column, from the right, as on paper. A column adds its two bits and any 1 arriving from the right. If that total is 2 or 3, a 1 goes on to the next column on the left. That 1 is the **carry**.\n\n" +
     "After `adds`, four flags record facts about the answer:\n\n" +
-    "- N is the answer's top bit.\n" +
-    "- Z is 1 when the answer is 0.\n" +
-    "- C is the carry out of the top bit, the carry that would need a 33rd bit.\n" +
+    "- N, for negative, is the answer's top bit.\n" +
+    "- Z, for zero, is 1 when the answer is 0.\n" +
+    "- C, for carry, is the carry out of the top bit, the carry that would need a 33rd bit.\n" +
     "- V is 1 when the carry into the top bit differs from the carry out of it.\n\n" +
     "For `0x7fffffff` plus 1, a carry runs through every column into the top bit. None comes out of it. So N is 1, Z is 0, C is 0 and V is 1.",
-  investigationDetailsSummary: "GCC's own overflow check",
+  investigationDetailsSummary: "GCC's own check",
   investigationDetails:
-    "GCC uses V itself. `__builtin_add_overflow` is a function built into GCC. It adds two numbers and reports whether the answer overflowed. For a call to it on two `int`s, GCC 16.1 at `-O1` compiles to this:\n\n" +
+    "GCC uses V itself. `__builtin_add_overflow` is a function built into GCC. It adds two numbers and reports whether the answer did not fit. For a call to it on two `int`s, GCC 16.1 at `-O1` compiles to this:\n\n" +
     "```\n" +
     "add_overflows:\n" +
     "        cmn     w0, w1\n" +
@@ -59,12 +59,12 @@ export const PROSE = {
     "The figure runs `sum_flags(0x7fffffff, 1, 0xffffffff)`, with `w0` as `0x7fffffff`, `w1` as 1 and `w2` as `0xffffffff`. First it runs `adds w3, w2, w2`, which adds `0xffffffff` to itself and leaves N and C at 1. Then it runs `add w0, w0, w1` instead of `adds`, on `0x7fffffff` plus 1.",
   failureQuestion: "**After `add`, what do the flags show?**",
   failureExplain:
-    "N and C are still 1, as `adds` left them. `add` gives the same answer as `adds` would, `0x80000000`, but records nothing. Had `add` recorded flags, they would be N 1, Z 0, C 0 and V 1, the same as `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had it cleared them, all four would be 0. The three outcomes differ, so the run tells them apart. Of the instructions met so far, only those whose names end in `s` record the four facts.",
+    "N and C are still 1, as `adds` left them. `add` gives the same answer as `adds` would, `0x80000000`, but records nothing. Had `add` recorded flags, they would be N 1, Z 0, C 0 and V 1, the same as `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had it cleared them, all four would be 0. The three outcomes differ, so the run tells them apart. Of `add`, `adds`, `sub` and `subs`, only those whose names end in `s` record the four facts.",
 
   explanation:
     "The adder adds bits. It gives one answer for both readings. N and Z describe that answer: its top bit, and whether it is 0.\n\n" +
     "C judges the unsigned reading. A carry out of the top bit means the unsigned answer did not fit.\n\n" +
-    "V judges the signed reading. When the carry into the top bit and the carry out of it differ, the top bit came out wrong for the signed answer. That case is called **overflow**.",
+    "V judges the signed reading; its letter stands for overflow. When the carry into the top bit and the carry out of it differ, the top bit came out wrong for the signed answer. That case is called **overflow**.",
 
   generalisation:
     "Every `adds` sets all four flags. The program reads the one that matches its reading.\n\n" +

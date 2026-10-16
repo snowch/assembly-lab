@@ -13,17 +13,17 @@ export const PROSE = {
     "Suppose the counter wraps between `then` and `now`.",
 
   motivation:
-    "A program that measures time with a counter like this one runs for weeks before the wrap. So a mistake here shows up rarely, and late. The answer depends on how the processor subtracts.",
+    "A program that measures time with a counter like this one runs for weeks before the wrap. So a mistake in `elapsed` that gets the wrap wrong shows up rarely, and late: it gives a wrong answer only when `now` is less than `then`, which happens only after a wrap. The answer depends on how the processor subtracts.",
 
   prediction:
     "`then` is 4294966296, the count just before the wrap; `now` is 1000, the count just after it.",
   predictionQuestion: "**What does `elapsed(1000, 4294966296)` return?**",
   predictionExplain:
-    "The answer is 2000. Counting on from 4294966296, 1000 steps reach the wrap, and 1000 more reach 1000. The subtraction needs a borrow (part 4 explains borrows), because 1000 is less than 4294966296 under the unsigned reading, so C is 0 after `subs`. The 32 bits that remain are still the right distance, 2000.",
+    "The answer is 2000. Counting on from 4294966296, 1000 steps reach the wrap, and 1000 more reach 1000. The subtraction needs a borrow (see the section *Subtraction as addition, and borrows*), because 1000 is less than 4294966296 under the unsigned reading, so C is 0 after `subs`, the `sub` that also records the flags. The 32 bits that remain are still the right distance, 2000.",
 
   investigation:
-    "The figure draws the counter's values on a ring. Two counter values close together sit at almost one spot on a ring of 4294967296 values, so a strip under the ring enlarges the stretch around the wrap.\n\n" +
-    "The processor subtracts by adding. `a - b` is worked out as `a` plus `b` with each of its bits changed to the other value (each 1 becomes 0, each 0 becomes 1), plus 1. It uses the same adder as in lesson 1. With `subs`, the flags come from that addition.\n\nA subtraction needs a **borrow** when `a` is less than `b` under the unsigned reading. C is 1 when no borrow was needed, and 0 when one was.\n\n" +
+    "After 4294967295 comes 0, so the counter's values form a ring, and the figure draws them that way. The distance runs forward from `then` to `now`. Two counter values close together sit at almost one spot on a ring of 4294967296 values, so a strip under the ring enlarges the stretch around the wrap.\n\n" +
+    "The processor subtracts by adding. `a - b` is worked out as `a` plus `b` with each of its bits changed to the other value (each 1 becomes 0, each 0 becomes 1), plus 1. The architecture defines subtraction as that addition, so the flags come from the same kind of sum. With `subs`, the flags come from that addition.\n\nA subtraction needs a **borrow** when `a` is less than `b` under the unsigned reading. C is 1 when no borrow was needed, and 0 when one was.\n\n" +
     "After you answer the prediction above, two more figures open. Each works a `subs` column by column, with each bit of the second number changed: one across the wrap, and one that does not wrap.",
 
   construction: "Earlier, GCC wrote `elapsed` for you. Here you write it yourself.",
@@ -31,7 +31,7 @@ export const PROSE = {
     "Write `elapsed(now, then)`, which returns the milliseconds from `then` to `now`. Four calls test it, two across the wrap.\n\n" +
     "You may use `add`, `sub`, `adds`, `subs` and `ret`.",
   elapsedHints: [
-    "A 32-bit subtraction keeps the low 32 bits of the true answer. Those 32 bits are the distance round the ring.",
+    "The 32 bits of a 32-bit subtraction are `now - then` when `now` is at least `then`, and `now - then + 4294967296` when `now` is less than `then`. Either way they are the distance round the ring.",
     "No test for the wrap is needed.",
     "`elapsed(5000, 1000)` is 4000. `sub` takes 1000 from 5000.",
     "`now` arrives in `w0` and `then` in `w1`.",
@@ -45,12 +45,12 @@ export const PROSE = {
     "`w0` still holds `0x80000000`, unchanged, and V is 1. The signed answer, 2147483648, does not fit, so the same pattern comes back.",
 
   explanation:
-    "Subtraction is addition with each bit of the second value changed to the other, and 1 added. N, Z and V mean what they meant in lesson 1. C is still the carry out of the top bit, but after a subtraction a 1 means no borrow was needed.\n\n" +
-    "The 32 bits of the answer are the true answer with every bit above the lowest 32 dropped. Dropping those bits is why a wrapped counter still gives the right distance.",
+    "N, Z and V mean what they meant in lesson 1. C is still the carry out of the top bit, but after a subtraction a 1 means no borrow was needed.\n\n" +
+    "The adder computes `now` plus `then` with each bit changed, plus 1. That sum is `now - then + 4294967296`. If `now` is at least `then`, the sum reaches 4294967296 or more. A carry leaves the top bit, so C is 1, and the 32 bits kept are `now - then`. If `now` is less than `then`, no carry leaves, so C is 0, and the 32 bits kept are `now - then + 4294967296`: the distance counting forward from `then`, round the wrap, to `now`. In the prediction above, that is `1000 - 4294966296 + 4294967296`, which is 2000. Either way, those 32 bits are the distance round the ring.",
 
   generalisation:
-    "Any counter that wraps gives the right distance by plain subtraction, as long as less than one full turn passed.\n\n" +
-    "`sub_overflows` is a function like `add_overflows`, for subtraction; it is not shown. GCC's `sub_overflows`, from `__builtin_sub_overflow`, runs `subs w0, w0, w1` and then an instruction a later module explains. That instruction reads V after the subtraction, as `add_overflows` did after an addition.",
+    "Any 32-bit counter, subtracted in 32 bits, gives the right distance by plain subtraction, as long as less than one full turn passed.\n\n" +
+    "",
 
   challenge: "This challenge looks at the step where the counter goes from its largest value to 0.",
   stepTask:

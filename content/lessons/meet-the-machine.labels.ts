@@ -26,7 +26,7 @@ export const LABELS = {
   },
   captions: {
     listing:
-      "The C function and the four instructions GCC made from it. Each instruction sits beside the C line GCC recorded for it.",
+      "The C function and the four instructions GCC made from it. GCC notes, for each instruction, the C line it came from. Each instruction sits beside that line.",
     stepper:
       "trip_distance(120, 85, 42, 15), one instruction at a time. A register with an outline has just changed.",
     // The prose file gives no caption for these figures; these were drafted by Haiku.

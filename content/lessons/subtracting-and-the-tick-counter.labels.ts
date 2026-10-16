@@ -20,12 +20,12 @@ export const LABELS = {
     construction: "Writing elapsed yourself",
     failureExperiment: "Negating 0x80000000",
     explanation: "Why the low bits are enough",
-    generalisation: "Other counters, and GCC's check",
+    generalisation: "Other counters",
     challenge: "Stepping from the top to zero",
     reflection: "Looking back",
   },
   captions: {
-    ring: "The counter as a ring: then, now, and the distance between them. The strip under the ring enlarges the stretch around the wrap.",
+    ring: "The counter as a ring: then, now, and the distance between them.",
     // Placeholders for the two subtractions the adder draws: the prose process replaces them.
     subtractWrapped:
       "subs w0, w0, w1 on 1000 and 4294966296, column by column, with each bit of the second number changed to the other value, and 1 carried in.",

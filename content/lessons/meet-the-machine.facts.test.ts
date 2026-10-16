@@ -331,7 +331,7 @@ describe("every number the lesson states", () => {
     const instructions = body.split("\n").filter((l) => /^\s+[a-z]/.test(l));
     expect(instructions).toHaveLength(20);
     // The lesson writes the count as a word.
-    expect(learnerText(lesson).join("\n")).toContain("GCC makes twenty instructions");
+    expect(learnerText(lesson).join("\n")).toContain("makes twenty instructions");
     // The recorded file's C starts with a copyright line, which the lesson leaves out: its line
     // numbers are one more than the page's.
     const sub = instructions.filter((l) => /^\s+sub\s+w0, w1, w0/.test(l));

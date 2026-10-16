@@ -19,12 +19,12 @@ export const PROSE = {
     "`w0` holds 0. 4294967284 plus 12 is 4294967296, which needs 33 bits: a 1 followed by 32 zeros. `w0` has 32 bits, so the 33rd bit is dropped and only the 32 zeros are kept. Adding 12 to the pattern gives 0, so the pattern behaves exactly as −12 would.",
 
   investigation:
-    "Thirty-two ones and zeros are hard to read. A shorter way to write them is **hexadecimal**. Each group of four bits becomes one digit: 0 to 9, then `a` to `f` for ten to fifteen. A `0x` in front marks a number as hexadecimal.\n\n" +
+    "Thirty-two ones and zeros are hard to read. A shorter way to write them is **hexadecimal**. Each group of four bits becomes one digit: 0 to 9, then `a` to `f` for ten to fifteen. For example, `1111` is fifteen, so `f`; `0100` is four, so `4`. A `0x` in front marks a number as hexadecimal. Hexadecimal only writes the bits. The readings are a separate matter, and there are two of them.\n\n" +
     "The pattern in `w0` is `1111 1111 1111 1111 1111 1111 1111 0100`, written `0xfffffff4`. The **unsigned reading** adds up the worth of every bit that is 1. Each bit is worth twice the bit to its right, so the worths run 1, 2, 4, 8 and so on, up to 2147483648 for the leftmost bit. That leftmost bit is the **top bit**. For this pattern the unsigned reading gives 4294967284.\n\n" +
-    "The **signed reading** counts the top bit as minus 2147483648 instead, and every other bit the same. For this pattern it gives −12. Both −12 and 4294967284 are right. They are two readings of the same 32 bits. The figure lets you set any bit, and shows the hexadecimal and both readings, each with the sum that gives it.",
+    "The **signed reading** counts the top bit as minus 2147483648 instead, and every other bit the same. For this pattern it gives −12. Both −12 and 4294967284 are right. They are two readings of the same 32 bits. The figure lets you set any bit, and shows the bits in hexadecimal and both readings, each with the sum that gives it.",
 
   construction:
-    "Set the bits yourself, in this challenge's register. The figure in part 4 shows the hexadecimal and both readings of any bits you set there.",
+    "Set the bits yourself, in this challenge's register. The figure in the section *Reading the bits* shows the hexadecimal and both readings of any bits you set there.",
   makeTask:
     "Set `w0`'s bits so that its signed reading is −1, then give the unsigned reading of the same bits.",
   makeHints: [
@@ -42,7 +42,7 @@ export const PROSE = {
     "Both listings are `sub w0, w1, w0` then `ret`. The figure compares them line by line. The type changes how a program reads the result, not the subtraction.",
 
   explanation:
-    "A register has no type. It holds bits, and nothing else.\n\n" +
+    "A register has no type.\n\n" +
     "The two readings differ only in the top bit's worth: plus 2147483648 unsigned, minus 2147483648 signed. When the top bit is 0, the two readings agree.\n\n" +
     "A subtraction or an addition gives the same bits, whichever reading the program uses later. So one `sub` serves both `int` and `unsigned`.",
 

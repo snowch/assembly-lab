@@ -233,6 +233,8 @@ describe("every number the lesson states", () => {
   // The numbers of the calls, and what the model gives for them. A number in the lesson's words
   // that is in no list here is a number nothing pins.
   const model = new Set<number>([
+    // The worked hexadecimal digits, written as their four bits: 1111 and 0100.
+    1111, 100,
     // fuel_used(50, 38), and the 12 of −12 and of add w0, w0, 12.
     50, 38, 12,
     // w0 after sub w0, w1, w0, read unsigned; and plus 12.

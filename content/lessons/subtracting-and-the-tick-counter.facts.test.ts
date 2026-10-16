@@ -71,7 +71,8 @@ describe("the listings the lesson shows or describes", () => {
   it("make sub_overflows subs w0, w0, w1 and then one more instruction that reads V", () => {
     const lines = functionIn(assembly(SUB_OVERFLOWS.listing), "sub_overflows");
     expect(lines).toEqual(["subs w0, w0, w1", "cset w0, vs", "ret"]);
-    expect(PROSE.generalisation).toContain("runs `subs w0, w0, w1` and then an instruction");
+    // The lesson no longer describes it (it showed nothing the learner could check); the listing stays recorded.
+    expect(PROSE.generalisation).not.toContain("sub_overflows");
     // It returns 1 exactly when V is set after the subtraction, as add_overflows did after an addition.
     const text = assembly(SUB_OVERFLOWS.listing);
     for (const [a, b] of [

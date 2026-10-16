@@ -35,7 +35,7 @@ The figure adds 2147483647 and 1 with `adds w0, w0, w1`, which is `0x7fffffff` p
 
 *Shown after the answer is checked.*
 
-The answer is `0x80000000`. Unsigned, it reads 2147483648, which is right. Signed, it reads −2147483648, which is wrong. 2147483647 plus 1 should be 2147483648. The signed reading cannot hold that number.
+The answer is `0x80000000`. Unsigned, it reads 2147483648, which is right. Signed, it reads −2147483648, which is wrong. 2147483647 plus 1 should be 2147483648. The signed reading cannot hold that number. The largest signed reading is 2147483647 (Module 1).
 
 ## 4. Carries and the four flags
 
@@ -43,18 +43,18 @@ The part of the processor that adds two registers' bits is called the **adder**.
 
 After `adds`, four flags record facts about the answer:
 
-- N is the answer's top bit.
-- Z is 1 when the answer is 0.
-- C is the carry out of the top bit, the carry that would need a 33rd bit.
+- N, for negative, is the answer's top bit.
+- Z, for zero, is 1 when the answer is 0.
+- C, for carry, is the carry out of the top bit, the carry that would need a 33rd bit.
 - V is 1 when the carry into the top bit differs from the carry out of it.
 
 For `0x7fffffff` plus 1, a carry runs through every column into the top bit. None comes out of it. So N is 1, Z is 0, C is 0 and V is 1.
 
 *`adds w0, w0, w1` column by column, with the carry into each column above it, and the four flags after it.*
 
-**GCC's own overflow check**
+**GCC's own check**
 
-GCC uses V itself. `__builtin_add_overflow` is a function built into GCC. It adds two numbers and reports whether the answer overflowed. For a call to it on two `int`s, GCC 16.1 at `-O1` compiles to this:
+GCC uses V itself. `__builtin_add_overflow` is a function built into GCC. It adds two numbers and reports whether the answer did not fit. For a call to it on two `int`s, GCC 16.1 at `-O1` compiles to this:
 
 ```
 add_overflows:
@@ -100,7 +100,7 @@ The figure runs `sum_flags(0x7fffffff, 1, 0xffffffff)`, with `w0` as `0x7fffffff
 
 *Shown after the answer is checked.*
 
-N and C are still 1, as `adds` left them. `add` gives the same answer as `adds` would, `0x80000000`, but records nothing. Had `add` recorded flags, they would be N 1, Z 0, C 0 and V 1, the same as `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had it cleared them, all four would be 0. The three outcomes differ, so the run tells them apart. Of the instructions met so far, only those whose names end in `s` record the four facts.
+N and C are still 1, as `adds` left them. `add` gives the same answer as `adds` would, `0x80000000`, but records nothing. Had `add` recorded flags, they would be N 1, Z 0, C 0 and V 1, the same as `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had it cleared them, all four would be 0. The three outcomes differ, so the run tells them apart. Of `add`, `adds`, `sub` and `subs`, only those whose names end in `s` record the four facts.
 
 ## 7. Which flag judges which reading
 
@@ -108,7 +108,7 @@ The adder adds bits. It gives one answer for both readings. N and Z describe tha
 
 C judges the unsigned reading. A carry out of the top bit means the unsigned answer did not fit.
 
-V judges the signed reading. When the carry into the top bit and the carry out of it differ, the top bit came out wrong for the signed answer. That case is called **overflow**.
+V judges the signed reading; its letter stands for overflow. When the carry into the top bit and the carry out of it differ, the top bit came out wrong for the signed answer. That case is called **overflow**.
 
 ## 8. Flags keep their values
 
@@ -162,7 +162,7 @@ Suppose the counter wraps between `then` and `now`.
 
 ## 2. Why the mistake shows up late
 
-A program that measures time with a counter like this one runs for weeks before the wrap. So a mistake here shows up rarely, and late. The answer depends on how the processor subtracts.
+A program that measures time with a counter like this one runs for weeks before the wrap. So a mistake in `elapsed` that gets the wrap wrong shows up rarely, and late: it gives a wrong answer only when `now` is less than `then`, which happens only after a wrap. The answer depends on how the processor subtracts.
 
 ## 3. Elapsed across the wrap
 
@@ -177,19 +177,19 @@ A program that measures time with a counter like this one runs for weeks before 
 
 *Shown after the answer is checked.*
 
-The answer is 2000. Counting on from 4294966296, 1000 steps reach the wrap, and 1000 more reach 1000. The subtraction needs a borrow (part 4 explains borrows), because 1000 is less than 4294966296 under the unsigned reading, so C is 0 after `subs`. The 32 bits that remain are still the right distance, 2000.
+The answer is 2000. Counting on from 4294966296, 1000 steps reach the wrap, and 1000 more reach 1000. The subtraction needs a borrow (see the section *Subtraction as addition, and borrows*), because 1000 is less than 4294966296 under the unsigned reading, so C is 0 after `subs`, the `sub` that also records the flags. The 32 bits that remain are still the right distance, 2000.
 
 ## 4. Subtraction as addition, and borrows
 
-The figure draws the counter's values on a ring. Two counter values close together sit at almost one spot on a ring of 4294967296 values, so a strip under the ring enlarges the stretch around the wrap.
+After 4294967295 comes 0, so the counter's values form a ring, and the figure draws them that way. The distance runs forward from `then` to `now`. Two counter values close together sit at almost one spot on a ring of 4294967296 values, so a strip under the ring enlarges the stretch around the wrap.
 
-The processor subtracts by adding. `a - b` is worked out as `a` plus `b` with each of its bits changed to the other value (each 1 becomes 0, each 0 becomes 1), plus 1. It uses the same adder as in lesson 1. With `subs`, the flags come from that addition.
+The processor subtracts by adding. `a - b` is worked out as `a` plus `b` with each of its bits changed to the other value (each 1 becomes 0, each 0 becomes 1), plus 1. The architecture defines subtraction as that addition, so the flags come from the same kind of sum. With `subs`, the flags come from that addition.
 
 A subtraction needs a **borrow** when `a` is less than `b` under the unsigned reading. C is 1 when no borrow was needed, and 0 when one was.
 
 After you answer the prediction above, two more figures open. Each works a `subs` column by column, with each bit of the second number changed: one across the wrap, and one that does not wrap.
 
-*The counter as a ring: `then`, `now`, and the distance between them. The strip under the ring enlarges the stretch around the wrap.*
+*The counter as a ring: `then`, `now`, and the distance between them.*
 
 ## 5. Writing elapsed yourself
 
@@ -201,7 +201,7 @@ Write `elapsed(now, then)`, which returns the milliseconds from `then` to `now`.
 
 You may use `add`, `sub`, `adds`, `subs` and `ret`.
 
-1. A 32-bit subtraction keeps the low 32 bits of the true answer. Those 32 bits are the distance round the ring.
+1. The 32 bits of a 32-bit subtraction are `now - then` when `now` is at least `then`, and `now - then + 4294967296` when `now` is less than `then`. Either way they are the distance round the ring.
 2. No test for the wrap is needed.
 3. `elapsed(5000, 1000)` is 4000. `sub` takes 1000 from 5000.
 4. `now` arrives in `w0` and `then` in `w1`.
@@ -224,15 +224,15 @@ You may use `add`, `sub`, `adds`, `subs` and `ret`.
 
 ## 7. Why the low bits are enough
 
-Subtraction is addition with each bit of the second value changed to the other, and 1 added. N, Z and V mean what they meant in lesson 1. C is still the carry out of the top bit, but after a subtraction a 1 means no borrow was needed.
+N, Z and V mean what they meant in lesson 1. C is still the carry out of the top bit, but after a subtraction a 1 means no borrow was needed.
 
-The 32 bits of the answer are the true answer with every bit above the lowest 32 dropped. Dropping those bits is why a wrapped counter still gives the right distance.
+The adder computes `now` plus `then` with each bit changed, plus 1. That sum is `now - then + 4294967296`. If `now` is at least `then`, the sum reaches 4294967296 or more. A carry leaves the top bit, so C is 1, and the 32 bits kept are `now - then`. If `now` is less than `then`, no carry leaves, so C is 0, and the 32 bits kept are `now - then + 4294967296`: the distance counting forward from `then`, round the wrap, to `now`. In the prediction above, that is `1000 - 4294966296 + 4294967296`, which is 2000. Either way, those 32 bits are the distance round the ring.
 
-## 8. Other counters, and GCC's check
+## 8. Other counters
 
-Any counter that wraps gives the right distance by plain subtraction, as long as less than one full turn passed.
+Any 32-bit counter, subtracted in 32 bits, gives the right distance by plain subtraction, as long as less than one full turn passed.
 
-`sub_overflows` is a function like `add_overflows`, for subtraction; it is not shown. GCC's `sub_overflows`, from `__builtin_sub_overflow`, runs `subs w0, w0, w1` and then an instruction a later module explains. That instruction reads V after the subtraction, as `add_overflows` did after an addition.
+
 
 ## 9. Stepping from the top to zero
 
