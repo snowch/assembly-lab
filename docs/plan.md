@@ -261,6 +261,14 @@ No agent gives the verdict on its own work, the managing session's included.
 
 ## Decisions since the brief
 
+### 16 October 2026: work goes on under the recommendations
+
+The author asked the managing session to keep working without stopping. The four decisions are
+still the author's. Until the author takes them, the work assumes each recommendation (A64; the
+name; the trip computer; the optional chapter as recorded listings), and says so where it depends
+on one: `docs/machine.md` assumes A64. Each assumption is reversible, and checkpoint 2 asks the
+author to confirm or change them before Module 0 is published.
+
 ### 16 October 2026: the plan's review
 
 A reader on another model reviewed this plan before the author saw it, and an independent sceptic
