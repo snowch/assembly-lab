@@ -51,16 +51,14 @@ export const meetTheMachine: LessonInput = {
       kind: "question",
       title: LABELS.titles.question,
       prose: PROSE.question,
-      details: {
-        summary: PROSE.questionDetailsSummary,
-        prose: PROSE.questionDetails,
-      },
       interactives: [
         {
           id: "trip-listing",
           kind: "listing",
           timeModel: "none",
           caption: LABELS.captions.listing,
+          // Under the listing, beside the line 7 it explains.
+          after: PROSE.questionAfter,
           props: { program: TRIP_DISTANCE },
         },
       ],

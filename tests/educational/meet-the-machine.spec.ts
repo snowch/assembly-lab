@@ -112,6 +112,22 @@ test.describe("the listing figure", () => {
       expect(asm!.x).toBeGreaterThan(c!.x + c!.width - 1);
     else expect(asm!.y).toBeGreaterThan(c!.y + c!.height - 1);
   });
+
+  test("explains GCC's line 7 directly under the listing, open, not in a closed note above it", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const figure = page.locator("#ix-trip-listing");
+    const after = figure.locator(".figure-after");
+    await expect(after).toBeVisible();
+    await expect(after).toContainText("Line 7 beside sub w0, w0, w3 is not a mistake.");
+    const [listing, note] = await Promise.all([
+      figure.locator(".al-asm").boundingBox(),
+      after.boundingBox(),
+    ]);
+    expect(note!.y).toBeGreaterThan(listing!.y + listing!.height - 1);
+    await expect(page.locator("section[data-kind='question'] details")).toHaveCount(0);
+  });
 });
 
 test.describe("the stepper", () => {

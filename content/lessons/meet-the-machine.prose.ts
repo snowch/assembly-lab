@@ -23,8 +23,7 @@ export const PROSE = {
     "The figure runs `trip_distance(120, 85, 42, 15)` on the simulator in the page. These registers are used here at 32 bits, the size of an `int`. Module 1 shows the rest of each register. The figure draws each one as bits and as a decimal number.\n\n" +
     "The marker shows which instruction runs next. The processor keeps that position in a register of its own, the **program counter**. Press Next to run one instruction. The C line GCC recorded for each instruction is lit as it runs.\n\n" +
     "An instruction's parts after its name are its **operands**. In `add w0, w0, w1`, the first operand is where the result goes, and the other two are what it is made from. After that instruction runs, `w0` holds 205, which is 120 plus 85. `w1` still holds 85. After the second instruction `w0` holds 247; after the third, 232. `ret` ends the function. Its result is whatever `w0` holds then: 232.",
-  questionDetailsSummary: "Where the last subtraction is counted",
-  questionDetails:
+  questionAfter:
     "Line 7 beside `sub w0, w0, w3` is not a mistake. The figure shows the line GCC recorded for each instruction, unchanged. GCC records `sub w0, w0, w3` and `ret` against line 7, the closing brace. That one `sub` does the work of two lines: line 5, `total = total - detour;`, and line 6, `return total;`. It subtracts straight into `w0`, where the result leaves the function. So no instruction is left for `return total;`. If GCC is set to `-O0`, with no optimisation, it records its subtraction against line 5. The record of lines is there to help you find your way from an instruction back to the C. When the compiler merges lines, the line it records can move.",
 
   construction:

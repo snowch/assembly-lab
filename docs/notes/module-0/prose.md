@@ -19,8 +19,6 @@ The C function `trip_distance` computes that distance in three statements. The f
 
 *The C function and the four instructions GCC made from it. Each instruction sits beside the C line GCC recorded for it.*
 
-**Where the last subtraction is counted**
-
 Line 7 beside `sub w0, w0, w3` is not a mistake. The figure shows the line GCC recorded for each instruction, unchanged. GCC records `sub w0, w0, w3` and `ret` against line 7, the closing brace. That one `sub` does the work of two lines: line 5, `total = total - detour;`, and line 6, `return total;`. It subtracts straight into `w0`, where the result leaves the function. So no instruction is left for `return total;`. If GCC is set to `-O0`, with no optimisation, it records its subtraction against line 5. The record of lines is there to help you find your way from an instruction back to the C. When the compiler merges lines, the line it records can move.
 
 ## 2. Why the instructions matter
