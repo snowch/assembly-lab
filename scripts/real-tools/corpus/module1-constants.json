@@ -1,0 +1,18 @@
+{
+  "entry": "service_interval",
+  "calls": [
+    { "args": [] },
+    {
+      "args": [
+        ["-1", 64],
+        ["-1", 64]
+      ]
+    },
+    { "entry": "odometer_limit", "args": [] },
+    { "entry": "odometer_limit", "args": [["-1", 64]] },
+    { "entry": "no_reading", "args": [] },
+    { "entry": "all_ones", "args": [] },
+    { "entry": "all_ones", "args": [["0x123456789abcdef0", 64]] },
+    { "entry": "no_reading_long", "args": [] }
+  ]
+}

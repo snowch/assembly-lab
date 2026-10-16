@@ -9,7 +9,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import { LESSONS } from "@al/content";
-import { MODULES, PLAN, statusOf } from "@al/content/plan";
+import { MODULES, PLAN, lessonsOf, statusOf } from "@al/content/plan";
 
 import { VIEW_STRINGS } from "../../packages/views/src/strings";
 
@@ -56,22 +56,41 @@ test("the front page lists the plan, every part and every module", async ({ page
   expect(errors).toEqual([]);
 });
 
-test("Module 0 is published and its entry links to its lesson; no other entry is a link", async ({
+test("a module with one lesson links its title to it; a module with several lists them", async ({
   page,
 }) => {
   await page.goto("#/");
   await ready(page);
+  // Which modules are published is worked out from the lessons, as the page works it out.
+  const written = MODULES.filter((m) => lessonsOf(m, LESSONS).length > 0);
   const published = page.locator(".plan-module .module-status[data-status='published']");
-  await expect(published).toHaveCount(1);
+  await expect(published).toHaveCount(written.length);
   const entry = page.locator('.plan-module[data-module="meet-the-machine"]');
   await expect(entry.locator(".module-status")).toHaveText(STRINGS.status.published);
   const link = entry.locator("h3 a");
   await expect(link).toHaveText("Meet the machine");
   await expect(link).toHaveAttribute("href", "#/lesson/meet-the-machine");
-  await expect(page.locator(".plan-module h3 a")).toHaveCount(1);
+  // Only a module of exactly one lesson has a link in its title.
+  const single = written.filter((m) => lessonsOf(m, LESSONS).length === 1);
+  await expect(page.locator(".plan-module h3 a")).toHaveCount(single.length);
+  // Module 1 has two lessons, listed in order, each a link to its lesson.
+  const module1 = page.locator('.plan-module[data-module="registers-and-readings"]');
+  await expect(module1.locator("h3 a")).toHaveCount(0);
+  await expect(module1.locator(".module-lessons li a")).toHaveText([
+    "One pattern, three readings",
+    "Constants and widths",
+  ]);
+  await expect(module1.locator(".module-lessons li a")).toHaveAttribute(
+    "href",
+    /^#\/lesson\/(one-pattern-three-readings|constants-and-widths)$/,
+  );
   await link.click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Meet the machine");
   expect(new URL(page.url()).hash).toBe("#/lesson/meet-the-machine");
+  await page.goto("#/");
+  await module1.locator(".module-lessons li a").nth(1).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Constants and widths");
+  expect(new URL(page.url()).hash).toBe("#/lesson/constants-and-widths");
 });
 
 test("the tab is named for the page, and the course has an address for a lesson", async ({

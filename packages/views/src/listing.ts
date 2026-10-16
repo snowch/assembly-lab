@@ -56,7 +56,7 @@ export function deleteLine(lines: readonly ListingLine[], spec: DeleteSpec): Lis
   throw new Error(`${spec.label} has no line ${spec.text}.`);
 }
 
-/** The lines of the C, for a figure that numbers them from 1. */
+/** The lines of the C, for a figure that numbers them from 1. A program with no C has no lines. */
 export function cLinesOf(c: string): string[] {
-  return c.replace(/\n+$/, "").split("\n");
+  return c.trim() === "" ? [] : c.replace(/\n+$/, "").split("\n");
 }

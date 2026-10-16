@@ -1,0 +1,15 @@
+{
+  "entry": "widths",
+  "calls": [
+    { "args": [] },
+    { "args": [["0x123456789abcdef0", 64]] },
+    { "entry": "four", "args": [] },
+    {
+      "entry": "four",
+      "args": [
+        ["0x123456789abcdef0", 64],
+        ["0x123456789abcdef0", 64]
+      ]
+    }
+  ]
+}

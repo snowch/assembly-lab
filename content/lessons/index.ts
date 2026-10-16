@@ -7,6 +7,12 @@
 
 import { parseLesson, type Lesson } from "@platform/lesson-schema";
 
+import { constantsAndWidths } from "./constants-and-widths";
 import { meetTheMachine } from "./meet-the-machine";
+import { onePatternThreeReadings } from "./one-pattern-three-readings";
 
-export const LESSONS: readonly Lesson[] = [meetTheMachine].map(parseLesson);
+export const LESSONS: readonly Lesson[] = [
+  meetTheMachine,
+  onePatternThreeReadings,
+  constantsAndWidths,
+].map(parseLesson);

@@ -21,4 +21,22 @@ export { errorSentence, sentence, stopSentence } from "./messages";
 export { ListingView, RegisterRow, withCode } from "./parts";
 export { VIEW_STRINGS } from "./strings";
 export { bitsOf, traceOf, viewAt, wValue, wValueAsInt } from "./trace";
+export { traceText } from "./traceText";
+export {
+  NO_BITS,
+  MINUS,
+  isPattern,
+  patternOf,
+  readingsOf,
+  readingsOfPattern,
+  readingsOfValue,
+  shown,
+  stateHolding,
+  wholeNumber,
+  worths,
+} from "./readings";
+export type { Readings } from "./readings";
+export { BIT_READINGS, PATTERN_READINGS, REGISTERS_AFTER } from "./readingGraders";
+export { compareListings } from "./interactives/ListingCompare";
+export { tryMov } from "./interactives/ConstantTester";
 export type { StepView, Trace, TraceCall } from "./trace";

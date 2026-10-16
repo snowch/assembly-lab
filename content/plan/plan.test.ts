@@ -69,7 +69,13 @@ describe("the course's plan", () => {
     expect(published.map((m) => m.label)).toEqual([
       ...new Set(LESSONS.map((l) => String(l.module))),
     ]);
-    expect(published.map((m) => m.title)).toEqual(["Meet the machine"]);
+    expect(published.map((m) => m.title)).toEqual(
+      published.map((m) => moduleByNumber(Number(m.label))!.title),
+    );
+    expect(published.slice(0, 2).map((m) => m.title)).toEqual([
+      "Meet the machine",
+      "Registers and readings",
+    ]);
     for (const m of MODULES.filter((m) => !published.includes(m)))
       expect(statusOf(m, LESSONS), m.title).toBe("planned");
   });
@@ -77,7 +83,11 @@ describe("the course's plan", () => {
   it("finds a module's lessons by the module number a lesson holds", () => {
     const meet = moduleByNumber(0)!;
     expect(lessonsOf(meet, LESSONS).map((l) => l.id)).toEqual(["meet-the-machine"]);
-    expect(lessonsOf(moduleByNumber(1)!, LESSONS)).toEqual([]);
+    expect(lessonsOf(moduleByNumber(1)!, LESSONS).map((l) => l.id)).toEqual([
+      "one-pattern-three-readings",
+      "constants-and-widths",
+    ]);
+    expect(lessonsOf(moduleByNumber(11)!, LESSONS)).toEqual([]);
     expect(statusOf(meet, [])).toBe("planned");
     expect(statusOf(meet, [{ id: "x", module: 0 }])).toBe("published");
     expect(statusOf(meet, [{ id: "y", module: 1 }])).toBe("planned");

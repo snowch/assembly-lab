@@ -74,16 +74,18 @@ export function ListingView({
   ran?: number | null;
 }) {
   return (
-    <div className="al-listing">
-      <div className="al-pane al-c" role="group" aria-label={S.listing.cPane}>
-        <div className="al-pane-head">{S.listing.cHeading}</div>
-        {cLines.map((text, i) => (
-          <div className="al-cline" key={i} data-line={i + 1} data-lit={litC === i + 1}>
-            <span className="al-ln">{i + 1}</span>
-            <code className="al-src">{text === "" ? " " : text}</code>
-          </div>
-        ))}
-      </div>
+    <div className="al-listing" data-c={cLines.length > 0}>
+      {cLines.length > 0 && (
+        <div className="al-pane al-c" role="group" aria-label={S.listing.cPane}>
+          <div className="al-pane-head">{S.listing.cHeading}</div>
+          {cLines.map((text, i) => (
+            <div className="al-cline" key={i} data-line={i + 1} data-lit={litC === i + 1}>
+              <span className="al-ln">{i + 1}</span>
+              <code className="al-src">{text === "" ? " " : text}</code>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="al-pane al-asm" role="group" aria-label={S.listing.instructionsPane}>
         <div className="al-pane-head">
           <span>{S.listing.instructionsHeading}</span>

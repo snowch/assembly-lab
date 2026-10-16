@@ -19,6 +19,14 @@ import type { AnswerField, Artifact, Challenge } from "@platform/lesson-schema";
 
 import { RecordedSchema } from "./interactives/props";
 import { errorSentence, stopSentence } from "./messages";
+import {
+  BIT_READINGS,
+  PATTERN_READINGS,
+  REGISTERS_AFTER,
+  gradeBitReadings,
+  gradePatternReadings,
+  gradeRegistersAfter,
+} from "./readingGraders";
 import { VIEW_STRINGS as S, plain } from "./strings";
 import { traceOf, wValue, wValueAsInt } from "./trace";
 
@@ -155,5 +163,8 @@ export function grade(challenge: Challenge, artifact: Artifact): Verdict {
   const { grader } = answerTests(challenge);
   if (grader === RUN_REGISTERS) return gradeWritten(challenge, artifact);
   if (grader === REGISTERS_AT_RETURN) return gradeAnswers(challenge, artifact);
+  if (grader === BIT_READINGS) return gradeBitReadings(challenge, artifact);
+  if (grader === PATTERN_READINGS) return gradePatternReadings(challenge, artifact);
+  if (grader === REGISTERS_AFTER) return gradeRegistersAfter(challenge, artifact);
   throw new Error(`${challenge.id}: there is no grader called ${grader}`);
 }
