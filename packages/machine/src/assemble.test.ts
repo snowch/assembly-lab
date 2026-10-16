@@ -387,6 +387,7 @@ describe("errors", () => {
   it("every key has a sentence with no slot left empty", () => {
     const params = {
       text: "t",
+      after: "a",
       name: "n",
       address: "0x1",
       line: 1,
@@ -424,6 +425,7 @@ describe("every message key an error can have", () => {
     ["operands.few", "f:\n  add x0, x1"],
     ["operands.many", "f:\n  nop x0"],
     ["operand.register", "f:\n  add x0, 5, x2"],
+    ["syntax.missingComma", "f:\n  sub w0 w0 w1"],
     ["operand.noSp", "f:\n  and x0, sp, x1"],
     ["operand.noZr", "f:\n  add xzr, xzr, 5"],
     ["operand.width", "f:\n  add w0, x1, x2"],
@@ -473,6 +475,22 @@ describe("every message key an error can have", () => {
     expect(message(e.key, e.params)).not.toMatch(/\{/);
   });
 
+  it("a missing comma names the operand it is in, and where the comma goes", () => {
+    const e = firstError("f:\n  sub w0 w0 w1\n  ret");
+    expect(e.key).toBe("syntax.missingComma");
+    expect(e.params).toMatchObject({ text: "w0 w0 w1", after: "w0" });
+    expect(e.line).toBe(2);
+    expect(e.column).toBe(7);
+    expect(message(e.key, e.params)).toBe(
+      "`w0 w0 w1` needs a comma after `w0`. Operands are separated by commas.",
+    );
+    // The same mistake in a later operand, and with an immediate.
+    expect(firstError("f:\n  sub w0, w0 w1").params).toMatchObject({ text: "w0 w1" });
+    expect(firstError("f:\n  add w0, w0 #5").key).toBe("syntax.missingComma");
+    // A shift or a memory operand is not one.
+    expect(assemble("f:\n  add x0, x1, x2, lsl 2\n  ldr x0, [x1, 8]\n  ret").errors).toEqual([]);
+  });
+
   it("gate.notYet", () => {
     expect(firstError("f:\n  nop", new Set()).key).toBe("gate.notYet");
   });
@@ -485,6 +503,7 @@ describe("every message key an error can have", () => {
       "fault.storeText",
       "fault.storeRodata",
       "fault.notInstruction",
+      "fault.ranOffEnd",
       "fault.entry",
       "stop.returned",
       "stop.limit",

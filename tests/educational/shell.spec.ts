@@ -249,7 +249,7 @@ test("prose keeps its measure: no line of about 85 characters or more", async ({
   expect(long).toEqual([]);
 });
 
-test("the cover runs trip_distance(120, 85, 42, 15) live, one instruction at a time", async ({
+test("the cover runs fuel_on_board(38, 6, 10) live, one instruction at a time", async ({
   page,
 }) => {
   const errors = watchErrors(page);
@@ -259,20 +259,19 @@ test("the cover runs trip_distance(120, 85, 42, 15) live, one instruction at a t
   const value = cover.locator(".cover-value");
   const next = cover.getByRole("button", { name: VIEW_STRINGS.stepper.next });
   const reset = cover.getByRole("button", { name: VIEW_STRINGS.stepper.reset });
-  await expect(value).toHaveText("= 120");
+  await expect(cover).toHaveAttribute("aria-label", STRINGS.cover.figure);
+  await expect(value).toHaveText("= 38");
   await expect(reset).toBeDisabled();
   await expect(cover.locator(".cover-code")).toHaveText([
     "add w0, w0, w1",
     "add w0, w0, w2",
-    "sub w0, w0, w3",
     "ret",
   ]);
   await expect(cover.locator(".cover-code[data-next='true']")).toHaveText("add w0, w0, w1");
   // Each press runs one instruction: the values are the simulator's.
   for (const [shown, running] of [
-    ["= 205", "add w0, w0, w2"],
-    ["= 247", "sub w0, w0, w3"],
-    ["= 232", "ret"],
+    ["= 44", "add w0, w0, w2"],
+    ["= 54", "ret"],
   ] as const) {
     await next.click();
     await expect(value).toHaveText(shown);
@@ -280,11 +279,11 @@ test("the cover runs trip_distance(120, 85, 42, 15) live, one instruction at a t
   }
   // ret ends the run: nothing is next, and the value stays.
   await next.click();
-  await expect(value).toHaveText("= 232");
+  await expect(value).toHaveText("= 54");
   await expect(cover.locator(".cover-code[data-next='true']")).toHaveCount(0);
   await expect(next).toBeDisabled();
   await reset.click();
-  await expect(value).toHaveText("= 120");
+  await expect(value).toHaveText("= 38");
   await expect(next).toBeEnabled();
   expect(errors).toEqual([]);
 });

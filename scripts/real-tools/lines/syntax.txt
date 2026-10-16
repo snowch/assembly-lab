@@ -103,3 +103,6 @@ adds.eq x0, x1, x2
 ADDS X0, X1, X2
 movk x0, 1, lsl 16
 MOVK X0, 1, LSL 16
+sub w0 w0 w1
+sub w0, w0 w1
+add w0, w0 #5

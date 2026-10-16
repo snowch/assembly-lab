@@ -19,7 +19,7 @@ export { assemblyOf, cLinesOf, deleteLine, parseListing } from "./listing";
 export type { DeleteSpec, ListingLine, RecordedProgram } from "./listing";
 export { errorSentence, sentence, stopSentence } from "./messages";
 export { ListingView, RegisterRow, withCode } from "./parts";
-export { VIEW_STRINGS } from "./strings";
+export { VIEW_STRINGS, quoted } from "./strings";
 export { bitsOf, traceOf, viewAt, wValue, wValueAsInt } from "./trace";
 export type { StepView, Trace, TraceCall } from "./trace";
 export { ARITH_STRINGS } from "./strings.arith";

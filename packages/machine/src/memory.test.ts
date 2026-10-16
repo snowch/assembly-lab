@@ -3,6 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { DATA_BASE, RETURN_ADDRESS, STACK_BASE, STACK_TOP, TEXT_BASE } from "./layout.ts";
 import { run, stateAfter } from "./run.ts";
+import { message } from "./strings.ts";
 import { MASK64, build, exec, flagBits, flagsOf, x, type Arg } from "./testing.ts";
 
 const BYTES = Array.from({ length: 32 }, (_, i) => (i * 17 + 0x81) & 0xff);
@@ -259,12 +260,26 @@ describe("faults", () => {
     expect(s.key).toBe("fault.notInstruction");
     expect(s.params).toMatchObject({ address: "0x500000", line: 3 });
     expect(fault("f:\n  adr x1, f\n  add x1, x1, 2\n  br x1").key).toBe("fault.notInstruction");
-    // Running off the end of the text.
-    expect(fault("f:\n  nop").key).toBe("fault.notInstruction");
+    // Running off the end of the text is its own message: see the next test.
     // A ret to a garbage link register.
     expect(fault("f:\n  mov x30, 0\n  ret").key).toBe("fault.notInstruction");
     // A branch into data inside text.
     expect(fault("f:\n  b k\nk:\n  .word 1").key).toBe("fault.notInstruction");
+  });
+
+  it("a run that falls off the end of the instructions names the last instruction, not an address", () => {
+    const s = fault("f:\n  nop\n  add w0, w0, w1");
+    expect(s.key).toBe("fault.ranOffEnd");
+    expect(s.params).toEqual({ line: 3, text: "add w0, w0, w1" });
+    expect(message(s.key, s.params)).toBe(
+      "The run reached the end of the instructions without a `ret`. The last instruction it ran was line 3, `add w0, w0, w1`.",
+    );
+    expect(message(s.key, s.params)).not.toMatch(/0x/);
+    // A branch, or a return, to a bad place keeps the address.
+    expect(fault("f:\n  b k\nk:\n  .word 1").key).toBe("fault.notInstruction");
+    expect(fault("f:\n  mov x30, 0\n  ret").key).toBe("fault.notInstruction");
+    // Falling into data is falling off the end of the instructions.
+    expect(fault("f:\n  nop\nk:\n  .word 1").key).toBe("fault.ranOffEnd");
   });
 
   it("a call that starts where there is no instruction", () => {

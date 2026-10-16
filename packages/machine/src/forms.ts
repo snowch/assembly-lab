@@ -1381,6 +1381,16 @@ export function buildInstruction(ctx: FormContext): FormResult {
     handler = condBranch(cond);
   }
   if (handler === undefined) return fail("notInMachine", { text: ctx.text }, ctx.col);
+  // `sub w0 w0 w1`: an operand that is a register followed by more words is two operands with no
+  // comma between them. No valid operand starts with a register and a space (a shift is its own
+  // operand, after a comma, and a memory operand starts with a bracket).
+  for (const o of ctx.ops) {
+    const words = o.text.split(/\s+/);
+    const first = words[0] ?? "";
+    if (words.length > 1 && parseRegName(first) !== null) {
+      return fail("syntax.missingComma", { text: o.text, after: first }, o.col);
+    }
+  }
   const op = handler(r);
   return { op, operands: r.parsed };
 }

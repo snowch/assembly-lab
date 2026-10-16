@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 
 import { sentence } from "./messages";
 import { grade, gradeAnswers, gradeWritten } from "./grader";
+import { quoted } from "./strings";
 import { answers, written } from "./testing";
 
 describe("grading written assembly", () => {
@@ -68,16 +69,26 @@ describe("grading written assembly", () => {
     expect(verdict.failures).toHaveLength(3);
     // The machine's own sentence for a run that went past its last instruction, whatever its
     // wording: the template, with each parameter allowed to be anything.
-    const template = sentence("fault.notInstruction", {
-      address: "\u0000",
-      line: "\u0000",
-      text: "\u0000",
-    });
+    const template = quoted(
+      sentence("fault.ranOffEnd", {
+        line: "\u0000",
+        text: "\u0000",
+      }),
+    );
     const pattern = template
       .split("\u0000")
       .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
       .join(".*");
     expect(verdict.failures[0]?.detail).toMatch(new RegExp(`^${pattern}$`));
+  });
+
+  it("prints the code in a detail inside curly quotes, never in backticks", () => {
+    const detail = gradeWritten(written, { text: "sub w0, w0, w1" }).failures[0]?.detail;
+    expect(detail).toBe(
+      "The run reached the end of the instructions without a \u201cret\u201d. The last instruction it ran was line 1, \u201csub w0, w0, w1\u201d.",
+    );
+    expect(detail).not.toContain("`");
+    expect(detail).toContain("\u201csub w0, w0, w1\u201d");
   });
 
   it("is what grade() does for a challenge that names the run-registers grader", () => {
@@ -129,8 +140,16 @@ describe("grading answers", () => {
   it("is blocked, naming the fields, when one is left empty", () => {
     const verdict = gradeAnswers(answers, { answers: { w0: "65", w1: "  " } });
     expect(verdict.passed).toBe(false);
-    expect(verdict.blocked).toBe("Give a whole number for w1 at the end first.");
-    expect(gradeAnswers(answers, {}).blocked).toContain("w0 at the end, w1 at the end");
+    expect(verdict.blocked).toBe("\u201cw1 at the end\u201d needs a whole number first.");
+  });
+
+  it("reads as one sentence whether one field is empty or all of them", () => {
+    expect(gradeAnswers(answers, {}).blocked).toBe(
+      "\u201cw0 at the end\u201d and \u201cw1 at the end\u201d each need a whole number first.",
+    );
+    expect(gradeAnswers(answers, { answers: { w0: " " } }).blocked).toBe(
+      "\u201cw0 at the end\u201d and \u201cw1 at the end\u201d each need a whole number first.",
+    );
   });
 
   it("is blocked when an answer is not a whole number", () => {

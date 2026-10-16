@@ -580,6 +580,18 @@ export function run(program: Program, call: Call): RunResult {
     const ins = m.instrAt.get(m.pc);
     if (ins === undefined) {
       const from = steps[steps.length - 1];
+      // Past the last instruction after an ordinary one (no branch, so the run fell through):
+      // the mistake is a missing `ret`, not an address. Say so, with no address.
+      if (from && from.branch === null && m.pc === from.address + 4) {
+        stop = {
+          kind: "fault",
+          key: "fault.ranOffEnd",
+          params: { line: from.line, text: from.text },
+          address: m.pc,
+          line: from.line,
+        };
+        break;
+      }
       stop = {
         kind: "fault",
         key: from ? "fault.notInstruction" : "fault.entry",

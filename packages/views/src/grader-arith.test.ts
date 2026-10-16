@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 
 import { Challenge } from "@platform/lesson-schema";
 
+import { fieldList } from "./fields";
 import { grade } from "./grader";
 import { ARITH_STRINGS as A } from "./strings.arith";
 import { VIEW_STRINGS as S } from "./strings";
@@ -125,7 +126,7 @@ describe("the outcomes at return, for flags", () => {
     const answers = { ...flags.reference.answers };
     delete answers["b-n"];
     const verdict = grade(flags, { answers });
-    expect(verdict.blocked).toBe(S.grader.unanswered("N for b"));
+    expect(verdict.blocked).toBe(S.grader.unanswered(fieldList(["N for b"]), 1));
     expect(grade(flags, { answers: {} }).blocked).toContain("first");
   });
 

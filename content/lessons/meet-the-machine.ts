@@ -185,7 +185,15 @@ export const meetTheMachine: LessonInput = {
       // The registers the tap editor offers, and the instructions the lesson's assembler allows.
       palette: ["w0", "w1", "w2", "w3"],
       allowedConstructs: ["add", "sub", "ret"],
-      initial: { text: FUEL_USED_MISTAKEN_TEXT },
+      // The keys the editor offers: this challenge writes `w` registers and commas, and needs no
+      // constant, so the symbol bar has two keys and the tap mode no number pad. (Typing `x` is
+      // still accepted.)
+      initial: {
+        text: FUEL_USED_MISTAKEN_TEXT,
+        data: {
+          editor: { symbols: [",", "w"], registers: ["w0", "w1", "w2", "w3"], numberPad: false },
+        },
+      },
       tests: {
         kind: "answers",
         grader: RUN_REGISTERS,

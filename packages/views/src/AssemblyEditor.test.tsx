@@ -11,7 +11,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import type { Artifact, Lesson } from "@platform/lesson-schema";
+import { Challenge, type Artifact, type Lesson } from "@platform/lesson-schema";
 
 import { AssemblyEditor, SYMBOLS } from "./AssemblyEditor";
 import { gradeWritten } from "./grader";
@@ -19,12 +19,20 @@ import { sentence } from "./messages";
 import { VIEW_STRINGS as S } from "./strings";
 import { written } from "./testing";
 
-function Harness({ start, seen }: { start: Artifact; seen?: (text: string | undefined) => void }) {
+function Harness({
+  start,
+  seen,
+  challenge = written,
+}: {
+  start: Artifact;
+  seen?: (text: string | undefined) => void;
+  challenge?: Challenge;
+}) {
   const [artifact, setArtifact] = useState<Artifact>(start);
   return (
     <AssemblyEditor
       lesson={{} as Lesson}
-      challenge={written}
+      challenge={challenge}
       artifact={artifact}
       onChange={(next) => {
         setArtifact(next);
@@ -250,5 +258,75 @@ describe("the two modes", () => {
   it("starts in text mode when the browser keeps nothing", () => {
     render(<Harness start={{ text: "ret" }} />);
     expect(mode(S.editor.tap)).toHaveAttribute("aria-pressed", "false");
+  });
+});
+
+describe("a challenge that chooses its editor's keys", () => {
+  const withKeys = (editor: Record<string, unknown>): Challenge =>
+    Challenge.parse({
+      ...written,
+      initial: { ...written.initial, data: { editor } },
+    });
+  const chips = (name: string) =>
+    within(group(name))
+      .getAllByRole("button")
+      .map((b) => b.textContent);
+
+  it("offers the symbol bar it names, in its order", () => {
+    render(<Harness start={{ text: "ret" }} challenge={withKeys({ symbols: [",", "w"] })} />);
+    const bar = group(S.editor.symbols);
+    expect(
+      within(bar)
+        .getAllByRole("button")
+        .map((b) => b.textContent),
+    ).toEqual([",", "w"]);
+    expect(screen.queryByRole("button", { name: S.editor.insert("x") })).toBeNull();
+  });
+
+  it("offers the registers it names to the tap mode, and no number pad when it says so", async () => {
+    const user = userEvent.setup();
+    render(
+      <Harness
+        start={{ text: "sub w0, w1, w0" }}
+        challenge={withKeys({ registers: ["w0", "w1"], numberPad: false })}
+      />,
+    );
+    await user.click(mode(S.editor.tap));
+    await user.click(screen.getByRole("button", { name: /sub w0, w1, w0/ }));
+    expect(chips(S.editor.operand(1))).toEqual(["w0", "w1"]);
+    expect(chips(S.editor.operand(3))).toEqual(["w0", "w1"]);
+  });
+
+  it("still accepts what the keys do not offer, typed", async () => {
+    const user = userEvent.setup();
+    let latest: string | undefined;
+    render(
+      <Harness
+        start={{ text: "" }}
+        seen={(t) => (latest = t)}
+        challenge={withKeys({ symbols: [",", "w"], numberPad: false })}
+      />,
+    );
+    await user.type(textBox(), "sub x0, x0, x1{Enter}ret");
+    expect(latest).toBe("sub x0, x0, x1\nret");
+  });
+
+  it("leaves a challenge without keys as it was, and ignores keys that do not fit", async () => {
+    const user = userEvent.setup();
+    for (const challenge of [written, withKeys({ symbols: "no" })]) {
+      localStorage.clear();
+      const { unmount } = render(
+        <Harness start={{ text: "sub w0, w1, w0" }} challenge={challenge} />,
+      );
+      expect(
+        within(group(S.editor.symbols))
+          .getAllByRole("button")
+          .map((b) => b.textContent),
+      ).toEqual([...SYMBOLS]);
+      await user.click(mode(S.editor.tap));
+      await user.click(screen.getByRole("button", { name: /sub w0, w1, w0/ }));
+      expect(chips(S.editor.operand(3))).toEqual(["w0", "w1", "w2", "w3", S.editor.number]);
+      unmount();
+    }
   });
 });

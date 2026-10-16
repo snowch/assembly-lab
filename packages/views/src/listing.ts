@@ -34,6 +34,15 @@ export function parseListing(listing: string): ListingLine[] {
   return out;
 }
 
+/** The label an instruction is under: the nearest label above line `index`, or null if none. */
+export function labelOf(lines: readonly ListingLine[], index: number): string | null {
+  for (let i = index; i >= 0; i--) {
+    const line = lines[i];
+    if (line?.kind === "label") return line.text;
+  }
+  return null;
+}
+
 /** The text the assembler reads: one source line for each listing line, in order. */
 export function assemblyOf(lines: readonly ListingLine[]): string {
   return lines.map((l) => (l.kind === "label" ? `${l.text}:` : l.text)).join("\n") + "\n";

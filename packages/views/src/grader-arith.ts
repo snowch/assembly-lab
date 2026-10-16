@@ -16,6 +16,7 @@
 // its `expect` maps one field to `w1`. An answer passes when it sets the flag and the number below
 // it does not (or is 0), which for the lesson's operand is the only such number.
 
+import { fieldList } from "./fields";
 import type { Verdict, VerdictFailure } from "@platform/lesson-runtime";
 import type { AnswerField, Artifact, Challenge } from "@platform/lesson-schema";
 
@@ -76,7 +77,7 @@ function unanswered(challenge: Challenge, answers: Record<string, string>, ids: 
       passed: false,
       total,
       failures: [],
-      blocked: S.grader.unanswered(missing.map(named).join(", ")),
+      blocked: S.grader.unanswered(fieldList(missing.map(named)), missing.length),
     } satisfies Verdict;
   const notWhole = ids.find((id) => wholeNumber(answers[id]) === null);
   if (notWhole !== undefined)

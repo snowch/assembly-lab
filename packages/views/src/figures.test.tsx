@@ -126,6 +126,18 @@ describe("the stepper", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Ran sub w0, w0, w3. Next: ret.");
   });
 
+  it("names a function only when the next instruction is under another label", async () => {
+    const user = userEvent.setup();
+    figure(StepperFigure, "s", "stepper", props);
+    for (let k = 0; k < 3; k++) {
+      await user.click(next());
+      expect(screen.getByRole("status").textContent).not.toMatch(/, in /);
+    }
+    expect(S.stepper.upNextIn("sub w0, w0, w1", "fuel_used")).toBe(
+      "Next: `sub w0, w0, w1`, in `fuel_used`.",
+    );
+  });
+
   it("draws w0 as 32 bits in four groups of eight, a 1 filled", async () => {
     const user = userEvent.setup();
     const { container } = figure(StepperFigure, "s", "stepper", props);
@@ -192,6 +204,10 @@ describe("the stepper", () => {
     for (let k = 0; k < 3; k++) await user.click(next());
     expect(value(container, "w0")).toBe("232");
     expect(container.querySelectorAll(".al-insn")[3]).toHaveAttribute("data-next", "true");
+    // The run has crossed into another function, and the status line says so.
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Ran sub w0, w0, w3. Next: sub w0, w0, w1, in fuel_used.",
+    );
     await user.click(next());
     expect(value(container, "w0")).toBe("147");
     await user.click(next());
