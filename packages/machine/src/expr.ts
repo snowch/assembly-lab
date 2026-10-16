@@ -45,6 +45,8 @@ function tokenise(text: string, base: number): Token[] {
   const fail = (at: number): never => {
     throw new AsmFail("syntax.expression", { text: text.trim() }, base + at);
   };
+  // An expression this long is not one a learner wrote, and the parser recurses.
+  if (text.length > 1000) return fail(0);
   while (i < text.length) {
     const c = text[i] as string;
     if (c === " " || c === "\t") {
@@ -63,10 +65,14 @@ function tokenise(text: string, base: number): Token[] {
       } else v = BigInt(lit);
       if (v >= 1n << 64n) throw new AsmFail("syntax.tooBig", { text: text.trim() }, base + i);
       // A number glued to letters (`08`, `0x`, `12ab`) is not a number.
-      const after = text[i + lit.length];
+      let end = i + lit.length;
+      // GNU as takes `1l` and `1L`.
+      if ((text[end] === "l" || text[end] === "L") && !SYMBOL_PART.test(text[end + 1] ?? " "))
+        end++;
+      const after = text[end];
       if (after !== undefined && SYMBOL_PART.test(after)) return fail(i);
       tokens.push({ t: "num", v, at: i });
-      i += lit.length;
+      i = end;
       continue;
     }
     if (c === "'") {
@@ -95,12 +101,12 @@ function tokenise(text: string, base: number): Token[] {
       continue;
     }
     const two = text.slice(i, i + 2);
-    if (two === "<<" || two === ">>") {
+    if (["<<", ">>", "==", "!=", "<>", "<=", ">=", "&&", "||"].includes(two)) {
       tokens.push({ t: "op", op: two, at: i });
       i += 2;
       continue;
     }
-    if ("+-*/%|&^~()".includes(c)) {
+    if ("+-*/%|&^~()<>!".includes(c)) {
       tokens.push({ t: "op", op: c, at: i });
       i++;
       continue;
@@ -119,9 +125,22 @@ const RANK: Record<string, number> = {
   "|": 7,
   "&": 7,
   "^": 7,
+  "!": 7,
   "+": 6,
   "-": 6,
+  "==": 5,
+  "!=": 5,
+  "<>": 5,
+  "<": 5,
+  ">": 5,
+  "<=": 5,
+  ">=": 5,
+  "&&": 4,
+  "||": 3,
 };
+
+/** GNU as: a comparison that holds is -1, and one that does not is 0. */
+const truth = (b: boolean): bigint => (b ? -1n : 0n);
 
 const wrap = (v: bigint): bigint => BigInt.asIntN(64, v);
 
@@ -160,6 +179,7 @@ export function evaluate(text: string, base: number, lookup: SymbolLookup, dot: 
     if (tok.op === "-") return wrap(-unary());
     if (tok.op === "+") return unary();
     if (tok.op === "~") return wrap(~unary());
+    if (tok.op === "!") return unary() === 0n ? 1n : 0n;
     return bad(tok.at);
   };
   const unary = (): bigint => primary();
@@ -202,6 +222,34 @@ export function evaluate(text: string, base: number, lookup: SymbolLookup, dot: 
           break;
         case "-":
           left = wrap(left - right);
+          break;
+        case "!":
+          left = left | wrap(~right);
+          break;
+        case "==":
+          left = truth(left === right);
+          break;
+        case "!=":
+        case "<>":
+          left = truth(left !== right);
+          break;
+        case "<":
+          left = truth(left < right);
+          break;
+        case ">":
+          left = truth(left > right);
+          break;
+        case "<=":
+          left = truth(left <= right);
+          break;
+        case ">=":
+          left = truth(left >= right);
+          break;
+        case "&&":
+          left = left !== 0n && right !== 0n ? 1n : 0n;
+          break;
+        case "||":
+          left = left !== 0n || right !== 0n ? 1n : 0n;
           break;
       }
     }

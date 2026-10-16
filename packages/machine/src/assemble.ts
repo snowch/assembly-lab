@@ -517,6 +517,11 @@ export function assemble(source: string, options: AssembleOptions = {}): Assembl
   }
   if (textEnd > DATA_BASE) err(1, 1, "program.textTooBig", { limit: DATA_BASE - TEXT_BASE });
   if (cursor > STACK_BASE) err(1, 1, "program.dataTooBig", { limit: STACK_BASE - DATA_BASE });
+  // A section that does not fit is not filled: it could be any size.
+  if (textEnd > DATA_BASE || cursor > STACK_BASE) {
+    errors.sort((a, b) => a.line - b.line || a.column - b.column);
+    return { program: null, errors };
+  }
 
   // ------------------------------------------------------------------ pass 2
   usePassOne = false;

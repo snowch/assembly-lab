@@ -13,6 +13,8 @@
 //
 // The tools come from AL_TOOLS (a directory holding usr/bin and usr/lib, as unpacked from the
 // Ubuntu packages) or from PATH. Usage: node check.mjs [--only name] [--corpus] [--lines] [-v]
+// [--corpus-dir dir] [--lines-dir dir]. A lines file whose first line is `// each line alone` has each
+// line assembled on its own; the others are assembled as one file (twice for GNU as: see gnuVerdicts).
 
 import { execFile } from "node:child_process";
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -430,7 +432,9 @@ const verbose = argv.includes("-v");
 let failed = false;
 
 if (doCorpus) {
-  const corpusDir = join(here, "corpus");
+  const corpusDir = argv.includes("--corpus-dir")
+    ? argv[argv.indexOf("--corpus-dir") + 1]
+    : join(here, "corpus");
   const names = readdirSync(corpusDir)
     .filter((f) => f.endsWith(".s"))
     .map((f) => f.slice(0, -2))
@@ -460,7 +464,9 @@ if (doCorpus) {
 }
 
 if (doLines) {
-  const linesDir = join(here, "lines");
+  const linesDir = argv.includes("--lines-dir")
+    ? argv[argv.indexOf("--lines-dir") + 1]
+    : join(here, "lines");
   const files = readdirSync(linesDir)
     .filter((f) => f.endsWith(".txt"))
     .sort();

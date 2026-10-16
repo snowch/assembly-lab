@@ -143,14 +143,6 @@ class Reader {
     return tok;
   }
 
-  /** Read a register that may be `sp` but not the zero register. */
-  regSp(): RegName {
-    const { tok, op } = this.anyReg();
-    if (tok.role === "zero") return fail("operand.noZr", { text: op.text }, op.col);
-    this.note(op, tok);
-    return tok;
-  }
-
   /** Read a 64-bit register that may be the zero register but not `sp`. */
   regX(): RegName {
     const tok = this.regZr();
@@ -974,7 +966,6 @@ function parseMem(r: Reader, op: RawOp): MemOperand {
     }
     result.offset = null;
     result.index = { tok: reg, extend, amount, shiftOp: third ?? null };
-    r.parsed.length += 0;
     return result;
   }
   if (parts.length === 3) return fail("mem.syntax", { text: op.text }, op.col);
