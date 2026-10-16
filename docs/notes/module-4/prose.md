@@ -286,7 +286,7 @@ Every listing so far ran from its first instruction to its `ret`, in order. This
 
 ## 2. Why a function needs to skip instructions
 
-A C `if` runs some statements and not others. `describe` returns different numbers for different gradients, so some instructions must be skipped on some calls. Until now, each instruction ran after the one before it. A function that decides needs an instruction that changes which one runs next. In `describe`, `b .L7` makes the run go on at the place named `.L7`, and `bgt .L9` does so only when a test of the flags says greater than.
+A C `if` runs some statements and not others. `describe` returns different numbers for different gradients, so some instructions must be skipped for some gradients. Until now, each instruction ran after the one before it. A function that decides needs an instruction that changes which one runs next. In `describe`, `b .L7` makes the run go on at the place named `.L7`, and `bgt .L9` does so only when a test of the flags says greater than.
 
 ## 3. Predict how many instructions run
 

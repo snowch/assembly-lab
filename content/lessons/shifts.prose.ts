@@ -7,7 +7,7 @@
 
 export const PROSE = {
   question:
-    "C writes a shift right as `>>` and a shift left as `<<`. `g >> 1` shifts the bits of `g` one place right. GCC turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns `g >> 1` into `lsr w0, w0, 1`. For a negative `int`, the C standard (C11, 6.5.7, paragraph 5) leaves the result of `>>` to the implementation, and GCC defines it as an arithmetic shift. This is the first place in the course where the C type changes the instruction.\n\n" +
+    "C writes a shift right as `>>` and a shift left as `<<`. `g >> 1` shifts the bits of `g` one place right. GCC turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns `g >> 1` into `lsr w0, w0, 1`. For a negative `int`, the C standard leaves the result of `>>` to the implementation, and GCC defines it as an arithmetic shift. This is the first place in the course where the C type changes the instruction.\n\n" +
     "The question is what each instruction does differently.",
 
   motivation:

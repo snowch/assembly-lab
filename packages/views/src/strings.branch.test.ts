@@ -57,8 +57,13 @@ describe("the conditions the figure of every condition shows", () => {
   const part7 = flat(prose.slice(prose.indexOf("## 7. What each condition reads")));
 
   it("have the names and rules the lesson's list gives, word for word", () => {
-    for (const c of CONDITION_ROWS.filter((r) => r.name !== "vs"))
-      expect(part7, c.name).toContain(`${c.name} ${c.means}: ${c.reads}.`);
+    for (const c of CONDITION_ROWS.filter((r) => r.name !== "vs")) {
+      // One line per condition: its name, what it means, which reading, then what it reads.
+      const esc = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      expect(part7, c.name).toMatch(
+        new RegExp(`${esc(c.name)}, ${esc(c.means)}[^:]*: ${esc(c.reads)}\\.`),
+      );
+    }
     expect(part7).toContain("vs (met in Module 2): V is 1.");
   });
 

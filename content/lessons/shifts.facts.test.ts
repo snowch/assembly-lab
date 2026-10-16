@@ -241,7 +241,8 @@ describe("every number the lesson states", () => {
     [1073741818, "lsr of -21 by 2, unsigned reading"],
     [2147483644, "lsr of -7 by 1, unsigned reading"],
   ]);
-  const hexes = new Set(["0xfffffff9", "0xfffffffc", "0x7ffffffc"]);
+  // 0xf is the constant of movk w0, 0xf, lsl 16 (held by the model, above).
+  const hexes = new Set(["0xfffffff9", "0xfffffffc", "0x7ffffffc", "0xf"]);
 
   const stated = statedNumbers([
     ...learnerText(lesson),
@@ -276,7 +277,13 @@ describe("every number the lesson states", () => {
     ];
     for (const [n, got] of model) expect(got, String(n)).toBe(n);
     expect(hexes).toEqual(
-      new Set([hex(-7), hex(w0(gcc, "halve_gradient", -7)), hex(w0(gcc, "halve_count", -7))]),
+      new Set([
+        hex(-7),
+        hex(w0(gcc, "halve_gradient", -7)),
+        hex(w0(gcc, "halve_count", -7)),
+        // movk's constant: the upper half the model puts it in is held above.
+        hex(w0(build("f:\n movk w0, 0xf, lsl 16\n ret\n"), "f", 0) >>> 16),
+      ]),
     );
   });
 });
