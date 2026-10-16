@@ -4,14 +4,15 @@
 // to a program that reads the page without running it, and to a reader whose browser runs no
 // scripts. The build writes the cover's own words into index.html (vite.config.ts): the
 // description a search result shows, what a shared link's preview shows, and, for a page that
-// runs no script, the cover itself and the course plan, listed from the same data the front page
-// lists (content/plan/plan.ts), so they say what the front page says and cannot drift. The head
+// runs no script, the cover itself, the course plan and the footer, listed from the same data the
+// front page lists (content/plan/plan.ts), so they say what the front page says and cannot drift.
+// The head
 // also names the course's icon, for a tab and a phone's home screen, and the manifest a browser
 // installs the course from (web-manifest.ts), each under the site's base path.
 
 import { PLAN } from "@al/content/plan";
 
-import { STRINGS } from "./strings";
+import { COMPANION_LINKS, STRINGS } from "./strings";
 import { BACKGROUND, ICONS, MANIFEST_FILE, shortName } from "./web-manifest";
 
 const escape = (text: string) =>
@@ -49,19 +50,41 @@ export function staticPage(html: string, base = "/"): string {
     const modules = part.modules.map(
       (m) =>
         `<li><strong>${escape(m.title)}</strong> (${escape(STRINGS.module(m.label))}): ` +
-        `${escape(m.line)}</li>`,
+        `${escape(m.line)} (${escape(STRINGS.status[m.status])})</li>`,
     );
     return `<h2>${escape(part.title)}</h2>\n    <ul>${modules.join("")}</ul>`;
   });
+  const intro = STRINGS.companions.intro.map((part) =>
+    typeof part === "string" ? escape(part) : `<em>${escape(part.title)}</em>`,
+  );
+  const link = (href: string, name: string) => `<li><a href="${href}">${escape(name)}</a></li>`;
+  // The footer the app draws, with the classes the stylesheet gives it, so the two look alike.
+  const footer = [
+    `<footer class="shell-footer">`,
+    `<p class="footer-intro">${intro.join("")}</p>`,
+    `<nav aria-label="${escape(STRINGS.companions.label)}">`,
+    `<ul class="footer-links">`,
+    link(COMPANION_LINKS.digitalDesign, STRINGS.companions.digitalDesign),
+    link(COMPANION_LINKS.notes, STRINGS.companions.notes),
+    link(COMPANION_LINKS.hub, STRINGS.companions.hub),
+    `</ul>`,
+    `</nav>`,
+    `<p class="copyright">${escape(STRINGS.copyright)}</p>`,
+    `</footer>`,
+  ];
+  // The stylesheet is linked from the head, so it applies without scripts: the page gets the
+  // app's gutter and width from the same classes.
   const noScript = [
     "<noscript>",
+    `<div class="noscript-page">`,
     `<h1>${escape(title)}</h1>`,
     `<p><strong>${escape(STRINGS.subtitle)}</strong></p>`,
     `<p>${escape(STRINGS.intro)}</p>`,
     `<p>${escape(STRINGS.statusNote)}</p>`,
     ...plan,
     `<p>${escape(STRINGS.noScript)}</p>`,
-    `<p>${escape(STRINGS.copyright)}</p>`,
+    `</div>`,
+    ...footer,
     "</noscript>",
   ];
   return html

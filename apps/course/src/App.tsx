@@ -14,6 +14,16 @@ import { lessonHref, pageTitle, useRoute } from "./route";
 import { COMPANION_LINKS, STRINGS } from "./strings";
 import { useTheme, type Theme } from "./theme";
 
+/**
+ * The skip link moves focus to the main content and leaves the address alone: its `#main` is not a
+ * route, and following it would replace the page with "no page at this address". A keyboard's
+ * Enter on a link is a click, so this serves the keyboard and a screen reader alike.
+ */
+function skipToContent(e: React.MouseEvent<HTMLAnchorElement>) {
+  e.preventDefault();
+  document.getElementById("main")?.focus();
+}
+
 export function App() {
   const route = useRoute();
   const [theme, setTheme] = useTheme();
@@ -44,7 +54,9 @@ export function App() {
       <>
         <h1>{STRINGS.noLesson(route.id)}</h1>
         <p>
-          <a href="#/">{STRINGS.backToPlan}</a>
+          <a className="back-link" href="#/">
+            {STRINGS.backToPlan}
+          </a>
         </p>
       </>
     );
@@ -53,7 +65,9 @@ export function App() {
       <>
         <h1>{STRINGS.missing(route.path)}</h1>
         <p>
-          <a href="#/">{STRINGS.backToPlan}</a>
+          <a className="back-link" href="#/">
+            {STRINGS.backToPlan}
+          </a>
         </p>
       </>
     );
@@ -61,7 +75,7 @@ export function App() {
 
   return (
     <>
-      <a className="skip-link" href="#main">
+      <a className="skip-link" href="#main" onClick={skipToContent}>
         {STRINGS.skip}
       </a>
       <header className="shell-header">
@@ -81,7 +95,11 @@ export function App() {
         {page}
       </main>
       <footer className="shell-footer">
-        <p className="footer-intro">{STRINGS.companions.intro}</p>
+        <p className="footer-intro">
+          {STRINGS.companions.intro.map((part, i) =>
+            typeof part === "string" ? part : <em key={i}>{part.title}</em>,
+          )}
+        </p>
         <nav aria-label={STRINGS.companions.label}>
           <ul className="footer-links">
             <li>

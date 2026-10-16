@@ -20,7 +20,7 @@ function Cover() {
 
 export function FrontPage() {
   return (
-    <>
+    <div className="front-column">
       <Cover />
       <p className="plan-status" role="note">
         {STRINGS.statusNote}
@@ -44,6 +44,6 @@ export function FrontPage() {
           </ul>
         </section>
       ))}
-    </>
+    </div>
   );
 }

@@ -139,10 +139,17 @@ svg {
   border-radius: var(--radius);
 }
 
-.shell-main {
+.shell-main,
+.noscript-page {
   padding: var(--space-5) var(--gutter) var(--space-8);
   max-width: var(--page);
   margin: 0 auto;
+}
+/* The pages for an address the course does not have: a link that is a full-size target. */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 .shell-footer {
@@ -260,9 +267,15 @@ ol {
   margin-bottom: 0;
 }
 
+/* The front page is one centred column: the cover and the plan share its left and right edges.
+   It is as wide as the cover's words plus the cover's own padding on a desk. */
+.front-column {
+  max-width: calc(var(--measure) + 2 * var(--space-6));
+  margin-inline: auto;
+}
+
 /* Where the plan stands, above the plan. */
 .plan-status {
-  max-width: var(--measure);
   margin: var(--space-5) 0 0;
   padding: var(--space-3) var(--space-4);
   background: var(--note-bg);
@@ -278,7 +291,6 @@ ol {
   list-style: none;
   padding: 0;
   margin: 0;
-  max-width: var(--measure);
 }
 .plan-module {
   padding: var(--space-3) var(--space-2);
@@ -304,18 +316,17 @@ ol {
 .module-line {
   margin: var(--space-1) 0 var(--space-2);
 }
+/* A status is a plain label, not a control: small capitals in muted ink, with no border or fill. */
 .module-status {
   display: inline-block;
-  padding: 0 var(--space-2);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  background: var(--bg-raised);
   color: var(--fg-muted);
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
+  font-weight: 600;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
 }
 .module-status[data-status="published"] {
   color: var(--ok);
-  border-color: var(--ok);
 }
 
 @media (min-width: 48rem) {

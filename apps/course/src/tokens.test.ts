@@ -89,6 +89,14 @@ const FLOORS: readonly [string, string, number, number][] = [
   ["hero-action-fg", "hero-action", 10.82, 12.03],
 ];
 
+/**
+ * The borders that mark a control (the theme select, the skip link), against every surface a
+ * control sits on: WCAG 1.4.11 asks 3:1. The --border token only draws dividers, which mark nothing.
+ */
+const CONTROL_BORDERS: readonly [string, readonly string[]][] = [
+  ["border-strong", ["bg", "bg-raised", "bg-sunken", "bg-inset"]],
+];
+
 describe("the colour tokens", () => {
   it("defines the same tokens for the dark theme whether chosen or from the system", () => {
     expect(systemDark).toEqual(dark);
@@ -109,6 +117,16 @@ describe("the colour tokens", () => {
         for (const s of surfaces) {
           const r = contrast(t[ink]!, t[s]!);
           if (r < 4.5) short.push(`${ink} on ${s}: ${r.toFixed(2)}`);
+        }
+      expect(short).toEqual([]);
+    });
+
+    it(`gives a control's border at least 3:1 on its surfaces, in the ${theme} theme`, () => {
+      const short: string[] = [];
+      for (const [border, surfaces] of CONTROL_BORDERS)
+        for (const s of surfaces) {
+          const r = contrast(t[border]!, t[s]!);
+          if (r < 3) short.push(`${border} on ${s}: ${r.toFixed(2)}`);
         }
       expect(short).toEqual([]);
     });

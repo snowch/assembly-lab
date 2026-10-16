@@ -120,44 +120,47 @@ test("every learner state key the course writes starts assembly-lab:v1:", async 
   for (const k of keys) expect(k.startsWith("assembly-lab:v1:"), k).toBe(true);
 });
 
-test("no visible text is under 11 pixels, and no control is under 40 pixels tall on a phone", async ({
-  page,
-}, info) => {
-  await page.goto("#/");
-  await ready(page);
-  const problems = await page.evaluate((isPhone) => {
-    const out: string[] = [];
-    const visible = (el: Element) => {
-      const cs = getComputedStyle(el);
-      if (cs.display === "none" || cs.visibility === "hidden") return false;
-      const r = el.getBoundingClientRect();
-      return r.width > 0 && r.height > 0;
-    };
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-    const seen = new Set<Element>();
-    let node: Node | null;
-    while ((node = walker.nextNode())) {
-      const el = node.parentElement;
-      if (!el || !(node.textContent ?? "").trim() || seen.has(el)) continue;
-      seen.add(el);
-      if (!visible(el)) continue;
-      const px = parseFloat(getComputedStyle(el).fontSize);
-      if (px < 11)
-        out.push(`text ${px.toFixed(1)}px: "${(node.textContent ?? "").trim().slice(0, 30)}"`);
-    }
-    if (isPhone)
-      for (const c of document.querySelectorAll("a, button, select, input, textarea, summary")) {
-        if (!visible(c)) continue;
-        const r = c.getBoundingClientRect();
-        if (r.height < 40)
-          out.push(
-            `control ${Math.round(r.height)}px tall: "${(c.textContent ?? "").trim().slice(0, 30)}"`,
-          );
+// The pages for an address the course does not have are visited too: their link is a control.
+for (const route of ["#/", "#/nowhere", "#/lesson/anything"]) {
+  test(`no visible text is under 11 pixels, and no control is under 40 pixels tall on a phone, at ${route}`, async ({
+    page,
+  }, info) => {
+    await page.goto(route);
+    await ready(page);
+    const problems = await page.evaluate((isPhone) => {
+      const out: string[] = [];
+      const visible = (el: Element) => {
+        const cs = getComputedStyle(el);
+        if (cs.display === "none" || cs.visibility === "hidden") return false;
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0;
+      };
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      const seen = new Set<Element>();
+      let node: Node | null;
+      while ((node = walker.nextNode())) {
+        const el = node.parentElement;
+        if (!el || !(node.textContent ?? "").trim() || seen.has(el)) continue;
+        seen.add(el);
+        if (!visible(el)) continue;
+        const px = parseFloat(getComputedStyle(el).fontSize);
+        if (px < 11)
+          out.push(`text ${px.toFixed(1)}px: "${(node.textContent ?? "").trim().slice(0, 30)}"`);
       }
-    return out;
-  }, info.project.name === "phone");
-  expect(problems).toEqual([]);
-});
+      if (isPhone)
+        for (const c of document.querySelectorAll("a, button, select, input, textarea, summary")) {
+          if (!visible(c)) continue;
+          const r = c.getBoundingClientRect();
+          if (r.height < 40)
+            out.push(
+              `control ${Math.round(r.height)}px tall: "${(c.textContent ?? "").trim().slice(0, 30)}"`,
+            );
+        }
+      return out;
+    }, info.project.name === "phone");
+    expect(problems).toEqual([]);
+  });
+}
 
 test("the page does not scroll sideways", async ({ page }) => {
   await page.goto("#/");
@@ -207,6 +210,11 @@ test("the footer carries the copyright and links to the companion courses", asyn
     "href",
     COMPANION_LINKS.hub,
   );
+  // The notes' title and the first course's are set in italics in the sentence.
+  await expect(footer.locator(".footer-intro em")).toHaveText([
+    STRINGS.companions.digitalDesign,
+    STRINGS.companions.notes,
+  ]);
   // The copyright is in the footer of a page that is not the front page too.
   await page.goto("#/nowhere");
   await expect(page.locator("footer.shell-footer .copyright")).toHaveText(STRINGS.copyright);
@@ -232,4 +240,77 @@ test("the skip link stays off the page until the keyboard reaches it", async ({ 
   await page.keyboard.press("Tab");
   await expect(skip).toBeFocused();
   await expect(skip).toBeInViewport();
+});
+
+test("the skip link moves focus to the main content and leaves the plan on the page", async ({
+  page,
+}) => {
+  const errors = watchErrors(page);
+  await page.goto("#/");
+  await ready(page);
+  await page.keyboard.press("Tab");
+  await expect(page.locator("a.skip-link")).toBeFocused();
+  await page.keyboard.press("Enter");
+  // The address is still the front page's, the plan is still shown, and focus is on <main>.
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(STRINGS.title);
+  await expect(page.locator(".plan-module")).toHaveCount(MODULES.length);
+  await expect(page.locator("main#main")).toBeFocused();
+  expect(await page.evaluate(() => document.activeElement?.tagName)).toBe("MAIN");
+  expect(new URL(page.url()).hash).toBe("#/");
+  expect(errors).toEqual([]);
+});
+
+test("on a desk the cover and the plan share one centred column, so their left edges line up", async ({
+  page,
+}, info) => {
+  // On a phone the cover is a band to both screen edges, by design; the plan keeps the gutter.
+  test.skip(info.project.name !== "desktop", "the phone's cover runs to the screen's edges");
+  await page.goto("#/");
+  await ready(page);
+  const edges = await page.evaluate(() => {
+    const box = (sel: string) => {
+      const r = document.querySelector(sel)!.getBoundingClientRect();
+      return { left: Math.round(r.left), right: Math.round(r.right) };
+    };
+    return {
+      cover: box(".cover-hero"),
+      note: box(".plan-status"),
+      list: box(".plan-modules"),
+      width: document.documentElement.clientWidth,
+    };
+  });
+  expect(edges.note).toEqual(edges.cover);
+  expect(edges.list).toEqual(edges.cover);
+  // The column is centred.
+  expect(edges.cover.left).toBe(edges.width - edges.cover.right);
+});
+
+test("a status is a plain label: no border, no fill", async ({ page }) => {
+  await page.goto("#/");
+  await ready(page);
+  const style = await page
+    .locator(".module-status")
+    .first()
+    .evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { border: cs.borderTopWidth, background: cs.backgroundColor };
+    });
+  expect(style).toEqual({ border: "0px", background: "rgba(0, 0, 0, 0)" });
+});
+
+test.describe("with scripts off", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("the plan has the app's side gutter and the footer's links", async ({ page }, info) => {
+    await page.goto("#/");
+    const gutter = info.project.name === "phone" ? 16 : 32;
+    await expect(page.locator(".noscript-page h1")).toBeVisible();
+    const heading = await page.locator(".noscript-page h1").boundingBox();
+    expect(heading!.x).toBeGreaterThanOrEqual(gutter);
+    await expect(page.locator("footer.shell-footer").getByRole("link")).toHaveCount(3);
+    await expect(page.locator("footer.shell-footer em")).toHaveText([
+      STRINGS.companions.digitalDesign,
+      STRINGS.companions.notes,
+    ]);
+  });
 });

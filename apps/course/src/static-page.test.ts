@@ -12,7 +12,7 @@ import { MODULES, PLAN } from "@al/content/plan";
 
 import { pageTitle, parseRoute } from "./route";
 import { courseTitle, staticPage } from "./static-page";
-import { STRINGS } from "./strings";
+import { COMPANION_LINKS, STRINGS } from "./strings";
 import { ICONS, MANIFEST_FILE, shortName, webManifest } from "./web-manifest";
 
 const template = readFileSync(resolve(process.cwd(), "apps/course/index.html"), "utf8");
@@ -56,6 +56,34 @@ describe("the page before any script runs", () => {
       expect(shown, m.title).toContain(STRINGS.module(m.label));
       expect(shown, m.title).toContain(m.line);
     }
+  });
+
+  it("shows each module's status label beside it, from the plan's data", () => {
+    const items = noscript.split("<li>").filter((i) => i.startsWith("<strong>"));
+    expect(items).toHaveLength(MODULES.length);
+    MODULES.forEach((m, i) => {
+      expect(text(items[i]!), m.title).toContain(`${m.line} (${STRINGS.status[m.status]})`);
+    });
+  });
+
+  it("shows the footer: the sentence with its two titles in italics, the three links and the copyright", () => {
+    const footer = /<footer[^>]*>([\s\S]*)<\/footer>/.exec(noscript)?.[1] ?? "";
+    const sentence = STRINGS.companions.intro.map((p) => (typeof p === "string" ? p : p.title));
+    expect(text(footer)).toContain(sentence.join(""));
+    expect(footer).toContain(`<em>${STRINGS.companions.digitalDesign}</em>`);
+    expect(footer).toContain(`<em>${STRINGS.companions.notes}</em>`);
+    for (const [key, href] of Object.entries(COMPANION_LINKS)) {
+      const name = STRINGS.companions[key as keyof typeof COMPANION_LINKS];
+      expect(footer, key).toContain(`<a href="${href}">${name}</a>`);
+    }
+    expect(footer).toContain(`aria-label="${STRINGS.companions.label}"`);
+    expect(text(footer)).toContain(STRINGS.copyright);
+  });
+
+  it("puts the plan in the page's gutter, as the app's main content is", () => {
+    expect(noscript).toContain(`<div class="noscript-page">`);
+    const css = readFileSync(resolve(process.cwd(), "apps/course/src/styles/app.css"), "utf8");
+    expect(css).toMatch(/\.shell-main,\s*\.noscript-page \{[^}]*padding:[^;]*var\(--gutter\)/);
   });
 
   it("comes after the root the scripts draw into, so a browser that runs them never shows it", () => {

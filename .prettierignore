@@ -7,3 +7,5 @@ package-lock.json
 *.md
 # Written by scripts/sync-platform.mjs; its bytes are its hashes' input.
 platform/SOURCE.json
+# Agent worktrees, never part of the course.
+.claude/

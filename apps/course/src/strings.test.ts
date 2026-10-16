@@ -49,6 +49,16 @@ describe("the course's words", () => {
     expect(STRINGS.copyright).toBe("© 2026 Christopher Snow");
   });
 
+  it("keep the footer's sentence word for word, with the two titles marked as titles", () => {
+    const parts = STRINGS.companions.intro;
+    const joined = parts.map((p) => (typeof p === "string" ? p : p.title)).join("");
+    expect(joined).toBe(
+      "This course is one of three ways to know one machine. Digital Design builds a computer from gates. The notes From gates to a compiled if explain what the bits mean. This course drives a real processor.",
+    );
+    const titles = parts.flatMap((p) => (typeof p === "string" ? [] : [p.title]));
+    expect(titles).toEqual([STRINGS.companions.digitalDesign, STRINGS.companions.notes]);
+  });
+
   it("send the footer's links to the companion courses", () => {
     expect(COMPANION_LINKS).toEqual({
       digitalDesign: "https://snowch.github.io/digital-design/",

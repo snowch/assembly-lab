@@ -4,6 +4,9 @@
 // drafted by Haiku from checked facts (CLAUDE.md); the interface labels (the theme control, the
 // skip link, "Module 4") are standard control names, kept as the scaffold wrote them.
 
+/** A part of the footer's sentence: plain words, or the title of a work, set in italics. */
+export type CompanionIntroPart = string | { readonly title: string };
+
 export const STRINGS = {
   title: "Assembly Lab",
   subtitle: "From a line of C to the bits in a register",
@@ -51,9 +54,17 @@ export const STRINGS = {
   // the footer's link to the companion courses, and the label that names them.
   companions: {
     label: "Companion courses",
-    /** Before the footer's links. */
-    intro:
-      "This course is one of three ways to know one machine. Digital Design builds a computer from gates. The notes From gates to a compiled if explain what the bits mean. This course drives a real processor.",
+    /**
+     * Before the footer's links, in parts: a part that is a `title` names a work, which the page
+     * sets in italics. The parts joined are the sentence, word for word.
+     */
+    intro: [
+      "This course is one of three ways to know one machine. ",
+      { title: "Digital Design" },
+      " builds a computer from gates. The notes ",
+      { title: "From gates to a compiled if" },
+      " explain what the bits mean. This course drives a real processor.",
+    ] as readonly CompanionIntroPart[],
     digitalDesign: "Digital Design",
     notes: "From gates to a compiled if",
     hub: "See all the author's courses and books",
