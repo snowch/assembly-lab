@@ -171,7 +171,7 @@ A number whose bits are all ones except within one 16-bit half fits, such as `-1
 
 ## 5. Building 1000000
 
-`movk` replaces one 16-bit half of a register and keeps the rest. `lsl 16`, a shift left that Module 3 explains, names the upper half, where the number goes. You split 1000000 into its two halves yourself. To split a number into its 16-bit halves, divide it by 65536. The whole-number answer is the upper half, and what is left over is the lower half. 65536 is the worth of bit 16, the lowest bit of the upper half. Writing `#` before a number in an instruction is optional: `mov w0, 30000` and `mov w0, #30000` are the same instruction (Module 0 met `#50`).
+`movk` replaces one 16-bit half of a register and keeps the rest. `lsl 16`, which Module 3 explains, names the upper half, where the number goes. You split 1000000 into its two halves yourself. To split a number into its 16-bit halves, divide it by 65536. The whole-number answer is the upper half, and what is left over is the lower half. 65536 is the worth of bit 16, the lowest bit of the upper half. Writing `#` before a number in an instruction is optional: `mov w0, 30000` and `mov w0, #30000` are the same instruction (Module 0 met `#50`).
 
 **Build 1000000**
 

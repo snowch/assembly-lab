@@ -34,7 +34,7 @@ export const LABELS = {
       "A prediction about what w0 holds after the new instruction runs. The new instruction, add w0, w0, 12, sits before ret in fuel_used_wrong.",
     stepAdd12:
       "fuel_used_wrong(50, 38) again, with add w0, w0, 12 before ret. A register with an outline has just changed.",
-    make: "Set each of the 32 bits of w0 with its button, then type one number in the field.",
+    make: "Set each of the 32 bits of w0 with its button, then type one number in the box.",
     read: "Several bit patterns are shown. Type the unsigned reading and the signed reading of each.",
   },
   options: {
