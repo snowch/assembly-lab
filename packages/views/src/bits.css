@@ -145,7 +145,7 @@
   margin: 0;
   color: var(--bad);
 }
-.al-legend {
+.al-figure p.al-legend {
   max-width: 38em;
   margin: 0;
   color: var(--fg-muted);
