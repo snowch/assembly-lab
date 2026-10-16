@@ -75,3 +75,27 @@ trip computer's gradient and fuel, shows GCC choosing `csel` and `cset` over bra
 Real processors predict branches and run ahead; the simulator runs one instruction at a time,
 which gives the same results. The listing's arrows show the program's path, not the processor's
 timing.
+
+## Changes after the fact brief (16 October 2026)
+
+The brief (`module-4/brief.md`, with every run in `module-4/facts/runs.md`) found these, and the
+lesson text (`module-4/prose.md`) follows them:
+
+- **Two challenges a lesson**, as the other modules have: Lesson 1 adds a construction,
+  `less_fuel` (gate `cmp`, `csel`, `ret`; five tests, two with the top bit set; the signed `lt`
+  fails two), and moves "which conditions hold" to its last challenge. Lesson 2's last challenge
+  asks for the result and the number of instructions run for `describe(11)`, `describe(-10)` and
+  `describe(-11)`.
+- **`wzr`** is a term of Lesson 2 (it first appears in `describe`).
+- **"GCC needs no branch for a simple `if`"** holds only for `warning_light`; `describe` uses a
+  branch. The lesson says what GCC 16.1 at `-O1` did for each, not why.
+- **`tst`, `ands`, `cbnz`, `tbz`, `tbnz`** appear in no recorded listing. The lessons show them as
+  the architecture's, with the course's own `service` example for `tbz`, and never as GCC's.
+- **`maybe_beep`** is shown as its first two instructions only, marked as an excerpt; the rest
+  calls `beep` and waits for Module 9.
+- **GCC's line record for `describe`** gives no instruction to `if (gradient < -10)` or `return -2;`:
+  `cmn`, `mov w0, -2` and `csel` are recorded against `return 0;`. The listing figure shows that.
+- **The figure of every condition** must not default to the last challenge's pair.
+- **The trace marks `ret` as a taken branch**; the arrows figure must not draw it as one.
+- **Corpus additions:** every recorded function, `steeper_u` with `ge`, `describe` with `bge`,
+  `less_fuel`, both `fuel_warning` references, `service`, and the `tst` and `ands` lines.
