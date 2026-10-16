@@ -443,6 +443,16 @@ ol {
   max-width: var(--measure);
   margin: var(--space-1) 0 var(--space-2);
 }
+/* A module with several lessons lists them, each a full-size target. */
+.module-lessons {
+  margin: 0 0 var(--space-2);
+  padding-left: var(--space-5);
+}
+.module-lessons a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
 /* A status is a plain label, not a control: small capitals in muted ink, with no border or fill. */
 .module-status {
   display: inline-block;

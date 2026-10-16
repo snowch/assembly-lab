@@ -9,7 +9,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { LESSONS } from "@al/content";
-import { MODULES, PLAN, statusOf } from "@al/content/plan";
+import { MODULES, PLAN, lessonsOf, statusOf } from "@al/content/plan";
 
 import { pageTitle, parseRoute } from "./route";
 import { courseTitle, staticPage } from "./static-page";
@@ -68,10 +68,12 @@ describe("the page before any script runs", () => {
     });
   });
 
-  it("says Module 0 is published and every other module planned", () => {
+  it("says a module with a lesson is published and every other module planned", () => {
     const items = noscript.split("<li>").filter((i) => i.startsWith("<strong>"));
     const labels = items.map((item) => /\(([A-Za-z ]+)\)<\/li>/.exec(item)?.[1]);
-    expect(labels).toEqual(MODULES.map((m) => (m.label === "0" ? "Published" : "Planned")));
+    expect(labels).toEqual(
+      MODULES.map((m) => (lessonsOf(m, LESSONS).length > 0 ? "Published" : "Planned")),
+    );
   });
 
   it("shows the footer: the sentence with its two titles in italics, the three links and the copyright", () => {

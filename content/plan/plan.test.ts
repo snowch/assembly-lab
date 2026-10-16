@@ -69,7 +69,7 @@ describe("the course's plan", () => {
     expect(published.map((m) => m.label)).toEqual([
       ...new Set(LESSONS.map((l) => String(l.module))),
     ]);
-    expect(published.map((m) => m.title)).toEqual(["Meet the machine"]);
+    expect(published.map((m) => m.title)).toEqual(["Meet the machine", "Logic, shifts and masks"]);
     for (const m of MODULES.filter((m) => !published.includes(m)))
       expect(statusOf(m, LESSONS), m.title).toBe("planned");
   });
@@ -78,6 +78,7 @@ describe("the course's plan", () => {
     const meet = moduleByNumber(0)!;
     expect(lessonsOf(meet, LESSONS).map((l) => l.id)).toEqual(["meet-the-machine"]);
     expect(lessonsOf(moduleByNumber(1)!, LESSONS)).toEqual([]);
+    expect(lessonsOf(moduleByNumber(3)!, LESSONS).map((l) => l.id)).toEqual(["masks", "shifts"]);
     expect(statusOf(meet, [])).toBe("planned");
     expect(statusOf(meet, [{ id: "x", module: 0 }])).toBe("published");
     expect(statusOf(meet, [{ id: "y", module: 1 }])).toBe("planned");

@@ -30,6 +30,8 @@ export const STRINGS = {
     "This course runs in your browser, so it needs JavaScript. With JavaScript turned off, you see only this summary of the plan.",
   // the plan's module label, "Module 4" and "Module A".
   module: (label: string) => `Module ${label}`,
+  // DRAFT: the name a screen reader gives a module's list of lessons.
+  lessonsOf: (module: string) => `Lessons of ${module}`,
   // a page's name in the browser's tab, after its own name; the front page keeps the title.
   pageTitle: (page: string) => `${page} / Assembly Lab`,
 

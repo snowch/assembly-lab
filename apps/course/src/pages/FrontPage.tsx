@@ -38,7 +38,9 @@ export function FrontPage() {
             {part.modules.map((m) => {
               // A module's status and its link come from the lessons that are written.
               const status = statusOf(m, LESSONS);
-              const first = lessonsOf(m, LESSONS)[0];
+              const lessons = [...lessonsOf(m, LESSONS)].sort((a, b) => a.order - b.order);
+              // A module with one lesson links its title to it; a module with more lists them.
+              const only = lessons.length === 1 ? lessons[0] : undefined;
               return (
                 <li key={m.id} className="plan-module" data-module={m.id}>
                   <span className="module-icon" aria-hidden="true">
@@ -47,10 +49,19 @@ export function FrontPage() {
                   <h3>
                     <span className="module-number">{STRINGS.module(m.label)}</span>
                     <span className="module-title">
-                      {first ? <a href={lessonHref(first.id)}>{m.title}</a> : m.title}
+                      {only ? <a href={lessonHref(only.id)}>{m.title}</a> : m.title}
                     </span>
                   </h3>
                   <p className="module-line">{m.line}</p>
+                  {lessons.length > 1 && (
+                    <ol className="module-lessons" aria-label={STRINGS.lessonsOf(m.title)}>
+                      {lessons.map((l) => (
+                        <li key={l.id} data-lesson={l.id}>
+                          <a href={lessonHref(l.id)}>{l.title}</a>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
                   <span className="module-status" data-status={status}>
                     {STRINGS.status[status]}
                   </span>

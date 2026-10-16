@@ -37,13 +37,19 @@ describe("the views' words", () => {
 describe("the book", () => {
   const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
 
-  it("has the id the stored work is namespaced by, the lessons, and the three figures", () => {
+  it("has the id the stored work is namespaced by, the lessons, and its figures", () => {
     expect(book.id).toBe("assembly-lab");
     expect(book.lessons).toBe(LESSONS);
     expect(Object.keys(book.interactives).sort()).toEqual([
+      "bit-ops",
       "listing",
+      "listing-compare",
+      "probe-prediction",
+      "shift",
       "stepper",
       "trace-prediction",
+      "warning-word",
+      "word-stepper",
     ]);
     expect(book.interactives).toBe(INTERACTIVES);
   });

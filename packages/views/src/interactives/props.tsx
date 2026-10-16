@@ -19,6 +19,13 @@ export const CallSchema = z.object({ entry: z.string(), args: z.array(z.number()
 /** One line of a listing that a figure can take out. */
 export const DeleteSchema = z.object({ label: z.string(), text: z.string() });
 
+/** A labelled bit or field of a word, lowest bit first (the same bit twice for a single bit). */
+export const KeyEntrySchema = z.object({
+  from: z.number().int().min(0).max(31),
+  to: z.number().int().min(0).max(31),
+  label: z.string(),
+});
+
 export function withProps<T>(
   schema: ZodType<T>,
   Inner: ComponentType<InteractiveProps & { data: T }>,

@@ -98,6 +98,95 @@ export const VIEW_STRINGS = {
     notWhole: (field: string) => `The answer for ${field} must be a whole number.`,
     noProgram: "This challenge has no program to run.",
   },
+
+  // DRAFT: the words of Module 3's figures and graders, drafted with the figures and not yet
+  // through the prose process. Every key below is listed in the build report.
+  bits: {
+    // DRAFT
+    keyHeading: "What the bits mean",
+    keyBits: "Bits",
+    keyMeaning: "Meaning",
+    keyValue: "Value",
+    keyBefore: "Before",
+    keyAfter: "After",
+    bit: (n: number) => `Bit ${n}`,
+    bitRange: (from: number, to: number) => `Bits ${from} to ${to}`,
+    /** Bit numbers already joined into a phrase: `Bits 2 and 5`. */
+    bitsList: (list: string) => `Bits ${list}`,
+    /** The row for a register at the start of a call. */
+    onEntry: (register: string) => `${register} on entry`,
+    /** What a screen reader hears for a row of 32 bits: its name and its value. */
+    rowGroup: (name: string, hex: string) => `${name}: ${hex}`,
+    /** Joins a list of bit numbers: 2; 2 and 3; 0, 2 and 3. */
+    and: "and",
+  },
+
+  bitOps: {
+    // DRAFT
+    functions: "Function",
+    cLabel: "C",
+    instructionLabel: "Instruction",
+    rowMask: "Mask",
+    rowBefore: (register: string) => `${register} before`,
+    rowAfter: (register: string) => `${register} after`,
+    inputLabel: (register: string) => `Value of ${register} on entry`,
+    inputProblem: "Type a whole number, or hexadecimal starting 0x.",
+    changed: (bits: string) => `Bits that changed: ${bits}.`,
+    unchanged: "No bit changed.",
+    result: (register: string, hex: string, decimal: string) =>
+      `${register} holds ${hex}, which is ${decimal}.`,
+    legend: "Outlined: bits that changed. Underlined: the field the instruction uses.",
+  },
+
+  shift: {
+    // DRAFT
+    instruction: "Instruction",
+    by: "Shift by",
+    inputLabel: "Value of w0 on entry",
+    inputProblem: "Type a whole number, or hexadecimal starting 0x.",
+    rowBefore: "Before",
+    rowAfter: "After",
+    fellOff: (bits: string) => `Fell off: ${bits}`,
+    filledWith: (bits: string) => `Filled with: ${bits}`,
+    result: (instruction: string, hex: string, unsigned: string, signed: string) =>
+      `After \`${instruction}\`, w0 holds ${hex}: ${unsigned} as unsigned, ${signed} as signed.`,
+    legend: "Struck through: bits that fall off. Dashed: bits the shift filled in.",
+  },
+
+  compare: {
+    // DRAFT
+    differs: "This instruction differs from the other listing",
+  },
+
+  probe: {
+    // DRAFT
+    clearedBits: (bits: string) =>
+      `The simulator ran the function on a word with every bit set. ${bits} came out 0.`,
+    noneCleared: "The simulator ran the function on a word with every bit set. No bit came out 0.",
+    filled: (instruction: string, how: string) => `The simulator ran \`${instruction}\`. ${how}`,
+    fillCopy: "The top bit was filled with a copy of the old top bit.",
+    fillZero: "The top bit was filled with 0.",
+    fillFell: "The top bit was filled with the bit that fell off the bottom.",
+    fillOther: "The top bit was filled in a way none of the choices describe.",
+    firstAdds: (instruction: string, negative: string, other: string) =>
+      `The simulator ran \`${instruction}\` on negative and non-negative values. It added ${negative} to a negative value and ${other} to any other.`,
+    firstAddsVaries: (instruction: string) =>
+      `The simulator ran \`${instruction}\` on negative and non-negative values. The amount it added changed from value to value.`,
+    endedWithHex: (register: string, hex: string) =>
+      `The simulator ran the program. \`${register}\` held ${hex} when the run ended.`,
+  },
+
+  answers: {
+    // DRAFT
+    notHex: (field: string) =>
+      `The answer for ${field} must be a hexadecimal number, such as 0x2f.`,
+    unanswered: (fields: string) => `Give an answer for ${fields} first.`,
+  },
+
+  tap: {
+    // DRAFT
+    sign: "Change sign",
+  },
 } as const;
 
 /** Text with `code` in backticks, as plain text: a verdict heading and a select show no Markdown. */

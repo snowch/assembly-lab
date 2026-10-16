@@ -35,7 +35,11 @@ export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
               <input
                 id={id}
                 type="text"
-                inputMode={f.kind === "number" ? "numeric" : "text"}
+                // A number keypad has no minus sign on every phone: a field that takes a negative
+                // number (it says so with a `min` below 0) gets the full keyboard.
+                inputMode={
+                  f.kind === "number" && !(f.min !== undefined && f.min < 0) ? "numeric" : "text"
+                }
                 autoComplete="off"
                 autoCapitalize="off"
                 autoCorrect="off"

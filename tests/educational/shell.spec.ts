@@ -9,7 +9,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import { LESSONS } from "@al/content";
-import { MODULES, PLAN, statusOf } from "@al/content/plan";
+import { MODULES, PLAN, lessonsOf, statusOf } from "@al/content/plan";
 
 import { VIEW_STRINGS } from "../../packages/views/src/strings";
 
@@ -56,19 +56,41 @@ test("the front page lists the plan, every part and every module", async ({ page
   expect(errors).toEqual([]);
 });
 
-test("Module 0 is published and its entry links to its lesson; no other entry is a link", async ({
+test("a module with lessons is published and its entry links to them; no other entry is a link", async ({
   page,
 }) => {
   await page.goto("#/");
   await ready(page);
-  const published = page.locator(".plan-module .module-status[data-status='published']");
-  await expect(published).toHaveCount(1);
+  // What the front page links is worked out from the lessons: a module with one lesson links its
+  // title to it, a module with several lists them.
+  const withLessons = MODULES.map((m) => ({
+    m,
+    lessons: [...lessonsOf(m, LESSONS)].sort((a, b) => a.order - b.order),
+  })).filter((x) => x.lessons.length > 0);
+  const single = withLessons.filter((x) => x.lessons.length === 1);
+  const several = withLessons.filter((x) => x.lessons.length > 1);
+  await expect(page.locator(".plan-module .module-status[data-status='published']")).toHaveCount(
+    withLessons.length,
+  );
   const entry = page.locator('.plan-module[data-module="meet-the-machine"]');
   await expect(entry.locator(".module-status")).toHaveText(STRINGS.status.published);
   const link = entry.locator("h3 a");
   await expect(link).toHaveText("Meet the machine");
   await expect(link).toHaveAttribute("href", "#/lesson/meet-the-machine");
-  await expect(page.locator(".plan-module h3 a")).toHaveCount(1);
+  await expect(page.locator(".plan-module h3 a")).toHaveCount(single.length);
+  await expect(page.locator(".plan-module .module-lessons a")).toHaveCount(
+    several.reduce((n, x) => n + x.lessons.length, 0),
+  );
+  for (const { m, lessons } of several) {
+    const item = page.locator(`.plan-module[data-module="${m.id}"]`);
+    await expect(item.locator("h3 a")).toHaveCount(0);
+    await expect(item.locator(".module-lessons a")).toHaveText(lessons.map((l) => l.title));
+    for (const [i, l] of lessons.entries())
+      await expect(item.locator(".module-lessons a").nth(i)).toHaveAttribute(
+        "href",
+        `#/lesson/${l.id}`,
+      );
+  }
   await link.click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Meet the machine");
   expect(new URL(page.url()).hash).toBe("#/lesson/meet-the-machine");

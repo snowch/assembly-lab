@@ -63,6 +63,7 @@ export function ListingView({
   next = null,
   litC = null,
   ran = null,
+  showC = true,
 }: {
   cLines: readonly string[];
   lines: readonly ListingLine[];
@@ -72,22 +73,26 @@ export function ListingView({
   litC?: number | null;
   /** The index into `lines` of the instruction that ran last, whose C line tag is lit with it. */
   ran?: number | null;
+  /** False for instructions that no compiler made from any C: only the instructions are drawn. */
+  showC?: boolean;
 }) {
   return (
-    <div className="al-listing">
-      <div className="al-pane al-c" role="group" aria-label={S.listing.cPane}>
-        <div className="al-pane-head">{S.listing.cHeading}</div>
-        {cLines.map((text, i) => (
-          <div className="al-cline" key={i} data-line={i + 1} data-lit={litC === i + 1}>
-            <span className="al-ln">{i + 1}</span>
-            <code className="al-src">{text === "" ? " " : text}</code>
-          </div>
-        ))}
-      </div>
+    <div className={showC ? "al-listing" : "al-listing al-listing-asm"}>
+      {showC && (
+        <div className="al-pane al-c" role="group" aria-label={S.listing.cPane}>
+          <div className="al-pane-head">{S.listing.cHeading}</div>
+          {cLines.map((text, i) => (
+            <div className="al-cline" key={i} data-line={i + 1} data-lit={litC === i + 1}>
+              <span className="al-ln">{i + 1}</span>
+              <code className="al-src">{text === "" ? " " : text}</code>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="al-pane al-asm" role="group" aria-label={S.listing.instructionsPane}>
         <div className="al-pane-head">
           <span>{S.listing.instructionsHeading}</span>
-          <span>{S.listing.cLineHeading}</span>
+          {showC && <span>{S.listing.cLineHeading}</span>}
         </div>
         {lines.map((line, i) =>
           line.kind === "label" ? (

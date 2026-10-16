@@ -7,6 +7,8 @@
 
 import { parseLesson, type Lesson } from "@platform/lesson-schema";
 
+import { masks } from "./masks";
 import { meetTheMachine } from "./meet-the-machine";
+import { shifts } from "./shifts";
 
-export const LESSONS: readonly Lesson[] = [meetTheMachine].map(parseLesson);
+export const LESSONS: readonly Lesson[] = [meetTheMachine, masks, shifts].map(parseLesson);

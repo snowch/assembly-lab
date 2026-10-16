@@ -1,0 +1,89 @@
+{
+  "entry": "set_gear_reference",
+  "calls": [
+    {
+      "entry": "set_gear_reference",
+      "args": [
+        ["53", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "set_gear_reference",
+      "args": [
+        ["0", 32],
+        ["7", 32]
+      ]
+    },
+    {
+      "entry": "set_gear_reference",
+      "args": [
+        ["4294967295", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "set_gear_reference",
+      "args": [
+        ["4660", 32],
+        ["13", 32]
+      ]
+    },
+    {
+      "entry": "set_gear_start",
+      "args": [
+        ["53", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "set_gear_start",
+      "args": [
+        ["0", 32],
+        ["7", 32]
+      ]
+    },
+    {
+      "entry": "set_gear_start",
+      "args": [
+        ["4294967295", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "set_gear_start",
+      "args": [
+        ["4660", 32],
+        ["13", 32]
+      ]
+    },
+    {
+      "entry": "set_gear_no_clear",
+      "args": [
+        ["53", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "set_gear_no_clear",
+      "args": [
+        ["0", 32],
+        ["7", 32]
+      ]
+    },
+    {
+      "entry": "set_gear_no_clear",
+      "args": [
+        ["4294967295", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "set_gear_no_clear",
+      "args": [
+        ["4660", 32],
+        ["13", 32]
+      ]
+    }
+  ]
+}
