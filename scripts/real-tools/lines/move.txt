@@ -1,0 +1,2518 @@
+mov x0, 0
+mov x0, 1
+mov x0, 5
+mov x0, 65535
+mov x0, 65536
+mov x0, 0x12345
+mov x0, 0x10000
+mov x0, 0x20000
+mov x0, 0xffff0000
+mov x0, 0x00ff00ff
+mov x0, 0xff00ff00
+mov x0, 0xffffffff
+mov x0, 0x100000000
+mov x0, -1
+mov x0, -2
+mov x0, -65536
+mov x0, -65537
+mov x0, -0x80000000
+mov x0, -0x80000001
+mov x0, -0x100000000
+mov x0, 0x80000000
+mov x0, 0x7fffffff
+mov x0, 0xffff00000000
+mov x0, 0xffff0000ffff
+mov x0, 0xffffffff00000000
+mov x0, 0x123456789
+mov x0, 0x1234567800000000
+mov x0, 0x5555555555555555
+mov x0, 0x55555555
+mov x0, 0xfffffffffffffffe
+mov x0, 0xffffffffffff0000
+mov x0, 0x1fffffffffffffff
+mov x0, 0xffff0001
+mov x0, 0x0001ffff
+mov x0, 0x12340000
+mov x0, 0x1234000000000000
+mov x0, 0xffffffffffff1234
+mov x0, 0xffff1234ffffffff
+mov x0, 0xffffffff1234ffff
+mov x0, -0x10000
+mov x0, -0x1234
+mov x0, #5
+mov x0, # 5
+mov x0, 'a'
+mov x0, 010
+mov x0, 0b101
+mov x0, 1+2
+mov x0, 1<<4
+mov x0, (3*4)
+mov x0, ~0
+mov x0, ~5
+mov x0, -(1<<15)
+mov x0, 0x3f
+mov x0, 0xf0f0f0f0
+mov x0, 0x0f0f0f0f0f0f0f0f
+mov x0, x1
+mov x0, sp
+mov x0, xzr
+mov x0, w1
+mov x0, wzr
+mov x0, wsp
+mov x0, lr
+mov x0, fp
+mov x0, x29
+mov x0, x30
+mov x0, ip0
+mov x0, ip1
+mov sp, 0
+mov sp, 1
+mov sp, 5
+mov sp, 65535
+mov sp, 65536
+mov sp, 0x12345
+mov sp, 0x10000
+mov sp, 0x20000
+mov sp, 0xffff0000
+mov sp, 0x00ff00ff
+mov sp, 0xff00ff00
+mov sp, 0xffffffff
+mov sp, 0x100000000
+mov sp, -1
+mov sp, -2
+mov sp, -65536
+mov sp, -65537
+mov sp, -0x80000000
+mov sp, -0x80000001
+mov sp, -0x100000000
+mov sp, 0x80000000
+mov sp, 0x7fffffff
+mov sp, 0xffff00000000
+mov sp, 0xffff0000ffff
+mov sp, 0xffffffff00000000
+mov sp, 0x123456789
+mov sp, 0x1234567800000000
+mov sp, 0x5555555555555555
+mov sp, 0x55555555
+mov sp, 0xfffffffffffffffe
+mov sp, 0xffffffffffff0000
+mov sp, 0x1fffffffffffffff
+mov sp, 0xffff0001
+mov sp, 0x0001ffff
+mov sp, 0x12340000
+mov sp, 0x1234000000000000
+mov sp, 0xffffffffffff1234
+mov sp, 0xffff1234ffffffff
+mov sp, 0xffffffff1234ffff
+mov sp, -0x10000
+mov sp, -0x1234
+mov sp, #5
+mov sp, # 5
+mov sp, 'a'
+mov sp, 010
+mov sp, 0b101
+mov sp, 1+2
+mov sp, 1<<4
+mov sp, (3*4)
+mov sp, ~0
+mov sp, ~5
+mov sp, -(1<<15)
+mov sp, 0x3f
+mov sp, 0xf0f0f0f0
+mov sp, 0x0f0f0f0f0f0f0f0f
+mov sp, x1
+mov sp, sp
+mov sp, xzr
+mov sp, w1
+mov sp, wzr
+mov sp, wsp
+mov sp, lr
+mov sp, fp
+mov sp, x29
+mov sp, x30
+mov sp, ip0
+mov sp, ip1
+mov xzr, 0
+mov xzr, 1
+mov xzr, 5
+mov xzr, 65535
+mov xzr, 65536
+mov xzr, 0x12345
+mov xzr, 0x10000
+mov xzr, 0x20000
+mov xzr, 0xffff0000
+mov xzr, 0x00ff00ff
+mov xzr, 0xff00ff00
+mov xzr, 0xffffffff
+mov xzr, 0x100000000
+mov xzr, -1
+mov xzr, -2
+mov xzr, -65536
+mov xzr, -65537
+mov xzr, -0x80000000
+mov xzr, -0x80000001
+mov xzr, -0x100000000
+mov xzr, 0x80000000
+mov xzr, 0x7fffffff
+mov xzr, 0xffff00000000
+mov xzr, 0xffff0000ffff
+mov xzr, 0xffffffff00000000
+mov xzr, 0x123456789
+mov xzr, 0x1234567800000000
+mov xzr, 0x5555555555555555
+mov xzr, 0x55555555
+mov xzr, 0xfffffffffffffffe
+mov xzr, 0xffffffffffff0000
+mov xzr, 0x1fffffffffffffff
+mov xzr, 0xffff0001
+mov xzr, 0x0001ffff
+mov xzr, 0x12340000
+mov xzr, 0x1234000000000000
+mov xzr, 0xffffffffffff1234
+mov xzr, 0xffff1234ffffffff
+mov xzr, 0xffffffff1234ffff
+mov xzr, -0x10000
+mov xzr, -0x1234
+mov xzr, #5
+mov xzr, # 5
+mov xzr, 'a'
+mov xzr, 010
+mov xzr, 0b101
+mov xzr, 1+2
+mov xzr, 1<<4
+mov xzr, (3*4)
+mov xzr, ~0
+mov xzr, ~5
+mov xzr, -(1<<15)
+mov xzr, 0x3f
+mov xzr, 0xf0f0f0f0
+mov xzr, 0x0f0f0f0f0f0f0f0f
+mov xzr, x1
+mov xzr, sp
+mov xzr, xzr
+mov xzr, w1
+mov xzr, wzr
+mov xzr, wsp
+mov xzr, lr
+mov xzr, fp
+mov xzr, x29
+mov xzr, x30
+mov xzr, ip0
+mov xzr, ip1
+mov w0, 0
+mov w0, 1
+mov w0, 5
+mov w0, 65535
+mov w0, 65536
+mov w0, 0x12345
+mov w0, 0x10000
+mov w0, 0x20000
+mov w0, 0xffff0000
+mov w0, 0x00ff00ff
+mov w0, 0xff00ff00
+mov w0, 0xffffffff
+mov w0, 0x100000000
+mov w0, -1
+mov w0, -2
+mov w0, -65536
+mov w0, -65537
+mov w0, -0x80000000
+mov w0, -0x80000001
+mov w0, -0x100000000
+mov w0, 0x80000000
+mov w0, 0x7fffffff
+mov w0, 0xffff00000000
+mov w0, 0xffff0000ffff
+mov w0, 0xffffffff00000000
+mov w0, 0x123456789
+mov w0, 0x1234567800000000
+mov w0, 0x5555555555555555
+mov w0, 0x55555555
+mov w0, 0xfffffffffffffffe
+mov w0, 0xffffffffffff0000
+mov w0, 0x1fffffffffffffff
+mov w0, 0xffff0001
+mov w0, 0x0001ffff
+mov w0, 0x12340000
+mov w0, 0x1234000000000000
+mov w0, 0xffffffffffff1234
+mov w0, 0xffff1234ffffffff
+mov w0, 0xffffffff1234ffff
+mov w0, -0x10000
+mov w0, -0x1234
+mov w0, #5
+mov w0, # 5
+mov w0, 'a'
+mov w0, 010
+mov w0, 0b101
+mov w0, 1+2
+mov w0, 1<<4
+mov w0, (3*4)
+mov w0, ~0
+mov w0, ~5
+mov w0, -(1<<15)
+mov w0, 0x3f
+mov w0, 0xf0f0f0f0
+mov w0, 0x0f0f0f0f0f0f0f0f
+mov w0, w1
+mov w0, wsp
+mov w0, wzr
+mov w0, x1
+mov w0, xzr
+mov w0, sp
+mov w0, lr
+mov w0, fp
+mov w0, x29
+mov w0, x30
+mov w0, ip0
+mov w0, ip1
+mov wsp, 0
+mov wsp, 1
+mov wsp, 5
+mov wsp, 65535
+mov wsp, 65536
+mov wsp, 0x12345
+mov wsp, 0x10000
+mov wsp, 0x20000
+mov wsp, 0xffff0000
+mov wsp, 0x00ff00ff
+mov wsp, 0xff00ff00
+mov wsp, 0xffffffff
+mov wsp, 0x100000000
+mov wsp, -1
+mov wsp, -2
+mov wsp, -65536
+mov wsp, -65537
+mov wsp, -0x80000000
+mov wsp, -0x80000001
+mov wsp, -0x100000000
+mov wsp, 0x80000000
+mov wsp, 0x7fffffff
+mov wsp, 0xffff00000000
+mov wsp, 0xffff0000ffff
+mov wsp, 0xffffffff00000000
+mov wsp, 0x123456789
+mov wsp, 0x1234567800000000
+mov wsp, 0x5555555555555555
+mov wsp, 0x55555555
+mov wsp, 0xfffffffffffffffe
+mov wsp, 0xffffffffffff0000
+mov wsp, 0x1fffffffffffffff
+mov wsp, 0xffff0001
+mov wsp, 0x0001ffff
+mov wsp, 0x12340000
+mov wsp, 0x1234000000000000
+mov wsp, 0xffffffffffff1234
+mov wsp, 0xffff1234ffffffff
+mov wsp, 0xffffffff1234ffff
+mov wsp, -0x10000
+mov wsp, -0x1234
+mov wsp, #5
+mov wsp, # 5
+mov wsp, 'a'
+mov wsp, 010
+mov wsp, 0b101
+mov wsp, 1+2
+mov wsp, 1<<4
+mov wsp, (3*4)
+mov wsp, ~0
+mov wsp, ~5
+mov wsp, -(1<<15)
+mov wsp, 0x3f
+mov wsp, 0xf0f0f0f0
+mov wsp, 0x0f0f0f0f0f0f0f0f
+mov wsp, w1
+mov wsp, wsp
+mov wsp, wzr
+mov wsp, x1
+mov wsp, xzr
+mov wsp, sp
+mov wsp, lr
+mov wsp, fp
+mov wsp, x29
+mov wsp, x30
+mov wsp, ip0
+mov wsp, ip1
+mov wzr, 0
+mov wzr, 1
+mov wzr, 5
+mov wzr, 65535
+mov wzr, 65536
+mov wzr, 0x12345
+mov wzr, 0x10000
+mov wzr, 0x20000
+mov wzr, 0xffff0000
+mov wzr, 0x00ff00ff
+mov wzr, 0xff00ff00
+mov wzr, 0xffffffff
+mov wzr, 0x100000000
+mov wzr, -1
+mov wzr, -2
+mov wzr, -65536
+mov wzr, -65537
+mov wzr, -0x80000000
+mov wzr, -0x80000001
+mov wzr, -0x100000000
+mov wzr, 0x80000000
+mov wzr, 0x7fffffff
+mov wzr, 0xffff00000000
+mov wzr, 0xffff0000ffff
+mov wzr, 0xffffffff00000000
+mov wzr, 0x123456789
+mov wzr, 0x1234567800000000
+mov wzr, 0x5555555555555555
+mov wzr, 0x55555555
+mov wzr, 0xfffffffffffffffe
+mov wzr, 0xffffffffffff0000
+mov wzr, 0x1fffffffffffffff
+mov wzr, 0xffff0001
+mov wzr, 0x0001ffff
+mov wzr, 0x12340000
+mov wzr, 0x1234000000000000
+mov wzr, 0xffffffffffff1234
+mov wzr, 0xffff1234ffffffff
+mov wzr, 0xffffffff1234ffff
+mov wzr, -0x10000
+mov wzr, -0x1234
+mov wzr, #5
+mov wzr, # 5
+mov wzr, 'a'
+mov wzr, 010
+mov wzr, 0b101
+mov wzr, 1+2
+mov wzr, 1<<4
+mov wzr, (3*4)
+mov wzr, ~0
+mov wzr, ~5
+mov wzr, -(1<<15)
+mov wzr, 0x3f
+mov wzr, 0xf0f0f0f0
+mov wzr, 0x0f0f0f0f0f0f0f0f
+mov wzr, w1
+mov wzr, wsp
+mov wzr, wzr
+mov wzr, x1
+mov wzr, xzr
+mov wzr, sp
+mov wzr, lr
+mov wzr, fp
+mov wzr, x29
+mov wzr, x30
+mov wzr, ip0
+mov wzr, ip1
+movz x0, 0
+movz x0, 0, lsl 0
+movz x0, 0, lsl 16
+movz x0, 0, lsl #16
+movz x0, 0, lsl 32
+movz x0, 0, lsl 48
+movz x0, 0, lsl 8
+movz x0, 0, lsl 64
+movz x0, 0, lsl 15
+movz x0, 0, lsr 16
+movz x0, 0, asr 16
+movz x0, 0, lsl
+movz x0, 0, lsl -16
+movz x0, 1
+movz x0, 1, lsl 0
+movz x0, 1, lsl 16
+movz x0, 1, lsl #16
+movz x0, 1, lsl 32
+movz x0, 1, lsl 48
+movz x0, 1, lsl 8
+movz x0, 1, lsl 64
+movz x0, 1, lsl 15
+movz x0, 1, lsr 16
+movz x0, 1, asr 16
+movz x0, 1, lsl
+movz x0, 1, lsl -16
+movz x0, 0xffff
+movz x0, 0xffff, lsl 0
+movz x0, 0xffff, lsl 16
+movz x0, 0xffff, lsl #16
+movz x0, 0xffff, lsl 32
+movz x0, 0xffff, lsl 48
+movz x0, 0xffff, lsl 8
+movz x0, 0xffff, lsl 64
+movz x0, 0xffff, lsl 15
+movz x0, 0xffff, lsr 16
+movz x0, 0xffff, asr 16
+movz x0, 0xffff, lsl
+movz x0, 0xffff, lsl -16
+movz x0, 0x10000
+movz x0, 0x10000, lsl 0
+movz x0, 0x10000, lsl 16
+movz x0, 0x10000, lsl #16
+movz x0, 0x10000, lsl 32
+movz x0, 0x10000, lsl 48
+movz x0, 0x10000, lsl 8
+movz x0, 0x10000, lsl 64
+movz x0, 0x10000, lsl 15
+movz x0, 0x10000, lsr 16
+movz x0, 0x10000, asr 16
+movz x0, 0x10000, lsl
+movz x0, 0x10000, lsl -16
+movz x0, -1
+movz x0, -1, lsl 0
+movz x0, -1, lsl 16
+movz x0, -1, lsl #16
+movz x0, -1, lsl 32
+movz x0, -1, lsl 48
+movz x0, -1, lsl 8
+movz x0, -1, lsl 64
+movz x0, -1, lsl 15
+movz x0, -1, lsr 16
+movz x0, -1, asr 16
+movz x0, -1, lsl
+movz x0, -1, lsl -16
+movz x0, 65535
+movz x0, 65535, lsl 0
+movz x0, 65535, lsl 16
+movz x0, 65535, lsl #16
+movz x0, 65535, lsl 32
+movz x0, 65535, lsl 48
+movz x0, 65535, lsl 8
+movz x0, 65535, lsl 64
+movz x0, 65535, lsl 15
+movz x0, 65535, lsr 16
+movz x0, 65535, asr 16
+movz x0, 65535, lsl
+movz x0, 65535, lsl -16
+movz x0, #7
+movz x0, #7, lsl 0
+movz x0, #7, lsl 16
+movz x0, #7, lsl #16
+movz x0, #7, lsl 32
+movz x0, #7, lsl 48
+movz x0, #7, lsl 8
+movz x0, #7, lsl 64
+movz x0, #7, lsl 15
+movz x0, #7, lsr 16
+movz x0, #7, asr 16
+movz x0, #7, lsl
+movz x0, #7, lsl -16
+movz x0, 0x12345
+movz x0, 0x12345, lsl 0
+movz x0, 0x12345, lsl 16
+movz x0, 0x12345, lsl #16
+movz x0, 0x12345, lsl 32
+movz x0, 0x12345, lsl 48
+movz x0, 0x12345, lsl 8
+movz x0, 0x12345, lsl 64
+movz x0, 0x12345, lsl 15
+movz x0, 0x12345, lsr 16
+movz x0, 0x12345, asr 16
+movz x0, 0x12345, lsl
+movz x0, 0x12345, lsl -16
+movz x0, 1+1
+movz x0, 1+1, lsl 0
+movz x0, 1+1, lsl 16
+movz x0, 1+1, lsl #16
+movz x0, 1+1, lsl 32
+movz x0, 1+1, lsl 48
+movz x0, 1+1, lsl 8
+movz x0, 1+1, lsl 64
+movz x0, 1+1, lsl 15
+movz x0, 1+1, lsr 16
+movz x0, 1+1, asr 16
+movz x0, 1+1, lsl
+movz x0, 1+1, lsl -16
+movz xzr, 0
+movz xzr, 0, lsl 0
+movz xzr, 0, lsl 16
+movz xzr, 0, lsl #16
+movz xzr, 0, lsl 32
+movz xzr, 0, lsl 48
+movz xzr, 0, lsl 8
+movz xzr, 0, lsl 64
+movz xzr, 0, lsl 15
+movz xzr, 0, lsr 16
+movz xzr, 0, asr 16
+movz xzr, 0, lsl
+movz xzr, 0, lsl -16
+movz xzr, 1
+movz xzr, 1, lsl 0
+movz xzr, 1, lsl 16
+movz xzr, 1, lsl #16
+movz xzr, 1, lsl 32
+movz xzr, 1, lsl 48
+movz xzr, 1, lsl 8
+movz xzr, 1, lsl 64
+movz xzr, 1, lsl 15
+movz xzr, 1, lsr 16
+movz xzr, 1, asr 16
+movz xzr, 1, lsl
+movz xzr, 1, lsl -16
+movz xzr, 0xffff
+movz xzr, 0xffff, lsl 0
+movz xzr, 0xffff, lsl 16
+movz xzr, 0xffff, lsl #16
+movz xzr, 0xffff, lsl 32
+movz xzr, 0xffff, lsl 48
+movz xzr, 0xffff, lsl 8
+movz xzr, 0xffff, lsl 64
+movz xzr, 0xffff, lsl 15
+movz xzr, 0xffff, lsr 16
+movz xzr, 0xffff, asr 16
+movz xzr, 0xffff, lsl
+movz xzr, 0xffff, lsl -16
+movz xzr, 0x10000
+movz xzr, 0x10000, lsl 0
+movz xzr, 0x10000, lsl 16
+movz xzr, 0x10000, lsl #16
+movz xzr, 0x10000, lsl 32
+movz xzr, 0x10000, lsl 48
+movz xzr, 0x10000, lsl 8
+movz xzr, 0x10000, lsl 64
+movz xzr, 0x10000, lsl 15
+movz xzr, 0x10000, lsr 16
+movz xzr, 0x10000, asr 16
+movz xzr, 0x10000, lsl
+movz xzr, 0x10000, lsl -16
+movz xzr, -1
+movz xzr, -1, lsl 0
+movz xzr, -1, lsl 16
+movz xzr, -1, lsl #16
+movz xzr, -1, lsl 32
+movz xzr, -1, lsl 48
+movz xzr, -1, lsl 8
+movz xzr, -1, lsl 64
+movz xzr, -1, lsl 15
+movz xzr, -1, lsr 16
+movz xzr, -1, asr 16
+movz xzr, -1, lsl
+movz xzr, -1, lsl -16
+movz xzr, 65535
+movz xzr, 65535, lsl 0
+movz xzr, 65535, lsl 16
+movz xzr, 65535, lsl #16
+movz xzr, 65535, lsl 32
+movz xzr, 65535, lsl 48
+movz xzr, 65535, lsl 8
+movz xzr, 65535, lsl 64
+movz xzr, 65535, lsl 15
+movz xzr, 65535, lsr 16
+movz xzr, 65535, asr 16
+movz xzr, 65535, lsl
+movz xzr, 65535, lsl -16
+movz xzr, #7
+movz xzr, #7, lsl 0
+movz xzr, #7, lsl 16
+movz xzr, #7, lsl #16
+movz xzr, #7, lsl 32
+movz xzr, #7, lsl 48
+movz xzr, #7, lsl 8
+movz xzr, #7, lsl 64
+movz xzr, #7, lsl 15
+movz xzr, #7, lsr 16
+movz xzr, #7, asr 16
+movz xzr, #7, lsl
+movz xzr, #7, lsl -16
+movz xzr, 0x12345
+movz xzr, 0x12345, lsl 0
+movz xzr, 0x12345, lsl 16
+movz xzr, 0x12345, lsl #16
+movz xzr, 0x12345, lsl 32
+movz xzr, 0x12345, lsl 48
+movz xzr, 0x12345, lsl 8
+movz xzr, 0x12345, lsl 64
+movz xzr, 0x12345, lsl 15
+movz xzr, 0x12345, lsr 16
+movz xzr, 0x12345, asr 16
+movz xzr, 0x12345, lsl
+movz xzr, 0x12345, lsl -16
+movz xzr, 1+1
+movz xzr, 1+1, lsl 0
+movz xzr, 1+1, lsl 16
+movz xzr, 1+1, lsl #16
+movz xzr, 1+1, lsl 32
+movz xzr, 1+1, lsl 48
+movz xzr, 1+1, lsl 8
+movz xzr, 1+1, lsl 64
+movz xzr, 1+1, lsl 15
+movz xzr, 1+1, lsr 16
+movz xzr, 1+1, asr 16
+movz xzr, 1+1, lsl
+movz xzr, 1+1, lsl -16
+movz sp, 0
+movz sp, 0, lsl 0
+movz sp, 0, lsl 16
+movz sp, 0, lsl #16
+movz sp, 0, lsl 32
+movz sp, 0, lsl 48
+movz sp, 0, lsl 8
+movz sp, 0, lsl 64
+movz sp, 0, lsl 15
+movz sp, 0, lsr 16
+movz sp, 0, asr 16
+movz sp, 0, lsl
+movz sp, 0, lsl -16
+movz sp, 1
+movz sp, 1, lsl 0
+movz sp, 1, lsl 16
+movz sp, 1, lsl #16
+movz sp, 1, lsl 32
+movz sp, 1, lsl 48
+movz sp, 1, lsl 8
+movz sp, 1, lsl 64
+movz sp, 1, lsl 15
+movz sp, 1, lsr 16
+movz sp, 1, asr 16
+movz sp, 1, lsl
+movz sp, 1, lsl -16
+movz sp, 0xffff
+movz sp, 0xffff, lsl 0
+movz sp, 0xffff, lsl 16
+movz sp, 0xffff, lsl #16
+movz sp, 0xffff, lsl 32
+movz sp, 0xffff, lsl 48
+movz sp, 0xffff, lsl 8
+movz sp, 0xffff, lsl 64
+movz sp, 0xffff, lsl 15
+movz sp, 0xffff, lsr 16
+movz sp, 0xffff, asr 16
+movz sp, 0xffff, lsl
+movz sp, 0xffff, lsl -16
+movz sp, 0x10000
+movz sp, 0x10000, lsl 0
+movz sp, 0x10000, lsl 16
+movz sp, 0x10000, lsl #16
+movz sp, 0x10000, lsl 32
+movz sp, 0x10000, lsl 48
+movz sp, 0x10000, lsl 8
+movz sp, 0x10000, lsl 64
+movz sp, 0x10000, lsl 15
+movz sp, 0x10000, lsr 16
+movz sp, 0x10000, asr 16
+movz sp, 0x10000, lsl
+movz sp, 0x10000, lsl -16
+movz sp, -1
+movz sp, -1, lsl 0
+movz sp, -1, lsl 16
+movz sp, -1, lsl #16
+movz sp, -1, lsl 32
+movz sp, -1, lsl 48
+movz sp, -1, lsl 8
+movz sp, -1, lsl 64
+movz sp, -1, lsl 15
+movz sp, -1, lsr 16
+movz sp, -1, asr 16
+movz sp, -1, lsl
+movz sp, -1, lsl -16
+movz sp, 65535
+movz sp, 65535, lsl 0
+movz sp, 65535, lsl 16
+movz sp, 65535, lsl #16
+movz sp, 65535, lsl 32
+movz sp, 65535, lsl 48
+movz sp, 65535, lsl 8
+movz sp, 65535, lsl 64
+movz sp, 65535, lsl 15
+movz sp, 65535, lsr 16
+movz sp, 65535, asr 16
+movz sp, 65535, lsl
+movz sp, 65535, lsl -16
+movz sp, #7
+movz sp, #7, lsl 0
+movz sp, #7, lsl 16
+movz sp, #7, lsl #16
+movz sp, #7, lsl 32
+movz sp, #7, lsl 48
+movz sp, #7, lsl 8
+movz sp, #7, lsl 64
+movz sp, #7, lsl 15
+movz sp, #7, lsr 16
+movz sp, #7, asr 16
+movz sp, #7, lsl
+movz sp, #7, lsl -16
+movz sp, 0x12345
+movz sp, 0x12345, lsl 0
+movz sp, 0x12345, lsl 16
+movz sp, 0x12345, lsl #16
+movz sp, 0x12345, lsl 32
+movz sp, 0x12345, lsl 48
+movz sp, 0x12345, lsl 8
+movz sp, 0x12345, lsl 64
+movz sp, 0x12345, lsl 15
+movz sp, 0x12345, lsr 16
+movz sp, 0x12345, asr 16
+movz sp, 0x12345, lsl
+movz sp, 0x12345, lsl -16
+movz sp, 1+1
+movz sp, 1+1, lsl 0
+movz sp, 1+1, lsl 16
+movz sp, 1+1, lsl #16
+movz sp, 1+1, lsl 32
+movz sp, 1+1, lsl 48
+movz sp, 1+1, lsl 8
+movz sp, 1+1, lsl 64
+movz sp, 1+1, lsl 15
+movz sp, 1+1, lsr 16
+movz sp, 1+1, asr 16
+movz sp, 1+1, lsl
+movz sp, 1+1, lsl -16
+movz w0, 0
+movz w0, 0, lsl 0
+movz w0, 0, lsl 16
+movz w0, 0, lsl #16
+movz w0, 0, lsl 32
+movz w0, 0, lsl 48
+movz w0, 0, lsl 8
+movz w0, 0, lsl 64
+movz w0, 0, lsl 15
+movz w0, 0, lsr 16
+movz w0, 0, asr 16
+movz w0, 0, lsl
+movz w0, 0, lsl -16
+movz w0, 1
+movz w0, 1, lsl 0
+movz w0, 1, lsl 16
+movz w0, 1, lsl #16
+movz w0, 1, lsl 32
+movz w0, 1, lsl 48
+movz w0, 1, lsl 8
+movz w0, 1, lsl 64
+movz w0, 1, lsl 15
+movz w0, 1, lsr 16
+movz w0, 1, asr 16
+movz w0, 1, lsl
+movz w0, 1, lsl -16
+movz w0, 0xffff
+movz w0, 0xffff, lsl 0
+movz w0, 0xffff, lsl 16
+movz w0, 0xffff, lsl #16
+movz w0, 0xffff, lsl 32
+movz w0, 0xffff, lsl 48
+movz w0, 0xffff, lsl 8
+movz w0, 0xffff, lsl 64
+movz w0, 0xffff, lsl 15
+movz w0, 0xffff, lsr 16
+movz w0, 0xffff, asr 16
+movz w0, 0xffff, lsl
+movz w0, 0xffff, lsl -16
+movz w0, 0x10000
+movz w0, 0x10000, lsl 0
+movz w0, 0x10000, lsl 16
+movz w0, 0x10000, lsl #16
+movz w0, 0x10000, lsl 32
+movz w0, 0x10000, lsl 48
+movz w0, 0x10000, lsl 8
+movz w0, 0x10000, lsl 64
+movz w0, 0x10000, lsl 15
+movz w0, 0x10000, lsr 16
+movz w0, 0x10000, asr 16
+movz w0, 0x10000, lsl
+movz w0, 0x10000, lsl -16
+movz w0, -1
+movz w0, -1, lsl 0
+movz w0, -1, lsl 16
+movz w0, -1, lsl #16
+movz w0, -1, lsl 32
+movz w0, -1, lsl 48
+movz w0, -1, lsl 8
+movz w0, -1, lsl 64
+movz w0, -1, lsl 15
+movz w0, -1, lsr 16
+movz w0, -1, asr 16
+movz w0, -1, lsl
+movz w0, -1, lsl -16
+movz w0, 65535
+movz w0, 65535, lsl 0
+movz w0, 65535, lsl 16
+movz w0, 65535, lsl #16
+movz w0, 65535, lsl 32
+movz w0, 65535, lsl 48
+movz w0, 65535, lsl 8
+movz w0, 65535, lsl 64
+movz w0, 65535, lsl 15
+movz w0, 65535, lsr 16
+movz w0, 65535, asr 16
+movz w0, 65535, lsl
+movz w0, 65535, lsl -16
+movz w0, #7
+movz w0, #7, lsl 0
+movz w0, #7, lsl 16
+movz w0, #7, lsl #16
+movz w0, #7, lsl 32
+movz w0, #7, lsl 48
+movz w0, #7, lsl 8
+movz w0, #7, lsl 64
+movz w0, #7, lsl 15
+movz w0, #7, lsr 16
+movz w0, #7, asr 16
+movz w0, #7, lsl
+movz w0, #7, lsl -16
+movz w0, 0x12345
+movz w0, 0x12345, lsl 0
+movz w0, 0x12345, lsl 16
+movz w0, 0x12345, lsl #16
+movz w0, 0x12345, lsl 32
+movz w0, 0x12345, lsl 48
+movz w0, 0x12345, lsl 8
+movz w0, 0x12345, lsl 64
+movz w0, 0x12345, lsl 15
+movz w0, 0x12345, lsr 16
+movz w0, 0x12345, asr 16
+movz w0, 0x12345, lsl
+movz w0, 0x12345, lsl -16
+movz w0, 1+1
+movz w0, 1+1, lsl 0
+movz w0, 1+1, lsl 16
+movz w0, 1+1, lsl #16
+movz w0, 1+1, lsl 32
+movz w0, 1+1, lsl 48
+movz w0, 1+1, lsl 8
+movz w0, 1+1, lsl 64
+movz w0, 1+1, lsl 15
+movz w0, 1+1, lsr 16
+movz w0, 1+1, asr 16
+movz w0, 1+1, lsl
+movz w0, 1+1, lsl -16
+movz wzr, 0
+movz wzr, 0, lsl 0
+movz wzr, 0, lsl 16
+movz wzr, 0, lsl #16
+movz wzr, 0, lsl 32
+movz wzr, 0, lsl 48
+movz wzr, 0, lsl 8
+movz wzr, 0, lsl 64
+movz wzr, 0, lsl 15
+movz wzr, 0, lsr 16
+movz wzr, 0, asr 16
+movz wzr, 0, lsl
+movz wzr, 0, lsl -16
+movz wzr, 1
+movz wzr, 1, lsl 0
+movz wzr, 1, lsl 16
+movz wzr, 1, lsl #16
+movz wzr, 1, lsl 32
+movz wzr, 1, lsl 48
+movz wzr, 1, lsl 8
+movz wzr, 1, lsl 64
+movz wzr, 1, lsl 15
+movz wzr, 1, lsr 16
+movz wzr, 1, asr 16
+movz wzr, 1, lsl
+movz wzr, 1, lsl -16
+movz wzr, 0xffff
+movz wzr, 0xffff, lsl 0
+movz wzr, 0xffff, lsl 16
+movz wzr, 0xffff, lsl #16
+movz wzr, 0xffff, lsl 32
+movz wzr, 0xffff, lsl 48
+movz wzr, 0xffff, lsl 8
+movz wzr, 0xffff, lsl 64
+movz wzr, 0xffff, lsl 15
+movz wzr, 0xffff, lsr 16
+movz wzr, 0xffff, asr 16
+movz wzr, 0xffff, lsl
+movz wzr, 0xffff, lsl -16
+movz wzr, 0x10000
+movz wzr, 0x10000, lsl 0
+movz wzr, 0x10000, lsl 16
+movz wzr, 0x10000, lsl #16
+movz wzr, 0x10000, lsl 32
+movz wzr, 0x10000, lsl 48
+movz wzr, 0x10000, lsl 8
+movz wzr, 0x10000, lsl 64
+movz wzr, 0x10000, lsl 15
+movz wzr, 0x10000, lsr 16
+movz wzr, 0x10000, asr 16
+movz wzr, 0x10000, lsl
+movz wzr, 0x10000, lsl -16
+movz wzr, -1
+movz wzr, -1, lsl 0
+movz wzr, -1, lsl 16
+movz wzr, -1, lsl #16
+movz wzr, -1, lsl 32
+movz wzr, -1, lsl 48
+movz wzr, -1, lsl 8
+movz wzr, -1, lsl 64
+movz wzr, -1, lsl 15
+movz wzr, -1, lsr 16
+movz wzr, -1, asr 16
+movz wzr, -1, lsl
+movz wzr, -1, lsl -16
+movz wzr, 65535
+movz wzr, 65535, lsl 0
+movz wzr, 65535, lsl 16
+movz wzr, 65535, lsl #16
+movz wzr, 65535, lsl 32
+movz wzr, 65535, lsl 48
+movz wzr, 65535, lsl 8
+movz wzr, 65535, lsl 64
+movz wzr, 65535, lsl 15
+movz wzr, 65535, lsr 16
+movz wzr, 65535, asr 16
+movz wzr, 65535, lsl
+movz wzr, 65535, lsl -16
+movz wzr, #7
+movz wzr, #7, lsl 0
+movz wzr, #7, lsl 16
+movz wzr, #7, lsl #16
+movz wzr, #7, lsl 32
+movz wzr, #7, lsl 48
+movz wzr, #7, lsl 8
+movz wzr, #7, lsl 64
+movz wzr, #7, lsl 15
+movz wzr, #7, lsr 16
+movz wzr, #7, asr 16
+movz wzr, #7, lsl
+movz wzr, #7, lsl -16
+movz wzr, 0x12345
+movz wzr, 0x12345, lsl 0
+movz wzr, 0x12345, lsl 16
+movz wzr, 0x12345, lsl #16
+movz wzr, 0x12345, lsl 32
+movz wzr, 0x12345, lsl 48
+movz wzr, 0x12345, lsl 8
+movz wzr, 0x12345, lsl 64
+movz wzr, 0x12345, lsl 15
+movz wzr, 0x12345, lsr 16
+movz wzr, 0x12345, asr 16
+movz wzr, 0x12345, lsl
+movz wzr, 0x12345, lsl -16
+movz wzr, 1+1
+movz wzr, 1+1, lsl 0
+movz wzr, 1+1, lsl 16
+movz wzr, 1+1, lsl #16
+movz wzr, 1+1, lsl 32
+movz wzr, 1+1, lsl 48
+movz wzr, 1+1, lsl 8
+movz wzr, 1+1, lsl 64
+movz wzr, 1+1, lsl 15
+movz wzr, 1+1, lsr 16
+movz wzr, 1+1, asr 16
+movz wzr, 1+1, lsl
+movz wzr, 1+1, lsl -16
+movz wsp, 0
+movz wsp, 0, lsl 0
+movz wsp, 0, lsl 16
+movz wsp, 0, lsl #16
+movz wsp, 0, lsl 32
+movz wsp, 0, lsl 48
+movz wsp, 0, lsl 8
+movz wsp, 0, lsl 64
+movz wsp, 0, lsl 15
+movz wsp, 0, lsr 16
+movz wsp, 0, asr 16
+movz wsp, 0, lsl
+movz wsp, 0, lsl -16
+movz wsp, 1
+movz wsp, 1, lsl 0
+movz wsp, 1, lsl 16
+movz wsp, 1, lsl #16
+movz wsp, 1, lsl 32
+movz wsp, 1, lsl 48
+movz wsp, 1, lsl 8
+movz wsp, 1, lsl 64
+movz wsp, 1, lsl 15
+movz wsp, 1, lsr 16
+movz wsp, 1, asr 16
+movz wsp, 1, lsl
+movz wsp, 1, lsl -16
+movz wsp, 0xffff
+movz wsp, 0xffff, lsl 0
+movz wsp, 0xffff, lsl 16
+movz wsp, 0xffff, lsl #16
+movz wsp, 0xffff, lsl 32
+movz wsp, 0xffff, lsl 48
+movz wsp, 0xffff, lsl 8
+movz wsp, 0xffff, lsl 64
+movz wsp, 0xffff, lsl 15
+movz wsp, 0xffff, lsr 16
+movz wsp, 0xffff, asr 16
+movz wsp, 0xffff, lsl
+movz wsp, 0xffff, lsl -16
+movz wsp, 0x10000
+movz wsp, 0x10000, lsl 0
+movz wsp, 0x10000, lsl 16
+movz wsp, 0x10000, lsl #16
+movz wsp, 0x10000, lsl 32
+movz wsp, 0x10000, lsl 48
+movz wsp, 0x10000, lsl 8
+movz wsp, 0x10000, lsl 64
+movz wsp, 0x10000, lsl 15
+movz wsp, 0x10000, lsr 16
+movz wsp, 0x10000, asr 16
+movz wsp, 0x10000, lsl
+movz wsp, 0x10000, lsl -16
+movz wsp, -1
+movz wsp, -1, lsl 0
+movz wsp, -1, lsl 16
+movz wsp, -1, lsl #16
+movz wsp, -1, lsl 32
+movz wsp, -1, lsl 48
+movz wsp, -1, lsl 8
+movz wsp, -1, lsl 64
+movz wsp, -1, lsl 15
+movz wsp, -1, lsr 16
+movz wsp, -1, asr 16
+movz wsp, -1, lsl
+movz wsp, -1, lsl -16
+movz wsp, 65535
+movz wsp, 65535, lsl 0
+movz wsp, 65535, lsl 16
+movz wsp, 65535, lsl #16
+movz wsp, 65535, lsl 32
+movz wsp, 65535, lsl 48
+movz wsp, 65535, lsl 8
+movz wsp, 65535, lsl 64
+movz wsp, 65535, lsl 15
+movz wsp, 65535, lsr 16
+movz wsp, 65535, asr 16
+movz wsp, 65535, lsl
+movz wsp, 65535, lsl -16
+movz wsp, #7
+movz wsp, #7, lsl 0
+movz wsp, #7, lsl 16
+movz wsp, #7, lsl #16
+movz wsp, #7, lsl 32
+movz wsp, #7, lsl 48
+movz wsp, #7, lsl 8
+movz wsp, #7, lsl 64
+movz wsp, #7, lsl 15
+movz wsp, #7, lsr 16
+movz wsp, #7, asr 16
+movz wsp, #7, lsl
+movz wsp, #7, lsl -16
+movz wsp, 0x12345
+movz wsp, 0x12345, lsl 0
+movz wsp, 0x12345, lsl 16
+movz wsp, 0x12345, lsl #16
+movz wsp, 0x12345, lsl 32
+movz wsp, 0x12345, lsl 48
+movz wsp, 0x12345, lsl 8
+movz wsp, 0x12345, lsl 64
+movz wsp, 0x12345, lsl 15
+movz wsp, 0x12345, lsr 16
+movz wsp, 0x12345, asr 16
+movz wsp, 0x12345, lsl
+movz wsp, 0x12345, lsl -16
+movz wsp, 1+1
+movz wsp, 1+1, lsl 0
+movz wsp, 1+1, lsl 16
+movz wsp, 1+1, lsl #16
+movz wsp, 1+1, lsl 32
+movz wsp, 1+1, lsl 48
+movz wsp, 1+1, lsl 8
+movz wsp, 1+1, lsl 64
+movz wsp, 1+1, lsl 15
+movz wsp, 1+1, lsr 16
+movz wsp, 1+1, asr 16
+movz wsp, 1+1, lsl
+movz wsp, 1+1, lsl -16
+movn x0, 0
+movn x0, 0, lsl 0
+movn x0, 0, lsl 16
+movn x0, 0, lsl #16
+movn x0, 0, lsl 32
+movn x0, 0, lsl 48
+movn x0, 0, lsl 8
+movn x0, 0, lsl 64
+movn x0, 0, lsl 15
+movn x0, 0, lsr 16
+movn x0, 0, asr 16
+movn x0, 0, lsl
+movn x0, 0, lsl -16
+movn x0, 1
+movn x0, 1, lsl 0
+movn x0, 1, lsl 16
+movn x0, 1, lsl #16
+movn x0, 1, lsl 32
+movn x0, 1, lsl 48
+movn x0, 1, lsl 8
+movn x0, 1, lsl 64
+movn x0, 1, lsl 15
+movn x0, 1, lsr 16
+movn x0, 1, asr 16
+movn x0, 1, lsl
+movn x0, 1, lsl -16
+movn x0, 0xffff
+movn x0, 0xffff, lsl 0
+movn x0, 0xffff, lsl 16
+movn x0, 0xffff, lsl #16
+movn x0, 0xffff, lsl 32
+movn x0, 0xffff, lsl 48
+movn x0, 0xffff, lsl 8
+movn x0, 0xffff, lsl 64
+movn x0, 0xffff, lsl 15
+movn x0, 0xffff, lsr 16
+movn x0, 0xffff, asr 16
+movn x0, 0xffff, lsl
+movn x0, 0xffff, lsl -16
+movn x0, 0x10000
+movn x0, 0x10000, lsl 0
+movn x0, 0x10000, lsl 16
+movn x0, 0x10000, lsl #16
+movn x0, 0x10000, lsl 32
+movn x0, 0x10000, lsl 48
+movn x0, 0x10000, lsl 8
+movn x0, 0x10000, lsl 64
+movn x0, 0x10000, lsl 15
+movn x0, 0x10000, lsr 16
+movn x0, 0x10000, asr 16
+movn x0, 0x10000, lsl
+movn x0, 0x10000, lsl -16
+movn x0, -1
+movn x0, -1, lsl 0
+movn x0, -1, lsl 16
+movn x0, -1, lsl #16
+movn x0, -1, lsl 32
+movn x0, -1, lsl 48
+movn x0, -1, lsl 8
+movn x0, -1, lsl 64
+movn x0, -1, lsl 15
+movn x0, -1, lsr 16
+movn x0, -1, asr 16
+movn x0, -1, lsl
+movn x0, -1, lsl -16
+movn x0, 65535
+movn x0, 65535, lsl 0
+movn x0, 65535, lsl 16
+movn x0, 65535, lsl #16
+movn x0, 65535, lsl 32
+movn x0, 65535, lsl 48
+movn x0, 65535, lsl 8
+movn x0, 65535, lsl 64
+movn x0, 65535, lsl 15
+movn x0, 65535, lsr 16
+movn x0, 65535, asr 16
+movn x0, 65535, lsl
+movn x0, 65535, lsl -16
+movn x0, #7
+movn x0, #7, lsl 0
+movn x0, #7, lsl 16
+movn x0, #7, lsl #16
+movn x0, #7, lsl 32
+movn x0, #7, lsl 48
+movn x0, #7, lsl 8
+movn x0, #7, lsl 64
+movn x0, #7, lsl 15
+movn x0, #7, lsr 16
+movn x0, #7, asr 16
+movn x0, #7, lsl
+movn x0, #7, lsl -16
+movn x0, 0x12345
+movn x0, 0x12345, lsl 0
+movn x0, 0x12345, lsl 16
+movn x0, 0x12345, lsl #16
+movn x0, 0x12345, lsl 32
+movn x0, 0x12345, lsl 48
+movn x0, 0x12345, lsl 8
+movn x0, 0x12345, lsl 64
+movn x0, 0x12345, lsl 15
+movn x0, 0x12345, lsr 16
+movn x0, 0x12345, asr 16
+movn x0, 0x12345, lsl
+movn x0, 0x12345, lsl -16
+movn x0, 1+1
+movn x0, 1+1, lsl 0
+movn x0, 1+1, lsl 16
+movn x0, 1+1, lsl #16
+movn x0, 1+1, lsl 32
+movn x0, 1+1, lsl 48
+movn x0, 1+1, lsl 8
+movn x0, 1+1, lsl 64
+movn x0, 1+1, lsl 15
+movn x0, 1+1, lsr 16
+movn x0, 1+1, asr 16
+movn x0, 1+1, lsl
+movn x0, 1+1, lsl -16
+movn xzr, 0
+movn xzr, 0, lsl 0
+movn xzr, 0, lsl 16
+movn xzr, 0, lsl #16
+movn xzr, 0, lsl 32
+movn xzr, 0, lsl 48
+movn xzr, 0, lsl 8
+movn xzr, 0, lsl 64
+movn xzr, 0, lsl 15
+movn xzr, 0, lsr 16
+movn xzr, 0, asr 16
+movn xzr, 0, lsl
+movn xzr, 0, lsl -16
+movn xzr, 1
+movn xzr, 1, lsl 0
+movn xzr, 1, lsl 16
+movn xzr, 1, lsl #16
+movn xzr, 1, lsl 32
+movn xzr, 1, lsl 48
+movn xzr, 1, lsl 8
+movn xzr, 1, lsl 64
+movn xzr, 1, lsl 15
+movn xzr, 1, lsr 16
+movn xzr, 1, asr 16
+movn xzr, 1, lsl
+movn xzr, 1, lsl -16
+movn xzr, 0xffff
+movn xzr, 0xffff, lsl 0
+movn xzr, 0xffff, lsl 16
+movn xzr, 0xffff, lsl #16
+movn xzr, 0xffff, lsl 32
+movn xzr, 0xffff, lsl 48
+movn xzr, 0xffff, lsl 8
+movn xzr, 0xffff, lsl 64
+movn xzr, 0xffff, lsl 15
+movn xzr, 0xffff, lsr 16
+movn xzr, 0xffff, asr 16
+movn xzr, 0xffff, lsl
+movn xzr, 0xffff, lsl -16
+movn xzr, 0x10000
+movn xzr, 0x10000, lsl 0
+movn xzr, 0x10000, lsl 16
+movn xzr, 0x10000, lsl #16
+movn xzr, 0x10000, lsl 32
+movn xzr, 0x10000, lsl 48
+movn xzr, 0x10000, lsl 8
+movn xzr, 0x10000, lsl 64
+movn xzr, 0x10000, lsl 15
+movn xzr, 0x10000, lsr 16
+movn xzr, 0x10000, asr 16
+movn xzr, 0x10000, lsl
+movn xzr, 0x10000, lsl -16
+movn xzr, -1
+movn xzr, -1, lsl 0
+movn xzr, -1, lsl 16
+movn xzr, -1, lsl #16
+movn xzr, -1, lsl 32
+movn xzr, -1, lsl 48
+movn xzr, -1, lsl 8
+movn xzr, -1, lsl 64
+movn xzr, -1, lsl 15
+movn xzr, -1, lsr 16
+movn xzr, -1, asr 16
+movn xzr, -1, lsl
+movn xzr, -1, lsl -16
+movn xzr, 65535
+movn xzr, 65535, lsl 0
+movn xzr, 65535, lsl 16
+movn xzr, 65535, lsl #16
+movn xzr, 65535, lsl 32
+movn xzr, 65535, lsl 48
+movn xzr, 65535, lsl 8
+movn xzr, 65535, lsl 64
+movn xzr, 65535, lsl 15
+movn xzr, 65535, lsr 16
+movn xzr, 65535, asr 16
+movn xzr, 65535, lsl
+movn xzr, 65535, lsl -16
+movn xzr, #7
+movn xzr, #7, lsl 0
+movn xzr, #7, lsl 16
+movn xzr, #7, lsl #16
+movn xzr, #7, lsl 32
+movn xzr, #7, lsl 48
+movn xzr, #7, lsl 8
+movn xzr, #7, lsl 64
+movn xzr, #7, lsl 15
+movn xzr, #7, lsr 16
+movn xzr, #7, asr 16
+movn xzr, #7, lsl
+movn xzr, #7, lsl -16
+movn xzr, 0x12345
+movn xzr, 0x12345, lsl 0
+movn xzr, 0x12345, lsl 16
+movn xzr, 0x12345, lsl #16
+movn xzr, 0x12345, lsl 32
+movn xzr, 0x12345, lsl 48
+movn xzr, 0x12345, lsl 8
+movn xzr, 0x12345, lsl 64
+movn xzr, 0x12345, lsl 15
+movn xzr, 0x12345, lsr 16
+movn xzr, 0x12345, asr 16
+movn xzr, 0x12345, lsl
+movn xzr, 0x12345, lsl -16
+movn xzr, 1+1
+movn xzr, 1+1, lsl 0
+movn xzr, 1+1, lsl 16
+movn xzr, 1+1, lsl #16
+movn xzr, 1+1, lsl 32
+movn xzr, 1+1, lsl 48
+movn xzr, 1+1, lsl 8
+movn xzr, 1+1, lsl 64
+movn xzr, 1+1, lsl 15
+movn xzr, 1+1, lsr 16
+movn xzr, 1+1, asr 16
+movn xzr, 1+1, lsl
+movn xzr, 1+1, lsl -16
+movn sp, 0
+movn sp, 0, lsl 0
+movn sp, 0, lsl 16
+movn sp, 0, lsl #16
+movn sp, 0, lsl 32
+movn sp, 0, lsl 48
+movn sp, 0, lsl 8
+movn sp, 0, lsl 64
+movn sp, 0, lsl 15
+movn sp, 0, lsr 16
+movn sp, 0, asr 16
+movn sp, 0, lsl
+movn sp, 0, lsl -16
+movn sp, 1
+movn sp, 1, lsl 0
+movn sp, 1, lsl 16
+movn sp, 1, lsl #16
+movn sp, 1, lsl 32
+movn sp, 1, lsl 48
+movn sp, 1, lsl 8
+movn sp, 1, lsl 64
+movn sp, 1, lsl 15
+movn sp, 1, lsr 16
+movn sp, 1, asr 16
+movn sp, 1, lsl
+movn sp, 1, lsl -16
+movn sp, 0xffff
+movn sp, 0xffff, lsl 0
+movn sp, 0xffff, lsl 16
+movn sp, 0xffff, lsl #16
+movn sp, 0xffff, lsl 32
+movn sp, 0xffff, lsl 48
+movn sp, 0xffff, lsl 8
+movn sp, 0xffff, lsl 64
+movn sp, 0xffff, lsl 15
+movn sp, 0xffff, lsr 16
+movn sp, 0xffff, asr 16
+movn sp, 0xffff, lsl
+movn sp, 0xffff, lsl -16
+movn sp, 0x10000
+movn sp, 0x10000, lsl 0
+movn sp, 0x10000, lsl 16
+movn sp, 0x10000, lsl #16
+movn sp, 0x10000, lsl 32
+movn sp, 0x10000, lsl 48
+movn sp, 0x10000, lsl 8
+movn sp, 0x10000, lsl 64
+movn sp, 0x10000, lsl 15
+movn sp, 0x10000, lsr 16
+movn sp, 0x10000, asr 16
+movn sp, 0x10000, lsl
+movn sp, 0x10000, lsl -16
+movn sp, -1
+movn sp, -1, lsl 0
+movn sp, -1, lsl 16
+movn sp, -1, lsl #16
+movn sp, -1, lsl 32
+movn sp, -1, lsl 48
+movn sp, -1, lsl 8
+movn sp, -1, lsl 64
+movn sp, -1, lsl 15
+movn sp, -1, lsr 16
+movn sp, -1, asr 16
+movn sp, -1, lsl
+movn sp, -1, lsl -16
+movn sp, 65535
+movn sp, 65535, lsl 0
+movn sp, 65535, lsl 16
+movn sp, 65535, lsl #16
+movn sp, 65535, lsl 32
+movn sp, 65535, lsl 48
+movn sp, 65535, lsl 8
+movn sp, 65535, lsl 64
+movn sp, 65535, lsl 15
+movn sp, 65535, lsr 16
+movn sp, 65535, asr 16
+movn sp, 65535, lsl
+movn sp, 65535, lsl -16
+movn sp, #7
+movn sp, #7, lsl 0
+movn sp, #7, lsl 16
+movn sp, #7, lsl #16
+movn sp, #7, lsl 32
+movn sp, #7, lsl 48
+movn sp, #7, lsl 8
+movn sp, #7, lsl 64
+movn sp, #7, lsl 15
+movn sp, #7, lsr 16
+movn sp, #7, asr 16
+movn sp, #7, lsl
+movn sp, #7, lsl -16
+movn sp, 0x12345
+movn sp, 0x12345, lsl 0
+movn sp, 0x12345, lsl 16
+movn sp, 0x12345, lsl #16
+movn sp, 0x12345, lsl 32
+movn sp, 0x12345, lsl 48
+movn sp, 0x12345, lsl 8
+movn sp, 0x12345, lsl 64
+movn sp, 0x12345, lsl 15
+movn sp, 0x12345, lsr 16
+movn sp, 0x12345, asr 16
+movn sp, 0x12345, lsl
+movn sp, 0x12345, lsl -16
+movn sp, 1+1
+movn sp, 1+1, lsl 0
+movn sp, 1+1, lsl 16
+movn sp, 1+1, lsl #16
+movn sp, 1+1, lsl 32
+movn sp, 1+1, lsl 48
+movn sp, 1+1, lsl 8
+movn sp, 1+1, lsl 64
+movn sp, 1+1, lsl 15
+movn sp, 1+1, lsr 16
+movn sp, 1+1, asr 16
+movn sp, 1+1, lsl
+movn sp, 1+1, lsl -16
+movn w0, 0
+movn w0, 0, lsl 0
+movn w0, 0, lsl 16
+movn w0, 0, lsl #16
+movn w0, 0, lsl 32
+movn w0, 0, lsl 48
+movn w0, 0, lsl 8
+movn w0, 0, lsl 64
+movn w0, 0, lsl 15
+movn w0, 0, lsr 16
+movn w0, 0, asr 16
+movn w0, 0, lsl
+movn w0, 0, lsl -16
+movn w0, 1
+movn w0, 1, lsl 0
+movn w0, 1, lsl 16
+movn w0, 1, lsl #16
+movn w0, 1, lsl 32
+movn w0, 1, lsl 48
+movn w0, 1, lsl 8
+movn w0, 1, lsl 64
+movn w0, 1, lsl 15
+movn w0, 1, lsr 16
+movn w0, 1, asr 16
+movn w0, 1, lsl
+movn w0, 1, lsl -16
+movn w0, 0xffff
+movn w0, 0xffff, lsl 0
+movn w0, 0xffff, lsl 16
+movn w0, 0xffff, lsl #16
+movn w0, 0xffff, lsl 32
+movn w0, 0xffff, lsl 48
+movn w0, 0xffff, lsl 8
+movn w0, 0xffff, lsl 64
+movn w0, 0xffff, lsl 15
+movn w0, 0xffff, lsr 16
+movn w0, 0xffff, asr 16
+movn w0, 0xffff, lsl
+movn w0, 0xffff, lsl -16
+movn w0, 0x10000
+movn w0, 0x10000, lsl 0
+movn w0, 0x10000, lsl 16
+movn w0, 0x10000, lsl #16
+movn w0, 0x10000, lsl 32
+movn w0, 0x10000, lsl 48
+movn w0, 0x10000, lsl 8
+movn w0, 0x10000, lsl 64
+movn w0, 0x10000, lsl 15
+movn w0, 0x10000, lsr 16
+movn w0, 0x10000, asr 16
+movn w0, 0x10000, lsl
+movn w0, 0x10000, lsl -16
+movn w0, -1
+movn w0, -1, lsl 0
+movn w0, -1, lsl 16
+movn w0, -1, lsl #16
+movn w0, -1, lsl 32
+movn w0, -1, lsl 48
+movn w0, -1, lsl 8
+movn w0, -1, lsl 64
+movn w0, -1, lsl 15
+movn w0, -1, lsr 16
+movn w0, -1, asr 16
+movn w0, -1, lsl
+movn w0, -1, lsl -16
+movn w0, 65535
+movn w0, 65535, lsl 0
+movn w0, 65535, lsl 16
+movn w0, 65535, lsl #16
+movn w0, 65535, lsl 32
+movn w0, 65535, lsl 48
+movn w0, 65535, lsl 8
+movn w0, 65535, lsl 64
+movn w0, 65535, lsl 15
+movn w0, 65535, lsr 16
+movn w0, 65535, asr 16
+movn w0, 65535, lsl
+movn w0, 65535, lsl -16
+movn w0, #7
+movn w0, #7, lsl 0
+movn w0, #7, lsl 16
+movn w0, #7, lsl #16
+movn w0, #7, lsl 32
+movn w0, #7, lsl 48
+movn w0, #7, lsl 8
+movn w0, #7, lsl 64
+movn w0, #7, lsl 15
+movn w0, #7, lsr 16
+movn w0, #7, asr 16
+movn w0, #7, lsl
+movn w0, #7, lsl -16
+movn w0, 0x12345
+movn w0, 0x12345, lsl 0
+movn w0, 0x12345, lsl 16
+movn w0, 0x12345, lsl #16
+movn w0, 0x12345, lsl 32
+movn w0, 0x12345, lsl 48
+movn w0, 0x12345, lsl 8
+movn w0, 0x12345, lsl 64
+movn w0, 0x12345, lsl 15
+movn w0, 0x12345, lsr 16
+movn w0, 0x12345, asr 16
+movn w0, 0x12345, lsl
+movn w0, 0x12345, lsl -16
+movn w0, 1+1
+movn w0, 1+1, lsl 0
+movn w0, 1+1, lsl 16
+movn w0, 1+1, lsl #16
+movn w0, 1+1, lsl 32
+movn w0, 1+1, lsl 48
+movn w0, 1+1, lsl 8
+movn w0, 1+1, lsl 64
+movn w0, 1+1, lsl 15
+movn w0, 1+1, lsr 16
+movn w0, 1+1, asr 16
+movn w0, 1+1, lsl
+movn w0, 1+1, lsl -16
+movn wzr, 0
+movn wzr, 0, lsl 0
+movn wzr, 0, lsl 16
+movn wzr, 0, lsl #16
+movn wzr, 0, lsl 32
+movn wzr, 0, lsl 48
+movn wzr, 0, lsl 8
+movn wzr, 0, lsl 64
+movn wzr, 0, lsl 15
+movn wzr, 0, lsr 16
+movn wzr, 0, asr 16
+movn wzr, 0, lsl
+movn wzr, 0, lsl -16
+movn wzr, 1
+movn wzr, 1, lsl 0
+movn wzr, 1, lsl 16
+movn wzr, 1, lsl #16
+movn wzr, 1, lsl 32
+movn wzr, 1, lsl 48
+movn wzr, 1, lsl 8
+movn wzr, 1, lsl 64
+movn wzr, 1, lsl 15
+movn wzr, 1, lsr 16
+movn wzr, 1, asr 16
+movn wzr, 1, lsl
+movn wzr, 1, lsl -16
+movn wzr, 0xffff
+movn wzr, 0xffff, lsl 0
+movn wzr, 0xffff, lsl 16
+movn wzr, 0xffff, lsl #16
+movn wzr, 0xffff, lsl 32
+movn wzr, 0xffff, lsl 48
+movn wzr, 0xffff, lsl 8
+movn wzr, 0xffff, lsl 64
+movn wzr, 0xffff, lsl 15
+movn wzr, 0xffff, lsr 16
+movn wzr, 0xffff, asr 16
+movn wzr, 0xffff, lsl
+movn wzr, 0xffff, lsl -16
+movn wzr, 0x10000
+movn wzr, 0x10000, lsl 0
+movn wzr, 0x10000, lsl 16
+movn wzr, 0x10000, lsl #16
+movn wzr, 0x10000, lsl 32
+movn wzr, 0x10000, lsl 48
+movn wzr, 0x10000, lsl 8
+movn wzr, 0x10000, lsl 64
+movn wzr, 0x10000, lsl 15
+movn wzr, 0x10000, lsr 16
+movn wzr, 0x10000, asr 16
+movn wzr, 0x10000, lsl
+movn wzr, 0x10000, lsl -16
+movn wzr, -1
+movn wzr, -1, lsl 0
+movn wzr, -1, lsl 16
+movn wzr, -1, lsl #16
+movn wzr, -1, lsl 32
+movn wzr, -1, lsl 48
+movn wzr, -1, lsl 8
+movn wzr, -1, lsl 64
+movn wzr, -1, lsl 15
+movn wzr, -1, lsr 16
+movn wzr, -1, asr 16
+movn wzr, -1, lsl
+movn wzr, -1, lsl -16
+movn wzr, 65535
+movn wzr, 65535, lsl 0
+movn wzr, 65535, lsl 16
+movn wzr, 65535, lsl #16
+movn wzr, 65535, lsl 32
+movn wzr, 65535, lsl 48
+movn wzr, 65535, lsl 8
+movn wzr, 65535, lsl 64
+movn wzr, 65535, lsl 15
+movn wzr, 65535, lsr 16
+movn wzr, 65535, asr 16
+movn wzr, 65535, lsl
+movn wzr, 65535, lsl -16
+movn wzr, #7
+movn wzr, #7, lsl 0
+movn wzr, #7, lsl 16
+movn wzr, #7, lsl #16
+movn wzr, #7, lsl 32
+movn wzr, #7, lsl 48
+movn wzr, #7, lsl 8
+movn wzr, #7, lsl 64
+movn wzr, #7, lsl 15
+movn wzr, #7, lsr 16
+movn wzr, #7, asr 16
+movn wzr, #7, lsl
+movn wzr, #7, lsl -16
+movn wzr, 0x12345
+movn wzr, 0x12345, lsl 0
+movn wzr, 0x12345, lsl 16
+movn wzr, 0x12345, lsl #16
+movn wzr, 0x12345, lsl 32
+movn wzr, 0x12345, lsl 48
+movn wzr, 0x12345, lsl 8
+movn wzr, 0x12345, lsl 64
+movn wzr, 0x12345, lsl 15
+movn wzr, 0x12345, lsr 16
+movn wzr, 0x12345, asr 16
+movn wzr, 0x12345, lsl
+movn wzr, 0x12345, lsl -16
+movn wzr, 1+1
+movn wzr, 1+1, lsl 0
+movn wzr, 1+1, lsl 16
+movn wzr, 1+1, lsl #16
+movn wzr, 1+1, lsl 32
+movn wzr, 1+1, lsl 48
+movn wzr, 1+1, lsl 8
+movn wzr, 1+1, lsl 64
+movn wzr, 1+1, lsl 15
+movn wzr, 1+1, lsr 16
+movn wzr, 1+1, asr 16
+movn wzr, 1+1, lsl
+movn wzr, 1+1, lsl -16
+movn wsp, 0
+movn wsp, 0, lsl 0
+movn wsp, 0, lsl 16
+movn wsp, 0, lsl #16
+movn wsp, 0, lsl 32
+movn wsp, 0, lsl 48
+movn wsp, 0, lsl 8
+movn wsp, 0, lsl 64
+movn wsp, 0, lsl 15
+movn wsp, 0, lsr 16
+movn wsp, 0, asr 16
+movn wsp, 0, lsl
+movn wsp, 0, lsl -16
+movn wsp, 1
+movn wsp, 1, lsl 0
+movn wsp, 1, lsl 16
+movn wsp, 1, lsl #16
+movn wsp, 1, lsl 32
+movn wsp, 1, lsl 48
+movn wsp, 1, lsl 8
+movn wsp, 1, lsl 64
+movn wsp, 1, lsl 15
+movn wsp, 1, lsr 16
+movn wsp, 1, asr 16
+movn wsp, 1, lsl
+movn wsp, 1, lsl -16
+movn wsp, 0xffff
+movn wsp, 0xffff, lsl 0
+movn wsp, 0xffff, lsl 16
+movn wsp, 0xffff, lsl #16
+movn wsp, 0xffff, lsl 32
+movn wsp, 0xffff, lsl 48
+movn wsp, 0xffff, lsl 8
+movn wsp, 0xffff, lsl 64
+movn wsp, 0xffff, lsl 15
+movn wsp, 0xffff, lsr 16
+movn wsp, 0xffff, asr 16
+movn wsp, 0xffff, lsl
+movn wsp, 0xffff, lsl -16
+movn wsp, 0x10000
+movn wsp, 0x10000, lsl 0
+movn wsp, 0x10000, lsl 16
+movn wsp, 0x10000, lsl #16
+movn wsp, 0x10000, lsl 32
+movn wsp, 0x10000, lsl 48
+movn wsp, 0x10000, lsl 8
+movn wsp, 0x10000, lsl 64
+movn wsp, 0x10000, lsl 15
+movn wsp, 0x10000, lsr 16
+movn wsp, 0x10000, asr 16
+movn wsp, 0x10000, lsl
+movn wsp, 0x10000, lsl -16
+movn wsp, -1
+movn wsp, -1, lsl 0
+movn wsp, -1, lsl 16
+movn wsp, -1, lsl #16
+movn wsp, -1, lsl 32
+movn wsp, -1, lsl 48
+movn wsp, -1, lsl 8
+movn wsp, -1, lsl 64
+movn wsp, -1, lsl 15
+movn wsp, -1, lsr 16
+movn wsp, -1, asr 16
+movn wsp, -1, lsl
+movn wsp, -1, lsl -16
+movn wsp, 65535
+movn wsp, 65535, lsl 0
+movn wsp, 65535, lsl 16
+movn wsp, 65535, lsl #16
+movn wsp, 65535, lsl 32
+movn wsp, 65535, lsl 48
+movn wsp, 65535, lsl 8
+movn wsp, 65535, lsl 64
+movn wsp, 65535, lsl 15
+movn wsp, 65535, lsr 16
+movn wsp, 65535, asr 16
+movn wsp, 65535, lsl
+movn wsp, 65535, lsl -16
+movn wsp, #7
+movn wsp, #7, lsl 0
+movn wsp, #7, lsl 16
+movn wsp, #7, lsl #16
+movn wsp, #7, lsl 32
+movn wsp, #7, lsl 48
+movn wsp, #7, lsl 8
+movn wsp, #7, lsl 64
+movn wsp, #7, lsl 15
+movn wsp, #7, lsr 16
+movn wsp, #7, asr 16
+movn wsp, #7, lsl
+movn wsp, #7, lsl -16
+movn wsp, 0x12345
+movn wsp, 0x12345, lsl 0
+movn wsp, 0x12345, lsl 16
+movn wsp, 0x12345, lsl #16
+movn wsp, 0x12345, lsl 32
+movn wsp, 0x12345, lsl 48
+movn wsp, 0x12345, lsl 8
+movn wsp, 0x12345, lsl 64
+movn wsp, 0x12345, lsl 15
+movn wsp, 0x12345, lsr 16
+movn wsp, 0x12345, asr 16
+movn wsp, 0x12345, lsl
+movn wsp, 0x12345, lsl -16
+movn wsp, 1+1
+movn wsp, 1+1, lsl 0
+movn wsp, 1+1, lsl 16
+movn wsp, 1+1, lsl #16
+movn wsp, 1+1, lsl 32
+movn wsp, 1+1, lsl 48
+movn wsp, 1+1, lsl 8
+movn wsp, 1+1, lsl 64
+movn wsp, 1+1, lsl 15
+movn wsp, 1+1, lsr 16
+movn wsp, 1+1, asr 16
+movn wsp, 1+1, lsl
+movn wsp, 1+1, lsl -16
+movk x0, 0
+movk x0, 0, lsl 0
+movk x0, 0, lsl 16
+movk x0, 0, lsl #16
+movk x0, 0, lsl 32
+movk x0, 0, lsl 48
+movk x0, 0, lsl 8
+movk x0, 0, lsl 64
+movk x0, 0, lsl 15
+movk x0, 0, lsr 16
+movk x0, 0, asr 16
+movk x0, 0, lsl
+movk x0, 0, lsl -16
+movk x0, 1
+movk x0, 1, lsl 0
+movk x0, 1, lsl 16
+movk x0, 1, lsl #16
+movk x0, 1, lsl 32
+movk x0, 1, lsl 48
+movk x0, 1, lsl 8
+movk x0, 1, lsl 64
+movk x0, 1, lsl 15
+movk x0, 1, lsr 16
+movk x0, 1, asr 16
+movk x0, 1, lsl
+movk x0, 1, lsl -16
+movk x0, 0xffff
+movk x0, 0xffff, lsl 0
+movk x0, 0xffff, lsl 16
+movk x0, 0xffff, lsl #16
+movk x0, 0xffff, lsl 32
+movk x0, 0xffff, lsl 48
+movk x0, 0xffff, lsl 8
+movk x0, 0xffff, lsl 64
+movk x0, 0xffff, lsl 15
+movk x0, 0xffff, lsr 16
+movk x0, 0xffff, asr 16
+movk x0, 0xffff, lsl
+movk x0, 0xffff, lsl -16
+movk x0, 0x10000
+movk x0, 0x10000, lsl 0
+movk x0, 0x10000, lsl 16
+movk x0, 0x10000, lsl #16
+movk x0, 0x10000, lsl 32
+movk x0, 0x10000, lsl 48
+movk x0, 0x10000, lsl 8
+movk x0, 0x10000, lsl 64
+movk x0, 0x10000, lsl 15
+movk x0, 0x10000, lsr 16
+movk x0, 0x10000, asr 16
+movk x0, 0x10000, lsl
+movk x0, 0x10000, lsl -16
+movk x0, -1
+movk x0, -1, lsl 0
+movk x0, -1, lsl 16
+movk x0, -1, lsl #16
+movk x0, -1, lsl 32
+movk x0, -1, lsl 48
+movk x0, -1, lsl 8
+movk x0, -1, lsl 64
+movk x0, -1, lsl 15
+movk x0, -1, lsr 16
+movk x0, -1, asr 16
+movk x0, -1, lsl
+movk x0, -1, lsl -16
+movk x0, 65535
+movk x0, 65535, lsl 0
+movk x0, 65535, lsl 16
+movk x0, 65535, lsl #16
+movk x0, 65535, lsl 32
+movk x0, 65535, lsl 48
+movk x0, 65535, lsl 8
+movk x0, 65535, lsl 64
+movk x0, 65535, lsl 15
+movk x0, 65535, lsr 16
+movk x0, 65535, asr 16
+movk x0, 65535, lsl
+movk x0, 65535, lsl -16
+movk x0, #7
+movk x0, #7, lsl 0
+movk x0, #7, lsl 16
+movk x0, #7, lsl #16
+movk x0, #7, lsl 32
+movk x0, #7, lsl 48
+movk x0, #7, lsl 8
+movk x0, #7, lsl 64
+movk x0, #7, lsl 15
+movk x0, #7, lsr 16
+movk x0, #7, asr 16
+movk x0, #7, lsl
+movk x0, #7, lsl -16
+movk x0, 0x12345
+movk x0, 0x12345, lsl 0
+movk x0, 0x12345, lsl 16
+movk x0, 0x12345, lsl #16
+movk x0, 0x12345, lsl 32
+movk x0, 0x12345, lsl 48
+movk x0, 0x12345, lsl 8
+movk x0, 0x12345, lsl 64
+movk x0, 0x12345, lsl 15
+movk x0, 0x12345, lsr 16
+movk x0, 0x12345, asr 16
+movk x0, 0x12345, lsl
+movk x0, 0x12345, lsl -16
+movk x0, 1+1
+movk x0, 1+1, lsl 0
+movk x0, 1+1, lsl 16
+movk x0, 1+1, lsl #16
+movk x0, 1+1, lsl 32
+movk x0, 1+1, lsl 48
+movk x0, 1+1, lsl 8
+movk x0, 1+1, lsl 64
+movk x0, 1+1, lsl 15
+movk x0, 1+1, lsr 16
+movk x0, 1+1, asr 16
+movk x0, 1+1, lsl
+movk x0, 1+1, lsl -16
+movk xzr, 0
+movk xzr, 0, lsl 0
+movk xzr, 0, lsl 16
+movk xzr, 0, lsl #16
+movk xzr, 0, lsl 32
+movk xzr, 0, lsl 48
+movk xzr, 0, lsl 8
+movk xzr, 0, lsl 64
+movk xzr, 0, lsl 15
+movk xzr, 0, lsr 16
+movk xzr, 0, asr 16
+movk xzr, 0, lsl
+movk xzr, 0, lsl -16
+movk xzr, 1
+movk xzr, 1, lsl 0
+movk xzr, 1, lsl 16
+movk xzr, 1, lsl #16
+movk xzr, 1, lsl 32
+movk xzr, 1, lsl 48
+movk xzr, 1, lsl 8
+movk xzr, 1, lsl 64
+movk xzr, 1, lsl 15
+movk xzr, 1, lsr 16
+movk xzr, 1, asr 16
+movk xzr, 1, lsl
+movk xzr, 1, lsl -16
+movk xzr, 0xffff
+movk xzr, 0xffff, lsl 0
+movk xzr, 0xffff, lsl 16
+movk xzr, 0xffff, lsl #16
+movk xzr, 0xffff, lsl 32
+movk xzr, 0xffff, lsl 48
+movk xzr, 0xffff, lsl 8
+movk xzr, 0xffff, lsl 64
+movk xzr, 0xffff, lsl 15
+movk xzr, 0xffff, lsr 16
+movk xzr, 0xffff, asr 16
+movk xzr, 0xffff, lsl
+movk xzr, 0xffff, lsl -16
+movk xzr, 0x10000
+movk xzr, 0x10000, lsl 0
+movk xzr, 0x10000, lsl 16
+movk xzr, 0x10000, lsl #16
+movk xzr, 0x10000, lsl 32
+movk xzr, 0x10000, lsl 48
+movk xzr, 0x10000, lsl 8
+movk xzr, 0x10000, lsl 64
+movk xzr, 0x10000, lsl 15
+movk xzr, 0x10000, lsr 16
+movk xzr, 0x10000, asr 16
+movk xzr, 0x10000, lsl
+movk xzr, 0x10000, lsl -16
+movk xzr, -1
+movk xzr, -1, lsl 0
+movk xzr, -1, lsl 16
+movk xzr, -1, lsl #16
+movk xzr, -1, lsl 32
+movk xzr, -1, lsl 48
+movk xzr, -1, lsl 8
+movk xzr, -1, lsl 64
+movk xzr, -1, lsl 15
+movk xzr, -1, lsr 16
+movk xzr, -1, asr 16
+movk xzr, -1, lsl
+movk xzr, -1, lsl -16
+movk xzr, 65535
+movk xzr, 65535, lsl 0
+movk xzr, 65535, lsl 16
+movk xzr, 65535, lsl #16
+movk xzr, 65535, lsl 32
+movk xzr, 65535, lsl 48
+movk xzr, 65535, lsl 8
+movk xzr, 65535, lsl 64
+movk xzr, 65535, lsl 15
+movk xzr, 65535, lsr 16
+movk xzr, 65535, asr 16
+movk xzr, 65535, lsl
+movk xzr, 65535, lsl -16
+movk xzr, #7
+movk xzr, #7, lsl 0
+movk xzr, #7, lsl 16
+movk xzr, #7, lsl #16
+movk xzr, #7, lsl 32
+movk xzr, #7, lsl 48
+movk xzr, #7, lsl 8
+movk xzr, #7, lsl 64
+movk xzr, #7, lsl 15
+movk xzr, #7, lsr 16
+movk xzr, #7, asr 16
+movk xzr, #7, lsl
+movk xzr, #7, lsl -16
+movk xzr, 0x12345
+movk xzr, 0x12345, lsl 0
+movk xzr, 0x12345, lsl 16
+movk xzr, 0x12345, lsl #16
+movk xzr, 0x12345, lsl 32
+movk xzr, 0x12345, lsl 48
+movk xzr, 0x12345, lsl 8
+movk xzr, 0x12345, lsl 64
+movk xzr, 0x12345, lsl 15
+movk xzr, 0x12345, lsr 16
+movk xzr, 0x12345, asr 16
+movk xzr, 0x12345, lsl
+movk xzr, 0x12345, lsl -16
+movk xzr, 1+1
+movk xzr, 1+1, lsl 0
+movk xzr, 1+1, lsl 16
+movk xzr, 1+1, lsl #16
+movk xzr, 1+1, lsl 32
+movk xzr, 1+1, lsl 48
+movk xzr, 1+1, lsl 8
+movk xzr, 1+1, lsl 64
+movk xzr, 1+1, lsl 15
+movk xzr, 1+1, lsr 16
+movk xzr, 1+1, asr 16
+movk xzr, 1+1, lsl
+movk xzr, 1+1, lsl -16
+movk sp, 0
+movk sp, 0, lsl 0
+movk sp, 0, lsl 16
+movk sp, 0, lsl #16
+movk sp, 0, lsl 32
+movk sp, 0, lsl 48
+movk sp, 0, lsl 8
+movk sp, 0, lsl 64
+movk sp, 0, lsl 15
+movk sp, 0, lsr 16
+movk sp, 0, asr 16
+movk sp, 0, lsl
+movk sp, 0, lsl -16
+movk sp, 1
+movk sp, 1, lsl 0
+movk sp, 1, lsl 16
+movk sp, 1, lsl #16
+movk sp, 1, lsl 32
+movk sp, 1, lsl 48
+movk sp, 1, lsl 8
+movk sp, 1, lsl 64
+movk sp, 1, lsl 15
+movk sp, 1, lsr 16
+movk sp, 1, asr 16
+movk sp, 1, lsl
+movk sp, 1, lsl -16
+movk sp, 0xffff
+movk sp, 0xffff, lsl 0
+movk sp, 0xffff, lsl 16
+movk sp, 0xffff, lsl #16
+movk sp, 0xffff, lsl 32
+movk sp, 0xffff, lsl 48
+movk sp, 0xffff, lsl 8
+movk sp, 0xffff, lsl 64
+movk sp, 0xffff, lsl 15
+movk sp, 0xffff, lsr 16
+movk sp, 0xffff, asr 16
+movk sp, 0xffff, lsl
+movk sp, 0xffff, lsl -16
+movk sp, 0x10000
+movk sp, 0x10000, lsl 0
+movk sp, 0x10000, lsl 16
+movk sp, 0x10000, lsl #16
+movk sp, 0x10000, lsl 32
+movk sp, 0x10000, lsl 48
+movk sp, 0x10000, lsl 8
+movk sp, 0x10000, lsl 64
+movk sp, 0x10000, lsl 15
+movk sp, 0x10000, lsr 16
+movk sp, 0x10000, asr 16
+movk sp, 0x10000, lsl
+movk sp, 0x10000, lsl -16
+movk sp, -1
+movk sp, -1, lsl 0
+movk sp, -1, lsl 16
+movk sp, -1, lsl #16
+movk sp, -1, lsl 32
+movk sp, -1, lsl 48
+movk sp, -1, lsl 8
+movk sp, -1, lsl 64
+movk sp, -1, lsl 15
+movk sp, -1, lsr 16
+movk sp, -1, asr 16
+movk sp, -1, lsl
+movk sp, -1, lsl -16
+movk sp, 65535
+movk sp, 65535, lsl 0
+movk sp, 65535, lsl 16
+movk sp, 65535, lsl #16
+movk sp, 65535, lsl 32
+movk sp, 65535, lsl 48
+movk sp, 65535, lsl 8
+movk sp, 65535, lsl 64
+movk sp, 65535, lsl 15
+movk sp, 65535, lsr 16
+movk sp, 65535, asr 16
+movk sp, 65535, lsl
+movk sp, 65535, lsl -16
+movk sp, #7
+movk sp, #7, lsl 0
+movk sp, #7, lsl 16
+movk sp, #7, lsl #16
+movk sp, #7, lsl 32
+movk sp, #7, lsl 48
+movk sp, #7, lsl 8
+movk sp, #7, lsl 64
+movk sp, #7, lsl 15
+movk sp, #7, lsr 16
+movk sp, #7, asr 16
+movk sp, #7, lsl
+movk sp, #7, lsl -16
+movk sp, 0x12345
+movk sp, 0x12345, lsl 0
+movk sp, 0x12345, lsl 16
+movk sp, 0x12345, lsl #16
+movk sp, 0x12345, lsl 32
+movk sp, 0x12345, lsl 48
+movk sp, 0x12345, lsl 8
+movk sp, 0x12345, lsl 64
+movk sp, 0x12345, lsl 15
+movk sp, 0x12345, lsr 16
+movk sp, 0x12345, asr 16
+movk sp, 0x12345, lsl
+movk sp, 0x12345, lsl -16
+movk sp, 1+1
+movk sp, 1+1, lsl 0
+movk sp, 1+1, lsl 16
+movk sp, 1+1, lsl #16
+movk sp, 1+1, lsl 32
+movk sp, 1+1, lsl 48
+movk sp, 1+1, lsl 8
+movk sp, 1+1, lsl 64
+movk sp, 1+1, lsl 15
+movk sp, 1+1, lsr 16
+movk sp, 1+1, asr 16
+movk sp, 1+1, lsl
+movk sp, 1+1, lsl -16
+movk w0, 0
+movk w0, 0, lsl 0
+movk w0, 0, lsl 16
+movk w0, 0, lsl #16
+movk w0, 0, lsl 32
+movk w0, 0, lsl 48
+movk w0, 0, lsl 8
+movk w0, 0, lsl 64
+movk w0, 0, lsl 15
+movk w0, 0, lsr 16
+movk w0, 0, asr 16
+movk w0, 0, lsl
+movk w0, 0, lsl -16
+movk w0, 1
+movk w0, 1, lsl 0
+movk w0, 1, lsl 16
+movk w0, 1, lsl #16
+movk w0, 1, lsl 32
+movk w0, 1, lsl 48
+movk w0, 1, lsl 8
+movk w0, 1, lsl 64
+movk w0, 1, lsl 15
+movk w0, 1, lsr 16
+movk w0, 1, asr 16
+movk w0, 1, lsl
+movk w0, 1, lsl -16
+movk w0, 0xffff
+movk w0, 0xffff, lsl 0
+movk w0, 0xffff, lsl 16
+movk w0, 0xffff, lsl #16
+movk w0, 0xffff, lsl 32
+movk w0, 0xffff, lsl 48
+movk w0, 0xffff, lsl 8
+movk w0, 0xffff, lsl 64
+movk w0, 0xffff, lsl 15
+movk w0, 0xffff, lsr 16
+movk w0, 0xffff, asr 16
+movk w0, 0xffff, lsl
+movk w0, 0xffff, lsl -16
+movk w0, 0x10000
+movk w0, 0x10000, lsl 0
+movk w0, 0x10000, lsl 16
+movk w0, 0x10000, lsl #16
+movk w0, 0x10000, lsl 32
+movk w0, 0x10000, lsl 48
+movk w0, 0x10000, lsl 8
+movk w0, 0x10000, lsl 64
+movk w0, 0x10000, lsl 15
+movk w0, 0x10000, lsr 16
+movk w0, 0x10000, asr 16
+movk w0, 0x10000, lsl
+movk w0, 0x10000, lsl -16
+movk w0, -1
+movk w0, -1, lsl 0
+movk w0, -1, lsl 16
+movk w0, -1, lsl #16
+movk w0, -1, lsl 32
+movk w0, -1, lsl 48
+movk w0, -1, lsl 8
+movk w0, -1, lsl 64
+movk w0, -1, lsl 15
+movk w0, -1, lsr 16
+movk w0, -1, asr 16
+movk w0, -1, lsl
+movk w0, -1, lsl -16
+movk w0, 65535
+movk w0, 65535, lsl 0
+movk w0, 65535, lsl 16
+movk w0, 65535, lsl #16
+movk w0, 65535, lsl 32
+movk w0, 65535, lsl 48
+movk w0, 65535, lsl 8
+movk w0, 65535, lsl 64
+movk w0, 65535, lsl 15
+movk w0, 65535, lsr 16
+movk w0, 65535, asr 16
+movk w0, 65535, lsl
+movk w0, 65535, lsl -16
+movk w0, #7
+movk w0, #7, lsl 0
+movk w0, #7, lsl 16
+movk w0, #7, lsl #16
+movk w0, #7, lsl 32
+movk w0, #7, lsl 48
+movk w0, #7, lsl 8
+movk w0, #7, lsl 64
+movk w0, #7, lsl 15
+movk w0, #7, lsr 16
+movk w0, #7, asr 16
+movk w0, #7, lsl
+movk w0, #7, lsl -16
+movk w0, 0x12345
+movk w0, 0x12345, lsl 0
+movk w0, 0x12345, lsl 16
+movk w0, 0x12345, lsl #16
+movk w0, 0x12345, lsl 32
+movk w0, 0x12345, lsl 48
+movk w0, 0x12345, lsl 8
+movk w0, 0x12345, lsl 64
+movk w0, 0x12345, lsl 15
+movk w0, 0x12345, lsr 16
+movk w0, 0x12345, asr 16
+movk w0, 0x12345, lsl
+movk w0, 0x12345, lsl -16
+movk w0, 1+1
+movk w0, 1+1, lsl 0
+movk w0, 1+1, lsl 16
+movk w0, 1+1, lsl #16
+movk w0, 1+1, lsl 32
+movk w0, 1+1, lsl 48
+movk w0, 1+1, lsl 8
+movk w0, 1+1, lsl 64
+movk w0, 1+1, lsl 15
+movk w0, 1+1, lsr 16
+movk w0, 1+1, asr 16
+movk w0, 1+1, lsl
+movk w0, 1+1, lsl -16
+movk wzr, 0
+movk wzr, 0, lsl 0
+movk wzr, 0, lsl 16
+movk wzr, 0, lsl #16
+movk wzr, 0, lsl 32
+movk wzr, 0, lsl 48
+movk wzr, 0, lsl 8
+movk wzr, 0, lsl 64
+movk wzr, 0, lsl 15
+movk wzr, 0, lsr 16
+movk wzr, 0, asr 16
+movk wzr, 0, lsl
+movk wzr, 0, lsl -16
+movk wzr, 1
+movk wzr, 1, lsl 0
+movk wzr, 1, lsl 16
+movk wzr, 1, lsl #16
+movk wzr, 1, lsl 32
+movk wzr, 1, lsl 48
+movk wzr, 1, lsl 8
+movk wzr, 1, lsl 64
+movk wzr, 1, lsl 15
+movk wzr, 1, lsr 16
+movk wzr, 1, asr 16
+movk wzr, 1, lsl
+movk wzr, 1, lsl -16
+movk wzr, 0xffff
+movk wzr, 0xffff, lsl 0
+movk wzr, 0xffff, lsl 16
+movk wzr, 0xffff, lsl #16
+movk wzr, 0xffff, lsl 32
+movk wzr, 0xffff, lsl 48
+movk wzr, 0xffff, lsl 8
+movk wzr, 0xffff, lsl 64
+movk wzr, 0xffff, lsl 15
+movk wzr, 0xffff, lsr 16
+movk wzr, 0xffff, asr 16
+movk wzr, 0xffff, lsl
+movk wzr, 0xffff, lsl -16
+movk wzr, 0x10000
+movk wzr, 0x10000, lsl 0
+movk wzr, 0x10000, lsl 16
+movk wzr, 0x10000, lsl #16
+movk wzr, 0x10000, lsl 32
+movk wzr, 0x10000, lsl 48
+movk wzr, 0x10000, lsl 8
+movk wzr, 0x10000, lsl 64
+movk wzr, 0x10000, lsl 15
+movk wzr, 0x10000, lsr 16
+movk wzr, 0x10000, asr 16
+movk wzr, 0x10000, lsl
+movk wzr, 0x10000, lsl -16
+movk wzr, -1
+movk wzr, -1, lsl 0
+movk wzr, -1, lsl 16
+movk wzr, -1, lsl #16
+movk wzr, -1, lsl 32
+movk wzr, -1, lsl 48
+movk wzr, -1, lsl 8
+movk wzr, -1, lsl 64
+movk wzr, -1, lsl 15
+movk wzr, -1, lsr 16
+movk wzr, -1, asr 16
+movk wzr, -1, lsl
+movk wzr, -1, lsl -16
+movk wzr, 65535
+movk wzr, 65535, lsl 0
+movk wzr, 65535, lsl 16
+movk wzr, 65535, lsl #16
+movk wzr, 65535, lsl 32
+movk wzr, 65535, lsl 48
+movk wzr, 65535, lsl 8
+movk wzr, 65535, lsl 64
+movk wzr, 65535, lsl 15
+movk wzr, 65535, lsr 16
+movk wzr, 65535, asr 16
+movk wzr, 65535, lsl
+movk wzr, 65535, lsl -16
+movk wzr, #7
+movk wzr, #7, lsl 0
+movk wzr, #7, lsl 16
+movk wzr, #7, lsl #16
+movk wzr, #7, lsl 32
+movk wzr, #7, lsl 48
+movk wzr, #7, lsl 8
+movk wzr, #7, lsl 64
+movk wzr, #7, lsl 15
+movk wzr, #7, lsr 16
+movk wzr, #7, asr 16
+movk wzr, #7, lsl
+movk wzr, #7, lsl -16
+movk wzr, 0x12345
+movk wzr, 0x12345, lsl 0
+movk wzr, 0x12345, lsl 16
+movk wzr, 0x12345, lsl #16
+movk wzr, 0x12345, lsl 32
+movk wzr, 0x12345, lsl 48
+movk wzr, 0x12345, lsl 8
+movk wzr, 0x12345, lsl 64
+movk wzr, 0x12345, lsl 15
+movk wzr, 0x12345, lsr 16
+movk wzr, 0x12345, asr 16
+movk wzr, 0x12345, lsl
+movk wzr, 0x12345, lsl -16
+movk wzr, 1+1
+movk wzr, 1+1, lsl 0
+movk wzr, 1+1, lsl 16
+movk wzr, 1+1, lsl #16
+movk wzr, 1+1, lsl 32
+movk wzr, 1+1, lsl 48
+movk wzr, 1+1, lsl 8
+movk wzr, 1+1, lsl 64
+movk wzr, 1+1, lsl 15
+movk wzr, 1+1, lsr 16
+movk wzr, 1+1, asr 16
+movk wzr, 1+1, lsl
+movk wzr, 1+1, lsl -16
+movk wsp, 0
+movk wsp, 0, lsl 0
+movk wsp, 0, lsl 16
+movk wsp, 0, lsl #16
+movk wsp, 0, lsl 32
+movk wsp, 0, lsl 48
+movk wsp, 0, lsl 8
+movk wsp, 0, lsl 64
+movk wsp, 0, lsl 15
+movk wsp, 0, lsr 16
+movk wsp, 0, asr 16
+movk wsp, 0, lsl
+movk wsp, 0, lsl -16
+movk wsp, 1
+movk wsp, 1, lsl 0
+movk wsp, 1, lsl 16
+movk wsp, 1, lsl #16
+movk wsp, 1, lsl 32
+movk wsp, 1, lsl 48
+movk wsp, 1, lsl 8
+movk wsp, 1, lsl 64
+movk wsp, 1, lsl 15
+movk wsp, 1, lsr 16
+movk wsp, 1, asr 16
+movk wsp, 1, lsl
+movk wsp, 1, lsl -16
+movk wsp, 0xffff
+movk wsp, 0xffff, lsl 0
+movk wsp, 0xffff, lsl 16
+movk wsp, 0xffff, lsl #16
+movk wsp, 0xffff, lsl 32
+movk wsp, 0xffff, lsl 48
+movk wsp, 0xffff, lsl 8
+movk wsp, 0xffff, lsl 64
+movk wsp, 0xffff, lsl 15
+movk wsp, 0xffff, lsr 16
+movk wsp, 0xffff, asr 16
+movk wsp, 0xffff, lsl
+movk wsp, 0xffff, lsl -16
+movk wsp, 0x10000
+movk wsp, 0x10000, lsl 0
+movk wsp, 0x10000, lsl 16
+movk wsp, 0x10000, lsl #16
+movk wsp, 0x10000, lsl 32
+movk wsp, 0x10000, lsl 48
+movk wsp, 0x10000, lsl 8
+movk wsp, 0x10000, lsl 64
+movk wsp, 0x10000, lsl 15
+movk wsp, 0x10000, lsr 16
+movk wsp, 0x10000, asr 16
+movk wsp, 0x10000, lsl
+movk wsp, 0x10000, lsl -16
+movk wsp, -1
+movk wsp, -1, lsl 0
+movk wsp, -1, lsl 16
+movk wsp, -1, lsl #16
+movk wsp, -1, lsl 32
+movk wsp, -1, lsl 48
+movk wsp, -1, lsl 8
+movk wsp, -1, lsl 64
+movk wsp, -1, lsl 15
+movk wsp, -1, lsr 16
+movk wsp, -1, asr 16
+movk wsp, -1, lsl
+movk wsp, -1, lsl -16
+movk wsp, 65535
+movk wsp, 65535, lsl 0
+movk wsp, 65535, lsl 16
+movk wsp, 65535, lsl #16
+movk wsp, 65535, lsl 32
+movk wsp, 65535, lsl 48
+movk wsp, 65535, lsl 8
+movk wsp, 65535, lsl 64
+movk wsp, 65535, lsl 15
+movk wsp, 65535, lsr 16
+movk wsp, 65535, asr 16
+movk wsp, 65535, lsl
+movk wsp, 65535, lsl -16
+movk wsp, #7
+movk wsp, #7, lsl 0
+movk wsp, #7, lsl 16
+movk wsp, #7, lsl #16
+movk wsp, #7, lsl 32
+movk wsp, #7, lsl 48
+movk wsp, #7, lsl 8
+movk wsp, #7, lsl 64
+movk wsp, #7, lsl 15
+movk wsp, #7, lsr 16
+movk wsp, #7, asr 16
+movk wsp, #7, lsl
+movk wsp, #7, lsl -16
+movk wsp, 0x12345
+movk wsp, 0x12345, lsl 0
+movk wsp, 0x12345, lsl 16
+movk wsp, 0x12345, lsl #16
+movk wsp, 0x12345, lsl 32
+movk wsp, 0x12345, lsl 48
+movk wsp, 0x12345, lsl 8
+movk wsp, 0x12345, lsl 64
+movk wsp, 0x12345, lsl 15
+movk wsp, 0x12345, lsr 16
+movk wsp, 0x12345, asr 16
+movk wsp, 0x12345, lsl
+movk wsp, 0x12345, lsl -16
+movk wsp, 1+1
+movk wsp, 1+1, lsl 0
+movk wsp, 1+1, lsl 16
+movk wsp, 1+1, lsl #16
+movk wsp, 1+1, lsl 32
+movk wsp, 1+1, lsl 48
+movk wsp, 1+1, lsl 8
+movk wsp, 1+1, lsl 64
+movk wsp, 1+1, lsl 15
+movk wsp, 1+1, lsr 16
+movk wsp, 1+1, asr 16
+movk wsp, 1+1, lsl
+movk wsp, 1+1, lsl -16
+mov
+mov x0
+mov x0, x1, x2
+mov x0, x1, lsl 2
+mov x0,
+mov , x0
+mov 5, x0
+mov x0, #
+movz
+movk x0

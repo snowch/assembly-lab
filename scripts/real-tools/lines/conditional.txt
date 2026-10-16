@@ -1,0 +1,700 @@
+csel x0, x1, x2, eq
+csel w0, w1, w2, eq
+csel x0, x1, x2, ne
+csel w0, w1, w2, ne
+csel x0, x1, x2, cs
+csel w0, w1, w2, cs
+csel x0, x1, x2, hs
+csel w0, w1, w2, hs
+csel x0, x1, x2, cc
+csel w0, w1, w2, cc
+csel x0, x1, x2, lo
+csel w0, w1, w2, lo
+csel x0, x1, x2, mi
+csel w0, w1, w2, mi
+csel x0, x1, x2, pl
+csel w0, w1, w2, pl
+csel x0, x1, x2, vs
+csel w0, w1, w2, vs
+csel x0, x1, x2, vc
+csel w0, w1, w2, vc
+csel x0, x1, x2, hi
+csel w0, w1, w2, hi
+csel x0, x1, x2, ls
+csel w0, w1, w2, ls
+csel x0, x1, x2, ge
+csel w0, w1, w2, ge
+csel x0, x1, x2, lt
+csel w0, w1, w2, lt
+csel x0, x1, x2, gt
+csel w0, w1, w2, gt
+csel x0, x1, x2, le
+csel w0, w1, w2, le
+csel x0, x1, x2, al
+csel w0, w1, w2, al
+csel x0, x1, x2, nv
+csel w0, w1, w2, nv
+csel x0, x1, x2, EQ
+csel w0, w1, w2, EQ
+csel x0, x1, x2, Ne
+csel w0, w1, w2, Ne
+csel x0, x1, x2, zz
+csel w0, w1, w2, zz
+csel x0, x1, x2, #3
+csel w0, w1, w2, #3
+csel x0, x1, x2, x1
+csel w0, w1, w2, x1
+csel x0, x1, x2, e
+csel w0, w1, w2, e
+csel x0, x1, x2, 
+csel w0, w1, w2, 
+csel x0, x1, x2, eq2
+csel w0, w1, w2, eq2
+csel x0, x1, xzr, ne
+csel x0, x1, sp, ne
+csel x0, xzr, x2, ne
+csel x0, xzr, xzr, ne
+csel x0, xzr, sp, ne
+csel x0, sp, x2, ne
+csel x0, sp, xzr, ne
+csel x0, sp, sp, ne
+csel xzr, x1, x2, ne
+csel xzr, x1, xzr, ne
+csel xzr, x1, sp, ne
+csel xzr, xzr, x2, ne
+csel xzr, xzr, xzr, ne
+csel xzr, xzr, sp, ne
+csel xzr, sp, x2, ne
+csel xzr, sp, xzr, ne
+csel xzr, sp, sp, ne
+csel sp, x1, x2, ne
+csel sp, x1, xzr, ne
+csel sp, x1, sp, ne
+csel sp, xzr, x2, ne
+csel sp, xzr, xzr, ne
+csel sp, xzr, sp, ne
+csel sp, sp, x2, ne
+csel sp, sp, xzr, ne
+csel sp, sp, sp, ne
+csel w0, w1, wzr, ne
+csel w0, w1, wsp, ne
+csel w0, wzr, w2, ne
+csel w0, wzr, wzr, ne
+csel w0, wzr, wsp, ne
+csel w0, wsp, w2, ne
+csel w0, wsp, wzr, ne
+csel w0, wsp, wsp, ne
+csel wzr, w1, w2, ne
+csel wzr, w1, wzr, ne
+csel wzr, w1, wsp, ne
+csel wzr, wzr, w2, ne
+csel wzr, wzr, wzr, ne
+csel wzr, wzr, wsp, ne
+csel wzr, wsp, w2, ne
+csel wzr, wsp, wzr, ne
+csel wzr, wsp, wsp, ne
+csel wsp, w1, w2, ne
+csel wsp, w1, wzr, ne
+csel wsp, w1, wsp, ne
+csel wsp, wzr, w2, ne
+csel wsp, wzr, wzr, ne
+csel wsp, wzr, wsp, ne
+csel wsp, wsp, w2, ne
+csel wsp, wsp, wzr, ne
+csel wsp, wsp, wsp, ne
+csel x0, x1, w2, ne
+csel w0, x1, x2, ne
+csel x0, x1, 5, ne
+csel x0, x1, x2
+csel x0, x1, x2, ne, eq
+csinc x0, x1, x2, eq
+csinc w0, w1, w2, eq
+csinc x0, x1, x2, ne
+csinc w0, w1, w2, ne
+csinc x0, x1, x2, cs
+csinc w0, w1, w2, cs
+csinc x0, x1, x2, hs
+csinc w0, w1, w2, hs
+csinc x0, x1, x2, cc
+csinc w0, w1, w2, cc
+csinc x0, x1, x2, lo
+csinc w0, w1, w2, lo
+csinc x0, x1, x2, mi
+csinc w0, w1, w2, mi
+csinc x0, x1, x2, pl
+csinc w0, w1, w2, pl
+csinc x0, x1, x2, vs
+csinc w0, w1, w2, vs
+csinc x0, x1, x2, vc
+csinc w0, w1, w2, vc
+csinc x0, x1, x2, hi
+csinc w0, w1, w2, hi
+csinc x0, x1, x2, ls
+csinc w0, w1, w2, ls
+csinc x0, x1, x2, ge
+csinc w0, w1, w2, ge
+csinc x0, x1, x2, lt
+csinc w0, w1, w2, lt
+csinc x0, x1, x2, gt
+csinc w0, w1, w2, gt
+csinc x0, x1, x2, le
+csinc w0, w1, w2, le
+csinc x0, x1, x2, al
+csinc w0, w1, w2, al
+csinc x0, x1, x2, nv
+csinc w0, w1, w2, nv
+csinc x0, x1, x2, EQ
+csinc w0, w1, w2, EQ
+csinc x0, x1, x2, Ne
+csinc w0, w1, w2, Ne
+csinc x0, x1, x2, zz
+csinc w0, w1, w2, zz
+csinc x0, x1, x2, #3
+csinc w0, w1, w2, #3
+csinc x0, x1, x2, x1
+csinc w0, w1, w2, x1
+csinc x0, x1, x2, e
+csinc w0, w1, w2, e
+csinc x0, x1, x2, 
+csinc w0, w1, w2, 
+csinc x0, x1, x2, eq2
+csinc w0, w1, w2, eq2
+csinc x0, x1, xzr, ne
+csinc x0, x1, sp, ne
+csinc x0, xzr, x2, ne
+csinc x0, xzr, xzr, ne
+csinc x0, xzr, sp, ne
+csinc x0, sp, x2, ne
+csinc x0, sp, xzr, ne
+csinc x0, sp, sp, ne
+csinc xzr, x1, x2, ne
+csinc xzr, x1, xzr, ne
+csinc xzr, x1, sp, ne
+csinc xzr, xzr, x2, ne
+csinc xzr, xzr, xzr, ne
+csinc xzr, xzr, sp, ne
+csinc xzr, sp, x2, ne
+csinc xzr, sp, xzr, ne
+csinc xzr, sp, sp, ne
+csinc sp, x1, x2, ne
+csinc sp, x1, xzr, ne
+csinc sp, x1, sp, ne
+csinc sp, xzr, x2, ne
+csinc sp, xzr, xzr, ne
+csinc sp, xzr, sp, ne
+csinc sp, sp, x2, ne
+csinc sp, sp, xzr, ne
+csinc sp, sp, sp, ne
+csinc w0, w1, wzr, ne
+csinc w0, w1, wsp, ne
+csinc w0, wzr, w2, ne
+csinc w0, wzr, wzr, ne
+csinc w0, wzr, wsp, ne
+csinc w0, wsp, w2, ne
+csinc w0, wsp, wzr, ne
+csinc w0, wsp, wsp, ne
+csinc wzr, w1, w2, ne
+csinc wzr, w1, wzr, ne
+csinc wzr, w1, wsp, ne
+csinc wzr, wzr, w2, ne
+csinc wzr, wzr, wzr, ne
+csinc wzr, wzr, wsp, ne
+csinc wzr, wsp, w2, ne
+csinc wzr, wsp, wzr, ne
+csinc wzr, wsp, wsp, ne
+csinc wsp, w1, w2, ne
+csinc wsp, w1, wzr, ne
+csinc wsp, w1, wsp, ne
+csinc wsp, wzr, w2, ne
+csinc wsp, wzr, wzr, ne
+csinc wsp, wzr, wsp, ne
+csinc wsp, wsp, w2, ne
+csinc wsp, wsp, wzr, ne
+csinc wsp, wsp, wsp, ne
+csinc x0, x1, w2, ne
+csinc w0, x1, x2, ne
+csinc x0, x1, 5, ne
+csinc x0, x1, x2
+csinc x0, x1, x2, ne, eq
+csinv x0, x1, x2, eq
+csinv w0, w1, w2, eq
+csinv x0, x1, x2, ne
+csinv w0, w1, w2, ne
+csinv x0, x1, x2, cs
+csinv w0, w1, w2, cs
+csinv x0, x1, x2, hs
+csinv w0, w1, w2, hs
+csinv x0, x1, x2, cc
+csinv w0, w1, w2, cc
+csinv x0, x1, x2, lo
+csinv w0, w1, w2, lo
+csinv x0, x1, x2, mi
+csinv w0, w1, w2, mi
+csinv x0, x1, x2, pl
+csinv w0, w1, w2, pl
+csinv x0, x1, x2, vs
+csinv w0, w1, w2, vs
+csinv x0, x1, x2, vc
+csinv w0, w1, w2, vc
+csinv x0, x1, x2, hi
+csinv w0, w1, w2, hi
+csinv x0, x1, x2, ls
+csinv w0, w1, w2, ls
+csinv x0, x1, x2, ge
+csinv w0, w1, w2, ge
+csinv x0, x1, x2, lt
+csinv w0, w1, w2, lt
+csinv x0, x1, x2, gt
+csinv w0, w1, w2, gt
+csinv x0, x1, x2, le
+csinv w0, w1, w2, le
+csinv x0, x1, x2, al
+csinv w0, w1, w2, al
+csinv x0, x1, x2, nv
+csinv w0, w1, w2, nv
+csinv x0, x1, x2, EQ
+csinv w0, w1, w2, EQ
+csinv x0, x1, x2, Ne
+csinv w0, w1, w2, Ne
+csinv x0, x1, x2, zz
+csinv w0, w1, w2, zz
+csinv x0, x1, x2, #3
+csinv w0, w1, w2, #3
+csinv x0, x1, x2, x1
+csinv w0, w1, w2, x1
+csinv x0, x1, x2, e
+csinv w0, w1, w2, e
+csinv x0, x1, x2, 
+csinv w0, w1, w2, 
+csinv x0, x1, x2, eq2
+csinv w0, w1, w2, eq2
+csinv x0, x1, xzr, ne
+csinv x0, x1, sp, ne
+csinv x0, xzr, x2, ne
+csinv x0, xzr, xzr, ne
+csinv x0, xzr, sp, ne
+csinv x0, sp, x2, ne
+csinv x0, sp, xzr, ne
+csinv x0, sp, sp, ne
+csinv xzr, x1, x2, ne
+csinv xzr, x1, xzr, ne
+csinv xzr, x1, sp, ne
+csinv xzr, xzr, x2, ne
+csinv xzr, xzr, xzr, ne
+csinv xzr, xzr, sp, ne
+csinv xzr, sp, x2, ne
+csinv xzr, sp, xzr, ne
+csinv xzr, sp, sp, ne
+csinv sp, x1, x2, ne
+csinv sp, x1, xzr, ne
+csinv sp, x1, sp, ne
+csinv sp, xzr, x2, ne
+csinv sp, xzr, xzr, ne
+csinv sp, xzr, sp, ne
+csinv sp, sp, x2, ne
+csinv sp, sp, xzr, ne
+csinv sp, sp, sp, ne
+csinv w0, w1, wzr, ne
+csinv w0, w1, wsp, ne
+csinv w0, wzr, w2, ne
+csinv w0, wzr, wzr, ne
+csinv w0, wzr, wsp, ne
+csinv w0, wsp, w2, ne
+csinv w0, wsp, wzr, ne
+csinv w0, wsp, wsp, ne
+csinv wzr, w1, w2, ne
+csinv wzr, w1, wzr, ne
+csinv wzr, w1, wsp, ne
+csinv wzr, wzr, w2, ne
+csinv wzr, wzr, wzr, ne
+csinv wzr, wzr, wsp, ne
+csinv wzr, wsp, w2, ne
+csinv wzr, wsp, wzr, ne
+csinv wzr, wsp, wsp, ne
+csinv wsp, w1, w2, ne
+csinv wsp, w1, wzr, ne
+csinv wsp, w1, wsp, ne
+csinv wsp, wzr, w2, ne
+csinv wsp, wzr, wzr, ne
+csinv wsp, wzr, wsp, ne
+csinv wsp, wsp, w2, ne
+csinv wsp, wsp, wzr, ne
+csinv wsp, wsp, wsp, ne
+csinv x0, x1, w2, ne
+csinv w0, x1, x2, ne
+csinv x0, x1, 5, ne
+csinv x0, x1, x2
+csinv x0, x1, x2, ne, eq
+csneg x0, x1, x2, eq
+csneg w0, w1, w2, eq
+csneg x0, x1, x2, ne
+csneg w0, w1, w2, ne
+csneg x0, x1, x2, cs
+csneg w0, w1, w2, cs
+csneg x0, x1, x2, hs
+csneg w0, w1, w2, hs
+csneg x0, x1, x2, cc
+csneg w0, w1, w2, cc
+csneg x0, x1, x2, lo
+csneg w0, w1, w2, lo
+csneg x0, x1, x2, mi
+csneg w0, w1, w2, mi
+csneg x0, x1, x2, pl
+csneg w0, w1, w2, pl
+csneg x0, x1, x2, vs
+csneg w0, w1, w2, vs
+csneg x0, x1, x2, vc
+csneg w0, w1, w2, vc
+csneg x0, x1, x2, hi
+csneg w0, w1, w2, hi
+csneg x0, x1, x2, ls
+csneg w0, w1, w2, ls
+csneg x0, x1, x2, ge
+csneg w0, w1, w2, ge
+csneg x0, x1, x2, lt
+csneg w0, w1, w2, lt
+csneg x0, x1, x2, gt
+csneg w0, w1, w2, gt
+csneg x0, x1, x2, le
+csneg w0, w1, w2, le
+csneg x0, x1, x2, al
+csneg w0, w1, w2, al
+csneg x0, x1, x2, nv
+csneg w0, w1, w2, nv
+csneg x0, x1, x2, EQ
+csneg w0, w1, w2, EQ
+csneg x0, x1, x2, Ne
+csneg w0, w1, w2, Ne
+csneg x0, x1, x2, zz
+csneg w0, w1, w2, zz
+csneg x0, x1, x2, #3
+csneg w0, w1, w2, #3
+csneg x0, x1, x2, x1
+csneg w0, w1, w2, x1
+csneg x0, x1, x2, e
+csneg w0, w1, w2, e
+csneg x0, x1, x2, 
+csneg w0, w1, w2, 
+csneg x0, x1, x2, eq2
+csneg w0, w1, w2, eq2
+csneg x0, x1, xzr, ne
+csneg x0, x1, sp, ne
+csneg x0, xzr, x2, ne
+csneg x0, xzr, xzr, ne
+csneg x0, xzr, sp, ne
+csneg x0, sp, x2, ne
+csneg x0, sp, xzr, ne
+csneg x0, sp, sp, ne
+csneg xzr, x1, x2, ne
+csneg xzr, x1, xzr, ne
+csneg xzr, x1, sp, ne
+csneg xzr, xzr, x2, ne
+csneg xzr, xzr, xzr, ne
+csneg xzr, xzr, sp, ne
+csneg xzr, sp, x2, ne
+csneg xzr, sp, xzr, ne
+csneg xzr, sp, sp, ne
+csneg sp, x1, x2, ne
+csneg sp, x1, xzr, ne
+csneg sp, x1, sp, ne
+csneg sp, xzr, x2, ne
+csneg sp, xzr, xzr, ne
+csneg sp, xzr, sp, ne
+csneg sp, sp, x2, ne
+csneg sp, sp, xzr, ne
+csneg sp, sp, sp, ne
+csneg w0, w1, wzr, ne
+csneg w0, w1, wsp, ne
+csneg w0, wzr, w2, ne
+csneg w0, wzr, wzr, ne
+csneg w0, wzr, wsp, ne
+csneg w0, wsp, w2, ne
+csneg w0, wsp, wzr, ne
+csneg w0, wsp, wsp, ne
+csneg wzr, w1, w2, ne
+csneg wzr, w1, wzr, ne
+csneg wzr, w1, wsp, ne
+csneg wzr, wzr, w2, ne
+csneg wzr, wzr, wzr, ne
+csneg wzr, wzr, wsp, ne
+csneg wzr, wsp, w2, ne
+csneg wzr, wsp, wzr, ne
+csneg wzr, wsp, wsp, ne
+csneg wsp, w1, w2, ne
+csneg wsp, w1, wzr, ne
+csneg wsp, w1, wsp, ne
+csneg wsp, wzr, w2, ne
+csneg wsp, wzr, wzr, ne
+csneg wsp, wzr, wsp, ne
+csneg wsp, wsp, w2, ne
+csneg wsp, wsp, wzr, ne
+csneg wsp, wsp, wsp, ne
+csneg x0, x1, w2, ne
+csneg w0, x1, x2, ne
+csneg x0, x1, 5, ne
+csneg x0, x1, x2
+csneg x0, x1, x2, ne, eq
+cset x0, eq
+cset w0, eq
+cset x0, ne
+cset w0, ne
+cset x0, cs
+cset w0, cs
+cset x0, hs
+cset w0, hs
+cset x0, cc
+cset w0, cc
+cset x0, lo
+cset w0, lo
+cset x0, mi
+cset w0, mi
+cset x0, pl
+cset w0, pl
+cset x0, vs
+cset w0, vs
+cset x0, vc
+cset w0, vc
+cset x0, hi
+cset w0, hi
+cset x0, ls
+cset w0, ls
+cset x0, ge
+cset w0, ge
+cset x0, lt
+cset w0, lt
+cset x0, gt
+cset w0, gt
+cset x0, le
+cset w0, le
+cset x0, al
+cset w0, al
+cset x0, nv
+cset w0, nv
+cset x0, EQ
+cset w0, EQ
+cset x0, Ne
+cset w0, Ne
+cset x0, zz
+cset w0, zz
+cset x0, #3
+cset w0, #3
+cset x0, x1
+cset w0, x1
+cset x0, e
+cset w0, e
+cset x0, 
+cset w0, 
+cset x0, eq2
+cset w0, eq2
+cset xzr, ne
+cset wzr, ne
+cset sp, ne
+cset wsp, ne
+cset 5, ne
+cset x0, x1, eq
+cset x0
+cset x0, ne, eq
+csetm x0, eq
+csetm w0, eq
+csetm x0, ne
+csetm w0, ne
+csetm x0, cs
+csetm w0, cs
+csetm x0, hs
+csetm w0, hs
+csetm x0, cc
+csetm w0, cc
+csetm x0, lo
+csetm w0, lo
+csetm x0, mi
+csetm w0, mi
+csetm x0, pl
+csetm w0, pl
+csetm x0, vs
+csetm w0, vs
+csetm x0, vc
+csetm w0, vc
+csetm x0, hi
+csetm w0, hi
+csetm x0, ls
+csetm w0, ls
+csetm x0, ge
+csetm w0, ge
+csetm x0, lt
+csetm w0, lt
+csetm x0, gt
+csetm w0, gt
+csetm x0, le
+csetm w0, le
+csetm x0, al
+csetm w0, al
+csetm x0, nv
+csetm w0, nv
+csetm x0, EQ
+csetm w0, EQ
+csetm x0, Ne
+csetm w0, Ne
+csetm x0, zz
+csetm w0, zz
+csetm x0, #3
+csetm w0, #3
+csetm x0, x1
+csetm w0, x1
+csetm x0, e
+csetm w0, e
+csetm x0, 
+csetm w0, 
+csetm x0, eq2
+csetm w0, eq2
+csetm xzr, ne
+csetm wzr, ne
+csetm sp, ne
+csetm wsp, ne
+csetm 5, ne
+csetm x0, x1, eq
+csetm x0
+csetm x0, ne, eq
+cinc x0, x1, eq
+cinc w0, w1, eq
+cinc x0, x1, ne
+cinc w0, w1, ne
+cinc x0, x1, cs
+cinc w0, w1, cs
+cinc x0, x1, hs
+cinc w0, w1, hs
+cinc x0, x1, cc
+cinc w0, w1, cc
+cinc x0, x1, lo
+cinc w0, w1, lo
+cinc x0, x1, mi
+cinc w0, w1, mi
+cinc x0, x1, pl
+cinc w0, w1, pl
+cinc x0, x1, vs
+cinc w0, w1, vs
+cinc x0, x1, vc
+cinc w0, w1, vc
+cinc x0, x1, hi
+cinc w0, w1, hi
+cinc x0, x1, ls
+cinc w0, w1, ls
+cinc x0, x1, ge
+cinc w0, w1, ge
+cinc x0, x1, lt
+cinc w0, w1, lt
+cinc x0, x1, gt
+cinc w0, w1, gt
+cinc x0, x1, le
+cinc w0, w1, le
+cinc x0, x1, al
+cinc w0, w1, al
+cinc x0, x1, nv
+cinc w0, w1, nv
+cinc x0, x1, EQ
+cinc w0, w1, EQ
+cinc x0, x1, Ne
+cinc w0, w1, Ne
+cinc x0, x1, zz
+cinc w0, w1, zz
+cinc x0, x1, #3
+cinc w0, w1, #3
+cinc x0, x1, x1
+cinc w0, w1, x1
+cinc x0, x1, e
+cinc w0, w1, e
+cinc x0, x1, 
+cinc w0, w1, 
+cinc x0, x1, eq2
+cinc w0, w1, eq2
+cinc x0, xzr, ne
+cinc x0, sp, ne
+cinc xzr, x1, ne
+cinc xzr, xzr, ne
+cinc xzr, sp, ne
+cinc sp, x1, ne
+cinc sp, xzr, ne
+cinc sp, sp, ne
+cinc w0, wzr, ne
+cinc w0, wsp, ne
+cinc wzr, w1, ne
+cinc wzr, wzr, ne
+cinc wzr, wsp, ne
+cinc wsp, w1, ne
+cinc wsp, wzr, ne
+cinc wsp, wsp, ne
+cinc x0, w1, ne
+cinc x0, ne
+cinc x0, x1
+cinc x0, 5, ne
+cneg x0, x1, eq
+cneg w0, w1, eq
+cneg x0, x1, ne
+cneg w0, w1, ne
+cneg x0, x1, cs
+cneg w0, w1, cs
+cneg x0, x1, hs
+cneg w0, w1, hs
+cneg x0, x1, cc
+cneg w0, w1, cc
+cneg x0, x1, lo
+cneg w0, w1, lo
+cneg x0, x1, mi
+cneg w0, w1, mi
+cneg x0, x1, pl
+cneg w0, w1, pl
+cneg x0, x1, vs
+cneg w0, w1, vs
+cneg x0, x1, vc
+cneg w0, w1, vc
+cneg x0, x1, hi
+cneg w0, w1, hi
+cneg x0, x1, ls
+cneg w0, w1, ls
+cneg x0, x1, ge
+cneg w0, w1, ge
+cneg x0, x1, lt
+cneg w0, w1, lt
+cneg x0, x1, gt
+cneg w0, w1, gt
+cneg x0, x1, le
+cneg w0, w1, le
+cneg x0, x1, al
+cneg w0, w1, al
+cneg x0, x1, nv
+cneg w0, w1, nv
+cneg x0, x1, EQ
+cneg w0, w1, EQ
+cneg x0, x1, Ne
+cneg w0, w1, Ne
+cneg x0, x1, zz
+cneg w0, w1, zz
+cneg x0, x1, #3
+cneg w0, w1, #3
+cneg x0, x1, x1
+cneg w0, w1, x1
+cneg x0, x1, e
+cneg w0, w1, e
+cneg x0, x1, 
+cneg w0, w1, 
+cneg x0, x1, eq2
+cneg w0, w1, eq2
+cneg x0, xzr, ne
+cneg x0, sp, ne
+cneg xzr, x1, ne
+cneg xzr, xzr, ne
+cneg xzr, sp, ne
+cneg sp, x1, ne
+cneg sp, xzr, ne
+cneg sp, sp, ne
+cneg w0, wzr, ne
+cneg w0, wsp, ne
+cneg wzr, w1, ne
+cneg wzr, wzr, ne
+cneg wzr, wsp, ne
+cneg wsp, w1, ne
+cneg wsp, wzr, ne
+cneg wsp, wsp, ne
+cneg x0, w1, ne
+cneg x0, ne
+cneg x0, x1
+cneg x0, 5, ne

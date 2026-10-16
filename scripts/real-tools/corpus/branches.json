@@ -1,0 +1,74 @@
+{
+  "entry": "count",
+  "calls": [
+    {
+      "args": [["0", 64]]
+    },
+    {
+      "args": [["1", 64]]
+    },
+    {
+      "args": [["7", 64]]
+    },
+    {
+      "args": [["0x100000000", 64]],
+      "entry": "bits"
+    },
+    {
+      "entry": "bits",
+      "args": [["0x80", 64]]
+    },
+    {
+      "entry": "bits",
+      "args": [["0xffffffffffffffff", 64]]
+    },
+    {
+      "entry": "bits",
+      "args": [["0x8000000100000003", 64]]
+    },
+    {
+      "entry": "bits",
+      "args": [["0x4000000200000080", 64]]
+    },
+    {
+      "entry": "bits",
+      "args": [["0", 64]]
+    },
+    {
+      "entry": "indirect",
+      "args": [["0", 64]]
+    },
+    {
+      "entry": "indirect",
+      "args": [["1", 64]]
+    },
+    {
+      "entry": "jump",
+      "args": [["0", 64]]
+    },
+    {
+      "entry": "jump",
+      "args": [["1", 64]]
+    },
+    {
+      "entry": "jump",
+      "args": [["2", 64]]
+    },
+    {
+      "entry": "jump",
+      "args": [["3", 64]]
+    },
+    {
+      "entry": "backwards",
+      "args": [["0", 64]]
+    },
+    {
+      "entry": "backwards",
+      "args": [["10", 64]]
+    },
+    {
+      "entry": "backwards",
+      "args": [["-3", 64]]
+    }
+  ]
+}

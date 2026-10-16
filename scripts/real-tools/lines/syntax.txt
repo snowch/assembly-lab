@@ -1,0 +1,105 @@
+// each line alone
+ADD X0, X1, X2
+Add x0, X1, x2
+add X0,X1,X2
+add	x0,	x1,	x2
+add   x0 ,  x1  ,  x2
+  add x0, x1, x2
+add x0, x1, x2   
+add x0, x1, x2 // comment
+add x0, x1, x2 /* c */
+/* c */ add x0, x1, x2
+add x0, /* c */ x1, x2
+add x0, x1, x2 ; add x0, x1, x3
+add x0, x1, x2;
+;add x0, x1, x2
+// just a comment
+
+# a comment
+   # indented comment
+add x0, x1, x2 # comment
+add x0, x1, #2
+add x0, x1, # 2
+add x0, x1, #2 // c
+l1: add x0, x1, x2
+l2: l3: add x0, x1, x2
+l4:
+l5: l6:
+l7 : add x0, x1, x2
+.L8: add x0, x1, x2
+.L9:
+l10:add x0,x1,x2
+x0: nop
+add: nop
+sp: nop
+_a$b: nop
+9a: nop
+a b: nop
+L: nop
+ADD x0, x1, x2, LSL 3
+add x0, x1, x2, Lsl #3
+add x0, x1, w2, SXTW
+ldr x0, [X1, W2, SXTW 3]
+b.EQ L
+B.eq L
+BEQ L
+ret X30
+RET
+mov SP, X0
+mov WSP, w0
+mov x0, LR
+mov x0, Fp
+mov x0, IP0
+mov x0, ip1
+mov x0, xZR
+mov x0, XZR
+mov x0, x01
+mov x0, x00
+mov x0, x-1
+mov x0, x32
+mov x0, X30
+add x0 , x1 , x2
+add x0,x1 ,x2
+add x0,	x1,x2
+add  x0, x1, x2, lsl  3
+add x0, x1, x2, lsl#3
+add x0, x1, x2,lsl 3
+add x0, x1, x2 , lsl 3
+ldr x0, [x1,8]
+ldr x0,[x1,#8]
+ldr x0, [x1 , #8 ]!
+ldr x0, [x1] , 8
+ldr x0, [x1],#8
+ldr x0, [x1], #-8
+bl  L
+blr  x0
+b.eq  L
+beq	L
+add x0, x1, x2, lsl 3 ; sub x0, x1, x2
+nop ; nop ; nop
+nop;nop
+nop ;
+; nop
+add x0, x1, x2 \
+add x0, x1, x2 \ nop
+add x0, x1, 'a'
+mov x0, '\n'
+mov w0, 'ab'
+foo
+foo bar
+foo:
+1: nop
+b 1b
+b 1f
+.
+.:
+x:
+add. x0, x1, x2
+add.eq x0, x1, x2
+b.eq.ne L
+nop.
+b.
+adds.eq x0, x1, x2
+ADDS X0, X1, X2
+movk x0, 1, lsl 16
+MOVK X0, 1, LSL 16

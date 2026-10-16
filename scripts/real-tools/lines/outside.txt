@@ -1,0 +1,149 @@
+// each line alone
+adc x0, x1, x2
+adcs x0, x1, x2
+sbc x0, x1, x2
+sbcs x0, x1, x2
+ngc x0, x1
+clz x0, x1
+cls x0, x1
+rbit x0, x1
+rev x0, x1
+rev16 x0, x1
+rev32 x0, x1
+extr x0, x1, x2, 3
+ubfm x0, x1, 3, 4
+sbfm x0, x1, 3, 4
+bfm x0, x1, 3, 4
+bfc x0, 3, 4
+uxtw x0, w1
+smnegl x0, w1, w2
+smsubl x0, w1, w2, x3
+umsubl x0, w1, w2, x3
+umnegl x0, w1, w2
+cinv x0, x1, eq
+csinv x0, x1, x2, nv
+csel x0, x1, x2, nv
+b.nv L
+bnv L
+bal L
+b.al L
+ccmp x0, x1, 0, eq
+ccmn x0, 5, 0, eq
+ldpsw x0, x1, [sp]
+ldnp x0, x1, [sp]
+stnp x0, x1, [sp]
+ldtr x0, [x1]
+sttr x0, [x1]
+ldurb w0, [x1, 1]
+sturb w0, [x1, 1]
+ldurh w0, [x1, 1]
+sturh w0, [x1, 1]
+ldursb w0, [x1, 1]
+ldursh w0, [x1, 1]
+ldursw x0, [x1, 1]
+prfm pldl1keep, [x0]
+prfum pldl1keep, [x0]
+ldar x0, [x1]
+stlr x0, [x1]
+ldxr x0, [x1]
+stxr w0, x1, [x2]
+ldaxr x0, [x1]
+ldadd x0, x1, [x2]
+swp x0, x1, [x2]
+cas x0, x1, [x2]
+ldr x0, L
+ldr w0, L
+ldr x0, =5
+ldr x0, =L
+ldr x0, =0x1234567812345678
+ldrsw x0, L
+ldr q0, [x1]
+ldr s0, [x1]
+ldr d0, [x1]
+ldr b0, [x1]
+ldr h0, [x1]
+str d0, [x1]
+ldp d0, d1, [sp]
+ldp q0, q1, [sp]
+fmov d0, d1
+fadd d0, d1, d2
+fmov x0, d0
+fcmp d0, d1
+fcvt s0, d0
+scvtf d0, x0
+fmov d0, 1.0
+movi v0.4s, 1
+add v0.4s, v1.4s, v2.4s
+ld1 {v0.4s}, [x0]
+cnt v0.8b, v1.8b
+dup v0.4s, w0
+svc 0
+svc #0
+hvc 0
+brk 0
+hlt 0
+udf 0
+mrs x0, nzcv
+msr nzcv, x0
+mrs x0, tpidr_el0
+msr daifset, 2
+isb
+dsb sy
+dmb ish
+yield
+wfe
+wfi
+sev
+eret
+clrex
+autiasp
+paciasp
+retaa
+braa x0, x1
+bti c
+xpaclri
+pacia x0, x1
+autia x0, x1
+blraa x0, x1
+madd x0, x1, x2
+adr
+ldr
+str x0
+b.eq x0, L
+cbz
+sdiv
+udiv x0
+crc32b w0, w1, w2
+sha1h s0, s1
+aese v0.16b, v1.16b
+rev64 v0.4s, v1.4s
+casal x0, x1, [x2]
+sxtx x0, w1
+uxtx x0, w1
+lsl.eq x0, x1, 2
+ror.s x0, x1, 2
+subps x0, x1, x2
+irg x0, x1
+addg x0, x1, 16, 1
+gmi x0, x1, x2
+stg x0, [x1]
+ldg x0, [x1]
+mov v0.b[0], w1
+mov z0.s, w0
+ptrue p0.s
+smstart
+rdsvl x0, 1
+ldr za[w12, 0], [x0]
+blorp x0
+mvo x0, x1
+ad x0, x1, x2
+adds
+ret ret
+movs x0, x1
+addi x0, x1, 1
+li x0, 1
+jmp L
+call L
+push x0
+pop x0
+mov x0, 1, 2

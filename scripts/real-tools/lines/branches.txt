@@ -1,0 +1,830 @@
+b.eq L
+beq L
+b.ne L
+bne L
+b.cs L
+bcs L
+b.hs L
+bhs L
+b.cc L
+bcc L
+b.lo L
+blo L
+b.mi L
+bmi L
+b.pl L
+bpl L
+b.vs L
+bvs L
+b.vc L
+bvc L
+b.hi L
+bhi L
+b.ls L
+bls L
+b.ge L
+bge L
+b.lt L
+blt L
+b.gt L
+bgt L
+b.le L
+ble L
+b.al L
+bal L
+b.nv L
+bnv L
+b.zz L
+bzz L
+b.EQ L
+bEQ L
+b. L
+b L
+b .+0
+bl .+0
+b.eq .+0
+beq .+0
+bne .+0
+cbz x0, .+0
+cbnz w0, .+0
+tbz x0, 5, .+0
+tbnz w0, 5, .+0
+adr x0, .+0
+adrp x0, .+0
+b .+4
+bl .+4
+b.eq .+4
+beq .+4
+bne .+4
+cbz x0, .+4
+cbnz w0, .+4
+tbz x0, 5, .+4
+tbnz w0, 5, .+4
+adr x0, .+4
+adrp x0, .+4
+b .-4
+bl .-4
+b.eq .-4
+beq .-4
+bne .-4
+cbz x0, .-4
+cbnz w0, .-4
+tbz x0, 5, .-4
+tbnz w0, 5, .-4
+adr x0, .-4
+adrp x0, .-4
+b .+8
+bl .+8
+b.eq .+8
+beq .+8
+bne .+8
+cbz x0, .+8
+cbnz w0, .+8
+tbz x0, 5, .+8
+tbnz w0, 5, .+8
+adr x0, .+8
+adrp x0, .+8
+b .+1
+bl .+1
+b.eq .+1
+beq .+1
+bne .+1
+cbz x0, .+1
+cbnz w0, .+1
+tbz x0, 5, .+1
+tbnz w0, 5, .+1
+adr x0, .+1
+adrp x0, .+1
+b .+2
+bl .+2
+b.eq .+2
+beq .+2
+bne .+2
+cbz x0, .+2
+cbnz w0, .+2
+tbz x0, 5, .+2
+tbnz w0, 5, .+2
+adr x0, .+2
+adrp x0, .+2
+b .+3
+bl .+3
+b.eq .+3
+beq .+3
+bne .+3
+cbz x0, .+3
+cbnz w0, .+3
+tbz x0, 5, .+3
+tbnz w0, 5, .+3
+adr x0, .+3
+adrp x0, .+3
+b .+5
+bl .+5
+b.eq .+5
+beq .+5
+bne .+5
+cbz x0, .+5
+cbnz w0, .+5
+tbz x0, 5, .+5
+tbnz w0, 5, .+5
+adr x0, .+5
+adrp x0, .+5
+b .+6
+bl .+6
+b.eq .+6
+beq .+6
+bne .+6
+cbz x0, .+6
+cbnz w0, .+6
+tbz x0, 5, .+6
+tbnz w0, 5, .+6
+adr x0, .+6
+adrp x0, .+6
+b .+7
+bl .+7
+b.eq .+7
+beq .+7
+bne .+7
+cbz x0, .+7
+cbnz w0, .+7
+tbz x0, 5, .+7
+tbnz w0, 5, .+7
+adr x0, .+7
+adrp x0, .+7
+b .+0xffffc
+bl .+0xffffc
+b.eq .+0xffffc
+beq .+0xffffc
+bne .+0xffffc
+cbz x0, .+0xffffc
+cbnz w0, .+0xffffc
+tbz x0, 5, .+0xffffc
+tbnz w0, 5, .+0xffffc
+adr x0, .+0xffffc
+adrp x0, .+0xffffc
+b .+0x100000
+bl .+0x100000
+b.eq .+0x100000
+beq .+0x100000
+bne .+0x100000
+cbz x0, .+0x100000
+cbnz w0, .+0x100000
+tbz x0, 5, .+0x100000
+tbnz w0, 5, .+0x100000
+adr x0, .+0x100000
+adrp x0, .+0x100000
+b .+0x100004
+bl .+0x100004
+b.eq .+0x100004
+beq .+0x100004
+bne .+0x100004
+cbz x0, .+0x100004
+cbnz w0, .+0x100004
+tbz x0, 5, .+0x100004
+tbnz w0, 5, .+0x100004
+adr x0, .+0x100004
+adrp x0, .+0x100004
+b .-0x100000
+bl .-0x100000
+b.eq .-0x100000
+beq .-0x100000
+bne .-0x100000
+cbz x0, .-0x100000
+cbnz w0, .-0x100000
+tbz x0, 5, .-0x100000
+tbnz w0, 5, .-0x100000
+adr x0, .-0x100000
+adrp x0, .-0x100000
+b .-0x100004
+bl .-0x100004
+b.eq .-0x100004
+beq .-0x100004
+bne .-0x100004
+cbz x0, .-0x100004
+cbnz w0, .-0x100004
+tbz x0, 5, .-0x100004
+tbnz w0, 5, .-0x100004
+adr x0, .-0x100004
+adrp x0, .-0x100004
+b .+0x7ffc
+bl .+0x7ffc
+b.eq .+0x7ffc
+beq .+0x7ffc
+bne .+0x7ffc
+cbz x0, .+0x7ffc
+cbnz w0, .+0x7ffc
+tbz x0, 5, .+0x7ffc
+tbnz w0, 5, .+0x7ffc
+adr x0, .+0x7ffc
+adrp x0, .+0x7ffc
+b .+0x8000
+bl .+0x8000
+b.eq .+0x8000
+beq .+0x8000
+bne .+0x8000
+cbz x0, .+0x8000
+cbnz w0, .+0x8000
+tbz x0, 5, .+0x8000
+tbnz w0, 5, .+0x8000
+adr x0, .+0x8000
+adrp x0, .+0x8000
+b .-0x8000
+bl .-0x8000
+b.eq .-0x8000
+beq .-0x8000
+bne .-0x8000
+cbz x0, .-0x8000
+cbnz w0, .-0x8000
+tbz x0, 5, .-0x8000
+tbnz w0, 5, .-0x8000
+adr x0, .-0x8000
+adrp x0, .-0x8000
+b .-0x8004
+bl .-0x8004
+b.eq .-0x8004
+beq .-0x8004
+bne .-0x8004
+cbz x0, .-0x8004
+cbnz w0, .-0x8004
+tbz x0, 5, .-0x8004
+tbnz w0, 5, .-0x8004
+adr x0, .-0x8004
+adrp x0, .-0x8004
+b .+0x7fffffc
+bl .+0x7fffffc
+b.eq .+0x7fffffc
+beq .+0x7fffffc
+bne .+0x7fffffc
+cbz x0, .+0x7fffffc
+cbnz w0, .+0x7fffffc
+tbz x0, 5, .+0x7fffffc
+tbnz w0, 5, .+0x7fffffc
+adr x0, .+0x7fffffc
+adrp x0, .+0x7fffffc
+b .+0x8000000
+bl .+0x8000000
+b.eq .+0x8000000
+beq .+0x8000000
+bne .+0x8000000
+cbz x0, .+0x8000000
+cbnz w0, .+0x8000000
+tbz x0, 5, .+0x8000000
+tbnz w0, 5, .+0x8000000
+adr x0, .+0x8000000
+adrp x0, .+0x8000000
+b .-0x8000000
+bl .-0x8000000
+b.eq .-0x8000000
+beq .-0x8000000
+bne .-0x8000000
+cbz x0, .-0x8000000
+cbnz w0, .-0x8000000
+tbz x0, 5, .-0x8000000
+tbnz w0, 5, .-0x8000000
+adr x0, .-0x8000000
+adrp x0, .-0x8000000
+b .-0x8000004
+bl .-0x8000004
+b.eq .-0x8000004
+beq .-0x8000004
+bne .-0x8000004
+cbz x0, .-0x8000004
+cbnz w0, .-0x8000004
+tbz x0, 5, .-0x8000004
+tbnz w0, 5, .-0x8000004
+adr x0, .-0x8000004
+adrp x0, .-0x8000004
+b .+0xfffff
+bl .+0xfffff
+b.eq .+0xfffff
+beq .+0xfffff
+bne .+0xfffff
+cbz x0, .+0xfffff
+cbnz w0, .+0xfffff
+tbz x0, 5, .+0xfffff
+tbnz w0, 5, .+0xfffff
+adr x0, .+0xfffff
+adrp x0, .+0xfffff
+b .+0x100001
+bl .+0x100001
+b.eq .+0x100001
+beq .+0x100001
+bne .+0x100001
+cbz x0, .+0x100001
+cbnz w0, .+0x100001
+tbz x0, 5, .+0x100001
+tbnz w0, 5, .+0x100001
+adr x0, .+0x100001
+adrp x0, .+0x100001
+b .-0x100001
+bl .-0x100001
+b.eq .-0x100001
+beq .-0x100001
+bne .-0x100001
+cbz x0, .-0x100001
+cbnz w0, .-0x100001
+tbz x0, 5, .-0x100001
+tbnz w0, 5, .-0x100001
+adr x0, .-0x100001
+adrp x0, .-0x100001
+b .+0x1000
+bl .+0x1000
+b.eq .+0x1000
+beq .+0x1000
+bne .+0x1000
+cbz x0, .+0x1000
+cbnz w0, .+0x1000
+tbz x0, 5, .+0x1000
+tbnz w0, 5, .+0x1000
+adr x0, .+0x1000
+adrp x0, .+0x1000
+b .-0x1000
+bl .-0x1000
+b.eq .-0x1000
+beq .-0x1000
+bne .-0x1000
+cbz x0, .-0x1000
+cbnz w0, .-0x1000
+tbz x0, 5, .-0x1000
+tbnz w0, 5, .-0x1000
+adr x0, .-0x1000
+adrp x0, .-0x1000
+b .
+bl .
+b.eq .
+beq .
+cbz x0, .
+tbz x0, 3, .
+adr x0, .
+adrp x0, .
+bl L
+b L+4
+b L-4
+bl L+8
+cbz x0, L
+cbnz x0, L
+cbz w0, L
+cbz xzr, L
+cbz wzr, L
+cbz sp, L
+cbz wsp, L
+cbz x0
+cbz L
+cbz x0, L, L
+cbz 5, L
+cbz w0, #L
+b
+b L, L
+bl
+b #L
+b 0x400004
+b 0x400000
+b 1
+b 0x400001
+b #0x400004
+b L,
+b (L+4)
+b L + 4
+br x0
+blr x0
+ret x0
+br w0
+blr w0
+ret w0
+br xzr
+blr xzr
+ret xzr
+br wzr
+blr wzr
+ret wzr
+br sp
+blr sp
+ret sp
+br wsp
+blr wsp
+ret wsp
+br x30
+blr x30
+ret x30
+br lr
+blr lr
+ret lr
+br x31
+blr x31
+ret x31
+br 5
+blr 5
+ret 5
+br L
+blr L
+ret L
+br 
+blr 
+ret 
+ret
+RET
+ret x0, x1
+br x0, x1
+tbz x0, 0, L
+tbnz x0, 0, L
+tbz x0, 1, L
+tbnz x0, 1, L
+tbz x0, 31, L
+tbnz x0, 31, L
+tbz x0, 32, L
+tbnz x0, 32, L
+tbz x0, 33, L
+tbnz x0, 33, L
+tbz x0, 63, L
+tbnz x0, 63, L
+tbz x0, 64, L
+tbnz x0, 64, L
+tbz x0, -1, L
+tbnz x0, -1, L
+tbz x0, 65, L
+tbnz x0, 65, L
+tbz x0, #5, L
+tbnz x0, #5, L
+tbz x0, 1+1, L
+tbnz x0, 1+1, L
+tbz x0, x1, L
+tbnz x0, x1, L
+tbz x0, L, L
+tbnz x0, L, L
+tbz w0, 0, L
+tbnz w0, 0, L
+tbz w0, 1, L
+tbnz w0, 1, L
+tbz w0, 31, L
+tbnz w0, 31, L
+tbz w0, 32, L
+tbnz w0, 32, L
+tbz w0, 33, L
+tbnz w0, 33, L
+tbz w0, 63, L
+tbnz w0, 63, L
+tbz w0, 64, L
+tbnz w0, 64, L
+tbz w0, -1, L
+tbnz w0, -1, L
+tbz w0, 65, L
+tbnz w0, 65, L
+tbz w0, #5, L
+tbnz w0, #5, L
+tbz w0, 1+1, L
+tbnz w0, 1+1, L
+tbz w0, x1, L
+tbnz w0, x1, L
+tbz w0, L, L
+tbnz w0, L, L
+tbz xzr, 0, L
+tbnz xzr, 0, L
+tbz xzr, 1, L
+tbnz xzr, 1, L
+tbz xzr, 31, L
+tbnz xzr, 31, L
+tbz xzr, 32, L
+tbnz xzr, 32, L
+tbz xzr, 33, L
+tbnz xzr, 33, L
+tbz xzr, 63, L
+tbnz xzr, 63, L
+tbz xzr, 64, L
+tbnz xzr, 64, L
+tbz xzr, -1, L
+tbnz xzr, -1, L
+tbz xzr, 65, L
+tbnz xzr, 65, L
+tbz xzr, #5, L
+tbnz xzr, #5, L
+tbz xzr, 1+1, L
+tbnz xzr, 1+1, L
+tbz xzr, x1, L
+tbnz xzr, x1, L
+tbz xzr, L, L
+tbnz xzr, L, L
+tbz wzr, 0, L
+tbnz wzr, 0, L
+tbz wzr, 1, L
+tbnz wzr, 1, L
+tbz wzr, 31, L
+tbnz wzr, 31, L
+tbz wzr, 32, L
+tbnz wzr, 32, L
+tbz wzr, 33, L
+tbnz wzr, 33, L
+tbz wzr, 63, L
+tbnz wzr, 63, L
+tbz wzr, 64, L
+tbnz wzr, 64, L
+tbz wzr, -1, L
+tbnz wzr, -1, L
+tbz wzr, 65, L
+tbnz wzr, 65, L
+tbz wzr, #5, L
+tbnz wzr, #5, L
+tbz wzr, 1+1, L
+tbnz wzr, 1+1, L
+tbz wzr, x1, L
+tbnz wzr, x1, L
+tbz wzr, L, L
+tbnz wzr, L, L
+tbz sp, 0, L
+tbnz sp, 0, L
+tbz sp, 1, L
+tbnz sp, 1, L
+tbz sp, 31, L
+tbnz sp, 31, L
+tbz sp, 32, L
+tbnz sp, 32, L
+tbz sp, 33, L
+tbnz sp, 33, L
+tbz sp, 63, L
+tbnz sp, 63, L
+tbz sp, 64, L
+tbnz sp, 64, L
+tbz sp, -1, L
+tbnz sp, -1, L
+tbz sp, 65, L
+tbnz sp, 65, L
+tbz sp, #5, L
+tbnz sp, #5, L
+tbz sp, 1+1, L
+tbnz sp, 1+1, L
+tbz sp, x1, L
+tbnz sp, x1, L
+tbz sp, L, L
+tbnz sp, L, L
+tbz x30, 0, L
+tbnz x30, 0, L
+tbz x30, 1, L
+tbnz x30, 1, L
+tbz x30, 31, L
+tbnz x30, 31, L
+tbz x30, 32, L
+tbnz x30, 32, L
+tbz x30, 33, L
+tbnz x30, 33, L
+tbz x30, 63, L
+tbnz x30, 63, L
+tbz x30, 64, L
+tbnz x30, 64, L
+tbz x30, -1, L
+tbnz x30, -1, L
+tbz x30, 65, L
+tbnz x30, 65, L
+tbz x30, #5, L
+tbnz x30, #5, L
+tbz x30, 1+1, L
+tbnz x30, 1+1, L
+tbz x30, x1, L
+tbnz x30, x1, L
+tbz x30, L, L
+tbnz x30, L, L
+tbz x0, 5
+tbz x0, L
+tbz x0, 5, L, L
+tbz 5, 5, L
+adr x0, L
+adrp x0, L
+adr x0, D
+adrp x0, D
+adr x0, D+8
+adrp x0, D+8
+adr x0, L+4
+adrp x0, L+4
+adr x0, L-4
+adrp x0, L-4
+adr x0, D-4
+adrp x0, D-4
+adr x0, 0x410000
+adrp x0, 0x410000
+adr x0, 0x400000
+adrp x0, 0x400000
+adr x0, 0x410123
+adrp x0, 0x410123
+adr x0, 0x400004
+adrp x0, 0x400004
+adr x0, 5
+adrp x0, 5
+adr x0, -1
+adrp x0, -1
+adr x0, (D)
+adrp x0, (D)
+adr x0, #D
+adrp x0, #D
+adr x0, L+1
+adrp x0, L+1
+adr x0, D+1
+adrp x0, D+1
+adr w0, L
+adrp w0, L
+adr w0, D
+adrp w0, D
+adr w0, D+8
+adrp w0, D+8
+adr w0, L+4
+adrp w0, L+4
+adr w0, L-4
+adrp w0, L-4
+adr w0, D-4
+adrp w0, D-4
+adr w0, 0x410000
+adrp w0, 0x410000
+adr w0, 0x400000
+adrp w0, 0x400000
+adr w0, 0x410123
+adrp w0, 0x410123
+adr w0, 0x400004
+adrp w0, 0x400004
+adr w0, 5
+adrp w0, 5
+adr w0, -1
+adrp w0, -1
+adr w0, .+4
+adrp w0, .+4
+adr w0, (D)
+adrp w0, (D)
+adr w0, #D
+adrp w0, #D
+adr w0, L+1
+adrp w0, L+1
+adr w0, D+1
+adrp w0, D+1
+adr xzr, L
+adrp xzr, L
+adr xzr, D
+adrp xzr, D
+adr xzr, D+8
+adrp xzr, D+8
+adr xzr, L+4
+adrp xzr, L+4
+adr xzr, L-4
+adrp xzr, L-4
+adr xzr, D-4
+adrp xzr, D-4
+adr xzr, 0x410000
+adrp xzr, 0x410000
+adr xzr, 0x400000
+adrp xzr, 0x400000
+adr xzr, 0x410123
+adrp xzr, 0x410123
+adr xzr, 0x400004
+adrp xzr, 0x400004
+adr xzr, 5
+adrp xzr, 5
+adr xzr, -1
+adrp xzr, -1
+adr xzr, .+4
+adrp xzr, .+4
+adr xzr, (D)
+adrp xzr, (D)
+adr xzr, #D
+adrp xzr, #D
+adr xzr, L+1
+adrp xzr, L+1
+adr xzr, D+1
+adrp xzr, D+1
+adr wzr, L
+adrp wzr, L
+adr wzr, D
+adrp wzr, D
+adr wzr, D+8
+adrp wzr, D+8
+adr wzr, L+4
+adrp wzr, L+4
+adr wzr, L-4
+adrp wzr, L-4
+adr wzr, D-4
+adrp wzr, D-4
+adr wzr, 0x410000
+adrp wzr, 0x410000
+adr wzr, 0x400000
+adrp wzr, 0x400000
+adr wzr, 0x410123
+adrp wzr, 0x410123
+adr wzr, 0x400004
+adrp wzr, 0x400004
+adr wzr, 5
+adrp wzr, 5
+adr wzr, -1
+adrp wzr, -1
+adr wzr, .+4
+adrp wzr, .+4
+adr wzr, (D)
+adrp wzr, (D)
+adr wzr, #D
+adrp wzr, #D
+adr wzr, L+1
+adrp wzr, L+1
+adr wzr, D+1
+adrp wzr, D+1
+adr sp, L
+adrp sp, L
+adr sp, D
+adrp sp, D
+adr sp, D+8
+adrp sp, D+8
+adr sp, L+4
+adrp sp, L+4
+adr sp, L-4
+adrp sp, L-4
+adr sp, D-4
+adrp sp, D-4
+adr sp, 0x410000
+adrp sp, 0x410000
+adr sp, 0x400000
+adrp sp, 0x400000
+adr sp, 0x410123
+adrp sp, 0x410123
+adr sp, 0x400004
+adrp sp, 0x400004
+adr sp, 5
+adrp sp, 5
+adr sp, -1
+adrp sp, -1
+adr sp, .+4
+adrp sp, .+4
+adr sp, (D)
+adrp sp, (D)
+adr sp, #D
+adrp sp, #D
+adr sp, L+1
+adrp sp, L+1
+adr sp, D+1
+adrp sp, D+1
+adr wsp, L
+adrp wsp, L
+adr wsp, D
+adrp wsp, D
+adr wsp, D+8
+adrp wsp, D+8
+adr wsp, L+4
+adrp wsp, L+4
+adr wsp, L-4
+adrp wsp, L-4
+adr wsp, D-4
+adrp wsp, D-4
+adr wsp, 0x410000
+adrp wsp, 0x410000
+adr wsp, 0x400000
+adrp wsp, 0x400000
+adr wsp, 0x410123
+adrp wsp, 0x410123
+adr wsp, 0x400004
+adrp wsp, 0x400004
+adr wsp, 5
+adrp wsp, 5
+adr wsp, -1
+adrp wsp, -1
+adr wsp, .+4
+adrp wsp, .+4
+adr wsp, (D)
+adrp wsp, (D)
+adr wsp, #D
+adrp wsp, #D
+adr wsp, L+1
+adrp wsp, L+1
+adr wsp, D+1
+adrp wsp, D+1
+adr x30, L
+adrp x30, L
+adr x30, D
+adrp x30, D
+adr x30, D+8
+adrp x30, D+8
+adr x30, L+4
+adrp x30, L+4
+adr x30, L-4
+adrp x30, L-4
+adr x30, D-4
+adrp x30, D-4
+adr x30, 0x410000
+adrp x30, 0x410000
+adr x30, 0x400000
+adrp x30, 0x400000
+adr x30, 0x410123
+adrp x30, 0x410123
+adr x30, 0x400004
+adrp x30, 0x400004
+adr x30, 5
+adrp x30, 5
+adr x30, -1
+adrp x30, -1
+adr x30, .+4
+adrp x30, .+4
+adr x30, (D)
+adrp x30, (D)
+adr x30, #D
+adrp x30, #D
+adr x30, L+1
+adrp x30, L+1
+adr x30, D+1
+adrp x30, D+1
+adr x0
+adrp x0
+adr x0, L, L
+adrp x0, :lo12:D
+adr x0, :lo12:D
+adrp x0, :got:D
+adrp x0, :pg_hi21:D
+adr x0, #5

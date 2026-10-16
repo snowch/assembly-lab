@@ -29,3 +29,26 @@ jobs:
         env:
           CI: "true"
         run: ./scripts/check.sh
+
+  # The differential test needs the real tools, so it is its own job and not part of
+  # scripts/check.sh. It holds the simulator and the assembler to GNU as and QEMU.
+  real-tools:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: GNU as and ld for A64, and QEMU's user mode
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user binutils-aarch64-linux-gnu
+
+      - name: Dependencies, exactly as the lockfile says
+        run: npm ci
+
+      - name: The simulator and the assembler against the real tools
+        run: npm run check:real-tools
