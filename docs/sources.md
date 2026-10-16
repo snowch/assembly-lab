@@ -37,6 +37,7 @@ open-std.org and gcc.gnu.org were not reachable from the build containers at che
 | --- | --- |
 | Source Sans 3, Archivo, JetBrains Mono, through `@fontsource-variable` | SIL Open Font License 1.1 |
 | React | MIT |
+| three Material Icons (`info`, `expand_more`, `lock`), drawn as CSS masks | Apache License 2.0 (Google) |
 | the learning platform's packages (`platform/`) | the author's own |
 
 The scaffold's build records the exact packages; a licence check like metadata-systems' joins
