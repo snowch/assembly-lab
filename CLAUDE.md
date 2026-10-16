@@ -112,10 +112,16 @@ of it.
   after, in a real browser at phone and desktop widths, in the light and the dark theme. Every
   finding quotes the page, gives a severity, suggests a direction and never rewrites; a number or
   a cross-reference is checked before it is asserted; a review never contains a challenge's
-  answer.
+  answer. Every reader also lists **what the page assumes the learner already knows** and the
+  course has not taught: a compiler setting such as `-O1`, a tool's name, a C feature beyond the
+  front page's "Before you start", a convention of assembly syntax, a word of jargon. The learner
+  knows only that panel and the earlier lessons; anything else is explained where it first
+  appears, or it is a finding.
 - **Sceptics** attack every finding against the page, the model, the sources and these rules, and
   recommend the smallest fix. Readers over-call; what survives goes on a ranked fix list, with the
-  rejected items listed so they do not return.
+  rejected items listed so they do not return. Readers also under-call what they themselves know:
+  a sceptic makes its own pass for unexplained assumed knowledge, and rejects such an item only by
+  quoting where the course explains it before that point.
 - **Checkers** confirm each fix in the built site: judge the page, not the note.
 
 ## Voice
@@ -179,6 +185,8 @@ Read for these before calling a lesson finished:
   name and as its contents, *flag* as a bit and as all four);
 - a definite article in front of a noun the lesson has not introduced;
 - a term doing work before it is defined;
+- knowledge the learner is assumed to have and was never given: a compiler flag (`-O1`), a tool, a
+  C feature beyond "Before you start", a syntax convention (`#`, `.L9:`), a piece of jargon;
 - `w0` and `x0` used as if they were different registers, or as if they were the same width;
 - a table or a register list nobody chose for this lesson, rendered because the component had it;
 - an idea that is a shape (a path through a program, bytes laid out in memory, the stack across
