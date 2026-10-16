@@ -16,6 +16,7 @@ import { FlagsRow } from "../FlagsRow";
 import { stopSentence } from "../messages";
 import { ListingView, RegisterRow, withCode } from "../parts";
 import { VIEW_STRINGS as S } from "../strings";
+import { BRANCH_STRINGS as B } from "../strings.branch";
 import { traceOf, viewAt, wValue, type StepView, type Trace } from "../trace";
 import { CallSchema, DeleteSchema, RecordedSchema, withProps } from "./props";
 
@@ -30,6 +31,8 @@ const Props = z.object({
   after: z.string().optional(),
   /** Draw the four flags under the registers, the one the last instruction changed outlined. */
   flags: z.boolean().default(false),
+  /** Say how many instructions have run so far. */
+  count: z.boolean().default(false),
 });
 
 /** What the status line says: what ran, what runs next, how the run ended. */
@@ -122,6 +125,11 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
       <p className="al-status" role="status">
         {withCode(statusOf(trace, view))}
       </p>
+      {data.count && (
+        <p className="al-count" data-count={view.k}>
+          {B.stepper.count(view.k)}
+        </p>
+      )}
       <div className="al-registers" role="group" aria-label={S.stepper.registers}>
         {data.registers.map((n) => (
           <RegisterRow

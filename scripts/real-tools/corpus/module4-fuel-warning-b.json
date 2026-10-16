@@ -1,0 +1,61 @@
+{
+  "entry": "fuel_warning",
+  "calls": [
+    {
+      "entry": "fuel_warning",
+      "args": [
+        ["0", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning",
+      "args": [
+        ["9", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning",
+      "args": [
+        ["10", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning",
+      "args": [
+        ["200", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning",
+      "args": [
+        ["2147483648", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning",
+      "args": [
+        ["10", 32],
+        ["9", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning",
+      "args": [
+        ["0", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning",
+      "args": [
+        ["4294967295", 32],
+        ["10", 32]
+      ]
+    }
+  ]
+}

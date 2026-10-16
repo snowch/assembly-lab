@@ -1,0 +1,37 @@
+{
+  "entry": "describe",
+  "calls": [
+    {
+      "entry": "describe",
+      "args": [["11", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["10", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["9", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["4294967286", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["4294967285", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["15", 32]]
+    },
+    {
+      "entry": "describe",
+      "args": [["4294967281", 32]]
+    }
+  ]
+}

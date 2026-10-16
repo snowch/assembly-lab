@@ -29,6 +29,10 @@ export const EditorKeysSchema = z.object({
   symbols: z.array(z.string().min(1)).optional(),
   registers: z.array(z.string().min(1)).optional(),
   numberPad: z.boolean().optional(),
+  /** The names of the labels the tap mode offers, as a branch writes them (`.Llow`). */
+  labels: z.array(z.string().min(1)).optional(),
+  /** The conditions the tap mode offers for `csel` and for `b.cond`, else the lessons' ten. */
+  conditions: z.array(z.string().min(1)).optional(),
 });
 export type EditorKeys = z.infer<typeof EditorKeysSchema>;
 

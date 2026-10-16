@@ -5,7 +5,7 @@
 // of it and puts a changed line back.
 
 /** What an operand of an instruction may be, so the editor knows which chips to offer. */
-export type Slot = "register" | "registerOrNumber" | "number" | "shift";
+export type Slot = "register" | "registerOrNumber" | "number" | "shift" | "condition" | "label";
 
 /** The shifts the tap editor offers for a `shift` operand: `movk` puts a number in the upper half. */
 export const SHIFTS: readonly string[] = ["lsl 16"];
@@ -24,7 +24,43 @@ export const SLOTS: Readonly<Record<string, readonly Slot[]>> = {
   mov: ["register", "registerOrNumber"],
   movk: ["register", "number", "shift"],
   ret: [],
+  // Module 4: a compare, the choice between two registers by a condition, and the branches that
+  // name a label. A conditional branch carries its condition in its name (`b.cc`), so it is found
+  // by `slotsOf`, not listed here.
+  cmp: ["register", "registerOrNumber"],
+  csel: ["register", "register", "register", "condition"],
+  cset: ["register", "condition"],
+  cbz: ["register", "label"],
+  cbnz: ["register", "label"],
+  b: ["label"],
 };
+
+/** The conditions the tap editor offers, in the order the lessons list them. */
+export const CONDITIONS: readonly string[] = [
+  "eq",
+  "ne",
+  "cs",
+  "cc",
+  "hi",
+  "ls",
+  "ge",
+  "lt",
+  "gt",
+  "le",
+];
+
+/** The operands of an instruction the editor can build: a conditional branch (`b.cc`) takes a label. */
+export function slotsOf(mnemonic: string): readonly Slot[] | undefined {
+  if (Object.hasOwn(SLOTS, mnemonic)) return SLOTS[mnemonic];
+  if (/^b\.[a-z]{2}$/.test(mnemonic)) return ["label"];
+  return undefined;
+}
+
+/** A line that is a label (`.Llow:`) and nothing else: its name, as written; otherwise null. */
+export function labelNameOf(text: string): string | null {
+  const m = /^([A-Za-z_.][\w.$]*):$/.exec(text.trim());
+  return m ? (m[1] as string) : null;
+}
 
 export interface Line {
   /** The instruction as written, lower case; empty for a blank line. */
@@ -54,6 +90,8 @@ export function splitOperands(rest: string): string[] {
 
 export function parseLine(text: string): Line {
   const trimmed = text.trim();
+  // A label line is its own kind of line: its name keeps the case it was written in.
+  if (labelNameOf(trimmed) !== null) return { mnemonic: trimmed, operands: [] };
   const space = trimmed.search(/\s/);
   if (space < 0) return { mnemonic: trimmed.toLowerCase(), operands: [] };
   return {
@@ -71,7 +109,7 @@ export function lineText(line: Line): string {
 
 /** The same line with another instruction. Operands that still fit its form are kept. */
 export function withInstruction(line: Line, mnemonic: string): Line {
-  const slots = SLOTS[mnemonic] ?? [];
+  const slots = slotsOf(mnemonic) ?? [];
   return { mnemonic, operands: line.operands.slice(0, slots.length) };
 }
 

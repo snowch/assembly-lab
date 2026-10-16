@@ -1,0 +1,101 @@
+{
+  "entry": "service",
+  "calls": [
+    {
+      "entry": "service",
+      "args": [["42", 32]]
+    },
+    {
+      "entry": "service",
+      "args": [["40", 32]]
+    },
+    {
+      "entry": "service",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "service",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "service",
+      "args": [["2", 32]]
+    },
+    {
+      "entry": "service",
+      "args": [["4294967295", 32]]
+    },
+    {
+      "entry": "service",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "service",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "service_nz",
+      "args": [["42", 32]]
+    },
+    {
+      "entry": "service_nz",
+      "args": [["40", 32]]
+    },
+    {
+      "entry": "service_nz",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "service_nz",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "service_nz",
+      "args": [["2", 32]]
+    },
+    {
+      "entry": "service_nz",
+      "args": [["4294967295", 32]]
+    },
+    {
+      "entry": "service_nz",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "service_nz",
+      "args": [["2147483647", 32]]
+    },
+    {
+      "entry": "nonzero",
+      "args": [["42", 32]]
+    },
+    {
+      "entry": "nonzero",
+      "args": [["40", 32]]
+    },
+    {
+      "entry": "nonzero",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "nonzero",
+      "args": [["1", 32]]
+    },
+    {
+      "entry": "nonzero",
+      "args": [["2", 32]]
+    },
+    {
+      "entry": "nonzero",
+      "args": [["4294967295", 32]]
+    },
+    {
+      "entry": "nonzero",
+      "args": [["2147483648", 32]]
+    },
+    {
+      "entry": "nonzero",
+      "args": [["2147483647", 32]]
+    }
+  ]
+}

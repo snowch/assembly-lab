@@ -46,3 +46,15 @@ export { FlagsRow } from "./FlagsRow";
 export { additionSteps, bitAt, flagDigits, hex32 } from "./arith";
 export { OUTCOMES_AT_RETURN, SMALLEST_SETTING_FLAG } from "./grader-arith";
 export { COUNTER_VALUES, ringReading } from "./ring";
+export { BRANCH_STRINGS, CONDITION_ROWS } from "./strings.branch";
+export {
+  branchArrows,
+  changeBetween,
+  compareResult,
+  diffRows,
+  parseInt32,
+  parseTyped,
+  ranLines,
+} from "./branch";
+export type { BranchArrow, Change, DiffRow } from "./branch";
+export { BRANCH_OUTCOMES } from "./grader-branch";

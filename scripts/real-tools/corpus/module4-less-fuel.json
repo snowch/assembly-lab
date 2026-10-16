@@ -1,0 +1,215 @@
+{
+  "entry": "less_fuel",
+  "calls": [
+    {
+      "entry": "less_fuel",
+      "args": [
+        ["3", 32],
+        ["7", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel",
+      "args": [
+        ["7", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel",
+      "args": [
+        ["5", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel",
+      "args": [
+        ["2147483648", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel",
+      "args": [
+        ["1", 32],
+        ["2147483648", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel",
+      "args": [
+        ["4294967295", 32],
+        ["4294967294", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_lo",
+      "args": [
+        ["3", 32],
+        ["7", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_lo",
+      "args": [
+        ["7", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_lo",
+      "args": [
+        ["5", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_lo",
+      "args": [
+        ["2147483648", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_lo",
+      "args": [
+        ["1", 32],
+        ["2147483648", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_lo",
+      "args": [
+        ["4294967295", 32],
+        ["4294967294", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_signed",
+      "args": [
+        ["3", 32],
+        ["7", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_signed",
+      "args": [
+        ["7", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_signed",
+      "args": [
+        ["5", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_signed",
+      "args": [
+        ["2147483648", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_signed",
+      "args": [
+        ["1", 32],
+        ["2147483648", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_signed",
+      "args": [
+        ["4294967295", 32],
+        ["4294967294", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_hi",
+      "args": [
+        ["3", 32],
+        ["7", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_hi",
+      "args": [
+        ["7", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_hi",
+      "args": [
+        ["5", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_hi",
+      "args": [
+        ["2147483648", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_hi",
+      "args": [
+        ["1", 32],
+        ["2147483648", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_hi",
+      "args": [
+        ["4294967295", 32],
+        ["4294967294", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_start",
+      "args": [
+        ["3", 32],
+        ["7", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_start",
+      "args": [
+        ["7", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_start",
+      "args": [
+        ["5", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_start",
+      "args": [
+        ["2147483648", 32],
+        ["1", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_start",
+      "args": [
+        ["1", 32],
+        ["2147483648", 32]
+      ]
+    },
+    {
+      "entry": "less_fuel_start",
+      "args": [
+        ["4294967295", 32],
+        ["4294967294", 32]
+      ]
+    }
+  ]
+}

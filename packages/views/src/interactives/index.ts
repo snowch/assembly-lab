@@ -17,6 +17,12 @@ import { StepperFigure } from "./StepperFigure";
 import { ConstantTester } from "./ConstantTester";
 import { TracePrediction } from "./TracePrediction";
 import { WideStepper } from "./WideStepper";
+import { BranchListing } from "./BranchListing";
+import { ConditionTable } from "./ConditionTable";
+import { CountPrediction } from "./CountPrediction";
+import { ListingChange } from "./ListingChange";
+import { ListingDiff } from "./ListingDiff";
+import { ListingRuns } from "./ListingRuns";
 
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
   listing: ListingFigure,
@@ -30,4 +36,10 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   "counter-ring": CounterRing,
   "run-prediction": RunPrediction,
   "wide-stepper": WideStepper,
+  "listing-runs": ListingRuns,
+  "listing-change": ListingChange,
+  "listing-diff": ListingDiff,
+  "condition-table": ConditionTable,
+  "count-prediction": CountPrediction,
+  "branch-listing": BranchListing,
 };
