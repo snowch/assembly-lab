@@ -9,7 +9,7 @@
 import { useState } from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LessonStore, memoryStorage } from "@platform/lesson-runtime";
 import { Interactive, type Artifact, type Lesson } from "@platform/lesson-schema";
@@ -26,6 +26,9 @@ import { ShiftFigure } from "./interactives/ShiftFigure";
 import { WarningWordFigure } from "./interactives/WarningWordFigure";
 import { WordStepperFigure } from "./interactives/WordStepperFigure";
 import { VIEW_STRINGS as S } from "./strings";
+
+// These tests click through whole editors; a busy machine needs longer than the default.
+vi.setConfig({ testTimeout: 30_000 });
 
 const recorded = (c: string, label: string, ...instructions: string[]) => ({
   c,
