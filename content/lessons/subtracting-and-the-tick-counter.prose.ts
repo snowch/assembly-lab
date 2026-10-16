@@ -16,7 +16,7 @@ export const PROSE = {
     "A program that measures time with a counter like this one runs for weeks before the wrap. So a mistake here shows up rarely, and late. The answer depends on how the processor subtracts.",
 
   prediction:
-    "`then` is 4294966296, taken just before the wrap; `now` is 1000, taken just after it.",
+    "`then` is 4294966296, the count just before the wrap; `now` is 1000, the count just after it.",
   predictionQuestion: "**What does `elapsed(1000, 4294966296)` return?**",
   predictionExplain:
     "The answer is 2000. Counting on from 4294966296, 1000 steps reach the wrap, and 1000 more reach 1000. The subtraction needs a borrow, because 1000 is less than 4294966296 under the unsigned reading, so C is 0 after `subs`. The 32 bits that remain are still the right distance, 2000.",

@@ -51,7 +51,7 @@ export const PROSE = {
   failureQuestion: "**What does it return?**",
 
   failureExplain:
-    "It returns 2, in five instructions. `cmp w0, 10` leaves NZCV 0110. `ge` is yes when N equals V, and both are 0, so the branch is taken. `gt` also needs Z to be 0, and Z is 1, so GCC's `bgt` is not taken and `describe(10)` returns 0. With `bge`, `describe(11)` still returns 2, and `describe(9)` still returns 0.",
+    "It returns 2, in five instructions. `cmp w0, 10` leaves NZCV 0110. `ge` is yes when N equals V, and both are 0, so the branch is taken. `gt` also needs Z to be 0, and Z is 1, so GCC's `bgt` is not taken and `describe(10)` returns 0. With `bge`, `describe(12)` still returns 2, and `describe(9)` still returns 0.",
 
   explanation:
     "`cbz w0, .L17` goes to `.L17` when `w0` is 0, and `cbnz` goes when it is not 0. Neither reads nor changes the flags. `tbz w0, 1, label` goes to the label when bit 1 of `w0` is 0, and `tbnz` goes when it is 1. No recorded listing in this module uses `cbnz`, `tbz` or `tbnz`, so none of them is shown as GCC's output. The course's own example, which is not GCC's, is:\n\n" +

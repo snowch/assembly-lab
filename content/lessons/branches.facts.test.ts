@@ -379,8 +379,8 @@ describe("the failure experiment: bge for bgt, on describe(10)", () => {
     expect(describeRun(10).int).toBe(0);
   });
 
-  it("leaves 11 returning 2 and 9 returning 0", () => {
-    expect(describeRun(11, BGE_TEXT).int).toBe(2);
+  it("leaves 12 returning 2 and 9 returning 0", () => {
+    expect(describeRun(12, BGE_TEXT).int).toBe(2);
     expect(describeRun(9, BGE_TEXT).int).toBe(0);
   });
 });
@@ -518,11 +518,7 @@ describe("the last challenge: describe(11), describe(-10) and describe(-11)", ()
     const elsewhere = lesson.sections
       .filter((s) => s.kind !== "challenge")
       .flatMap((s) => [s.prose, ...s.interactives.flatMap((x) => JSON.stringify(x.props))]);
-    // The part of the failure experiment's explanation that names describe(11) is the file's own;
-    // the test lists it so that it is seen.
-    expect(elsewhere.filter((t) => call.test(t))).toEqual([
-      expect.stringContaining("With `bge`, `describe(11)` still returns 2"),
-    ]);
+    expect(elsewhere.filter((t) => call.test(t))).toEqual([]);
     expect([...TOLD_GRADIENTS]).toEqual([15, 10, -15, 0]);
     expect(partOf(body, 9)).toContain("gradients 11");
   });

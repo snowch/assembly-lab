@@ -2,7 +2,7 @@
 
 Drafted by Haiku from the fact brief `brief.md` beside this file, 16 October 2026; every number
 checked against the course's simulator (runs recorded with the brief) and the recorded GCC 16.1
-`-O1` listings in `listings.md`. Two sentences of provenance meant for the checker were removed.
+`-O1` listings in `listings.md`. Two sentences of provenance meant for the checker were removed. The build found that part 6 of Lesson 2 named `describe(11)`, one of the last challenge's gradients; it now names `describe(12)`, which the simulator also returns 2 for.
 This file is the lesson's words: the lesson files keep them word for word.
 
 # Lesson 1: Compare, and the condition that carries the type
@@ -316,7 +316,7 @@ The figure runs `describe` with `bgt .L9` changed to `bge .L9`, on `describe(10)
 
 *Shown after the answer is checked.*
 
-It returns 2, in five instructions. `cmp w0, 10` leaves NZCV 0110. `ge` is yes when N equals V, and both are 0, so the branch is taken. `gt` also needs Z to be 0, and Z is 1, so GCC's `bgt` is not taken and `describe(10)` returns 0. With `bge`, `describe(11)` still returns 2, and `describe(9)` still returns 0.
+It returns 2, in five instructions. `cmp w0, 10` leaves NZCV 0110. `ge` is yes when N equals V, and both are 0, so the branch is taken. `gt` also needs Z to be 0, and Z is 1, so GCC's `bgt` is not taken and `describe(10)` returns 0. With `bge`, `describe(12)` still returns 2, and `describe(9)` still returns 0.
 
 ## 7. Branches that test a register
 

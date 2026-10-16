@@ -166,7 +166,7 @@ A program that measures time with a counter like this one runs for weeks before 
 
 ## 3. Elapsed across the wrap
 
-`then` is 4294966296, taken just before the wrap; `now` is 1000, taken just after it.
+`then` is 4294966296, the count just before the wrap; `now` is 1000, the count just after it.
 
 **What does `elapsed(1000, 4294966296)` return?**
 
