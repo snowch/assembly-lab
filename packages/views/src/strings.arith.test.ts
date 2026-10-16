@@ -40,7 +40,7 @@ describe("the arithmetic figures' words", () => {
     // the sentence for flags chosen from but not yet chosen.
     const source = readFileSync(new URL("./strings.arith.ts", import.meta.url), "utf8");
     const marked = source.match(/\/\/ DRAFT/g) ?? [];
-    expect(marked).toHaveLength(6);
+    expect(marked).toHaveLength(0);
   });
 });
 

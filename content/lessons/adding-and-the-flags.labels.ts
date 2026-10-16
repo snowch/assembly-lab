@@ -29,7 +29,7 @@ export const LABELS = {
       "adds w0, w0, w1 column by column, with the carry into each column above it, and the four flags after it.",
     // A placeholder for the figure after the flags challenge: the prose process replaces it.
     adderCarryOut:
-      "adds w0, w0, w1 on 1 and 0xffffffff, column by column, with the four flags after it.", // DRAFT
+      "adds w0, w0, w1 on 1 and 0xffffffff, column by column. The answer is 0, and a carry goes out of the top bit. The four flags after it are drawn.",
     predictReadings: "A prediction about which readings of the answer are right.",
     predictAdd: "A prediction about what the flags show after add.",
     stepAdd:
@@ -47,10 +47,10 @@ export const LABELS = {
     // Placeholders for the failure experiment's four options: the prose process replaces them.
     // The right one is the one the model computes (value "c": N and C are 1, V is 0).
     afterAdd: [
-      { value: "v", label: "N and V are 1, from the addition" }, // DRAFT
-      { value: "c", label: "N and C are still 1, as `adds` left them" }, // DRAFT
-      { value: "none", label: "All four are 0" }, // DRAFT
-      { value: "error", label: "The run stops with an error" }, // DRAFT
+      { value: "v", label: "N and V are 1, from the addition" },
+      { value: "c", label: "N and C are still 1, as `adds` left them" },
+      { value: "none", label: "All four are 0" },
+      { value: "error", label: "The run stops with an error" },
     ],
   },
   challenges: {

@@ -28,16 +28,17 @@ export const ARITH_STRINGS = {
       `Column ${n}: the bits are ${a} and ${b}, and the carry into this column is ${carryIn}. The answer bit is ${bit}, and the carry out is ${carryOut}.`,
     done: "All 32 columns are added.",
     /** Said after `done`: column 32 is the top bit, and what V compares there. */
-    topBit: "This is the top bit. V compares the carry into it with the carry out of it.", // DRAFT
+    topBit:
+      "This is the top bit. V is 1 when the carry into the top bit differs from the carry out of it.",
     /** Under the carry row: what the two thick underlines mark. */
     topKey:
-      "The two thick underlines mark the carry out of the top bit, on the left, and the carry into the top bit, next to it.", // DRAFT
+      "The two thick underlines mark the carry out of the top bit, on the left, and the carry into the top bit, next to it.",
     /** In place of an adder that waits for a challenge to be passed. */
-    lockedUntilPassed: "Pass the challenge above first. The figure opens once you have passed it.", // DRAFT
+    lockedUntilPassed: "Pass the challenge above first. The figure opens once you have passed it.",
     carryRow: "Carry into each column",
     answerRow: "Answer",
     /** The second number of a subtraction, as the adder takes it. */
-    turnedOver: (name: string) => `${name} turned over`,
+    turnedOver: (name: string) => `${name} with each bit changed`,
     carryIntoTop: "Carry into the top bit",
     carryOutOfTop: "Carry out of the top bit",
     noAddition: "The run has no addition for this figure to draw.",
@@ -78,10 +79,10 @@ export const ARITH_STRINGS = {
     flagClear: (flag: string) => `${flag} is 0 for the number you gave.`,
     notSmallest: "A smaller number also makes V 1.",
     /** The sentence for a wrong flag when the case gives none of its own. It names no flag. */
-    flagWrong: "At least one flag for this addition is wrong.", // DRAFT
+    flagWrong: "At least one flag for this addition is wrong.",
     /** The same for a wrong register value. It names no value. */
-    valueWrong: "That answer is not right.", // DRAFT
+    valueWrong: "That answer is not right.",
     /** In place of the list of fields, when every unanswered field is a choice. */
-    chooseFirst: "Choose 0 or 1 for every flag first.", // DRAFT
+    chooseFirst: "Choose 0 or 1 for every flag first.",
   },
 } as const;

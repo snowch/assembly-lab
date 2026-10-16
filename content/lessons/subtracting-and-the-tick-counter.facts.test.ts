@@ -61,9 +61,11 @@ describe("the listings the lesson shows or describes", () => {
     },
   );
 
-  it("make elapsed one subtraction and a return: sub w0, w0, w1, then ret", () => {
+  it("make elapsed one subtraction and a return, which the question counts without writing out", () => {
     expect(functionIn(assembly(ELAPSED.listing), "elapsed")).toEqual(["sub w0, w0, w1", "ret"]);
-    expect(PROSE.question).toContain("`sub w0, w0, w1`, then `ret`");
+    expect(PROSE.question).toContain("two instructions, one subtraction and a `ret`");
+    // The subtraction is the Write elapsed challenge's answer, so no text before it gives it.
+    expect(PROSE.question).not.toContain("sub w0, w0, w1");
   });
 
   it("make sub_overflows subs w0, w0, w1 and then one more instruction that reads V", () => {

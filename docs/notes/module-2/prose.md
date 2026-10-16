@@ -1,6 +1,6 @@
 # Module 2: the lessons' words, as drafted
 
-Drafted by Haiku from the fact brief in `docs/notes/module-2/brief.md`, a part at a time; checked for facts by the managing session, which narrowed two sentences the brief had overstated (which instructions set the flags; how a real processor adds), cut one repeat, and set the answers' explanations in plain type as Module 0's are. After the build, Haiku replaced the generic titles of parts 2 to 10 with titles that name each section's content (16 October 2026). Every number was produced by the simulator before the brief went out.
+Drafted by Haiku from the fact brief in `docs/notes/module-2/brief.md`, a part at a time; checked for facts by the managing session, which narrowed two sentences the brief had overstated (which instructions set the flags; how a real processor adds), cut one repeat, and set the answers' explanations in plain type as Module 0's are. After the build, Haiku replaced the generic titles of parts 2 to 10 with titles that name each section's content (16 October 2026). After the module's review, Haiku redrafted the parts its sceptic upheld (the failure experiment's new program, the subtraction drawn bit by bit, the ungated answer moved into the prediction's explanation, the meaning of C after a subtraction), from facts the simulator produced. Every number was produced by the simulator before the brief went out.
 
 # Lesson 1: Adding, and the four flags
 
@@ -12,7 +12,7 @@ Drafted by Haiku from the fact brief in `docs/notes/module-2/brief.md`, a part a
 
 ## 1. How can the processor say when an answer does not fit?
 
-Module 1 showed that 4294967284 and −12 are one pattern. It also showed that GCC uses the same `add` and `sub` for `int` and `unsigned`.
+Module 1 showed that 4294967284 and −12 are one pattern. It also showed that GCC uses the same `sub` instruction for `int` and for `unsigned`.
 
 So the processor adds without knowing which reading the program wants. It must still say when an answer does not fit, and it must do that for both readings at once.
 
@@ -39,7 +39,7 @@ The answer is `0x80000000`. Unsigned, it reads 2147483648, which is right. Signe
 
 ## 4. Carries and the four flags
 
-The figure draws the addition column by column, from the right, as on paper. A column adds its two bits and any 1 arriving from the right. If that total is 2 or 3, a 1 goes on to the next column on the left. That 1 is the **carry**.
+The part of the processor that adds two registers' bits is called the **adder**. The figure draws the addition column by column, from the right, as on paper. A column adds its two bits and any 1 arriving from the right. If that total is 2 or 3, a 1 goes on to the next column on the left. That 1 is the **carry**.
 
 After `adds`, four flags record facts about the answer:
 
@@ -89,18 +89,18 @@ For each addition, give N, Z, C and V.
 
 ## 6. Running add instead of adds
 
-The figure first runs an `adds` that leaves all four flags at 0. Then it runs `add w0, w0, w1` instead of `adds`, on `0x7fffffff` plus 1.
+The figure runs `sum_flags(0x7fffffff, 1, 0xffffffff)`, with `w0` as `0x7fffffff`, `w1` as 1 and `w2` as `0xffffffff`. First it runs `adds w3, w2, w2`, which adds `0xffffffff` to itself and leaves N and C at 1. Then it runs `add w0, w0, w1` instead of `adds`, on `0x7fffffff` plus 1.
 
 **After `add`, what do the flags show?**
 
-- V is 1, as with `adds`
-- All four are still 0
+- N and V are 1, from the addition
+- N and C are still 1, as `adds` left them
+- All four are 0
 - The run stops with an error
-- C is 1
 
 *Shown after the answer is checked.*
 
-All four are still 0. `add` gives the same answer and leaves the flags as they were. Of the instructions met so far, only those whose names end in `s` record the four facts.
+N and C are still 1, as `adds` left them. `add` gives the same answer as `adds` would, `0x80000000`, but records nothing. Had `add` recorded flags, they would be N 1, Z 0, C 0 and V 1, the same as `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had it cleared them, all four would be 0. The three outcomes differ, so the run tells them apart. Of the instructions met so far, only those whose names end in `s` record the four facts.
 
 ## 7. Which flag judges which reading
 
@@ -152,11 +152,11 @@ The simulator works out the flags as the architecture defines them. A real proce
 
 ## 1. Is the answer still right after a wrap?
 
-The trip computer counts milliseconds in a 32-bit `unsigned` counter. It reaches 4294967295, then goes back to 0. Going back to 0 is called a **wrap**.
+The trip computer counts milliseconds in a 32-bit `unsigned` counter. Each count is one millisecond, called a **tick**. It reaches 4294967295, then goes back to 0. Going back to 0 is called a **wrap**.
 
 4294967296 milliseconds is about 49.71 days. So a car that is never switched off wraps its counter every 50 days or so.
 
-`elapsed(now, then)` returns `now - then`. GCC makes it one subtraction, `sub w0, w0, w1`, then `ret`.
+`elapsed(now, then)` returns `now - then`. GCC makes it two instructions, one subtraction and a `ret`.
 
 Suppose the counter wraps between `then` and `now`.
 
@@ -166,7 +166,7 @@ A program that measures time with a counter like this one runs for weeks before 
 
 ## 3. Elapsed across the wrap
 
-`then` is 4294966296, read just before the wrap; `now` is 1000, read just after it.
+`then` is 4294966296, taken just before the wrap; `now` is 1000, taken just after it.
 
 **What does `elapsed(1000, 4294966296)` return?**
 
@@ -177,17 +177,19 @@ A program that measures time with a counter like this one runs for weeks before 
 
 *Shown after the answer is checked.*
 
-The answer is 2000. Counting on from 4294966296, 1000 steps reach the wrap, and 1000 more reach 1000.
+The answer is 2000. Counting on from 4294966296, 1000 steps reach the wrap, and 1000 more reach 1000. The subtraction needs a borrow, because 1000 is less than 4294966296 under the unsigned reading, so C is 0 after `subs`. The 32 bits that remain are still the right distance, 2000.
 
 ## 4. Subtraction as addition, and borrows
 
-The figure draws the counter's values on a ring, with `then` and `now` either side of the wrap.
+The figure draws the counter's values on a ring. Two counter values 2000 apart sit at almost one spot on a ring of 4294967296 values, so a strip under the ring enlarges the stretch around the wrap, where `then` and `now` sit.
 
-The processor subtracts by adding. `a - b` is worked out as `a` plus the bits of `b` turned over, plus 1. It uses the same adder as in lesson 1. With `subs`, the flags come from that addition. A subtraction needs a **borrow** when `a` is less than `b` under the unsigned reading. C is 1 when no borrow was needed, and 0 when one was.
+The processor subtracts by adding. `a - b` is worked out as `a` plus `b` with each of its bits changed to the other value (each 1 becomes 0, each 0 becomes 1), plus 1. It uses the same adder as in lesson 1. With `subs`, the flags come from that addition.
 
-For `elapsed(1000, 4294966296)`, C is 0. The subtraction borrowed, because the counter wrapped. The 32 bits that remain are still the right distance: 2000.
+A subtraction needs a **borrow** when `a` is less than `b` under the unsigned reading. C is 1 when no borrow was needed, and 0 when one was.
 
-*The counter as a ring: `then`, `now`, and the distance between them.*
+After you answer the prediction above, two more figures open. Each works a `subs` column by column, with each bit of the second number changed: one across the wrap, and one that does not wrap.
+
+*The counter as a ring: `then`, `now`, and the distance between them. The strip under the ring enlarges the stretch around the wrap.*
 
 ## 5. Writing elapsed yourself
 
@@ -197,7 +199,7 @@ Earlier, GCC wrote `elapsed` for you. Here you write it yourself.
 
 Write `elapsed(now, then)`, which returns the milliseconds from `then` to `now`. Four calls test it, two across the wrap.
 
-You may use `add`, `sub`, `adds`, `subs`, `neg` and `ret`.
+You may use `add`, `sub`, `adds`, `subs` and `ret`.
 
 1. A 32-bit subtraction keeps the low 32 bits of the true answer. Those 32 bits are the distance round the ring.
 2. No test for the wrap is needed.
@@ -222,7 +224,7 @@ You may use `add`, `sub`, `adds`, `subs`, `neg` and `ret`.
 
 ## 7. Why the low bits are enough
 
-Subtraction is addition with the second value turned over and 1 added. So the flags mean what they meant in lesson 1.
+Subtraction is addition with each bit of the second value changed to the other, and 1 added. N, Z and V mean what they meant in lesson 1. C is still the carry out of the top bit, but after a subtraction a 1 means no borrow was needed.
 
 The 32 bits of the answer are the true answer with every bit above the lowest 32 dropped. Dropping those bits is why a wrapped counter still gives the right distance.
 

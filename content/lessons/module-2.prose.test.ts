@@ -65,14 +65,10 @@ const cases = [
         ["N", "Z", "C", "V"].map((flag) => L1.challenges.flags.field(flag, a.text)),
       ),
     ],
-    // The failure experiment's four options are placeholders (the program changed, so the file's
-    // options no longer fit): the file's option "V is 1, as with `adds`" has no option left, and the
-    // prose process replaces the placeholders and the file's lines together.
-    draftOptions: L1.options.afterAdd.map((o) => o.label),
-    replaced: ["V is 1, as with `adds`"],
-    // Those, and the template that makes a field's label from a flag and an addition. The marks are
-    // the placeholder caption of the figure after the flags challenge and the four placeholder options.
-    marks: 5,
+    draftOptions: [] as string[],
+    replaced: [] as string[],
+    // Those, and the template that makes a field's label from a flag and an addition.
+    marks: 0,
   },
   {
     n: 2,
@@ -96,8 +92,7 @@ const cases = [
     ],
     draftOptions: [] as string[],
     replaced: [] as string[],
-    // The two marks are the placeholder captions of the two subtractions the adder draws.
-    marks: 2,
+    marks: 0,
   },
 ] as const;
 

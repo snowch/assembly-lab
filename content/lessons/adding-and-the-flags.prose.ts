@@ -7,7 +7,7 @@
 
 export const PROSE = {
   question:
-    "Module 1 showed that 4294967284 and −12 are one pattern. It also showed that GCC uses the same `add` and `sub` for `int` and `unsigned`.\n\n" +
+    "Module 1 showed that 4294967284 and −12 are one pattern. It also showed that GCC uses the same `sub` instruction for `int` and for `unsigned`.\n\n" +
     "So the processor adds without knowing which reading the program wants. It must still say when an answer does not fit, and it must do that for both readings at once.",
 
   motivation:
@@ -21,7 +21,7 @@ export const PROSE = {
     "The answer is `0x80000000`. Unsigned, it reads 2147483648, which is right. Signed, it reads −2147483648, which is wrong. 2147483647 plus 1 should be 2147483648. The signed reading cannot hold that number.",
 
   investigation:
-    "The figure draws the addition column by column, from the right, as on paper. A column adds its two bits and any 1 arriving from the right. If that total is 2 or 3, a 1 goes on to the next column on the left. That 1 is the **carry**.\n\n" +
+    "The part of the processor that adds two registers' bits is called the **adder**. The figure draws the addition column by column, from the right, as on paper. A column adds its two bits and any 1 arriving from the right. If that total is 2 or 3, a 1 goes on to the next column on the left. That 1 is the **carry**.\n\n" +
     "After `adds`, four flags record facts about the answer:\n\n" +
     "- N is the answer's top bit.\n" +
     "- Z is 1 when the answer is 0.\n" +
@@ -56,10 +56,10 @@ export const PROSE = {
   ] as const,
 
   failureExperiment:
-    "The figure first runs an `adds` that leaves all four flags at 0. Then it runs `add w0, w0, w1` instead of `adds`, on `0x7fffffff` plus 1.",
+    "The figure runs `sum_flags(0x7fffffff, 1, 0xffffffff)`, with `w0` as `0x7fffffff`, `w1` as 1 and `w2` as `0xffffffff`. First it runs `adds w3, w2, w2`, which adds `0xffffffff` to itself and leaves N and C at 1. Then it runs `add w0, w0, w1` instead of `adds`, on `0x7fffffff` plus 1.",
   failureQuestion: "**After `add`, what do the flags show?**",
   failureExplain:
-    "All four are still 0. `add` gives the same answer and leaves the flags as they were. Of the instructions met so far, only those whose names end in `s` record the four facts.",
+    "N and C are still 1, as `adds` left them. `add` gives the same answer as `adds` would, `0x80000000`, but records nothing. Had `add` recorded flags, they would be N 1, Z 0, C 0 and V 1, the same as `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had it cleared them, all four would be 0. The three outcomes differ, so the run tells them apart. Of the instructions met so far, only those whose names end in `s` record the four facts.",
 
   explanation:
     "The adder adds bits. It gives one answer for both readings. N and Z describe that answer: its top bit, and whether it is 0.\n\n" +

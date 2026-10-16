@@ -156,7 +156,9 @@ describe("the adder", () => {
     await user.click(screen.getByRole("button", { name: A.adder.all }));
     expect(screen.getByRole("status")).toHaveTextContent(A.adder.topBit);
     expect(A.adder.topBit).toMatch(/top bit/);
-    expect(A.adder.topBit).toMatch(/V compares the carry into it with the carry out of it/);
+    expect(A.adder.topBit).toMatch(
+      /V is 1 when the carry into the top bit differs from the carry out of it/,
+    );
   });
 
   it("says what the two thick underlines are in text a touch screen can read, not in a title alone", () => {

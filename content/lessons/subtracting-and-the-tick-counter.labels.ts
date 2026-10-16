@@ -25,12 +25,12 @@ export const LABELS = {
     reflection: "Looking back",
   },
   captions: {
-    ring: "The counter as a ring: then, now, and the distance between them.",
+    ring: "The counter as a ring: then, now, and the distance between them. The strip under the ring enlarges the stretch around the wrap.",
     // Placeholders for the two subtractions the adder draws: the prose process replaces them.
     subtractWrapped:
-      "subs w0, w0, w1 on 1000 and 4294966296, column by column, with the second number turned over.", // DRAFT
+      "subs w0, w0, w1 on 1000 and 4294966296, column by column, with each bit of the second number changed to the other value, and 1 carried in.",
     subtractNoWrap:
-      "subs w0, w0, w1 on 9000 and 2500, column by column, with the second number turned over.", // DRAFT
+      "subs w0, w0, w1 on 9000 and 2500, column by column, with each bit of the second number changed to the other value, and 1 carried in.",
     predictElapsed: "A prediction about what elapsed returns across the wrap.",
     predictNegs: "A prediction about what w0 holds after negs.",
     stepNegs:
