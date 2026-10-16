@@ -344,7 +344,7 @@ describe("the prediction about a register at the end of a run", () => {
     await user.click(screen.getByRole("radio", { name: "147" }));
     await user.click(screen.getByRole("button", { name: S.prediction.commit }));
     expect(container.querySelector(".al-match")).toHaveTextContent(
-      "The simulator ran it. w0 held 147 when the run ended.",
+      "The simulator ran the program. w0 held 147 when the run ended.",
     );
   });
 

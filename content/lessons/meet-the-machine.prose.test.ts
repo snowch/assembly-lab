@@ -3,8 +3,8 @@
 // The lesson's words are docs/notes/module-0/prose.md's, kept word for word. This test holds the
 // lesson to that file in both directions: every line of the file is somewhere in the lesson (so
 // nothing was dropped), and every string the lesson takes from the file is in it (so nothing was
-// reworded). The strings the file does not give are the DRAFT captions, and this test lists them,
-// so a new one is a decision somebody sees.
+// reworded). The strings the file does not give are five captions of the lesson's own, drafted by
+// Haiku, and this test lists them, so a new one is a decision somebody sees.
 
 import { readFileSync } from "node:fs";
 
@@ -78,7 +78,7 @@ describe("the lesson's words", () => {
     expect(chunks.filter((c) => c.trim() !== "" && !fileFlat.includes(flat(c)))).toEqual([]);
   });
 
-  it("have the captions the file gives, and only five captions of their own, all DRAFT", () => {
+  it("have the captions the file gives, and only five captions of their own, each drafted by Haiku", () => {
     expect(fileFlat).toContain(flat(LABELS.captions.listing));
     expect(fileFlat).toContain(flat(LABELS.captions.stepper));
     const own = [
@@ -91,7 +91,9 @@ describe("the lesson's words", () => {
     expect(Object.keys(LABELS.captions)).toHaveLength(2 + own.length);
     for (const caption of own) expect(fileFlat, caption).not.toContain(flat(caption));
     const source = readFileSync(new URL("./meet-the-machine.labels.ts", import.meta.url), "utf8");
-    expect(source.match(/\/\/ DRAFT/g)).toHaveLength(own.length + 1);
+    // Each of the five went through the prose process (16 October 2026); a new caption arrives
+    // marked DRAFT, and this count fails until it has been through it too.
+    expect(source.match(/\/\/ DRAFT/g) ?? []).toHaveLength(0);
   });
 
   it("keep the figures' captions as plain text, and the objectives as the file has them", () => {

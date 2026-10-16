@@ -29,13 +29,13 @@ export const LABELS = {
       "The C function and the four instructions GCC made from it. Each instruction sits beside the C line GCC recorded for it.",
     stepper:
       "trip_distance(120, 85, 42, 15), one instruction at a time. A register with an outline has just changed.",
-    // DRAFT: the prose file gives no caption for these figures.
-    predictTotal: "A prediction about where the processor keeps total.", // DRAFT
-    predictNoRet: "A prediction about what w0 holds when the run ends without ret.", // DRAFT
+    // The prose file gives no caption for these figures; these were drafted by Haiku.
+    predictTotal: "A prediction about where the processor keeps total.",
+    predictNoRet: "A prediction about what w0 holds when the run ends without ret.",
     noRet:
-      "trip_distance(120, 85, 42, 15) again, with a switch that deletes ret. fuel_used follows trip_distance in memory.", // DRAFT
-    fix: "The assembly editor, with the instructions of fuel_used as GCC made them from the mistaken C.", // DRAFT
-    trace: "Trace the call by hand, then give two values.", // DRAFT
+      "trip_distance(120, 85, 42, 15) again, with a switch that deletes ret. In memory, fuel_used comes after trip_distance.",
+    fix: "The assembly editor, with the instructions of fuel_used as GCC made them from the mistaken C.",
+    trace: "Trace the call by hand, then give two values.",
   },
   options: {
     total: [

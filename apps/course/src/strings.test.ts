@@ -36,7 +36,7 @@ describe("the course's words", () => {
     expect(STRINGS.title).toBe("Assembly Lab");
     expect(STRINGS.subtitle).toBe("From a line of C to the bits in a register");
     expect(STRINGS.statusNote).toBe(
-      "The plan below is under the author's review. There are no lessons yet, and the first ones are written after the plan is approved.",
+      "The plan below is under the author's review. Module 0 is written as a draft to try. The other modules are written after the plan is approved.",
     );
     expect(STRINGS.status.planned).toBe("Planned");
   });

@@ -10,10 +10,11 @@ instruction beside it. It is built on the author's learning platform (`snowch/le
 like `snowch/digital-design` and `snowch/metadata-systems`, and shares their interaction
 vocabulary: inspect, predict, step, experiment, break, explain, drill down, replay.
 
-**Status.** Checkpoint 1: the plan is proposed and under the author's review (`docs/plan.md`),
-and the scaffold is live. No lesson is written until the author has taken the plan's four
-decisions. Which modules have lessons, the front page says: it is worked out from the lessons
-themselves.
+**Status.** The plan's four decisions are still the author's (`docs/plan.md`); at the author's
+request the work goes on under its recommendations, and says so where it depends on one. The
+machine is built and held to GNU as and QEMU (`docs/machine.md`). Module 0 is published as a draft
+for the author to try, and is under review. Which modules have lessons, the front page says: it is
+worked out from the lessons themselves.
 
 Read `docs/plan.md` for the modules, their order, the decisions and the checkpoints;
 `docs/sources.md` for what every claim about the instruction set, the compiler and C rests on;

@@ -2,101 +2,101 @@
 
 // Every word the figures, the editor and the grader put in front of a learner, except the words of
 // the lessons themselves (their prose, labels and hints are in content/lessons) and the machine's
-// own sentences (packages/machine/src/strings.ts, read through messages.ts). Each is a DRAFT until
-// the prose process has been through it. A `code` span is written between backticks.
+// own sentences (packages/machine/src/strings.ts, read through messages.ts). Each was redrafted by
+// Haiku and checked for meaning (16 October 2026); a new one is marked DRAFT until it has been. A `code` span is written between backticks.
 
 export const VIEW_STRINGS = {
   /** The note under the badge of every figure that runs the simulator (the book's `steps` model). */
   modelNote:
-    "Each step runs one instruction on the course's simulator. The instruction reads registers, writes registers, and the simulator moves on to the next instruction. Nothing else happens between steps.", // DRAFT
+    "Each step runs one instruction on the course's simulator. The instruction reads registers and writes registers. Then the simulator moves on to the next instruction. Nothing else happens between steps.",
   /** The badge on a figure that runs the simulator, and the heading over its note. */
-  modelBadge: "Stepped", // DRAFT
-  modelHeading: "How the simulator steps", // DRAFT
+  modelBadge: "Stepped",
+  modelHeading: "How the simulator steps",
 
   register: {
     /** What a screen reader hears for a register: its name and its value as a number. */
-    group: (name: string) => `Register ${name}`, // DRAFT
-    changed: "Changed by the last instruction", // DRAFT
+    group: (name: string) => `Register ${name}`,
+    changed: "Changed by the last instruction",
   },
 
   listing: {
-    cHeading: "C", // DRAFT
-    instructionsHeading: "Instructions", // DRAFT
-    cLineHeading: "C line", // DRAFT
+    cHeading: "C",
+    instructionsHeading: "Instructions",
+    cLineHeading: "C line",
     /** The C line number beside an instruction, for a screen reader. */
-    recordedAgainst: (n: number) => `Recorded against C line ${n}`, // DRAFT
-    next: "Runs next", // DRAFT
-    cPane: "The C", // DRAFT
-    instructionsPane: "The instructions", // DRAFT
+    recordedAgainst: (n: number) => `Recorded against C line ${n}`,
+    next: "Runs next",
+    cPane: "The C",
+    instructionsPane: "The instructions",
   },
 
   stepper: {
-    next: "Next", // DRAFT
-    back: "Back", // DRAFT
-    reset: "Reset", // DRAFT
-    registers: "Registers", // DRAFT
-    controls: "Step through the run", // DRAFT
-    start: "Press Next to run the first instruction.", // DRAFT
-    ran: (text: string) => `Ran \`${text}\`.`, // DRAFT
-    upNext: (text: string) => `Next: \`${text}\`.`, // DRAFT
-    ended: "The function returned.", // DRAFT
+    next: "Next",
+    back: "Back",
+    reset: "Reset",
+    registers: "Registers",
+    controls: "Step through the run",
+    start: "Press Next to run the first instruction.",
+    ran: (text: string) => `Ran \`${text}\`.`,
+    upNext: (text: string) => `Next: \`${text}\`.`,
+    ended: "The function returned.",
     /** The switch that takes one line out of the listing and runs it again. */
-    deleteLine: (text: string) => `Delete the \`${text}\` line`, // DRAFT
+    deleteLine: (text: string) => `Delete the \`${text}\` line`,
     /** In place of a stepper that waits for a prediction. */
-    locked: "Check your prediction above first. The figure opens when you have.", // DRAFT
+    locked: "Check your prediction above first. The figure opens once you have checked it.",
   },
 
   prediction: {
-    commit: "Check my prediction", // DRAFT
-    legend: "Your prediction", // DRAFT
-    youChose: (choice: string) => `You chose: ${choice}`, // DRAFT
-    match: "That matches your prediction.", // DRAFT
-    noMatch: "That does not match your prediction.", // DRAFT
+    commit: "Check your prediction",
+    legend: "Your prediction",
+    youChose: (choice: string) => `You chose: ${choice}`,
+    match: "That matches your prediction.",
+    noMatch: "That does not match your prediction.",
     /** The simulator's result for a question about the first instruction's register. */
     firstWrote: (register: string) =>
-      `The simulator ran the first instruction. It wrote \`${register}\`.`, // DRAFT
-    firstWroteNothing: "The simulator ran the first instruction. It wrote no register.", // DRAFT
+      `The simulator ran the first instruction. It wrote \`${register}\`.`,
+    firstWroteNothing: "The simulator ran the first instruction. It wrote no register.",
     /** The simulator's result for a question about a register at the end of a run. */
     endedWith: (register: string, value: number) =>
-      `The simulator ran it. \`${register}\` held ${value} when the run ended.`, // DRAFT
-    endedWithError: "The simulator ran it. The run stopped with an error.", // DRAFT
+      `The simulator ran the program. \`${register}\` held ${value} when the run ended.`,
+    endedWithError: "The simulator ran the program. The run stopped with an error.",
   },
 
   editor: {
-    mode: "Edit as", // DRAFT
-    text: "Text", // DRAFT
-    tap: "Tap", // DRAFT
-    textLabel: "Your instructions", // DRAFT
-    symbols: "Characters for assembly", // DRAFT
-    insert: (char: string) => `Insert ${char}`, // DRAFT
-    problems: "Problems in your instructions", // DRAFT
-    lineProblem: (n: number, sentence: string) => `Line ${n}: ${sentence}`, // DRAFT
-    emptyLine: "(empty line)", // DRAFT
-    lines: "Your instructions, one to a line", // DRAFT
-    noLines: "There are no instructions yet.", // DRAFT
-    addFirst: "Add a line", // DRAFT
-    addBelow: "Add a line below", // DRAFT
-    remove: "Delete this line", // DRAFT
-    up: "Move up", // DRAFT
-    down: "Move down", // DRAFT
-    done: "Done", // DRAFT
-    editing: (n: number) => `Editing line ${n}`, // DRAFT
-    instruction: "Instruction", // DRAFT
-    operand: (n: number) => `Operand ${n}`, // DRAFT
-    number: "A number", // DRAFT
-    numberPad: "Number pad", // DRAFT
-    numberShown: (n: string) => `Number: ${n === "" ? "none yet" : n}`, // DRAFT
-    deleteDigit: "Delete last digit", // DRAFT
-    clearNumber: "Clear number", // DRAFT
+    mode: "Edit as",
+    text: "Text",
+    tap: "Tap",
+    textLabel: "Your instructions",
+    symbols: "Characters for assembly",
+    insert: (char: string) => `Insert ${char}`,
+    problems: "Problems in your instructions",
+    lineProblem: (n: number, sentence: string) => `Line ${n}: ${sentence}`,
+    emptyLine: "(empty line)",
+    lines: "Your instructions, one per line",
+    noLines: "There are no instructions yet.",
+    addFirst: "Add a line",
+    addBelow: "Add a line below",
+    remove: "Delete this line",
+    up: "Move up",
+    down: "Move down",
+    done: "Done",
+    editing: (n: number) => `Editing line ${n}`,
+    instruction: "Instruction",
+    operand: (n: number) => `Operand ${n}`,
+    number: "A number",
+    numberPad: "Number pad",
+    numberShown: (n: string) => `Number: ${n === "" ? "none yet" : n}`,
+    deleteDigit: "Delete last digit",
+    clearNumber: "Clear number",
     notEditable:
-      "This line is not an instruction the chips can build. Pick an instruction to replace it.", // DRAFT
+      "This line is not an instruction the chips can build. Pick an instruction to replace it.",
   },
 
   grader: {
-    nothingWritten: "Write at least one instruction first.", // DRAFT
-    unanswered: (fields: string) => `Give a whole number for ${fields} first.`, // DRAFT
-    notWhole: (field: string) => `The answer for ${field} must be a whole number.`, // DRAFT
-    noProgram: "This challenge has no program to run.", // DRAFT
+    nothingWritten: "Write at least one instruction first.",
+    unanswered: (fields: string) => `Give a whole number for ${fields} first.`,
+    notWhole: (field: string) => `The answer for ${field} must be a whole number.`,
+    noProgram: "This challenge has no program to run.",
   },
 } as const;
 

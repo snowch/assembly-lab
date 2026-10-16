@@ -13,7 +13,7 @@ export const STRINGS = {
   intro:
     "You drive a real processor's instruction set, one instruction at a time. After each instruction, you see what changed: the bits in each register, the four flags and memory, with the line of C it came from shown beside it. Before each run, you predict what will happen, and you write small programs that tests check. Everything runs in your browser.",
   statusNote:
-    "The plan below is under the author's review. There are no lessons yet, and the first ones are written after the plan is approved.",
+    "The plan below is under the author's review. Module 0 is written as a draft to try. The other modules are written after the plan is approved.",
   /** The label on a module that has no lessons yet. */
   status: {
     planned: "Planned",
@@ -47,8 +47,8 @@ export const STRINGS = {
 
   // the cover's live figure: the name a screen reader gives it, and what it says as it runs.
   cover: {
-    figure: "Step through trip_distance(120, 85, 42, 15)", // DRAFT
-    register: (value: number) => `w0 holds ${value}.`, // DRAFT
+    figure: "Step through trip_distance(120, 85, 42, 15)",
+    register: (value: number) => `w0 holds ${value}.`,
   },
 
   /** Under the plan, on every page. */
