@@ -23,10 +23,12 @@ export const PLUS = {
 } as const;
 
 /**
- * The failure experiment: an `adds` on `0x7fffffff` plus 1 that leaves N and V at 1, then `add`
- * where `adds` would have set the flags again, on the same two numbers.
+ * The failure experiment: an `adds` on `0xffffffff` plus `0xffffffff` that leaves N and C at 1
+ * (1010), then `add` on `0x7fffffff` plus 1. Left alone the flags stay 1010; had `add` set them
+ * they would be 1001 (N and V); had it cleared them, 0000. The call is
+ * `sum_flags(0x7fffffff, 1, 0xffffffff)`, and none of it is an addition of the flags challenge.
  */
 export const SUM_FLAGS = {
   c: "",
-  listing: ["sum_flags:", "  adds w2, w0, w1", "  add w0, w0, w1", "  ret"].join("\n"),
+  listing: ["sum_flags:", "  adds w3, w2, w2", "  add w0, w0, w1", "  ret"].join("\n"),
 } as const;

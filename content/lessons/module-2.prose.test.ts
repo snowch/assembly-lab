@@ -65,9 +65,14 @@ const cases = [
         ["N", "Z", "C", "V"].map((flag) => L1.challenges.flags.field(flag, a.text)),
       ),
     ],
-    // Those, and the template that makes a field's label from a flag and an addition. The one mark
-    // is the placeholder caption of the figure after the flags challenge.
-    marks: 1,
+    // The failure experiment's four options are placeholders (the program changed, so the file's
+    // options no longer fit): the file's option "V is 1, as with `adds`" has no option left, and the
+    // prose process replaces the placeholders and the file's lines together.
+    draftOptions: L1.options.afterAdd.map((o) => o.label),
+    replaced: ["V is 1, as with `adds`"],
+    // Those, and the template that makes a field's label from a flag and an addition. The marks are
+    // the placeholder caption of the figure after the flags challenge and the four placeholder options.
+    marks: 5,
   },
   {
     n: 2,
@@ -89,6 +94,8 @@ const cases = [
       L2.challenges.step.tests.result,
       L2.challenges.step.tests.c,
     ],
+    draftOptions: [] as string[],
+    replaced: [] as string[],
     // The two marks are the placeholder captions of the two subtractions the adder draws.
     marks: 2,
   },
@@ -116,7 +123,8 @@ describe.each(cases)("module 2, lesson $n: the lesson's words", (c) => {
   const wordsOfFile = body
     .split("\n")
     .filter((l) => l.trim() !== "" && !l.startsWith("## ") && !l.startsWith("*Shown after"))
-    .map((l) => l.replace(/^- /, "").replace(/^\d+\. /, ""));
+    .map((l) => l.replace(/^- /, "").replace(/^\d+\. /, ""))
+    .filter((l) => !(c.replaced as readonly string[]).includes(l));
 
   it("take the lesson's title from the file's heading", () => {
     const heading = new RegExp(`^# Lesson ${c.n}: (.*)$`, "m").exec(file)?.[1];
@@ -143,7 +151,8 @@ describe.each(cases)("module 2, lesson $n: the lesson's words", (c) => {
       ...stringsIn(
         Object.values(c.labels.options)
           .flat()
-          .map((o) => o.label),
+          .map((o) => o.label)
+          .filter((label) => !(c.draftOptions as readonly string[]).includes(label)),
       ),
       ...stringsIn(c.labels.titles),
     ];
@@ -154,7 +163,8 @@ describe.each(cases)("module 2, lesson $n: the lesson's words", (c) => {
   it("keep the objectives as the file has them, and each option's label too", () => {
     expect(lesson.objectives).toEqual([...c.labels.objectives]);
     for (const o of Object.values(c.labels.options).flat())
-      expect(fileFlat, o.label).toContain(flat(o.label));
+      if (!(c.draftOptions as readonly string[]).includes(o.label))
+        expect(fileFlat, o.label).toContain(flat(o.label));
   });
 
   it("have only the captions and labels drafted for the page, each through the prose process", () => {

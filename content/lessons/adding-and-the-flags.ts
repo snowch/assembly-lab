@@ -31,6 +31,9 @@ const PLUS_CALL = { entry: "plus", args: [0x7fffffff, 1] } as const;
  */
 const CARRY_OUT_CALL = { entry: "plus", args: [1, 0xffffffff] } as const;
 
+/** The failure experiment's call: `w2` is for the `adds`, `w0` and `w1` for the `add`. */
+const SUM_CALL = { entry: "sum_flags", args: [0x7fffffff, 1, 0xffffffff] } as const;
+
 const FLAG_NAMES = ["N", "Z", "C", "V"] as const;
 
 /** The additions the prediction challenge asks about, with the arguments each is run with. */
@@ -131,9 +134,9 @@ export const addingAndTheFlags: LessonInput = {
             options: LABELS.options.afterAdd,
             explain: PROSE.failureExplain,
             program: SUM_FLAGS,
-            call: { entry: "sum_flags", args: [0x7fffffff, 1] },
+            call: SUM_CALL,
             measure: { kind: "flags" },
-            inputs: [0, 1],
+            inputs: [0, 1, 2],
           },
         },
         {
@@ -143,8 +146,8 @@ export const addingAndTheFlags: LessonInput = {
           caption: LABELS.captions.stepAdd,
           props: {
             program: SUM_FLAGS,
-            call: { entry: "sum_flags", args: [0x7fffffff, 1] },
-            registers: [0, 1, 2],
+            call: SUM_CALL,
+            registers: [0, 1, 2, 3],
             flags: true,
             after: "predict-add-flags",
           },

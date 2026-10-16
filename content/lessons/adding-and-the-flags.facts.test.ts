@@ -162,40 +162,80 @@ describe("the three additions the challenge predicts", () => {
 });
 
 describe("the failure experiment", () => {
-  const keeping = callText(assembly(SUM_FLAGS.listing), "sum_flags", [0x7fffffff, 1]);
+  const CALL = [0x7fffffff, 1, 0xffffffff];
+  const keeping = callText(assembly(SUM_FLAGS.listing), "sum_flags", CALL);
+  const plusFlags = (a: number, b: number) => nzcv(plus(a, b).flags);
 
-  it("runs an adds that leaves N and V at 1, then an add that leaves them as they were", () => {
+  it("runs an adds on 0xffffffff plus 0xffffffff, then an add on 0x7fffffff plus 1", () => {
     const steps = keeping.result.steps;
-    expect(steps.map((s) => s.text)).toEqual(["adds w2, w0, w1", "add w0, w0, w1", "ret"]);
-    expect(nzcv(steps[0]!.flagsAfter)).toBe("1001");
-    expect(nzcv(steps[1]!.flagsAfter)).toBe("1001");
-    expect(nzcv(keeping.flags)).toBe("1001");
-    // The adds put the answer in w2, which the add does not touch: w2 is 0x80000000.
-    expect(keeping.result.final.x[2]).toBe(0x80000000n);
+    expect(steps.map((s) => s.text)).toEqual(["adds w3, w2, w2", "add w0, w0, w1", "ret"]);
+    // The adds: w3 is 0xfffffffe, N 1, Z 0, C 1, V 0. The add leaves the flags and ret too.
+    expect(nzcv(steps[0]!.flagsBefore)).toBe("0000");
+    expect(nzcv(steps[0]!.flagsAfter)).toBe("1010");
+    expect(nzcv(steps[1]!.flagsAfter)).toBe("1010");
+    expect(nzcv(steps[2]!.flagsAfter)).toBe("1010");
+    expect(nzcv(keeping.flags)).toBe("1010");
+    expect(keeping.result.final.x[3]).toBe(0xfffffffen);
   });
 
-  it("starts the adds from flags that are all clear, so the add is seen to leave a set flag", () => {
-    expect(nzcv(keeping.result.steps[0]!.flagsBefore)).toBe("0000");
-  });
-
-  it("gives add the same answer as adds: 0x80000000", () => {
+  it("gives w0 0x80000000 after the add, the answer of 0x7fffffff plus 1", () => {
     expect(keeping.w0).toBe(0x80000000);
     expect(keeping.w0).toBe(plus(0x7fffffff, 1).w0);
+    expect(keeping.result.final.x[1]).toBe(1n);
+    expect(keeping.result.final.x[2]).toBe(0xffffffffn);
+  });
+
+  it("tells leaving the flags from setting them and from clearing them: 1010, 1001 and 0000", () => {
+    // Left alone: the adds' flags, N and C. Set by the add: the flags of its own addition, N and V.
+    expect(plusFlags(0x7fffffff, 1)).toBe("1001");
+    // Cleared: all four 0. The three outcomes are different.
+    const outcomes = [nzcv(keeping.flags), plusFlags(0x7fffffff, 1), "0000"];
+    expect(new Set(outcomes).size).toBe(3);
+    // The adds' own addition is 0xffffffff plus 0xffffffff: N 1, Z 0, C 1, V 0.
+    expect(plusFlags(0xffffffff, 0xffffffff)).toBe("1010");
+  });
+
+  it("uses none of the additions of the flags challenge", () => {
+    const challenge = lesson.challenges.find((x) => x.id === "predict-flags")!;
+    if (challenge.tests.kind !== "answers") throw new Error("answers");
+    const additions = challenge.tests.cases.map((t) => [t.given["w0"], t.given["w1"]].join(","));
+    for (const pair of ["2147483647,1", "4294967295,4294967295"])
+      expect(additions, pair).not.toContain(pair);
+    // The figure's call is the one tested here.
+    const figure = lesson.sections
+      .flatMap((s) => s.interactives)
+      .find((x) => x.id === "predict-add-flags")!;
+    expect(figure.props["call"]).toEqual({ entry: "sum_flags", args: CALL });
+    expect(figure.props["inputs"]).toEqual([0, 1, 2]);
+    expect(figure.props["measure"]).toEqual({ kind: "flags" });
   });
 
   it("leaves flags as it found them, whatever they were", () => {
-    const set = callText(assembly(SUM_FLAGS.listing), "sum_flags", [0x7fffffff, 1], ALL_SET);
-    // adds w2, w0, w1 rewrites the flags to 1001; add then leaves them. Starting from 1111, an add alone keeps 1111.
-    expect(nzcv(set.result.steps[0]!.flagsAfter)).toBe("1001");
-    expect(nzcv(set.flags)).toBe("1001");
+    for (const start of [ALL_SET, { n: false, z: true, c: false, v: false }]) {
+      const out = callText(assembly(SUM_FLAGS.listing), "sum_flags", CALL, start);
+      // adds w3, w2, w2 rewrites the flags to 1010 whatever they were; the add keeps that.
+      expect(nzcv(out.result.steps[0]!.flagsAfter)).toBe("1010");
+      expect(nzcv(out.flags)).toBe("1010");
+    }
     const only = callText("f:\n  add w0, w0, w1\n  ret\n", "f", [0x7fffffff, 1], ALL_SET);
     expect(nzcv(only.flags)).toBe("1111");
+    const left = { n: true, z: false, c: true, v: false };
+    const after = callText("f:\n  add w0, w0, w1\n  ret\n", "f", [0x7fffffff, 1], left);
+    expect(nzcv(after.flags)).toBe("1010");
   });
 
-  it("is not an add that clears the flags: an add from the flags the adds left keeps 1001", () => {
-    const left = { n: true, z: false, c: false, v: true };
-    const after = callText("f:\n  add w0, w0, w1\n  ret\n", "f", [0x7fffffff, 1], left);
-    expect(nzcv(after.flags)).toBe("1001");
+  it("has the model pick the option N and C are still 1 (value c), not V", () => {
+    const options = lesson.sections
+      .flatMap((s) => s.interactives)
+      .find((x) => x.id === "predict-add-flags")!.props["options"] as {
+      value: string;
+      label: string;
+    }[];
+    expect(options.map((o) => o.value).sort()).toEqual(["c", "error", "none", "v"]);
+    // N 1, Z 0, C 1, V 0 is "c" for the prediction (C set, V clear).
+    const [n, z, c, v] = nzcv(keeping.flags).split("").map(Number);
+    expect([n, z, c, v]).toEqual([1, 0, 1, 0]);
+    expect(options.find((o) => o.value === "c")!.label).toMatch(/N and C are still 1/);
   });
 
   it("finds that, of the instructions met so far, only adds records the four facts", () => {

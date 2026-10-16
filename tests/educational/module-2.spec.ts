@@ -31,6 +31,9 @@ const TWO = "subtracting-and-the-tick-counter";
 const lesson = (id: string) => LESSONS.find((l) => l.id === id)!;
 const key = (id: string) => `assembly-lab:v1:${id}`;
 
+/** The failure experiment's call: `w2` is for the `adds`, `w0` and `w1` for the `add`. */
+const SUM_CALL = { entry: "sum_flags", args: [0x7fffffff, 1, 0xffffffff] };
+
 /** Everything the page logs as an error, or throws, until the test ends. */
 function watchErrors(page: Page): string[] {
   const errors: string[] = [];
@@ -142,20 +145,19 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       page.locator("#ix-predict-readings").getByRole("button", { name: V.prediction.commit }),
     );
     await expect(readings).toContainText(A.prediction.readings(true, false));
-    // The adds before the add leaves N and V at 1, so the model says V is 1 and the add keeps it.
-    const flags = flagDigits(
-      traceOf(SUM_FLAGS, { entry: "sum_flags", args: [0x7fffffff, 1] }).result.final.flags,
-    );
-    expect(flags).toEqual([1, 0, 0, 1]);
+    // The adds leaves N and C at 1 (1010), so the model says C is set and V clear, and the add
+    // keeps that: not 1001, which the add's own addition would give, and not 0000.
+    const flags = flagDigits(traceOf(SUM_FLAGS, SUM_CALL).result.final.flags);
+    expect(flags).toEqual([1, 0, 1, 0]);
     await predictionCommitsBeforeItReveals(
       page,
       "predict-add-flags",
-      /^V is 1/,
-      "All four are still 0",
+      /^N and C are still 1/,
+      "All four are 0",
     );
     await page
       .locator("#ix-predict-add-flags")
-      .getByRole("radio", { name: /^V is 1/ })
+      .getByRole("radio", { name: /^N and C are still 1/ })
       .check();
     await press(
       page,
@@ -252,9 +254,9 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     await openLesson(page, ONE);
     const stepper = page.locator("#ix-step-add");
     await expect(stepper.locator(".al-locked")).toBeVisible();
-    await commit(page, "predict-add-flags", /^V is 1/);
+    await commit(page, "predict-add-flags", /^N and C are still 1/);
     await stepper.scrollIntoViewIfNeeded();
-    const model = traceOf(SUM_FLAGS, { entry: "sum_flags", args: [0x7fffffff, 1] });
+    const model = traceOf(SUM_FLAGS, SUM_CALL);
     const next = stepper.getByRole("button", { name: V.stepper.next });
     await expect(registerValue(stepper, "w0")).toHaveText("2147483647");
     for (const k of [1, 2, 3]) {
@@ -263,17 +265,19 @@ test.describe("lesson 1, Adding, and the four flags", () => {
         [0, "w0"],
         [1, "w1"],
         [2, "w2"],
+        [3, "w3"],
       ] as const)
         await expect(registerValue(stepper, name)).toHaveText(
           String(wValue(viewAt(model, k).state, n)),
         );
-      // The adds sets N and V; the add and the ret leave them as they were.
+      // The adds sets N and C; the add and the ret leave them as they were.
       expect(await flagValues(stepper)).toEqual(
         flagDigits(viewAt(model, k).state.flags).map(String),
       );
-      expect(await flagValues(stepper)).toEqual(["1", "0", "0", "1"]);
+      expect(await flagValues(stepper)).toEqual(["1", "0", "1", "0"]);
     }
     await expect(registerValue(stepper, "w0")).toHaveText("2147483648");
+    await expect(registerValue(stepper, "w3")).toHaveText("4294967294");
     await expect(next).toBeDisabled();
   });
 
@@ -523,7 +527,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       await press(page, page.locator("details.lesson-details summary"));
       expect(await designProblems(page, phone)).toEqual([]);
       await press(page, adder.getByRole("button", { name: A.adder.all }));
-      await commit(page, "predict-add-flags", "C is 1");
+      await commit(page, "predict-add-flags", "All four are 0");
       const stepper = page.locator("#ix-step-add");
       await press(page, stepper.getByRole("button", { name: V.stepper.next }));
       const flags = challenge(page, "predict-flags");

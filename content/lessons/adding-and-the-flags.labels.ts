@@ -44,11 +44,13 @@ export const LABELS = {
       { value: "signed", label: "Only the signed" },
       { value: "neither", label: "Neither" },
     ],
+    // Placeholders for the failure experiment's four options: the prose process replaces them.
+    // The right one is the one the model computes (value "c": N and C are 1, V is 0).
     afterAdd: [
-      { value: "v", label: "V is 1, as with `adds`" },
-      { value: "none", label: "All four are still 0" },
-      { value: "error", label: "The run stops with an error" },
-      { value: "c", label: "C is 1" },
+      { value: "v", label: "N and V are 1, from the addition" }, // DRAFT
+      { value: "c", label: "N and C are still 1, as `adds` left them" }, // DRAFT
+      { value: "none", label: "All four are 0" }, // DRAFT
+      { value: "error", label: "The run stops with an error" }, // DRAFT
     ],
   },
   challenges: {
