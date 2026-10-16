@@ -108,9 +108,10 @@ did not write it, working from a written brief and never from the author of the 
 of it.
 
 - **Readers** review one lesson each, as a learner who has done every earlier lesson and none
-  after, in a real browser at phone and desktop widths. Every finding quotes the page, gives a
-  severity, suggests a direction and never rewrites; a number or a cross-reference is checked
-  before it is asserted; a review never contains a challenge's answer.
+  after, in a real browser at phone and desktop widths, in the light and the dark theme. Every
+  finding quotes the page, gives a severity, suggests a direction and never rewrites; a number or
+  a cross-reference is checked before it is asserted; a review never contains a challenge's
+  answer.
 - **Sceptics** attack every finding against the page, the model, the sources and these rules, and
   recommend the smallest fix. Readers over-call; what survives goes on a ranked fix list, with the
   rejected items listed so they do not return.

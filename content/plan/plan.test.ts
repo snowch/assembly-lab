@@ -2,6 +2,8 @@
 
 // The plan as data: what the front page and the cover for a browser with no scripts list.
 
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
 import { MODULES, OPTIONAL_PART, PARTS, PLAN, STATUSES, moduleByNumber } from "./plan";
@@ -11,7 +13,7 @@ describe("the course's plan", () => {
     expect(PARTS.map((p) => p.title)).toEqual([
       "The machine's state",
       "Choosing what runs next",
-      "Memory",
+      "Memory and wider values",
       "Functions and C",
     ]);
     expect(PLAN).toEqual([...PARTS, OPTIONAL_PART]);
@@ -55,5 +57,13 @@ describe("the course's plan", () => {
     expect(moduleByNumber(0)?.title).toBe("Meet the machine");
     expect(moduleByNumber(11)?.title).toBe("Where C and the machine disagree");
     expect(moduleByNumber(12)).toBeUndefined();
+  });
+
+  it("names its parts and modules exactly as docs/plan.md does, so the two cannot drift", () => {
+    const doc = readFileSync(new URL("../../docs/plan.md", import.meta.url), "utf8");
+    PARTS.forEach((part, i) => {
+      expect(doc, part.title).toContain(`### Part ${i + 1}: ${part.title}\n`);
+    });
+    for (const m of MODULES) expect(doc, m.title).toContain(`| ${m.label} ${m.title} |`);
   });
 });

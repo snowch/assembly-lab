@@ -81,7 +81,7 @@ export const PARTS: readonly PlanPart[] = [
   },
   {
     id: "memory",
-    title: "Memory",
+    title: "Memory and wider values",
     modules: [
       M(
         "6",

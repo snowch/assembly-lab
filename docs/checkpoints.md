@@ -30,7 +30,26 @@ Written on 16 October 2026 by the managing session.
 
 ### The review of the plan
 
-PENDING: filled in from the reader's and the sceptic's reports.
+A reader on another model reviewed `docs/plan.md` against compiled listings, QEMU and GNU as runs,
+the AAPCS documents and the family's rules, and wrote 22 findings (2 high, 11 medium, 9 low). An
+independent sceptic attacked each one: 5 upheld, 11 upheld in part, 4 rejected, 2 already
+answered. Both reports are in `docs/notes/checkpoint-1/review/`. Every surviving fix is in the
+plan; the two that bear most on the decisions:
+
+- **The divide.** The plan had said Armv7-A has no divide instruction. Divide is an optional
+  extension on Armv7-A, which GCC does not assume for the baseline `-march=armv7-a` target, so
+  that target's code calls `__aeabi_idiv`. The A32 column and the optional chapter now say so.
+  The recommendation for A64 does not rest on it.
+- **The calling convention.** Every capstone from Module 0 is a function, so arguments in `w0`,
+  `w1`, the result in `w0` and `ret` now arrive in Module 0; Module 9 keeps what a function must
+  preserve, and the stack.
+
+The others: a write to `w0` clears the top half of `x0` (now in Module 1); the A64 `int8_t`
+listing extends the operand rather than narrowing the result; the notes are written for 32-bit
+ARM, which is now one of A64's stated costs; the optional chapter is recorded listings, not a
+second model, and the plan prices the alternative; the trip computer's signed quantity is the
+road's gradient, not a temperature, which digital-design already uses; hexadecimal is taught in
+Module 1; and several smaller corrections to the module tables.
 
 ### What the build containers cannot reach
 
