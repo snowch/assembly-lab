@@ -366,18 +366,18 @@ ol {
   align-self: start;
   display: grid;
   place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: var(--radius-lg);
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--icon-tile);
+  color: var(--icon-mark);
 }
 .module-icon svg {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.8;
+  stroke-width: 2.2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
