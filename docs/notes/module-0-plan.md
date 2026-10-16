@@ -68,6 +68,9 @@ Instructions the lesson's assembler allows: `add`, `sub`, `ret`.
 The stepper and the editor are reused by every later module, so they are built as general
 figures: the stepper takes a listing, a call, the registers to draw, and the recorded C; the
 editor takes a starting listing, calls with expected results, and the instruction gate.
+The editor has both modes of `docs/plan.md` ("Editing on a phone or a tablet"), text and tap,
+from this first lesson, and the browser tests complete the construction challenge both ways: by
+typing at the desktop width, and by tapping alone at the phone width.
 
 ## Challenges
 
