@@ -22,9 +22,11 @@ Keep the words out of the structure file: `<lesson>.prose.ts` holds every paragr
   and the memory the case checks, in the verdict shape the runtime renders. An answer challenge
   (predict a flag, a register's value, which branch is taken) uses the platform's `answers`
   fields, graded by the course's graders.
-- **The instruction gate.** Each lesson's `introduces` lists the instructions it is the first to
-  use, as well as its terms. The assembler, given a lesson, rejects an instruction no earlier
-  lesson introduced, with a plain message.
+- **The instruction gate.** A lesson's `introduces` lists its terms only, as digital-design's do;
+  an instruction's name (`adds`) can also be an ordinary English word, which the term gate would
+  trip on. The instructions a learner may write are each written challenge's `allowedConstructs`,
+  which the assembler is given as its gate, and the tap editor offers only those (decided at
+  Module 2's build, 16 October 2026).
 - **Every program a lesson shows is in the differential test** against QEMU.
 - **Every compiler listing a lesson shows is recorded** with the compiler, its version and its
   flags, and a facts test pins what the prose says about it.
