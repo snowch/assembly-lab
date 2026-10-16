@@ -26,6 +26,7 @@ import { errorSentence } from "./messages";
 import { withCode } from "./parts";
 import { VIEW_STRINGS as S } from "./strings";
 import {
+  SHIFTS,
   SLOTS,
   linesOf,
   lineText,
@@ -267,12 +268,31 @@ function LineEditor({
         const operand = line.operands[j] ?? "";
         const digits = numberOf(operand);
         const takesNumber = slot === "registerOrNumber" && numberPad;
-        const open = takesNumber && (digits !== null || padFor === j);
+        // A number is always open for a slot that can only be a number.
+        const open = slot === "number" || (takesNumber && (digits !== null || padFor === j));
+        if (slot === "shift") {
+          return (
+            <div key={j} className="asm-field" role="group" aria-label={S.editor.operand(j + 1)}>
+              <span className="asm-field-label">{S.editor.operand(j + 1)}</span>
+              <div className="asm-chips">
+                {SHIFTS.map((shift) => (
+                  <Chip
+                    key={shift}
+                    pressed={operand.toLowerCase().replace(/\s+/g, " ") === shift}
+                    onClick={() => set(withOperand(line, j, operand === shift ? "" : shift))}
+                  >
+                    {shift}
+                  </Chip>
+                ))}
+              </div>
+            </div>
+          );
+        }
         return (
           <div key={j} className="asm-field" role="group" aria-label={S.editor.operand(j + 1)}>
             <span className="asm-field-label">{S.editor.operand(j + 1)}</span>
             <div className="asm-chips">
-              {registers.map((r) => (
+              {(slot === "number" ? [] : registers).map((r) => (
                 <Chip
                   key={r}
                   pressed={operand.toLowerCase() === r}
@@ -301,7 +321,11 @@ function LineEditor({
             {open && (
               <NumberPad
                 digits={digits ?? ""}
-                onDigits={(d) => set(withOperand(line, j, d === "" ? "" : `#${d}`))}
+                onDigits={(d) => {
+                  // The pad stays open when the last digit goes, so a number can be replaced.
+                  setPadFor(j);
+                  set(withOperand(line, j, d === "" ? "" : `#${d}`));
+                }}
               />
             )}
           </div>

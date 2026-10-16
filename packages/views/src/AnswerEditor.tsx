@@ -8,9 +8,12 @@ import type { ComponentType } from "react";
 
 import type { ChallengeEditorProps } from "@platform/lesson-runtime";
 
+import { BitToggles } from "./BitToggles";
 import { RecordedSchema } from "./interactives/props";
 import { cLinesOf, parseListing } from "./listing";
 import { ListingView, withCode } from "./parts";
+import { NO_BITS, isPattern } from "./readings";
+import { plain } from "./strings";
 
 export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
   challenge,
@@ -49,6 +52,20 @@ export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
               </span>
             </fieldset>
           );
+        // A field of bits is 32 buttons, set one at a time; it is kept as 32 characters.
+        if (f.kind === "bits") {
+          const stored = answers[f.id];
+          return (
+            <div key={f.id} className="answer-field" data-field={f.id}>
+              <span className="answer-label">{withCode(f.label)}</span>
+              <BitToggles
+                bits={isPattern(stored) ? stored : NO_BITS}
+                onChange={(bits) => set(f.id, bits)}
+                label={plain(f.label)}
+              />
+            </div>
+          );
+        }
         return (
           <label key={f.id} className="answer-field" data-field={f.id} htmlFor={id}>
             <span className="answer-label">{withCode(f.label)}</span>

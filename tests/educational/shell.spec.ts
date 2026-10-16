@@ -90,6 +90,13 @@ test("a module with a lesson is published; with one lesson its title links to it
   await meet.click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Meet the machine");
   expect(new URL(page.url()).hash).toBe("#/lesson/meet-the-machine");
+  await page.goto("#/");
+  await page
+    .locator('.plan-module[data-module="registers-and-readings"] .module-lessons li a')
+    .nth(1)
+    .click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Constants and widths");
+  expect(new URL(page.url()).hash).toBe("#/lesson/constants-and-widths");
 });
 
 test("each lesson of a module with several is reached from the front page", async ({ page }) => {

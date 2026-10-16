@@ -64,6 +64,74 @@ export const VIEW_STRINGS = {
     endedWithError: "The simulator ran the program. The run stopped with an error.",
   },
 
+  // DRAFT: Module 1's figures. These strings have not been through the Haiku redraft that the
+  // others above had, and are listed for it.
+  toggles: {
+    /** The name of one bit's button, for a screen reader: its number, 31 for the top bit. */
+    bit: (n: number) => `Bit ${n}`,
+    /** The name of the hexadecimal digit written under four bits. */
+    digit: (digit: string) => `Hexadecimal digit ${digit}`,
+    /** The name of a row of bits that the learner sets. */
+    group: (register: string) => `Bits of ${register}`,
+  },
+
+  // DRAFT
+  reader: {
+    hex: "Hexadecimal",
+    unsigned: "Unsigned reading",
+    signed: "Signed reading",
+    readings: "Readings of the bits",
+  },
+
+  // DRAFT
+  compare: {
+    cPane: (name: string) => `The C of ${name}`,
+    table: "The two listings, line by line",
+    same: "Same",
+    differs: "Different",
+    allSame: (n: number) => `All ${n} instructions are the same.`,
+    notAllSame: "The instructions are not all the same.",
+    /** The simulator's result for a question about two listings. */
+    resultSame: "The course's assembler read both listings. Their instructions are the same.",
+    resultDiffer: "The course's assembler read both listings. Their instructions are not the same.",
+  },
+
+  // DRAFT
+  fits: {
+    /** The result for a question about which constants one `mov` can hold. */
+    one: (accepted: string, refused: number) =>
+      `The course's assembler took \`mov w0, ${accepted}\` as one instruction. It refused the other ${refused}.`,
+    none: "The course's assembler refused every one of these.",
+    several: (accepted: string) =>
+      `The course's assembler took more than one of these as one instruction: ${accepted}.`,
+  },
+
+  // DRAFT
+  tester: {
+    input: "The number after mov w0",
+    empty: "Type a number to see whether one `mov` can hold it.",
+    notNumber: "Type a whole number, in decimal or in hexadecimal with 0x in front.",
+    fits: (text: string) => `\`mov w0, ${text}\` is one instruction. After it, \`w0\` holds this:`,
+  },
+
+  // DRAFT
+  wide: {
+    upper: "Upper 32 bits",
+    lower: (name: string) => `${name}, the lower 32 bits`,
+    /** The result for a question about a register that is 64 bits wide. */
+    endedWith: (register: string, hex: string) =>
+      `The simulator ran the program. \`${register}\` held \`${hex}\` when the run ended.`,
+  },
+
+  // DRAFT: the sentence under a wrong answer in the readings challenges. None of them says the
+  // right value.
+  readings: {
+    bitsRead: (value: string) => `Your bits read as ${value} when signed.`,
+    notThis: "That is not what these bits give when read this way.",
+    registerWrong: (name: string) =>
+      `${name} does not hold that number once all the instructions have run.`,
+  },
+
   editor: {
     mode: "Edit as",
     text: "Text",

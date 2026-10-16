@@ -5,7 +5,10 @@
 // of it and puts a changed line back.
 
 /** What an operand of an instruction may be, so the editor knows which chips to offer. */
-export type Slot = "register" | "registerOrNumber";
+export type Slot = "register" | "registerOrNumber" | "number" | "shift";
+
+/** The shifts the tap editor offers for a `shift` operand: `movk` puts a number in the upper half. */
+export const SHIFTS: readonly string[] = ["lsl 16"];
 
 /**
  * The operands of each instruction the editor can build, in order. An instruction not listed has no
@@ -18,6 +21,8 @@ export const SLOTS: Readonly<Record<string, readonly Slot[]>> = {
   adds: ["register", "register", "registerOrNumber"],
   subs: ["register", "register", "registerOrNumber"],
   neg: ["register", "register"],
+  mov: ["register", "registerOrNumber"],
+  movk: ["register", "number", "shift"],
   ret: [],
 };
 

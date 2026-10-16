@@ -1,0 +1,209 @@
+// Copyright © 2026 Christopher Snow
+
+// Lesson: Constants and widths (module 1, the second of its two lessons). The learner finds out
+// which numbers one `mov` can put in a register, builds 1000000 with `mov` and `movk`, sees that
+// `-1` and `4294967295` are the same instruction, and finds that writing a `w` name clears the
+// upper half of the `x` register.
+//
+// The structure is here; the words are in constants-and-widths.prose.ts and .labels.ts (kept from
+// docs/notes/module-1/prose.md), and the compiler listings are in module-1.listings.ts. The plan
+// for the lesson is docs/notes/module-1-plan.md.
+
+import type { LessonInput } from "@platform/lesson-schema";
+
+import { LABELS } from "./constants-and-widths.labels";
+import { PROSE } from "./constants-and-widths.prose";
+import {
+  FOUR_INSTRUCTIONS,
+  ODOMETER_LIMIT_START_TEXT,
+  ODOMETER_LIMIT_TEXT,
+  SERVICE_AND_ODOMETER,
+  WIDTHS,
+} from "./module-1.listings";
+
+/** The model the lesson's figures run: one instruction to a step (the book's note names it). */
+const STEPS = "steps";
+
+/** The graders the book supplies (packages/views/src/grader.ts, readingGraders.ts). */
+const RUN_REGISTERS = "run-registers";
+const REGISTERS_AFTER = "registers-after";
+
+/** A label as plain text: a verdict shows no code marks. */
+const plain = (text: string) => text.replaceAll("`", "");
+
+export const constantsAndWidths: LessonInput = {
+  id: "constants-and-widths",
+  title: "Constants and widths",
+  module: 1,
+  order: 1,
+  objectives: [...LABELS.objectives],
+  introduces: ["constant", "w register", "x register"],
+  sections: [
+    {
+      kind: "question",
+      title: LABELS.titles.question,
+      prose: PROSE.question,
+      interactives: [
+        {
+          id: "service-and-odometer",
+          kind: "listing",
+          timeModel: "none",
+          caption: LABELS.captions.listing,
+          props: { program: SERVICE_AND_ODOMETER },
+        },
+      ],
+    },
+    { kind: "motivation", title: LABELS.titles.motivation, prose: PROSE.motivation },
+    {
+      kind: "prediction",
+      title: LABELS.titles.prediction,
+      prose: PROSE.prediction,
+      interactives: [
+        {
+          id: "predict-fits",
+          kind: "model-prediction",
+          timeModel: STEPS,
+          caption: LABELS.captions.predictFits,
+          props: {
+            question: PROSE.predictionQuestion,
+            options: LABELS.options.fits,
+            explain: PROSE.predictionExplain,
+            measure: { kind: "constant-fits" },
+          },
+        },
+      ],
+    },
+    {
+      kind: "investigation",
+      title: LABELS.titles.investigation,
+      prose: PROSE.investigation,
+      details: {
+        summary: PROSE.investigationDetailsSummary,
+        prose: PROSE.investigationDetails,
+      },
+      interactives: [
+        {
+          id: "try-a-number",
+          kind: "constant-tester",
+          timeModel: STEPS,
+          caption: LABELS.captions.tester,
+          props: { after: "predict-fits" },
+        },
+      ],
+    },
+    {
+      kind: "construction",
+      title: LABELS.titles.construction,
+      prose: PROSE.construction,
+      interactives: [
+        {
+          id: "build-1000000",
+          kind: "challenge",
+          timeModel: STEPS,
+          caption: LABELS.captions.build,
+          props: { challengeId: "build-1000000" },
+        },
+      ],
+    },
+    {
+      kind: "failureExperiment",
+      title: LABELS.titles.failureExperiment,
+      prose: PROSE.failureExperiment,
+      interactives: [
+        {
+          id: "predict-width",
+          kind: "model-prediction",
+          timeModel: STEPS,
+          caption: LABELS.captions.predictWidth,
+          props: {
+            question: PROSE.failureQuestion,
+            options: LABELS.options.width,
+            explain: PROSE.failureExplain,
+            measure: { kind: "register-at-end", program: WIDTHS, register: 3 },
+          },
+        },
+        {
+          id: "x3-halves",
+          kind: "wide-stepper",
+          timeModel: STEPS,
+          caption: LABELS.captions.halves,
+          props: { program: WIDTHS, register: 3, after: "predict-width" },
+        },
+      ],
+    },
+    { kind: "explanation", title: LABELS.titles.explanation, prose: PROSE.explanation },
+    { kind: "generalisation", title: LABELS.titles.generalisation, prose: PROSE.generalisation },
+    {
+      kind: "challenge",
+      title: LABELS.titles.challenge,
+      prose: PROSE.challenge,
+      interactives: [
+        {
+          id: "predict-two-registers",
+          kind: "challenge",
+          timeModel: STEPS,
+          caption: LABELS.captions.predictTwo,
+          props: { challengeId: "predict-two-registers" },
+        },
+      ],
+    },
+    { kind: "reflection", title: LABELS.titles.reflection, prose: PROSE.reflection },
+  ],
+  challenges: [
+    {
+      id: "build-1000000",
+      title: LABELS.challenges.build.title,
+      task: PROSE.buildTask,
+      gradedDirection: "write",
+      // The registers the tap editor offers, and the instructions the lesson's assembler allows.
+      palette: ["w0"],
+      allowedConstructs: ["mov", "movk", "ret"],
+      initial: { text: ODOMETER_LIMIT_START_TEXT },
+      tests: {
+        kind: "answers",
+        grader: RUN_REGISTERS,
+        cases: [{ label: "odometer_limit()", given: {}, expect: { w0: 1000000 } }],
+      },
+      hints: [...PROSE.buildHints],
+      reference: { text: ODOMETER_LIMIT_TEXT },
+    },
+    {
+      id: "predict-two-registers",
+      title: LABELS.challenges.predict.title,
+      task: PROSE.predictTask,
+      gradedDirection: "answer",
+      fields: [
+        { id: "x1", label: LABELS.challenges.predict.fields.x1, kind: "number" },
+        { id: "w2", label: LABELS.challenges.predict.fields.w2, kind: "number" },
+      ],
+      // The program the editor shows and the grader runs. The expected values are what the run
+      // leaves in the registers each case names, never numbers in this file.
+      initial: { data: { program: FOUR_INSTRUCTIONS } },
+      tests: {
+        kind: "answers",
+        grader: REGISTERS_AFTER,
+        cases: [
+          {
+            label: plain(LABELS.challenges.predict.fields.x1),
+            given: {},
+            expect: { x1: "x1" },
+          },
+          {
+            label: plain(LABELS.challenges.predict.fields.w2),
+            given: {},
+            expect: { w2: "w2" },
+          },
+        ],
+      },
+      hints: [...PROSE.predictHints],
+      reference: { answers: { x1: "5", w2: "1000000" } },
+    },
+  ],
+  modelVsReality: PROSE.modelVsReality,
+  originalityNote: {
+    textbookExample:
+      "The obvious way to teach constants is the encoding of an immediate: how many bits an instruction has for its number.",
+    howThisDiffers:
+      "This lesson works from the assembler's own refusal of `mov w0, 1000000`, and builds the number from two instructions. It never shows an instruction's bits, so which constants fit is taken from GNU as. The two names of one register are shown on a 64-bit register drawn as two halves, run through `mov x3, -1` and then `mov w3, -1`.",
+  },
+};

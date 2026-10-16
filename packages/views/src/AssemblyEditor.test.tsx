@@ -179,9 +179,9 @@ describe("tap mode", () => {
 
   it("opens a line that is not an instruction the chips can build, and says so", async () => {
     const user = userEvent.setup();
-    render(<Harness start={{ text: "mov w0, w1" }} />);
+    render(<Harness start={{ text: "ldr x0, [x1]" }} />);
     await user.click(mode(S.editor.tap));
-    await user.click(screen.getByRole("button", { name: /mov w0, w1/ }));
+    await user.click(screen.getByRole("button", { name: /ldr x0, \[x1\]/ }));
     expect(screen.getByText(S.editor.notEditable)).toBeInTheDocument();
   });
 });

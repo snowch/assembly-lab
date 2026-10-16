@@ -439,6 +439,17 @@ ol {
   align-items: center;
   min-height: 44px;
 }
+/* A module of several lessons lists them, one to a line, each a full-size target. */
+.module-lessons {
+  list-style: none;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+}
+.module-lessons a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
 .module-line {
   max-width: var(--measure);
   margin: var(--space-1) 0 var(--space-2);

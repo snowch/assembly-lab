@@ -78,6 +78,7 @@ describe("the page before any script runs", () => {
       ),
     );
     expect(written.has("0")).toBe(true);
+    expect(written.has("1")).toBe(true);
     expect(written.has("2")).toBe(true);
   });
 

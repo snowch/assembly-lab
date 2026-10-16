@@ -1,0 +1,47 @@
+mov w0, 0
+mov w0, 1
+mov w0, 30000
+mov w0, 65535
+mov w0, 65536
+mov w0, 65537
+mov w0, 70000
+mov w0, 100000
+mov w0, 1000000
+mov w0, 16960
+mov w0, #16960
+mov w0, 4294967295
+mov w0, 4294967296
+mov w0, -1
+mov w0, -2
+mov w0, -65536
+mov w0, -65537
+mov w0, -2147483648
+mov w0, -2147483649
+mov w0, 0xf
+mov w0, 0x4240
+mov w0, 0x00010001
+mov w0, 0x00ff00ff
+mov w0, 0xffff0000
+mov w0, 0xffff1234
+mov w0, 0x12345
+mov w0, 0x80000000
+mov w0, 0x7fffffff
+mov x0, -1
+mov x3, -1
+mov x1, 5
+mov w3, -1
+mov w1, 5
+mov w2, 16960
+movk w0, 15, lsl 16
+movk w0, #15, lsl 16
+movk w0, #15, lsl #16
+movk w0, 0xf, lsl 16
+movk w2, 0xf, lsl 16
+movk w0, 1, lsl 16
+movk w0, 15
+movk w0, 15, lsl 0
+movk w0, 15, lsl 8
+movk w0, 15, lsl 32
+movk w0, 65535, lsl 16
+movk w0, 65536, lsl 16
+movk w0, 65536

@@ -72,8 +72,11 @@ describe("the course's plan", () => {
     expect(published.map((m) => m.title)).toEqual(
       MODULES.filter((m) => LESSONS.some((l) => String(l.module) === m.label)).map((m) => m.title),
     );
-    expect(published.map((m) => m.title)).toContain("Meet the machine");
-    expect(published.map((m) => m.title)).toContain("Adding, subtracting and the flags");
+    expect(published.slice(0, 3).map((m) => m.title)).toEqual([
+      "Meet the machine",
+      "Registers and readings",
+      "Adding, subtracting and the flags",
+    ]);
     for (const m of MODULES.filter((m) => !published.includes(m)))
       expect(statusOf(m, LESSONS), m.title).toBe("planned");
   });
@@ -81,7 +84,11 @@ describe("the course's plan", () => {
   it("finds a module's lessons by the module number a lesson holds", () => {
     const meet = moduleByNumber(0)!;
     expect(lessonsOf(meet, LESSONS).map((l) => l.id)).toEqual(["meet-the-machine"]);
-    // Module 2 has two lessons, in the order they are taught.
+    // Modules 1 and 2 have two lessons each, in the order they are taught.
+    expect(lessonsOf(moduleByNumber(1)!, LESSONS).map((l) => l.id)).toEqual([
+      "one-pattern-three-readings",
+      "constants-and-widths",
+    ]);
     expect(lessonsOf(moduleByNumber(2)!, LESSONS).map((l) => l.id)).toEqual([
       "adding-and-the-flags",
       "subtracting-and-the-tick-counter",
