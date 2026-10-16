@@ -196,7 +196,8 @@ describe("the challenges", () => {
       "bl fuel_warning",
     ]) {
       const verdict = grade(c, text(`${instruction}\n${FUEL_WARNING_TEXT}`));
-      expect(verdict.blocked, instruction).toContain("You have not met");
+      // One the course has not met yet, or one an earlier challenge allowed that this one does not.
+      expect(verdict.blocked, instruction).toMatch(/You have not met|This challenge allows only/);
     }
     expect(grade(c, text(FUEL_WARNING_SHARED_RET_TEXT)).blocked).toBeUndefined();
   });

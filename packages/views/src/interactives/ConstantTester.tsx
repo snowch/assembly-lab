@@ -74,13 +74,13 @@ export const ConstantTester = withProps(Props, function ConstantTester({ data, s
       </label>
       <div className="al-tester-result" role="status">
         {result.kind === "empty" && <p>{withCode(S.tester.empty)}</p>}
-        {result.kind === "not-a-number" && <p>{S.tester.notNumber}</p>}
+        {result.kind === "not-a-number" && <p>{withCode(S.tester.notNumber)}</p>}
         {result.kind === "refused" && <p className="al-nomatch">{withCode(result.sentence)}</p>}
         {result.kind === "one" && (
           <p className="al-match">{withCode(S.tester.fits(text.trim()))}</p>
         )}
       </div>
-      {result.kind === "one" && <RegisterRow name="w0" value={result.w0} changed />}
+      {result.kind === "one" && <RegisterRow name="w0" value={result.w0} changed halves />}
     </div>
   );
 });

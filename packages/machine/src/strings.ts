@@ -20,6 +20,8 @@ export const strings = {
   "label.duplicate": "The label `{name}` is already defined.",
   notInMachine: "The machine does not have `{text}`.",
   "gate.notYet": "You have not met `{name}` yet, so the machine will not take `{text}`.",
+  // DRAFT: `{allowed}` is the instructions the program may use, from `nameList`.
+  "gate.notAllowedHere": "This challenge allows only {allowed}.",
   "instruction.outsideText": "`{text}` is an instruction, so it must be in the text section.",
   "program.textTooBig": "The instructions are more than {limit} bytes. The text section is full.",
   "program.dataTooBig": "The data is more than {limit} bytes. The data sections are full.",
@@ -106,6 +108,16 @@ export const strings = {
 } as const;
 
 export type MessageKey = keyof typeof strings;
+
+/** DRAFT: the word that joins the last two names of a list in a sentence. */
+const AND = "and";
+
+/** Names as code in a sentence: "`mov`", "`mov` and `ret`", "`mov`, `movk` and `ret`". */
+export function nameList(names: readonly string[]): string {
+  const coded = names.map((n) => `\`${n}\``);
+  const last = coded.pop() ?? "";
+  return coded.length === 0 ? last : `${coded.join(", ")} ${AND} ${last}`;
+}
 
 /** The sentence for a key, with its parameters filled in. */
 export function message(key: MessageKey, params: Record<string, string | number> = {}): string {

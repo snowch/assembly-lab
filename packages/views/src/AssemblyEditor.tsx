@@ -21,7 +21,7 @@ import {
 import { assemble, type AsmError } from "@al/machine";
 import type { ChallengeEditorProps } from "@platform/lesson-runtime";
 
-import { EditorKeysSchema } from "./interactives/props";
+import { EditorKeysSchema, introducedOf } from "./interactives/props";
 import { errorSentence } from "./messages";
 import { withCode } from "./parts";
 import { VIEW_STRINGS as S } from "./strings";
@@ -526,9 +526,10 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
     m === "b.cond" ? conditions.map((c) => `b.${c}`) : [m],
   );
   const [mode, setMode] = useState<Mode>(rememberedMode);
+  const introduced = useMemo(() => introducedOf(challenge), [challenge]);
   const errors = useMemo(
-    () => assemble(text, { allowed: new Set(allowed) }).errors,
-    [text, allowed],
+    () => assemble(text, { allowed: new Set(allowed), introduced }).errors,
+    [text, allowed, introduced],
   );
   const setText = (next: string) => onChange({ ...artifact, text: next });
   const choose = (next: Mode) => {

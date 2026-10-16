@@ -166,9 +166,7 @@ describe("the outcomes at return, for a register and a flag", () => {
     expect(grade(gap, { answers: { result: "one", c: "0" } }).blocked).toBe(
       S.grader.notWhole(fieldList(["The result"])),
     );
-    expect(grade(gap, { answers: { result: "one", c: "0" } }).blocked).toBe(
-      "The answer for “The result” must be a whole number.",
-    );
+    expect(grade(gap, { answers: { result: "one", c: "0" } }).blocked).toContain("“The result”");
   });
 
   it("lists the fields still empty when they are numbers, not choices", () => {

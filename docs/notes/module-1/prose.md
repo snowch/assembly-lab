@@ -136,7 +136,7 @@ The trip computer's service interval is 30000 kilometres. The odometer's limit i
 
 GCC 16.1 at `-O1` makes one instruction for `return 30000;`: `mov w0, 30000`. For `return 1000000;` it makes two instructions.
 
-*The C of both functions, and GCC's one instruction for service_interval.*
+*service_interval in C, and the one instruction GCC makes for it.*
 
 ## 2. Numbers inside instructions
 

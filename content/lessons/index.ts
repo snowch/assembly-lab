@@ -11,6 +11,7 @@ import { addingAndTheFlags } from "./adding-and-the-flags";
 import { branches } from "./branches";
 import { compareAndChoose } from "./compare-and-choose";
 import { constantsAndWidths } from "./constants-and-widths";
+import { withIntroduced } from "./introduced";
 import { meetTheMachine } from "./meet-the-machine";
 import { onePatternThreeReadings } from "./one-pattern-three-readings";
 import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
@@ -23,4 +24,6 @@ export const LESSONS: readonly Lesson[] = [
   subtractingAndTheTickCounter,
   compareAndChoose,
   branches,
-].map(parseLesson);
+]
+  .map(withIntroduced)
+  .map(parseLesson);

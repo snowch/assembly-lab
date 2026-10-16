@@ -36,6 +36,22 @@ export const EditorKeysSchema = z.object({
 });
 export type EditorKeys = z.infer<typeof EditorKeysSchema>;
 
+/**
+ * The instructions the course has introduced by a written challenge's lesson, in the challenge's
+ * `initial.data.introduced` (the content package works it out from the lessons' own data). A
+ * challenge without it gets no such list, and every instruction its gate leaves out is "not met
+ * yet".
+ */
+export const IntroducedSchema = z.array(z.string().min(1));
+
+/** The set the challenge's `initial.data.introduced` names, or undefined if it names none. */
+export function introducedOf(challenge: {
+  initial: { data?: Record<string, unknown> | undefined };
+}): ReadonlySet<string> | undefined {
+  const parsed = IntroducedSchema.safeParse(challenge.initial.data?.["introduced"]);
+  return parsed.success ? new Set(parsed.data) : undefined;
+}
+
 export function withProps<T>(
   schema: ZodType<T>,
   Inner: ComponentType<InteractiveProps & { data: T }>,

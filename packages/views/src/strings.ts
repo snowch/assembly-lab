@@ -166,7 +166,9 @@ export const VIEW_STRINGS = {
         : `Nothing is graded until each of ${fields} has a whole number.`,
     /** Between the last two names in a list. */
     and: "and",
-    notWhole: (field: string) => `The answer for ${field} must be a whole number.`,
+    // DRAFT: says "in decimal", because `0x5` is a whole number and is refused.
+    notWhole: (field: string) =>
+      `The answer for ${field} must be a whole number written in decimal.`,
     noProgram: "This challenge has no program to run.",
   },
 } as const;

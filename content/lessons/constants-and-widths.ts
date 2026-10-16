@@ -17,7 +17,7 @@ import {
   FOUR_INSTRUCTIONS,
   ODOMETER_LIMIT_START_TEXT,
   ODOMETER_LIMIT_TEXT,
-  SERVICE_AND_ODOMETER,
+  SERVICE_INTERVAL,
   WIDTHS,
 } from "./module-1.listings";
 
@@ -45,11 +45,13 @@ export const constantsAndWidths: LessonInput = {
       prose: PROSE.question,
       interactives: [
         {
-          id: "service-and-odometer",
+          // Only `service_interval`: `odometer_limit`'s two instructions are the first challenge's
+          // answer, and the learner has not built them yet.
+          id: "service-interval",
           kind: "listing",
           timeModel: "none",
           caption: LABELS.captions.listing,
-          props: { program: SERVICE_AND_ODOMETER },
+          props: { program: SERVICE_INTERVAL },
         },
       ],
     },
@@ -158,7 +160,12 @@ export const constantsAndWidths: LessonInput = {
       // The registers the tap editor offers, and the instructions the lesson's assembler allows.
       palette: ["w0"],
       allowedConstructs: ["mov", "movk", "ret"],
-      initial: { text: ODOMETER_LIMIT_START_TEXT },
+      // The keys the editor offers: this challenge writes `w0` and commas, as Module 0's does, and
+      // needs a number pad (the tap mode builds `mov` and `movk` from numbers).
+      initial: {
+        text: ODOMETER_LIMIT_START_TEXT,
+        data: { editor: { symbols: [",", "w"], registers: ["w0"], numberPad: true } },
+      },
       tests: {
         kind: "answers",
         grader: RUN_REGISTERS,

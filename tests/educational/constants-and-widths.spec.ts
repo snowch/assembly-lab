@@ -15,6 +15,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { LESSONS } from "@al/content";
 import { TEXT_BASE, assemble, message, run, stateAfter } from "@al/machine";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
+import { MODULE1_STRINGS } from "../../packages/views/src/strings.module1";
 import { DEFAULT_STRINGS as S } from "../../platform/lesson-runtime/src/strings";
 
 import {
@@ -68,25 +69,22 @@ test("the lesson loads with no console error, ten sections, and its two challeng
 });
 
 test.describe("the listing figure", () => {
-  test("shows the C of both functions and the instructions GCC recorded, each beside its C line", async ({
+  test("shows the C of service_interval and the instructions GCC recorded for it, and nothing of odometer_limit", async ({
     page,
   }) => {
     await openLesson(page);
-    const figure = page.locator("#ix-service-and-odometer");
+    const figure = page.locator("#ix-service-interval");
     await figure.scrollIntoViewIfNeeded();
     await expect(figure.locator(".al-cline .al-src")).toHaveText([
       "int service_interval(void) { return 30000; }",
-      "int odometer_limit(void) { return 1000000; }",
     ]);
-    await expect(figure.locator(".al-label")).toHaveText(["service_interval:", "odometer_limit:"]);
-    await expect(figure.locator(".al-insn .al-text")).toHaveText([
-      "mov w0, 30000",
-      "ret",
-      "mov w0, 16960",
-      "movk w0, 0xf, lsl 16",
-      "ret",
-    ]);
-    await expect(figure.locator(".al-ctag")).toHaveText(["1", "1", "2", "2", "2"]);
+    await expect(figure.locator(".al-label")).toHaveText(["service_interval:"]);
+    await expect(figure.locator(".al-insn .al-text")).toHaveText(["mov w0, 30000", "ret"]);
+    await expect(figure.locator(".al-ctag")).toHaveText(["1", "1"]);
+    // The two instructions for 1000000 are the first challenge's answer: the figure holds neither.
+    await expect(figure).not.toContainText("odometer_limit");
+    await expect(figure).not.toContainText("16960");
+    await expect(figure).not.toContainText("movk");
   });
 });
 
@@ -193,6 +191,40 @@ test.describe("the constant tester", () => {
     });
   }
 
+  test("draws w0 as two labelled 16-bit halves with a rule between them, inside the box", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await commit(page, "predict-fits", "65536");
+    await tester(page).scrollIntoViewIfNeeded();
+    await typeNumber(page, "65536");
+    const halves = tester(page).locator('[data-register="w0"] .al-half16');
+    await expect(halves.locator(".al-half16-name")).toHaveText([
+      MODULE1_STRINGS.register.upperHalf,
+      MODULE1_STRINGS.register.lowerHalf,
+    ]);
+    // 65536 is bit 16, the lowest bit of the upper half.
+    await expect(halves.nth(0).locator('.al-bit[data-on="true"]')).toHaveCount(1);
+    await expect(halves.nth(1).locator('.al-bit[data-on="true"]')).toHaveCount(0);
+    await expect(halves.nth(0).locator(".al-bit")).toHaveCount(16);
+    await expect(halves.nth(1).locator(".al-bit")).toHaveCount(16);
+    // The rule between them is drawn, and the halves sit side by side.
+    const rule = await halves.nth(1).evaluate((el) => getComputedStyle(el).borderLeftWidth);
+    expect(parseFloat(rule)).toBeGreaterThan(0);
+    const [a, b] = await halves.evaluateAll((els) =>
+      els.map((el) => el.getBoundingClientRect().toJSON()),
+    );
+    expect(b.left).toBeGreaterThanOrEqual(a.right);
+    await expect(
+      tester(page).locator('[data-register="w0"] .al-half16-name').first(),
+    ).toBeVisible();
+    expect(await figureOverflow(page)).toEqual([]);
+    expect(await designProblems(page, page.viewportSize()!.width < 500)).toEqual([]);
+    // A number the assembler refuses shows no bits at all.
+    await typeNumber(page, "1000000");
+    await expect(tester(page).locator(".al-half16, .al-bit")).toHaveCount(0);
+  });
+
   test("says 'no single instruction' for 1000000, as the lesson's prose says it will", async ({
     page,
   }) => {
@@ -210,7 +242,9 @@ test.describe("the constant tester", () => {
     await commit(page, "predict-fits", "65536");
     await tester(page).scrollIntoViewIfNeeded();
     await typeNumber(page, "w1");
-    await expect(tester(page).locator(".al-tester-result")).toHaveText(V.tester.notNumber);
+    await expect(tester(page).locator(".al-tester-result")).toHaveText(
+      V.tester.notNumber.replaceAll("`", ""),
+    );
     await expect(tester(page).locator("[data-register]")).toHaveCount(0);
   });
 
@@ -373,10 +407,26 @@ test.describe("the written challenge", () => {
     await expect(status(c)).toHaveText(failing(0, 1));
     await expect(c.locator(".verdict-failure").first()).toContainText("w0=15");
     await box(page).fill("mov w0, 16960\nadd w0, w0, 1\nret");
-    await expect(c.locator(".asm-problems")).toContainText("add");
+    // `add` is from Module 0, so the sentence says what this challenge allows, not that it is new.
+    const allowedHere = message("gate.notAllowedHere", { allowed: "`mov`, `movk` and `ret`" });
+    await expect(c.locator(".asm-problems")).toContainText(allowedHere.replaceAll("`", ""));
+    await expect(c.locator(".asm-problems")).not.toContainText("not met");
     await press(page, runTests(c));
     await expect(status(c)).toHaveText(blocked);
     await expect(c.locator(".challenge-complete")).toHaveCount(0);
+    // An instruction no lesson has introduced is still one the learner has not met.
+    await box(page).fill("mov w0, 16960\nb done\nret");
+    await expect(c.locator(".asm-problems")).toContainText("You have not met b yet");
+  });
+
+  test("offers a comma and w on the keyboard row, and w0 alone in the tap mode", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const c = challenge(page, BUILD);
+    await c.scrollIntoViewIfNeeded();
+    await press(page, c.getByRole("button", { name: V.editor.text, exact: true }));
+    await expect(c.locator(".asm-bar .asm-key")).toHaveText([",", "w"]);
   });
 
   test("keeps a completion through a reload, grades it again, and is cleared back to the starting text", async ({
@@ -540,6 +590,20 @@ test.describe("the answers challenge", () => {
     await press(page, runTests(c));
     await expect(status(c)).toHaveText(blocked);
     await expect(c.locator(".verdict.blocked")).toContainText("w2 at the end");
+  });
+
+  test("refuses a hexadecimal answer by saying the answer is written in decimal", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await fill(page, "0x5", "1000000");
+    const c = challenge(page, TWO);
+    await press(page, runTests(c));
+    await expect(status(c)).toHaveText(blocked);
+    await expect(c.locator(".verdict.blocked")).toHaveText(
+      "The answer for x1 at the end must be a whole number written in decimal.",
+    );
+    await expect(c.locator(".challenge-complete")).toHaveCount(0);
   });
 
   test("rejects x1 as it would be if writing w1 kept the upper half, a number of 64 bits", async ({

@@ -471,6 +471,27 @@
   margin: 0;
 }
 
+/* Module 1: a 32-bit register drawn as two 16-bit halves, each labelled, with a rule between them */
+.al-half16 {
+  flex: 1 1 0;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+.al-half16 + .al-half16 {
+  margin-left: 4px;
+  padding-left: 8px;
+  border-left: 2px solid var(--border-strong);
+}
+.al-half16-name {
+  color: var(--fg-muted);
+  font-size: 0.75rem;
+}
+.al-half16-groups {
+  display: flex;
+  gap: 6px;
+}
+
 /* Module 1: a 64-bit register drawn as two halves of 32 bits */
 .al-wide {
   display: grid;

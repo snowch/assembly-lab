@@ -7,7 +7,7 @@
 import { AsmFail, evaluate } from "./expr.ts";
 import { buildInstruction, gateName, isKnownMnemonic, splitOperands, type RawOp } from "./forms.ts";
 import { DATA_BASE, STACK_BASE, TEXT_BASE } from "./layout.ts";
-import type { MessageKey } from "./strings.ts";
+import { nameList, type MessageKey } from "./strings.ts";
 import type {
   AsmError,
   AssembleOptions,
@@ -582,7 +582,21 @@ export function assemble(source: string, options: AssembleOptions = {}): Assembl
           case "insn": {
             const address = at;
             if (options.allowed && isKnownMnemonic(item.mnemonic)) {
-              if (!options.allowed.has(gateName(item.mnemonic))) {
+              const name = gateName(item.mnemonic);
+              if (!options.allowed.has(name)) {
+                // An instruction the course has introduced but this program may not use is not
+                // "not met yet".
+                if (options.introduced?.has(name)) {
+                  throw new AsmFail(
+                    "gate.notAllowedHere",
+                    {
+                      name: item.mnemonic,
+                      text: item.text,
+                      allowed: nameList([...options.allowed]),
+                    },
+                    item.col,
+                  );
+                }
                 throw new AsmFail(
                   "gate.notYet",
                   { name: item.mnemonic, text: item.text },

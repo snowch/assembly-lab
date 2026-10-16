@@ -25,7 +25,7 @@ export const LABELS = {
     reflection: "Looking back",
   },
   captions: {
-    listing: "The C of both functions, and GCC's one instruction for service_interval.",
+    listing: "service_interval in C, and the one instruction GCC makes for it.",
     tester: "Type a number; the figure shows whether one mov can hold it, and what w0 then holds.",
     halves: "x3 drawn as two halves of 32 bits, with w3 its lower half.",
     // The prose file gives no caption for these four figures; Haiku drafted them (16 October 2026).

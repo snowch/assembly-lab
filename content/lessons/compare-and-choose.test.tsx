@@ -153,7 +153,8 @@ describe("the challenges", () => {
       "subs w0, w0, w1",
     ]) {
       const verdict = grade(c, { text: `${instruction}\ncmp w0, w1\ncsel w0, w0, w1, cc\nret` });
-      expect(verdict.blocked, instruction).toContain("You have not met");
+      // One the course has not met yet, or one an earlier challenge allowed that this one does not.
+      expect(verdict.blocked, instruction).toMatch(/You have not met|This challenge allows only/);
     }
   });
 

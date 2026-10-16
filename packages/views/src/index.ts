@@ -58,3 +58,5 @@ export {
 } from "./branch";
 export type { BranchArrow, Change, DiffRow } from "./branch";
 export { BRANCH_OUTCOMES } from "./grader-branch";
+export { MODULE1_STRINGS } from "./strings.module1";
+export { introducedOf } from "./interactives/props";
