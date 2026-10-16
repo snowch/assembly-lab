@@ -53,3 +53,28 @@ times8:
         lsl     w0, w0, 3             C15
         ret                           C15
 ```
+
+## The shifts in Lesson 2's last challenge
+
+```c
+// Copyright © 2026 Christopher Snow
+int shr3_int(int x) { return x >> 3; }
+unsigned shr3_unsigned(unsigned x) { return x >> 3; }
+int shl3_int(int x) { return x << 3; }
+unsigned shl3_unsigned(unsigned x) { return x << 3; }
+```
+
+```
+shr3_int:                           
+        asr     w0, w0, 3             C2
+        ret                           C2
+shr3_unsigned:                      
+        lsr     w0, w0, 3             C3
+        ret                           C3
+shl3_int:                           
+        lsl     w0, w0, 3             C4
+        ret                           C4
+shl3_unsigned:                      
+        lsl     w0, w0, 3             C5
+        ret                           C5
+```
