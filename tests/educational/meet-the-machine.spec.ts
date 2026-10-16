@@ -127,6 +127,13 @@ test.describe("the listing figure", () => {
     ]);
     expect(note!.y).toBeGreaterThan(listing!.y + listing!.height - 1);
     await expect(page.locator("section[data-kind='question'] details")).toHaveCount(0);
+    // It is as wide as the prose above the figure, not held to a figure's narrower lines.
+    const [prose, words] = await Promise.all([
+      page.locator("section[data-kind='question'] > .prose p").first().boundingBox(),
+      after.locator("p").first().boundingBox(),
+    ]);
+    expect(Math.abs(words!.width - prose!.width)).toBeLessThan(2);
+    expect(Math.abs(words!.x - prose!.x)).toBeLessThan(2);
   });
 });
 

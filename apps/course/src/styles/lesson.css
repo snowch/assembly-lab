@@ -334,6 +334,11 @@ figure.interactive > :not(figcaption):not(.figure-lead):not(.figure-after) {
 figure.interactive p {
   max-width: 36rem;
 }
+/* The words above and below a figure are the lesson's prose, and keep the reading column's width. */
+figure.interactive > .figure-lead p,
+figure.interactive > .figure-after p {
+  max-width: none;
+}
 
 /* Challenge */
 .challenge-title {
