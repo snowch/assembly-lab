@@ -7,7 +7,7 @@
 
 export const PROSE = {
   question:
-    "GCC turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns `g >> 1` into `lsr w0, w0, 1`. This is the first place in the course where the C type changes the instruction.\n\n" +
+    "C writes a shift right as `>>` and a shift left as `<<`. `g >> 1` shifts the bits of `g` one place right. GCC turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns `g >> 1` into `lsr w0, w0, 1`. This is the first place in the course where the C type changes the instruction.\n\n" +
     "The question is what each instruction does differently.",
 
   motivation:
@@ -26,7 +26,7 @@ export const PROSE = {
   construction:
     "C's `/` divides, and a shift can seem to do the same job. This challenge compares them for a positive value and for a negative one.",
   compareTask:
-    "Give `asr` by 2, `lsr` by 2, and C's `/ 4`, for 21 and for −21. Give each answer as a decimal number in its `int` reading, except where the field label says unsigned.",
+    "Give `asr` by 2, `lsr` by 2, and C's `/ 4`, for 21 and for −21. Give each answer as a decimal number in its `int` reading, except where the field label says unsigned. On two `int`s, C's `/` gives a whole number and rounds towards zero. For example, `7 / 2` is 3, and `-7 / 2` is −3.",
   compareHints: [
     "For a positive value all three agree; for a negative value they do not.",
     "`asr` rounds down; C's `/` rounds towards zero; `lsr` fills with zeros, so a negative value becomes a large positive one.",

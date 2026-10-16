@@ -183,7 +183,7 @@ downhill:
 
 There is no compare. The signed reading is negative exactly when the top bit is 1, and `lsr` by 31 moves the top bit to the bottom. `downhill(-3)` is 1, `downhill(4)` is 0, `downhill(0)` is 0, and `downhill(0x80000000)` is 1. Each runs two instructions.
 
-Two more instructions exist in the architecture. No recorded listing in this module uses them, so this is not a claim about GCC's output. `tst w0, 2` sets the flags of `w0` AND 2 and writes no register. N is the top bit of that AND, Z is 1 when it is 0, and C and V are set to 0. With the warning word `0x2a`, `tst w0, 2` leaves NZCV 0000. With `0x28`, it leaves NZCV 0100, so Z is 1 when the service-due bit (bit 1) is clear. `ands w1, w0, 2` writes the AND to `w1` as well. With `0x2a`, `w1` is 2 and NZCV is 0000. `and` alone leaves the flags as they were. (Module 3: GCC wrote `service_due` as `ubfx x0, x0, 1, 1`.)
+Two more instructions exist in the architecture. No recorded listing in this module uses them, so this is not a claim about GCC's output. `tst w0, 2` sets the flags of `w0` AND 2 and writes no register. N is the top bit of that AND, Z is 1 when it is 0, and C and V are set to 0. With the warning word `0x2a`, `tst w0, 2` leaves NZCV 0000. With `0x28`, it leaves NZCV 0100, so Z is 1 when the service-due bit (bit 1) is clear. `ands w1, w0, 2` writes the AND to `w1` as well. With `0x2a`, `w1` is 2 and NZCV is 0000. `and` alone leaves the flags as they were. GCC 16.1 at `-O1` compiles `bool service_due(unsigned w) { return (w & 2) != 0; }` to `ubfx x0, x0, 1, 1` and then `ret`, which takes bit 1 to the bottom with no compare and no flags.
 
 ## 9. Read four conditions after one `cmp`
 

@@ -12,7 +12,7 @@ Drafted by Haiku from the fact brief in `docs/notes/module-3/brief.md`, a part a
 
 ## 1. How do you change one warning?
 
-The trip computer keeps its warnings in one `unsigned`, the warning word. Each of its low bits says one thing. Bit 0 means fuel is low. Bit 1 means service is due. Bit 2 means a door is open. Bit 3 means the lights are on.
+The trip computer keeps its warnings in one `unsigned`, the warning word. Each of its low bits says one thing. Bits are counted from the right, starting at 0; bit n is worth 2 to the power n, so bit 0 is worth 1 and bit 2 is worth 4. Bit 0 means fuel is low. Bit 1 means service is due. Bit 2 means a door is open. Bit 3 means the lights are on.
 
 Bits 4 to 6 hold the gear, a number from 0 to 7.
 
@@ -26,7 +26,7 @@ How does a program change one bit, or the gear, without disturbing the rest?
 
 ## 3. The constant that clears bit 2
 
-GCC turns `return w & ~DOOR_OPEN;`, which clears bit 2, into `and w0, w0, -5`.
+In this C, `w` is the warning word, a C variable, not the register `w0`, and `DOOR_OPEN` is a name for 4, the worth of bit 2. In C, `&` is AND of each pair of bits, and `~` turns every bit over: each 1 becomes 0, and each 0 becomes 1. GCC turns `return w & ~DOOR_OPEN;`, which clears bit 2, into `and w0, w0, -5`.
 
 **Why is the constant −5?**
 
@@ -47,7 +47,7 @@ A value chosen to pick out bits is called a **mask**. In `orr w0, w0, 1`, the ma
 
 A run of bits that together hold one number is called a **field**, such as the gear in bits 4 to 6. The instruction `lsl` moves bits up. `lsl w1, w1, 4` moves every bit of `w1` up four places.
 
-GCC reads the gear with `ubfx x0, x0, 4, 3`. This takes 3 bits, starting at bit 4, and puts them at the bottom. It writes the gear with `bfi w0, w1, 4, 3`. This puts the low 3 bits of `w1` into bits 4 to 6 of `w0`, and leaves the rest of `w0` alone. Two examples: `clear_door(0xf)` gives `0xb`, which is 11, and `gear_of(0x35)` gives 3.
+GCC reads the gear with `ubfx x0, x0, 4, 3`. This takes 3 bits, starting at bit 4, and puts them at the bottom. It writes the gear with `bfi w0, w1, 4, 3`. This puts the low 3 bits of `w1` into bits 4 to 6 of `w0`, and leaves the rest of `w0` alone. `clear_door` is the function whose C is `return w & ~DOOR_OPEN;`, and `gear_of` is the function GCC compiled to `ubfx x0, x0, 4, 3`, which reads the gear. Two examples: `clear_door(0xf)` gives `0xb`, which is 11, and `gear_of(0x35)` gives 3.
 
 *A word and a mask, combined bit by bit.*
 
@@ -130,7 +130,7 @@ Field labels: "after `orr`"; "after `and`"; "the gear".
 
 ## 1. Why does the C type change the instruction?
 
-GCC turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns `g >> 1` into `lsr w0, w0, 1`. This is the first place in the course where the C type changes the instruction.
+C writes a shift right as `>>` and a shift left as `<<`. `g >> 1` shifts the bits of `g` one place right. GCC turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns `g >> 1` into `lsr w0, w0, 1`. This is the first place in the course where the C type changes the instruction.
 
 The question is what each instruction does differently.
 
@@ -169,7 +169,7 @@ C's `/` divides, and a shift can seem to do the same job. This challenge compare
 
 **Compare shifts with division**
 
-Give `asr` by 2, `lsr` by 2, and C's `/ 4`, for 21 and for −21. Give each answer as a decimal number in its `int` reading, except where the field label says unsigned.
+Give `asr` by 2, `lsr` by 2, and C's `/ 4`, for 21 and for −21. Give each answer as a decimal number in its `int` reading, except where the field label says unsigned. On two `int`s, C's `/` gives a whole number and rounds towards zero. For example, `7 / 2` is 3, and `-7 / 2` is −3.
 
 Field labels: "`asr` of 21 by 2"; "`lsr` of 21 by 2"; "`21 / 4`"; "`asr` of −21 by 2"; "`lsr` of −21 by 2, unsigned reading"; "`-21 / 4`".
 
