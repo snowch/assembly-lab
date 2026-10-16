@@ -1,0 +1,11 @@
+{
+  "name": "@al/machine",
+  "author": "Christopher Snow",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "The course machine: an assembler and a simulator for a subset of A64, with no DOM and no runtime dependencies.",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

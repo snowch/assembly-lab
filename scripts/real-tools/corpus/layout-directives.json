@@ -1,0 +1,18 @@
+{
+  "entry": "f",
+  "compare": [
+    {
+      "label": "bytes",
+      "length": 112
+    },
+    {
+      "label": "ro",
+      "length": 24
+    },
+    {
+      "label": "zeros",
+      "length": 24
+    }
+  ],
+  "calls": [{}]
+}

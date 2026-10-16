@@ -1,0 +1,209 @@
+// each line alone
+.text
+.data
+.bss
+.section .text
+.section .data
+.section .rodata
+.section .bss
+.section .rodata.str1.8,"aMS",@progbits,1
+.section .text.startup,"ax",@progbits
+.section .data.rel.ro,"aw"
+.section .note.GNU-stack,"",@progbits
+.section ".text"
+.section .foo
+.section
+.section .rodata,"a"
+.rodata
+.text 1
+.data 2
+.bss 1
+.section .bss.x,"aw",@nobits
+.global f
+.globl f
+.global f, g
+.global
+.globl
+.global 5
+.weak f
+.local f
+.hidden f
+.extern f
+.type f, %function
+.type f, @function
+.type f, %object
+.type f, @object
+.type f
+.type
+.size f, 4
+f: nop; .size f, .-f
+.size f
+.size
+.align 0
+.align 1
+.align 2
+.align 3
+.align 4
+.align 12
+.align 21
+.align -1
+.align 2, 0
+.align 2, 0xff
+.align 3, , 4
+.align 4,,7
+.align 4, 0, 3
+.p2align 0
+.p2align 2
+.p2align 3
+.p2align 4,,7
+.p2align 2, 0xff
+.p2align 3, 0, 2
+.p2align x
+.balign 1
+.balign 2
+.balign 4
+.balign 8
+.balign 16
+.balign 3
+.balign 0
+.balign 12
+.balign 4, 0
+.balign 8, 0xaa
+.balign -4
+.balign 32768
+.byte 1
+.byte 1, 2, 3
+.byte -1
+.byte -128
+.byte -129
+.byte 255
+.byte 256
+.byte 'a'
+.byte 0x7f, 0x80
+.byte 1+2
+.byte L
+.byte 1 2
+.byte "a"
+.hword 1
+.hword 65535
+.hword 65536
+.hword -32768
+.hword -32769
+.hword 1, 2
+.2byte 5
+.2byte 70000
+.short 1
+.value 1
+.word 1
+.word 0xffffffff
+.word 0x100000000
+.word -1
+.word -2147483648
+.word -2147483649
+.word 1, 2, 3
+.4byte 7
+.int 1
+.long 1
+.word L
+.word D
+.word L+4
+.word D-L
+.quad 1
+.quad -1
+.quad 0xffffffffffffffff
+.quad L
+.quad D
+.quad D+8
+.quad 1, 2
+.8byte 5
+.8byte L
+.dword 1
+.octa 1
+.ascii "abc"
+.ascii ""
+.ascii "a", "b"
+.ascii "a\n"
+.ascii "a\t\"\\"
+.ascii "\101"
+.ascii "\x41"
+.ascii "\0"
+.ascii "\377"
+.ascii "\400"
+.ascii "a;b"
+.ascii "a//b"
+.ascii "a/*b"
+.ascii abc
+.ascii 'a'
+.ascii "a" "b"
+.asciz "abc"
+.asciz ""
+.asciz "a", "b"
+.string "abc"
+.string ""
+.string "a", "b"
+.string 5
+.zero 0
+.zero 1
+.zero 16
+.zero L
+.zero 2+2
+.zero 0x10
+.skip 0
+.skip 4
+.skip 4, 0xff
+.skip 4, 256
+.skip 1, 2, 3
+.space 4
+.fill 4
+.fill 4, 1, 0
+.arch armv8-a
+.arch armv8.2-a+crc
+.arch
+.file "x.c"
+.ident "GCC: (GNU) 16.1.0"
+.ident
+.loc 1 1 1
+.set x, 1
+.equ x, 1
+.macro m
+.endm
+.if 1
+.endif
+.include "x"
+.comm c, 4
+.lcomm c, 4
+.incbin "x"
+.org 0
+.float 1.0
+.double 1.0
+.uleb128 1
+.inst 0xd503201f
+.word_
+.data_
+.TEXT
+.Text
+.GLOBAL f
+.BYTE 1
+.Byte 1
+text
+data
+.byte 1 // c
+.byte 1 ; .byte 2
+.byte 1 /* c */
+.word 1,2 # c
+.byte 1	,	2
+.byte	1
+.byte  1  ,  2  
+.equiv x, 1
+.pushsection .data
+.popsection
+.previous
+.subsection 1
+.ltorg
+.pool
+.req x
+.unreq x
+.tlsdescldr x
+.variant_pcs f
+.cpu generic
+.arch_extension crc

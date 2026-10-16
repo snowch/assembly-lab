@@ -1,0 +1,10 @@
+{
+  "entry": "f",
+  "compare": [
+    {
+      "label": "buf",
+      "length": 40
+    }
+  ],
+  "calls": [{}]
+}

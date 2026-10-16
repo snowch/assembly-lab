@@ -1,0 +1,338 @@
+mul x0, x1, x2
+mul x0, x1, xzr
+mul x0, x1, sp
+mul x0, xzr, x2
+mul x0, xzr, xzr
+mul x0, xzr, sp
+mul x0, sp, x2
+mul x0, sp, xzr
+mul x0, sp, sp
+mul xzr, x1, x2
+mul xzr, x1, xzr
+mul xzr, x1, sp
+mul xzr, xzr, x2
+mul xzr, xzr, xzr
+mul xzr, xzr, sp
+mul xzr, sp, x2
+mul xzr, sp, xzr
+mul xzr, sp, sp
+mul sp, x1, x2
+mul sp, x1, xzr
+mul sp, x1, sp
+mul sp, xzr, x2
+mul sp, xzr, xzr
+mul sp, xzr, sp
+mul sp, sp, x2
+mul sp, sp, xzr
+mul sp, sp, sp
+mul w0, w1, w2
+mul w0, w1, wzr
+mul w0, w1, wsp
+mul w0, wzr, w2
+mul w0, wzr, wzr
+mul w0, wzr, wsp
+mul w0, wsp, w2
+mul w0, wsp, wzr
+mul w0, wsp, wsp
+mul wzr, w1, w2
+mul wzr, w1, wzr
+mul wzr, w1, wsp
+mul wzr, wzr, w2
+mul wzr, wzr, wzr
+mul wzr, wzr, wsp
+mul wzr, wsp, w2
+mul wzr, wsp, wzr
+mul wzr, wsp, wsp
+mul wsp, w1, w2
+mul wsp, w1, wzr
+mul wsp, w1, wsp
+mul wsp, wzr, w2
+mul wsp, wzr, wzr
+mul wsp, wzr, wsp
+mul wsp, wsp, w2
+mul wsp, wsp, wzr
+mul wsp, wsp, wsp
+mul x0, x1, w2
+mul w0, x1, x2
+mul x0, x1, 5
+mul x0, x1
+mul x0, x1, x2, x3
+mul x0, x1, #2
+mneg x0, x1, x2
+mneg x0, x1, xzr
+mneg x0, x1, sp
+mneg x0, xzr, x2
+mneg x0, xzr, xzr
+mneg x0, xzr, sp
+mneg x0, sp, x2
+mneg x0, sp, xzr
+mneg x0, sp, sp
+mneg xzr, x1, x2
+mneg xzr, x1, xzr
+mneg xzr, x1, sp
+mneg xzr, xzr, x2
+mneg xzr, xzr, xzr
+mneg xzr, xzr, sp
+mneg xzr, sp, x2
+mneg xzr, sp, xzr
+mneg xzr, sp, sp
+mneg sp, x1, x2
+mneg sp, x1, xzr
+mneg sp, x1, sp
+mneg sp, xzr, x2
+mneg sp, xzr, xzr
+mneg sp, xzr, sp
+mneg sp, sp, x2
+mneg sp, sp, xzr
+mneg sp, sp, sp
+mneg w0, w1, w2
+mneg w0, w1, wzr
+mneg w0, w1, wsp
+mneg w0, wzr, w2
+mneg w0, wzr, wzr
+mneg w0, wzr, wsp
+mneg w0, wsp, w2
+mneg w0, wsp, wzr
+mneg w0, wsp, wsp
+mneg wzr, w1, w2
+mneg wzr, w1, wzr
+mneg wzr, w1, wsp
+mneg wzr, wzr, w2
+mneg wzr, wzr, wzr
+mneg wzr, wzr, wsp
+mneg wzr, wsp, w2
+mneg wzr, wsp, wzr
+mneg wzr, wsp, wsp
+mneg wsp, w1, w2
+mneg wsp, w1, wzr
+mneg wsp, w1, wsp
+mneg wsp, wzr, w2
+mneg wsp, wzr, wzr
+mneg wsp, wzr, wsp
+mneg wsp, wsp, w2
+mneg wsp, wsp, wzr
+mneg wsp, wsp, wsp
+mneg x0, x1, w2
+mneg w0, x1, x2
+mneg x0, x1, 5
+mneg x0, x1
+mneg x0, x1, x2, x3
+mneg x0, x1, #2
+sdiv x0, x1, x2
+sdiv x0, x1, xzr
+sdiv x0, x1, sp
+sdiv x0, xzr, x2
+sdiv x0, xzr, xzr
+sdiv x0, xzr, sp
+sdiv x0, sp, x2
+sdiv x0, sp, xzr
+sdiv x0, sp, sp
+sdiv xzr, x1, x2
+sdiv xzr, x1, xzr
+sdiv xzr, x1, sp
+sdiv xzr, xzr, x2
+sdiv xzr, xzr, xzr
+sdiv xzr, xzr, sp
+sdiv xzr, sp, x2
+sdiv xzr, sp, xzr
+sdiv xzr, sp, sp
+sdiv sp, x1, x2
+sdiv sp, x1, xzr
+sdiv sp, x1, sp
+sdiv sp, xzr, x2
+sdiv sp, xzr, xzr
+sdiv sp, xzr, sp
+sdiv sp, sp, x2
+sdiv sp, sp, xzr
+sdiv sp, sp, sp
+sdiv w0, w1, w2
+sdiv w0, w1, wzr
+sdiv w0, w1, wsp
+sdiv w0, wzr, w2
+sdiv w0, wzr, wzr
+sdiv w0, wzr, wsp
+sdiv w0, wsp, w2
+sdiv w0, wsp, wzr
+sdiv w0, wsp, wsp
+sdiv wzr, w1, w2
+sdiv wzr, w1, wzr
+sdiv wzr, w1, wsp
+sdiv wzr, wzr, w2
+sdiv wzr, wzr, wzr
+sdiv wzr, wzr, wsp
+sdiv wzr, wsp, w2
+sdiv wzr, wsp, wzr
+sdiv wzr, wsp, wsp
+sdiv wsp, w1, w2
+sdiv wsp, w1, wzr
+sdiv wsp, w1, wsp
+sdiv wsp, wzr, w2
+sdiv wsp, wzr, wzr
+sdiv wsp, wzr, wsp
+sdiv wsp, wsp, w2
+sdiv wsp, wsp, wzr
+sdiv wsp, wsp, wsp
+sdiv x0, x1, w2
+sdiv w0, x1, x2
+sdiv x0, x1, 5
+sdiv x0, x1
+sdiv x0, x1, x2, x3
+sdiv x0, x1, #2
+udiv x0, x1, x2
+udiv x0, x1, xzr
+udiv x0, x1, sp
+udiv x0, xzr, x2
+udiv x0, xzr, xzr
+udiv x0, xzr, sp
+udiv x0, sp, x2
+udiv x0, sp, xzr
+udiv x0, sp, sp
+udiv xzr, x1, x2
+udiv xzr, x1, xzr
+udiv xzr, x1, sp
+udiv xzr, xzr, x2
+udiv xzr, xzr, xzr
+udiv xzr, xzr, sp
+udiv xzr, sp, x2
+udiv xzr, sp, xzr
+udiv xzr, sp, sp
+udiv sp, x1, x2
+udiv sp, x1, xzr
+udiv sp, x1, sp
+udiv sp, xzr, x2
+udiv sp, xzr, xzr
+udiv sp, xzr, sp
+udiv sp, sp, x2
+udiv sp, sp, xzr
+udiv sp, sp, sp
+udiv w0, w1, w2
+udiv w0, w1, wzr
+udiv w0, w1, wsp
+udiv w0, wzr, w2
+udiv w0, wzr, wzr
+udiv w0, wzr, wsp
+udiv w0, wsp, w2
+udiv w0, wsp, wzr
+udiv w0, wsp, wsp
+udiv wzr, w1, w2
+udiv wzr, w1, wzr
+udiv wzr, w1, wsp
+udiv wzr, wzr, w2
+udiv wzr, wzr, wzr
+udiv wzr, wzr, wsp
+udiv wzr, wsp, w2
+udiv wzr, wsp, wzr
+udiv wzr, wsp, wsp
+udiv wsp, w1, w2
+udiv wsp, w1, wzr
+udiv wsp, w1, wsp
+udiv wsp, wzr, w2
+udiv wsp, wzr, wzr
+udiv wsp, wzr, wsp
+udiv wsp, wsp, w2
+udiv wsp, wsp, wzr
+udiv wsp, wsp, wsp
+udiv x0, x1, w2
+udiv w0, x1, x2
+udiv x0, x1, 5
+udiv x0, x1
+udiv x0, x1, x2, x3
+udiv x0, x1, #2
+madd x0, x1, x2, x3
+madd x0, x1, x2, xzr
+madd x0, x1, x2, sp
+madd xzr, x1, x2, x3
+madd xzr, x1, x2, xzr
+madd xzr, x1, x2, sp
+madd sp, x1, x2, x3
+madd sp, x1, x2, xzr
+madd sp, x1, x2, sp
+madd w0, w1, w2, w3
+madd w0, w1, w2, wzr
+madd w0, w1, w2, wsp
+madd wzr, w1, w2, w3
+madd wzr, w1, w2, wzr
+madd wzr, w1, w2, wsp
+madd wsp, w1, w2, w3
+madd wsp, w1, w2, wzr
+madd wsp, w1, w2, wsp
+madd x0, x1, x2, w3
+madd w0, w1, w2, x3
+madd x0, x1, x2
+madd x0, x1, x2, 5
+madd x0, x1, x2, x3, x4
+msub x0, x1, x2, x3
+msub x0, x1, x2, xzr
+msub x0, x1, x2, sp
+msub xzr, x1, x2, x3
+msub xzr, x1, x2, xzr
+msub xzr, x1, x2, sp
+msub sp, x1, x2, x3
+msub sp, x1, x2, xzr
+msub sp, x1, x2, sp
+msub w0, w1, w2, w3
+msub w0, w1, w2, wzr
+msub w0, w1, w2, wsp
+msub wzr, w1, w2, w3
+msub wzr, w1, w2, wzr
+msub wzr, w1, w2, wsp
+msub wsp, w1, w2, w3
+msub wsp, w1, w2, wzr
+msub wsp, w1, w2, wsp
+msub x0, x1, x2, w3
+msub w0, w1, w2, x3
+msub x0, x1, x2
+msub x0, x1, x2, 5
+msub x0, x1, x2, x3, x4
+smull x0, w1, w2
+smull x0, x1, x2
+smull w0, w1, w2
+smull x0, w1, x2
+smull x0, x1, w2
+smull xzr, wzr, wzr
+smull x0, wsp, w2
+smull sp, w1, w2
+smull x0, w1, 5
+umull x0, w1, w2
+umull x0, x1, x2
+umull w0, w1, w2
+umull x0, w1, x2
+umull x0, x1, w2
+umull xzr, wzr, wzr
+umull x0, wsp, w2
+umull sp, w1, w2
+umull x0, w1, 5
+smaddl x0, w1, w2, x3
+smaddl x0, w1, w2, w3
+smaddl x0, w1, w2, xzr
+smaddl x0, x1, w2, x3
+smaddl w0, w1, w2, w3
+smaddl x0, w1, w2, sp
+smaddl x0, w1, w2, undefined
+umaddl x0, w1, w2, x3
+umaddl x0, w1, w2, w3
+umaddl x0, w1, w2, xzr
+umaddl x0, x1, w2, x3
+umaddl w0, w1, w2, w3
+umaddl x0, w1, w2, sp
+umaddl x0, w1, w2, undefined
+smulh x0, x1, x2
+smulh w0, w1, w2
+smulh x0, w1, x2
+smulh xzr, xzr, xzr
+smulh sp, x1, x2
+smulh x0, x1, 5
+smulh x0, x1, undefined
+umulh x0, x1, x2
+umulh w0, w1, w2
+umulh x0, w1, x2
+umulh xzr, xzr, xzr
+umulh sp, x1, x2
+umulh x0, x1, 5
+umulh x0, x1, undefined
+nop
+NOP
+nop x0
+nop 5
+nop // c
+  nop  

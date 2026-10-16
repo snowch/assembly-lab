@@ -1,0 +1,14 @@
+{
+  "entry": "readall",
+  "compare": [
+    {
+      "label": "v8",
+      "length": 24
+    },
+    {
+      "label": "bss",
+      "length": 32
+    }
+  ],
+  "calls": [{}]
+}
