@@ -13,7 +13,7 @@
 // computes, never values in the lesson's data. A wrong field gives the case's own sentence for
 // that field (`given["feedback.<field>"]`) as the failure's detail, and never the right value.
 
-import { fieldList } from "./fields";
+import { failureDetail, fieldList } from "./fields";
 import { TEXT_BASE, assemble, run } from "@al/machine";
 import type { Verdict, VerdictFailure } from "@platform/lesson-runtime";
 import type { AnswerField, Artifact, Challenge } from "@platform/lesson-schema";
@@ -204,18 +204,13 @@ export function gradeAnswers(
     if (wrong.length === 0) return;
     // The case's own sentence for each wrong field, with its code in quotes (a verdict shows no
     // code marks). It says what to look at, never the value.
-    const detail = wrong
-      .map(([field]) => quoted(String(c.given[`feedback.${field}`] ?? "")))
-      .filter((s) => s !== "")
-      .join(" ");
-    failures.push({
-      index,
-      label: plain(c.label),
-      inputs: {},
-      actual: {},
-      expected: {},
-      ...(detail !== "" ? { detail } : {}),
-    });
+    const detail = failureDetail(
+      wrong.map(([field]) => field),
+      c.given,
+      named,
+      quoted,
+    );
+    failures.push({ index, label: plain(c.label), inputs: {}, actual: {}, expected: {}, detail });
   });
   return { passed: failures.length === 0, total, failures };
 }
@@ -247,18 +242,8 @@ export function gradeInstructions(challenge: Challenge, artifact: Artifact): Ver
     const ran = mnemonicOf(trace.result.steps[0]?.text ?? "");
     const wrong = Object.keys(c.expect).filter((field) => mnemonicOf(answers[field] ?? "") !== ran);
     if (wrong.length === 0) return;
-    const detail = wrong
-      .map((field) => plain(String(c.given[`feedback.${field}`] ?? "")))
-      .filter((s) => s !== "")
-      .join(" ");
-    failures.push({
-      index,
-      label: plain(c.label),
-      inputs: {},
-      actual: {},
-      expected: {},
-      ...(detail !== "" ? { detail } : {}),
-    });
+    const detail = failureDetail(wrong, c.given, named, plain);
+    failures.push({ index, label: plain(c.label), inputs: {}, actual: {}, expected: {}, detail });
   });
   return { passed: failures.length === 0, total, failures };
 }

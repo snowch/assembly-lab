@@ -624,12 +624,16 @@ function logicHandler(
       const value = r.number(third);
       r.parsed.push({ kind: "imm", text: third.text, value });
       r.end();
+      const refused = (): never =>
+        fail(
+          bicImm ? "immediate.bitmaskBic" : "immediate.bitmask",
+          { text: third.text, bits: w, repeats: w === 32 ? "2, 4, 8 or 16" : "2, 4, 8, 16 or 32" },
+          third.col,
+        );
       const pat = immediatePattern(value, w);
-      if (pat === null) return fail("immediate.bitmask", { text: third.text }, third.col);
+      if (pat === null) return refused();
       const used = bicImm ? ~pat & maskOf(w) : pat;
-      if (!isBitmaskImmediate(used, w)) {
-        return fail("immediate.bitmask", { text: third.text }, third.col);
-      }
+      if (!isBitmaskImmediate(used, w)) return refused();
       return {
         k: "logic",
         op: name,

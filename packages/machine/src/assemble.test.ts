@@ -448,6 +448,8 @@ describe("errors", () => {
       limit: 1,
       steps: 2,
       allowed: "`a`",
+      bits: 32,
+      repeats: "2, 4, 8 or 16",
     };
     for (const key of Object.keys(strings) as MessageKey[]) {
       expect(message(key, params), key).not.toMatch(/\{/);
@@ -498,6 +500,7 @@ describe("every message key an error can have", () => {
     ["immediate.move", "f:\n  mov w0, 0x12345"],
     ["immediate.addsub", "f:\n  add w0, w1, 4097"],
     ["immediate.bitmask", "f:\n  and w0, w1, 257"],
+    ["immediate.bitmaskBic", "f:\n  bic w0, w1, 0x70f0"],
     ["mem.syntax", "f:\n  ldr x0, [x1, 8"],
     ["mem.base", "f:\n  ldr x0, [w1]"],
     ["mem.preNeedsOffset", "f:\n  ldr x0, [x1]!"],

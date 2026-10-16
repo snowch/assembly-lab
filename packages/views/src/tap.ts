@@ -118,10 +118,45 @@ export function lineText(line: Line): string {
   return operands.length > 0 ? `${line.mnemonic} ${operands.join(", ")}` : line.mnemonic;
 }
 
-/** The same line with another instruction. Operands that still fit its form are kept. */
+const REGISTER = /^(?:[wx](?:\d{1,2}|zr)|wsp|sp)$/i;
+const NUMBER = /^#?-?(?:0x[0-9a-f]+|\d+)$/i;
+const CONDITION_NAMES = /^(?:eq|ne|cs|hs|cc|lo|mi|pl|vs|vc|hi|ls|ge|lt|gt|le|al)$/i;
+
+/** Whether an operand as written could be what `slot` asks for; an empty operand fits any slot. */
+export function fitsSlot(operand: string, slot: Slot): boolean {
+  const text = operand.trim();
+  if (text === "") return true;
+  switch (slot) {
+    case "register":
+      return REGISTER.test(text);
+    case "registerOrNumber":
+    case "registerOrMask":
+      return REGISTER.test(text) || NUMBER.test(text);
+    case "number":
+      return NUMBER.test(text);
+    case "shift":
+      return /^(?:lsl|lsr|asr|ror)\s+#?\d+$/i.test(text);
+    case "condition":
+      return CONDITION_NAMES.test(text);
+    case "label":
+      // A name: not a register, a number or a condition word with a space in it.
+      return /^[A-Za-z_.][\w.$]*$/.test(text) && !REGISTER.test(text);
+  }
+}
+
+/**
+ * The same line with another instruction. Operands that still fit the slot they land in are kept;
+ * one that does not (a number where a label is needed) is cleared, so that a stale `0` never
+ * becomes the target of a branch. The slot is left empty, for the learner to fill.
+ */
 export function withInstruction(line: Line, mnemonic: string): Line {
   const slots = slotsOf(mnemonic) ?? [];
-  return { mnemonic, operands: line.operands.slice(0, slots.length) };
+  return {
+    mnemonic,
+    operands: line.operands
+      .slice(0, slots.length)
+      .map((operand, i) => (fitsSlot(operand, slots[i] as Slot) ? operand : "")),
+  };
 }
 
 /** The same line with operand `index` replaced. */

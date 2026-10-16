@@ -207,7 +207,7 @@ export const branches: LessonInput = {
         grader: RUN_REGISTERS,
         cases: FUEL_WARNING_CASES.map((c, i) => ({
           label: LABELS.challenges.fuelWarning.tests[i] as string,
-          given: { w0: c.litres, w1: c.reserve },
+          given: { w0: c.litres, w1: c.reserve, reading: "unsigned" },
           expect: { w0: c.result },
         })),
       },

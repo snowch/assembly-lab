@@ -45,6 +45,35 @@ describe("a line", () => {
     expect(withInstruction(line, "ret")).toEqual({ mnemonic: "ret", operands: [] });
   });
 
+  it("clears an operand that does not fit the slot it lands in, and keeps the ones that do", () => {
+    // A number is not a label: `mov w0, 0` changed to `cbz` must not branch to 0.
+    const cbz = withInstruction(parseLine("mov w0, 0"), "cbz");
+    expect(cbz).toEqual({ mnemonic: "cbz", operands: ["w0", ""] });
+    expect(lineText(cbz)).toBe("cbz w0");
+    // A label is not a register or a number.
+    expect(withInstruction(parseLine("cbz w0, .Llow"), "mov")).toEqual({
+      mnemonic: "mov",
+      operands: ["w0", ""],
+    });
+    expect(withInstruction(parseLine("cbz w0, .Llow"), "cbnz").operands).toEqual(["w0", ".Llow"]);
+    expect(withInstruction(parseLine("cmp w0, #10"), "mov").operands).toEqual(["w0", "#10"]);
+    // A register is not a condition, and a condition is not a register.
+    expect(withInstruction(parseLine("csel w0, w1, w2, w3"), "csel").operands).toEqual([
+      "w0",
+      "w1",
+      "w2",
+      "",
+    ]);
+    expect(withInstruction(parseLine("cset w0, ge"), "csel").operands).toEqual(["w0", ""]);
+    // The number of `movk`, and its shift.
+    expect(withInstruction(parseLine("mov w0, 5"), "movk").operands).toEqual(["w0", "5"]);
+    expect(withInstruction(parseLine("movk w0, 5, lsl 16"), "movk").operands).toEqual([
+      "w0",
+      "5",
+      "lsl 16",
+    ]);
+  });
+
   it("takes an operand at any place, leaving gaps before it", () => {
     expect(lineText(withOperand(parseLine("sub"), 2, "w1"))).toBe("sub , , w1");
     expect(lineText(withOperand(parseLine("sub w0, w1, w0"), 1, "w0"))).toBe("sub w0, w0, w0");

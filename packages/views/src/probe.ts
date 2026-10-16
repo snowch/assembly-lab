@@ -67,9 +67,11 @@ export function measure(
       const key = `cleared:${cleared.sort((a, b) => a - b).join(",")}`;
       if (cleared.length === 0)
         return { value: key, said: S.probe.noneCleared, rows: { before, after } };
-      const label =
-        cleared.length === 1 ? S.bits.bit(cleared[0] ?? 0) : S.bits.bitsList(bitList(cleared));
-      return { value: key, said: S.probe.clearedBits(label), rows: { before, after } };
+      const said =
+        cleared.length === 1
+          ? S.probe.clearedOnly(cleared[0] ?? 0)
+          : S.probe.clearedBits(S.bits.bitsList(bitList(cleared)));
+      return { value: key, said, rows: { before, after } };
     }
     case "fill-rule": {
       const instruction = firstText(trace);

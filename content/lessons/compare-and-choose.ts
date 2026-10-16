@@ -212,7 +212,7 @@ export const compareAndChoose: LessonInput = {
         grader: RUN_REGISTERS,
         cases: LESS_FUEL_CASES.map((c, i) => ({
           label: LABELS.challenges.lessFuel.tests[i] as string,
-          given: { ...c.given },
+          given: { ...c.given, reading: "unsigned" },
           expect: { ...c.expect },
         })),
       },

@@ -131,7 +131,8 @@ describe("the challenges", () => {
       "less_fuel(0x80000000, 1)",
       "less_fuel(1, 0x80000000)",
     ]);
-    for (const f of verdict.failures) expect(f.actual["w0"]).toBe("-2147483648");
+    // Unsigned, as the expected value is: a card never sets a signed number beside an unsigned one.
+    for (const f of verdict.failures) expect(f.actual["w0"]).toBe("2147483648");
   });
 
   it("write-less-fuel: the larger of two (hi) fails, and so does the compare the wrong way round", () => {

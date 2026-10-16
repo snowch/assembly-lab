@@ -751,7 +751,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
         c.getByRole("group", { name: group, exact: true }).locator("button.chip");
       // A line that holds ret has no operands; choose an instruction that has them.
       await press(page, chips(V.editor.instruction).filter({ hasText: /^sub$/ }));
-      // neg is not met until the failure experiment, so the gate and the chips leave it out.
+      // neg is taught here but this challenge does not allow it, so the chips leave it out.
       await expect(chips(V.editor.instruction)).toHaveText(["add", "sub", "adds", "subs", "ret"]);
       await expect(chips(V.editor.operand(1))).toHaveText(["w0", "w1"]);
     });

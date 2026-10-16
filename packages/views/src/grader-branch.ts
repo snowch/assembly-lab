@@ -17,13 +17,13 @@
 //     0 if it does not, exactly. The model runs a `cset` to find out.
 //
 // A case's `given["feedback.<field>"]` is the sentence said for a wrong field; with none, the failure
-// names the case only.
+// says the answer for that field is not right (it names the field, never the value).
 
 import type { Verdict, VerdictFailure } from "@platform/lesson-runtime";
 import type { AnswerField, Artifact, Challenge } from "@platform/lesson-schema";
 
 import { compareResult } from "./branch";
-import { fieldList } from "./fields";
+import { failureDetail, fieldList } from "./fields";
 import { RecordedSchema } from "./interactives/props";
 import { stopSentence } from "./messages";
 import { VIEW_STRINGS as S, plain } from "./strings";
@@ -98,18 +98,13 @@ export function gradeBranchOutcomes(challenge: Challenge, artifact: Artifact): V
       throw new Error(`${challenge.id}: ${kind} is neither w0, steps nor holds:<condition>`);
     });
     if (wrong.length === 0) return;
-    const detail = wrong
-      .map(([field]) => plain(String(c.given[`feedback.${field}`] ?? "")))
-      .filter((s) => s !== "")
-      .join(" ");
-    failures.push({
-      index,
-      label: plain(c.label),
-      inputs: {},
-      actual: {},
-      expected: {},
-      ...(detail !== "" ? { detail } : {}),
-    });
+    const detail = failureDetail(
+      wrong.map(([field]) => field),
+      c.given,
+      named,
+      plain,
+    );
+    failures.push({ index, label: plain(c.label), inputs: {}, actual: {}, expected: {}, detail });
   });
   return { passed: failures.length === 0, total, failures };
 }

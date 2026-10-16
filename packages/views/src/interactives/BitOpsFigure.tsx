@@ -231,7 +231,9 @@ export const BitOpsFigure = withProps(Props, function BitOpsFigure({ data, store
       <p className="al-status" role="status">
         {withCode(S.bitOps.result("w0", hex(result), String(unsignedOf(result))))}{" "}
         {fn.returns === "word" &&
-          (changed.size === 0 ? S.bitOps.unchanged : S.bitOps.changed(bitList(changed)))}
+          (changed.size === 0
+            ? S.bitOps.unchanged
+            : S.bitOps.changed(bitList(changed), changed.size))}
       </p>
       <p className="al-legend">{S.bitOps.legend}</p>
       {fn.returns === "word" && <BitKey entries={data.entries} before={word} after={result} />}

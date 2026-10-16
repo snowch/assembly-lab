@@ -124,7 +124,7 @@ test.describe("the two predictions commit before they reveal", () => {
     expect(await rowBits(figure, "ran-before")).toBe(pad32(0xffffffff));
     expect(await rowBits(figure, "ran-after")).toBe(pad32(after));
     expect(await marked(figure, "ran-after", "changed")).toEqual([2]);
-    await expect(figure.locator(".al-outcome")).toContainText("Bit 2 came out 0");
+    await expect(figure.locator(".al-outcome")).toContainText("Only bit 2 came out 0");
   });
 
   test("a commitment is kept, and is still there after a reload", async ({ page }) => {

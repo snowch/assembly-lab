@@ -120,11 +120,12 @@ describe("the challenges", () => {
     expect(grade(c, { text: "subs w0, w0, w1\nret" }).passed).toBe(true);
   });
 
-  it("write-elapsed: neg is not met yet, so the gate refuses it before the failure experiment", () => {
+  it("write-elapsed: neg is taught by this lesson, so the gate says what the challenge allows, not that neg is not met", () => {
     const c = challenge("write-elapsed");
     const verdict = grade(c, { text: "neg w1, w1\nadd w0, w0, w1\nret" });
     expect(verdict.passed).toBe(false);
-    expect(verdict.blocked).toContain("You have not met `neg`");
+    expect(verdict.blocked).toContain("This challenge allows only");
+    expect(verdict.blocked).not.toContain("not met");
   });
 
   it("write-elapsed: a wrong answer shows its values as unsigned numbers, not negative ones", () => {

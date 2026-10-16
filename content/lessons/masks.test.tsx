@@ -76,6 +76,15 @@ describe("the lesson", () => {
       expect(ids.indexOf(x.props["after"] as string)).toBeLessThan(ids.indexOf(x.id));
   });
 
+  it("does not show the recipe for set_gear, the challenge's answer, in the Investigation's figure", () => {
+    const figure = lesson.sections
+      .flatMap((s) => s.interactives)
+      .find((x) => x.id === "mask-bits")!;
+    const entries = (figure.props["functions"] as { entry: string }[]).map((f) => f.entry);
+    expect(entries).toEqual(["warn_fuel", "clear_door", "toggle_lights", "gear_of"]);
+    expect(JSON.stringify(figure.props)).not.toContain("7u << 4");
+  });
+
   it("shows only instructions its gate has: the lesson's, and ret", () => {
     const allowed = new Set<string>([...MASKS_INSTRUCTIONS, "ret"]);
     const used = new Set<string>();
@@ -152,7 +161,9 @@ describe("the challenges", () => {
     const c = challenge("write-set-gear");
     const verdict = grade(c, { text: "bfi w0, w1, 4, 3\nret" });
     expect(verdict.passed).toBe(false);
-    expect(verdict.blocked).toContain("bfi");
+    // bfi is taught in this lesson, so the gate says what the challenge allows, not "not met".
+    expect(verdict.blocked).toContain("This challenge allows only");
+    expect(verdict.blocked).not.toContain("not met");
   });
 
   it("trace-three-results: a wrong answer is rejected without the right value", () => {
