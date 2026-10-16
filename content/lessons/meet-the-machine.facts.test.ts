@@ -302,6 +302,9 @@ describe("every number the lesson states", () => {
     // C line 7, the closing brace that GCC records the last two instructions against (held to the
     // recorded listing below), and Module 1, which the lesson points to for the rest of a register.
     7, 1,
+    // Lines 5 and 6, which the last sub does the work of, and -O0's 20 instructions for
+    // trip_distance with its subtraction recorded against line 5 (held to the recorded file below).
+    5, 6, 20,
   ]);
 
   it("is pinned: each is an argument of a call, a result of the model, or a fact the recorded file states", () => {
@@ -318,6 +321,21 @@ describe("every number the lesson states", () => {
     const lines = parseListing(TRIP_DISTANCE.listing);
     const lastTwo = lines.slice(-2).map((l) => (l.kind === "instruction" ? l.cLine : null));
     expect(lastTwo).toEqual([7, 7]);
+  });
+
+  it("records, at -O0, 20 instructions for trip_distance, its subtraction against line 5", () => {
+    const listing = blocksUnder("`m0b.c` at `-O0`").find(([lang]) => lang === "")![1];
+    const body = listing.slice(listing.indexOf("trip_distance:"), listing.indexOf("fuel_used:"));
+    const instructions = body.split("\n").filter((l) => /^\s+[a-z]/.test(l));
+    expect(instructions).toHaveLength(20);
+    // The recorded file's C starts with a copyright line, which the lesson leaves out: its line
+    // numbers are one more than the page's.
+    const sub = instructions.filter((l) => /^\s+sub\s+w0, w1, w0/.test(l));
+    expect(sub.map((l) => Number(/C(\d+)\s*$/.exec(l)![1]) - 1)).toEqual([5]);
+    // The lines the -O1 sub does the work of.
+    const c = TRIP_DISTANCE.c.split("\n");
+    expect(c[4]!.trim()).toBe("total = total - detour;");
+    expect(c[5]!.trim()).toBe("return total;");
   });
 
   it("agrees with the model on every pinned result", () => {

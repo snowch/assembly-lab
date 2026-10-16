@@ -22,7 +22,7 @@ export const PROSE = {
     "The answer is 2000. Counting on from 4294966296, 1000 steps reach the wrap, and 1000 more reach 1000. The subtraction needs a borrow, because 1000 is less than 4294966296 under the unsigned reading, so C is 0 after `subs`. The 32 bits that remain are still the right distance, 2000.",
 
   investigation:
-    "The figure draws the counter's values on a ring. Two counter values 2000 apart sit at almost one spot on a ring of 4294967296 values, so a strip under the ring enlarges the stretch around the wrap, where `then` and `now` sit.\n\n" +
+    "The figure draws the counter's values on a ring. Two counter values close together sit at almost one spot on a ring of 4294967296 values, so a strip under the ring enlarges the stretch around the wrap.\n\n" +
     "The processor subtracts by adding. `a - b` is worked out as `a` plus `b` with each of its bits changed to the other value (each 1 becomes 0, each 0 becomes 1), plus 1. It uses the same adder as in lesson 1. With `subs`, the flags come from that addition.\n\nA subtraction needs a **borrow** when `a` is less than `b` under the unsigned reading. C is 1 when no borrow was needed, and 0 when one was.\n\n" +
     "After you answer the prediction above, two more figures open. Each works a `subs` column by column, with each bit of the second number changed: one across the wrap, and one that does not wrap.",
 

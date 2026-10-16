@@ -7,7 +7,7 @@
 export const PROSE = {
   question:
     "The trip computer keeps a work log of distances driven. For one trip, the distance in the log is the three legs added together, minus a private detour. The log must not include that detour.\n\n" +
-    "The C function `trip_distance` computes that distance in three statements. The figure below shows it. GCC, a C compiler, version 16.1, set to `-O1`, turned it into four instructions for a 64-bit Arm processor. They are shown beside the C. The question is what the processor does, instruction by instruction, when this function runs.",
+    "The C function `trip_distance` computes that distance in three statements. The figure below shows it. GCC, a C compiler, version 16.1, set to `-O1`, turned it into four instructions for a 64-bit Arm processor. The course uses `-O1` so the code stays short enough to follow: at `-O0`, with no optimisation, GCC makes 20 instructions for this C, keeping every value in memory. At `-O1` the values stay inside the processor, and four instructions do the work, one for each step of the arithmetic and one to return. They are shown beside the C. The question is what the processor does, instruction by instruction, when this function runs.",
 
   motivation:
     "The C is a description. The compiler translates it, and the instructions are what the processor runs. When a program does something its C does not seem to say, the difference shows in the instructions. Every later module reads instructions like these. This function has only four, which is few enough to follow one at a time.",
@@ -25,7 +25,7 @@ export const PROSE = {
     "An instruction's parts after its name are its **operands**. In `add w0, w0, w1`, the first operand is where the result goes, and the other two are what it is made from. After that instruction runs, `w0` holds 205, which is 120 plus 85. `w1` still holds 85. After the second instruction `w0` holds 247; after the third, 232. `ret` ends the function. Its result is whatever `w0` holds then: 232.",
   questionDetailsSummary: "Where the last subtraction is counted",
   questionDetails:
-    "In the figure, the last two instructions show C line 7, the closing brace. GCC records the last subtraction against the closing brace, not against the line `total = total - detour;`. The figure shows GCC's record as it is. The record says which line an instruction is counted against, and the compiler decides it.",
+    "Line 7 beside `sub w0, w0, w3` is not a mistake. The figure shows the line GCC recorded for each instruction, unchanged. GCC records `sub w0, w0, w3` and `ret` against line 7, the closing brace. That one `sub` does the work of two lines: line 5, `total = total - detour;`, and line 6, `return total;`. It subtracts straight into `w0`, where the result leaves the function. So no instruction is left for `return total;`. If GCC is set to `-O0`, with no optimisation, it records its subtraction against line 5. The record of lines is there to help you find your way from an instruction back to the C. When the compiler merges lines, the line it records can move.",
 
   construction:
     "A second function, `fuel_used`, should return the litres used on a trip. That is the fuel at the start minus the fuel at the end. Its C was written the wrong way round: `return at_end - at_start;`. GCC turned it into `sub w0, w1, w0` and `ret`.\n\n" +

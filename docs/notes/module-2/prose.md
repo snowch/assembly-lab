@@ -181,7 +181,7 @@ The answer is 2000. Counting on from 4294966296, 1000 steps reach the wrap, and 
 
 ## 4. Subtraction as addition, and borrows
 
-The figure draws the counter's values on a ring. Two counter values 2000 apart sit at almost one spot on a ring of 4294967296 values, so a strip under the ring enlarges the stretch around the wrap, where `then` and `now` sit.
+The figure draws the counter's values on a ring. Two counter values close together sit at almost one spot on a ring of 4294967296 values, so a strip under the ring enlarges the stretch around the wrap.
 
 The processor subtracts by adding. `a - b` is worked out as `a` plus `b` with each of its bits changed to the other value (each 1 becomes 0, each 0 becomes 1), plus 1. It uses the same adder as in lesson 1. With `subs`, the flags come from that addition.
 

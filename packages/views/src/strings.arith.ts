@@ -79,7 +79,7 @@ export const ARITH_STRINGS = {
     flagClear: (flag: string) => `${flag} is 0 for the number you gave.`,
     notSmallest: "A smaller number also makes V 1.",
     /** The sentence for a wrong flag when the case gives none of its own. It names no flag. */
-    flagWrong: "At least one flag for this addition is wrong.",
+    flagWrong: "At least one flag you gave is wrong.",
     /** The same for a wrong register value. It names no value. */
     valueWrong: "That answer is not right.",
     /** In place of the list of fields, when every unanswered field is a choice. */
