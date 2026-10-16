@@ -113,7 +113,7 @@ test.describe("the prediction about which numbers fit", () => {
       );
       // The model's own result: the assembler took 65536, and refused the other three.
       await expect(figure.locator(".al-outcome")).toContainText(
-        "took mov w0, 65536 as one instruction. It refused the other 3.",
+        V.fits.one("65536", 3).replace(/`/g, ""),
       );
       await expect(figure.locator(".al-outcome .prose")).toContainText("Only 65536.");
     });

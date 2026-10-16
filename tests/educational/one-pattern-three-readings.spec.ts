@@ -350,7 +350,7 @@ test.describe("Make −1", () => {
     await press(page, run(c));
     await expect(status(c)).toHaveText(failing(1, 2));
     await expect(c.locator(".verdict-failure h4")).toHaveText(["the bits of w0"]);
-    await expect(c.locator(".verdict-detail")).toHaveText("Your bits read as −12 when signed.");
+    await expect(c.locator(".verdict-detail")).toHaveText(V.readings.bitsRead("−12"));
     await expect(c.locator(".verdict")).not.toContainText("4294967295");
     await expect(c.locator(".challenge-complete")).toHaveCount(0);
   });

@@ -420,7 +420,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       const c = challenge(page, "smallest-overflow");
       await c.scrollIntoViewIfNeeded();
       await press(page, run(c));
-      await expect(c.locator(".verdict.blocked")).toContainText("first");
+      await expect(c.locator(".verdict.blocked")).toContainText("Nothing is graded until");
       await answer(c, "two");
       await press(page, run(c));
       await expect(c.locator(".verdict.blocked")).toContainText("whole number");
