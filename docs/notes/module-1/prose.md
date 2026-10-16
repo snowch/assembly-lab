@@ -155,7 +155,7 @@ Each number below could be the constant in one `mov`.
 
 *Shown after the answer is checked.*
 
-Only 65536. Its bits are a single 1, in the upper half, so all its set bits are in one half. The other three need bits in both halves.
+Only 65536. Its bits are a single 1, in the upper 16-bit half, so all its set bits are in one half. The other three need bits in both halves.
 
 ## 4. Trying a number
 
@@ -171,7 +171,7 @@ A number whose bits are all ones except within one 16-bit half fits, such as `-1
 
 ## 5. Building 1000000
 
-`movk` replaces one 16-bit half of a register and keeps the rest. `lsl 16` names the upper half. You split 1000000 into its two halves yourself, as hexadecimal makes easy. Writing `#` before a number in an instruction is optional: `mov w0, 30000` and `mov w0, #30000` are the same instruction (Module 0 met `#50`).
+`movk` replaces one 16-bit half of a register and keeps the rest. `lsl 16`, a shift left that Module 3 explains, names the upper half, where the number goes. You split 1000000 into its two halves yourself. To split a number into its 16-bit halves, divide it by 65536. The whole-number answer is the upper half, and what is left over is the lower half. 65536 is the worth of bit 16, the lowest bit of the upper half. Writing `#` before a number in an instruction is optional: `mov w0, 30000` and `mov w0, #30000` are the same instruction (Module 0 met `#50`).
 
 **Build 1000000**
 
@@ -206,7 +206,7 @@ One `mov` fits a number in one 16-bit half. `movk` fills in another half without
 
 ## 8. Constants and C types
 
-A `long` in C uses the `x` name: GCC turns `return -1;` with `long` into `mov x0, -1`. GCC turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.
+A `long` in C, an integer type, uses the `x` name: with GCC on this 64-bit Arm processor it is 64 bits, so GCC turns `return -1;` with `long` into `mov x0, -1`. In `4294967295u`, the `u` marks the constant as `unsigned`. GCC turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.
 
 Every constant in every listing is a pattern of bits. The C type only decides how the program reads it later.
 

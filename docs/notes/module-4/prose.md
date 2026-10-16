@@ -21,6 +21,8 @@ int steeper_s(int a, int b) { return a > b ? a : b; }
 unsigned steeper_u(unsigned a, unsigned b) { return a > b ? a : b; }
 ```
 
+`a > b ? a : b` means "`a` if `a` is greater than `b`, otherwise `b`".
+
 Both are given the same two 32-bit patterns, `0xffffffff` and `1`. `steeper_s` returns 1, and `steeper_u` returns 4294967295.
 
 Module 1 showed that one pattern can have two readings. `0xffffffff` is −1 signed and 4294967295 unsigned.
@@ -33,6 +35,8 @@ steeper_s:
         csel    w0, w1, w0, ge
         ret
 ```
+
+`csel` puts one of two registers into `w0`. Which one depends on its last item, a test of the flags that `cmp` set.
 
 `steeper_u` also gets the same bits, and it gives a different answer.
 
@@ -145,6 +149,8 @@ A condition read after something other than `cmp` uses the flags that the instru
 
 ## 8. What GCC does with the same two instructions
 
+`bool` is a C type that holds 0 or 1. A comparison such as `litres < reserve` gives 1 if it is true and 0 if not.
+
 GCC 16.1 at `-O1` compiled `fuel_low`, `bool fuel_low(unsigned litres, unsigned reserve) { return litres < reserve; }`, to this (recorded listing):
 
 ```
@@ -253,7 +259,7 @@ The figure puts each instruction beside the C line GCC recorded for it. `cmp` an
 
 ## 2. Why a function needs to skip instructions
 
-A C `if` runs some statements and not others. `describe` returns different numbers for different gradients, so not every instruction can run every time. Until now, each instruction ran after the one before it. A function that decides needs an instruction that changes which one runs next.
+A C `if` runs some statements and not others. `describe` returns different numbers for different gradients, so not every instruction can run every time. Until now, each instruction ran after the one before it. A function that decides needs an instruction that changes which one runs next. In `describe`, `b .L7` makes the run go on at the place named `.L7`, and `bgt .L9` does so only when a test of the flags says greater than.
 
 ## 3. Predict how many instructions run
 
@@ -281,7 +287,7 @@ A **branch** is an instruction that can change which instruction runs next. A **
 - `describe(-15)`: `cmp w0, 10` leaves NZCV 1010, so `bgt` is not taken. `cmn w0, #10` leaves NZCV 1000. The result is −2 (`0xfffffffe`), in six instructions.
 - `describe(0)`: `cmp` leaves NZCV 1000, and `cmn` leaves NZCV 0000. The result is 0, in six instructions.
 
-`cmn w0, #10` sets the flags of `w0` plus 10. After it, `lt` is yes exactly when `w0` plus 10 is below 0, that is, when `w0` is below −10. It is the same test as comparing with −10. GNU as itself turns `cmp w0, -10` into `cmn w0, 10`, and the simulator gives the same flags for both. GCC prints `cmp w0, 10` without `#` and `cmn w0, #10` with it. Both forms are accepted.
+`cmn w0, #10` sets the flags of `w0` plus 10. After it, `lt` is yes exactly when `w0` plus 10 is below 0, that is, when `w0` is below −10. It is the same test as comparing with −10. The GNU assembler (`as`) itself turns `cmp w0, -10` into `cmn w0, 10`, and the simulator gives the same flags for both. GCC prints `cmp w0, 10` without `#` and `cmn w0, #10` with it. Both forms are accepted.
 
 `mov w0, -2` sits between `cmn` and `csel` and leaves the flags alone, so `csel` still reads `cmn`'s flags. `csel w0, w0, wzr, lt` gives `w0` (now −2) when `lt` is yes, and `wzr` when it is no. `wzr` is a register name that always reads as 0. Both paths end at the one `ret` under `.L7`: the first by falling through from `csel`, and the second by `b .L7`.
 
@@ -295,7 +301,7 @@ A **branch** is an instruction that can change which instruction runs next. A **
 
 Write `fuel_warning(litres, reserve)`. It returns 2 when `litres` is 0, 1 when `litres` is below `reserve`, and 0 otherwise. Both are `unsigned`. Use only `cmp`, a branch with a condition, `cbz`, `b`, `mov` and `ret`. Five calls test it: one with `litres` equal to `reserve`, and one with the top bit of `litres` set.
 
-`litres` arrives in `w0` and `reserve` in `w1`; the answer leaves in `w0`. `cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags: with flags 0000 or 1111, they stay the same.
+`litres` arrives in `w0` and `reserve` in `w1`; the answer leaves in `w0`. `cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags: with flags 0000 or 1111, they stay the same. You name your own labels, and any name works. The `.L` that starts each of GCC's labels is only GCC's habit. GCC puts each label on its own line, followed by a colon, before the instruction it names.
 
 1. Two questions need two tests: is `litres` 0, and is it below `reserve`. Ask the empty one first.
 2. Ask "below `reserve`" first and `litres` 0 also passes it, so it returns 1, not 2.

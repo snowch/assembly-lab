@@ -19,7 +19,7 @@ export const PROSE = {
     "`then` is 4294966296, the count just before the wrap; `now` is 1000, the count just after it.",
   predictionQuestion: "**What does `elapsed(1000, 4294966296)` return?**",
   predictionExplain:
-    "The answer is 2000. Counting on from 4294966296, 1000 steps reach the wrap, and 1000 more reach 1000. The subtraction needs a borrow, because 1000 is less than 4294966296 under the unsigned reading, so C is 0 after `subs`. The 32 bits that remain are still the right distance, 2000.",
+    "The answer is 2000. Counting on from 4294966296, 1000 steps reach the wrap, and 1000 more reach 1000. The subtraction needs a borrow (part 4 explains borrows), because 1000 is less than 4294966296 under the unsigned reading, so C is 0 after `subs`. The 32 bits that remain are still the right distance, 2000.",
 
   investigation:
     "The figure draws the counter's values on a ring. Two counter values close together sit at almost one spot on a ring of 4294967296 values, so a strip under the ring enlarges the stretch around the wrap.\n\n" +
@@ -39,7 +39,7 @@ export const PROSE = {
   ] as const,
 
   failureExperiment:
-    "`neg w0, w0` turns a value into its negative, as 0 minus the value. The figure runs `negs w0, w0` on `0x80000000`, which reads as −2147483648 signed.",
+    "`neg w0, w0` turns a value into its negative, as 0 minus the value. `negs` does the same and also records the four flags, as the names ending in `s` do. The figure runs `negs w0, w0` on `0x80000000`, which reads as −2147483648 signed.",
   failureQuestion: "**What does `w0` hold afterwards?**",
   failureExplain:
     "`w0` still holds `0x80000000`, unchanged, and V is 1. The signed answer, 2147483648, does not fit, so the same pattern comes back.",
@@ -50,7 +50,7 @@ export const PROSE = {
 
   generalisation:
     "Any counter that wraps gives the right distance by plain subtraction, as long as less than one full turn passed.\n\n" +
-    "GCC's `sub_overflows`, from `__builtin_sub_overflow`, runs `subs w0, w0, w1` and then an instruction a later module explains. That instruction reads V after the subtraction, as `add_overflows` did after an addition.",
+    "`sub_overflows` is a function like `add_overflows`, for subtraction; it is not shown. GCC's `sub_overflows`, from `__builtin_sub_overflow`, runs `subs w0, w0, w1` and then an instruction a later module explains. That instruction reads V after the subtraction, as `add_overflows` did after an addition.",
 
   challenge: "This challenge looks at the step where the counter goes from its largest value to 0.",
   stepTask:

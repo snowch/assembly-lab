@@ -54,7 +54,7 @@ For `0x7fffffff` plus 1, a carry runs through every column into the top bit. Non
 
 **GCC's own overflow check**
 
-GCC uses V itself. For `__builtin_add_overflow` on two `int`s, GCC 16.1 at `-O1` compiles to this:
+GCC uses V itself. `__builtin_add_overflow` is a function built into GCC. It adds two numbers and reports whether the answer overflowed. For a call to it on two `int`s, GCC 16.1 at `-O1` compiles to this:
 
 ```
 add_overflows:
@@ -63,7 +63,7 @@ add_overflows:
         ret
 ```
 
-The two instructions before `ret` return 1 exactly when V is set. Both are instructions a later module explains.
+The first line, `add_overflows:`, is the function's name followed by a colon, as in every listing so far. The two instructions before `ret` return 1 exactly when V is set. Both are instructions a later module explains.
 
 ## 5. Three additions to predict
 
@@ -140,7 +140,7 @@ Enter the number in decimal.
 
 ## 11. The model and the real processor
 
-The simulator works out the flags as the architecture defines them. A real processor need not add column by column. The drawing shows the arithmetic, not the circuit. The digital-design course builds the circuit.
+The architecture is Arm's published definition of what each instruction does. The simulator works out the flags as the architecture defines them. The course checks its simulator against QEMU, a widely used program that imitates Arm processors. A real processor need not add column by column. The drawing shows the arithmetic, not the circuit. The digital-design course builds the circuit.
 
 # Lesson 2: Subtracting, and the tick counter
 
@@ -177,7 +177,7 @@ A program that measures time with a counter like this one runs for weeks before 
 
 *Shown after the answer is checked.*
 
-The answer is 2000. Counting on from 4294966296, 1000 steps reach the wrap, and 1000 more reach 1000. The subtraction needs a borrow, because 1000 is less than 4294966296 under the unsigned reading, so C is 0 after `subs`. The 32 bits that remain are still the right distance, 2000.
+The answer is 2000. Counting on from 4294966296, 1000 steps reach the wrap, and 1000 more reach 1000. The subtraction needs a borrow (part 4 explains borrows), because 1000 is less than 4294966296 under the unsigned reading, so C is 0 after `subs`. The 32 bits that remain are still the right distance, 2000.
 
 ## 4. Subtraction as addition, and borrows
 
@@ -209,7 +209,7 @@ You may use `add`, `sub`, `adds`, `subs` and `ret`.
 
 ## 6. Negating 0x80000000
 
-`neg w0, w0` turns a value into its negative, as 0 minus the value. The figure runs `negs w0, w0` on `0x80000000`, which reads as −2147483648 signed.
+`neg w0, w0` turns a value into its negative, as 0 minus the value. `negs` does the same and also records the four flags, as the names ending in `s` do. The figure runs `negs w0, w0` on `0x80000000`, which reads as −2147483648 signed.
 
 **What does `w0` hold afterwards?**
 
@@ -232,7 +232,7 @@ The 32 bits of the answer are the true answer with every bit above the lowest 32
 
 Any counter that wraps gives the right distance by plain subtraction, as long as less than one full turn passed.
 
-GCC's `sub_overflows`, from `__builtin_sub_overflow`, runs `subs w0, w0, w1` and then an instruction a later module explains. That instruction reads V after the subtraction, as `add_overflows` did after an addition.
+`sub_overflows` is a function like `add_overflows`, for subtraction; it is not shown. GCC's `sub_overflows`, from `__builtin_sub_overflow`, runs `subs w0, w0, w1` and then an instruction a later module explains. That instruction reads V after the subtraction, as `add_overflows` did after an addition.
 
 ## 9. Stepping from the top to zero
 

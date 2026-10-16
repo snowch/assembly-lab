@@ -10,16 +10,17 @@
 
 export const strings = {
   // --- reading a line
-  "syntax.expression": "`{text}` is not a number or an address the machine can read.",
+  "syntax.expression": "`{text}` is not a number or a name the course's assembler can read.",
   "syntax.tooBig": "`{text}` is too big for 64 bits.",
   "syntax.missingComma":
     "`{text}` needs a comma after `{after}`. Operands are separated by commas.",
   "syntax.divideByZero": "This line divides a number by zero.",
   "symbol.undefined": "There is no label called `{name}`.",
-  "symbol.notNumber": "`{text}` is an address, but here the machine needs a plain number.",
+  "symbol.notNumber":
+    "`{text}` is a label, which names a place in memory, but here the course's assembler needs a plain number.",
   "label.duplicate": "The label `{name}` is already defined.",
-  notInMachine: "The machine does not have `{text}`.",
-  "gate.notYet": "You have not met `{name}` yet, so the machine will not take `{text}`.",
+  notInMachine: "The course's simulator does not have `{text}`.",
+  "gate.notYet": "You have not met `{name}` yet, so the course's assembler will not take `{text}`.",
   // DRAFT: `{allowed}` is the instructions the program may use, from `nameList`.
   "gate.notAllowedHere": "This challenge allows only {allowed}.",
   "instruction.outsideText": "`{text}` is an instruction, so it must be in the text section.",
@@ -99,7 +100,7 @@ export const strings = {
   "fault.storeRodata":
     "Line {line}, `{text}`, stored to the address {address}. That address is in read-only data.",
   "fault.notInstruction":
-    "The run went to the address {address}, from line {line}, `{text}`. No instruction is at that address.",
+    "An address is the number that names a place in memory. The run went to the address {address}, from line {line}, `{text}`. No instruction is at that address.",
   "fault.ranOffEnd":
     "The run went past the end of the instructions without running a `ret`. The last instruction it ran was line {line}, `{text}`.",
   "fault.entry": "The call starts at the address {address}. No instruction is at that address.",

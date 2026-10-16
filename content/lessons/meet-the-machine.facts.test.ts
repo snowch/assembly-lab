@@ -305,6 +305,8 @@ describe("every number the lesson states", () => {
     // Lines 5 and 6, which the last sub does the work of, and -O0's 20 instructions for
     // trip_distance with its subtraction recorded against line 5 (held to the recorded file below).
     5, 6, 20,
+    // Part 3, which names w0 to w3 registers.
+    3,
   ]);
 
   it("is pinned: each is an argument of a call, a result of the model, or a fact the recorded file states", () => {

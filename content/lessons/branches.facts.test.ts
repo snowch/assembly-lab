@@ -215,7 +215,9 @@ describe("cmn w0, #10", () => {
     const a = callText("f:\n  cmp w0, -10\n  ret\n", "f", [0]).result;
     const b = callText("f:\n  cmn w0, 10\n  ret\n", "f", [0]).result;
     expect(a.steps[0]!.flagsAfter).toEqual(b.steps[0]!.flagsAfter);
-    expect(PROSE.investigation).toContain("GNU as itself turns `cmp w0, -10` into `cmn w0, 10`");
+    expect(PROSE.investigation).toContain(
+      "The GNU assembler (`as`) itself turns `cmp w0, -10` into `cmn w0, 10`",
+    );
   });
 
   it("makes lt yes exactly when w0 is below −10", () => {

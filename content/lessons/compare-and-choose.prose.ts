@@ -8,11 +8,11 @@ export const PROSE = {
   question:
     "The trip computer returns the larger of two gradients with `steeper_s`. `steeper_u` is the same function with `unsigned` arguments.\n\n" +
     "```c\nint steeper_s(int a, int b) { return a > b ? a : b; }\nunsigned steeper_u(unsigned a, unsigned b) { return a > b ? a : b; }\n```\n\n" +
-    "Both are given the same two 32-bit patterns, `0xffffffff` and `1`. `steeper_s` returns 1, and `steeper_u` returns 4294967295.\n\n" +
+    '`a > b ? a : b` means "`a` if `a` is greater than `b`, otherwise `b`".\n\nBoth are given the same two 32-bit patterns, `0xffffffff` and `1`. `steeper_s` returns 1, and `steeper_u` returns 4294967295.\n\n' +
     "Module 1 showed that one pattern can have two readings. `0xffffffff` is −1 signed and 4294967295 unsigned.\n\n" +
     "GCC 16.1 at `-O1` compiled `steeper_s` to three instructions (recorded listing):\n\n" +
     "```\nsteeper_s:\n        cmp     w1, w0\n        csel    w0, w1, w0, ge\n        ret\n```\n\n" +
-    "`steeper_u` also gets the same bits, and it gives a different answer.\n\n" +
+    "`csel` puts one of two registers into `w0`. Which one depends on its last item, a test of the flags that `cmp` set.\n\n`steeper_u` also gets the same bits, and it gives a different answer.\n\n" +
     "**What does GCC change in its three instructions?**",
 
   motivation:
@@ -69,7 +69,7 @@ export const PROSE = {
     "A condition read after something other than `cmp` uses the flags that the instruction before it set. Lesson 2 shows one.",
 
   generalisation:
-    "GCC 16.1 at `-O1` compiled `fuel_low`, `bool fuel_low(unsigned litres, unsigned reserve) { return litres < reserve; }`, to this (recorded listing):\n\n" +
+    "`bool` is a C type that holds 0 or 1. A comparison such as `litres < reserve` gives 1 if it is true and 0 if not.\n\nGCC 16.1 at `-O1` compiled `fuel_low`, `bool fuel_low(unsigned litres, unsigned reserve) { return litres < reserve; }`, to this (recorded listing):\n\n" +
     "```\nfuel_low:\n        cmp     w0, w1\n        cset    w0, cc\n        ret\n```\n\n" +
     '`cset w0, cc` writes 1 to `w0` when `cc` is yes, and 0 when it is no. `cc` is "lower", unsigned. Module 2\'s `cset w0, vs` worked the same way. `fuel_low(5, 8)` is 1 (NZCV 1000), `fuel_low(8, 8)` is 0 (NZCV 0110), and `fuel_low(0x80000000, 8)` is 0 (NZCV 0011). With the top bit set, `litres` is a large unsigned number. Each runs three instructions.\n\n' +
     "`warning_light` has an `if (litres < reserve) return 1;` followed by `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing (recorded listing):\n\n" +

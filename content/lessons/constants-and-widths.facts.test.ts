@@ -277,6 +277,8 @@ describe("every number the lesson states", () => {
     1048575,
     // Module 0, by its number, and its #50, a constant in Module 0's recorded listing.
     0, 50,
+    // Module 3, which explains lsl.
+    3,
   ]);
 
   const text = learnerText(lesson).join("\n");

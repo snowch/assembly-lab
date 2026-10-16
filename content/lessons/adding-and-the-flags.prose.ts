@@ -30,14 +30,14 @@ export const PROSE = {
     "For `0x7fffffff` plus 1, a carry runs through every column into the top bit. None comes out of it. So N is 1, Z is 0, C is 0 and V is 1.",
   investigationDetailsSummary: "GCC's own overflow check",
   investigationDetails:
-    "GCC uses V itself. For `__builtin_add_overflow` on two `int`s, GCC 16.1 at `-O1` compiles to this:\n\n" +
+    "GCC uses V itself. `__builtin_add_overflow` is a function built into GCC. It adds two numbers and reports whether the answer overflowed. For a call to it on two `int`s, GCC 16.1 at `-O1` compiles to this:\n\n" +
     "```\n" +
     "add_overflows:\n" +
     "        cmn     w0, w1\n" +
     "        cset    w0, vs\n" +
     "        ret\n" +
     "```\n\n" +
-    "The two instructions before `ret` return 1 exactly when V is set. Both are instructions a later module explains.",
+    "The first line, `add_overflows:`, is the function's name followed by a colon, as in every listing so far. The two instructions before `ret` return 1 exactly when V is set. Both are instructions a later module explains.",
 
   construction: "Earlier, you predicted one addition. Now you predict three.",
   flagsTask:
@@ -88,5 +88,5 @@ export const PROSE = {
     "- What does `add` do to the flags?",
 
   modelVsReality:
-    "The simulator works out the flags as the architecture defines them. A real processor need not add column by column. The drawing shows the arithmetic, not the circuit. The digital-design course builds the circuit.",
+    "The architecture is Arm's published definition of what each instruction does. The simulator works out the flags as the architecture defines them. The course checks its simulator against QEMU, a widely used program that imitates Arm processors. A real processor need not add column by column. The drawing shows the arithmetic, not the circuit. The digital-design course builds the circuit.",
 } as const;
