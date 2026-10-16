@@ -80,10 +80,11 @@ test("a module with one lesson links its title to it; a module with several list
     "One pattern, three readings",
     "Constants and widths",
   ]);
-  await expect(module1.locator(".module-lessons li a")).toHaveAttribute(
-    "href",
-    /^#\/lesson\/(one-pattern-three-readings|constants-and-widths)$/,
-  );
+  expect(
+    await module1
+      .locator(".module-lessons li a")
+      .evaluateAll((as) => as.map((a) => a.getAttribute("href"))),
+  ).toEqual(["#/lesson/one-pattern-three-readings", "#/lesson/constants-and-widths"]);
   await link.click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Meet the machine");
   expect(new URL(page.url()).hash).toBe("#/lesson/meet-the-machine");
