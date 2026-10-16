@@ -11,7 +11,7 @@ export const STRINGS = {
   title: "Assembly Lab",
   subtitle: "From a line of C to the bits in a register",
   intro:
-    "You drive a real processor's instruction set, one instruction at a time. After each instruction, you see what changed: the bits in each register, the four flags and memory, with the line of C it came from shown beside it. Before each run, you predict what will happen, and you write small programs that tests check. Everything runs in your browser.",
+    "You drive a real processor's instruction set, 64-bit Arm, one instruction at a time. After each instruction, you see what changed: the bits in each register, the four flags and memory, with the line of C it came from shown beside it. Before each run, you predict what will happen, and you write small programs that tests check. Everything runs in your browser.",
   statusNote:
     "The plan below is under the author's review. Module 0 is written as a draft to try. The other modules are written after the plan is approved.",
   /** "Before you start", between the status note and the plan: what the course assumes. */
@@ -55,7 +55,7 @@ export const STRINGS = {
   // what a search result and a shared link's preview show under the title (at most 155
   // characters; static-page.ts writes it into the page).
   description:
-    "In your browser, you drive a real processor's instruction set one instruction at a time, and see beside each one the line of C it came from.",
+    "In your browser, you drive a real processor's instruction set, 64-bit Arm, one instruction at a time, and see beside each one the line of C it came from.",
   // for a browser that runs no scripts, under the cover's words (static-page.ts).
   noScript:
     "This course runs in your browser, so it needs JavaScript. With JavaScript turned off, you see only this summary of the plan.",

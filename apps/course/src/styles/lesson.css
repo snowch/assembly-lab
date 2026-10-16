@@ -459,3 +459,19 @@ figure.interactive p {
     padding: var(--space-3);
   }
 }
+
+/* The reading column is centred in the page, and the figures span the page: the space the prose
+   does not use falls evenly either side of it rather than all to its right. Every block of words
+   keeps the reading measure and is centred; a figure keeps the page's width, and the words inside
+   a figure (its caption, its lead and the words after it) line up with the column. */
+.lesson-back,
+.lesson-header,
+.lesson-section > :not(figure.interactive),
+.lesson-model-note,
+.lesson-model-vs-reality,
+figure.interactive > figcaption,
+figure.interactive > .figure-lead,
+figure.interactive > .figure-after {
+  max-width: var(--measure);
+  margin-inline: auto;
+}

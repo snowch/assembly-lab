@@ -462,16 +462,36 @@ ol {
   }
 }
 
-/* "Before you start": what the course assumes, between the status note and the plan. */
+/* "Before you start": what the course assumes, between the status note and the plan. A panel as
+   wide as the page: what you need on one side and the check on the other on a desk, one above the
+   other on a phone. */
+.prereqs {
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
 .prereqs h2 {
-  margin-top: var(--space-6);
+  margin-top: 0;
+}
+.prereqs-grid {
+  display: grid;
+  gap: var(--space-2) var(--space-6);
+}
+@media (min-width: 56rem) {
+  .prereqs {
+    padding: var(--space-5) var(--space-6);
+  }
+  .prereqs-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
 }
 .prereqs p,
 .prereqs ul {
   max-width: var(--measure);
 }
 .prereqs-code {
-  max-width: var(--measure);
   overflow-x: auto;
   padding: var(--space-3) var(--space-4);
   background: var(--bg-sunken);
@@ -481,7 +501,6 @@ ol {
   font-size: var(--text-sm);
 }
 .prereqs-answer {
-  max-width: var(--measure);
   margin-bottom: var(--space-3);
 }
 .prereqs-answer summary {
@@ -490,6 +509,9 @@ ol {
   min-height: 44px;
   cursor: pointer;
   color: var(--accent);
+}
+.prereqs-further {
+  margin-bottom: 0;
 }
 /* On a phone the check's code wraps rather than hiding its ends behind a scroll. */
 @media (max-width: 40rem) {
