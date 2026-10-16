@@ -210,6 +210,25 @@ animation, as in the earlier courses:
 `docs/machine.md` will fix the subset, its syntax and its semantics, and what is left out, at
 checkpoint 2.
 
+### Editing on a phone or a tablet as well as with a keyboard
+
+The author asked (16 October 2026) that writing assembly, and later C, be as easy on a touch
+screen as with a keyboard. The editor every challenge uses has two modes over the same text, and
+the learner switches between them at any point without losing anything:
+
+- **Text**, for a keyboard: monospaced, with autocorrect, capitalisation and spellcheck off, and a
+  bar of the characters assembly needs (`,` `[` `]` `#` `!` and the register prefixes) above a
+  phone's keyboard.
+- **Tap**, for a touch screen: the program as a list of lines. Tapping a line opens it: the
+  instruction is chosen from chips holding only the instructions the lesson's gate allows; each
+  operand is chosen from chips holding only the registers that fit there, in the right width, or
+  typed on a number pad for a constant; lines are inserted, deleted and moved with buttons. A line
+  the assembler would reject is marked as it is built, with the assembler's own message.
+
+C (Module 10) gets the same two modes: text with a symbol bar, and a tap mode that edits a
+statement at a time from templates (`x = a - b;`, `if`, `for`) with slots for variables and
+operators. Its exact form is decided with the C subset at checkpoint 5.
+
 ### How the model is kept honest
 
 - **A differential test against real tools.** A CI job assembles every program the course shows
