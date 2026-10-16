@@ -9,7 +9,10 @@
 // GitHub Pages serves it, on a desktop viewport and on a phone.
 import { defineConfig } from "@playwright/test";
 
-const port = 4173;
+// The port the built site is served on. scripts/check.sh picks a free one and passes it in
+// AL_PORT, so two checks running at once (two agents' worktrees, say) never share a server; run
+// on its own, Playwright uses 4173.
+const port = Number(process.env.AL_PORT ?? 4173);
 const base = "/assembly-lab/";
 
 export default defineConfig({
@@ -26,7 +29,9 @@ export default defineConfig({
   webServer: {
     command: `npm run preview -w @al/course -- --port ${port} --strictPort`,
     url: `http://localhost:${port}${base}`,
-    reuseExistingServer: !process.env.CI,
+    // Never test a server this run did not start: one left on the port by another checkout would
+    // be a different build, and its results would be about that build. A busy port fails loudly.
+    reuseExistingServer: false,
     timeout: 120_000,
   },
   projects: [

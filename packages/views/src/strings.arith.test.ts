@@ -33,10 +33,11 @@ describe("the arithmetic figures' words", () => {
     expect(all.filter(([, s]) => s.includes("—")).map(([p]) => p)).toEqual([]);
   });
 
-  it("are each marked DRAFT, and the marks are counted so a new string is seen", () => {
+  it("went through the prose process: none is marked DRAFT, so a new one marked so is seen", () => {
+    // Redrafted by Haiku and checked for meaning, 16 October 2026.
     const source = readFileSync(new URL("./strings.arith.ts", import.meta.url), "utf8");
     const marked = source.match(/\/\/ DRAFT/g) ?? [];
-    expect(marked).toHaveLength(all.length);
+    expect(marked).toHaveLength(0);
   });
 });
 

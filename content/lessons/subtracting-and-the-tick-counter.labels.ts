@@ -14,24 +14,24 @@ export const LABELS = {
   ],
   titles: {
     question: "Is the answer still right after a wrap?",
-    motivation: "Motivation",
-    prediction: "Prediction",
-    investigation: "Investigation",
-    construction: "Construction",
-    failureExperiment: "Failure experiment",
-    explanation: "Explanation",
-    generalisation: "Generalisation",
-    challenge: "Challenge",
-    reflection: "Reflection",
+    motivation: "Why the mistake shows up late",
+    prediction: "Elapsed across the wrap",
+    investigation: "Subtraction as addition, and borrows",
+    construction: "Writing elapsed yourself",
+    failureExperiment: "Negating 0x80000000",
+    explanation: "Why the low bits are enough",
+    generalisation: "Other counters, and GCC's check",
+    challenge: "Stepping from the top to zero",
+    reflection: "Looking back",
   },
   captions: {
     ring: "The counter as a ring: then, now, and the distance between them.",
-    predictElapsed: "A prediction about what elapsed returns across the wrap.", // DRAFT
-    predictNegs: "A prediction about what w0 holds after negs.", // DRAFT
+    predictElapsed: "A prediction about what elapsed returns across the wrap.",
+    predictNegs: "A prediction about what w0 holds after negs.",
     stepNegs:
-      "negs w0, w0 on 0x80000000, with the flags under the register. A register or flag with an outline has just changed.", // DRAFT
-    elapsed: "The assembly editor, starting from a function that returns now unchanged.", // DRAFT
-    step: "Give the result and C for one step past the top.", // DRAFT
+      "negs w0, w0 on 0x80000000, with the flags under the register. A register or flag with an outline has just changed.",
+    elapsed: "The assembly editor, starting from a function that returns now unchanged.",
+    step: "Give the result and C for one step past the top.",
   },
   options: {
     elapsed: [
@@ -52,13 +52,13 @@ export const LABELS = {
     step: {
       title: "One step past the top",
       fields: {
-        result: "`elapsed(0, 4294967295)`, in decimal", // DRAFT
-        c: "C after `subs`, 0 or 1", // DRAFT
+        result: "`elapsed(0, 4294967295)`, in decimal",
+        c: "C after `subs`, 0 or 1",
       },
       // Plain text, for the name of each test in a verdict.
       tests: {
-        result: "The result of elapsed(0, 4294967295)", // DRAFT
-        c: "C after subs", // DRAFT
+        result: "The result of elapsed(0, 4294967295)",
+        c: "C after subs",
       },
     },
   },

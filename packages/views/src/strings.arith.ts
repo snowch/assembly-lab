@@ -8,67 +8,67 @@
 
 export const ARITH_STRINGS = {
   flags: {
-    group: "The four flags", // DRAFT
+    group: "The four flags",
     /** A flag a figure has not worked out yet. */
-    pending: "Not worked out yet", // DRAFT
-    changed: "Changed by the last instruction", // DRAFT
+    pending: "Not worked out yet",
+    changed: "Changed by the last instruction",
     /** What a screen reader hears for one flag. */
-    one: (name: string, value: number) => `Flag ${name} is ${value}`, // DRAFT
+    one: (name: string, value: number) => `Flag ${name} is ${value}`,
   },
 
   adder: {
-    controls: "Step through the addition", // DRAFT
-    next: "Next column", // DRAFT
-    back: "Back", // DRAFT
-    reset: "Reset", // DRAFT
-    all: "All columns", // DRAFT
-    start: "Press Next column to add the rightmost column first.", // DRAFT
+    controls: "Step through the addition",
+    next: "Next column",
+    back: "Back",
+    reset: "Reset",
+    all: "All columns",
+    start: "Press Next column to add the rightmost column first.",
     /** The column just added, counted from the right. */
     column: (n: number, a: number, b: number, carryIn: number, bit: number, carryOut: number) =>
-      `Column ${n}: the bits are ${a} and ${b}, and the carry in is ${carryIn}. The answer bit is ${bit} and the carry out is ${carryOut}.`, // DRAFT
-    done: "All 32 columns are added.", // DRAFT
-    carryRow: "Carry into each column", // DRAFT
-    answerRow: "Answer", // DRAFT
+      `Column ${n}: the bits are ${a} and ${b}, and the carry into this column is ${carryIn}. The answer bit is ${bit}, and the carry out is ${carryOut}.`,
+    done: "All 32 columns are added.",
+    carryRow: "Carry into each column",
+    answerRow: "Answer",
     /** The second number of a subtraction, as the adder takes it. */
-    turnedOver: (name: string) => `${name} turned over`, // DRAFT
-    carryIntoTop: "Carry into the top bit", // DRAFT
-    carryOutOfTop: "Carry out of the top bit", // DRAFT
-    noAddition: "The run has no addition for this figure to draw.", // DRAFT
-    rows: "The addition, column by column", // DRAFT
+    turnedOver: (name: string) => `${name} turned over`,
+    carryIntoTop: "Carry into the top bit",
+    carryOutOfTop: "Carry out of the top bit",
+    noAddition: "The run has no addition for this figure to draw.",
+    rows: "The addition, column by column",
   },
 
   prediction: {
-    registers: "Registers before the run", // DRAFT
+    registers: "Registers before the run",
     /** The simulator's result for a question about which readings of an answer are right. */
     readings: (unsigned: boolean, signed: boolean) =>
-      `The simulator ran the addition. Read as unsigned, the answer is ${unsigned ? "right" : "wrong"}. Read as signed, the answer is ${signed ? "right" : "wrong"}.`, // DRAFT
+      `The simulator ran the addition. Read as unsigned, the answer is ${unsigned ? "right" : "wrong"}. Read as signed, the answer is ${signed ? "right" : "wrong"}.`,
     /** The simulator's result for a question about the flags at the end of a run. */
     flagsAt: (n: number, z: number, c: number, v: number) =>
-      `The simulator ran the program. When it ended, N was ${n}, Z was ${z}, C was ${c} and V was ${v}.`, // DRAFT
+      `The simulator ran the program. When it ended, N was ${n}, Z was ${z}, C was ${c} and V was ${v}.`,
     /** A register's value in hexadecimal, for a question about a pattern. */
     endedWithHex: (register: string, hex: string) =>
-      `The simulator ran the program. \`${register}\` held \`${hex}\` when the run ended.`, // DRAFT
+      `The simulator ran the program. \`${register}\` held \`${hex}\` when the run ended.`,
     /** Added after a register's value when the figure also reports the flags. */
     andFlags: (n: number, z: number, c: number, v: number) =>
-      `N was ${n}, Z was ${z}, C was ${c} and V was ${v}.`, // DRAFT
+      `N was ${n}, Z was ${z}, C was ${c} and V was ${v}.`,
   },
 
   ring: {
-    figure: "The counter as a ring", // DRAFT
-    then: "then", // DRAFT
-    now: "now", // DRAFT
-    elapsed: "elapsed", // DRAFT
-    wrap: "wrap", // DRAFT
+    figure: "The counter as a ring",
+    then: "then",
+    now: "now",
+    elapsed: "elapsed",
+    wrap: "wrap",
     /** The flag after `subs` for the same two readings. */
-    carryAfter: "C after `subs`", // DRAFT
-    borrowed: "a borrow was needed", // DRAFT
-    notBorrowed: "no borrow was needed", // DRAFT
-    values: "The readings and the distance", // DRAFT
+    carryAfter: "C after `subs`",
+    borrowed: "a borrow was needed",
+    notBorrowed: "no borrow was needed",
+    values: "The values and the distance",
   },
 
   grader: {
     /** A flag that is 0 for the number the learner gave. */
-    flagClear: (flag: string) => `${flag} is 0 for that number.`, // DRAFT
-    notSmallest: "A smaller number also sets it.", // DRAFT
+    flagClear: (flag: string) => `${flag} is 0 for the number you gave.`,
+    notSmallest: "A smaller number also makes V 1.",
   },
 } as const;

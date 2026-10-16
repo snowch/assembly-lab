@@ -9,7 +9,7 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { INTERACTIVES, STEPS, createBook, grade } from "@al/views";
+import { ARITH_STRINGS, INTERACTIVES, STEPS, createBook, grade } from "@al/views";
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
 import {
   SECTION_KINDS,
@@ -123,9 +123,9 @@ describe("the challenges", () => {
     const pass = (n: string) => grade(c, { answers: { number: n } });
     expect(pass("2").passed).toBe(true);
     // 1 does not set V: 0x7ffffffe plus 1 is 0x7fffffff, which fits.
-    expect(pass("1").failures[0]?.detail).toBe("V is 0 for that number.");
+    expect(pass("1").failures[0]?.detail).toBe(ARITH_STRINGS.grader.flagClear("V"));
     // 3 sets V, but 2 does too.
-    expect(pass("3").failures[0]?.detail).toBe("A smaller number also sets it.");
+    expect(pass("3").failures[0]?.detail).toBe(ARITH_STRINGS.grader.notSmallest);
     // 0 and negative numbers are not positive; a number with no V does not pass.
     expect(pass("0").passed).toBe(false);
     expect(pass("-5").passed).toBe(false);

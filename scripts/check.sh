@@ -42,6 +42,10 @@ echo "== browser tests =="
 # The built site, driven in a browser on a desktop and on a phone: no console errors, the theme
 # control, legible text, reachable controls, no sideways scroll, working links. Needs Playwright's
 # Chromium; CI installs it.
+# Served on a port nothing else holds, picked now, so two checks at once (two worktrees) never test
+# each other's builds.
+AL_PORT="$(node -e 'const s=require("net").createServer();s.listen(0,()=>{console.log(s.address().port);s.close()})')"
+export AL_PORT
 npx playwright test
 
 echo

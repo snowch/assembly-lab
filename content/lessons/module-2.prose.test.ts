@@ -65,7 +65,7 @@ const cases = [
       ),
     ],
     // Those, and the template that makes a field's label from a flag and an addition.
-    marks: 8,
+    marks: 0,
   },
   {
     n: 2,
@@ -85,7 +85,7 @@ const cases = [
       L2.challenges.step.tests.result,
       L2.challenges.step.tests.c,
     ],
-    marks: 9,
+    marks: 0,
   },
 ] as const;
 
@@ -152,7 +152,7 @@ describe.each(cases)("module 2, lesson $n: the lesson's words", (c) => {
       expect(fileFlat, o.label).toContain(flat(o.label));
   });
 
-  it("have only the captions and labels drafted for the page, and mark each DRAFT", () => {
+  it("have only the captions and labels drafted for the page, each through the prose process", () => {
     const captions = lesson.sections.flatMap((s) => s.interactives.map((x) => x.caption));
     // The one caption the file gives is the one in italics under the figure.
     expect(captions.filter((x) => fileFlat.includes(flat(x)))).toHaveLength(1);

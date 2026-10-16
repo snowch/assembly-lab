@@ -14,25 +14,25 @@ export const LABELS = {
   ],
   titles: {
     question: "How can the processor say when an answer does not fit?",
-    motivation: "Motivation",
-    prediction: "Prediction",
-    investigation: "Investigation",
-    construction: "Construction",
-    failureExperiment: "Failure experiment",
-    explanation: "Explanation",
-    generalisation: "Generalisation",
-    challenge: "Challenge",
-    reflection: "Reflection",
+    motivation: "When an addition does not fit",
+    prediction: "Two readings of one addition",
+    investigation: "Carries and the four flags",
+    construction: "Three additions to predict",
+    failureExperiment: "Running add instead of adds",
+    explanation: "Which flag judges which reading",
+    generalisation: "Flags keep their values",
+    challenge: "The smallest signed overflow",
+    reflection: "Looking back",
   },
   captions: {
     adder:
       "adds w0, w0, w1 column by column, with the carry into each column above it, and the four flags after it.",
-    predictReadings: "A prediction about which readings of the answer are right.", // DRAFT
-    predictAdd: "A prediction about what the flags show after add.", // DRAFT
+    predictReadings: "A prediction about which readings of the answer are right.",
+    predictAdd: "A prediction about what the flags show after add.",
     stepAdd:
-      "The two additions one instruction at a time, with the flags under the registers. A register or flag with an outline has just changed.", // DRAFT
-    flags: "Predict N, Z, C and V for three additions.", // DRAFT
-    overflow: "Find the smallest number that makes V 1.", // DRAFT
+      "The two additions one instruction at a time, with the flags under the registers. A register or flag with an outline has just changed.",
+    flags: "Predict N, Z, C and V for three additions.",
+    overflow: "Find the smallest number that makes V 1.",
   },
   options: {
     readings: [
@@ -58,12 +58,12 @@ export const LABELS = {
         { id: "third", text: "`0x80000000` plus `0x80000000`" },
       ],
       /** The label of one flag's field: its letter, then the addition. */
-      field: (flag: string, addition: string) => `${flag} for ${addition}`, // DRAFT
+      field: (flag: string, addition: string) => `${flag} for ${addition}`,
     },
     overflow: {
       title: "Find the smallest overflow",
-      field: "The number, in decimal", // DRAFT
-      test: "The smallest number that makes V 1", // DRAFT
+      field: "The number, in decimal",
+      test: "The smallest number that makes V 1",
     },
   },
 } as const;
