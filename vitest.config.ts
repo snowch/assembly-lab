@@ -25,6 +25,11 @@ export default defineConfig({
       "apps/**/*.test.tsx",
     ],
     environment: "node",
+    // Vitest's own default, 5 seconds, unless AL_TEST_TIMEOUT (milliseconds) says otherwise. A few
+    // tests drive a figure through dozens of presses and take 3 to 4 seconds when several checks
+    // share one machine; the variable lets such a machine run `npm run check` without changing what
+    // any test asserts.
+    testTimeout: Number(process.env["AL_TEST_TIMEOUT"] ?? 5000),
     setupFiles: ["./tests/vitest.setup.ts"],
     passWithNoTests: false,
   },
