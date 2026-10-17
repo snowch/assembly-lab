@@ -36,7 +36,7 @@ describe("the course's words", () => {
     expect(STRINGS.title).toBe("Assembly Lab");
     expect(STRINGS.subtitle).toBe("From a line of C to the bits in a register");
     expect(STRINGS.statusNote).toBe(
-      'The plan below is under the author\'s review. A module labelled "Published draft" has lessons you can use now; the other modules are written after the plan is approved.',
+      'Modules labelled "Published draft" have lessons you can use now. These lessons may change. The other modules are planned, and the author is reviewing the course plan.',
     );
     expect(STRINGS.status.planned).toBe("Planned");
   });
@@ -53,7 +53,7 @@ describe("the course's words", () => {
     const parts = STRINGS.companions.intro;
     const joined = parts.map((p) => (typeof p === "string" ? p : p.title)).join("");
     expect(joined).toBe(
-      "This course is one of three ways to know one machine. Digital Design builds a computer from gates. The notes From gates to a compiled if explain what the bits mean. This course drives a real processor.",
+      "Digital Design builds a computer from gates. The notes From gates to a compiled if explain what the bits mean. Assembly Lab teaches Arm assembly through a browser simulator.",
     );
     const titles = parts.flatMap((p) => (typeof p === "string" ? [] : [p.title]));
     expect(titles).toEqual([STRINGS.companions.digitalDesign, STRINGS.companions.notes]);

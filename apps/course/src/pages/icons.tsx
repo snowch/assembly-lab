@@ -124,6 +124,7 @@ export function CoverFigure() {
           {VIEW_STRINGS.stepper.reset}
         </button>
       </div>
+      <p className="cover-help">{STRINGS.cover.help}</p>
       <p className="visually-hidden" role="status">
         {STRINGS.cover.register(value)} {atEnd ? VIEW_STRINGS.stepper.ended : ""}
       </p>

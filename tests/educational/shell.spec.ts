@@ -42,6 +42,7 @@ test("the front page lists the plan, every part and every module", async ({ page
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(STRINGS.title);
   await expect(page.locator(".cover-subtitle")).toHaveText(STRINGS.subtitle);
   await expect(page.locator(".cover-intro")).toHaveText(STRINGS.intro);
+  await expect(page.locator(".cover-help")).toHaveText(STRINGS.cover.help);
   await expect(page.locator(".plan-status")).toHaveText(STRINGS.statusNote);
   await expect(page.locator("section.plan-part > h2")).toHaveText(PLAN.map((p) => p.title));
   await expect(page.locator(".plan-module")).toHaveCount(MODULES.length);
@@ -54,6 +55,8 @@ test("the front page lists the plan, every part and every module", async ({ page
     await expect(item.locator(".module-status")).toHaveText(STRINGS.status[statusOf(m, LESSONS)]);
   }
   expect(errors).toEqual([]);
+  await page.getByRole("link", { name: STRINGS.start }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(LESSONS[0]!.title);
 });
 
 test("a module with a lesson is published; with one lesson its title links to it, with several it lists them", async ({

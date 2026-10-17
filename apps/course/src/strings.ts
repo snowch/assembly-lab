@@ -1,8 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 // The shell's own words. The plan's words are in content/plan/plan.ts. Every sentence here was
-// drafted by Haiku from checked facts (CLAUDE.md); the interface labels (the theme control, the
-// skip link, "Module 4") are standard control names, kept as the scaffold wrote them.
+// drafted separately from checked facts (CLAUDE.md); interface labels use standard control names.
 
 /** A part of the footer's sentence: plain words, or the title of a work, set in italics. */
 export type CompanionIntroPart = string | { readonly title: string };
@@ -18,26 +17,27 @@ export const STRINGS = {
   title: "Assembly Lab",
   subtitle: "From a line of C to the bits in a register",
   intro:
-    "You drive a real processor's instruction set, 64-bit Arm, one instruction at a time. After each instruction, you see what changed: the bits in each register, the four flags and memory, with the line of C it came from shown beside it. Before each run, you predict what will happen, and you write small programs that tests check. Everything runs in your browser.",
+    "Learn assembly by running instructions one at a time in your browser. The simulator supports a subset of 64-bit Arm instructions. In the lessons, you see C code beside its assembly instructions. After each instruction, you can inspect the register values and their bits, the flags and memory. You predict what will happen and write small assembly programs. Automatic checks test your answers and programs.",
+  start: "Start with Module 0",
   statusNote:
-    'The plan below is under the author\'s review. A module labelled "Published draft" has lessons you can use now; the other modules are written after the plan is approved.',
+    'Modules labelled "Published draft" have lessons you can use now. These lessons may change. The other modules are planned, and the author is reviewing the course plan.',
   /** "Before you start", between the status note and the plan: what the course assumes. */
   prereqs: {
     heading: "Before you start",
-    lead: "The course assumes a little C and a little arithmetic, and no assembly language.",
-    cLead: "You need to read small C functions, not write whole programs. That means:",
+    lead: "You need a little C and some basic arithmetic. You do not need any assembly experience.",
+    cLead: "You should be able to read small C functions that use:",
     cItems: [
-      "A function with `int` and `unsigned` arguments, and a `return`.",
+      "`int` and `unsigned` arguments, and `return`.",
       "`if` and `else`.",
       "`for` and `while` loops.",
-      "An array indexed with `a[i]`.",
+      "Arrays indexed with `a[i]`.",
     ],
-    cNot: "Pointers, structs, `malloc` and the standard library are not assumed. Module 7 teaches pointers, as addresses. You do not need a compiler. Everything runs in your browser.",
+    cNot: "You do not need to know about pointers, structs, `malloc` or the standard library. Module 7 introduces pointers as addresses. You do not need a compiler; the lessons run in your browser.",
     numbers:
-      "You need to convert binary to decimal and back. Hexadecimal and the signed reading of a number are taught in Module 1, so you do not need them first.",
-    assembly: "You need no assembly language, because Module 0 starts from nothing.",
+      "You should be able to convert binary numbers to decimal and back. Module 1 introduces hexadecimal and explains how bit patterns represent positive and negative numbers.",
+    assembly: "Module 0 introduces assembly from the beginning.",
     checkLead:
-      "A quick check: if you can say what this function returns for `legs_over(100, 120, 85, 140)`, you know enough C.",
+      "A quick check before you start: what does this function return for `legs_over(100, 120, 85, 140)`?",
     checkCode: `int legs_over(int limit, int a, int b, int c)
 {
     int over = 0;
@@ -48,8 +48,9 @@ export const STRINGS = {
 }`,
     /** The control that opens the check's answer. A standard control name. */
     checkShow: "Show the answer",
-    checkAnswer: "It returns 2, because two of the three legs are longer than the limit.",
-    further: `Two companion works go deeper. The course never relies on them. [*Digital Design*](${COMPANION_LINKS.digitalDesign}) builds the machine from gates. The notes [*From gates to a compiled if*](${COMPANION_LINKS.notes}) go further into what bits mean.`,
+    checkAnswer:
+      "It returns 2. Both 120 and 140 are greater than the limit of 100; 85 is not. If you can follow this example, you are ready to start Module 0.",
+    further: `You can use this course without reading the companion resources. [*Digital Design*](${COMPANION_LINKS.digitalDesign}) builds a computer from gates. The notes [*From gates to a compiled if*](${COMPANION_LINKS.notes}) explain more about what bits mean.`,
   },
   /** The label on a module that has no lessons yet. */
   status: {
@@ -61,7 +62,7 @@ export const STRINGS = {
   // what a search result and a shared link's preview show under the title (at most 155
   // characters; static-page.ts writes it into the page).
   description:
-    "In your browser, you drive a real processor's instruction set, 64-bit Arm, one instruction at a time, and see beside each one the line of C it came from.",
+    "Learn Arm assembly in your browser. Run instructions one at a time, inspect registers and memory, and see how the instructions relate to C.",
   // for a browser that runs no scripts, under the cover's words (static-page.ts).
   noScript:
     "This course runs in your browser, so it needs JavaScript. With JavaScript turned off, you see only this summary of the plan.",
@@ -88,6 +89,7 @@ export const STRINGS = {
   cover: {
     // Names the cover's call, which is in no lesson (content/cover.ts).
     figure: "Step through fuel_on_board(38, 6, 10)",
+    help: "Press Next to run one instruction. Watch the value and bits in register w0.",
     register: (value: number) => `w0 holds ${value}.`,
   },
 
@@ -101,11 +103,10 @@ export const STRINGS = {
      * sets in italics. The parts joined are the sentence, word for word.
      */
     intro: [
-      "This course is one of three ways to know one machine. ",
       { title: "Digital Design" },
       " builds a computer from gates. The notes ",
       { title: "From gates to a compiled if" },
-      " explain what the bits mean. This course drives a real processor.",
+      " explain what the bits mean. Assembly Lab teaches Arm assembly through a browser simulator.",
     ] as readonly CompanionIntroPart[],
     digitalDesign: "Digital Design",
     notes: "From gates to a compiled if",

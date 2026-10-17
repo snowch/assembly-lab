@@ -266,6 +266,22 @@ ol {
   max-width: var(--measure);
   margin-bottom: 0;
 }
+.cover-start {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--hero-action);
+  color: var(--hero-action-fg);
+  font-weight: 600;
+}
+.cover-hero .cover-help {
+  margin-top: var(--space-3);
+  margin-bottom: 0;
+  color: var(--hero-muted);
+}
 /* The cover's figure sits beside the words on a desk and under them on a phone. */
 .cover-hero {
   display: grid;

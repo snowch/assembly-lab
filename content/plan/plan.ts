@@ -43,7 +43,7 @@ export const PARTS: readonly PlanPart[] = [
         "0",
         "meet-the-machine",
         "Meet the machine",
-        "Step through a finished C function and its compiled instructions, watching what each changes.",
+        "Step through a C function's compiled instructions and watch what each instruction changes.",
       ),
       M(
         "1",
@@ -86,7 +86,7 @@ export const PARTS: readonly PlanPart[] = [
         "6",
         "loads-stores-widths",
         "Loads, stores and widths",
-        "Move bytes, halves and words between memory and registers, and see narrow values widened.",
+        "Move values of different sizes between memory and registers. See how a smaller value fills a larger register.",
       ),
       M(
         "7",
@@ -122,7 +122,7 @@ export const PARTS: readonly PlanPart[] = [
         "11",
         "where-c-and-the-machine-disagree",
         "Where C and the machine disagree",
-        "Find C that the hardware runs differently from how it reads.",
+        "Explore what happens when a C program relies on behaviour that the language does not guarantee.",
       ),
     ],
   },

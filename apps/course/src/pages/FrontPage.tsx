@@ -87,6 +87,9 @@ function Cover() {
         <h1 id="cover-title">{STRINGS.title}</h1>
         <p className="cover-subtitle">{STRINGS.subtitle}</p>
         <p className="cover-intro">{STRINGS.intro}</p>
+        <a className="cover-start" href={lessonHref(LESSONS[0]!.id)}>
+          {STRINGS.start}
+        </a>
       </div>
       <CoverFigure />
     </section>
