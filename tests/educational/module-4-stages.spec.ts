@@ -147,7 +147,9 @@ test.describe("lesson 1: the compare, the condition and the select", () => {
     await expect(status(c)).toHaveText(failing(3, 5));
     await expect(own.locator(".al-locked")).toBeVisible();
     // One that passes does, and it is the learner's own text with its comments left out.
-    await box.fill(`// the smaller\n${LESS_FUEL_TEXT.replace("cmp w0, w1", "cmp w0, w1 // a minus b")}`);
+    await box.fill(
+      `// the smaller\n${LESS_FUEL_TEXT.replace("cmp w0, w1", "cmp w0, w1 // a minus b")}`,
+    );
     await press(page, run(c));
     await expect(status(c)).toHaveText(passing(5));
     await own.scrollIntoViewIfNeeded();
@@ -269,8 +271,10 @@ test.describe("lesson 2: the path, the sentence after a branch, two conditions o
       const sentence = branchStatusAt(model, viewAt(model, k));
       if (sentence !== null) await expect(say()).toHaveText(sentence.replaceAll("`", ""));
       const jumped = k === 2 || k === 4;
-      if (jumped) await expect(f.locator("[data-figure='stepper']")).toHaveAttribute("data-jump", "true");
-      else await expect(f.locator("[data-figure='stepper']")).not.toHaveAttribute("data-jump", "true");
+      if (jumped)
+        await expect(f.locator("[data-figure='stepper']")).toHaveAttribute("data-jump", "true");
+      else
+        await expect(f.locator("[data-figure='stepper']")).not.toHaveAttribute("data-jump", "true");
     }
     // `bgt` taken to .L9, then b always to .L7.
     expect(branchStatusAt(model, viewAt(model, 2))).toBe(
@@ -312,7 +316,9 @@ test.describe("lesson 2: the path, the sentence after a branch, two conditions o
     await expect(f.locator('[data-cond="gt"]')).toHaveAttribute("data-holds", "false");
     await expect(f.locator('[data-cond="gt"]')).toContainText("Reads N = 0, Z = 1, V = 0");
     await expect(f.locator('[data-cond="ge"]')).toHaveAttribute("data-holds", "true");
-    await expect(f.locator('[data-cond="ge"]')).toContainText(B.twoConditions.usedBy("bge .L9").replaceAll("`", ""));
+    await expect(f.locator('[data-cond="ge"]')).toContainText(
+      B.twoConditions.usedBy("bge .L9").replaceAll("`", ""),
+    );
     await press(page, f.getByRole("button", { name: V.stepper.next }));
     await expect(f.locator(".al-status")).toHaveText("bge .L9 was taken. Next: mov w0, 2 at .L9.");
     await fits(page);
@@ -328,7 +334,9 @@ test.describe("lesson 2: the path, the sentence after a branch, two conditions o
       P2.reflectionNoteSummary,
     ]);
     for (const n of await notes.all()) await expect(n).not.toHaveAttribute("open", "");
-    await expect(page.locator('section[data-kind="reflection"]')).toContainText("What you now know");
+    await expect(page.locator('section[data-kind="reflection"]')).toContainText(
+      "What you now know",
+    );
   });
 
   test("the grader says which of the checks to look at, and tells a wrong count where to look", async ({
@@ -364,7 +372,8 @@ test.describe("lesson 2: the path, the sentence after a branch, two conditions o
     );
     const counts = challenge(page, "count-describe-runs");
     await counts.scrollIntoViewIfNeeded();
-    const answers = lesson2.challenges.find((x) => x.id === "count-describe-runs")!.reference.answers!;
+    const answers = lesson2.challenges.find((x) => x.id === "count-describe-runs")!.reference
+      .answers!;
     for (const [id, value] of Object.entries({ ...answers, steps11: "6" }))
       await counts.locator(`[data-field="${id}"] input`).fill(value);
     await press(page, run(counts));
@@ -400,9 +409,11 @@ test.describe("at 360 pixels", () => {
     for (const g of ["10", "-15", "0", "15"]) {
       await press(page, arrows.getByRole("button", { name: g, exact: true }));
       // A row's tags stay in the row, and the arrows keep to their instructions' rows.
-      const rows = await arrows.locator(".al-brow").evaluateAll((els) =>
-        els.map((e) => [e.scrollWidth - e.clientWidth, e.getBoundingClientRect().height]),
-      );
+      const rows = await arrows
+        .locator(".al-brow")
+        .evaluateAll((els) =>
+          els.map((e) => [e.scrollWidth - e.clientWidth, e.getBoundingClientRect().height]),
+        );
       for (const [over, height] of rows) {
         expect(over).toBeLessThanOrEqual(1);
         expect(height).toBe(36);
@@ -449,7 +460,8 @@ test.describe("at 360 pixels", () => {
           .getByRole("button", { name: digit, exact: true }),
       );
     };
-    const text = async () => (await stored(page, TWO)).challenges["write-fuel-warning"].artifact.text;
+    const text = async () =>
+      (await stored(page, TWO)).challenges["write-fuel-warning"].artifact.text;
     // Out with the starting point's two lines.
     await first();
     await first();
