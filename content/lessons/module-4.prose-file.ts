@@ -36,8 +36,11 @@ export function partOf(body: string, n: number): string {
 
 /**
  * The lines of a lesson's body that carry words the lesson shows, without their list marks:
- * headings, the stage direction after a prediction, and the lines that name the fields a challenge
- * asks for are left out (the fields' labels are held to the file one by one).
+ * headings, the stage directions (after a prediction, after a challenge passes, the markers of a
+ * closed note, of the feedback after a failed test and of the stepper's lines), the lines a figure
+ * or a grader says (those that start `>`), and the lines that name the fields a challenge asks for
+ * are left out. The fields' labels, the notes' titles and the sentences a grader says are held to
+ * the file by the tests that follow.
  */
 export function wordsOf(body: string): string[] {
   return body
@@ -47,9 +50,27 @@ export function wordsOf(body: string): string[] {
         l.trim() !== "" &&
         !l.startsWith("## ") &&
         !l.startsWith("*Shown after") &&
+        !l.startsWith("*Closed note:") &&
+        !l.startsWith("*End of closed note") &&
+        !l.startsWith("*Feedback after") &&
+        !l.startsWith("*Said by") &&
+        !l.startsWith("> ") &&
         !l.startsWith("Field labels"),
     )
     .map((l) => l.replace(/^- /, "").replace(/^\d+\. /, ""));
+}
+
+/** The titles of the closed notes of a body, in order (the `*Closed note: Title*` lines). */
+export function closedNotesOf(body: string): string[] {
+  return [...body.matchAll(/^\*Closed note: (.*)\*$/gm)].map((m) => m[1] as string);
+}
+
+/** The sentences a figure or a grader says (the lines that start `> `), in order. */
+export function saidOf(body: string): string[] {
+  return body
+    .split("\n")
+    .filter((l) => l.startsWith("> "))
+    .map((l) => l.slice(2));
 }
 
 /** The quoted labels of the "Field labels" lines of a body, in order. */

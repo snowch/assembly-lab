@@ -15,9 +15,18 @@ import { learnerText } from "@platform/lesson-schema";
 import { LESSONS } from ".";
 import { LABELS as L1 } from "./compare-and-choose.labels";
 import { PROSE as P1 } from "./compare-and-choose.prose";
-import { LABELS as L2 } from "./branches.labels";
+import { COUNT_GROUPS, LABELS as L2 } from "./branches.labels";
 import { PROSE as P2 } from "./branches.prose";
-import { fieldLabelsOf, flat, headingsOf, lessonBody, wordsOf } from "./module-4.prose-file";
+import { BRANCH_STRINGS as B } from "@al/views";
+import {
+  closedNotesOf,
+  fieldLabelsOf,
+  flat,
+  headingsOf,
+  lessonBody,
+  saidOf,
+  wordsOf,
+} from "./module-4.prose-file";
 
 /** Every string anywhere in a value. */
 function stringsIn(value: unknown): string[] {
@@ -31,7 +40,7 @@ const cases = [
   {
     n: 1 as const,
     id: "compare-and-choose",
-    title: "Compare, and the condition that carries the type",
+    title: "Compare, and the signed or unsigned condition",
     prose: P1,
     labels: L1,
     labelsFile: "./compare-and-choose.labels.ts",
@@ -40,13 +49,19 @@ const cases = [
     own: [
       L1.captions.predictChange,
       L1.captions.lessFuel,
+      L1.captions.stepOwn,
       L1.captions.predictGe,
       L1.captions.stepGe,
       L1.captions.holds,
       ...Object.values(L1.challenges.holds.tests),
     ],
+    // The ones among them that are new and not yet through the prose process: each is marked DRAFT
+    // where it is written, and nothing else in the labels file is.
+    draft: [L1.captions.stepOwn] as readonly string[],
     // The file gives these captions, in italics under their figures.
     given: [L1.captions.runs, L1.captions.diff, L1.captions.conditions],
+    // The sentences a grader says, in the order the file gives them.
+    said: Object.values(P1.lessFuelFeedback) as readonly string[],
   },
   {
     n: 2 as const,
@@ -63,7 +78,17 @@ const cases = [
       L2.captions.stepBge,
       L2.captions.counts,
     ],
+    // The three group labels for the last challenge's boxes are marked DRAFT and drawn by nothing yet.
+    draft: [] as readonly string[],
     given: [L2.captions.listing, L2.captions.arrows],
+    // The stepper's lines (strings.branch.ts), then the grader's sentences, in the file's order.
+    said: [
+      B.status.taken("{branch}", "{instruction}", "{label}"),
+      B.status.notTaken("{branch}", "{instruction}"),
+      B.status.always("{branch}", "{label}", "{instruction}"),
+      ...Object.values(P2.fuelWarningFeedback),
+      P2.countsFeedback,
+    ] as readonly string[],
   },
 ];
 
@@ -152,13 +177,36 @@ describe.each(cases)("module 4, lesson $n: the lesson's words", (c) => {
     ].filter((x) => !fileFlat.includes(flat(x)));
     expect([...new Set(drafted)].sort()).toEqual([...new Set(c.own)].sort());
     // Each is marked DRAFT where it is written until it has been through the prose process; the
-    // ones that have are listed, and nothing else is marked.
-    // Every one went through it on 17 October 2026.
-    const checked: readonly string[] = c.own;
+    // ones that have not are listed in `draft`, and nothing else is marked. (Lesson 2 also marks the
+    // three group labels, which nothing draws yet.)
     const source = readFileSync(new URL(c.labelsFile, import.meta.url), "utf8");
+    const unchecked = c.own.filter((x) => c.draft.includes(x));
+    expect(unchecked).toEqual([...c.draft]);
     expect(source.match(/^\s*\/\/ DRAFT$/gm) ?? []).toHaveLength(
-      c.own.filter((x) => !checked.includes(x)).length,
+      c.draft.length + (c.n === 2 ? 1 : 0),
     );
+  });
+
+  it("show each closed note under the title the file gives it, in the file's order", () => {
+    const titles = closedNotesOf(body);
+    const summaries = lesson.sections.flatMap((s) => (s.details ? [s.details.summary] : []));
+    expect(summaries.map(flat)).toEqual(titles.map(flat));
+    // A summary is plain text. The platform's section holds one `details`, so Lesson 1's section 8,
+    // which the draft gave two notes, has them under one summary: five notes in all, and four in
+    // Lesson 2.
+    for (const s of lesson.sections) if (s.details) expect(s.details.summary).not.toMatch(/[`*]/);
+    expect(titles).toHaveLength(c.n === 1 ? 5 : 4);
+  });
+
+  it("say, where a figure or a grader says them, the sentences the file gives", () => {
+    expect(saidOf(body).map(flat)).toEqual(c.said.map(flat));
+  });
+
+  it("answer a question in the closed note titled Answer, not in the section's prose", () => {
+    const section = lesson.sections.find((s) => s.kind === "reflection")!;
+    expect(section.details?.summary).toBe("Answer");
+    expect(section.prose).toContain("Question:");
+    expect(section.prose).not.toContain(flat(section.details?.prose ?? "").slice(0, 30));
   });
 
   it("keep the figures' captions and the challenges' titles as plain text", () => {
@@ -183,5 +231,22 @@ describe.each(cases)("module 4, lesson $n: the lesson's words", (c) => {
 
   it("use no em dash", () => {
     expect(learnerText(lesson).filter((t) => t.includes("—"))).toEqual([]);
+  });
+});
+
+describe("module 4, lesson 2: the groups of the last challenge's boxes", () => {
+  it("are one label for each gradient, the one its two boxes' labels start with", () => {
+    const lesson = LESSONS.find((l) => l.id === "branches")!;
+    const labels = lesson.challenges
+      .find((ch) => ch.id === "count-describe-runs")!
+      .fields.map((f) => f.label);
+    expect([...COUNT_GROUPS]).toEqual(["`describe(11)`", "`describe(-10)`", "`describe(-11)`"]);
+    for (const group of COUNT_GROUPS)
+      expect(
+        labels.filter((label) => label.includes(group)),
+        group,
+      ).toHaveLength(2);
+    // Nothing draws them yet: the lesson's data does not mention them.
+    expect(JSON.stringify(lesson)).not.toContain("groups");
   });
 });

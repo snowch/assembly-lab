@@ -45,10 +45,25 @@ describe("the lesson", () => {
 
   it("uses none of the words the lesson after it introduces, or the ones the brief withholds", () => {
     const withheld =
-      /\b(branch\w*|labels?|taken|wzr|bgt|cbz|tbz|jump\w*|goto|link register|stack|program counter|pipeline\w*|speculat\w*|sign extension|two's complement|encoding|opcode|mnemonic|immediate|barrel shifter|loops?)\b/i;
+      /\b(labels?|taken|wzr|bgt|cbz|tbz|jump\w*|goto|link register|stack|program counter|pipeline\w*|speculat\w*|sign extension|two's complement|encoding|opcode|mnemonic|immediate|barrel shifter|loops?)\b/i;
     expect(learnerText(lesson).filter((t) => withheld.test(t))).toEqual([]);
     // `b` as an instruction: a lone b between code marks or spaces.
     expect(learnerText(lesson).filter((t) => /`b\s/.test(t))).toEqual([]);
+  });
+
+  it("uses branch in one place only, the checked sentences of section 8, and the gate is told so", () => {
+    // The author's text says that not every C `if` needs a branch, a lesson before the one that
+    // introduces the word. The gate is exempted for that word alone, and only that section says it.
+    expect(lesson.termExemptions.map((e) => e.term)).toEqual(["branch"]);
+    expect(lesson.termExemptions[0]?.reason).not.toBe("");
+    const withBranch = lesson.sections.filter((s) =>
+      learnerText({ ...lesson, sections: [s] } as typeof lesson).some((t) => /\bbranch/i.test(t)),
+    );
+    expect(withBranch.map((s) => s.kind)).toEqual(["generalisation"]);
+    const prose = lesson.sections.find((s) => s.kind === "generalisation")!.prose;
+    expect(prose.match(/\bbranch/gi)).toHaveLength(2);
+    expect(prose).toContain("Not every C `if` needs a branch.");
+    expect(prose).toContain("the same listing, with no branch.");
   });
 
   it("uses call only as the word for a test: five calls test it", () => {
@@ -211,8 +226,10 @@ describe("the page", () => {
     expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
-    // The two listings and the stepper wait for their predictions; nothing of either run is on the page.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
+    // The two listings and the stepper wait for their predictions, and the learner's own solution
+    // waits for the challenge; nothing of any run is on the page.
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(3);
+    expect(container.querySelector('[data-figure="solution-stepper"]')).toBeNull();
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
     expect(container.querySelector('[data-figure="condition-table"]')).not.toBeNull();

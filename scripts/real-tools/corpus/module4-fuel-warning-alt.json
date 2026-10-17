@@ -1,0 +1,173 @@
+{
+  "entry": "fuel_warning_c",
+  "calls": [
+    {
+      "entry": "fuel_warning_c",
+      "args": [
+        ["0", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_c",
+      "args": [
+        ["9", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_c",
+      "args": [
+        ["10", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_c",
+      "args": [
+        ["200", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_c",
+      "args": [
+        ["2147483648", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_c",
+      "args": [
+        ["10", 32],
+        ["9", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_c",
+      "args": [
+        ["0", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_c",
+      "args": [
+        ["4294967295", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_d",
+      "args": [
+        ["0", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_d",
+      "args": [
+        ["9", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_d",
+      "args": [
+        ["10", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_d",
+      "args": [
+        ["200", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_d",
+      "args": [
+        ["2147483648", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_d",
+      "args": [
+        ["10", 32],
+        ["9", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_d",
+      "args": [
+        ["0", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_d",
+      "args": [
+        ["4294967295", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_e",
+      "args": [
+        ["0", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_e",
+      "args": [
+        ["9", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_e",
+      "args": [
+        ["10", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_e",
+      "args": [
+        ["200", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_e",
+      "args": [
+        ["2147483648", 32],
+        ["10", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_e",
+      "args": [
+        ["10", 32],
+        ["9", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_e",
+      "args": [
+        ["0", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "fuel_warning_e",
+      "args": [
+        ["4294967295", 32],
+        ["10", 32]
+      ]
+    }
+  ]
+}

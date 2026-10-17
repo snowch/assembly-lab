@@ -253,7 +253,7 @@ describe("what each condition reads", () => {
     callText(`f:\n  cset w0, ${cond}\n  ret\n`, "f", [], f).w0 === 1;
 
   it("hold as the lesson's list says, at all sixteen settings of the flags", () => {
-    expect(PROSE.explanation).toContain("checked at all sixteen settings of the flags");
+    expect(PROSE.explanationNote).toContain("checked at all sixteen settings of the flags");
     for (const [cond, reads] of Object.entries(rule))
       for (const f of settings) expect(holds(cond, f), `${cond} at ${nzcv(f)}`).toBe(reads(f));
   });
