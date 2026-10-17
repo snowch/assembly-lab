@@ -170,6 +170,9 @@ export const VIEW_STRINGS = {
     notWhole: (field: string) =>
       `The answer for ${field} must be a whole number written in decimal.`,
     noProgram: "This challenge has no program to run.",
+    // DRAFT: the failure card's sentence for a wrong field that has no sentence of its own. It names
+    // the field and never the value. Without it the card prints its labels with nothing under them.
+    fieldNotRight: (field: string) => `Your answer for ‘${field}’ is not right.`,
   },
 
   // DRAFT: the words of Module 3's figures and graders, drafted with the figures and not yet
@@ -204,7 +207,9 @@ export const VIEW_STRINGS = {
     rowAfter: (register: string) => `${register} after`,
     inputLabel: (register: string) => `Value of ${register} on entry`,
     inputProblem: "Type a whole number, or hexadecimal starting 0x.",
-    changed: (bits: string) => `Bits that changed: ${bits}.`,
+    // DRAFT: `list` is the bit numbers joined into a phrase (`2`, `4 and 6`), `count` how many.
+    changed: (list: string, count: number) =>
+      count === 1 ? `Bit ${list} changed.` : `Bits ${list} changed.`,
     unchanged: "No bit changed.",
     result: (register: string, hex: string, decimal: string) =>
       `${register} holds ${hex}, which is ${decimal}.`,
@@ -235,6 +240,10 @@ export const VIEW_STRINGS = {
     // DRAFT
     clearedBits: (bits: string) =>
       `The simulator ran the function on a word with every bit set. ${bits} came out 0.`,
+    // DRAFT: the one bit that came out 0, when it was only one, so that a function that also clears
+    // other bits is told apart.
+    clearedOnly: (bit: number) =>
+      `The simulator ran the function on a word with every bit set. Only bit ${bit} came out 0.`,
     noneCleared: "The simulator ran the function on a word with every bit set. No bit came out 0.",
     filled: (instruction: string, how: string) => `The simulator ran \`${instruction}\`. ${how}`,
     fillCopy: "The top bit was filled with a copy of the old top bit.",

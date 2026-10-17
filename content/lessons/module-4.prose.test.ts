@@ -60,6 +60,7 @@ const cases = [
       L2.captions.stepCount,
       L2.captions.fuelWarning,
       L2.captions.predictBge,
+      L2.captions.stepBge,
       L2.captions.counts,
     ],
     given: [L2.captions.listing, L2.captions.arrows],

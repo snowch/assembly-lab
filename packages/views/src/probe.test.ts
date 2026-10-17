@@ -18,7 +18,7 @@ describe("cleared-bits", () => {
   it("names the one bit that clear_door clears, and says so", () => {
     const out = measure({ kind: "cleared-bits" }, fn("f", "and w0, w0, -5"), ones("f"));
     expect(out.value).toBe("cleared:2");
-    expect(out.said).toContain("Bit 2 came out 0");
+    expect(out.said).toContain("Only bit 2 came out 0");
     expect(out.rows).toEqual({ before: 0xffffffff, after: 0xfffffffb });
   });
 

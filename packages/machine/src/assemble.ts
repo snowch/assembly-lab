@@ -263,7 +263,7 @@ export function assemble(source: string, options: AssembleOptions = {}): Assembl
   // ------------------------------------------------------------------ pass 1
   for (let li = 0; li < lines.length; li++) {
     const lineNo = li + 1;
-    for (const st of statements(clean[li] as string, lineNo)) {
+    for (const [statementNo, st] of statements(clean[li] as string, lineNo).entries()) {
       let text = st.text;
       let col = st.col;
       // Labels.
@@ -315,6 +315,13 @@ export function assemble(source: string, options: AssembleOptions = {}): Assembl
       }
       if (!/^[a-z][a-z0-9]*(\.[a-z0-9]+)?$/.test(mnemonic)) {
         err(lineNo, col, "notInMachine", { text: trimmed });
+        continue;
+      }
+      // After a `;` GNU as starts another statement, so `cmp w0, w1 ; compare` is a `cmp` and then
+      // a statement called `compare`. Nobody who writes it means a second instruction: a comment
+      // starts with `//`. (A second statement that is an instruction is fine: `mov w0, 1 ; ret`.)
+      if (statementNo > 0 && !isKnownMnemonic(mnemonic)) {
+        err(lineNo, st.col - 1, "syntax.commentTail", { text: `; ${trimmed}` });
         continue;
       }
       let ops: RawOp[] = [];

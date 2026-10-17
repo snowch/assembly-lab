@@ -39,6 +39,9 @@ export const LABELS = {
     // DRAFT
     predictBge: "A prediction about what describe returns for 10 once bgt is changed to bge.",
     // DRAFT
+    stepBge:
+      "describe with bge on 10, one instruction at a time, with the flags and the number of instructions that have run. A register or flag with an outline has just changed.",
+    // DRAFT
     counts: "describe, and six numbers to give for three gradients.",
   },
   options: {

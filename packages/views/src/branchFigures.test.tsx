@@ -217,9 +217,11 @@ describe("one compare, every condition", () => {
     );
     await user.clear(first);
     await user.type(first, "banana");
-    expect(container.querySelector('[data-register="w0"] .al-cond-readings')).toHaveTextContent(
-      S.tester.notNumber,
-    );
+    const problem = container.querySelector('[data-register="w0"] .al-cond-readings')!;
+    // The sentence has code in it (`0x`), which is drawn as code and not as backticks.
+    expect(problem).toHaveTextContent(S.tester.notNumber.replace(/`/g, ""));
+    expect(problem.textContent).not.toContain("`");
+    expect(problem.querySelector("code")).toHaveTextContent("0x");
     expect(container.querySelector(".al-cond-list")).toBeNull();
     await user.clear(first);
     await user.type(first, "4294967296");

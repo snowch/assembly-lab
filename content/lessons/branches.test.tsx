@@ -25,6 +25,7 @@ import {
 import { LESSONS } from ".";
 import { branches } from "./branches";
 import {
+  DESCRIBE_BGE,
   FUEL_WARNING_SHARED_RET_TEXT,
   FUEL_WARNING_STARTING_TEXT,
   FUEL_WARNING_TEXT,
@@ -84,7 +85,11 @@ describe("the lesson", () => {
     const gated = lesson.sections
       .flatMap((s) => s.interactives)
       .filter((x) => typeof x.props["after"] === "string");
-    expect(gated.map((x) => x.id)).toEqual(["step-describe", "describe-arrows"]);
+    expect(gated.map((x) => x.id)).toEqual([
+      "step-describe",
+      "describe-arrows",
+      "step-describe-bge",
+    ]);
     for (const x of gated)
       expect(ids.indexOf(x.props["after"] as string), x.id).toBeLessThan(ids.indexOf(x.id));
   });
@@ -99,6 +104,21 @@ describe("the lesson", () => {
       .find((x) => x.kind === "branch-listing")!;
     expect(arrows.props["start"]).toBe(15);
     expect(arrows.props["presets"]).toEqual([15, 10, -15, 0]);
+  });
+
+  it("runs describe with bge on describe(10) in a stepper after the failure experiment's prediction, with flags and the count", () => {
+    const stepper = lesson.sections
+      .flatMap((s) => s.interactives)
+      .find((x) => x.id === "step-describe-bge")!;
+    expect(stepper.kind).toBe("stepper");
+    expect(stepper.props["program"]).toEqual(DESCRIBE_BGE);
+    expect(stepper.props["call"]).toEqual({ entry: "describe", args: [10] });
+    expect(stepper.props["flags"]).toBe(true);
+    expect(stepper.props["count"]).toBe(true);
+    expect(stepper.props["after"]).toBe("predict-describe-bge");
+    expect(lesson.sections.find((s) => s.kind === "failureExperiment")?.interactives).toContain(
+      stepper,
+    );
   });
 
   it("gives the construction challenge the gate cmp, b.cond, cbz, b, mov and ret, and a tap editor that can build labels", () => {
@@ -250,7 +270,7 @@ describe("the page", () => {
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
     // The stepper and the arrows wait for the prediction; nothing of either run is on the page.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(3);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
     expect(container.querySelector('[data-figure="listing"]')).not.toBeNull();

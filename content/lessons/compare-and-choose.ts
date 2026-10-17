@@ -33,6 +33,17 @@ const STEPS = "steps";
 const RUN_REGISTERS = "run-registers";
 const BRANCH_OUTCOMES = "branch-outcomes";
 
+/**
+ * The editor's keys for `less_fuel`: it writes `w` registers and commas, and the gate allows no
+ * constant, so the symbol bar has two keys (no `#`) and the tap mode no number pad. (Typing `x` is
+ * still accepted.)
+ */
+const LESS_FUEL_EDITOR = {
+  symbols: [",", "w"],
+  registers: ["w0", "w1"],
+  numberPad: false,
+} as const;
+
 /** The calls the figures run: both functions on the same two patterns. */
 const RUNS = [
   { program: STEEPER_S, call: { entry: "steeper_s", args: [...ARGS] }, reading: "signed" },
@@ -206,13 +217,13 @@ export const compareAndChoose: LessonInput = {
       // The registers the tap editor offers, and the instructions the lesson's assembler allows.
       palette: ["w0", "w1"],
       allowedConstructs: ["cmp", "csel", "ret"],
-      initial: { text: LESS_FUEL_STARTING_TEXT },
+      initial: { text: LESS_FUEL_STARTING_TEXT, data: { editor: LESS_FUEL_EDITOR } },
       tests: {
         kind: "answers",
         grader: RUN_REGISTERS,
         cases: LESS_FUEL_CASES.map((c, i) => ({
           label: LABELS.challenges.lessFuel.tests[i] as string,
-          given: { ...c.given },
+          given: { ...c.given, reading: "unsigned" },
           expect: { ...c.expect },
         })),
       },

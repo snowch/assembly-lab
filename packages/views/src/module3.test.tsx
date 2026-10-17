@@ -153,7 +153,7 @@ describe("the bit figure", () => {
     );
     expect(marked(container, "result", "changed")).toEqual([2]);
     expect(screen.getByRole("status")).toHaveTextContent("w0 holds 0xb, which is 11.");
-    expect(screen.getByRole("status")).toHaveTextContent("Bits that changed: 2.");
+    expect(screen.getByRole("status")).toHaveTextContent("Bit 2 changed.");
     // The key reads the labelled bits before and after.
     expect(keyRow(container, "2-2")).toEqual(["door open", "1", "0"]);
     expect(keyRow(container, "0-0")).toEqual(["fuel low", "1", "1"]);

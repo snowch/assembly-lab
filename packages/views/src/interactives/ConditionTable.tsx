@@ -49,7 +49,7 @@ function ValueBox({
   const id = `al-cond-${name}`;
   return (
     <div className="al-cond-value" data-register={name}>
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id}>{withCode(label)}</label>
       <input
         id={id}
         type="text"
@@ -64,10 +64,12 @@ function ValueBox({
       />
       {typed.kind === "ok" ? (
         <span className="al-cond-readings">
-          {B.conditions.readings(typed.pattern, Number(BigInt.asIntN(32, BigInt(typed.pattern))))}
+          {withCode(
+            B.conditions.readings(typed.pattern, Number(BigInt.asIntN(32, BigInt(typed.pattern)))),
+          )}
         </span>
       ) : (
-        <span className="al-cond-readings al-nomatch">{sentence}</span>
+        <span className="al-cond-readings al-nomatch">{withCode(sentence ?? "")}</span>
       )}
     </div>
   );
@@ -108,7 +110,7 @@ export const ConditionTable = withProps(Props, function ConditionTable({ data })
                 setB(y);
               }}
             >
-              {B.conditions.preset(x, y)}
+              {withCode(B.conditions.preset(x, y))}
             </button>
           ))}
         </div>
@@ -126,17 +128,17 @@ export const ConditionTable = withProps(Props, function ConditionTable({ data })
           <div className="al-cond-list" role="group" aria-label={B.conditions.list}>
             {GROUPS.map((group) => (
               <div key={group} className="al-cond-group" data-group={group}>
-                <p className="al-cond-group-head">{B.conditions.groups[group]}</p>
+                <p className="al-cond-group-head">{withCode(B.conditions.groups[group])}</p>
                 <ul>
                   {CONDITION_ROWS.filter((c) => c.group === group).map((c) => {
                     const yes = result.holds[c.name] === true;
                     return (
                       <li key={c.name} className="al-cond" data-cond={c.name} data-holds={yes}>
                         <code className="al-cond-name">{c.name}</code>
-                        <span className="al-cond-means">{c.means}</span>
-                        <span className="al-cond-reads">{c.reads}</span>
+                        <span className="al-cond-means">{withCode(c.means)}</span>
+                        <span className="al-cond-reads">{withCode(c.reads)}</span>
                         <span className="al-cond-verdict">
-                          {yes ? B.conditions.yes : B.conditions.no}
+                          {withCode(yes ? B.conditions.yes : B.conditions.no)}
                         </span>
                       </li>
                     );

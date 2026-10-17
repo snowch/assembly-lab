@@ -92,6 +92,15 @@ describe("the lesson", () => {
     expect(testCount(c)).toBe(5);
   });
 
+  it("offers the keys the challenge uses: commas and w, no # and no number pad", () => {
+    const c = challenge("write-less-fuel");
+    expect(c.initial.data?.["editor"]).toEqual({
+      symbols: [",", "w"],
+      registers: ["w0", "w1"],
+      numberPad: false,
+    });
+  });
+
   it("starts the condition table at a pair the last challenge does not ask about", () => {
     const table = lesson.sections
       .flatMap((s) => s.interactives)
@@ -131,7 +140,8 @@ describe("the challenges", () => {
       "less_fuel(0x80000000, 1)",
       "less_fuel(1, 0x80000000)",
     ]);
-    for (const f of verdict.failures) expect(f.actual["w0"]).toBe("-2147483648");
+    // Unsigned, as the expected value is: a card never sets a signed number beside an unsigned one.
+    for (const f of verdict.failures) expect(f.actual["w0"]).toBe("2147483648");
   });
 
   it("write-less-fuel: the larger of two (hi) fails, and so does the compare the wrong way round", () => {

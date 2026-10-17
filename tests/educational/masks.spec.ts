@@ -124,7 +124,7 @@ test.describe("the two predictions commit before they reveal", () => {
     expect(await rowBits(figure, "ran-before")).toBe(pad32(0xffffffff));
     expect(await rowBits(figure, "ran-after")).toBe(pad32(after));
     expect(await marked(figure, "ran-after", "changed")).toEqual([2]);
-    await expect(figure.locator(".al-outcome")).toContainText("Bit 2 came out 0");
+    await expect(figure.locator(".al-outcome")).toContainText("Only bit 2 came out 0");
   });
 
   test("a commitment is kept, and is still there after a reload", async ({ page }) => {
@@ -173,30 +173,22 @@ test.describe("the bit figure", () => {
     const figure = page.locator("#ix-mask-bits");
     await figure.scrollIntoViewIfNeeded();
     const word = figure.getByLabel(V.bitOps.inputLabel("w0"));
-    for (const name of [
-      "warn_fuel",
-      "clear_door",
-      "toggle_lights",
-      "gear_of",
-      "set_gear",
-    ] as const) {
+    // `set_gear` is not here: its recipe is the construction challenge's answer.
+    for (const name of ["warn_fuel", "clear_door", "toggle_lights", "gear_of"] as const) {
       await press(page, chip(figure, V.bitOps.functions, name));
       await expect(chip(figure, V.bitOps.functions, name)).toHaveAttribute("aria-pressed", "true");
+      await expect(chip(figure, V.bitOps.functions, "set_gear" as string)).toHaveCount(0);
       for (const w of [0, 0xf, 0x35, 0xffffffff]) {
         await word.fill(hexOf(w));
-        for (const g of name === "set_gear" ? [5, 13] : [0]) {
-          if (name === "set_gear")
-            await figure.getByLabel(V.bitOps.inputLabel("w1")).fill(String(g));
-          const want = name === "set_gear" ? model(name, w, g) : model(name, w);
-          const label = `${name}(${hexOf(w)}${name === "set_gear" ? `, ${g}` : ""})`;
-          expect(await rowBits(figure, "word"), label).toBe(pad32(w));
-          expect(await rowBits(figure, "result"), label).toBe(pad32(want));
-          await expect(rowValue(figure, "result"), label).toContainText(hexOf(want));
-          if (name !== "gear_of")
-            expect(await marked(figure, "result", "changed"), label).toEqual(
-              [...Array(32).keys()].filter((i) => ((w ^ want) >>> i) & 1),
-            );
-        }
+        const want = model(name, w);
+        const label = `${name}(${hexOf(w)})`;
+        expect(await rowBits(figure, "word"), label).toBe(pad32(w));
+        expect(await rowBits(figure, "result"), label).toBe(pad32(want));
+        await expect(rowValue(figure, "result"), label).toContainText(hexOf(want));
+        if (name !== "gear_of")
+          expect(await marked(figure, "result", "changed"), label).toEqual(
+            [...Array(32).keys()].filter((i) => ((w ^ want) >>> i) & 1),
+          );
       }
     }
   });
@@ -378,7 +370,7 @@ test.describe("a wrong answer is rejected", () => {
     await expect(c.locator(".verdict-failure h4")).toHaveText(["set_gear(0x1234, 13)"]);
   });
 
-  test("GCC's own bfi is refused, as an instruction the lesson has not allowed here", async ({
+  test("GCC's own bfi is refused, as an instruction the challenge does not allow", async ({
     page,
   }) => {
     await open(page);
@@ -386,10 +378,12 @@ test.describe("a wrong answer is rejected", () => {
     await c.scrollIntoViewIfNeeded();
     const box = c.getByRole("textbox", { name: V.editor.textLabel });
     await box.fill("bfi w0, w1, 4, 3\nret");
-    await expect(c.locator(".asm-problems")).toContainText("bfi");
+    // The lesson teaches bfi, so the gate says what the challenge allows, not that bfi is not met.
+    await expect(c.locator(".asm-problems")).toContainText("allows only");
+    await expect(c.locator(".asm-problems")).not.toContainText("not met");
     await press(page, run(c));
     await expect(status(c)).toHaveText(S.challenge.blocked);
-    await expect(c.locator(".verdict.blocked")).toContainText("bfi");
+    await expect(c.locator(".verdict.blocked")).toContainText("allows only");
     await expect(c.locator(".challenge-complete")).toHaveCount(0);
   });
 
@@ -541,7 +535,7 @@ test.describe("the look of the lesson page", () => {
     await commit(page, "predict-no-clear", "0x55");
     const bits = page.locator("#ix-mask-bits");
     await bits.scrollIntoViewIfNeeded();
-    await press(page, chip(bits, V.bitOps.functions, "set_gear"));
+    await press(page, chip(bits, V.bitOps.functions, "toggle_lights"));
     await bits.getByLabel(V.bitOps.inputLabel("w0")).fill("0x35");
     await press(page, chip(bits, V.bitOps.functions, "gear_of"));
     const step = page.locator("#ix-step-no-clear");

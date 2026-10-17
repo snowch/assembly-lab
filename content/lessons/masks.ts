@@ -16,7 +16,6 @@ import { PROSE } from "./masks.prose";
 import {
   CLEAR_DOOR,
   GEAR_OF,
-  SET_GEAR,
   SET_GEAR_REFERENCE_TEXT,
   SET_GEAR_START_TEXT,
   SET_GEAR_WITHOUT_CLEAR,
@@ -111,11 +110,9 @@ export const masks: LessonInput = {
               { entry: "clear_door", program: CLEAR_DOOR, returns: "word" },
               { entry: "toggle_lights", program: TOGGLE_LIGHTS, returns: "word" },
               { entry: "gear_of", program: GEAR_OF, returns: "number" },
-              { entry: "set_gear", program: SET_GEAR, returns: "word", second: true },
             ],
             start: "clear_door",
             word: 0xf,
-            secondValue: 5,
             entries: LABELS.drafts.keyEntries,
             after: "predict-minus-five",
           },
@@ -204,14 +201,26 @@ export const masks: LessonInput = {
         grader: RUN_REGISTERS,
         // What each call must give is what GCC's `bfi` gives (the facts test runs both).
         cases: [
-          { label: "set_gear(0x35, 5)", given: { w0: 0x35, w1: 5 }, expect: { w0: 0x55 } },
-          { label: "set_gear(0, 7)", given: { w0: 0, w1: 7 }, expect: { w0: 0x70 } },
+          {
+            label: "set_gear(0x35, 5)",
+            given: { w0: 0x35, w1: 5, reading: "unsigned" },
+            expect: { w0: 0x55 },
+          },
+          {
+            label: "set_gear(0, 7)",
+            given: { w0: 0, w1: 7, reading: "unsigned" },
+            expect: { w0: 0x70 },
+          },
           {
             label: "set_gear(0xffffffff, 0)",
-            given: { w0: 0xffffffff, w1: 0 },
+            given: { w0: 0xffffffff, w1: 0, reading: "unsigned" },
             expect: { w0: 0xffffff8f },
           },
-          { label: "set_gear(0x1234, 13)", given: { w0: 0x1234, w1: 13 }, expect: { w0: 0x1254 } },
+          {
+            label: "set_gear(0x1234, 13)",
+            given: { w0: 0x1234, w1: 13, reading: "unsigned" },
+            expect: { w0: 0x1254 },
+          },
         ],
       },
       hints: [...PROSE.setGearHints],

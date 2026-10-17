@@ -98,7 +98,8 @@ describe("branch-outcomes, for what a run gives", () => {
     const v = grade(runs, { answers: { small: "-2", smallSteps: "5", big: "3", bigSteps: "4" } });
     expect(v.failures.map((f) => f.label)).toEqual(["f(3) steps", "f(30) returns"]);
     expect(v.failures[1]!.detail).toBe("Look at the branch.");
-    expect(v.failures[0]!.detail).toBeUndefined();
+    // A field with no sentence of its own is named, never given its value.
+    expect(v.failures[0]!.detail).toMatch(/^Your answer for \u2018.+\u2019 is not right\.$/);
     expect(JSON.stringify(v)).not.toMatch(/"(4|2|-2)"/);
   });
 

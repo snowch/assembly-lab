@@ -32,15 +32,15 @@ export const LABELS = {
   options: {
     // A choice's value is the model's name for it (probe.ts); its label is the file's words.
     minusFive: [
-      { value: "cleared:2", label: "−5 is `0xfffffffb`, every bit set except bit 2" },
       { value: "counted-backwards", label: "−5 is bit 2 counted backwards" },
+      { value: "cleared:2", label: "−5 is `0xfffffffb`, every bit set except bit 2" },
       { value: "subtracts", label: "the compiler subtracts 5 from the word" },
       { value: "listing-error", label: "−5 is an error in the listing" },
     ],
     noClear: [
-      { value: "117", label: "`0x75`" },
-      { value: "85", label: "`0x55`" },
       { value: "53", label: "`0x35`" },
+      { value: "85", label: "`0x55`" },
+      { value: "117", label: "`0x75`" },
       { value: "error", label: "the run stops with an error" },
     ],
   },

@@ -48,8 +48,8 @@ export const LABELS = {
     // The right one is the one the model computes (value "c": N and C are 1, V is 0).
     afterAdd: [
       { value: "v", label: "N and V are 1, from the addition" },
-      { value: "c", label: "N and C are still 1, as `adds` left them" },
       { value: "none", label: "All four are 0" },
+      { value: "c", label: "N and C are still 1, as `adds` left them" },
       { value: "error", label: "The run stops with an error" },
     ],
   },

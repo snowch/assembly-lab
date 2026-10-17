@@ -20,6 +20,11 @@ export const strings = {
     "`{text}` is a label, which names a place in memory, but here the course's assembler needs a plain number.",
   "label.duplicate": "The label `{name}` is already defined.",
   notInMachine: "The course's simulator does not have `{text}`.",
+  // DRAFT: a line that is one word the machine does not know, most often a label with no colon.
+  notInMachineWord:
+    "The course's simulator does not have `{text}`. If it is a label, end it with a colon.",
+  // DRAFT: `{text}` is the tail from its `#` or `;` to the end of the line.
+  "syntax.commentTail": "`{text}` looks like a comment. A comment starts with `//`.",
   "gate.notYet": "You have not met `{name}` yet, so the course's assembler will not take `{text}`.",
   // DRAFT: `{allowed}` is the instructions the program may use, from `nameList`.
   "gate.notAllowedHere": "This challenge allows only {allowed}.",
@@ -63,7 +68,14 @@ export const strings = {
   "immediate.range": "`{text}` must be from {min} to {max}.",
   "immediate.move": "No single instruction can put `{text}` in a register.",
   "immediate.addsub": "`{text}` must be from 0 to 4095, or a multiple of 4096 up to 16773120.",
-  "immediate.bitmask": "`{text}` is not a pattern of bits this instruction can hold.",
+  // DRAFT: the rule for the constant of `and`, `orr`, `eor`, `ands` and `tst`. `{bits}` is 32 or 64
+  // and `{repeats}` the spacings that repeat a run there ("2, 4, 8 or 16"). The two examples are
+  // facts of the model (`0xf0` is accepted, `0x8f` is refused), not of the lesson.
+  "immediate.bitmask":
+    "`{text}` is not a constant this instruction can hold. Across the {bits} bits it must be one run of 1s that does not fill them all, and the run may wrap round from the top bit to bit 0. A shorter run repeated in every {repeats} bits also works. `0xf0` is one run; `0x8f` is not.",
+  // DRAFT: as `immediate.bitmask`, for `bic`, which takes the constant with every bit turned over.
+  "immediate.bitmaskBic":
+    "`{text}` is not a constant `bic` can hold. Turn every bit of it over, and the result must be one run of 1s across the {bits} bits that does not fill them all (the run may wrap round from the top bit to bit 0), or a shorter run repeated in every {repeats} bits.",
 
   // --- memory operands
   "mem.syntax": "`{text}` is not a memory operand. Write it like `[x1, 8]`.",
