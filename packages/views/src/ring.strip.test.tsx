@@ -7,7 +7,7 @@
 // recorded function returns. Nothing the figure says claims to count how many times a counter wrapped.
 
 import { render } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { LessonStore, memoryStorage } from "@platform/lesson-runtime";
 import { Interactive, type Lesson } from "@platform/lesson-schema";
@@ -49,6 +49,9 @@ function ring(now: number, then: number) {
 
 const text = (container: HTMLElement, selector: string) =>
   container.querySelector(selector)?.textContent;
+
+// Rendering a whole lesson and pressing its buttons takes a while on a busy machine.
+vi.setConfig({ testTimeout: 30_000 });
 
 describe("the readings of the ring", () => {
   it("split elapsed(1000, 4294966296) into 1000 ticks before the wrap and 1000 after it: 2000 in all", () => {

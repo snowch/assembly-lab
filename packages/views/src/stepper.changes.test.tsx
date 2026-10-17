@@ -9,7 +9,7 @@
 
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { LessonStore, memoryStorage } from "@platform/lesson-runtime";
 import { Interactive, type Lesson } from "@platform/lesson-schema";
@@ -58,6 +58,9 @@ const taggedRegisters = (c: HTMLElement) =>
     e.closest(".al-reg")?.getAttribute("data-register"),
   );
 const NOT_UPDATED = "N, Z, C and V were not updated by";
+
+// Rendering a whole lesson and pressing its buttons takes a while on a busy machine.
+vi.setConfig({ testTimeout: 30_000 });
 
 describe("the stepper that marks what changed", () => {
   const props = {

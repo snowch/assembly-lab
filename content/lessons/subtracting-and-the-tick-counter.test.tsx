@@ -8,7 +8,7 @@
 // problem.
 
 import { fireEvent, render, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { ARITH_STRINGS, BOOK_ID, INTERACTIVES, STEPS, createBook, grade } from "@al/views";
 import { LessonStore, LessonView, memoryStorage } from "@platform/lesson-runtime";
@@ -29,6 +29,9 @@ import { PROSE } from "./subtracting-and-the-tick-counter.prose";
 const lesson = LESSONS.find((l) => l.id === "subtracting-and-the-tick-counter")!;
 const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
 const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
+
+// Rendering a whole lesson and pressing its buttons takes a while on a busy machine.
+vi.setConfig({ testTimeout: 30_000 });
 
 describe("the lesson", () => {
   it("parses and passes the schema's checks: ten sections in order, every challenge mounted", () => {

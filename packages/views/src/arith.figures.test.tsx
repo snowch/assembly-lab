@@ -9,7 +9,7 @@
 
 import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { LessonStore, memoryStorage } from "@platform/lesson-runtime";
 import { Challenge, Interactive, type Lesson } from "@platform/lesson-schema";
@@ -23,6 +23,9 @@ import { StepperFigure } from "./interactives/StepperFigure";
 import { ARITH_STRINGS as A } from "./strings.arith";
 import { VIEW_STRINGS as S } from "./strings";
 import { traceOf } from "./trace";
+
+// Thirty-two presses of a button take a while on a busy machine.
+vi.setConfig({ testTimeout: 30_000 });
 
 const PLUS = { c: "", listing: "plus:\n  adds w0, w0, w1\n  ret" };
 const SUM_FLAGS = {

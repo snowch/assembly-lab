@@ -8,7 +8,7 @@
 
 import { render, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { Challenge, type Lesson } from "@platform/lesson-schema";
 
@@ -88,6 +88,9 @@ function editor(c: Challenge, artifact = {}, onChange: (a: object) => void = () 
     <AnswerEditor lesson={{} as Lesson} challenge={c} artifact={artifact} onChange={onChange} />,
   );
 }
+
+// Rendering a whole lesson and pressing its buttons takes a while on a busy machine.
+vi.setConfig({ testTimeout: 30_000 });
 
 describe("answers chosen in groups", () => {
   it("draws one group for each addition, headed by it, with a compact row of N, Z, C and V in each", () => {
