@@ -12,8 +12,10 @@
 //                   call whose two values are equal.
 //   "fuel-warning": `topBit` when the only failing call is the one with the top bit of `litres`
 //                   set; then, for a call, `overwritten` when the run moved a value into `w0` and
-//                   read `w0` again afterwards, `zeroFirst` when `litres` of 0 returned 1, and
-//                   `label` for any other wrong value.
+//                   read `w0` again afterwards; for a `litres` of 0, `fellThrough` when its test for 0
+//                   was taken and the run then went on from one block into the next, and
+//                   `zeroFirst` when it returned 1 and took no branch for the test of 0; `label` for
+//                   any other wrong value.
 
 import type { Program, Step } from "@al/machine";
 import type { VerdictFailure } from "@platform/lesson-runtime";
@@ -54,6 +56,45 @@ export function overwroteAnInput(run: FailedRun): boolean {
       if (ins.operands.some((o) => o.kind === "reg" && o.text.toLowerCase() === "w0")) return true;
     }
     if (ins.mnemonic === "mov" && ins.operands[0]?.text.toLowerCase() === "w0") moved = true;
+  }
+  return false;
+}
+
+const instructionAt = (run: FailedRun, step: Step) =>
+  run.program.instructions.find((i) => i.address === step.address);
+
+/** Whether a step is a taken branch for the test of 0: a `cbz` on `w0`, or a branch on `eq`. */
+function isZeroTest(run: FailedRun, step: Step): boolean {
+  if (step.branch?.taken !== true) return false;
+  const ins = instructionAt(run, step);
+  if (ins === undefined) return false;
+  if (ins.mnemonic === "cbz") return ins.operands[0]?.text.toLowerCase() === "w0";
+  return /^b\.?eq$/.test(ins.mnemonic);
+}
+
+/** Whether the run took a branch for the test of 0 (a taken `cbz` on `w0`, or a taken branch on `eq`). */
+export function tookZeroTest(run: FailedRun): boolean {
+  return run.steps.some((step) => isZeroTest(run, step));
+}
+
+/**
+ * Whether, after the branch for the test of 0 was taken, the run went on from one block into the
+ * next: an instruction that is not a taken branch was followed by the instruction at a label, and
+ * that instruction is not a `ret`. A block that falls into a shared `ret` is not this, and is right.
+ */
+export function fellThroughAfterZeroTest(run: FailedRun): boolean {
+  const first = run.steps.findIndex((step) => isZeroTest(run, step));
+  if (first < 0) return false;
+  const labels = new Set(
+    Object.values(run.program.symbols)
+      .filter((symbol) => symbol.section === "text")
+      .map((symbol) => symbol.address),
+  );
+  for (let j = first + 1; j < run.steps.length; j++) {
+    const before = run.steps[j - 1]!;
+    const step = run.steps[j]!;
+    if (before.branch?.taken === true || !labels.has(step.address)) continue;
+    if (instructionAt(run, step)?.mnemonic !== "ret") return true;
   }
   return false;
 }
@@ -99,9 +140,11 @@ function chooseFuelWarning(
     const litres = run.args[0] ?? 0;
     const key = overwroteAnInput(run)
       ? "overwritten"
-      : litres === 0 && run.actual === 1
-        ? "zeroFirst"
-        : "label";
+      : litres === 0 && fellThroughAfterZeroTest(run)
+        ? "fellThrough"
+        : litres === 0 && run.actual === 1 && !tookZeroTest(run)
+          ? "zeroFirst"
+          : "label";
     if (said.has(key) || s[key] === undefined) continue;
     said.add(key);
     out.set(index, s[key]);

@@ -192,7 +192,7 @@ test.describe("lesson 1: the compare, the condition and the select", () => {
     await expect(c.locator(".verdict-detail")).toHaveCount(0);
   });
 
-  test("the table of conditions: six at first, the rest behind All condition codes, which opens from the keyboard", async ({
+  test("the table of conditions: six at first, the rest behind Conditions beyond the first six, which opens from the keyboard", async ({
     page,
   }) => {
     await openLesson(page, ONE);
@@ -363,6 +363,29 @@ test.describe("lesson 2: the path, the sentence after a branch, two conditions o
     );
     await press(page, run(c));
     await expect(c.locator(".verdict-failure").first()).toContainText(
+      quoted(P2.fuelWarningFeedback.zeroFirst),
+    );
+    // The check for 0 is first and the block under .Lempty has no ret: the run goes on into .Llow.
+    // That is not an order fault, and the page does not blame the order.
+    await box.fill(
+      [
+        "cbz w0, .Lempty",
+        "cmp w0, w1",
+        "b.cc .Llow",
+        "mov w0, 0",
+        "ret",
+        ".Lempty:",
+        "mov w0, 2",
+        ".Llow:",
+        "mov w0, 1",
+        "ret",
+      ].join("\n"),
+    );
+    await press(page, run(c));
+    await expect(c.locator(".verdict-failure").first()).toContainText(
+      quoted(P2.fuelWarningFeedback.fellThrough),
+    );
+    await expect(c.locator(".verdict-failure").first()).not.toContainText(
       quoted(P2.fuelWarningFeedback.zeroFirst),
     );
     await box.fill(FUEL_WARNING_TEXT.replace("b.cc", "b.lt"));

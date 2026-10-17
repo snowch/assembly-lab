@@ -408,8 +408,14 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
       await openLesson(page, ONE);
       const f = figure(page);
       await f.scrollIntoViewIfNeeded();
-      await expect(f.locator('[data-register="w0"] input')).toHaveValue("8");
-      await expect(f.locator('[data-register="w1"] input')).toHaveValue("8");
+      await expect(f.locator("input")).toHaveCount(0);
+      await expect(f.locator('[data-register="w0"] .al-cond-readings')).toHaveText(
+        B.conditions.readings(8, 8),
+      );
+      await expect(f.getByRole("button", { name: "8 and 8" })).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
       expect(await holds(f)).toEqual(modelHolds(8, 8));
       const flags = await f
         .locator(".al-flag")
@@ -418,7 +424,7 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
       await expect(f.locator(".al-cond")).toHaveCount(CONDITION_ROWS.length);
     });
 
-    test("runs the compare again for the pair that needs V, and for values that are typed", async ({
+    test("runs the compare again for each pair the buttons offer, and offers no box to type another in", async ({
       page,
     }) => {
       await openLesson(page, ONE);
@@ -429,25 +435,25 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
       expect((await holds(f))["ge"]).toBe("true");
       expect((await holds(f))["cc"]).toBe("true");
       await expect(f.locator('.al-flag[data-flag="v"]')).toHaveAttribute("data-value", "1");
-      const first = f.locator('[data-register="w0"] input');
-      await first.fill("-5");
-      await f.locator('[data-register="w1"] input').fill("2");
-      expect(await holds(f)).toEqual(modelHolds(0xfffffffb, 2));
+      // The text has used four pairs; the buttons offer those and no other, and the pair of the
+      // challenge that follows (0xfffffffb and 2) is not among them.
+      await expect(f.locator(".al-cond-presets button")).toHaveText([
+        "8 and 8",
+        "0x7fffffff and 0xffffffff",
+        "0xffffffff and 1",
+        "0x80000000 and 1",
+      ]);
+      for (const [x, y] of [
+        ["0xffffffff", 1],
+        ["0x80000000", 1],
+      ] as const) {
+        await press(page, f.getByRole("button", { name: `${x} and ${y}` }));
+        expect(await holds(f)).toEqual(modelHolds(Number(x), y));
+      }
       await expect(f.locator('[data-register="w0"] .al-cond-readings')).toHaveText(
-        B.conditions.readings(4294967291, -5),
+        B.conditions.readings(2147483648, -2147483648),
       );
-      // A value that is not a number gives a sentence, and no list that would be about nothing.
-      await first.fill("banana");
-      // The sentence has `0x` in it, drawn as code, never as backticks.
-      await expect(f.locator('[data-register="w0"] .al-cond-readings')).toHaveText(
-        V.tester.notNumber.replace(/`/g, ""),
-      );
-      await expect(f.locator('[data-register="w0"] .al-cond-readings code')).toHaveText("0x");
-      await expect(f.locator(".al-cond")).toHaveCount(0);
-      await first.fill("4294967296");
-      await expect(f.locator('[data-register="w0"] .al-cond-readings')).toHaveText(
-        B.conditions.outOfRange,
-      );
+      await expect(f.locator("input")).toHaveCount(0);
     });
 
     test("draws every condition with its name, meaning and rule, and each fits its box", async ({

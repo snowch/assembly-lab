@@ -4,6 +4,7 @@ Drafted by Haiku from the fact brief `brief.md` beside this file, 16 October 202
 checked against the course's simulator (runs recorded with the brief) and the recorded GCC 16.1
 `-O1` listings in `listings.md`. Two sentences of provenance meant for the checker were removed. The build found that the section *Changing `bgt` to `bge`* of Lesson 2 named `describe(11)`, one of the last challenge's gradients; it now names `describe(12)`, which the simulator also returns 2 for.
 On 17 October 2026 the text of most sections was replaced by the improved text of brief 58 (24 items, checked for facts); the figure that draws it was extended to match. Lesson 1 is retitled "Compare, and the signed or unsigned condition".
+The same day the review's fixes (15 items, checked for facts) changed Lesson 1's sections 5, 7, 8 and 9 and Lesson 2's sections 1, 3, 5 and 9, and added the feedback sentence for a run that goes on into the next block.
 This file is the lesson's words: the lesson files keep them word for word.
 
 How this file marks what the page does with a passage. A *Closed note* is the section's closed `details`, titled as the marker says; the marker lines are not words of the lesson. A line that starts `>` is a sentence a figure or a grader says (the stepper's status lines, the feedback after a failed test); the lesson's files hold it word for word where the grader or the figure reads it, and a test holds the two together.
@@ -25,7 +26,8 @@ int steeper_s(int a, int b)
     return a > b ? a : b;
 }
 
-unsigned steeper_u(unsigned a, unsigned b)
+unsigned steeper_u(unsigned a,
+                   unsigned b)
 {
     return a > b ? a : b;
 }
@@ -128,12 +130,12 @@ Write `less_fuel(a, b)`. It returns the smaller of two `unsigned` litres values.
 
 `a` arrives in `w0`, and `b` arrives in `w1`. The answer leaves in `w0`. A comment starts with `//`.
 
-Five calls test it. In two of them, one value has the top bit set. That makes it a large unsigned number. A signed condition gives the wrong answer for it.
+Five calls test it. In two of them, one value has the top bit set.
 
 1. Compare the two, then let one `csel` choose between them.
 2. The values are `unsigned`, so use the unsigned pair of conditions.
 3. `csel w0, w0, w1, cc` would give `w0` when `cc` is yes and `w1` when it is no.
-4. `cc` is yes when C is 0, that is, when `w0` is lower than `w1` (also written `lo`). Compare `w0` with `w1`, in that order.
+4. `cc` is yes when C is 0, that is, when `w0` is lower than `w1`. Compare `w0` with `w1`, in that order.
 5. `cmp w0, w1`, `csel w0, w0, w1, cc`, `ret`.
 
 *Feedback after a failed test.*
@@ -173,22 +175,22 @@ With `ge`, the function reads the bits as signed. `0x80000000` is the smallest `
 
 GCC prints the conditions `cs` and `cc`. Arm also writes them `hs` and `lo`, and the assembler accepts both.
 
-After `cmp a, b`, the core conditions come in groups. Each line says what the condition means, and which flags it reads.
+In `cmp a, b`, `a` is the first operand and `b` is the second. After that compare, the core conditions come in groups. Each line says what the condition means, and which flags it reads.
 
 - Equality: `eq` (a = b, Z is 1) and `ne` (a ≠ b, Z is 0).
 - Unsigned order: `cs` (a ≥ b, C is 1) and `cc` (a < b, C is 0).
 - Signed order: `ge` (a ≥ b, N equals V) and `lt` (a < b, N differs from V).
 
-The strict versions add Z to the test.
+The next conditions are the versions without equality. They read Z as well.
 
 - `hi` (higher, unsigned) is `cs` without equality: C is 1 and Z is 0. Its opposite is `ls` (lower or same, unsigned): C is 0 or Z is 1.
 - `gt` (greater than, signed) is `ge` without equality: Z is 0 and N equals V. Its opposite is `le` (less than or equal, signed): Z is 1 or N differs from V.
 
 `vs`, which Module 2 met, is yes when V is 1.
 
-The figure below compares two values you choose with `cmp w0, w1`, in that order. So `a` is `w0` and `b` is `w1`. This is the reverse of `steeper_s`'s `cmp w1, w0`. For each condition, the figure shows its rule, the flag values it read and whether it holds.
+The figure below compares a pair of values with `cmp w0, w1`, in that order, and you choose the pair. It offers four pairs: `0xffffffff` and 1, `0x80000000` and 1, and two more that it shows. So `a` is `w0` and `b` is `w1`. This is the reverse of `steeper_s`'s `cmp w1, w0`. For each condition, the figure shows its rule, the flag values it read and whether it holds.
 
-*Closed note: All condition codes*
+*Closed note: Every condition this course uses*
 
 - `eq`, equal (either reading): Z is 1.
 - `ne`, not equal (either reading): Z is 0.
@@ -231,7 +233,7 @@ fuel_low:
 
 `fuel_low(5, 8)` is 1, and `fuel_low(8, 8)` is 0.
 
-Not every C `if` makes the processor skip instructions. `warning_light` is written with `if (litres < reserve) return 1;` and then `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing, which runs every instruction. The closed note "`warning_light`" shows that listing and its two results.
+Not every C `if` makes the processor skip instructions. `warning_light` is written with `if (litres < reserve) return 1;` and then `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing, which runs every instruction. The closed note "`warning_light`, and `tst` and `ands`" shows that listing and its two results.
 
 *Closed note: warning_light, and tst and ands*
 
@@ -267,8 +269,6 @@ downhill:
 There is no compare. The signed reading of a number is negative exactly when its top bit is 1. `lsr w0, w0, 31` moves the top bit to the bottom, as Module 3 showed. So the result is 1 for a negative gradient, and 0 otherwise.
 
 ## 9. Read four conditions after one `cmp`
-
-This challenge reads four conditions after one `cmp`.
 
 **Read four conditions after one `cmp`**
 
@@ -312,7 +312,7 @@ The simulator's conditions follow the architecture's, and its tests hold each on
 
 ## 1. Which instruction runs next?
 
-The trip computer classifies a gradient as steep uphill, steep downhill or neither. The result depends on which conditions are true.
+The trip computer classifies a gradient as steep uphill, steep downhill or neither. The result depends on how the gradient compares with 10 and −10.
 
 `describe` returns 2 when the gradient is above 10, −2 when it is below −10, and 0 otherwise. Its C is below.
 
@@ -343,6 +343,8 @@ describe:
         b       .L7
 ```
 
+GCC records, for each instruction, the C line it came from. Here `cmn`, `mov w0, -2` and `csel` sit beside `return 0;`, and no instruction sits beside `if (gradient < -10)` or `return -2;`.
+
 `wzr` is a register name that always reads as 0. A write to it is thrown away.
 
 Every listing so far ran from its first instruction to its `ret`, in order. This one has two lines that end in a colon, `.L7:` and `.L9:`. Two instructions name them.
@@ -351,7 +353,7 @@ Every listing so far ran from its first instruction to its `ret`, in order. This
 
 *Closed note: Which compiler?*
 
-GCC 16.1 with `-O1`, as in Module 0. GCC records, for each instruction, the C line it came from. Here `cmn`, `mov w0, -2` and `csel` sit beside `return 0;`. No instruction sits beside `if (gradient < -10)` or `return -2;`.
+GCC 16.1 with `-O1`, as in Module 0.
 
 *End of closed note.*
 
@@ -373,7 +375,7 @@ When a branch goes to its label, it is **taken**. When it does not, it is **not 
 
 The figure runs `describe(15)` on the listing above.
 
-**How many instructions run before the function returns?**
+**How many instructions run, counting `ret`?**
 
 - 5
 - 8
@@ -426,8 +428,6 @@ Write `fuel_warning(litres, reserve)`. Both are `unsigned`. Its rules, in order:
 - Otherwise, if `litres` is below `reserve`, return 1.
 - Otherwise, return 0.
 
-A `litres` of 0 is also below any `reserve` above 0, so the order of the checks matters.
-
 Use only `cmp`, a branch with a condition, `cbz`, `b`, `mov` and `ret`. Five calls test it. One has `litres` equal to `reserve`. One has the top bit of `litres` set.
 
 `litres` arrives in `w0`, and `reserve` arrives in `w1`. The answer leaves in `w0`.
@@ -447,6 +447,8 @@ A label goes on its own line, followed by a colon, before the instruction it nam
 *Feedback after a failed test.*
 
 > A `litres` of 0 returns 1. Does the check for 0 come first?
+
+> The run for a `litres` of 0 went on into the next block instead of returning. Does every block end in `ret` or `b`?
 
 > The call with the top bit set fails. Is "below" read as unsigned?
 
@@ -529,8 +531,6 @@ GCC 16.1 at `-O1` made different choices for different `if`s. In `warning_light`
 That reasoning comes from what `csel` does. It is not a claim about why GCC chose the branch.
 
 ## 9. Count the runs of `describe`
-
-This challenge counts the instructions in three runs of `describe`.
 
 **Count the runs of `describe`**
 

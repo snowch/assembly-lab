@@ -108,6 +108,35 @@ describe("the lesson", () => {
     expect(table.props["start"]).toEqual(["8", "8"]);
     expect(JSON.stringify(table.props)).not.toMatch(/0xfffffffb|4294967291|-5/);
   });
+
+  it("offers the condition table's pairs by button only, and never a pair the challenge or the reflection question asks about", () => {
+    const table = lesson.sections
+      .flatMap((s) => s.interactives)
+      .find((x) => x.kind === "condition-table")!;
+    expect(table.props["choices"]).toBe("presets");
+    const presets = table.props["presets"] as [string, string][];
+    // The pairs the text has used: the closed note's two, the Question's and the failure experiment's.
+    expect(presets).toEqual([
+      ["8", "8"],
+      ["0x7fffffff", "0xffffffff"],
+      ["0xffffffff", "1"],
+      ["0x80000000", "1"],
+    ]);
+    const asPatterns = (pair: [string, string]) =>
+      pair.map((v) => Number(BigInt.asUintN(32, BigInt(v))));
+    // "Read four conditions" holds 0xfffffffb and 2 (and no pair is one in the other order); the
+    // reflection question holds 2 and 0xfffffffe.
+    const asked = [
+      [0xfffffffb, 2],
+      [2, 0xfffffffb],
+      [2, 0xfffffffe],
+      [0xfffffffe, 2],
+    ];
+    for (const pair of presets)
+      expect(asked, pair.join(" and ")).not.toContainEqual(asPatterns(pair));
+    // The challenge does ask about the pair the list above keeps clear of.
+    expect(challenge("read-four-conditions").task).toContain("`0xfffffffb`");
+  });
 });
 
 describe("the challenges", () => {
@@ -218,5 +247,12 @@ describe("the page", () => {
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
     expect(container.querySelector('[data-figure="condition-table"]')).not.toBeNull();
+    // The condition table has buttons for its pairs and no box to type a pair in.
+    expect(container.querySelectorAll('[data-figure="condition-table"] input')).toHaveLength(0);
+    expect(
+      [
+        ...container.querySelectorAll('[data-figure="condition-table"] .al-cond-presets button'),
+      ].map((b) => b.textContent),
+    ).toEqual(["8 and 8", "0x7fffffff and 0xffffffff", "0xffffffff and 1", "0x80000000 and 1"]);
   });
 });

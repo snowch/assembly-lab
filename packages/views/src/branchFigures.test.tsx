@@ -243,6 +243,69 @@ describe("one compare, every condition", () => {
     expect(typed).toEqual(["8", "8"]);
   });
 
+  describe("with choices: presets, the pair comes from the buttons only", () => {
+    const PRESETS = [
+      ["8", "8"],
+      ["0x7fffffff", "0xffffffff"],
+      ["0xffffffff", "1"],
+      ["0x80000000", "1"],
+    ];
+    const buttons = (container: HTMLElement) =>
+      [...container.querySelectorAll(".al-cond-presets button")].map((b) => b.textContent);
+
+    it("has no box to type in, and still names the two values and their readings", () => {
+      const { container } = table({ choices: "presets", presets: PRESETS });
+      expect(container.querySelectorAll("input")).toHaveLength(0);
+      expect(container.querySelector('[data-register="w0"]')).toHaveTextContent(B.conditions.first);
+      expect(container.querySelector('[data-register="w1"]')).toHaveTextContent(
+        B.conditions.second,
+      );
+      expect(container.querySelector('[data-register="w0"] .al-cond-readings')).toHaveTextContent(
+        B.conditions.readings(8, 8),
+      );
+      expect(buttons(container)).toEqual([
+        "8 and 8",
+        "0x7fffffff and 0xffffffff",
+        "0xffffffff and 1",
+        "0x80000000 and 1",
+      ]);
+    });
+
+    it("runs the compare for each button: 0xffffffff and 1 leave NZCV 1010, 0x80000000 and 1 leave NZCV 0011", async () => {
+      const user = userEvent.setup({ delay: null });
+      const { container } = table({ choices: "presets", presets: PRESETS });
+      await user.click(screen.getByRole("button", { name: "0xffffffff and 1" }));
+      expect(flagValues(container)).toEqual(["1", "0", "1", "0"]);
+      // As signed, −1 is below 1; as unsigned, 4294967295 is not.
+      expect(holds(container, "lt")).toBe("true");
+      expect(holds(container, "cc")).toBe("false");
+      expect(container.querySelector('[data-register="w0"] .al-cond-readings')).toHaveTextContent(
+        B.conditions.readings(4294967295, -1),
+      );
+      await user.click(screen.getByRole("button", { name: "0x80000000 and 1" }));
+      expect(flagValues(container)).toEqual(["0", "0", "1", "1"]);
+      expect(holds(container, "lt")).toBe("true");
+      expect(holds(container, "cs")).toBe("true");
+      expect(container.querySelector('[data-register="w0"] .al-cond-readings')).toHaveTextContent(
+        B.conditions.readings(2147483648, -2147483648),
+      );
+      expect(container.querySelectorAll("input")).toHaveLength(0);
+    });
+
+    it("leaves the default alone: without choices the boxes are there and take a typed pair", async () => {
+      const user = userEvent.setup({ delay: null });
+      const { container } = table();
+      const inputs = container.querySelectorAll("input");
+      expect(inputs).toHaveLength(2);
+      await user.clear(inputs[0]!);
+      await user.type(inputs[0]!, "-5");
+      await user.clear(inputs[1]!);
+      await user.type(inputs[1]!, "2");
+      expect(holds(container, "ge")).toBe("false");
+      expect(holds(container, "cs")).toBe("true");
+    });
+  });
+
   it("holds the rules exactly as the lesson words them", () => {
     expect(CONDITION_ROWS.map((c) => `${c.name} ${c.means}: ${c.reads}`)).toEqual([
       "eq equal: Z is 1",

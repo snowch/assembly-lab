@@ -128,9 +128,18 @@ export type MessageKey = keyof typeof strings;
 /** DRAFT: the word that joins the last two names of a list in a sentence. */
 const AND = "and";
 
-/** Names as code in a sentence: "`mov`", "`mov` and `ret`", "`mov`, `movk` and `ret`". */
+/**
+ * What a sentence says for the gate's name for every conditional branch, `b.cond`. That name is the
+ * gate's placeholder, not an instruction a learner can write.
+ */
+const CONDITIONAL_BRANCH_ITEM = "`b` with a condition, such as `b.cc`";
+
+/**
+ * Names as code in a sentence: "`mov`", "`mov` and `ret`", "`mov`, `movk` and `ret`". The gate's
+ * `b.cond` is the item "`b` with a condition, such as `b.cc`".
+ */
 export function nameList(names: readonly string[]): string {
-  const coded = names.map((n) => `\`${n}\``);
+  const coded = names.map((n) => (n === "b.cond" ? CONDITIONAL_BRANCH_ITEM : `\`${n}\``));
   const last = coded.pop() ?? "";
   return coded.length === 0 ? last : `${coded.join(", ")} ${AND} ${last}`;
 }
