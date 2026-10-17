@@ -7,6 +7,12 @@
 // `w0`, `w1` and on), and the registers the case's `expect` names are compared. A text that does
 // not assemble gives a verdict that is `blocked`, with each error against its line.
 //
+// A case may name a mistake it expects (`given["misconception.value"]`, the value the one
+// register the case checks holds when the mistake is made, which the lesson works out on the model,
+// and `given["misconception.feedback"]`, the sentence for it). A failed case whose register holds
+// exactly that value shows the sentence in place of the usual card; every other failure keeps the
+// usual card.
+//
 // "registers-at-return" grades the learner's answers: the challenge's `initial.data.program` is run
 // for each case's call, and each field the case's `expect` maps to a register (`{ w0: "w0" }`) is
 // compared with what that register holds at the return. The expected values are what the model
@@ -128,7 +134,25 @@ export function gradeWritten(challenge: Challenge, artifact: Artifact): Verdict 
       expected[name] = String(unsigned ? pattern(want) : want);
       if (pattern(want) !== BigInt.asUintN(32, result.final.x[n] ?? 0n)) ok = false;
     }
-    if (!ok) failures.push({ index, label: c.label, inputs, actual, expected });
+    if (!ok) {
+      const feedback = c.given["misconception.feedback"];
+      const mistaken = c.given["misconception.value"];
+      const names = Object.keys(c.expect);
+      const only = names.length === 1 ? registerNumber(names[0] as string) : null;
+      const isMistake =
+        feedback !== undefined &&
+        mistaken !== undefined &&
+        only !== null &&
+        pattern(mistaken) === BigInt.asUintN(32, result.final.x[only] ?? 0n);
+      failures.push({
+        index,
+        label: c.label,
+        inputs,
+        actual,
+        expected,
+        ...(isMistake ? { detail: quoted(String(feedback)) } : {}),
+      });
+    }
   });
   return { passed: failures.length === 0, total, failures };
 }

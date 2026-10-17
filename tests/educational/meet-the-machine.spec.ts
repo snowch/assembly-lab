@@ -6,7 +6,9 @@
 // desktop width) and by tapping alone (at the phone width); a wrong answer is rejected; the answers
 // challenge rejects a wrong w1 with the lesson's sentence and accepts the reference; a completion
 // survives a reload and is graded again; Clear work removes it; and the page keeps the look the
-// shell's own pages keep.
+// shell's own pages keep. The stepper's panel of what the last instruction read and wrote, its
+// decimal registers with their switch, the two closed notes under the listing, and the ret
+// experiment's two connected groups are driven here too.
 
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
@@ -15,6 +17,7 @@ import { VIEW_STRINGS as V, quoted } from "../../packages/views/src/strings";
 import { traceOf, viewAt, wValue } from "../../packages/views/src/trace";
 import { DEFAULT_STRINGS as S, format } from "../../platform/lesson-runtime/src/strings";
 
+import { MODULE0_STRINGS as M0 } from "../../packages/views/src/strings.module0";
 import { PROSE } from "../../content/lessons/meet-the-machine.prose";
 import { TRIP_DISTANCE } from "../../content/lessons/meet-the-machine.listings";
 import { designProblems } from "./design";
@@ -64,8 +67,13 @@ async function commit(page: Page, id: string, option: string | RegExp): Promise<
   return figure;
 }
 
+// The registers are drawn as decimal numbers, or as their 32 bits once the switch is pressed.
 const registerValue = (figure: Locator, name: string) =>
-  figure.locator(`[data-register="${name}"] .al-reg-value`);
+  figure.locator(`[data-register="${name}"]`).locator(".al-dreg-value, .al-reg-value");
+
+/** The panel's words as one line of text. */
+const flowText = async (figure: Locator) =>
+  ((await figure.locator(".al-flow").textContent()) ?? "").replace(/\s+/g, " ").trim();
 
 const stored = (page: Page) =>
   page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? "null"), STORAGE_KEY);
@@ -113,27 +121,56 @@ test.describe("the listing figure", () => {
     else expect(asm!.y).toBeGreaterThan(c!.y + c!.height - 1);
   });
 
-  test("explains GCC's line 7 directly under the listing, open, not in a closed note above it", async ({
+  test("hangs two closed notes directly under the listing, in place of an open paragraph", async ({
     page,
   }) => {
     await openLesson(page);
     const figure = page.locator("#ix-trip-listing");
-    const after = figure.locator(".figure-after");
-    await expect(after).toBeVisible();
-    await expect(after).toContainText("Line 7 beside sub w0, w0, w3 is not a mistake.");
-    const [listing, note] = await Promise.all([
+    const notes = figure.locator("details.lesson-details");
+    await expect(notes).toHaveCount(2);
+    await expect(notes.locator("summary")).toHaveText([
+      PROSE.compilerNote.summary,
+      PROSE.lineNote.summary,
+    ]);
+    // Closed by default: the words inside are not on show.
+    for (const open of await notes.evaluateAll((els) =>
+      els.map((e) => (e as HTMLDetailsElement).open),
+    ))
+      expect(open).toBe(false);
+    await expect(figure.getByText("Line 7 beside")).toHaveCount(0);
+    await expect(figure.locator(".figure-after")).toHaveCount(0);
+    await expect(page.getByText("The record is there to lead you")).toBeHidden();
+    // Directly under the listing, in the reading column.
+    const [listing, first] = await Promise.all([
       figure.locator(".al-asm").boundingBox(),
-      after.boundingBox(),
+      notes.first().boundingBox(),
     ]);
-    expect(note!.y).toBeGreaterThan(listing!.y + listing!.height - 1);
-    await expect(page.locator("section[data-kind='question'] details")).toHaveCount(0);
-    // It is as wide as the prose above the figure, not held to a figure's narrower lines.
-    const [prose, words] = await Promise.all([
-      page.locator("section[data-kind='question'] > .prose p").first().boundingBox(),
-      after.locator("p").first().boundingBox(),
-    ]);
-    expect(Math.abs(words!.width - prose!.width)).toBeLessThan(2);
-    expect(Math.abs(words!.x - prose!.x)).toBeLessThan(2);
+    expect(first!.y).toBeGreaterThan(listing!.y + listing!.height - 1);
+    const cr = await notes.first().evaluate((el) => el.getBoundingClientRect().width);
+    expect(cr).toBeLessThanOrEqual(page.viewportSize()!.width);
+  });
+
+  test("opens a note from the keyboard, with Enter or Space, and shows its words", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const figure = page.locator("#ix-trip-listing");
+    const notes = figure.locator("details.lesson-details");
+    const summary = (n: number) => notes.nth(n).locator("summary");
+    await summary(0).focus();
+    await expect(summary(0)).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(notes.nth(0)).toHaveJSProperty("open", true);
+    await expect(notes.nth(0)).toContainText("GCC version 16.1");
+    await expect(notes.nth(0)).toContainText("makes twenty instructions");
+    await expect(notes.nth(1)).toHaveJSProperty("open", false);
+    await page.keyboard.press("Tab");
+    await expect(summary(1)).toBeFocused();
+    await page.keyboard.press("Space");
+    await expect(notes.nth(1)).toHaveJSProperty("open", true);
+    await expect(notes.nth(1)).toContainText("records both sub w0, w0, w3 and ret as line 7");
+    await page.keyboard.press("Enter");
+    await expect(notes.nth(1)).toHaveJSProperty("open", false);
   });
 });
 
@@ -223,6 +260,222 @@ test.describe("the stepper", () => {
   });
 });
 
+test.describe("the stepper's panel of what the last instruction read and wrote", () => {
+  test("shows nothing of an instruction before it has run, then the first add: 120 and 85 read, 205 written to w0", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await commit(page, "predict-total", /^In w0/);
+    const figure = page.locator("#ix-step-trip");
+    await figure.scrollIntoViewIfNeeded();
+    expect(await flowText(figure)).toBe("");
+    const next = figure.getByRole("button", { name: V.stepper.next });
+    await press(page, next);
+    const text = await flowText(figure);
+    expect(text).toContain("Reads w0 (120) + w1 (85) → Writes w0 = 205 (w0 was 120)");
+    expect(text).toContain("Changed: w0");
+    expect(text).toContain("Unchanged: w1");
+    // The shapes differ as well as the words: a dashed outline for what was read, a solid one for what was written.
+    const [src, dst] = await Promise.all([
+      figure
+        .locator('[data-role="source"]')
+        .first()
+        .evaluate((e) => getComputedStyle(e).borderTopStyle),
+      figure
+        .locator('[data-role="destination"]')
+        .evaluate((e) => getComputedStyle(e).borderTopStyle),
+    ]);
+    expect([src, dst]).toEqual(["dashed", "solid"]);
+    await press(page, next);
+    expect(await flowText(figure)).toContain(
+      "Reads w0 (205) + w2 (42) → Writes w0 = 247 (w0 was 205)",
+    );
+    await press(page, next);
+    const sub = await flowText(figure);
+    expect(sub).toContain("Reads w0 (247) − w3 (15) → Writes w0 = 232 (w0 was 247)");
+    expect(sub).toContain(M0.flow.subtracts);
+    expect(sub).toContain("Unchanged: w3");
+    await press(page, next);
+    expect(await flowText(figure)).toContain("does no arithmetic");
+    // Back restores the previous panel and the value.
+    await press(page, figure.getByRole("button", { name: V.stepper.back }));
+    expect(await flowText(figure)).toContain("Reads w0 (247) − w3 (15)");
+    await expect(registerValue(figure, "w0")).toHaveText("232");
+    await press(page, figure.getByRole("button", { name: V.stepper.back }));
+    expect(await flowText(figure)).toContain("Reads w0 (205) + w2 (42)");
+    await expect(registerValue(figure, "w0")).toHaveText("247");
+  });
+
+  test("shows the sentence about ret only once the run has ended", async ({ page }) => {
+    await openLesson(page);
+    await commit(page, "predict-total", /^In w0/);
+    const figure = page.locator("#ix-step-trip");
+    await figure.scrollIntoViewIfNeeded();
+    const next = figure.getByRole("button", { name: V.stepper.next });
+    for (let k = 0; k < 3; k++) await press(page, next);
+    await expect(figure.locator(".al-endnote")).toHaveCount(0);
+    await press(page, next);
+    await expect(figure.locator(".al-endnote")).toContainText(
+      "ret ends the function. Its result is whatever w0 holds at that moment.",
+    );
+  });
+});
+
+test.describe("the registers as decimal numbers", () => {
+  test("show no bits until the switch is pressed, and the switch works from the keyboard", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await commit(page, "predict-total", /^In w0/);
+    const figure = page.locator("#ix-step-trip");
+    await figure.scrollIntoViewIfNeeded();
+    await expect(figure.locator(".al-bit")).toHaveCount(0);
+    await expect(registerValue(figure, "w0")).toHaveText("120");
+    const toggle = figure.getByRole("button", { name: M0.registers.showBits });
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await toggle.focus();
+    await page.keyboard.press("Enter");
+    const hide = figure.getByRole("button", { name: M0.registers.hideBits });
+    await expect(hide).toHaveAttribute("aria-expanded", "true");
+    await expect(figure.locator(".al-bit")).toHaveCount(4 * 32);
+    await expect(figure.locator("[data-register='w0'] .al-bit-group")).toHaveCount(4);
+    await page.keyboard.press("Space");
+    await expect(figure.locator(".al-bit")).toHaveCount(0);
+  });
+
+  test("mark the changed register by an outline and by the word Changed", async ({ page }) => {
+    await openLesson(page);
+    await commit(page, "predict-total", /^In w0/);
+    const figure = page.locator("#ix-step-trip");
+    await figure.scrollIntoViewIfNeeded();
+    await expect(figure.locator('[data-changed="true"]')).toHaveCount(0);
+    await expect(figure.getByText(M0.registers.changed, { exact: true })).toHaveCount(0);
+    await press(page, figure.getByRole("button", { name: V.stepper.next }));
+    const changed = figure.locator('[data-changed="true"]');
+    await expect(changed).toHaveCount(1);
+    await expect(changed).toHaveAttribute("data-register", "w0");
+    await expect(changed.getByText(M0.registers.changed, { exact: true })).toBeVisible();
+    const outline = await changed.evaluate((e) => getComputedStyle(e).borderTopColor);
+    const plain = await figure
+      .locator("[data-register='w1']")
+      .evaluate((e) => getComputedStyle(e).borderTopColor);
+    expect(outline).not.toBe(plain);
+  });
+});
+
+test.describe("the ret experiment, as two connected groups", () => {
+  const groups = (figure: Locator) => figure.locator(".al-group");
+
+  test("shows trip_distance and fuel_used under their labels, and no mark until the run reaches one", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await commit(page, "predict-no-ret", "147");
+    const figure = page.locator("#ix-step-no-ret");
+    await figure.scrollIntoViewIfNeeded();
+    await expect(groups(figure).locator(".al-label")).toHaveText(["trip_distance:", "fuel_used:"]);
+    await expect(groups(figure).first().locator(".al-text")).toHaveText([
+      "add w0, w0, w1",
+      "add w0, w0, w2",
+      "sub w0, w0, w3",
+      "ret",
+    ]);
+    await expect(figure.locator(".al-stop, .al-link")).toHaveCount(0);
+    expect(await flowText(figure)).toBe("");
+    const next = figure.getByRole("button", { name: V.stepper.next });
+    for (let k = 0; k < 3; k++) await press(page, next);
+    await expect(figure.locator(".al-stop")).toHaveCount(0);
+    await press(page, next);
+    // With ret present the run stops after trip_distance's ret, and nothing links the groups.
+    await expect(groups(figure).first().locator(".al-stop")).toHaveText(/Stopping point/);
+    await expect(figure.locator(".al-link")).toHaveCount(0);
+    await expect(registerValue(figure, "w0")).toHaveText("232");
+  });
+
+  test("with ret deleted, joins the groups only when the run crosses, and the panel shows the extra subtraction", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await commit(page, "predict-no-ret", "232");
+    const figure = page.locator("#ix-step-no-ret");
+    await figure.scrollIntoViewIfNeeded();
+    await press(page, figure.getByRole("checkbox", { name: /Delete the ret line/ }));
+    await expect(figure.locator(".al-link")).toHaveCount(0);
+    await expect(groups(figure).first().locator(".al-text")).toHaveCount(3);
+    const next = figure.getByRole("button", { name: V.stepper.next });
+    for (let k = 0; k < 2; k++) await press(page, next);
+    await expect(figure.locator(".al-link")).toHaveCount(0);
+    await press(page, next);
+    const link = figure.locator(".al-link");
+    await expect(link).toHaveText("The run crosses from trip_distance into fuel_used.");
+    // Between the two groups, as a line and a text label.
+    const [first, mid, second] = await Promise.all([
+      groups(figure).first().boundingBox(),
+      link.boundingBox(),
+      groups(figure).last().boundingBox(),
+    ]);
+    expect(mid!.y).toBeGreaterThanOrEqual(first!.y + first!.height - 1);
+    expect(second!.y).toBeGreaterThanOrEqual(mid!.y + mid!.height - 1);
+    expect(await flowText(figure)).toContain("The run continues into it.");
+    await press(page, next);
+    expect(await flowText(figure)).toContain(
+      "Reads w0 (232) − w1 (85) → Writes w0 = 147 (w0 was 232)",
+    );
+    await press(page, next);
+    await expect(next).toBeDisabled();
+    await expect(registerValue(figure, "w0")).toHaveText("147");
+    await expect(groups(figure).last().locator(".al-stop")).toBeVisible();
+    // Back, three times: the connector goes with the crossing.
+    for (let k = 0; k < 3; k++)
+      await press(page, figure.getByRole("button", { name: V.stepper.back }));
+    await expect(figure.locator(".al-link")).toHaveCount(0);
+  });
+
+  test("shows no run, no groups and no switch before the prediction is checked", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const figure = page.locator("#ix-step-no-ret");
+    await figure.scrollIntoViewIfNeeded();
+    await expect(figure.locator(".al-locked")).toBeVisible();
+    await expect(figure.locator(".al-group, .al-flow, .al-link, .al-stop, .al-dreg")).toHaveCount(
+      0,
+    );
+    await expect(figure.getByRole("checkbox")).toHaveCount(0);
+  });
+
+  test("is reached from the keyboard: the switch with Space, Next with Enter", async ({ page }) => {
+    await openLesson(page);
+    await commit(page, "predict-no-ret", "147");
+    const figure = page.locator("#ix-step-no-ret");
+    await figure.scrollIntoViewIfNeeded();
+    const checkbox = figure.getByRole("checkbox", { name: /Delete the ret line/ });
+    await checkbox.focus();
+    await page.keyboard.press("Space");
+    await expect(checkbox).toBeChecked();
+    await expect(figure.locator(".al-insn")).toHaveCount(5);
+    const next = figure.getByRole("button", { name: V.stepper.next });
+    await next.focus();
+    for (let k = 0; k < 3; k++) await page.keyboard.press("Enter");
+    await expect(figure.locator(".al-link")).toBeVisible();
+  });
+
+  test("moves nothing when the learner prefers reduced motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await openLesson(page);
+    await commit(page, "predict-no-ret", "147");
+    const figure = page.locator("#ix-step-no-ret");
+    await figure.scrollIntoViewIfNeeded();
+    await press(page, figure.getByRole("checkbox"));
+    for (let k = 0; k < 3; k++)
+      await press(page, figure.getByRole("button", { name: V.stepper.next }));
+    const seconds = await figure
+      .locator(".al-link")
+      .evaluate((e) => parseFloat(getComputedStyle(e).animationDuration));
+    expect(seconds).toBeLessThan(0.01);
+  });
+});
+
 test.describe("the two predictions commit before they reveal", () => {
   for (const [id, right, wrong] of [
     ["predict-total", /^In w0/, /^In w3/],
@@ -244,6 +497,29 @@ test.describe("the two predictions commit before they reveal", () => {
       await figure.getByRole("radio", { name: wrong }).check();
       await press(page, figure.getByRole("button", { name: V.prediction.commit }));
       await expect(figure.locator(".al-nomatch")).toContainText(V.prediction.noMatch);
+    });
+  }
+
+  for (const [id, wrong, sentence] of [
+    ["predict-total", /^In a new place/, PROSE.predictionFeedback["new-place"]],
+    ["predict-total", /^It does not keep/, PROSE.predictionFeedback["not-kept"]],
+    ["predict-total", /^In w3/, PROSE.predictionFeedback.w3],
+    ["predict-no-ret", "232", PROSE.failureFeedback["232"]],
+    ["predict-no-ret", /^The run stops with an error/, PROSE.failureFeedback.error],
+    ["predict-no-ret", "0", PROSE.failureFeedback["0"]],
+  ] as const) {
+    test(`${id}: choosing ${String(wrong)} wrongly is answered with its sentence, and the right choice with none`, async ({
+      page,
+    }) => {
+      await openLesson(page);
+      const figure = await commit(page, id, wrong);
+      await expect(figure.locator(".al-nomatch")).toContainText(V.prediction.noMatch);
+      await expect(figure.locator(".al-feedback")).toHaveText(sentence.replace(/`/g, ""));
+      const right = id === "predict-total" ? /^In w0/ : "147";
+      await figure.getByRole("radio", { name: right }).check();
+      await press(page, figure.getByRole("button", { name: V.prediction.commit }));
+      await expect(figure.locator(".al-match")).toBeVisible();
+      await expect(figure.locator(".al-feedback")).toHaveCount(0);
     });
   }
 
@@ -372,8 +648,27 @@ test.describe("a wrong answer is rejected", () => {
       "fuel_used(50, 38)",
       "fuel_used(60, 5)",
     ]);
-    await expect(c.locator(".verdict-failure").first()).toContainText("w0=-12");
+    // Both failures are the reversed subtraction, so each is answered with the sentence about the
+    // order of the operands, which names no value.
+    await expect(c.locator(".verdict-detail")).toHaveText([
+      quoted(PROSE.fixReversedFeedback),
+      quoted(PROSE.fixReversedFeedback),
+    ]);
     await expect(c.locator(".challenge-complete")).toHaveCount(0);
+  });
+
+  test("any other wrong result keeps the usual card, with the values and without the sentence", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const c = challenge(page, FIX);
+    await c.scrollIntoViewIfNeeded();
+    const box = c.getByRole("textbox", { name: V.editor.textLabel });
+    await box.fill("add w0, w0, w1\nret");
+    await press(page, run(c));
+    await expect(c.locator(".verdict-failure")).toHaveCount(3);
+    await expect(c.locator(".verdict-detail")).toHaveCount(0);
+    await expect(c.locator(".verdict-failure").first()).toContainText("w0=88");
   });
 
   test("another wrong order of operands fails, and an instruction the lesson has not met is refused", async ({
@@ -549,8 +844,17 @@ test.describe("the look of the lesson page", () => {
     const step = page.locator("#ix-step-trip");
     await press(page, step.getByRole("button", { name: V.stepper.next }));
     await press(page, step.getByRole("button", { name: V.stepper.next }));
+    // Both notes under the listing open, the bits of the registers shown, and the experiment's run
+    // across into fuel_used with its connector drawn.
+    for (const summary of await page.locator("#ix-trip-listing summary").all())
+      await press(page, summary);
+    await press(page, step.getByRole("button", { name: M0.registers.showBits }));
     const noRet = page.locator("#ix-step-no-ret");
     await press(page, noRet.getByRole("checkbox"));
+    for (let k = 0; k < 3; k++)
+      await press(page, noRet.getByRole("button", { name: V.stepper.next }));
+    await expect(noRet.locator(".al-link")).toBeVisible();
+    expect(await designProblems(page, phone)).toEqual([]);
     const fix = challenge(page, FIX);
     await press(page, fix.getByRole("button", { name: V.editor.tap, exact: true }));
     await press(page, fix.locator(".asm-line-button").first());
@@ -571,9 +875,47 @@ test.describe("the look of the lesson page", () => {
     expect(await designProblems(page, phone)).toEqual([]);
   });
 
+  test("the page, with every new part open, is 360 pixels wide with no sideways scroll, legible text and controls 40 pixels tall", async ({
+    page,
+  }, info) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    // The phone project taps; the desktop project, resized to 360, still has a mouse.
+    const press = (_page: Page, target: Locator) =>
+      info.project.name === "phone" ? target.tap() : target.click();
+    await openLesson(page);
+    await commit(page, "predict-total", /^In a new place/);
+    await commit(page, "predict-no-ret", "232");
+    for (const summary of await page.locator("#ix-trip-listing summary").all())
+      await press(page, summary);
+    const step = page.locator("#ix-step-trip");
+    await step.scrollIntoViewIfNeeded();
+    await press(page, step.getByRole("button", { name: V.stepper.next }));
+    expect(await designProblems(page, true)).toEqual([]);
+    await press(page, step.getByRole("button", { name: M0.registers.showBits }));
+    for (let k = 0; k < 3; k++)
+      await press(page, step.getByRole("button", { name: V.stepper.next }));
+    expect(await designProblems(page, true)).toEqual([]);
+    const noRet = page.locator("#ix-step-no-ret");
+    await press(page, noRet.getByRole("checkbox"));
+    for (let k = 0; k < 5; k++)
+      await press(page, noRet.getByRole("button", { name: V.stepper.next }));
+    await expect(noRet.locator(".al-link")).toBeVisible();
+    await expect(noRet.locator(".al-stop")).toBeVisible();
+    expect(await designProblems(page, true)).toEqual([]);
+    const reflection = page.locator("section[data-kind='reflection']");
+    await reflection.scrollIntoViewIfNeeded();
+    await press(page, reflection.locator("summary"));
+    await expect(reflection.locator("details")).toContainText("w2 still holds 9.");
+    expect(await designProblems(page, true)).toEqual([]);
+  });
+
   test("a register's 32 cells fit the screen, on a phone and on a desk", async ({ page }) => {
     await openLesson(page);
     await commit(page, "predict-total", /^In w0/);
+    await press(
+      page,
+      page.locator("#ix-step-trip").getByRole("button", { name: M0.registers.showBits }),
+    );
     const row = page.locator("#ix-step-trip [data-register='w0']");
     await row.scrollIntoViewIfNeeded();
     const box = (await row.boundingBox())!;
@@ -598,6 +940,7 @@ test.describe("both themes", () => {
       await commit(page, "predict-total", /^In w0/);
       const figure = page.locator("#ix-step-trip");
       await press(page, figure.getByRole("button", { name: V.stepper.next }));
+      await press(page, figure.getByRole("button", { name: M0.registers.showBits }));
       const colours = await figure.evaluate((el) => {
         const on = el.querySelector('.al-bit[data-on="true"]')!;
         const off = el.querySelector('.al-bit[data-on="false"]')!;

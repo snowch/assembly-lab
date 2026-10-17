@@ -38,16 +38,82 @@ const shown = flat(
   ].join("\n"),
 );
 
-/** The file's lines that carry words, without their list marks or stage-direction wrappers. */
+/**
+ * The file's lines that carry words, without their list marks or stage-direction wrappers. A line
+ * that begins `*Shown`, `*Closed note` or `*Answer (closed` says when something appears and is not
+ * itself shown; a `*Feedback for ...:*` line is shown without that lead-in.
+ */
 const wordsOfFile = body
   .split("\n")
-  .filter((l) => l.trim() !== "" && !l.startsWith("## ") && !l.startsWith("*Shown after"))
+  .filter(
+    (l) =>
+      l.trim() !== "" &&
+      !l.startsWith("## ") &&
+      !l.startsWith("*Shown") &&
+      !l.startsWith("*Closed note") &&
+      !l.startsWith("*Answer (closed"),
+  )
   .map((l) =>
     l
       .replace(/^- /, "")
       .replace(/^\d+\. /, "")
-      .replace(/^\*Feedback for a wrong `w\d`:\* /, ""),
+      .replace(/^\*Feedback for [^:]*:\* /, ""),
   );
+
+/** The strings of a section's figures' props, found by the figure's id. */
+const figure = (id: string) =>
+  lesson.sections.flatMap((s) => s.interactives).find((x) => x.id === id)!;
+
+describe("the closed notes and the wrong-answer sentences", () => {
+  it("hang two closed notes under the listing, with the file's titles and words", () => {
+    expect(figure("trip-listing").props["notes"]).toEqual([PROSE.compilerNote, PROSE.lineNote]);
+    const titles = [...body.matchAll(/^\*Closed note under the listing[^\n]*\n\n\*\*(.*)\*\*$/gm)];
+    expect(titles.map((m) => m[1])).toEqual([PROSE.compilerNote.summary, PROSE.lineNote.summary]);
+    // The notes replace the open paragraph that used to sit under the listing.
+    expect(figure("trip-listing").after).toBeUndefined();
+  });
+
+  it("give each wrong option of the two predictions the file's sentence, and the right option none", () => {
+    const feedbackOf = (id: string) =>
+      Object.fromEntries(
+        (figure(id).props["options"] as { value: string; feedback?: string }[]).map((o) => [
+          o.value,
+          o.feedback,
+        ]),
+      );
+    expect(feedbackOf("predict-total")).toEqual({
+      w0: undefined,
+      "new-place": PROSE.predictionFeedback["new-place"],
+      "not-kept": PROSE.predictionFeedback["not-kept"],
+      w3: PROSE.predictionFeedback.w3,
+    });
+    expect(feedbackOf("predict-no-ret")).toEqual({
+      "232": PROSE.failureFeedback["232"],
+      "147": undefined,
+      error: PROSE.failureFeedback.error,
+      "0": PROSE.failureFeedback["0"],
+    });
+  });
+
+  it("close the last section with the question's answer as its closed note, titled Answer", () => {
+    const last = lesson.sections.at(-1)!;
+    expect(last.details).toEqual({ summary: "Answer", prose: PROSE.reflectionAnswer });
+    expect(last.prose).not.toContain(PROSE.reflectionAnswer);
+    expect(last.title).toBe("What you now know");
+  });
+
+  it("give the stepper the file's sentence for the end of the run, and the other steppers none", () => {
+    expect(figure("step-trip").props["endNote"]).toBe(PROSE.investigationEnd);
+    expect(figure("step-no-ret").props["endNote"]).toBeUndefined();
+  });
+
+  it("give the construction challenge's three cases the sentence for the reversed subtraction", () => {
+    const c = lesson.challenges.find((x) => x.id === "fix-fuel-used")!;
+    if (c.tests.kind !== "answers") throw new Error("answer tests");
+    for (const t of c.tests.cases)
+      expect(t.given["misconception.feedback"], t.label).toBe(PROSE.fixReversedFeedback);
+  });
+});
 
 describe("the lesson's words", () => {
   it("include every line of docs/notes/module-0/prose.md", () => {

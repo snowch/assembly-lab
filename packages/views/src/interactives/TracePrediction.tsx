@@ -32,7 +32,16 @@ const Measure = z.discriminatedUnion("kind", [
 const Props = z.object({
   /** Markdown: the question. */
   question: z.string(),
-  options: z.array(z.object({ value: z.string(), label: z.string() })).min(2),
+  options: z
+    .array(
+      z.object({
+        value: z.string(),
+        label: z.string(),
+        /** Shown, with the result, when this option is chosen and the model says it does not match. */
+        feedback: z.string().optional(),
+      }),
+    )
+    .min(2),
   /** Markdown, shown once the prediction is checked. */
   explain: z.string().default(""),
   program: RecordedSchema,
@@ -75,6 +84,10 @@ export const TracePrediction = withProps(
       return { value: String(held), said: S.prediction.endedWith(`w${m.register}`, held) };
     }, [stored, data.measure, data.program, data.call]);
     const labelOf = (value: string) => data.options.find((o) => o.value === value)?.label ?? value;
+    const feedback =
+      stored && outcome && outcome.value !== stored.choice
+        ? data.options.find((o) => o.value === stored.choice)?.feedback
+        : undefined;
     return (
       <div
         className="al-figure al-prediction"
@@ -84,7 +97,7 @@ export const TracePrediction = withProps(
         <Prose markdown={data.question} />
         <PredictionChallenge
           name={`${interactive.id}-choice`}
-          options={data.options}
+          options={data.options.map(({ value, label }) => ({ value, label }))}
           committed={stored?.choice}
           onCommit={(choice) => setStored({ choice })}
           legend={S.prediction.legend}
@@ -103,6 +116,7 @@ export const TracePrediction = withProps(
               {withCode(outcome.said)}{" "}
               {outcome.value === stored.choice ? S.prediction.match : S.prediction.noMatch}
             </p>
+            {feedback !== undefined && <p className="al-feedback">{withCode(feedback)}</p>}
             {data.explain && <Prose markdown={data.explain} />}
           </div>
         )}

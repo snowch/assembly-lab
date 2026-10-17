@@ -8,6 +8,7 @@
 // docs/notes/module-0/prose.md), and the compiler listings are in meet-the-machine.listings.ts.
 // The plan for the lesson is docs/notes/module-0-plan.md.
 
+import { TEXT_BASE, assemble, run } from "@al/machine";
 import type { LessonInput } from "@platform/lesson-schema";
 
 import { LABELS } from "./meet-the-machine.labels";
@@ -29,6 +30,44 @@ const TRIP_CALL = { entry: "trip_distance", args: [120, 85, 42, 15] } as const;
 /** The graders the book supplies (packages/views/src/grader.ts). */
 const RUN_REGISTERS = "run-registers";
 const REGISTERS_AT_RETURN = "registers-at-return";
+
+/**
+ * What the mistaken `fuel_used` (`sub w0, w1, w0`) leaves in `w0` for a call: the reversed
+ * subtraction, `at_end` minus `at_start`, as the model computes it. A failed test whose result is
+ * this number gets the sentence about the order of the operands.
+ */
+function reversedResult(atStart: number, atEnd: number): number {
+  const { program } = assemble(FUEL_USED_MISTAKEN_TEXT);
+  if (program === null) throw new Error("The mistaken fuel_used does not assemble.");
+  const result = run(program, {
+    entry: TEXT_BASE,
+    args: [atStart, atEnd].map((value) => ({ value: BigInt(value), width: 32 as const })),
+  });
+  return Number(BigInt.asIntN(32, result.final.x[0] ?? 0n));
+}
+
+/** A call of `fuel_used`, with the sentence for its reversed result. */
+function fuelCase(atStart: number, atEnd: number, expected: number) {
+  return {
+    label: `fuel_used(${atStart}, ${atEnd})`,
+    given: {
+      w0: atStart,
+      w1: atEnd,
+      "misconception.value": reversedResult(atStart, atEnd),
+      "misconception.feedback": PROSE.fixReversedFeedback,
+    },
+    expect: { w0: expected },
+  };
+}
+
+/** A prediction's option with the sentence for choosing it wrongly, if the lesson has one. */
+function withFeedback(
+  option: { readonly value: string; readonly label: string },
+  feedback: Readonly<Record<string, string>>,
+) {
+  const own = feedback[option.value];
+  return own === undefined ? { ...option } : { ...option, feedback: own };
+}
 
 const KM_ARGS = { w0: 30000, w1: 28750, w2: 140, w3: 390 } as const;
 
@@ -57,9 +96,11 @@ export const meetTheMachine: LessonInput = {
           kind: "listing",
           timeModel: "none",
           caption: LABELS.captions.listing,
-          // Under the listing, beside the line 7 it explains.
-          after: PROSE.questionAfter,
-          props: { program: TRIP_DISTANCE },
+          // Two closed notes under the listing: the compiler and its setting, and GCC's line 7.
+          props: {
+            program: TRIP_DISTANCE,
+            notes: [PROSE.compilerNote, PROSE.lineNote],
+          },
         },
       ],
     },
@@ -76,7 +117,7 @@ export const meetTheMachine: LessonInput = {
           caption: LABELS.captions.predictTotal,
           props: {
             question: PROSE.predictionQuestion,
-            options: LABELS.options.total,
+            options: LABELS.options.total.map((o) => withFeedback(o, PROSE.predictionFeedback)),
             explain: PROSE.predictionExplain,
             program: TRIP_DISTANCE,
             call: TRIP_CALL,
@@ -100,6 +141,10 @@ export const meetTheMachine: LessonInput = {
             call: TRIP_CALL,
             registers: [0, 1, 2, 3],
             after: "predict-total",
+            // Module 0 shows what each step read and wrote, and each register as a decimal number.
+            flow: true,
+            decimal: true,
+            endNote: PROSE.investigationEnd,
           },
         },
       ],
@@ -130,7 +175,7 @@ export const meetTheMachine: LessonInput = {
           caption: LABELS.captions.predictNoRet,
           props: {
             question: PROSE.failureQuestion,
-            options: LABELS.options.noRet,
+            options: LABELS.options.noRet.map((o) => withFeedback(o, PROSE.failureFeedback)),
             explain: PROSE.failureExplain,
             program: TRIP_DISTANCE_AND_FUEL_USED,
             call: TRIP_CALL,
@@ -152,6 +197,9 @@ export const meetTheMachine: LessonInput = {
             registers: [0, 1, 2, 3],
             removable: { label: "trip_distance", text: "ret" },
             after: "predict-no-ret",
+            flow: true,
+            decimal: true,
+            grouped: true,
           },
         },
       ],
@@ -172,7 +220,13 @@ export const meetTheMachine: LessonInput = {
         },
       ],
     },
-    { kind: "reflection", title: LABELS.titles.reflection, prose: PROSE.reflection },
+    {
+      kind: "reflection",
+      title: LABELS.titles.reflection,
+      prose: PROSE.reflection,
+      // The answer to the closing question, shut until the learner opens it.
+      details: { summary: LABELS.details.reflection, prose: PROSE.reflectionAnswer },
+    },
   ],
   challenges: [
     {
@@ -195,11 +249,7 @@ export const meetTheMachine: LessonInput = {
       tests: {
         kind: "answers",
         grader: RUN_REGISTERS,
-        cases: [
-          { label: "fuel_used(50, 38)", given: { w0: 50, w1: 38 }, expect: { w0: 12 } },
-          { label: "fuel_used(45, 45)", given: { w0: 45, w1: 45 }, expect: { w0: 0 } },
-          { label: "fuel_used(60, 5)", given: { w0: 60, w1: 5 }, expect: { w0: 55 } },
-        ],
+        cases: [fuelCase(50, 38, 12), fuelCase(45, 45, 0), fuelCase(60, 5, 55)],
       },
       hints: [...PROSE.fixHints],
       reference: { text: FUEL_USED_FIXED_TEXT },
