@@ -5,18 +5,26 @@
 // instruction that just ran is lit, and each register is drawn as 32 bits and a number. Every value
 // comes from `run()` and `stateAfter()` through trace.ts. An option takes one named line out of the
 // listing and runs it again, for the failure experiment.
+//
+// Module 0 turns on four more things, each an optional prop that is off elsewhere: `flow` (a panel
+// under the controls that says what the last instruction read and wrote), `decimal` (registers as
+// large decimal numbers, with a switch that opens their 32 bits), `grouped` (the listing as one box
+// for each function, marking where the run stops and where it crosses into the next function) and
+// `endNote` (a sentence that appears only once the run has ended).
 
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { z } from "zod";
 
 import { useSlot } from "@platform/lesson-runtime";
 
+import { crossedFrom, flowAt } from "../flow";
 import { cLinesOf, labelOf } from "../listing";
 import { FlagsRow } from "../FlagsRow";
 import { stopSentence } from "../messages";
-import { ListingView, RegisterRow, withCode } from "../parts";
+import { DecimalRegister, ListingView, RegisterRow, withCode } from "../parts";
 import { VIEW_STRINGS as S } from "../strings";
 import { BRANCH_STRINGS as B } from "../strings.branch";
+import { MODULE0_STRINGS as M0 } from "../strings.module0";
 import { traceOf, viewAt, wValue, type StepView, type Trace } from "../trace";
 import { CallSchema, DeleteSchema, RecordedSchema, withProps } from "./props";
 
@@ -33,6 +41,17 @@ const Props = z.object({
   flags: z.boolean().default(false),
   /** Say how many instructions have run so far. */
   count: z.boolean().default(false),
+  /**
+   * After each step, say what the instruction read and wrote: the sources with the values they
+   * held, the operation, the destination with its old and new value, and which registers changed.
+   */
+  flow: z.boolean().default(false),
+  /** Draw each register as a large decimal number; a switch opens the 32 bits. */
+  decimal: z.boolean().default(false),
+  /** Draw the listing as one box for each function, with the run's stopping point and crossings marked. */
+  grouped: z.boolean().default(false),
+  /** Markdown-free text shown under the figure's status once the run has ended. */
+  endNote: z.string().optional(),
 });
 
 /** What the status line says: what ran, what runs next, how the run ended. */
@@ -57,9 +76,73 @@ function statusOf(trace: Trace, view: StepView) {
   return parts.join(" ");
 }
 
+/** What the last instruction read and wrote, in words and numbers. Nothing before the first step. */
+function FlowPanel({ trace, k }: { trace: Trace; k: number }) {
+  const flow = flowAt(trace, k);
+  const F = M0.flow;
+  return (
+    <div
+      className="al-flow"
+      role="group"
+      aria-label={F.label}
+      aria-live="polite"
+      aria-atomic="true"
+      data-flow={flow?.kind ?? "none"}
+    >
+      {flow?.kind === "arith" && (
+        <>
+          <p className="al-flow-head">{withCode(F.head(flow.text))}</p>
+          <p className="al-flow-equation">
+            <span className="al-flow-role">{F.reads}</span>{" "}
+            {flow.sources.map((source, i) => (
+              <span key={i}>
+                {i > 0 && (
+                  <span className="al-flow-op">
+                    {" "}
+                    {flow.operation === "add" ? F.plus : F.minus}{" "}
+                  </span>
+                )}
+                <span className="al-flow-source" data-role="source">
+                  {source.isRegister ? F.read(source.name, source.value) : source.name}
+                </span>
+              </span>
+            ))}{" "}
+            <span className="al-flow-nowrap">
+              <span className="al-flow-op">{F.gives}</span>{" "}
+              <span className="al-flow-role">{F.writes}</span>
+            </span>{" "}
+            <span className="al-flow-destination" data-role="destination">
+              {F.wrote(flow.destination.name, flow.destination.after)}
+            </span>{" "}
+            <span className="al-flow-was">
+              ({F.was(flow.destination.name, flow.destination.before)})
+            </span>
+          </p>
+          <p className="al-flow-order">{flow.operation === "add" ? F.adds : F.subtracts}</p>
+          <p className="al-flow-sets">
+            <span data-set="changed">{F.changed(flow.changed.join(", ") || F.none)}</span>{" "}
+            <span data-set="unchanged">{F.unchanged(flow.unchanged.join(", ") || F.none)}</span>
+          </p>
+          {flow.continuesInto !== null && (
+            <p className="al-flow-continues">{withCode(F.continues(flow.continuesInto))}</p>
+          )}
+        </>
+      )}
+      {flow?.kind === "ret" && (
+        <>
+          <p className="al-flow-head">{withCode(F.head(flow.text))}</p>
+          <p className="al-flow-return">{withCode(F.ret)}</p>
+        </>
+      )}
+    </div>
+  );
+}
+
 export const StepperFigure = withProps(Props, function StepperFigure({ data, store }) {
   const [removed, setRemoved] = useState(false);
   const [k, setK] = useState(0);
+  const [bitsShown, setBitsShown] = useState(false);
+  const bitsId = useId();
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const trace = useMemo(
     () => traceOf(data.program, data.call, removed ? data.removable : undefined),
@@ -74,6 +157,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
   }
   const view = viewAt(trace, k);
   const atEnd = view.k >= view.total;
+  const decimalOnly = data.decimal && !bitsShown;
   return (
     <div className="al-figure al-stepper" data-figure="stepper" data-k={view.k}>
       {data.removable && (
@@ -95,6 +179,9 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
         next={view.next}
         litC={view.litC}
         ran={view.ran}
+        grouped={data.grouped}
+        stopAfter={data.grouped && view.stop?.kind === "returned" ? view.ran : null}
+        crossedAfter={data.grouped ? crossedFrom(trace, view.k) : null}
       />
       <div className="al-controls" role="group" aria-label={S.stepper.controls}>
         <button
@@ -125,20 +212,53 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
       <p className="al-status" role="status">
         {withCode(statusOf(trace, view))}
       </p>
+      {data.endNote !== undefined && atEnd && (
+        <p className="al-endnote">{withCode(data.endNote)}</p>
+      )}
       {data.count && (
         <p className="al-count" data-count={view.k}>
           {B.stepper.count(view.k)}
         </p>
       )}
-      <div className="al-registers" role="group" aria-label={S.stepper.registers}>
-        {data.registers.map((n) => (
-          <RegisterRow
-            key={n}
-            name={`w${n}`}
-            value={wValue(view.state, n)}
-            changed={view.written.has(n)}
-          />
-        ))}
+      {data.flow && <FlowPanel trace={trace} k={view.k} />}
+      {data.decimal && (
+        <div className="al-registers-head">
+          <span className="al-registers-title">{S.stepper.registers}</span>
+          <button
+            type="button"
+            className="button secondary"
+            aria-expanded={bitsShown}
+            aria-controls={bitsId}
+            onClick={() => setBitsShown(!bitsShown)}
+          >
+            {bitsShown ? M0.registers.hideBits : M0.registers.showBits}
+          </button>
+        </div>
+      )}
+      <div
+        id={data.decimal ? bitsId : undefined}
+        className="al-registers"
+        role="group"
+        aria-label={S.stepper.registers}
+        data-view={data.decimal ? (decimalOnly ? "decimal" : "bits") : undefined}
+      >
+        {data.registers.map((n) =>
+          decimalOnly ? (
+            <DecimalRegister
+              key={n}
+              name={`w${n}`}
+              value={wValue(view.state, n)}
+              changed={view.written.has(n)}
+            />
+          ) : (
+            <RegisterRow
+              key={n}
+              name={`w${n}`}
+              value={wValue(view.state, n)}
+              changed={view.written.has(n)}
+            />
+          ),
+        )}
       </div>
       {data.flags && (
         <FlagsRow

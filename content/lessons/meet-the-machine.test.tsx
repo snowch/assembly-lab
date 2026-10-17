@@ -107,6 +107,34 @@ describe("the challenges", () => {
     expect(verdict.failures[0]?.actual).toEqual({ w0: "-12" });
   });
 
+  it("fix-fuel-used: the reversed subtraction is answered with the lesson's sentence about the order", () => {
+    const c = challenge("fix-fuel-used");
+    const verdict = grade(c, c.initial);
+    expect(verdict.failures.map((f) => f.detail)).toEqual([
+      quoted(PROSE.fixReversedFeedback),
+      quoted(PROSE.fixReversedFeedback),
+    ]);
+    // The sentence says what to look at, not the answer.
+    expect(PROSE.fixReversedFeedback).not.toMatch(/sub w0, w0, w1/);
+  });
+
+  it("fix-fuel-used: any other wrong result keeps the usual card, with its values", () => {
+    const c = challenge("fix-fuel-used");
+    // add w0, w0, w1 gives 88, 90 and 65: right for none of the three calls, and not reversed.
+    const verdict = grade(c, { text: "add w0, w0, w1\nret" });
+    expect(verdict.failures).toHaveLength(3);
+    for (const f of verdict.failures) expect(f.detail).toBeUndefined();
+    expect(verdict.failures.map((f) => f.actual)).toEqual([
+      { w0: "88" },
+      { w0: "90" },
+      { w0: "65" },
+    ]);
+    // A program that returns 0 gets the (45, 45) call right; the other two fail with no sentence.
+    const zero = grade(c, { text: "sub w0, w0, w0\nret" });
+    expect(zero.failures).toHaveLength(2);
+    expect(zero.failures.every((f) => f.detail === undefined)).toBe(true);
+  });
+
   it("trace-the-call: a wrong w1 is answered with the lesson's sentence, not the value", () => {
     const c = challenge("trace-the-call");
     const verdict = grade(c, { answers: { w0: "670", w1: "30000" } });

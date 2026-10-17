@@ -22,7 +22,12 @@ export const LABELS = {
     explanation: "How a program runs",
     generalisation: "Other functions",
     challenge: "Kilometres to service",
-    reflection: "Looking back",
+    reflection: "What you now know",
+  },
+  // The words on the control that opens a section's closed note (docs/notes/module-0/prose.md,
+  // section 10: "Answer (closed by default)").
+  details: {
+    reflection: "Answer",
   },
   captions: {
     listing:

@@ -58,10 +58,10 @@ Instructions the lesson's assembler allows: `add`, `sub`, `ret`.
 
 | Figure | Section | What it shows, all from the simulator's trace |
 | --- | --- | --- |
-| a C function beside its listing | question | the C with its lines, the listing, and which C line each instruction is recorded against; static, from the recorded listing |
-| prediction: where does `total` live? | prediction | four options; the answer comes from running the first instruction |
-| the stepper | investigation | the listing with the instruction that runs next marked (the program counter, drawn as a marker, not as a number: hexadecimal is Module 1's), the recorded C line lit, `w0` to `w3` each as 32 bits and as a decimal number, the changed register outlined; next, back, reset |
-| the stepper, with a "delete `ret`" switch | failure experiment | the same figure over `trip_distance` followed by `fuel_used`; the switch removes the line and reruns; the learner predicts first |
+| a C function beside its listing | question | the C with its lines, the listing, and which C line each instruction is recorded against; static, from the recorded listing; two closed notes under it (the compiler and its setting, and GCC's line 7) |
+| prediction: where does `total` live? | prediction | four options; the answer comes from running the first instruction; each wrong option has its own sentence under the result |
+| the stepper | investigation | the listing with the instruction that runs next marked (the program counter, drawn as a marker, not as a number: hexadecimal is Module 1's), the recorded C line lit; after each step a panel that says what the instruction read and wrote (sources with the values read, the operation, the destination with its old and new value, which registers changed and which were only read), computed from the trace's states before and after; `w0` to `w3` each as a large decimal number, the changed register outlined and labelled, with a switch that opens the 32 bits; next, back, reset; a sentence about `ret` once the run has ended |
+| the stepper, with a "delete `ret`" switch | failure experiment | the same figure over `trip_distance` followed by `fuel_used`, drawn as two groups under their labels; the switch removes the line and reruns; the learner predicts first. With `ret` the run's stopping point is marked once it is reached; without it, a connector with a text label is drawn between the groups when the run crosses into `fuel_used`, and the panel shows the extra subtraction |
 | the assembly editor | construction | the mistaken `fuel_used` listing, editable, run against three calls; the verdict per call |
 | an answers challenge | challenge | `km_to_service`'s listing and the call; two fields: `w0` at the end, and `w1` at the end |
 
@@ -76,7 +76,9 @@ typing at the desktop width, and by tapping alone at the phone width.
 
 1. **Fix `fuel_used`** (write, graded by running): starting point `sub w0, w1, w0` / `ret`, which
    fails all three calls but `(45, 45)`; reference `sub w0, w0, w1` / `ret`. Five hints, from "which
-   operand does `sub` subtract from which?" to the whole answer.
+   operand does `sub` subtract from which?" to the whole answer. A failed call whose result is the
+   reversed subtraction (`at_end` minus `at_start`, worked out on the model) is answered with a
+   sentence about the order of the operands; any other failure keeps the usual card.
 2. **Trace `km_to_service`** (answers): `w0` at the end, 670; `w1` at the end, 28750. Five hints.
    The grader's feedback for a wrong `w1` says that a `sub` writes only its first operand, never
    the value it was given.

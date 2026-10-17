@@ -1,0 +1,232 @@
+/* Copyright © 2026 Christopher Snow */
+
+/* Module 0's additions to the stepper and the listing. Every rule here is for a part that only
+   draws when a lesson asks for it, so the other modules' figures are as they were. Colours are the
+   app's tokens, so the parts follow the theme. Nothing moves except a short fade, which the
+   app's reduced-motion rule stops. */
+
+/* Closed notes under a listing */
+.al-notes {
+  display: grid;
+  gap: var(--space-2);
+}
+.al-notes .lesson-details {
+  margin: 0;
+}
+
+/* The sentence for a wrong choice, under the result line */
+.al-feedback {
+  margin: var(--space-2) 0 var(--space-3);
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--border-strong);
+}
+
+/* The sentence that appears once the run has ended */
+.al-endnote {
+  margin: 0;
+}
+
+/* What the last instruction read and wrote */
+.al-flow {
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+}
+.al-flow:not([data-flow="none"]) {
+  padding: var(--space-3);
+  border-color: var(--border);
+  background: var(--bg-raised);
+  animation: al-appear var(--motion) ease-out;
+}
+/* Every panel for an addition or a subtraction is as tall as the others, so the registers under it stay put. */
+.al-flow[data-flow="arith"] {
+  min-height: 9.5rem;
+}
+.al-flow p {
+  margin: 0;
+}
+.al-flow p + p {
+  margin-top: var(--space-2);
+}
+.al-flow code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+.al-flow p.al-flow-head {
+  max-width: 26rem;
+  color: var(--fg-muted);
+  font-size: var(--text-xs);
+}
+.al-flow-equation {
+  font-family: var(--font-mono);
+  line-height: 2.3;
+}
+/* A word that says which part of the line a value is in, so the shapes do not carry it alone */
+.al-flow-role {
+  font-family: var(--font-text);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+/* A value that was read: a dashed outline */
+.al-flow-source {
+  display: inline-block;
+  padding: 0 var(--space-2);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  line-height: 1.6;
+}
+/* The value that was written: solid and filled */
+.al-flow-destination {
+  display: inline-block;
+  padding: 0 var(--space-2);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  font-weight: 650;
+  line-height: 1.5;
+}
+.al-flow-nowrap {
+  white-space: nowrap;
+}
+.al-flow-was {
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+.al-flow-sets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-5);
+}
+.al-flow-sets [data-set="changed"] {
+  font-weight: 650;
+}
+.al-flow-continues {
+  font-weight: 600;
+}
+
+/* Registers as decimal numbers, with a switch that opens their bits */
+.al-registers-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.al-registers-title {
+  font-weight: 650;
+}
+.al-registers[data-view="decimal"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 48rem) {
+  .al-registers[data-view="decimal"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.al-dreg {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+}
+.al-dreg[data-changed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.al-dreg-name {
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+.al-dreg-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: 650;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+/* The word that says the register changed; its line is kept so the card does not change height */
+.al-dreg-flag {
+  min-height: 1.3em;
+  color: var(--accent-strong);
+  font-size: var(--text-xs);
+  font-weight: 650;
+}
+
+/* The listing as one box for each function */
+.al-group {
+  margin: 0 var(--space-2) var(--space-2);
+  padding: var(--space-1) 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+}
+.al-group .al-label {
+  padding-top: var(--space-1);
+}
+/* Where the run ends: a rule across the box and the words that say so */
+.al-stop {
+  margin: var(--space-1) var(--space-3) var(--space-1) 1.75rem;
+  padding-top: var(--space-1);
+  border-top: 2px solid var(--accent);
+  color: var(--fg);
+  font-family: var(--font-text);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  animation: al-appear var(--motion) ease-out;
+}
+.al-stop code {
+  font-size: inherit;
+}
+/* Where the run goes on from one box into the next: a dashed line with an arrowhead, and the words */
+.al-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 var(--space-2) var(--space-2);
+  padding-left: 1.1rem;
+  color: var(--fg);
+  font-family: var(--font-text);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  animation: al-appear var(--motion) ease-out;
+}
+.al-link code {
+  font-size: inherit;
+}
+.al-link-line {
+  position: relative;
+  flex: none;
+  align-self: stretch;
+  min-height: 2rem;
+  border-left: 2px dashed var(--accent);
+}
+.al-link-line::after {
+  content: "";
+  position: absolute;
+  left: -6px;
+  bottom: -2px;
+  border-top: 7px solid var(--accent);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+
+@keyframes al-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

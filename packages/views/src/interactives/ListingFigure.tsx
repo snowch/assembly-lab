@@ -1,20 +1,38 @@
 // Copyright © 2026 Christopher Snow
 
 // A C function beside the instructions GCC made from it, each instruction showing the C line GCC
-// recorded for it. Static: it draws the recorded listing and runs nothing.
+// recorded for it. Static: it draws the recorded listing and runs nothing. A lesson may hang
+// closed notes under it (`notes`): each is a `details` the learner opens, with the summary as its
+// control and Markdown for its body.
 
 import { z } from "zod";
+
+import { Prose } from "@platform/lesson-runtime";
 
 import { cLinesOf, parseListing } from "../listing";
 import { ListingView } from "../parts";
 import { RecordedSchema, withProps } from "./props";
 
-const Props = z.object({ program: RecordedSchema });
+const Props = z.object({
+  program: RecordedSchema,
+  /** Closed notes under the listing: the words on the control, and Markdown for what opens. */
+  notes: z.array(z.object({ summary: z.string().min(1), body: z.string().min(1) })).default([]),
+});
 
 export const ListingFigure = withProps(Props, function ListingFigure({ data }) {
   return (
     <div className="al-figure" data-figure="listing">
       <ListingView cLines={cLinesOf(data.program.c)} lines={parseListing(data.program.listing)} />
+      {data.notes.length > 0 && (
+        <div className="al-notes">
+          {data.notes.map((note) => (
+            <details className="lesson-details" key={note.summary}>
+              <summary>{note.summary}</summary>
+              <Prose markdown={note.body} />
+            </details>
+          ))}
+        </div>
+      )}
     </div>
   );
 });
