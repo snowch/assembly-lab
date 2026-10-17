@@ -18,8 +18,7 @@ import { useMemo, useState } from "react";
 import { z } from "zod";
 
 import type { Addition, Step } from "@al/machine";
-import { useSlot, useStored, type StoredLesson } from "@platform/lesson-runtime";
-import type { Lesson } from "@platform/lesson-schema";
+import { useSlot, useStored } from "@platform/lesson-runtime";
 
 import {
   additionSteps,
@@ -31,11 +30,11 @@ import {
   topCarries,
 } from "../arith";
 import { FlagsRow } from "../FlagsRow";
-import { grade } from "../grader";
 import { withCode } from "../parts";
 import { ARITH_STRINGS as A } from "../strings.arith";
 import { VIEW_STRINGS as S } from "../strings";
 import { traceOf, type Trace } from "../trace";
+import { passedChallenge } from "./gate";
 import { CallSchema, RecordedSchema, withProps } from "./props";
 
 const Props = z.object({
@@ -165,18 +164,6 @@ function namesOf(trace: Trace, step: Step) {
   return ops.length === 3 ? { answer: ops[0]!, a: ops[1]!, b: ops[2]! } : null;
 }
 
-/** Whether the learner's saved work for a challenge passes its tests now. */
-function passed(lesson: Lesson, stored: StoredLesson, id: string): boolean {
-  const challenge = lesson.challenges?.find((c) => c.id === id);
-  const saved = stored.challenges[id];
-  if (!challenge || !saved) return false;
-  try {
-    return grade(challenge, saved.artifact).passed;
-  } catch {
-    return false;
-  }
-}
-
 /** The column just worked, as a small calculation: its three bits, their total, and the two things it passes on. */
 function Calc({
   record,
@@ -278,7 +265,7 @@ export const AdderFigure = withProps(Props, function AdderFigure({ data, store, 
       </p>
     );
   }
-  if (data.afterChallenge !== undefined && !passed(lesson, stored, data.afterChallenge)) {
+  if (data.afterChallenge !== undefined && !passedChallenge(lesson, stored, data.afterChallenge)) {
     return (
       <p role="note" className="al-locked">
         {A.adder.lockedUntilPassed}

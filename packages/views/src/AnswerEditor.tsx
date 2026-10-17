@@ -10,6 +10,7 @@ import { z } from "zod";
 import type { ChallengeEditorProps } from "@platform/lesson-runtime";
 
 import { BitToggles } from "./BitToggles";
+import { HexEntry } from "./HexEntry";
 import { RecordedSchema } from "./interactives/props";
 import { cLinesOf, parseListing } from "./listing";
 import { ListingView, withCode } from "./parts";
@@ -44,6 +45,9 @@ export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
   const grouping = GroupsSchema.safeParse(challenge.initial.data?.["editor"]);
   const groups = grouping.success ? grouping.data.groups : [];
   const grouped = new Set(groups.flatMap((g) => g.fields.map((f) => f.id)));
+  // The fields of bits that also take hexadecimal, named in the challenge's `initial.data.hexEntry`.
+  // A challenge that does not name a field gets 32 buttons and nothing else, as before.
+  const hexFields = z.array(z.string()).safeParse(challenge.initial.data?.["hexEntry"]);
   return (
     <div className="answer-editor">
       {program.success && (
@@ -115,14 +119,18 @@ export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
           // A field of bits is 32 buttons, set one at a time; it is kept as 32 characters.
           if (f.kind === "bits") {
             const stored = answers[f.id];
+            const bits = isPattern(stored) ? stored : NO_BITS;
             return (
               <div key={f.id} className="answer-field" data-field={f.id}>
                 <span className="answer-label">{withCode(f.label)}</span>
                 <BitToggles
-                  bits={isPattern(stored) ? stored : NO_BITS}
-                  onChange={(bits) => set(f.id, bits)}
+                  bits={bits}
+                  onChange={(next) => set(f.id, next)}
                   label={plain(f.label)}
                 />
+                {hexFields.success && hexFields.data.includes(f.id) && (
+                  <HexEntry bits={bits} onBits={(next) => set(f.id, next)} />
+                )}
               </div>
             );
           }

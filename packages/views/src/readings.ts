@@ -8,7 +8,21 @@
 
 import { TEXT_BASE, assemble, run, type MachineState } from "@al/machine";
 
-import { wValue, wValueAsInt } from "./trace";
+import type { RecordedProgram } from "./listing";
+import { traceOf, wValue, wValueAsInt, type TraceCall } from "./trace";
+
+/**
+ * The 32 bits `wN` holds when a recorded program's call has run: the register as the model leaves
+ * it. A figure that starts from what an earlier figure left uses this, so the pattern is the
+ * model's and is written nowhere in the lesson.
+ */
+export function patternAfterRun(
+  recorded: Pick<RecordedProgram, "listing">,
+  call: TraceCall,
+  register = 0,
+): string {
+  return patternOf(wValue(traceOf(recorded, call).result.final, register));
+}
 
 /** Thirty-two zeros: a register with no bit set. */
 export const NO_BITS = "0".repeat(32);
@@ -63,6 +77,56 @@ export const readingsOfPattern = (pattern: string): Readings => readingsOf(state
 /** The readings of a value in 0 to 4294967295 or −2147483648 to 2147483647. */
 export const readingsOfValue = (value: number | bigint): Readings =>
   readingsOfPattern(patternOf(value));
+
+/**
+ * The top bit's part of each reading, the other 31 bits' part, and the whole, for one pattern. The
+ * parts are what the model's register gives for the pattern with only that part set (the top bit
+ * alone, the other 31 bits alone), so the table that shows them is the sum the lesson describes:
+ * `top + other` is the reading, in each column. With the top bit clear the two readings agree, so
+ * `other` is one number for both columns.
+ */
+export interface TopBitTable {
+  readonly top: { readonly unsigned: number; readonly signed: number };
+  readonly other: number;
+  readonly unsigned: number;
+  readonly signed: number;
+}
+
+export function topBitTable(pattern: string): TopBitTable {
+  if (!isPattern(pattern)) throw new Error("A pattern is 32 characters, each a 0 or a 1.");
+  const topAlone = readingsOfPattern("1" + "0".repeat(31));
+  const rest = readingsOfPattern("0" + pattern.slice(1));
+  const whole = readingsOfPattern(pattern);
+  return {
+    top:
+      pattern[0] === "1"
+        ? { unsigned: topAlone.unsigned, signed: topAlone.signed }
+        : { unsigned: 0, signed: 0 },
+    other: rest.unsigned,
+    unsigned: whole.unsigned,
+    signed: whole.signed,
+  };
+}
+
+/** What the learner has typed into a hexadecimal entry for a register's 32 bits. */
+export type HexEntry =
+  | { readonly kind: "empty" }
+  | { readonly kind: "ok"; readonly pattern: string }
+  | { readonly kind: "invalid" };
+
+/**
+ * Reads typed hexadecimal as 32 bits: one to eight hexadecimal digits, with `0x` in front or not,
+ * the missing digits on the left being 0. Nothing typed, or only `0x`, is "empty": the entry is
+ * waiting for digits. Anything else is "invalid", and changes no bit.
+ */
+export function parseHexEntry(text: string): HexEntry {
+  const typed = text.trim();
+  if (typed === "" || /^0x$/i.test(typed)) return { kind: "empty" };
+  const m = /^(?:0x)?([0-9a-f]{1,8})$/i.exec(typed);
+  return m
+    ? { kind: "ok", pattern: patternOf(BigInt(`0x${m[1] as string}`)) }
+    : { kind: "invalid" };
+}
 
 /** A whole number as the lessons write it: a minus sign, not a hyphen. */
 export const shown = (n: number): string => (n < 0 ? `${MINUS}${-n}` : String(n));

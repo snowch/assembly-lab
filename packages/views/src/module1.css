@@ -1,0 +1,366 @@
+/* Copyright © 2026 Christopher Snow */
+
+/* Module 1's added figures: the top bit's table in the register to read, the outline that pairs four
+   bits with their digit, the hexadecimal entry beside a field of bits, a `w` register as two halves
+   of 16 bits, `x3` as one box with `w3` inside it, and a note that waits for a challenge. views.css
+   imports this file. Phone first: nothing is wider than the 375-pixel page, every control is 44
+   pixels tall, and no text is under 12 pixels. This file is imported before the rest of views.css,
+   so a rule here that meets one there names one more class. Every colour is a token of the app, and a changed
+   state is said in words and drawn in a line style as well as a colour. Nothing moves. */
+
+/* ---- The register to read, with the top bit's table ---- */
+
+/* Bit 31 is marked by a double border and the words "top bit" over it, as well as by what it is
+   worth. The space for the words is kept whether or not they are shown, so nothing shifts. */
+.al-toggles[data-top-bit="marked"] {
+  padding-top: 1.4rem;
+}
+.al-toggles[data-top-bit="marked"] .al-nibble {
+  position: relative;
+}
+.al-top-flag {
+  position: absolute;
+  top: -1.4rem;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  color: var(--fg);
+  font-size: 0.75rem;
+  font-weight: 650;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.al-top-flag::after {
+  content: "";
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+}
+.al-toggles[data-top-bit="marked"] .al-toggle[data-top="true"] {
+  border: 4px double var(--fg);
+}
+
+/* A group of four bits and its digit are outlined together while one of its buttons is in use. */
+.al-toggles[data-groups="outlined"] .al-nibble {
+  border-radius: var(--radius-sm);
+}
+.al-toggles[data-groups="outlined"] .al-nibble[data-lit="true"] {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
+}
+.al-toggles[data-groups="outlined"] .al-nibble[data-lit="true"] .al-digit {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+/* The pattern is the bits written shorter. It is not a reading, so it has no column of the table:
+   it sits on a line of its own, in a dashed box. */
+.al-pattern {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+.al-pattern .al-reading-name {
+  color: var(--fg-muted);
+  font-weight: 600;
+}
+.al-pattern code.al-reading-value {
+  padding: 0.15em 0.6em;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-md);
+}
+.al-pattern .al-clear {
+  margin-left: auto;
+}
+
+/* The two readings: what the top bit adds, what the other 31 bits add, and the result. */
+.al-top-table {
+  width: 100%;
+  max-width: 34rem;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-variant-numeric: tabular-nums;
+}
+.al-top-table th,
+.al-top-table td {
+  padding: var(--space-2) var(--space-1);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.al-top-table thead th {
+  vertical-align: bottom;
+  color: var(--fg-muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+.al-top-table tbody th {
+  width: 27%;
+  text-align: left;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.al-top-table tbody tr + tr th,
+.al-top-table tbody tr + tr td {
+  border-top: 1px solid var(--border);
+}
+.al-top-table td {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+.al-top-table .al-top-result th,
+.al-top-table .al-top-result td {
+  border-top: 2px solid var(--fg);
+}
+.al-top-table .al-top-result td .al-reading-value {
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+@media (min-width: 48rem) {
+  .al-top-table td {
+    font-size: var(--text-sm);
+  }
+  .al-top-table .al-top-result td .al-reading-value {
+    font-size: var(--text-md);
+  }
+}
+
+/* The sum of every bit, shut until asked for. It opens below the table, so the table stays put. */
+.lesson-details.al-calc {
+  margin: 0;
+  max-width: none;
+}
+.al-calc-body {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0 var(--space-4) var(--space-3);
+}
+
+/* ---- A field of bits that also takes hexadecimal ---- */
+
+.answer-hex {
+  display: grid;
+  gap: var(--space-1);
+}
+.answer-hex-label {
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.answer-hex-input {
+  width: 12rem;
+  max-width: 100%;
+  min-height: 2.75rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+.answer-hex-input[aria-invalid="true"] {
+  border: 2px solid var(--bad);
+}
+.answer-hex-problem {
+  margin: 0;
+  /* Room for the sentence on two lines, which a phone needs, so it never moves what is below. */
+  min-height: 3.2em;
+  color: var(--bad);
+  font-size: var(--text-sm);
+}
+@media (min-width: 48rem) {
+  .answer-hex-problem {
+    min-height: 1.6em;
+  }
+}
+
+/* ---- A `w` register as two halves of 16 bits ---- */
+
+.al-wide.al-wide16 {
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: baseline;
+}
+.al-wide16 .al-reg-hex {
+  background: none;
+  padding: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.al-wide16 .al-reg-hex-gap {
+  display: inline-block;
+  width: 0.5ch;
+}
+.al-wide.al-wide16 .al-reg-value {
+  grid-area: auto;
+  grid-column: 3;
+  justify-self: end;
+}
+.al-h16-pair {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+/* The boundary between the halves is a rule, across on a phone and down on a desk. */
+.al-h16 + .al-h16 {
+  padding-top: var(--space-3);
+  border-top: 2px solid var(--border-strong);
+}
+.al-h16 {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.al-h16-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: 0 var(--space-1);
+}
+.al-h16-tag {
+  min-width: 3ch;
+  font-size: var(--text-xs);
+  font-weight: 650;
+  text-align: right;
+}
+.al-h16-groups {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+  padding: var(--space-1);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+}
+/* A half the last instruction wrote has a solid line round it; a half it left has a dashed one. */
+.al-h16[data-tag="new"] .al-h16-groups {
+  border-color: var(--accent);
+  border-style: solid;
+}
+.al-h16[data-tag="kept"] .al-h16-groups {
+  border-color: var(--border-strong);
+  border-style: dashed;
+}
+.al-h16[data-tag="new"] .al-h16-tag {
+  color: var(--accent-strong);
+}
+.al-h16[data-tag="kept"] .al-h16-tag {
+  color: var(--fg-muted);
+}
+.al-h16-group {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  min-width: 0;
+}
+.al-h16-digit {
+  background: none;
+  padding: 0;
+  font-size: var(--text-md);
+  font-weight: 700;
+  line-height: 1.3;
+}
+.al-h16-bits {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  width: 100%;
+}
+@media (min-width: 48rem) {
+  .al-h16-pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+  .al-h16 + .al-h16 {
+    padding-top: 0;
+    padding-left: var(--space-4);
+    border-top: 0;
+    border-left: 2px solid var(--border-strong);
+  }
+}
+
+/* ---- `x3` as one box, with `w3` inside it ---- */
+
+.al-wide.al-wide-named {
+  border: 2px solid var(--border-strong);
+  padding: var(--space-3);
+}
+.al-wide-named .al-reg-name {
+  font-size: var(--text-sm);
+}
+@media (min-width: 48rem) {
+  .al-wide-named .al-reg-name {
+    font-size: var(--text-md);
+  }
+}
+.al-wide-named .al-half {
+  padding: var(--space-1) var(--space-2) var(--space-2);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+}
+.al-wide-named .al-half[data-half="lower"] {
+  background: var(--bg-sunken);
+}
+.al-wide-named .al-half-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+}
+.al-half-alias {
+  padding: 0 0.45em;
+  border: 1px solid var(--fg-muted);
+  border-radius: var(--radius-sm);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+.al-half-tag {
+  margin-left: auto;
+  font-weight: 650;
+}
+.al-wide-named .al-half[data-tag="written"] {
+  border-color: var(--accent);
+  border-style: solid;
+}
+.al-wide-named .al-half[data-tag="cleared"] {
+  border-color: var(--warn);
+  border-style: dashed;
+}
+.al-wide-named .al-half[data-tag="written"] .al-half-tag {
+  color: var(--accent-strong);
+}
+.al-wide-named .al-half[data-tag="cleared"] .al-half-tag {
+  color: var(--warn);
+}
+.al-wide-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  min-height: 1.6em;
+}
+
+/* ---- Words that wait for a challenge ---- */
+
+/* The note is a few words of the lesson's, not a figure: no card, no caption, and no room until it
+   has something to say. */
+figure.interactive[data-kind="challenge-note"] {
+  margin: 0;
+}
+figure.interactive[data-kind="challenge-note"] > figcaption {
+  display: none;
+}
+figure.interactive[data-kind="challenge-note"]
+  > :not(figcaption):not(.figure-lead):not(.figure-after) {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.al-challenge-note {
+  max-width: var(--measure);
+  margin: var(--space-4) auto;
+}

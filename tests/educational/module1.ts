@@ -80,7 +80,7 @@ export async function figureOverflow(page: Page): Promise<string[]> {
       return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== "hidden";
     };
     for (const el of document.querySelectorAll(
-      ".al-toggles, .al-nibble, .al-readings, .al-reading, .al-compare-row, .al-wide, .al-half, .al-tester",
+      ".al-toggles, .al-nibble, .al-readings, .al-reading, .al-pattern, .al-top-table, .al-compare-row, .al-wide, .al-half, .al-h16-pair, .al-h16, .al-tester, .answer-hex",
     )) {
       if (!visible(el)) continue;
       if (el.scrollWidth > el.clientWidth + 1)

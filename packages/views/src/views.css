@@ -9,6 +9,7 @@
    figure follows the theme. */
 
 @import "./bits.css";
+@import "./module1.css";
 
 .al-figure {
   display: grid;

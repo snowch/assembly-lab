@@ -7,6 +7,7 @@ import type { ComponentType } from "react";
 import type { InteractiveProps } from "@platform/lesson-runtime";
 
 import { AdderFigure } from "./AdderFigure";
+import { ChallengeNote } from "./ChallengeNote";
 import { CounterRing } from "./CounterRing";
 import { ListingFigure } from "./ListingFigure";
 import { RunPrediction } from "./RunPrediction";
@@ -59,6 +60,7 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   shift: ShiftFigure,
   "probe-prediction": ProbePrediction,
   "word-stepper": WordStepperFigure,
+  "challenge-note": ChallengeNote,
   "listing-pair": ListingPairFigure,
   "field-reading": FieldReadingFigure,
   "solution-stepper": SolutionStepper,

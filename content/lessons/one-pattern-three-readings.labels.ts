@@ -22,12 +22,12 @@ export const LABELS = {
     explanation: "Bits and readings",
     generalisation: "Every 32-bit pattern",
     challenge: "Three more patterns",
-    reflection: "Looking back",
+    reflection: "What you now know",
   },
   captions: {
     fuelRun: "fuel_used_wrong(50, 38) as first written; w0 after its subtraction.",
     reader:
-      "One register, set bit by bit. The hexadecimal writes the same bits; the unsigned and signed readings each come with their sum.",
+      "One register, set bit by bit, with each hexadecimal digit under its four bits, and the top bit's worth and the rest shown for each reading.",
     compare: "The two functions side by side, with GCC's listing for each.",
     // The prose file gives no caption for these four figures; Haiku drafted them (16 October 2026).
     predictAdd12:

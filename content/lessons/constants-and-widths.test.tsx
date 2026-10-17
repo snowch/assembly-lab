@@ -117,8 +117,101 @@ describe("the lesson", () => {
 
   it("puts the closed note after the tester's section prose, as a note the learner opens", () => {
     const investigation = lesson.sections[3]!;
-    expect(investigation.details?.summary).toBe("Some more numbers fit.");
+    expect(investigation.details?.summary).toBe("Other patterns that fit");
     expect(investigation.details?.prose).toContain("65537");
+  });
+});
+
+describe("the improvement pass", () => {
+  it("keeps the title, and closes with what you now know, a question and its answer in a closed note", () => {
+    expect(lesson.title).toBe("Constants and widths");
+    const last = lesson.sections[9]!;
+    expect(last.title).toBe("What you now know");
+    expect(last.prose).toContain("`mov w5, 7`");
+    expect(last.details?.summary).toBe("Answer");
+    expect(last.details?.prose).toContain("`x5` holds 7.");
+    expect(last.prose).not.toContain("holds 7");
+  });
+
+  it("has the compiler note as the first section's closed note", () => {
+    const first = lesson.sections[0]!;
+    expect(first.details?.summary).toBe("Which compiler?");
+    expect(first.details?.prose).toContain("GCC 16.1");
+    expect(first.prose).not.toContain("GCC 16.1");
+  });
+
+  it("draws w0 in halves of 16 for service_interval, then for the worked movk example, then for the learner's own solution", () => {
+    const modes = lesson.sections.flatMap((s) =>
+      s.interactives
+        .filter((x) => x.kind === "wide-stepper")
+        .map((x) => [x.id, x.props["mode"], x.props["register"]]),
+    );
+    expect(modes).toEqual([
+      ["service-halves", "w16", 0],
+      ["movk-halves", "w16", 0],
+      ["solution-halves", "w16", 0],
+      ["x3-halves", "x64-named", 3],
+    ]);
+  });
+
+  it("takes the solution stepper's program from the saved work for Build 1000000, never from the lesson", () => {
+    const stepper = lesson.sections
+      .flatMap((s) => s.interactives)
+      .find((x) => x.id === "solution-halves")!;
+    expect(stepper.props["fromChallenge"]).toBe("build-1000000");
+    expect(stepper.props["program"]).toBeUndefined();
+    expect(JSON.stringify(stepper.props)).not.toMatch(/16960|movk|0xf\b/);
+    // Nothing of the reference solution is in the lesson's data before the last challenge's section
+    // (which shows four instructions of its own, whose numbers happen to be the same).
+    const before = JSON.stringify(
+      lesson.sections.slice(0, 8).map((s) => [s.prose, s.details, s.interactives]),
+    );
+    expect(before).not.toContain("16960");
+    expect(before).not.toContain("0xf,");
+  });
+
+  it("puts the words for a passed Build 1000000 before the stepper through the solution, gated by the challenge", () => {
+    const ids = lesson.sections.flatMap((s) => s.interactives.map((x) => x.id));
+    const note = lesson.sections
+      .flatMap((s) => s.interactives)
+      .find((x) => x.id === "build-1000000-solved")!;
+    expect(note.kind).toBe("challenge-note");
+    expect(note.props["afterChallenge"]).toBe("build-1000000");
+    expect(String(note.props["text"])).toContain("Step through your solution below");
+    expect(ids.indexOf("build-1000000")).toBeLessThan(ids.indexOf("build-1000000-solved"));
+    expect(ids.indexOf("build-1000000-solved")).toBeLessThan(ids.indexOf("solution-halves"));
+  });
+
+  it("shows the solution stepper and its words only when the saved work passes Build 1000000", () => {
+    const page = (text?: string) => {
+      const storage = memoryStorage();
+      if (text !== undefined)
+        storage.set(
+          `assembly-lab:v1:${lesson.id}`,
+          JSON.stringify({
+            version: 1,
+            slots: {},
+            challenges: {
+              "build-1000000": { artifact: { text }, attempts: 1, hintsRevealed: 0 },
+            },
+          }),
+        );
+      return render(<LessonView book={book} lesson={lesson} storage={storage} />);
+    };
+    const stepper = (c: HTMLElement) => c.querySelector("#ix-solution-halves")!;
+    const words = "Step through your solution below";
+    for (const text of [undefined, "mov w0, 16960\nret", "mov w0, 16960\nmovk w0, 15, lsl 16"]) {
+      const view = page(text);
+      expect(stepper(view.container).querySelector(".al-locked"), String(text)).not.toBeNull();
+      expect(stepper(view.container).querySelector(".al-h16"), String(text)).toBeNull();
+      expect(stepper(view.container).querySelector(".al-controls"), String(text)).toBeNull();
+      expect(view.container.textContent, String(text)).not.toContain(words);
+      view.unmount();
+    }
+    const passed = page("mov w0, 16960\nmovk w0, 15, lsl 16\nret");
+    expect(stepper(passed.container).querySelector(".al-locked")).toBeNull();
+    expect(stepper(passed.container).querySelectorAll(".al-h16")).toHaveLength(2);
+    expect(passed.container.textContent).toContain(words);
   });
 });
 
@@ -263,10 +356,16 @@ describe("the page", () => {
     expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
-    // The tester and the halves wait for their predictions; nothing of either is on the page yet.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
+    // The tester and the x3 figure wait for their predictions, and the stepper through the learner's
+    // own solution waits for the challenge; nothing of any of them is on the page yet.
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(3);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
-    expect(container.querySelectorAll("details.lesson-details")).toHaveLength(1);
+    // The compiler note, the other patterns that fit, and the closing question's answer.
+    expect(container.querySelectorAll("details.lesson-details")).toHaveLength(3);
+    // The two figures that draw a `w` register in halves of 16 and need nothing first.
+    expect(
+      container.querySelectorAll('[data-figure="wide-stepper"][data-mode="w16"]'),
+    ).toHaveLength(2);
   });
 });

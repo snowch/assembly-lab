@@ -68,6 +68,25 @@ export const FOUR_INSTRUCTIONS = {
   listing: ["mov x1, -1", "mov w1, 5", "mov w2, 16960", "movk w2, 0xf, lsl 16"].join("\n"),
 } as const;
 
+/**
+ * The second lesson's worked example of `movk`: no compiler made it, and it has no C. A figure
+ * shows it as hand-written (docs/notes/module-1/listings.md records only compiler output), and the
+ * differential test runs it (scripts/real-tools/corpus/module1-halves.s).
+ */
+export const MOVK_EXAMPLE = {
+  c: "",
+  listing: ["mov w0, 3", "movk w0, 2, lsl 16", "ret"].join("\n"),
+} as const;
+
+/**
+ * The program the second lesson's closing question describes: no page draws it, and the facts test
+ * and the differential test run it (`x5` all ones, then a write to `w5`).
+ */
+export const X5_QUESTION = {
+  c: "",
+  listing: ["mov x5, -1", "mov w5, 7", "ret"].join("\n"),
+} as const;
+
 /** The starting text of the second lesson's written challenge: it does not assemble. */
 export const ODOMETER_LIMIT_START_TEXT = ["mov w0, 1000000", "ret"].join("\n");
 

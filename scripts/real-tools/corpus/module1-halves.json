@@ -1,0 +1,12 @@
+{
+  "entry": "worked",
+  "calls": [
+    { "args": [] },
+    { "args": [["0x123456789abcdef0", 64]] },
+    { "entry": "five", "args": [] },
+    { "entry": "movk_first", "args": [] },
+    { "entry": "movk_first", "args": [["0x123456789abcdef0", 64]] },
+    { "entry": "three_steps", "args": [] },
+    { "entry": "three_steps", "args": [["-1", 64]] }
+  ]
+}

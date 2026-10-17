@@ -6,12 +6,14 @@
 
 export const PROSE = {
   question:
-    "In Module 0, `fuel_used` was first written the wrong way round, as `return at_end - at_start;`. The figure runs that wrong version again, under the name `fuel_used_wrong`, called as `fuel_used_wrong(50, 38)`. The C says the answer is 38 minus 50, and its type is `int`. So the answer should be −12.\n\n" +
-    "After `sub w0, w1, w0`, `w0` holds 32 bits. Read as a number, they give 4294967284.",
+    "In Module 0, `fuel_used` was first written with its subtraction the wrong way round. The figure runs that version, named `fuel_used_wrong`, as `fuel_used_wrong(50, 38)`.\n\n" +
+    "The C calculation is 38 minus 50, with type `int`. That gives −12.\n\n" +
+    "After `sub w0, w1, w0`, the register `w0` holds a pattern of 32 bits. Read as an unsigned number, where every bit counts as a positive amount, those bits give 4294967284.\n\n" +
+    "How can the same bits be −12?",
 
   motivation:
-    "Every value in a register is only bits. A number is a way of reading them.\n\n" +
-    "A program that reads the bits one way, when the C meant the other, gets the wrong answer without any error. This module is about the readings. Later modules show the instructions that choose one.",
+    "A register holds bits, not a signed or an unsigned number. The decimal number a figure shows is one way of reading those bits.\n\n" +
+    "A program that reads the bits one way, when the C meant the other, gets a wrong answer with no error. Later modules show instructions that choose a reading.",
 
   prediction: "The figure can add 12 to `w0`, with `add w0, w0, 12`.",
   predictionQuestion: "**After adding 12, what does `w0` hold?**",
@@ -19,12 +21,20 @@ export const PROSE = {
     "`w0` holds 0. 4294967284 plus 12 is 4294967296, which needs 33 bits: a 1 followed by 32 zeros. `w0` has 32 bits, so the 33rd bit is dropped and only the 32 zeros are kept. Adding 12 to the pattern gives 0, so the pattern behaves exactly as −12 would.",
 
   investigation:
-    "Thirty-two ones and zeros are hard to read. A shorter way to write them is **hexadecimal**. Each group of four bits becomes one digit: 0 to 9, then `a` to `f` for ten to fifteen. For example, `1111` is fifteen, so `f`; `0100` is four, so `4`. A `0x` in front marks a number as hexadecimal. Hexadecimal only writes the bits. The readings are a separate matter, and there are two of them.\n\n" +
-    "The pattern in `w0` is `1111 1111 1111 1111 1111 1111 1111 0100`, written `0xfffffff4`. The **unsigned reading** adds up the worth of every bit that is 1. Each bit is worth twice the bit to its right, so the worths run 1, 2, 4, 8 and so on, up to 2147483648 for the leftmost bit. That leftmost bit is the **top bit**. For this pattern the unsigned reading gives 4294967284.\n\n" +
-    "The **signed reading** counts the top bit as minus 2147483648 instead, and every other bit the same. For this pattern it gives −12. Both −12 and 4294967284 are right. They are two readings of the same 32 bits. The figure lets you set any bit, and shows the bits in hexadecimal and both readings, each with the sum that gives it.",
+    "Thirty-two ones and zeros are hard to read, so they are written in **hexadecimal**. Each group of four bits becomes one digit: 0 to 9, then `a` to `f` for ten to fifteen. `1111` is fifteen, so it is `f`; `0100` is four, so it is `4`. The eight bits `1111 0100` are written `f4`.\n\n" +
+    "A `0x` in front marks a number as hexadecimal. The pattern in `w0` is eight groups of four, `1111 1111 1111 1111 1111 1111 1111 0100`, written `0xfffffff4`.\n\n" +
+    "Hexadecimal is only a shorter way to write the bits. It is not a reading of them as a number. The figure below shows each digit under its four bits.\n\n" +
+    "Each bit is worth twice the bit to its right: 1, 2, 4, 8 and so on. The leftmost bit, bit 31, is the **top bit**. It is worth 2147483648.\n\n" +
+    "The **unsigned reading** adds the worths of the bits that are 1. The **signed reading** does the same, except the top bit counts as minus 2147483648.\n\n" +
+    "The other 31 bits count the same in both readings. So when the top bit is 0, the two readings agree.\n\n" +
+    "The figure starts with `0xfffffff4`, the pattern `sub` left in `w0`. It shows the top bit's worth and the other 31 bits' total in each reading. The full sum of every bit is under \"Show calculation\".\n\n" +
+    'Set or clear any bit, or press "Clear bits" to start from zero.',
 
   construction:
-    "Set the bits yourself, in this challenge's register. The figure in the section *Reading the bits* shows the hexadecimal and both readings of any bits you set there.",
+    'Set the bits of `w0` so that its signed reading is −1, then give the unsigned reading of the same bits. You can click bits, or type a pattern in hexadecimal and the bits follow it. The figure in "Reading the bits" shows both readings of any bits you set there.',
+  /** Shown once Make −1 has passed. */
+  constructionSolved:
+    "With all 32 bits set, the signed reading is −1 and the unsigned reading is 4294967295.",
   makeTask:
     "Set `w0`'s bits so that its signed reading is −1, then give the unsigned reading of the same bits.",
   makeHints: [
@@ -36,15 +46,16 @@ export const PROSE = {
   ] as const,
 
   failureExperiment:
-    "The figure shows two functions side by side: `fuel_used_wrong`, with `int`, and `fuel_used_wrong_u`, the same C with `unsigned`. GCC 16.1 at `-O1` made both listings, as it did in Module 0.",
+    "The figure shows `fuel_used_wrong`, with `int`, beside `fuel_used_wrong_u`, the same C with `unsigned`.",
+  failureDetailsSummary: "Which compiler?",
+  failureDetails: "Both listings are from GCC 16.1 with the setting `-O1`, as in Module 0.",
   failureQuestion: "**What does GCC do differently for the `unsigned` version?**",
   failureExplain:
-    "Both listings are `sub w0, w1, w0` then `ret`. The figure compares them line by line. The type changes how a program reads the result, not the subtraction.",
+    "Both listings are `sub w0, w1, w0` then `ret`. GCC used the same `sub` instruction for both functions. The subtraction produces the same 32-bit pattern for these inputs. Signed and unsigned values differ in how that pattern is interpreted. Other operations, such as division and comparisons, can require different instructions.",
 
   explanation:
     "A register has no type.\n\n" +
-    "The two readings differ only in the top bit's worth: plus 2147483648 unsigned, minus 2147483648 signed. When the top bit is 0, the two readings agree.\n\n" +
-    "A subtraction or an addition gives the same bits, whichever reading the program uses later. So one `sub` serves both `int` and `unsigned`.",
+    "An addition or a subtraction gives the same bits, whichever reading the program uses later. That is why one `sub` serves both `int` and `unsigned` here.",
 
   generalisation:
     "Every 32-bit pattern has an unsigned reading from 0 to 4294967295, and a signed reading from −2147483648 to 2147483647.\n\n" +
@@ -61,9 +72,14 @@ export const PROSE = {
   ] as const,
 
   reflection:
-    "- Which reading gave −12, and which bit made the difference?\n" +
-    "- Why did adding 12 give 0?\n" +
-    "- Where in a program does the type `int` or `unsigned` exist, if not in the instructions?",
+    "- Hexadecimal is a compact way to write bits: four bits per digit.\n" +
+    "- One 32-bit pattern has an unsigned reading and a signed reading.\n" +
+    "- The top bit is worth plus 2147483648 in one reading and minus 2147483648 in the other.\n" +
+    "- A register does not store a C type.\n\n" +
+    "**What are the unsigned and signed readings of `0x80000001`?**",
+  reflectionDetailsSummary: "Answer",
+  reflectionDetails:
+    "Unsigned 2147483649: the top bit, 2147483648, plus 1. Signed −2147483647: minus 2147483648, plus 1.",
 
   modelVsReality:
     "A real processor's registers hold bits with no type, as the simulator's do. Each register holds 64 bits; this lesson's figures show only the lower 32, which the `w` names use. Lesson 2 shows the rest.",

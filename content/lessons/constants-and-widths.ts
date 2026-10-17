@@ -15,6 +15,7 @@ import { LABELS } from "./constants-and-widths.labels";
 import { PROSE } from "./constants-and-widths.prose";
 import {
   FOUR_INSTRUCTIONS,
+  MOVK_EXAMPLE,
   ODOMETER_LIMIT_START_TEXT,
   ODOMETER_LIMIT_TEXT,
   SERVICE_INTERVAL,
@@ -43,6 +44,7 @@ export const constantsAndWidths: LessonInput = {
       kind: "question",
       title: LABELS.titles.question,
       prose: PROSE.question,
+      details: { summary: PROSE.questionDetailsSummary, prose: PROSE.questionDetails },
       interactives: [
         {
           // Only `service_interval`: `odometer_limit`'s two instructions are the first challenge's
@@ -55,7 +57,22 @@ export const constantsAndWidths: LessonInput = {
         },
       ],
     },
-    { kind: "motivation", title: LABELS.titles.motivation, prose: PROSE.motivation },
+    {
+      kind: "motivation",
+      title: LABELS.titles.motivation,
+      prose: PROSE.motivation,
+      interactives: [
+        {
+          // `mov w0, 30000` from the recorded listing, with `w0` in two halves of 16 bits: 0000
+          // over 7530.
+          id: "service-halves",
+          kind: "wide-stepper",
+          timeModel: STEPS,
+          caption: LABELS.captions.serviceHalves,
+          props: { program: SERVICE_INTERVAL, register: 0, mode: "w16" },
+        },
+      ],
+    },
     {
       kind: "prediction",
       title: LABELS.titles.prediction,
@@ -99,11 +116,38 @@ export const constantsAndWidths: LessonInput = {
       prose: PROSE.construction,
       interactives: [
         {
+          // The worked example of `movk`, hand-written (it is in the differential test's corpus):
+          // 3 in the lower half, then 2 in the upper half, which is new while the lower is kept.
+          id: "movk-halves",
+          kind: "wide-stepper",
+          timeModel: STEPS,
+          caption: LABELS.captions.workedHalves,
+          props: { program: MOVK_EXAMPLE, register: 0, mode: "w16" },
+        },
+        {
           id: "build-1000000",
           kind: "challenge",
           timeModel: STEPS,
           caption: LABELS.captions.build,
           props: { challengeId: "build-1000000" },
+        },
+        {
+          // A few words that appear once Build 1000000 has passed. Its caption is the challenge's
+          // title.
+          id: "build-1000000-solved",
+          kind: "challenge-note",
+          timeModel: "none",
+          caption: LABELS.challenges.build.title,
+          props: { afterChallenge: "build-1000000", text: PROSE.constructionSolved },
+        },
+        {
+          // The learner's own saved solution, assembled and traced, a step at a time. Nothing of
+          // it shows until the saved work passes the challenge's tests.
+          id: "solution-halves",
+          kind: "wide-stepper",
+          timeModel: STEPS,
+          caption: LABELS.captions.solutionHalves,
+          props: { register: 0, mode: "w16", fromChallenge: "build-1000000" },
         },
       ],
     },
@@ -129,7 +173,7 @@ export const constantsAndWidths: LessonInput = {
           kind: "wide-stepper",
           timeModel: STEPS,
           caption: LABELS.captions.halves,
-          props: { program: WIDTHS, register: 3, after: "predict-width" },
+          props: { program: WIDTHS, register: 3, mode: "x64-named", after: "predict-width" },
         },
       ],
     },
@@ -149,7 +193,12 @@ export const constantsAndWidths: LessonInput = {
         },
       ],
     },
-    { kind: "reflection", title: LABELS.titles.reflection, prose: PROSE.reflection },
+    {
+      kind: "reflection",
+      title: LABELS.titles.reflection,
+      prose: PROSE.reflection,
+      details: { summary: PROSE.reflectionDetailsSummary, prose: PROSE.reflectionDetails },
+    },
   ],
   challenges: [
     {

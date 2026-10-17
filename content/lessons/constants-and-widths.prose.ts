@@ -7,25 +7,44 @@
 export const PROSE = {
   question:
     "The trip computer's service interval is 30000 kilometres. The odometer's limit is 1000000.\n\n" +
-    "GCC 16.1 at `-O1` makes one instruction for `return 30000;`: `mov w0, 30000`. For `return 1000000;` it makes two instructions.",
+    "For `return 30000;`, GCC makes one instruction: `mov w0, 30000`. For `return 1000000;`, it makes two.",
+  questionDetailsSummary: "Which compiler?",
+  questionDetails: "The listings in this lesson are from GCC 16.1 with `-O1`, as in Module 0.",
 
   motivation:
-    "Almost every function puts a fixed number in a register somewhere. The instruction `mov` does that: `mov w0, 30000` puts 30000 in `w0`. A number written inside an instruction is called a **constant**. An instruction is a fixed size, so only some numbers fit inside one. The 32 bits of a register split into a lower half (the right-hand 16) and an upper half (the left-hand 16).",
+    "`mov` puts a fixed number in a register: `mov w0, 30000` puts 30000 in `w0`. A number written inside an instruction is a **constant**.\n\n" +
+    "An instruction is 32 bits long, so it cannot hold every 32-bit constant.\n\n" +
+    "Split a register's 32 bits into two halves. The upper half is the left 16 bits. The lower half is the right 16 bits.\n\n" +
+    "30000 is `0x00007530`. Its upper half is `0000`, so all its set bits are in the lower half.\n\n" +
+    "A single `mov` can load a constant whose set bits all fall in one 16-bit half. Some other patterns load too, so this is not the complete rule.\n\n" +
+    "In hexadecimal each half is four digits, so the boundary falls in the middle of the eight digits.",
 
-  prediction: "Each number below could be the constant in one `mov`.",
+  prediction:
+    "Here are the four in hexadecimal, with a space between the halves. 65536 is `0x0001 0000`, 70000 is `0x0001 1170`, 100000 is `0x0001 86a0`, and 1000000 is `0x000f 4240`. Look at which halves of each number have set bits.",
   predictionQuestion: "**Which of these can one `mov` put in `w0`?**",
   predictionExplain:
-    "Only 65536. Its bits are a single 1, in the upper 16-bit half, so all its set bits are in one half. The other three need bits in both halves.",
+    "Only 65536 fits. Its only set bit is in the upper half, so its lower half is `0000`. The other three numbers have set bits in both halves.",
 
   investigation:
-    "The figure assembles `mov w0, ` followed by the number you type. Assembling turns that text into an instruction. The course's assembler accepts and rejects the same numbers as the GNU assembler. The GNU assembler is the program that GCC itself uses to turn its listings into instructions.\n\n" +
-    "A `mov` with a constant works when all the number's set bits fall within one 16-bit half of the register. Other numbers fit too, though their bits are in both halves. `-1`, with all 32 bits set, fits. So does 1048575, which is `0x000fffff`: twenty 1s in a row across both halves. So do some numbers whose run of 1s repeats at equal spacing, such as 65537, which is a single 1 repeated every 16 bits: `0x00010001`. For most other numbers with bits in both halves, the assembler says no single instruction can put them in a register. The figure below is the way to find out for any number.",
-  investigationDetailsSummary: "Some more numbers fit.",
+    "The figure assembles `mov w0,` followed by the number you type. Assembling turns that text into an instruction.\n\n" +
+    "The course's assembler accepts and rejects the same numbers as the GNU assembler, the program GCC uses to turn its listings into instructions. So the figure is the authority on whether a number fits.\n\n" +
+    "`mov` is a name the assembler accepts for more than one instruction. It chooses the one that can hold the constant.",
+  investigationDetailsSummary: "Other patterns that fit",
   investigationDetails:
-    "A number whose bits are all ones except within one 16-bit half fits, such as `-1`. So do some numbers whose bits repeat one short pattern, such as 65537, which is `0x00010001`.",
+    "`-1` fits, with all 32 bits set.\n\n" +
+    "1048575 (`0x000fffff`) fits. It has twenty 1s in a row across both halves.\n\n" +
+    "65537 (`0x00010001`) fits. It is a single 1 repeated every 16 bits.\n\n" +
+    "The full rule is longer than this course needs. The figure checks any number.",
 
   construction:
-    "`movk` replaces one 16-bit half of a register and keeps the rest. `lsl 16`, which Module 3 explains, names the upper half, where the number goes. You split 1000000 into its two halves yourself. To split a number into its 16-bit halves, divide it by 65536. The whole-number answer is the upper half, and what is left over is the lower half. 65536 is the worth of the lowest bit of the upper half. Writing `#` before a number in an instruction is optional: `mov w0, 30000` and `mov w0, #30000` are the same instruction (Module 0 met `#50`).",
+    "`movk` replaces one 16-bit half of a register and keeps the rest. `mov` replaces the whole register.\n\n" +
+    "`lsl 16` after the number tells `movk` to put it in the upper half, bits 16 to 31. Without `lsl 16`, `movk` puts it in the lower half.\n\n" +
+    "For example, `mov w0, 3` gives `0x0000 0003`. Then `movk w0, 2, lsl 16` gives `0x0002 0003`, which is 131075. The upper half is new, and the lower half is kept. The figure draws each step.\n\n" +
+    "To split a number into its two halves, divide it by 65536. That is the worth of the lowest bit of the upper half. The whole-number answer is the upper half, and what is left over is the lower half.\n\n" +
+    "Writing `#` before a number is optional. `mov w0, 30000` and `mov w0, #30000` are the same instruction.",
+  /** Shown once Build 1000000 has passed, above the stepper through the learner's own solution. */
+  constructionSolved:
+    "Step through your solution below to see each instruction's halves, and which half changed and which was kept.",
   buildTask:
     "Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The starting text, `mov w0, 1000000` then `ret`, does not assemble.",
   buildHints: [
@@ -37,13 +56,15 @@ export const PROSE = {
   ] as const,
 
   failureExperiment:
-    "The registers so far have been drawn as 32 bits, because the lessons used their `w` names. Each register holds 64 bits, and it has two names. The **`x` register** name is `x3`, and it names all 64 bits. The **`w` register** name is `w3`, and it names the lower 32 bits of the same register. The figure runs `mov x3, -1`, which sets all 64 bits, then `mov w3, -1`.",
+    "The figures so far showed 32 bits, because they used `w` names. Each register holds 64 bits, and it has two names.\n\n" +
+    "The `x` name, `x3`, names all 64 bits. The `w` name, `w3`, names the lower 32 bits of the same register. They are not two registers.\n\n" +
+    "The figure runs `mov x3, -1`, which sets all 64 bits, then `mov w3, -1`.",
   failureQuestion: "**After `mov w3, -1`, what does `x3` hold?**",
   failureExplain:
-    "The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x00000000ffffffff`. Writing a `w` name always clears the upper half of the register.",
+    "The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x00000000ffffffff`. Writing a `w` name always clears the upper 32 bits of the `x` register.",
 
   explanation:
-    "One `mov` fits a number in one 16-bit half. `movk` fills in another half without disturbing the rest.",
+    "A constant that does not fit in one `mov` is built half by half, with `mov` then `movk`.",
 
   generalisation:
     "A `long` in C is an integer type; on 64-bit Arm Linux it is 64 bits, so GCC 16.1 at `-O1` turns `return -1;` with `long` into `mov x0, -1`, which uses the `x` name. The `u` in `4294967295u` marks the constant as `unsigned`. GCC 16.1 at `-O1` turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.\n\n" +
@@ -61,9 +82,14 @@ export const PROSE = {
   ] as const,
 
   reflection:
-    "- Why does one `mov` hold 65536 but not 70000?\n" +
-    "- What does `movk` keep that `mov` does not?\n" +
-    "- If a function wrote `w0` and its caller read `x0`, what would the caller find in the upper half?",
+    "- Not every constant fits in a single `mov`.\n" +
+    "- `movk` replaces one chosen 16-bit half and keeps the rest.\n" +
+    "- `wN` names the lower 32 bits of `xN`.\n" +
+    "- Writing `wN` clears the upper 32 bits of `xN`.\n\n" +
+    "**`x5` holds `0xffffffffffffffff`. Then `mov w5, 7` runs. What does `x5` hold?**",
+  reflectionDetailsSummary: "Answer",
+  reflectionDetails:
+    "`x5` holds 7. Writing `w5` put 7 in the lower 32 bits and cleared the upper 32.",
 
   modelVsReality:
     "The course does not show how an instruction's bits hold its constant. The course takes which constants fit from the GNU assembler, and tests its own assembler against that one line by line.",
