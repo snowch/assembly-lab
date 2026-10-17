@@ -225,7 +225,7 @@ test.describe("the shift figure", () => {
     await expect(figure.locator('[data-part="filled"]')).toHaveText("Filled with: 0");
   });
 
-  test("keeps the last word it could read, and says so, when the learner types something else", async ({
+  test("says so, and shows no result and never the starting word, when the learner types something it cannot read", async ({
     page,
   }) => {
     await open(page);
@@ -234,7 +234,7 @@ test.describe("the shift figure", () => {
     await figure.scrollIntoViewIfNeeded();
     await figure.getByLabel(V.shift.inputLabel).fill("banana");
     await expect(figure.getByText(V.shift.inputProblem)).toBeVisible();
-    expect(await rowBits(figure, "before")).toBe(pad32(-7));
+    await expect(figure.locator(".al-bit")).toHaveCount(0);
   });
 });
 
@@ -552,4 +552,58 @@ test.describe("both themes", () => {
       expect(look.fillColour).not.toBe(look.off);
     });
   }
+});
+
+test.describe("the reworked figures (17 October 2026)", () => {
+  test("the shift figure says which way the bits move and what fills the gap, and marks -7's filled top bit for asr and lsr", async ({
+    page,
+  }) => {
+    await open(page);
+    await commit(page, "predict-fill", /^A copy of the old top bit/);
+    const figure = page.locator("#ix-shift-word");
+    await figure.scrollIntoViewIfNeeded();
+    for (const [op, text, bits] of [
+      ["asr", "copies of the old top bit", pad32(0xfffffffc)],
+      ["lsr", "zeros", pad32(0x7ffffffc)],
+    ] as const) {
+      await press(page, chip(figure, V.shift.instruction, op));
+      await expect(figure.locator(".al-direction")).toContainText(
+        `${op} moves every bit 1 place right`,
+      );
+      await expect(figure.locator(".al-direction")).toContainText(text);
+      expect(await rowBits(figure, "after")).toBe(bits);
+      expect(await marked(figure, "after", "fill")).toEqual([31]);
+      await expect(figure.locator('[data-row="filled"] .al-mark[data-bit="31"]')).toHaveText("+");
+    }
+  });
+
+  test("a word the shift figure cannot read gets its message and no result", async ({ page }) => {
+    await open(page);
+    await commit(page, "predict-fill", /^A copy of the old top bit/);
+    const figure = page.locator("#ix-shift-word");
+    await figure.scrollIntoViewIfNeeded();
+    for (const bad of ["", "0x", "4294967296", "banana"]) {
+      await figure.getByLabel(V.shift.inputLabel).fill(bad);
+      await expect(figure.locator(".al-problem")).toBeVisible();
+      await expect(figure.locator(".al-bit")).toHaveCount(0);
+    }
+    await figure.getByLabel(V.shift.inputLabel).fill("-7");
+    await expect(figure.locator(".al-problem")).toHaveCount(0);
+  });
+
+  test("the div2 stepper shows w0 before and after, the shifted operand, and a second call for 7", async ({
+    page,
+  }) => {
+    await open(page);
+    await commit(page, "predict-first-add", /^1 when/);
+    const figure = page.locator("#ix-step-div2");
+    await figure.scrollIntoViewIfNeeded();
+    await press(page, figure.getByRole("button", { name: V.stepper.next }));
+    await expect(figure.locator('.al-facts [data-fact="before"]')).toContainText("(-7)");
+    await expect(figure.locator('.al-facts [data-fact="operand"]')).toContainText("0x1 (1)");
+    await expect(figure.locator('.al-facts [data-fact="after"]')).toContainText("(-6)");
+    await press(page, figure.getByRole("button", { name: "div2(7)", exact: true }));
+    await press(page, figure.getByRole("button", { name: V.stepper.next }));
+    await expect(figure.locator('.al-facts [data-fact="operand"]')).toContainText("0x0 (0)");
+  });
 });

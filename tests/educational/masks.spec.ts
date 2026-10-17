@@ -208,7 +208,7 @@ test.describe("the bit figure", () => {
     await expect(figure.locator(".al-key")).toHaveCount(0);
   });
 
-  test("keeps the last word it could read, and says so, when the learner types something else", async ({
+  test("says so, and shows no result and never the starting word, when the learner types something it cannot read", async ({
     page,
   }) => {
     await open(page);
@@ -217,7 +217,7 @@ test.describe("the bit figure", () => {
     await figure.scrollIntoViewIfNeeded();
     await figure.getByLabel(V.bitOps.inputLabel("w0")).fill("banana");
     await expect(figure.getByText(V.bitOps.inputProblem)).toBeVisible();
-    expect(await rowBits(figure, "word")).toBe(pad32(0xf));
+    await expect(figure.locator(".al-bit")).toHaveCount(0);
   });
 });
 
@@ -609,4 +609,111 @@ test.describe("both themes", () => {
       expect(look.outlineColour).not.toBe(look.off);
     });
   }
+});
+
+test.describe("the reworked figures (17 October 2026)", () => {
+  test("the warning word marks bits 7 to 31 unused, labels bits 0 to 6, and marks a focused warning's bit", async ({
+    page,
+  }) => {
+    await open(page);
+    const figure = page.locator("#ix-warning-word");
+    expect((await marked(figure, "word", "unused")).length).toBe(25);
+    await expect(figure.locator(".al-use .al-cell")).toHaveCount(7);
+    await expect(figure.locator('[data-entry="4-6"]')).toContainText("gear");
+    await expect(figure.locator('[data-entry="4-6"] .al-use-state')).toHaveText("3");
+    await figure.locator('[data-entry="2-2"]').focus();
+    expect(await marked(figure, "word", "picked")).toEqual([2]);
+    await figure.locator('[data-entry="4-6"]').focus();
+    expect(await marked(figure, "word", "picked")).toEqual([4, 5, 6]);
+  });
+
+  test("the first prediction shows the mask as -5 and the low eight bits of word, mask and result only after the commit", async ({
+    page,
+  }) => {
+    await open(page);
+    const figure = page.locator("#ix-predict-minus-five");
+    await figure.scrollIntoViewIfNeeded();
+    await expect(figure.locator(".al-maskview")).toHaveCount(0);
+    await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
+    const cells = (row: string) =>
+      figure
+        .locator(`[data-row="${row}"] .al-cell-bit`)
+        .evaluateAll((c) => c.map((x) => x.textContent).join(""));
+    await expect(figure.locator(".al-maskline")).toHaveText("The mask is -5, which is 0xfffffffb.");
+    expect(await cells("view-word")).toBe("00001111");
+    expect(await cells("view-mask")).toBe("11111011");
+    expect(await cells("view-result")).toBe("00001011");
+    await expect(figure.locator(".al-maskview .al-cell[data-picked='true']")).toHaveCount(3);
+  });
+
+  test("the bit figure reads one column in one line, and a word it cannot read gets its message and no result", async ({
+    page,
+  }) => {
+    await open(page);
+    await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
+    const figure = page.locator("#ix-mask-bits");
+    await figure.scrollIntoViewIfNeeded();
+    await figure.locator('[data-row="mask"] [data-bit="2"]').click();
+    await expect(figure.locator("[data-readout='column']")).toHaveText(
+      "Bit 2: input 1, mask 0, result 0.",
+    );
+    await expect(figure.locator(".al-rule")).toHaveText(V.bitOps.rule.and);
+    const word = figure.getByLabel(V.bitOps.inputLabel("w0"));
+    for (const bad of ["", "0x", "0x123456789", "-2147483649"]) {
+      await word.fill(bad);
+      await expect(figure.locator(".al-problem")).toBeVisible();
+      await expect(figure.locator(".al-bit")).toHaveCount(0);
+      await expect(figure.getByRole("status")).toHaveCount(0);
+    }
+    await word.fill("0x35");
+    await expect(figure.locator(".al-problem")).toHaveCount(0);
+    expect(await rowBits(figure, "word")).toBe(pad32(0x35));
+  });
+
+  test("the learner's own instructions are stepped only after the challenge has been run, and the comparison with GCC only after it passes", async ({
+    page,
+  }) => {
+    await open(page);
+    const stepper = page.locator("#ix-step-solution");
+    const bfi = page.locator("#ix-compare-bfi");
+    await stepper.scrollIntoViewIfNeeded();
+    await expect(stepper.locator(".al-locked")).toBeVisible();
+    await expect(bfi.locator(".al-locked")).toBeVisible();
+    const c = challenge(page, SET);
+    await c.scrollIntoViewIfNeeded();
+    const box = c.getByRole("textbox", { name: V.editor.textLabel });
+    // Run, but not passing: the stepper opens, GCC's function stays shut.
+    await box.fill("and w1, w1, 7\nlsl w1, w1, 4\norr w0, w0, w1\nret");
+    await press(page, run(c));
+    await expect(stepper.locator(".al-locked")).toHaveCount(0);
+    await expect(bfi.locator(".al-locked")).toBeVisible();
+    await expect(bfi).not.toContainText("bfi");
+    await box.fill(SET_GEAR_REFERENCE_TEXT);
+    await press(page, run(c));
+    await expect(status(c)).toHaveText(passing(4));
+    await expect(bfi.locator(".al-locked")).toHaveCount(0);
+    await expect(bfi).toContainText("bfi w0, w1, 4, 3");
+    expect(await bfi.locator('[data-row="gcc"] .al-cell-bit').allTextContents()).toEqual(
+      "01010101".split(""),
+    );
+    // Step through: after the last instruction w0 holds what the model gives.
+    await stepper.scrollIntoViewIfNeeded();
+    for (let k = 0; k < 5; k++)
+      await press(page, stepper.getByRole("button", { name: V.stepper.next }));
+    await expect(stepper.locator('[data-row="w0"]')).toHaveAttribute("data-value", String(0x55));
+    await expect(stepper.locator("[data-figure]")).toHaveAttribute("data-k", "5");
+  });
+
+  test("the comparison without the clear opens with the prediction and shows 0x75 and 0x55", async ({
+    page,
+  }) => {
+    await open(page);
+    const figure = page.locator("#ix-compare-no-clear");
+    await figure.scrollIntoViewIfNeeded();
+    await expect(figure.locator(".al-locked")).toBeVisible();
+    await commit(page, "predict-no-clear", "0x75");
+    await expect(figure.locator('[data-row="without"]')).toHaveAttribute("data-value", "117");
+    await expect(figure.locator('[data-row="with"]')).toHaveAttribute("data-value", "85");
+    await expect(figure.locator('[data-row="old"] .al-cell[data-tag="survives"]')).toHaveCount(2);
+  });
 });
