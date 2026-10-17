@@ -28,8 +28,9 @@ records which section of which issue it was checked against. Memory is not a sou
 | --- | --- |
 | ISO/IEC 9899:2024 (C23), through its public drafts on open-std.org (WG14) | what C defines, leaves to the implementation, or leaves undefined: signed overflow, conversions to a narrower signed type, `INT_MIN / -1`, `<stdckdint.h>` |
 | GCC's manual, for `-fwrapv`, `-ftrapv`, `-fsanitize=`, `-W` options | the lessons' advice on catching errors |
+| GCC's manual, "C Implementation-Defined Behavior", Integers (`gcc/doc/implement-c.texi`, read through the `gcc-mirror/gcc` repository on GitHub, 17 October 2026) | Module 3's shifts: signed `>>` of a negative value acts by sign extension in GCC; C99 and later leave some signed `<<` undefined, and GCC, as an extension, does not treat them as undefined |
 
-open-std.org and gcc.gnu.org were not reachable from the build containers at checkpoint 1.
+open-std.org and gcc.gnu.org were not reachable from the build containers at checkpoint 1, nor on 17 October 2026; GitHub's raw files were.
 
 ## What the site ships, and its licences
 
