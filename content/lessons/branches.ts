@@ -20,7 +20,7 @@ import {
   FUEL_WARNING_TEXT,
   TOLD_GRADIENTS,
 } from "./branches.listings";
-import { LABELS } from "./branches.labels";
+import { COUNT_GROUPS, LABELS } from "./branches.labels";
 import { PROSE } from "./branches.prose";
 
 /** The model the lesson's figures run: one instruction to a step (the book's note names it). */
@@ -276,7 +276,25 @@ export const branches: LessonInput = {
       })),
       // The listing the editor shows above the fields. The expected values are what the run gives
       // and how many steps it takes, never numbers in this file.
-      initial: { data: { program: DESCRIBE } },
+      // The six boxes are drawn in three groups, one for each gradient, each box labelled as its
+      // field is.
+      initial: {
+        data: {
+          program: DESCRIBE,
+          editor: {
+            groups: COUNT_GROUPS.map((label, n) => ({
+              label,
+              fields: (
+                [
+                  ["result11", "steps11"],
+                  ["resultM10", "stepsM10"],
+                  ["resultM11", "stepsM11"],
+                ] as const
+              )[n]!.map((id) => ({ id, label: LABELS.challenges.counts.fields[id] })),
+            })),
+          },
+        },
+      },
       tests: {
         kind: "answers",
         grader: BRANCH_OUTCOMES,

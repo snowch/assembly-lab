@@ -48,6 +48,38 @@ export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
   // The fields of bits that also take hexadecimal, named in the challenge's `initial.data.hexEntry`.
   // A challenge that does not name a field gets 32 buttons and nothing else, as before.
   const hexFields = z.array(z.string()).safeParse(challenge.initial.data?.["hexEntry"]);
+  // A number or a word is a text box; a field that takes a negative number gets the full keyboard.
+  const textBox = (f: (typeof challenge.fields)[number], label: string, compact = false) => {
+    const id = `answer-${challenge.id}-${f.id}`;
+    return (
+      <label
+        key={f.id}
+        className={compact ? "answer-field answer-compact" : "answer-field"}
+        data-field={f.id}
+        htmlFor={id}
+      >
+        <span className="answer-label">{withCode(label)}</span>
+        <span className="answer-input">
+          <input
+            id={id}
+            type="text"
+            // A number keypad has no minus sign on every phone: a field that takes a negative
+            // number (it says so with a `min` below 0) gets the full keyboard.
+            inputMode={
+              f.kind === "number" && !(f.min !== undefined && f.min < 0) ? "numeric" : "text"
+            }
+            autoComplete="off"
+            autoCapitalize="off"
+            autoCorrect="off"
+            spellCheck={false}
+            value={answers[f.id] ?? ""}
+            onChange={(e) => set(f.id, e.target.value)}
+          />
+          {f.unit && <span className="answer-unit">{f.unit}</span>}
+        </span>
+      </label>
+    );
+  };
   return (
     <div className="answer-editor">
       {program.success && (
@@ -61,7 +93,10 @@ export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
               <div className="answer-group-row">
                 {g.fields.map(({ id: fieldId, label: short }) => {
                   const f = challenge.fields.find((x) => x.id === fieldId);
-                  if (!f || f.kind !== "choice" || !f.options) return null;
+                  if (!f) return null;
+                  // A number or a word in a group is a text box, labelled as the group gives it.
+                  if (f.kind === "number" || f.kind === "text") return textBox(f, short, true);
+                  if (f.kind !== "choice" || !f.options) return null;
                   return (
                     <fieldset
                       key={f.id}
@@ -134,29 +169,7 @@ export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
               </div>
             );
           }
-          return (
-            <label key={f.id} className="answer-field" data-field={f.id} htmlFor={id}>
-              <span className="answer-label">{withCode(f.label)}</span>
-              <span className="answer-input">
-                <input
-                  id={id}
-                  type="text"
-                  // A number keypad has no minus sign on every phone: a field that takes a negative
-                  // number (it says so with a `min` below 0) gets the full keyboard.
-                  inputMode={
-                    f.kind === "number" && !(f.min !== undefined && f.min < 0) ? "numeric" : "text"
-                  }
-                  autoComplete="off"
-                  autoCapitalize="off"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  value={answers[f.id] ?? ""}
-                  onChange={(e) => set(f.id, e.target.value)}
-                />
-                {f.unit && <span className="answer-unit">{f.unit}</span>}
-              </span>
-            </label>
-          );
+          return textBox(f, f.label);
         })}
     </div>
   );

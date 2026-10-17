@@ -246,7 +246,17 @@ describe("module 4, lesson 2: the groups of the last challenge's boxes", () => {
         labels.filter((label) => label.includes(group)),
         group,
       ).toHaveLength(2);
-    // Nothing draws them yet: the lesson's data does not mention them.
-    expect(JSON.stringify(lesson)).not.toContain("groups");
+    // The editor draws them: each group holds its two boxes, labelled as the fields are.
+    const counts = lesson.challenges.find((ch) => ch.id === "count-describe-runs")!;
+    const groups = (
+      counts.initial.data?.["editor"] as {
+        groups: { label: string; fields: { label: string }[] }[];
+      }
+    ).groups;
+    expect(groups.map((g) => g.label)).toEqual([...COUNT_GROUPS]);
+    for (const g of groups) {
+      expect(g.fields).toHaveLength(2);
+      for (const f of g.fields) expect(f.label, g.label).toContain(g.label);
+    }
   });
 });

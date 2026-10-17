@@ -200,3 +200,55 @@ describe("a wrong flag, told by its rule", () => {
     expect(verdict.failures[0]?.detail).toBe(A.grader.flagWrong);
   });
 });
+
+describe("a group of numbers", () => {
+  it("draws each number box inside its group, labelled as the group gives it, and keeps what is typed", async () => {
+    const user = userEvent.setup();
+    const numbers = Challenge.parse({
+      id: "counts",
+      title: "Counts",
+      task: "Give two numbers for each call.",
+      gradedDirection: "answer",
+      fields: ["a1", "a2", "b1", "b2"].map((id) => ({ id, label: `the ${id}`, kind: "number" })),
+      initial: {
+        data: {
+          editor: {
+            groups: [
+              {
+                label: "`f(1)`",
+                fields: [
+                  { id: "a1", label: "the a1" },
+                  { id: "a2", label: "the a2" },
+                ],
+              },
+              {
+                label: "`f(2)`",
+                fields: [
+                  { id: "b1", label: "the b1" },
+                  { id: "b2", label: "the b2" },
+                ],
+              },
+            ],
+          },
+        },
+      },
+      tests: { kind: "answers", grader: "none", cases: [{ label: "x", given: {}, expect: {} }] },
+      hints: ["one", "two", "three", "four", "five"],
+      reference: { answers: {} },
+    });
+    const onChange = vi.fn();
+    const { container } = render(
+      <AnswerEditor challenge={numbers} artifact={{ answers: {} }} onChange={onChange} />,
+    );
+    const groups = [...container.querySelectorAll(".answer-group")];
+    expect(groups).toHaveLength(2);
+    expect(groups.map((g) => g.querySelector("legend")?.textContent)).toEqual(["f(1)", "f(2)"]);
+    const second = within(groups[1] as HTMLElement);
+    expect(second.getByLabelText("the b1")).toBeInstanceOf(HTMLInputElement);
+    expect(second.getByLabelText("the b2")).toBeInstanceOf(HTMLInputElement);
+    // Every field is drawn once, inside its group, and none outside the groups.
+    expect(container.querySelectorAll("[data-field]")).toHaveLength(4);
+    await user.type(second.getByLabelText("the b1"), "7");
+    expect(onChange).toHaveBeenLastCalledWith({ answers: { b1: "7" } });
+  });
+});

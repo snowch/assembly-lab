@@ -99,8 +99,7 @@ export const LABELS = {
     },
     /**
      * The labels over the two groups of answer boxes in "Compare shifts with division", one group
-     * for each input. Not used yet: the answer editor takes an optional grouping of fields from
-     * Module 2's build, and the managing session wires these two labels in after the merge.
+     * for each input.
      */
     groups: {
       input21: "Input: 21", // DRAFT

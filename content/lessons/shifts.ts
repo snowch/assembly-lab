@@ -230,8 +230,34 @@ export const shifts: LessonInput = {
         },
       ],
       // The program the grader runs: `asr` by 2, `lsr` by 2 and C's `/ 4`, as a function each. The
-      // learner is not shown it; the expected values are what the run leaves in w0.
-      initial: { data: { model: COMPARE_SHIFTS } },
+      // learner is not shown it; the expected values are what the run leaves in w0. The six boxes
+      // are drawn in two groups, one for each input, each box labelled as the field is.
+      initial: {
+        data: {
+          model: COMPARE_SHIFTS,
+          editor: {
+            groups: [
+              {
+                label: LABELS.drafts.groups.input21,
+                fields: (["asr21", "lsr21", "div21"] as const).map((id) => ({
+                  id,
+                  label: LABELS.challenges.compare.fields[id],
+                })),
+              },
+              {
+                label: LABELS.drafts.groups.inputNeg21,
+                fields: (
+                  [
+                    ["asr_neg", "asrNeg"],
+                    ["lsr_neg", "lsrNeg"],
+                    ["div_neg", "divNeg"],
+                  ] as const
+                ).map(([id, key]) => ({ id, label: LABELS.challenges.compare.fields[key] })),
+              },
+            ],
+          },
+        },
+      },
       tests: {
         kind: "answers",
         grader: REGISTERS_AT_RETURN,
