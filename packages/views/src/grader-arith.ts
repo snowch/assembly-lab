@@ -9,7 +9,8 @@
 // as `w0`, `w1` and on). Each field the case's `expect` maps to `w<N>` is compared with that
 // register's value (read as an unsigned number, so a negative answer is not the same answer), and
 // each mapped to `n`, `z`, `c` or `v` with that flag. A case's `given["feedback.<field>"]` is the
-// sentence said for a wrong field; with none, the failure names the case only.
+// sentence said for a wrong field; with none, the failure names the case only, unless the case's
+// `given.feedback` is "rule", which says the rule of each wrong flag (its letter, then what it is).
 //
 // "smallest-setting-flag" asks for the smallest positive number that, as `w1`, sets a flag after the
 // program runs with the other arguments the case gives. The case's `given.flag` names the flag and
@@ -127,13 +128,22 @@ export function gradeOutcomes(challenge: Challenge, artifact: Artifact): Verdict
     if (wrong.length === 0) return;
     // The case's own sentence for each wrong field; a field with none gets a fixed sentence that
     // names no flag and no value, so a failure never shows empty lists.
+    // A case may ask for the rule of each wrong flag (`given.feedback` is "rule"): the sentence for
+    // that flag, never its value.
+    const rules = String(c.given["feedback"] ?? "") === "rule";
+    const flagSentence = (what: string): string => {
+      const key = what.toLowerCase();
+      if (rules && (key === "n" || key === "z" || key === "c" || key === "v"))
+        return A.grader.flagRuleLine(key.toUpperCase(), A.grader.flagRule[key]);
+      return A.grader.flagWrong;
+    };
     const detail = [
       ...new Set(
         wrong.map(
           ([field, what]) =>
             plain(String(c.given[`feedback.${field}`] ?? "")) ||
             (flagNamed(trace.result.final.flags, String(what)) !== null
-              ? A.grader.flagWrong
+              ? flagSentence(String(what))
               : A.grader.valueWrong),
         ),
       ),

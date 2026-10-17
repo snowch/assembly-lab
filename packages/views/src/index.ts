@@ -46,9 +46,18 @@ export { tryMov } from "./interactives/ConstantTester";
 export type { StepView, Trace, TraceCall } from "./trace";
 export { ARITH_STRINGS } from "./strings.arith";
 export { FlagsRow } from "./FlagsRow";
-export { additionSteps, bitAt, flagDigits, hex32 } from "./arith";
+export {
+  additionSteps,
+  bitAt,
+  columnWork,
+  endOfGroup,
+  flagDigits,
+  hex32,
+  secondAsGiven,
+  topCarries,
+} from "./arith";
 export { OUTCOMES_AT_RETURN, SMALLEST_SETTING_FLAG } from "./grader-arith";
-export { COUNTER_VALUES, ringReading } from "./ring";
+export { COUNTER_VALUES, ringReading, segmentsOf } from "./ring";
 export { BRANCH_STRINGS, CONDITION_ROWS } from "./strings.branch";
 export {
   branchArrows,

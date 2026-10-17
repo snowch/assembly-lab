@@ -22,7 +22,7 @@ export const LABELS = {
     explanation: "Why the low bits are enough",
     generalisation: "Other counters",
     challenge: "Stepping from the top to zero",
-    reflection: "Looking back",
+    reflection: "What you now know",
   },
   captions: {
     ring: "The counter as a ring: then, now, and the distance between them.",
@@ -31,6 +31,9 @@ export const LABELS = {
       "subs w0, w0, w1 on 1000 and 4294966296, column by column, with each bit of the second number changed to the other value, and 1 carried in.",
     subtractNoWrap:
       "subs w0, w0, w1 on 9000 and 2500, column by column, with each bit of the second number changed to the other value, and 1 carried in.",
+    // The figure that opens when `elapsed` is passed: a draft, as the two above it are.
+    subtractOwn:
+      "subs w0, w0, w1 on 250 and 4294967046, one of the four test calls, column by column, with each bit of the second number changed to the other value, and 1 carried in.", // DRAFT
     predictElapsed: "A prediction about what elapsed returns across the wrap.",
     predictNegs: "A prediction about what w0 holds after negs.",
     stepNegs:

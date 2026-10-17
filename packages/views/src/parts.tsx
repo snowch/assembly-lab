@@ -26,11 +26,17 @@ export function RegisterRow({
   value,
   changed,
   halves = false,
+  tag,
 }: {
   name: string;
   value: number;
   changed: boolean;
   halves?: boolean;
+  /**
+   * A word beside the name of a register that changed, so the change does not rest on an outline.
+   * A figure that gives one gives it to every register, "" for those that did not change.
+   */
+  tag?: string;
 }) {
   const bits = bitsOf(value);
   const groups = [0, 8, 16, 24].map((from) => bits.slice(from, from + 8));
@@ -50,8 +56,12 @@ export function RegisterRow({
       aria-label={S.register.group(name)}
       data-register={name}
       data-changed={changed}
+      data-tagged={tag !== undefined ? true : undefined}
     >
-      <span className="al-reg-name">{name}</span>
+      <span className="al-reg-name">
+        {name}
+        {tag !== undefined && tag !== "" && <span className="al-reg-tag"> {tag}</span>}
+      </span>
       <span className="al-reg-value" title={changed ? S.register.changed : undefined}>
         {value}
       </span>

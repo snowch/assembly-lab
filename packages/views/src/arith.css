@@ -170,7 +170,7 @@
 }
 .al-ring-strip {
   stroke: var(--bg-inset);
-  stroke-width: 10;
+  stroke-width: 14;
 }
 .al-ring-tick {
   stroke: var(--fg);
@@ -183,13 +183,13 @@
 .al-ring-text {
   fill: var(--fg-muted);
   font-family: var(--font-text);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
 }
 .al-ring-value {
   fill: var(--fg);
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  font-weight: 600;
+  font-size: 0.875rem;
+  font-weight: 700;
 }
 .al-ring-values {
   display: grid;
@@ -234,4 +234,254 @@
   gap: var(--space-1);
   min-height: 2.75rem;
   font-family: var(--font-mono);
+}
+
+/* Flags that say what they record, and that say when they changed */
+/* Four boxes with words under them do not fit one line of a phone: two lines of two there. */
+.al-flags[data-explained="true"] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.al-flags[data-explained="true"] .al-flag {
+  min-width: 0;
+}
+@media (min-width: 36rem) {
+  .al-flags[data-explained="true"] {
+    grid-template-columns: repeat(4, minmax(5.5rem, 8rem));
+  }
+}
+.al-flag-explain,
+.al-flag-tag {
+  font-family: var(--font-text);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.3;
+  text-align: center;
+}
+.al-flag-tag {
+  font-weight: 700;
+}
+.al-reg-tag {
+  font-family: var(--font-text);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+@media (min-width: 48rem) {
+  .al-reg[data-tagged="true"] {
+    grid-template-columns: 6.5rem minmax(0, 1fr) 7rem;
+  }
+}
+
+/* The adder with its detail: groups of four columns, the column just worked, the top bit's frame
+   and the carries at bit 31 */
+.al-adder-cells[data-size="4"] {
+  gap: 4px;
+}
+.al-adder-cells[data-size="4"] .al-adder-group {
+  flex: 4 1 0;
+}
+.al-adder-cells[data-size="4"] .al-adder-group[data-single="true"] {
+  flex: 1 1 0;
+}
+.al-adder-cells[data-size="4"] .al-adder-carry,
+.al-adder-cells[data-size="4"] .al-bit {
+  font-size: 0.6875rem;
+}
+@media (min-width: 48rem) {
+  .al-adder-cells[data-size="4"] {
+    gap: 8px;
+  }
+  .al-adder-cells[data-size="4"] .al-adder-carry,
+  .al-adder-cells[data-size="4"] .al-bit {
+    font-size: var(--text-xs);
+  }
+}
+/* The top bit's column is framed by two vertical lines in every row, as well as labelled. */
+.al-adder-cell[data-top-bit="true"] {
+  box-shadow:
+    inset 2px 0 0 var(--accent),
+    inset -2px 0 0 var(--accent);
+}
+.al-adder-row[data-row="marks"] .al-adder-cell {
+  position: relative;
+  min-height: 2.25em;
+}
+/* A label stands over its column, with a triangle pointing down at it. */
+.al-adder-mark {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.al-adder-mark::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--accent);
+}
+.al-adder-mark[data-mark="top"] {
+  left: 0;
+  align-items: flex-start;
+}
+.al-adder-mark[data-mark="low"] {
+  right: 0;
+  align-items: flex-end;
+}
+@media (min-width: 48rem) {
+  .al-adder-mark {
+    font-size: var(--text-xs);
+  }
+}
+
+.al-adder-main {
+  display: grid;
+  gap: var(--space-4);
+}
+.al-adder-calc {
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+  font-size: var(--text-sm);
+}
+.al-adder-calc-head {
+  margin: 0 0 var(--space-2);
+  font-weight: 700;
+}
+.al-adder-calc dl {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+.al-adder-calc dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 2px 0;
+  border-bottom: 1px solid var(--border);
+}
+.al-adder-calc dt {
+  margin: 0;
+}
+.al-adder-calc dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+@media (min-width: 64rem) {
+  .al-adder-main {
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    align-items: start;
+  }
+}
+.al-adder-lower {
+  display: grid;
+  gap: var(--space-3);
+}
+@media (min-width: 48rem) {
+  .al-adder-lower {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-5);
+  }
+}
+.al-adder-final {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+}
+.al-adder-final li {
+  margin: 0;
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--border-strong);
+}
+.al-adder-final li[data-line="c"],
+.al-adder-final li[data-line="v"] {
+  border-left-color: var(--accent);
+  font-weight: 600;
+}
+
+/* The counter's ring: arrowheads for the direction the counter counts, and the strip's labels */
+.al-ring-arrow {
+  fill: var(--fg);
+}
+.al-ring-strip-arrow {
+  stroke: var(--fg);
+  stroke-width: 2;
+}
+.al-ring-text,
+.al-ring-value {
+  paint-order: stroke;
+  stroke: var(--bg-raised);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+/* Answers chosen in groups: a box for each addition, a compact row of choices in it */
+.answer-groups {
+  display: grid;
+  gap: var(--space-3);
+}
+.answer-group {
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+}
+.answer-group-label {
+  padding: 0 var(--space-2);
+  font-weight: 600;
+}
+.answer-group-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1) var(--space-3);
+}
+@media (min-width: 36rem) {
+  .answer-group-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.answer-compact {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+}
+.answer-compact .answer-label {
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+.answer-compact .answer-options {
+  flex-wrap: nowrap;
+  gap: var(--space-1);
+}
+
+/* A block of code in a prediction's explanation (the three lines of negation) must not widen the
+   figure on a phone: it is set a little smaller there, and a line too long for the screen wraps. */
+.al-outcome {
+  min-width: 0;
+  overflow-x: auto;
+}
+@media (max-width: 36rem) {
+  .al-outcome pre {
+    white-space: pre-wrap;
+  }
+  .al-outcome pre code {
+    font-size: 0.6875rem;
+  }
 }

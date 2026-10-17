@@ -6,7 +6,7 @@
 // starting point does not, a wrong answer is answered without the right value, and the whole page
 // renders with no figure problem.
 
-import { render } from "@testing-library/react";
+import { fireEvent, render, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { ARITH_STRINGS, INTERACTIVES, STEPS, createBook, grade } from "@al/views";
@@ -23,6 +23,7 @@ import {
 
 import { LESSONS } from ".";
 import { addingAndTheFlags } from "./adding-and-the-flags";
+import { PROSE } from "./adding-and-the-flags.prose";
 
 const lesson = LESSONS.find((l) => l.id === "adding-and-the-flags")!;
 const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
@@ -133,12 +134,44 @@ describe("the challenges", () => {
     expect(verdict.blocked).toBe(ARITH_STRINGS.grader.chooseFirst);
   });
 
-  it("predict-flags: a wrong flag is told in a fixed sentence, so no verdict shows empty lists", () => {
+  it("predict-flags: a wrong flag is told by its own rule, so no verdict shows empty lists", () => {
     const c = challenge("predict-flags");
     const verdict = grade(c, { answers: { ...c.reference.answers, "second-z": "1" } });
     expect(verdict.failures.map((f) => [f.label, f.detail])).toEqual([
-      ["5 plus 3", ARITH_STRINGS.grader.flagWrong],
+      ["5 plus 3", `Z: ${ARITH_STRINGS.grader.flagRule.z}`],
     ]);
+  });
+
+  it("predict-flags: each wrong flag of an addition is named with the sentence for that flag, and no value", () => {
+    const c = challenge("predict-flags");
+    const wrong = { ...c.reference.answers, "third-n": "1", "third-c": "0", "third-v": "0" };
+    const verdict = grade(c, { answers: wrong });
+    expect(verdict.failures.map((f) => f.label)).toEqual(["0x80000000 plus 0x80000000"]);
+    const rule = ARITH_STRINGS.grader.flagRule;
+    expect(verdict.failures[0]?.detail).toBe(`N: ${rule.n} C: ${rule.c} V: ${rule.v}`);
+    // The flags that were right are not named, and no value is given.
+    expect(verdict.failures[0]?.detail).not.toContain("Z:");
+    expect(verdict.failures[0]?.actual).toEqual({});
+    expect(verdict.failures[0]?.expected).toEqual({});
+  });
+
+  it("predict-flags: the twelve choices are drawn as one group for each addition, N, Z, C and V in each", () => {
+    const c = challenge("predict-flags");
+    const groups = (
+      c.initial.data?.["editor"] as {
+        groups: { label: string; fields: { id: string; label: string }[] }[];
+      }
+    ).groups;
+    expect(groups.map((g) => g.label)).toEqual([
+      "`0xffffffff` plus 1",
+      "5 plus 3",
+      "`0x80000000` plus `0x80000000`",
+    ]);
+    expect(groups.flatMap((g) => g.fields.map((f) => f.id))).toEqual(c.fields.map((f) => f.id));
+    expect(groups.every((g) => g.fields.map((f) => f.label).join("") === "NZCV")).toBe(true);
+    // Every case asks for the rule of each wrong flag.
+    if (c.tests.kind !== "answers") throw new Error("answers");
+    expect(c.tests.cases.every((t) => t.given["feedback"] === "rule")).toBe(true);
   });
 
   it("smallest-overflow: only 2 passes, and a wrong answer is told only what it got wrong", () => {
@@ -176,6 +209,72 @@ describe("the page", () => {
     expect(container.querySelectorAll(".al-locked")).toHaveLength(3);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
-    expect(container.querySelectorAll("details.lesson-details")).toHaveLength(1);
+    // The closed note on GCC's check, and the closed answer to the last section's question.
+    expect(container.querySelectorAll("details.lesson-details")).toHaveLength(2);
+  });
+
+  it("draws the flags challenge as three separate groups of N, Z, C and V, with no answer chosen", () => {
+    const { container } = render(
+      <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
+    );
+    const c = container.querySelector('section.challenge[data-challenge="predict-flags"]')!;
+    const groups = c.querySelectorAll("fieldset.answer-group");
+    expect(groups).toHaveLength(3);
+    for (const g of groups)
+      expect([...g.querySelectorAll(".answer-compact > legend")].map((l) => l.textContent)).toEqual(
+        ["N", "Z", "C", "V"],
+      );
+    expect(c.querySelectorAll("input[type=radio]:checked")).toHaveLength(0);
+  });
+
+  it("keeps the answers that were right when the learner runs the tests, fails, and tries again", () => {
+    const { container } = render(
+      <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
+    );
+    const c = container.querySelector(
+      'section.challenge[data-challenge="predict-flags"]',
+    ) as HTMLElement;
+    const answers = { ...challenge("predict-flags").reference.answers, "third-v": "0" };
+    for (const [id, value] of Object.entries(answers))
+      fireEvent.click(c.querySelector(`[data-field="${id}"] input[value="${value}"]`)!);
+    fireEvent.click(within(c).getByRole("button", { name: /Run tests/ }));
+    expect(c.querySelector(".verdict-failure .verdict-detail")?.textContent).toBe(
+      `V: ${ARITH_STRINGS.grader.flagRule.v}`,
+    );
+    // Every answer is still chosen, the wrong one too: nothing was cleared by the failure.
+    const chosen = (id: string) =>
+      (c.querySelector(`[data-field="${id}"] input:checked`) as HTMLInputElement | null)?.value;
+    for (const [id, value] of Object.entries(answers)) expect(chosen(id), id).toBe(value);
+    // Mend the one wrong flag: the others need no touching.
+    fireEvent.click(c.querySelector('[data-field="third-v"] input[value="1"]')!);
+    fireEvent.click(within(c).getByRole("button", { name: /Run tests/ }));
+    expect(c.querySelector(".challenge-complete")).not.toBeNull();
+  });
+
+  it("shows the text after the flags challenge, and the adder it follows, only once the challenge passes", () => {
+    const { container } = render(
+      <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
+    );
+    const note = PROSE.flagsAfter.split(". ")[0]!;
+    expect(container.textContent).not.toContain(note);
+    const c = container.querySelector(
+      'section.challenge[data-challenge="predict-flags"]',
+    ) as HTMLElement;
+    for (const [id, value] of Object.entries(challenge("predict-flags").reference.answers!))
+      fireEvent.click(c.querySelector(`[data-field="${id}"] input[value="${value}"]`)!);
+    fireEvent.click(within(c).getByRole("button", { name: /Run tests/ }));
+    expect(container.querySelector("#ix-add-carry-out .al-adder-note")?.textContent).toContain(
+      note,
+    );
+  });
+
+  it("opens no result before it is earned: the stepper and the adder wait for their predictions", () => {
+    const { container } = render(
+      <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
+    );
+    for (const id of ["add-columns", "step-add", "add-carry-out"])
+      expect(container.querySelector(`#ix-${id} .al-locked`), id).not.toBeNull();
+    expect(container.querySelector(".al-adder-final")).toBeNull();
+    expect(container.querySelector(".al-flag-tag")).toBeNull();
   });
 });

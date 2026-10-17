@@ -117,8 +117,10 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     await expect(page.locator("section.challenge")).toHaveCount(2);
     await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
     await expect(page).toHaveTitle(`${lesson(ONE).title} / Assembly Lab`);
-    const note = page.locator("details.lesson-details");
-    await expect(note).toHaveCount(1);
+    // The closed note on GCC's check, and the closed answer to the last section's question.
+    const notes = page.locator("details.lesson-details");
+    await expect(notes).toHaveCount(2);
+    const note = notes.first();
     await expect(note).not.toHaveAttribute("open", "");
     await press(page, note.locator("summary"));
     await expect(note.locator("pre")).toContainText("cset");
@@ -373,8 +375,14 @@ test.describe("lesson 1, Adding, and the four flags", () => {
         String(record.carryOut),
       );
       await expect(adder.locator('[data-top="out"]')).toHaveAttribute("data-value", "1");
-      // The last status says this is the top bit and what V compares, and the key is visible text.
-      await expect(adder.locator("[role=status]")).toContainText(A.adder.topBit);
+      // The panel says the two carries at bit 31 and what C and V are, and the key is visible text.
+      await expect(adder.locator('.al-adder-final [data-line="into"]')).toHaveText(
+        A.adder.final.carryInto(bitAt(record.carries, 31)),
+      );
+      await expect(adder.locator('.al-adder-final [data-line="c"]')).toHaveText(A.adder.final.c(1));
+      await expect(adder.locator('.al-adder-final [data-line="v"]')).toHaveText(
+        A.adder.final.v(0, 1, 1),
+      );
       await expect(adder.locator(".al-adder-key")).toBeVisible();
       await expect(adder.locator(".al-adder-key")).toHaveText(A.adder.topKey);
       // A reload grades the saved work again, and the adder is still open.
@@ -393,8 +401,10 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       await press(page, run(c));
       await expect(status(c)).toHaveText(failing(2, 3));
       await expect(c.locator(".verdict-failure h4")).toHaveText(["0x80000000 plus 0x80000000"]);
-      // The failure says a flag is wrong, in a sentence, and shows no empty lists.
-      await expect(c.locator(".verdict-failure .verdict-detail")).toHaveText(A.grader.flagWrong);
+      // The failure names the wrong flag with the rule for it, in a sentence, and shows no empty lists.
+      await expect(c.locator(".verdict-failure .verdict-detail")).toHaveText(
+        A.grader.flagRuleLine("V", A.grader.flagRule.v),
+      );
       await expect(c.locator(".verdict-values")).toHaveCount(0);
       await expect(c.locator(".verdict")).not.toContainText(/third-v|V for/);
       await expect(c.locator(".challenge-complete")).toHaveCount(0);
@@ -524,7 +534,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       const adder = page.locator("#ix-add-columns");
       for (let k = 0; k < 6; k++)
         await press(page, adder.getByRole("button", { name: A.adder.next }));
-      await press(page, page.locator("details.lesson-details summary"));
+      await press(page, page.locator("details.lesson-details summary").first());
       expect(await designProblems(page, phone)).toEqual([]);
       await press(page, adder.getByRole("button", { name: A.adder.all }));
       await commit(page, "predict-add-flags", "All four are 0");
@@ -550,7 +560,8 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       expect(box.x).toBeGreaterThanOrEqual(0);
       expect(box.x + box.width).toBeLessThanOrEqual(width);
       await expect(adder.locator('[data-row="carry"] .al-adder-cell')).toHaveCount(33);
-      await expect(adder.locator('[data-row="sum"] .al-adder-group')).toHaveCount(5);
+      // Groups of four columns, and the place for the carry out.
+      await expect(adder.locator('[data-row="sum"] .al-adder-group')).toHaveCount(9);
     });
   });
 
@@ -643,7 +654,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     await expect(row("elapsed")).toHaveText("2000");
     await expect(row("c")).toContainText("0");
     await expect(row("c")).toContainText(A.ring.borrowed);
-    await expect(ring.locator("svg")).toHaveAttribute("data-wrapped", "true");
+    await expect(ring.locator("svg")).toHaveAttribute("data-borrowed", "true");
     await expect(ring.locator('[data-mark="wrap"]')).toHaveCount(1);
     const box = (await ring.locator("svg").boundingBox())!;
     expect(box.x + box.width).toBeLessThanOrEqual(page.viewportSize()!.width);
@@ -680,14 +691,21 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
             "data-value",
             String(bitAt(record.b, column)),
           );
+        // It opens at its final state: the flags, the carry out, and the result and C in words.
+        expect(await flagValues(adder)).toEqual(d.flags);
+        expect(await flagValues(adder)).toEqual(flagDigits(model.result.final.flags).map(String));
+        await expect(adder.locator('[data-top="out"]')).toHaveAttribute("data-value", d.out);
+        await expect(adder.locator('.al-adder-final [data-line="c"]')).toHaveText(
+          A.adder.final.cSub(Number(d.out)),
+        );
+        await expect(adder.locator(".al-adder-key")).toBeVisible();
+        // Its column-by-column view is there to step through from the start: 1 is carried in first.
+        await press(page, adder.getByRole("button", { name: A.adder.reset }));
+        await expect(adder.locator(".al-adder-final")).toHaveCount(0);
         await press(page, adder.getByRole("button", { name: A.adder.next }));
         await expect(cell("carry", 0)).toHaveAttribute("data-value", "1");
         await press(page, adder.getByRole("button", { name: A.adder.all }));
         expect(await flagValues(adder)).toEqual(d.flags);
-        expect(await flagValues(adder)).toEqual(flagDigits(model.result.final.flags).map(String));
-        await expect(adder.locator('[data-top="out"]')).toHaveAttribute("data-value", d.out);
-        await expect(adder.locator("[role=status]")).toContainText(A.adder.topBit);
-        await expect(adder.locator(".al-adder-key")).toBeVisible();
       });
     }
   });

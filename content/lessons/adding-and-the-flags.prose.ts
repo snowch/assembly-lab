@@ -7,12 +7,12 @@
 
 export const PROSE = {
   question:
-    "Module 1 showed that 4294967284 and −12 are one pattern. It also showed that GCC uses the same `sub` instruction for `int` and for `unsigned`.\n\n" +
-    "So the processor adds without knowing which reading the program wants. It must still say when an answer does not fit, and it must do that for both readings at once.",
+    "In Module 1, the same 32 bits could represent different signed and unsigned numbers. Addition has the same problem. The processor adds bits, but the result may not fit the number range the program expects. How can the processor tell us when that happens?",
 
   motivation:
-    "An addition in 32 bits can give an answer that does not fit. The bits that remain are then wrong for one reading or the other. A program that must not continue with a wrong answer needs to know it happened.\n\n" +
-    "`add` keeps no record. `adds` does the same addition and also records four facts about the answer. Each fact sits in a **flag**. The four flags are named N, Z, C and V.",
+    "An addition in 32 bits can give a result that does not fit the reading the program uses. The 32 bits kept are then wrong for that reading.\n\n" +
+    "`add` does the addition and nothing more. `adds` does the same addition and also records four facts about the result. Each fact sits in a **flag**. The four flags are named N, Z, C and V.\n\n" +
+    "Neither instruction stops the program or reports an error when the result does not fit. A program that cares must read a flag.",
 
   prediction:
     "The figure adds 2147483647 and 1 with `adds w0, w0, w1`, which is `0x7fffffff` plus `0x00000001` in hexadecimal.",
@@ -21,32 +21,34 @@ export const PROSE = {
     "The answer is `0x80000000`. Unsigned, it reads 2147483648, which is right. Signed, it reads −2147483648, which is wrong. 2147483647 plus 1 should be 2147483648. The signed reading cannot hold that number. The largest signed reading is 2147483647 (Module 1).",
 
   investigation:
-    "The part of the processor that adds two registers' bits is called the **adder**. The figure draws the addition column by column, from the right, as on paper. A column adds its two bits and any 1 arriving from the right. If that total is 2 or 3, a 1 goes on to the next column on the left. That 1 is the **carry**.\n\n" +
+    "The part of the processor that adds is the **adder**. The figure works the addition column by column, from the right, as on paper. A column adds its two bits and the 1 carried in from the right, if there is one. The total is 0, 1, 2 or 3.\n\n" +
+    "The column keeps the total's lowest bit as its result bit. It passes the total's other bit, the **carry**, to the next column on the left.\n\n" +
+    "You can step through the figure one column at a time, jump over a group of columns, or show them all.\n\n" +
     "After `adds`, four flags record facts about the answer:\n\n" +
-    "- N, for negative, is the answer's top bit.\n" +
-    "- Z, for zero, is 1 when the answer is 0.\n" +
-    "- C, for carry, is the carry out of the top bit, the carry that would need a 33rd bit.\n" +
-    "- V is 1 when the carry into the top bit differs from the carry out of it.\n\n" +
-    "For `0x7fffffff` plus 1, a carry runs through every column into the top bit. None comes out of it. So N is 1, Z is 0, C is 0 and V is 1.",
-  investigationDetailsSummary: "GCC's own check",
+    "- N is the top bit of the result.\n" +
+    "- Z is 1 when all 32 result bits are 0.\n" +
+    "- C is the carry out of bit 31, for an addition.\n" +
+    "- V is 1 when the carry into bit 31 differs from the carry out of it.\n\n" +
+    "The figure's last column, bit 31, shows the carry into bit 31 and the carry out of it. Those two carries give C and V.",
+  investigationDetailsSummary: "How GCC checks for overflow",
   investigationDetails:
-    "GCC uses V itself. `__builtin_add_overflow` is a function built into GCC. It adds two numbers and reports whether the answer did not fit. For a call to it on two `int`s, GCC 16.1 at `-O1` compiles to this:\n\n" +
+    "`__builtin_add_overflow` is a function built into GCC. It adds two numbers and reports whether the result did not fit. For two `int`s, GCC 16.1 with `-O1`, as in Module 0, compiles a call to it into this:\n\n" +
     "```\n" +
     "add_overflows:\n" +
     "        cmn     w0, w1\n" +
     "        cset    w0, vs\n" +
     "        ret\n" +
     "```\n\n" +
-    "The first line, `add_overflows:`, is the function's name followed by a colon, as in every listing so far. The two instructions before `ret` return 1 exactly when V is set. Both are instructions a later module explains.",
+    "The first line, `add_overflows:`, is the function's name and a colon. The two instructions before `ret` return 1 exactly when V is set. A later module explains them.",
 
   construction: "Earlier, you predicted one addition. Now you predict three.",
   flagsTask:
-    "Predict N, Z, C and V for three additions with `adds`, before running them.\n\n" +
-    "The additions are:\n\n" +
+    "Give N, Z, C and V for each of three additions with `adds`. Each addition has its own group of four boxes, N, Z, C and V. Each box takes 0 or 1.\n\n" +
+    "The three additions are:\n\n" +
     "- `0xffffffff` plus 1\n" +
     "- 5 plus 3\n" +
     "- `0x80000000` plus `0x80000000`\n\n" +
-    "For each addition, give N, Z, C and V.",
+    "Check your answers. A wrong flag is named, and the answers you got right stay.",
   flagsHints: [
     "C is the carry out of the top bit. V is 1 when the carry into the top bit and the carry out of it differ.",
     "C and V are not the same thing. One addition here sets both, and one sets only C.",
@@ -55,20 +57,28 @@ export const PROSE = {
     "`0xffffffff` plus 1 gives N 0, Z 1, C 1 and V 0. 5 plus 3 has all four at 0. `0x80000000` plus `0x80000000` gives N 0, Z 1, C 1 and V 1.",
   ] as const,
 
+  /** Shown with the figure that opens when the flags challenge is passed. */
+  flagsAfter:
+    "C and V are separate tests, one for each reading, so either can be 1 without the other. `0xffffffff` plus 1 carries into bit 31 and out of it, so C is 1 and V is 0; `0x7fffffff` plus 1 carries into bit 31 but not out, so C is 0 and V is 1. `0x80000000` plus `0x80000000` makes C and V both 1.",
+
   failureExperiment:
-    "The figure runs `sum_flags(0x7fffffff, 1, 0xffffffff)`, with `w0` as `0x7fffffff`, `w1` as 1 and `w2` as `0xffffffff`. First it runs `adds w3, w2, w2`, which adds `0xffffffff` to itself and leaves N and C at 1. Then it runs `add w0, w0, w1` instead of `adds`, on `0x7fffffff` plus 1.",
+    "The figure runs `sum_flags` with `w0` = `0x7fffffff`, `w1` = 1 and `w2` = `0xffffffff`.\n\n" +
+    "It runs `adds w3, w2, w2` first, which adds `0xffffffff` to itself. Then it runs `add w0, w0, w1`, which adds `0x7fffffff` and 1. After each step, the figure shows which registers and which flags changed.",
   failureQuestion: "**After `add`, what do the flags show?**",
   failureExplain:
-    "N and C are still 1, as `adds` left them. `add` gives the same answer as `adds` would, `0x80000000`, but records nothing. Had `add` recorded flags, they would be N 1, Z 0, C 0 and V 1, the same as `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had it cleared them, all four would be 0. The three outcomes differ, so the run tells them apart. Of `add`, `adds` and `sub`, only `adds`, whose name ends in `s`, records the four facts.",
+    "N and C are still 1, as `adds` left them. `add` wrote `0x80000000` to `w0` and left the flags alone.\n\n" +
+    "Had `add` set the flags, they would be N 1, Z 0, C 0 and V 1. That is what `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had `add` cleared them, all four would be 0.\n\n" +
+    "Of `add`, `adds` and `sub`, only `adds` writes the flags.",
 
   explanation:
-    "The adder adds bits. It gives one answer for both readings. N and Z describe that answer: its top bit, and whether it is 0.\n\n" +
-    "C judges the unsigned reading. A carry out of the top bit means the unsigned answer did not fit.\n\n" +
-    "V judges the signed reading; its letter stands for overflow. When the carry into the top bit and the carry out of it differ, the top bit came out wrong for the signed answer. That case is called **overflow**.",
+    "The adder gives one result for both readings. N and Z describe that result.\n\n" +
+    "C reports a carry out of bit 31. For an addition, a carry out of bit 31 means the unsigned result did not fit.\n\n" +
+    "V reports signed **overflow**. V is 1 when the carry into bit 31 differs from the carry out of it; the top bit then came out wrong for the signed result.\n\n" +
+    "C and V are separate tests.",
 
   generalisation:
-    "Every `adds` sets all four flags. The program reads the one that matches its reading.\n\n" +
-    "The flags keep their values until another instruction records them. Later modules show the instructions that read the flags to choose what runs next.",
+    "Every `adds` writes all four flags. The flags keep their values until another instruction writes them. `add` and `sub` do not write the flags.\n\n" +
+    "A program reads the flag that matches its reading. Later modules show instructions that read the flags.",
 
   challenge: "This challenge uses V, the flag that judges the signed reading.",
   overflowTask:
@@ -83,9 +93,16 @@ export const PROSE = {
   ] as const,
 
   reflection:
-    "- Why can one addition be right and wrong at once?\n" +
-    "- Which flag would a program using `unsigned` read, and which one using `int`?\n" +
-    "- What does `add` do to the flags?",
+    "- `adds` adds two numbers and writes N, Z, C and V.\n" +
+    "- N and Z describe the result.\n" +
+    "- C is the carry out of bit 31 for an addition.\n" +
+    "- V reports signed overflow.\n" +
+    "- `add` does not write the flags.\n" +
+    "- The flags keep their values until an instruction writes them.\n\n" +
+    "**Question:** `adds` adds `0xc0000000` and `0xc0000000`. Which of C and V is 1?",
+  reflectionAnswerSummary: "Answer",
+  reflectionAnswer:
+    "The result is `0x80000000`. A carry goes into bit 31 and a carry comes out, so C is 1 and V is 0. The unsigned result does not fit, but the signed one does: −1073741824 plus −1073741824 is −2147483648.",
 
   modelVsReality:
     "The architecture is Arm's published definition of what each instruction does. The simulator works out the flags as the architecture defines them. The course checks its simulator against QEMU, a widely used program that imitates Arm processors. A real processor need not add column by column. The drawing shows the arithmetic, not the circuit. The digital-design course builds the circuit.",

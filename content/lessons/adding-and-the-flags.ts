@@ -94,7 +94,7 @@ export const addingAndTheFlags: LessonInput = {
           kind: "adder",
           timeModel: STEPS,
           caption: LABELS.captions.adder,
-          props: { program: PLUS, call: PLUS_CALL, after: "predict-readings" },
+          props: { program: PLUS, call: PLUS_CALL, after: "predict-readings", detail: true },
         },
       ],
     },
@@ -115,7 +115,13 @@ export const addingAndTheFlags: LessonInput = {
           kind: "adder",
           timeModel: STEPS,
           caption: LABELS.captions.adderCarryOut,
-          props: { program: PLUS, call: CARRY_OUT_CALL, afterChallenge: "predict-flags" },
+          props: {
+            program: PLUS,
+            call: CARRY_OUT_CALL,
+            afterChallenge: "predict-flags",
+            detail: true,
+            note: PROSE.flagsAfter,
+          },
         },
       ],
     },
@@ -150,6 +156,8 @@ export const addingAndTheFlags: LessonInput = {
             registers: [0, 1, 2, 3],
             flags: true,
             after: "predict-add-flags",
+            showChanges: true,
+            explainFlags: true,
           },
         },
       ],
@@ -170,7 +178,12 @@ export const addingAndTheFlags: LessonInput = {
         },
       ],
     },
-    { kind: "reflection", title: LABELS.titles.reflection, prose: PROSE.reflection },
+    {
+      kind: "reflection",
+      title: LABELS.titles.reflection,
+      prose: PROSE.reflection,
+      details: { summary: PROSE.reflectionAnswerSummary, prose: PROSE.reflectionAnswer },
+    },
   ],
   challenges: [
     {
@@ -188,14 +201,29 @@ export const addingAndTheFlags: LessonInput = {
         })),
       ),
       // The program the editor shows and the grader runs. The expected flags are what the run
-      // leaves, never values in this file.
-      initial: { data: { program: PLUS } },
+      // leaves, never values in this file. The twelve choices are drawn as one group for each
+      // addition, a compact row of N, Z, C and V in it.
+      initial: {
+        data: {
+          program: PLUS,
+          editor: {
+            groups: ADDITIONS.map((a) => ({
+              label: a.text,
+              fields: FLAG_NAMES.map((flag) => ({
+                id: `${a.id}-${flag.toLowerCase()}`,
+                label: flag,
+              })),
+            })),
+          },
+        },
+      },
       tests: {
         kind: "answers",
         grader: OUTCOMES_AT_RETURN,
         cases: ADDITIONS.map((a) => ({
           label: a.text,
-          given: { entry: "plus", w0: a.w0, w1: a.w1 },
+          // A wrong flag is told with its own rule, never its value (the grader's "rule").
+          given: { entry: "plus", w0: a.w0, w1: a.w1, feedback: "rule" },
           expect: Object.fromEntries(
             FLAG_NAMES.map((flag) => [`${a.id}-${flag.toLowerCase()}`, flag.toLowerCase()]),
           ),

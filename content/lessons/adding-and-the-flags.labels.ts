@@ -22,7 +22,7 @@ export const LABELS = {
     explanation: "Which flag judges which reading",
     generalisation: "Flags keep their values",
     challenge: "The smallest signed overflow",
-    reflection: "Looking back",
+    reflection: "What you now know",
   },
   captions: {
     adder:

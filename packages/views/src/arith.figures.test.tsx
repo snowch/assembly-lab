@@ -468,7 +468,7 @@ describe("the counter's ring", () => {
     expect(row(container, "elapsed")).toBe("2000");
     expect(row(container, "c")).toBe(`0 (${A.ring.borrowed})`);
     // The wrap is marked on the enlarged strip.
-    expect(container.querySelector("svg")).toHaveAttribute("data-wrapped", "true");
+    expect(container.querySelector("svg")).toHaveAttribute("data-borrowed", "true");
     expect(container.querySelector('[data-mark="wrap"]')).not.toBeNull();
   });
 
@@ -486,7 +486,7 @@ describe("the counter's ring", () => {
     });
     expect(row(container, "elapsed")).toBe("4000");
     expect(row(container, "c")).toBe(`1 (${A.ring.notBorrowed})`);
-    expect(container.querySelector("svg")).toHaveAttribute("data-wrapped", "false");
+    expect(container.querySelector("svg")).toHaveAttribute("data-borrowed", "false");
     expect(container.querySelector('[data-mark="wrap"]')).toBeNull();
   });
 
