@@ -80,8 +80,7 @@ export const PROSE = {
     "No carry runs from one bit into the next. So, for `and`, `orr` and `eor`, each bit of the result depends only on the same bit of the two inputs. That is why a mask can change one warning and leave the rest.",
 
   generalisation:
-    "Status words, packed dates and colours keep several small numbers in one word in the same way.\n\n" +
-    "GCC writes the gear in one instruction, `bfi`, where the shortest version in the challenge above takes four instructions before `ret`. The result is the same: `set_gear(0x35, 5)` returns `0x55` both ways.",
+    "Status words, packed dates and colours keep several small numbers in one word in the same way.",
 
   challenge: "This challenge uses the operations and the gear on one word.",
   traceTask:

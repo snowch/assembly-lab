@@ -132,8 +132,6 @@ No carry runs from one bit into the next. So, for `and`, `orr` and `eor`, each b
 
 Status words, packed dates and colours keep several small numbers in one word in the same way.
 
-GCC writes the gear in one instruction, `bfi`, where the shortest version in the challenge above takes four instructions before `ret`. The result is the same: `set_gear(0x35, 5)` returns `0x55` both ways.
-
 ## 9. Three results from one word
 
 This challenge uses the operations and the gear on one word.

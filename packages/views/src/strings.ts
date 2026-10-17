@@ -204,7 +204,7 @@ export const VIEW_STRINGS = {
     rowBefore: (register: string) => `${register} before`,
     rowAfter: (register: string) => `${register} after`,
     inputLabel: (register: string) => `Value of ${register} when the call starts`,
-    inputProblem: "Type a whole number, or a hexadecimal number starting with `0x`.",
+    inputProblem: "Type a whole number, or a hexadecimal number starting with 0x.",
     // `list` is the bit numbers joined into a phrase (`2`, `4 and 6`), `count` how many.
     changed: (list: string, count: number) =>
       count === 1 ? `Bit ${list} changed.` : `Bits ${list} changed.`,
@@ -240,7 +240,7 @@ export const VIEW_STRINGS = {
     instruction: "Instruction",
     by: "Shift by",
     inputLabel: "Value of w0 when the call starts",
-    inputProblem: "Type a whole number, or a hexadecimal number starting with `0x`.",
+    inputProblem: "Type a whole number, or a hexadecimal number starting with 0x.",
     rowBefore: "Before",
     rowAfter: "After",
     fellOff: (bits: string) => `Fell off: ${bits}`,
