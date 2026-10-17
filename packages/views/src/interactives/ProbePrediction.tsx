@@ -16,6 +16,7 @@ import { withCode } from "../parts";
 import { measure } from "../probe";
 import { VIEW_STRINGS as S } from "../strings";
 import { traceOf, viewAt, wValue } from "../trace";
+import { MaskView } from "./MaskView";
 import { CallSchema, RecordedSchema, withProps } from "./props";
 
 const Measure = z.discriminatedUnion("kind", [
@@ -36,6 +37,11 @@ const Props = z.object({
   measure: Measure,
   /** Draw w0 as it is when the call starts, before the learner commits. */
   showStart: z.boolean().default(false),
+  /**
+   * After the commit, also draw the mask of the function's logic instruction and the low eight bits
+   * of the word, the mask and the result, from a run of the function on this word.
+   */
+  maskView: z.object({ word: z.number().int() }).optional(),
 });
 
 interface Stored {
@@ -110,6 +116,13 @@ export const ProbePrediction = withProps(
                   marks={{ changed: differing(outcome.rows.before, outcome.rows.after) }}
                 />
               </div>
+            )}
+            {data.maskView && (
+              <MaskView
+                program={data.program}
+                entry={data.call.entry}
+                word={unsignedOf(data.maskView.word)}
+              />
             )}
             {data.explain && <Prose markdown={data.explain} />}
           </div>

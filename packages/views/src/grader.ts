@@ -179,6 +179,40 @@ function programOf(challenge: Challenge) {
   return program.data;
 }
 
+/**
+ * A case may say that a wrong answer for a field is a particular mistake: `chained.<field>` names
+ * another function of the program, and the mistake is to have worked the field's function out from
+ * what that function gave instead of from the case's own inputs (an `and` done on the `orr`
+ * result). The model runs both functions to find out what that mistake would give. If the
+ * learner's answer is that, the case's `feedback.chained.<field>` is the sentence for the field;
+ * the sentence never says the value. Otherwise `given` is returned as it came.
+ */
+function chainedGiven(
+  given: Case["given"],
+  wrong: readonly (readonly [string, unknown])[],
+  program: ReturnType<typeof programOf>,
+  answers: Readonly<Record<string, string | undefined>>,
+  radix: 10 | 16,
+): Case["given"] {
+  let out = given;
+  for (const [field] of wrong) {
+    const first = given[`chained.${field}`];
+    const sentence = given[`feedback.chained.${field}`];
+    if (first === undefined || sentence === undefined) continue;
+    const args = argsOf(given);
+    const [w0 = 0] = args;
+    // The first function's result, put into w0 for the case's own function.
+    const before = traceOf(program, { entry: String(first), args: [w0] });
+    const via = traceOf(program, {
+      entry: String(given["entry"] ?? ""),
+      args: [wValue(before.result.final, 0), ...args.slice(1)],
+    });
+    if (answerPattern(answers[field], radix) === BigInt(wValue(via.result.final, 0)))
+      out = { ...out, [`feedback.${field}`]: sentence };
+  }
+  return out;
+}
+
 export function gradeAnswers(
   challenge: Challenge,
   artifact: Artifact,
@@ -230,7 +264,7 @@ export function gradeAnswers(
     // code marks). It says what to look at, never the value.
     const detail = failureDetail(
       wrong.map(([field]) => field),
-      c.given,
+      chainedGiven(c.given, wrong, program, answers, radix),
       named,
       quoted,
     );

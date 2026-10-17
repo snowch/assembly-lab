@@ -281,6 +281,12 @@ describe("every number the lesson states", () => {
     [85, "0x55, an option's value"],
     [113, "-113, the mask that clears bits 4 to 6"],
     [117, "0x75, an option's value"],
+    // The rework of 17 October 2026 (held by the tests under "the rework's numbers", below).
+    [31, "bit 31, the top bit of a word: bits moved past it are lost"],
+    [16, "the `lsl 16` of movk w0, 0xf, lsl 16, from Module 1"],
+    [13, "g = 13, the fourth call of set_gear, which is larger than 7"],
+    [1101, "13 in its low four bits"],
+    [100, "bits 6 to 4 of 0x47, the gear 4 written in three bits"],
   ]);
   const hexes = new Set(
     [
@@ -296,6 +302,8 @@ describe("every number the lesson states", () => {
       "0x2b",
       "0x22",
       "0x2",
+      "0x47",
+      "0x43",
     ].map((h) => h.toLowerCase()),
   );
 
@@ -308,7 +316,17 @@ describe("every number the lesson states", () => {
     expect(stated.decimal.length).toBeGreaterThan(40);
     expect(stated.decimal.filter((n) => !decimal.has(n))).toEqual([]);
     expect(stated.hex.filter((h) => !hexes.has(h))).toEqual([]);
-    expect(stated.binary).toEqual(["0010 1010"]);
+    // Each is a byte of a result the model produced (checked under "the rework's numbers").
+    expect([...new Set(stated.binary)].sort()).toEqual(
+      [
+        "0010 1010", // 0x2a
+        "0011 0101", // 0x35
+        "0100 0111", // 0x47
+        "0101 0000", // 0x35's new gear, moved into place: 5 << 4
+        "0101 0101", // 0x55
+        "0111 0101", // 0x75
+      ].sort(),
+    );
   });
 
   it("agrees with the model on every pinned hexadecimal result", () => {
@@ -318,6 +336,8 @@ describe("every number the lesson states", () => {
       hex(w0(gcc, "clear_door", 0xf)),
       hex(0x35),
       hex(wValue(call(withoutClear, "set_gear", [0x35, 5]).final, 0)),
+      hex(0x47),
+      hex(w0(build("f:\n eor w0, w0, 4\n ret\n"), "f", 0x47)),
       hex(w0(gcc, "set_gear", 0x35, 5)),
       hex(0x2a),
       hex(w0(gcc, "set_gear", 0xffffffff, 0)),
@@ -360,6 +380,12 @@ describe("every number the lesson states", () => {
         64,
         (call(build("f:\n sub x0, x0, 1\n ret\n"), "f", [0]).final.x[0] ?? 0n).toString(2).length,
       ],
+      // The rework of 17 October 2026.
+      [31, Math.max(...bitsSet(w0(build("f:\n lsl w0, w0, 1\n ret\n"), "f", 0x40000000)))],
+      [16, Math.log2(w0(build("f:\n movk w0, 0xf, lsl 16\n ret\n"), "f", 0) / 0xf)],
+      [13, w0(build("f:\n and w0, w0, 15\n ret\n"), "f", 13)],
+      [1101, Number((13).toString(2))],
+      [100, Number((w0(gcc, "gear_of", 0x47) >>> 0).toString(2))],
     ]);
     for (const [n, got] of model) expect(got, String(n)).toBe(n);
   });
@@ -373,5 +399,101 @@ describe("every number the lesson states", () => {
     expect(first(GEAR_OF)).toBe("ubfx x0, x0, 4, 3");
     expect(first(SET_GEAR)).toBe("bfi w0, w1, 4, 3");
     expect(first(SERVICE_DUE)).toBe("ubfx x0, x0, 1, 1");
+  });
+});
+
+// ---------------------------------------------------------------------------------------------
+// The rework's numbers (17 October 2026): each one the figures draw or the new words state
+
+describe("the rework's numbers", () => {
+  const low8 = (n: number) =>
+    (n & 0xff)
+      .toString(2)
+      .padStart(8, "0")
+      .replace(/(\d{4})(\d{4})/, "$1 $2");
+
+  it("clear_door(0xf) is 0xb: the low eight bits are 0000 1111, 1111 1011 and 0000 1011, and bit 2 is the only one that differs", () => {
+    const mask = immediate("and w0, w0, -5") >>> 0;
+    const result = w0(gcc, "clear_door", 0xf);
+    expect(hex(result)).toBe("0xb");
+    expect([0xf, mask, result].map(low8)).toEqual(["0000 1111", "1111 1011", "0000 1011"]);
+    expect(hex(mask)).toBe("0xfffffffb");
+    expect(mask | 0).toBe(-5);
+    // Bit 2 is the only bit where the mask has a 0, and the only bit the result differs in.
+    expect(bitsSet(~mask >>> 0)).toEqual([2]);
+    expect(bitsSet((0xf ^ result) >>> 0)).toEqual([2]);
+  });
+
+  it("orr 1 changes only bit 0, and only when it was 0; eor 8 flips only bit 3", () => {
+    for (const word of [0, 1, 0x2a, 0x35, 0xf, 0xffffffff, 0x80000000]) {
+      const orr = w0(gcc, "warn_fuel", word);
+      expect(bitsSet((word ^ orr) >>> 0)).toEqual((word & 1) === 0 ? [0] : []);
+      expect(bitsSet((word ^ w0(gcc, "toggle_lights", word)) >>> 0)).toEqual([3]);
+    }
+  });
+
+  it("gear_of(0x35) is 3: bits 6 to 4 of 0x35 are 011, and ubfx takes 3 bits starting at bit 4", () => {
+    expect(w0(gcc, "gear_of", 0x35)).toBe(3);
+    expect((0x35 >> 4) & 7).toBe(3);
+    expect(((0x35 >> 4) & 7).toString(2).padStart(3, "0")).toBe("011");
+    expect([immediate("ubfx x0, x0, 4, 3", 2), immediate("ubfx x0, x0, 4, 3", 3)]).toEqual([4, 3]);
+  });
+
+  it("set_gear(0x35, 5) is 0x55, and 0x75 without the clear: 0011 0101 or 0101 0000 is 0111 0101", () => {
+    expect(hex(w0(gcc, "set_gear", 0x35, 5))).toBe("0x55");
+    expect(hex(wValue(call(withoutClear, "set_gear", [0x35, 5]).final, 0))).toBe("0x75");
+    // The new gear, moved into place, is w1 after the second instruction.
+    const moved = wValue(stateAfter(call(withoutClear, "set_gear", [0x35, 5]), 1), 1);
+    expect([0x35, moved, 0x75, 0x55].map(low8)).toEqual([
+      "0011 0101",
+      "0101 0000",
+      "0111 0101",
+      "0101 0101",
+    ]);
+    expect((0x35 | moved) >>> 0).toBe(0x75);
+    // The old gear's bits 4 and 5 stay set under an OR; the clear is what takes them away.
+    expect(bitsSet(0x35 & 0x70)).toEqual([4, 5]);
+    expect(bitsSet(0x75 & 0x70)).toEqual([4, 5, 6]);
+    expect(bitsSet((0x75 ^ 0x55) >>> 0)).toEqual([5]);
+  });
+
+  it("set_gear(0x1234, 13) keeps only the low 3 bits of 13, which are 5's bits, and nothing outside the field changes", () => {
+    expect(hex(w0(gcc, "set_gear", 0x1234, 13))).toBe("0x1254");
+    expect(w0(gcc, "set_gear", 0x1234, 13)).toBe(w0(gcc, "set_gear", 0x1234, 5));
+    expect(13 & 7).toBe(5);
+    // 13 is 1101 in its low four bits; without keeping the low 3, its bit 3 would land in bit 7.
+    expect((13).toString(2)).toBe("1101");
+    const noMask = build("f:\n lsl w1, w1, 4\n and w0, w0, -113\n orr w0, w0, w1\n ret\n");
+    expect(hex(w0(noMask, "f", 0x1234, 13))).toBe("0x12d4");
+    expect(bitsSet((w0(noMask, "f", 0x1234, 13) ^ 0x1254) >>> 0)).toEqual([7]);
+    // The bits outside the field are the word's own, for the reader's code and GCC's.
+    for (const [word, gear] of [
+      [0x1234, 13],
+      [0xffffffff, 0],
+      [0xa5a5a5a5, 6],
+      [0x35, 5],
+    ] as const) {
+      const ours = wValue(call(reference, 0x400000, [word, gear]).final, 0);
+      expect((ours & ~0x70) >>> 0).toBe((word & ~0x70) >>> 0);
+      expect((ours >> 4) & 7).toBe(gear & 7);
+      expect(ours).toBe(w0(gcc, "set_gear", word, gear));
+    }
+  });
+
+  it("the closing question: the gear of 0x47 is 4, and eor 4 gives 0x43", () => {
+    expect(w0(gcc, "gear_of", 0x47)).toBe(4);
+    expect(low8(0x47)).toBe("0100 0111");
+    expect(((0x47 >> 4) & 7).toString(2)).toBe("100");
+    const eor4 = build("f:\n eor w0, w0, 4\n ret\n");
+    expect(hex(w0(eor4, "f", 0x47))).toBe("0x43");
+    expect(bitsSet(0x47 & 4)).toEqual([2]);
+    expect(bitsSet((0x47 ^ 0x43) >>> 0)).toEqual([2]);
+  });
+
+  it("the third challenge's chained mistake is 0x23: the same and, worked on 0x2b instead of 0x2a", () => {
+    const chained = w0(three, "after_and", w0(three, "after_orr", 0x2a));
+    expect(hex(chained)).toBe("0x23");
+    expect(chained).not.toBe(w0(three, "after_and", 0x2a));
+    expect(w0(three, "after_orr", 0x2a)).toBe(0x2a | 1);
   });
 });

@@ -238,6 +238,10 @@ describe("every number the lesson states", () => {
       "movk w0, 0xf, lsl 16 puts the 16-bit number 0xf in the upper half (held by the model, below)",
     ],
     [31, "w0, lsr 31 moves the top bit to the bottom"],
+    [9, "int g = -9 in the closing question"],
+    // The compiler's version, from the recorded file's header (held in
+    // logic-shifts-masks.listings.test.ts), now named in the note "What C says".
+    [16.1, "GCC 16.1, the compiler of the recorded listings"],
     [1073741818, "lsr of -21 by 2, unsigned reading"],
     [2147483644, "lsr of -7 by 1, unsigned reading"],
   ]);
@@ -258,6 +262,7 @@ describe("every number the lesson states", () => {
 
   it("agrees with the model on every pinned result", () => {
     const model: [number, number][] = [
+      [9, -signed(build("f:\n mov w0, -9\n ret\n"), "f", 0)],
       [2147483644, w0(gcc, "halve_count", -7)],
       [4, -signed(gcc, "halve_gradient", -7)],
       [3, -signed(gcc, "div2", -7)],
@@ -305,5 +310,91 @@ describe("the shift figure's programs", () => {
         const result = call(shift(op, n), "f", [0x80000001]);
         expect(result.stop.kind).toBe("returned");
       }
+  });
+});
+
+// ---------------------------------------------------------------------------------------------
+// The rework's numbers (17 October 2026): each one the figures draw or the new words state
+
+describe("the rework's numbers", () => {
+  it("-7 asr 1 is -4 and -7 lsr 1 is 2147483644, and the filled top bit is 1 in the asr result and 0 in the lsr one", () => {
+    expect(signed(shift("asr", 1), "f", -7)).toBe(-4);
+    expect(w0(shift("lsr", 1), "f", -7)).toBe(2147483644);
+    expect(hex(w0(shift("asr", 1), "f", -7))).toBe("0xfffffffc");
+    expect(hex(w0(shift("lsr", 1), "f", -7))).toBe("0x7ffffffc");
+    // The old top bit of -7 is 1: asr fills the top with a copy of it, lsr with 0.
+    expect(w0(shift("asr", 1), "f", -7) >>> 31).toBe(1);
+    expect(w0(shift("lsr", 1), "f", -7) >>> 31).toBe(0);
+  });
+
+  it("loses the bits the figure marks lost, and fills the bits it marks filled, for lsl, lsr and asr", () => {
+    const word = 0x80000001;
+    for (const n of SHIFT_AMOUNTS) {
+      const bits = (v: number, from: number, to: number) =>
+        (v >>> from) & ((1 << (to - from + 1)) - 1);
+      // lsl: the top n bits go, the bottom n are zeros.
+      const left = w0(shift("lsl", n), "f", word);
+      expect(left & ((1 << n) - 1), `lsl ${n}`).toBe(0);
+      expect(bits(left, n, 31)).toBe(bits(word, 0, 31 - n));
+      // lsr: the bottom n bits go, the top n are zeros.
+      const lsr = w0(shift("lsr", n), "f", word);
+      expect(lsr >>> (32 - n), `lsr ${n}`).toBe(0);
+      expect(lsr).toBe(word >>> n);
+      // asr: the bottom n bits go, the top n are copies of the old top bit.
+      const asr = w0(shift("asr", n), "f", word);
+      expect(asr >>> (32 - n), `asr ${n}`).toBe((1 << n) - 1);
+      expect(asr >>> 0).toBe(((word | 0) >> n) >>> 0);
+    }
+    // The lost bits are the ones the shift's amount names: asr of 0x7ffffffe by 1 loses the 0 and fills with 0.
+    expect(hex(w0(shift("asr", 1), "f", 0x7ffffffe))).toBe("0x3fffffff");
+  });
+
+  it("21 and -21 by 2 and by / 4: 5, 5, 5 and -6, 1073741818, -5", () => {
+    expect([21, -21].map((w) => signed(compare, "asr_by_2", w))).toEqual([5, -6]);
+    expect([21, -21].map((w) => w0(compare, "lsr_by_2", w))).toEqual([5, 1073741818]);
+    expect([21, -21].map((w) => signed(compare, "div_by_4", w))).toEqual([5, -5]);
+  });
+
+  it("div2(-7) writes -6 and then -3, and div2(7) adds 0 and gives 3", () => {
+    const run7 = call(programOf(DIV2), "div2", [-7]);
+    expect(run7.steps.map((s) => s.text)).toEqual([
+      "add w0, w0, w0, lsr 31",
+      "asr w0, w0, 1",
+      "ret",
+    ]);
+    expect([0, 1].map((k) => wValueAsInt(stateAfter(run7, k), 0))).toEqual([-6, -3]);
+    expect(run7.steps.map((s) => s.writes.length)).toEqual([1, 1, 0]);
+    const run0 = call(programOf(DIV2), "div2", [7]);
+    expect(wValueAsInt(stateAfter(run0, 0), 0)).toBe(7);
+    expect(wValueAsInt(stateAfter(run0, 1), 0)).toBe(3);
+    expect(signed(gcc, "div2", 7)).toBe(3);
+  });
+
+  it("the shifted operand is worked out from w0 before the add and changes nothing by itself: the add is the only step that writes w0 before the asr", () => {
+    for (const word of [-7, 7, -1, 0, 100, -100, 2147483647, -2147483648]) {
+      const result = call(programOf(DIV2), "div2", [word]);
+      const before = wValue(result.initial, 0);
+      const operand = before >>> 31;
+      const add = result.steps[0]!;
+      expect(add.writes.map((w) => w.reg)).toEqual([0]);
+      // Nothing wrote w0 between the call and the add: the operand read the argument.
+      expect(wValue(stateAfter(result, 0), 0)).toBe((before + operand) >>> 0);
+      expect(result.steps.filter((s) => s.writes.some((w) => w.reg === 0))).toHaveLength(2);
+    }
+  });
+
+  it("for g = -9: g / 2 is -4 and asr by 1 gives -5, and GCC's add makes -8 first, which asr halves to -4", () => {
+    expect(signed(gcc, "div2", -9)).toBe(-4);
+    expect(signed(shift("asr", 1), "f", -9)).toBe(-5);
+    const run = call(programOf(DIV2), "div2", [-9]);
+    expect(wValueAsInt(stateAfter(run, 0), 0)).toBe(-8);
+    expect(wValueAsInt(stateAfter(run, 1), 0)).toBe(-4);
+    expect(signed(shift("asr", 1), "f", -8)).toBe(-4);
+  });
+
+  it("C's / rounds towards zero where asr rounds down: 7 / 2 is 3 and -7 / 2 is -3", () => {
+    expect(Math.trunc(7 / 2)).toBe(3);
+    expect(signed(gcc, "div2", 7)).toBe(3);
+    expect(signed(gcc, "div2", -7)).toBe(-3);
   });
 });

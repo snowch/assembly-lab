@@ -5,7 +5,9 @@
 // backticks taken out, because the page draws a title as plain text; an option has the list mark's
 // closing ; or . taken off). Everything the prose file does not give is in `drafts`, marked DRAFT:
 // the captions of figures it gives none for, and the words inside the warning word figure. The
-// prose test lists them, so a new one is a decision somebody sees.
+// prose test lists them, so a new one is a decision somebody sees. Those added on 17 October 2026
+// for the figures' rework (a changed title and the captions of four new figures) are marked as
+// drafts until they have been through the prose process; the prose test counts the marks.
 
 export const LABELS = {
   objectives: [
@@ -17,13 +19,13 @@ export const LABELS = {
     question: "How do you change one warning?",
     motivation: "Why one bit at a time",
     prediction: "The constant that clears bit 2",
-    investigation: "Four operations, masks and fields",
+    investigation: "Masks, fields and the three rules", // DRAFT: the old title counted four operations
     construction: "Writing a field",
     failureExperiment: "Leaving out the clear",
     explanation: "What each operation does",
     generalisation: "Fields in real code",
     challenge: "Three results from one word",
-    reflection: "Looking back",
+    reflection: "What you now know",
   },
   captions: {
     warningWord: "The warning word's 32 bits. The table beside it gives each bit's meaning.",
@@ -67,6 +69,10 @@ export const LABELS = {
       predictMinusFive: "A prediction about the constant in the listing.",
       setGear: "The assembly editor, with a single ret to start from.",
       predictNoClear: "A prediction about what set_gear returns without the clearing step.",
+      readGear: "The gear of 0x35: the bits gear_of takes, and the number they make.", // DRAFT
+      stepSolution: "Your set_gear, one instruction at a time, on the call you choose.", // DRAFT
+      compareBfi: "Your set_gear and GCC's set_gear, run on the same call.", // DRAFT
+      compareClear: "The old word, the new gear and the two results, bit by bit.", // DRAFT
       stepNoClear:
         "set_gear(0x35, 5) without the clearing step, one instruction at a time. A register with an outline has just changed.",
       traceThree: "Work out three results for the warning word 0x2a, then give them.",
