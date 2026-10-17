@@ -1,0 +1,20 @@
+{
+  "entry": "read_long",
+  "calls": [
+    {
+      "args": [["0x410000", 64]]
+    },
+    {
+      "args": [["0x410008", 64]]
+    },
+    {
+      "args": [["0x410010", 64]]
+    }
+  ],
+  "compare": [
+    {
+      "label": "sensor",
+      "length": 24
+    }
+  ]
+}

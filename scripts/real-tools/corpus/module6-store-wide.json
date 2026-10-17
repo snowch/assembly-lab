@@ -1,0 +1,17 @@
+{
+  "entry": "store_wide",
+  "compare": [
+    {
+      "label": "sensor",
+      "length": 16
+    }
+  ],
+  "calls": [
+    {
+      "args": [
+        ["0x410000", 64],
+        ["0x12345678", 32]
+      ]
+    }
+  ]
+}

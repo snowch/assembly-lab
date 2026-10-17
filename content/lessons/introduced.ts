@@ -25,6 +25,8 @@ export const TAUGHT: Readonly<Record<string, readonly string[]>> = {
   branches: ["b", "b.cond", "cbz", "cbnz", "tbz", "tbnz"],
   "counting-up": [],
   "counting-down": [],
+  "memory-and-addresses": ["ldr", "str", "strb", "strh"],
+  "loading-widths": ["ldrb", "ldrsb", "ldrh", "ldrsh", "ldrsw", "sxtb", "uxtb", "sxtw"],
 };
 
 /**

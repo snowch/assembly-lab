@@ -6,7 +6,15 @@
 
 /** What an operand of an instruction may be, so the editor knows which chips to offer. */
 export type Slot =
-  "register" | "registerOrNumber" | "registerOrMask" | "number" | "shift" | "condition" | "label";
+  | "register"
+  | "registerOrNumber"
+  | "registerOrMask"
+  | "number"
+  | "shift"
+  | "condition"
+  | "label"
+  | "address"
+  | "extension";
 
 /** The shifts the tap editor offers for a `shift` operand: `movk` puts a number in the upper half. */
 export const SHIFTS: readonly string[] = ["lsl 16"];
@@ -44,6 +52,18 @@ export const SLOTS: Readonly<Record<string, readonly Slot[]>> = {
   cbz: ["register", "label"],
   cbnz: ["register", "label"],
   b: ["label"],
+  ldr: ["register", "address"],
+  str: ["register", "address"],
+  ldrb: ["register", "address"],
+  strb: ["register", "address"],
+  ldrh: ["register", "address"],
+  strh: ["register", "address"],
+  ldrsb: ["register", "address"],
+  ldrsh: ["register", "address"],
+  ldrsw: ["register", "address"],
+  sxtb: ["register", "register"],
+  uxtb: ["register", "register"],
+  sxtw: ["register", "register"],
 };
 
 /** The conditions the tap editor offers, in the order the lessons list them. */
@@ -61,7 +81,9 @@ export const CONDITIONS: readonly string[] = [
 ];
 
 /** The operands of an instruction the editor can build: a conditional branch (`b.cc`) takes a label. */
-export function slotsOf(mnemonic: string): readonly Slot[] | undefined {
+export function slotsOf(mnemonic: string, extensions = false): readonly Slot[] | undefined {
+  if (extensions && ["add", "sub", "adds", "subs"].includes(mnemonic))
+    return ["register", "register", "registerOrNumber", "extension"];
   if (Object.hasOwn(SLOTS, mnemonic)) return SLOTS[mnemonic];
   if (/^b\.[a-z]{2}$/.test(mnemonic)) return ["label"];
   return undefined;
@@ -141,6 +163,10 @@ export function fitsSlot(operand: string, slot: Slot): boolean {
     case "label":
       // A name: not a register, a number or a condition word with a space in it.
       return /^[A-Za-z_.][\w.$]*$/.test(text) && !REGISTER.test(text);
+    case "address":
+      return /^\[\s*(?:x\d{1,2}|sp)\s*(?:,\s*#?-?(?:0x[0-9a-f]+|\d+)\s*)?\]$/i.test(text);
+    case "extension":
+      return /^(?:[su]xt[bwhx])(?:\s+#?\d+)?$/i.test(text);
   }
 }
 
@@ -149,8 +175,8 @@ export function fitsSlot(operand: string, slot: Slot): boolean {
  * one that does not (a number where a label is needed) is cleared, so that a stale `0` never
  * becomes the target of a branch. The slot is left empty, for the learner to fill.
  */
-export function withInstruction(line: Line, mnemonic: string): Line {
-  const slots = slotsOf(mnemonic) ?? [];
+export function withInstruction(line: Line, mnemonic: string, extensions = false): Line {
+  const slots = slotsOf(mnemonic, extensions) ?? [];
   return {
     mnemonic,
     operands: line.operands

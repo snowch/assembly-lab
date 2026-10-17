@@ -110,6 +110,9 @@ const UNSIGNED_WRITTEN = [
   "write-dim-up",
   "write-dim-down",
   "write-dim-until-dark",
+  "write-save-distance",
+  "write-copy-distance",
+  "write-read-sensors",
 ];
 
 describe("the written challenges' readings", () => {

@@ -44,6 +44,7 @@ import {
 } from "./readingGraders";
 import { VIEW_STRINGS as S, plain, quoted } from "./strings";
 import { traceOf, wValue, wValueAsInt } from "./trace";
+import { gradeMemoryWritten, needsMemoryGrader } from "./grader-memory";
 
 export const RUN_REGISTERS = "run-registers";
 export const REGISTERS_AT_RETURN = "registers-at-return";
@@ -90,6 +91,7 @@ const pattern = (v: string | number): bigint => BigInt.asUintN(32, BigInt(v));
 
 export function gradeWritten(challenge: Challenge, artifact: Artifact): Verdict {
   const { cases } = answerTests(challenge);
+  if (needsMemoryGrader(cases)) return gradeMemoryWritten(challenge, artifact);
   const total = cases.length;
   const text = artifact.text ?? challenge.initial.text ?? "";
   if (text.trim() === "")

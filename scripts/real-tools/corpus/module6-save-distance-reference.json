@@ -1,0 +1,23 @@
+{
+  "entry": "save_distance_reference",
+  "compare": [
+    {
+      "label": "sensor",
+      "length": 16
+    }
+  ],
+  "calls": [
+    {
+      "args": [
+        ["0x410000", 64],
+        ["0x12345678", 32]
+      ]
+    },
+    {
+      "args": [
+        ["0x410000", 64],
+        ["0xffffffff", 32]
+      ]
+    }
+  ]
+}

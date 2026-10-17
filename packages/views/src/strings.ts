@@ -8,7 +8,7 @@
 export const VIEW_STRINGS = {
   /** The note under the badge of every figure that runs the simulator (the book's `steps` model). */
   modelNote:
-    "Each step runs one instruction on the course's simulator. The instruction reads registers and writes registers. Then the simulator moves on to the next instruction. Nothing else happens between steps.",
+    "Each step runs one instruction on the course's simulator. An instruction can read or change registers, flags or memory. It also determines which instruction runs next, or returns from the function. Nothing else happens between steps.",
   /** The badge on a figure that runs the simulator, and the heading over its note. */
   modelBadge: "Stepped",
   modelHeading: "How the simulator steps",

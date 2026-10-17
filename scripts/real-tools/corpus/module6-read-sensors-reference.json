@@ -1,0 +1,14 @@
+{
+  "entry": "read_sensors_reference",
+  "compare": [
+    {
+      "label": "sensor",
+      "length": 16
+    }
+  ],
+  "calls": [
+    {
+      "args": [["0x410000", 64]]
+    }
+  ]
+}

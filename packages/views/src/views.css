@@ -3,6 +3,7 @@
 @import "./arith.css";
 @import "./branch.css";
 @import "./loop.css";
+@import "./memory.css";
 @import "./module0.css";
 
 /* The course's figures, assembly editor and answer boxes. Phone first: the C sits above the

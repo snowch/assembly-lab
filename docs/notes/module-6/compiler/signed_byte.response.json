@@ -1,0 +1,40 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 49,
+  "processExecutionResultTime": 0.0029549989849328995,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 3439,
+  "asm": [
+    { "text": "signed_byte:", "source": null, "labels": [] },
+    {
+      "text": "        sxtb    w0, w0",
+      "source": { "file": null, "line": 5, "column": 1 },
+      "labels": []
+    },
+    { "text": "        ret", "source": { "file": null, "line": 5, "column": 1 }, "labels": [] }
+  ],
+  "optOutput": [],
+  "labelDefinitions": { "signed_byte": 1 },
+  "parsingTime": 1,
+  "filteredCount": 222,
+  "popularArguments": {},
+  "queueTime": 4
+}

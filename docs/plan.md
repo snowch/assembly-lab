@@ -40,8 +40,9 @@ shift. Every module shows one more place where the compiler made that choice for
 The reader can read simple C (variables, `if`, loops, functions, arrays) and convert between
 binary and decimal. It does not assume hexadecimal, two's complement, pointers, any assembly, or
 any electronics: Module 1 teaches hexadecimal as a short way to write bits and derives the signed
-reading from the machine, Module 7 teaches pointers as addresses, and the course links to digital-design and
-the notes for how the parts are built, never relying on them.
+reading from the machine. Module 6 introduces pointers as addresses; Module 7 develops arrays
+and pointer arithmetic. The course links to digital-design and the notes for how the parts are
+built, never relying on them.
 
 ## Decision 1: which machine
 

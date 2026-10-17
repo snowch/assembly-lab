@@ -24,7 +24,7 @@ export { errorSentence, sentence, stopSentence } from "./messages";
 export { DecimalRegister, ListingView, RegisterRow, withCode } from "./parts";
 export { VIEW_STRINGS, quoted } from "./strings";
 export { fieldList } from "./fields";
-export { bitsOf, traceOf, viewAt, wValue, wValueAsInt } from "./trace";
+export { bitsOf, memoryAt, traceOf, viewAt, wValue, wValueAsInt } from "./trace";
 export {
   NO_BITS,
   MINUS,
@@ -48,7 +48,7 @@ export { traceAssembly, traceText } from "./traceText";
 export { BIT_READINGS, PATTERN_READINGS, REGISTERS_AFTER } from "./readingGraders";
 export { compareListings } from "./interactives/ListingCompare";
 export { tryMov } from "./interactives/ConstantTester";
-export type { StepView, Trace, TraceCall } from "./trace";
+export type { StepView, Trace, TraceCall, MemoryTraceCall } from "./trace";
 export { ARITH_STRINGS } from "./strings.arith";
 export { FlagsRow } from "./FlagsRow";
 export {

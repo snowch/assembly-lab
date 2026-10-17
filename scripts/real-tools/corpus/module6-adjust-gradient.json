@@ -1,0 +1,23 @@
+{
+  "entry": "adjust_gradient",
+  "compare": [
+    {
+      "label": "sensor",
+      "length": 16
+    }
+  ],
+  "calls": [
+    {
+      "args": [
+        ["0x410004", 64],
+        ["10", 32]
+      ]
+    },
+    {
+      "args": [
+        ["0x410005", 64],
+        ["0xffffffff", 32]
+      ]
+    }
+  ]
+}

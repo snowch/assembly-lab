@@ -9,6 +9,7 @@ import { useMemo, type ComponentType } from "react";
 import { z, type ZodType } from "zod";
 
 import type { InteractiveProps } from "@platform/lesson-runtime";
+import { ArgumentSchema, MemorySchema } from "../call";
 
 /** A program as a lesson records it: its C and the compiler's listing. */
 export const RecordedSchema = z.object({ c: z.string(), listing: z.string() });
@@ -19,6 +20,12 @@ export const CallSchema = z.object({
   args: z.array(z.number().int()),
   /** Bounded traces for loops. Calls that omit it retain the machine's default. */
   maxSteps: z.number().int().min(1).max(1000).optional(),
+});
+
+/** Exact-width arguments and private fixture bytes for memory lessons. */
+export const MemoryCallSchema = CallSchema.extend({
+  args: z.array(ArgumentSchema).max(8),
+  memory: MemorySchema.optional(),
 });
 
 /** One line of a listing that a figure can take out. */
@@ -38,6 +45,10 @@ export const EditorKeysSchema = z.object({
   labels: z.array(z.string().min(1)).optional(),
   /** The conditions the tap mode offers for `csel` and for `b.cond`, else the lessons' ten. */
   conditions: z.array(z.string().min(1)).optional(),
+  /** Address operands taught by this challenge; the tap editor offers only these choices. */
+  addresses: z.array(z.string().min(1)).optional(),
+  /** Optional final operand on `add`/`sub`, such as `sxtw`. */
+  extensions: z.array(z.string().min(1)).optional(),
 });
 export type EditorKeys = z.infer<typeof EditorKeysSchema>;
 

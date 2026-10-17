@@ -1,0 +1,103 @@
+/* Copyright © 2026 Christopher Snow */
+
+.al-memory-registers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.al-memory-register {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 2px solid transparent;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.al-memory-register[data-changed="true"] {
+  border-color: var(--accent);
+}
+.al-memory-heading {
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+.al-memory-order,
+.al-memory-access,
+.al-memory-range,
+.al-memory-role {
+  font-size: var(--text-sm);
+}
+.al-memory-cells {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+  gap: var(--space-2);
+}
+.al-memory-cells li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-1);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+}
+.al-memory-cells li[data-access="loaded"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.al-memory-cells li[data-access="stored"] {
+  border-color: var(--accent);
+  border-style: dashed;
+  background: var(--accent-soft);
+}
+.al-memory-value {
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+.al-memory-address {
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.al-memory-register-bytes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+.al-memory-register-byte {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-2) 2px;
+  gap: var(--space-1);
+  border: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+.al-memory-register-byte[data-role="loaded"],
+.al-memory-register-byte[data-role="source"] {
+  border: 2px solid var(--accent);
+  background: var(--accent-soft);
+}
+.al-memory-register-byte[data-role="signFill"] {
+  border-style: dashed;
+}
+.al-memory-register-byte[data-role="clearedUpper"] {
+  background: var(--bg-sunken);
+}
+.al-memory-register-byte .al-memory-address {
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .al-memory-register-bytes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.al-memory-bits {
+  font-size: 11px;
+  letter-spacing: 0;
+}

@@ -32,7 +32,7 @@ export const STRINGS = {
       "`for` and `while` loops.",
       "Arrays indexed with `a[i]`.",
     ],
-    cNot: "You do not need to know about pointers, structs, `malloc` or the standard library. Module 7 introduces pointers as addresses. You do not need a compiler; the lessons run in your browser.",
+    cNot: "You do not need to know about pointers, structs, `malloc` or the standard library. Module 6 introduces pointers as addresses. You do not need a compiler; the lessons run in your browser.",
     numbers:
       "You should be able to convert binary numbers to decimal and back. Module 1 introduces hexadecimal and explains how bit patterns represent positive and negative numbers.",
     assembly: "Module 0 introduces assembly from the beginning.",

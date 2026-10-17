@@ -1,0 +1,17 @@
+{
+  "entry": "memory_start",
+  "compare": [
+    {
+      "label": "sensor",
+      "length": 16
+    }
+  ],
+  "calls": [
+    {
+      "args": [
+        ["0x410000", 64],
+        ["10", 32]
+      ]
+    }
+  ]
+}

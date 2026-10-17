@@ -37,6 +37,8 @@ import { WarningWordFigure } from "./WarningWordFigure";
 import { WordStepperFigure } from "./WordStepperFigure";
 import { LoopFigure } from "./LoopFigure";
 import { LoopPrediction } from "./LoopPrediction";
+import { MemoryStepper } from "./MemoryStepper";
+import { MemoryPrediction } from "./MemoryPrediction";
 
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
   listing: ListingFigure,
@@ -70,4 +72,6 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   "clear-compare": ClearCompare,
   "loop-runs": LoopFigure,
   "loop-prediction": LoopPrediction,
+  "memory-stepper": MemoryStepper,
+  "memory-prediction": MemoryPrediction,
 };

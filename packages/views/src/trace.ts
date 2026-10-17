@@ -23,6 +23,7 @@ import {
   type RecordedProgram,
 } from "./listing";
 import { sentence } from "./messages";
+import { machineArgs, withMemory, type TraceArgument } from "./call";
 
 /** The call a figure runs: a label in the listing and the values of `w0`, `w1` and on. */
 export interface TraceCall {
@@ -30,6 +31,12 @@ export interface TraceCall {
   readonly args: readonly number[];
   /** Stop recording after this many instructions, even if the function has not returned. */
   readonly maxSteps?: number;
+  readonly memory?: readonly number[];
+}
+
+/** A call whose arguments may explicitly name their register widths. */
+export interface MemoryTraceCall extends Omit<TraceCall, "args"> {
+  readonly args: readonly TraceArgument[];
 }
 
 export interface Trace {
@@ -43,12 +50,12 @@ export interface Trace {
 /** Assemble a recorded program (with a line taken out, if asked) and run one call on it. */
 export function traceOf(
   recorded: Pick<RecordedProgram, "listing">,
-  call: TraceCall,
+  call: TraceCall | MemoryTraceCall,
   without?: DeleteSpec,
 ): Trace {
   const parsed = parseListing(recorded.listing);
   const lines = without ? deleteLine(parsed, without) : parsed;
-  const { program, errors } = assemble(assemblyOf(lines));
+  const { program, errors } = assemble(withMemory(assemblyOf(lines), call.memory));
   if (program === null) {
     const first = errors[0];
     throw new Error(
@@ -59,12 +66,39 @@ export function traceOf(
   }
   const result = run(program, {
     entry: call.entry,
-    args: call.args.map((value) => ({ value: BigInt(value), width: 32 })),
+    args: machineArgs(call.args),
     ...(call.maxSteps === undefined ? {} : { maxSteps: call.maxSteps }),
   });
   const lineAt = new Map<number, number>();
   for (const ins of program.instructions) lineAt.set(ins.address, ins.line - 1);
   return { lines, program, result, lineAt };
+}
+
+/** Bytes after the first `k` instructions, reconstructed by undoing later stores. */
+export function memoryAt(
+  trace: Trace,
+  k: number,
+  address: number,
+  length: number,
+): number[] | undefined {
+  if (!Number.isInteger(k) || k < 0 || k > trace.result.steps.length)
+    throw new Error("The memory step must be within the recorded trace.");
+  if (!Number.isSafeInteger(address) || address < 0 || !Number.isSafeInteger(length) || length < 0)
+    throw new Error("A memory range needs a non-negative integer address and length.");
+  const final = trace.result.read(address, length);
+  if (final === undefined) return undefined;
+  const bytes = [...final];
+  for (let i = trace.result.steps.length - 1; i >= k; i--) {
+    const stores = trace.result.steps[i]?.stores ?? [];
+    for (let s = stores.length - 1; s >= 0; s--) {
+      const store = stores[s]!;
+      store.before.forEach((byte, offset) => {
+        const at = store.address + offset - address;
+        if (at >= 0 && at < length) bytes[at] = byte;
+      });
+    }
+  }
+  return bytes;
 }
 
 /** What a figure shows once `k` instructions have run. */

@@ -38,6 +38,13 @@ During the Module 5 work later on 17 October 2026, open-std.org was reachable. T
 the permission to assume termination, and the order of `while`, `do` and `for` operations.
 `docs/notes/module-5/listings.md` records the application of those clauses to the lessons.
 
+Module 6 also checks the integer conversions in N3096 section 6.3.1.3, including the
+implementation-defined result or signal for an out-of-range conversion to a signed type.
+The AAPCS64 2025Q4 sections on fundamental data types, byte order and C/C++ language mappings
+support the selected target's sizes and LP64 data model. The course uses little-endian memory;
+AAPCS64 also describes big-endian operation. The exact compiler choices and executable checks
+are recorded in `docs/notes/module-6/listings.md` and `docs/notes/module-6/facts/runs.md`.
+
 ## What the site ships, and its licences
 
 | What | Licence |

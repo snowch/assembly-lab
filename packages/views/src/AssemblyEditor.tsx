@@ -243,6 +243,8 @@ function LineEditor({
   numberPad,
   labels,
   conditions,
+  addresses,
+  extensions,
   count,
   onText,
   onAdd,
@@ -259,6 +261,8 @@ function LineEditor({
   labels: readonly string[];
   /** The conditions offered for the last item of `csel` and `cset`. */
   conditions: readonly string[];
+  addresses: readonly string[];
+  extensions: readonly string[];
   count: number;
   onText: (text: string) => void;
   onAdd: () => void;
@@ -267,7 +271,9 @@ function LineEditor({
   onDone: () => void;
 }) {
   const line = parseLine(text);
-  const slots = slotsOf(line.mnemonic);
+  const slots = instructions.includes(line.mnemonic)
+    ? slotsOf(line.mnemonic, extensions.length > 0)
+    : undefined;
   const isLabelLine = labelNameOf(text) !== null;
   // The number pad is open for an operand that is a number, or after the learner asks for it.
   const [padFor, setPadFor] = useState<number | null>(null);
@@ -283,7 +289,7 @@ function LineEditor({
               pressed={line.mnemonic === m}
               onClick={() => {
                 setPadFor(null);
-                set(withInstruction(line, m));
+                set(withInstruction(line, m, extensions.length > 0));
               }}
             >
               {m}
@@ -314,8 +320,15 @@ function LineEditor({
         const takesNumber = (slot === "registerOrNumber" || slot === "registerOrMask") && numberPad;
         // A number is always open for a slot that can only be a number.
         const open = slot === "number" || (takesNumber && (digits !== null || padFor === j));
-        if (slot === "label" || slot === "condition") {
-          const names = slot === "label" ? labels : conditions;
+        if (["label", "condition", "address", "extension"].includes(slot)) {
+          const names =
+            slot === "label"
+              ? labels
+              : slot === "condition"
+                ? conditions
+                : slot === "address"
+                  ? addresses
+                  : extensions;
           return (
             <div key={j} className="asm-field" role="group" aria-label={S.editor.operand(j + 1)}>
               <span className="asm-field-label">{S.editor.operand(j + 1)}</span>
@@ -435,6 +448,8 @@ function TapMode({
   numberPad,
   labels,
   conditions,
+  addresses,
+  extensions,
 }: {
   lines: readonly string[];
   setLines: (lines: string[]) => void;
@@ -444,6 +459,8 @@ function TapMode({
   numberPad: boolean;
   labels: readonly string[];
   conditions: readonly string[];
+  addresses: readonly string[];
+  extensions: readonly string[];
 }) {
   const [open, setOpen] = useState<number | null>(null);
   const replace = (i: number, text: string) => setLines(replaceLine(lines, i, text));
@@ -501,6 +518,8 @@ function TapMode({
                     numberPad={numberPad}
                     labels={labels}
                     conditions={conditions}
+                    addresses={addresses}
+                    extensions={extensions}
                     count={lines.length}
                     onText={(t) => replace(i, t)}
                     onAdd={() => insertBelow(i)}
@@ -546,6 +565,8 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
   const numberPad = chosen.numberPad ?? true;
   const labels = chosen.labels ?? [];
   const conditions = chosen.conditions ?? CONDITIONS;
+  const addresses = chosen.addresses ?? [];
+  const extensions = chosen.extensions ?? [];
   const instructions = allowed.flatMap((m) =>
     m === "b.cond" ? conditions.map((c) => `b.${c}`) : [m],
   );
@@ -588,6 +609,8 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
           numberPad={numberPad}
           labels={labels}
           conditions={conditions}
+          addresses={addresses}
+          extensions={extensions}
         />
       )}
     </div>

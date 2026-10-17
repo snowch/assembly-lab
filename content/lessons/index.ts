@@ -16,6 +16,8 @@ import { countingDown } from "./counting-down";
 import { withIntroduced } from "./introduced";
 import { masks } from "./masks";
 import { meetTheMachine } from "./meet-the-machine";
+import { memoryAndAddresses } from "./memory-and-addresses";
+import { loadingWidths } from "./loading-widths";
 import { onePatternThreeReadings } from "./one-pattern-three-readings";
 import { shifts } from "./shifts";
 import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
@@ -32,6 +34,8 @@ export const LESSONS: readonly Lesson[] = [
   branches,
   countingUp,
   countingDown,
+  memoryAndAddresses,
+  loadingWidths,
 ]
   .map(withIntroduced)
   .map(parseLesson);
