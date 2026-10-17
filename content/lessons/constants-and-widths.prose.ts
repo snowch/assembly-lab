@@ -7,13 +7,14 @@
 export const PROSE = {
   question:
     "The trip computer's service interval is 30000 kilometres. The odometer's limit is 1000000.\n\n" +
-    "For `return 30000;`, GCC makes one instruction: `mov w0, 30000`. For `return 1000000;`, it makes two.",
+    "For `return 30000;`, GCC loads the result with one instruction: `mov w0, 30000`. For `return 1000000;`, it needs two instructions to load the result. In both cases, `ret` then returns to the caller.\n\n" +
+    "The C listing uses `int service_interval(void)`. The `void` inside the brackets means the function takes no arguments.",
   questionDetailsSummary: "Which compiler?",
   questionDetails: "The listings in this lesson are from GCC 16.1 with `-O1`, as in Module 0.",
 
   motivation:
     "`mov` puts a fixed number in a register: `mov w0, 30000` puts 30000 in `w0`. A number written inside an instruction is a **constant**.\n\n" +
-    "An instruction is 32 bits long, so it cannot hold every 32-bit constant.\n\n" +
+    "An instruction is 32 bits long. Some bits identify the operation and the destination register, leaving fewer than 32 for the constant. So one instruction cannot hold every 32-bit constant.\n\n" +
     "Split a register's 32 bits into two halves. The upper half is the left 16 bits. The lower half is the right 16 bits.\n\n" +
     "30000 is `0x00007530`. Its upper half is `0000`, so all its set bits are in the lower half.\n\n" +
     "A single `mov` can load a constant whose set bits all fall in one 16-bit half. Some other patterns load too, so this is not the complete rule.\n\n" +
@@ -21,9 +22,10 @@ export const PROSE = {
 
   prediction:
     "Here are three of the four in hexadecimal, with a space between the halves. 65536 is `0x0001 0000`, 70000 is `0x0001 1170`, and 100000 is `0x0001 86a0`. The fourth, 1000000, is the odometer limit from the first section, which GCC needs two instructions for. Look at which halves of the three numbers have set bits.",
-  predictionQuestion: "**Which of these can one `mov` put in `w0`?**",
+  predictionQuestion:
+    "**Which number does the rule above guarantee will fit in one `mov` to `w0`?**",
   predictionExplain:
-    "Only 65536 fits. Its only set bit is in the upper half, so its lower half is `0000`. The other three numbers have set bits in both halves.",
+    "The rule guarantees that 65536 fits. Its only set bit is in the upper half, so its lower half is `0000`. The other three numbers have set bits in both halves, so the rule does not tell us whether they fit. The assembler rejects all three; you can check them in the next figure.",
 
   investigation:
     "The figure assembles `mov w0,` followed by the number you type. Assembling turns that text into an instruction.\n\n" +
@@ -37,14 +39,14 @@ export const PROSE = {
     "The full rule is longer than this course needs. The figure checks any number.",
 
   construction:
-    "`movk` replaces one 16-bit half of a register and keeps the rest. `mov` replaces the whole register.\n\n" +
+    "With a `w` name, `movk` replaces one 16-bit half of the 32 bits and keeps the other half. `mov` replaces all 32 bits.\n\n" +
     "`lsl 16` after the number tells `movk` to put it in the upper half, bits 16 to 31. Without `lsl 16`, `movk` puts it in the lower half.\n\n" +
     "For example, `mov w0, 3` gives `0x0000 0003`. Then `movk w0, 2, lsl 16` gives `0x0002 0003`, which is 131075. The upper half is new, and the lower half is kept. The figure draws each step.\n\n" +
-    "To split a number into its two halves, divide it by 65536. That is the worth of the lowest bit of the upper half. The whole-number answer is the upper half, and what is left over is the lower half.\n\n" +
+    "To split a non-negative 32-bit integer into halves, divide it by 65536. This is the value of the lowest bit in the upper half. Take the result without its fractional part for the upper half. The remainder gives the lower half. In the example above, 131075 = 2 × 65536 + 3, so the upper half is 2 and the lower half is 3.\n\n" +
     "Writing `#` before a number is optional. `mov w0, 30000` and `mov w0, #30000` are the same instruction.",
   /** Shown once Build 1000000 has passed, above the stepper through the learner's own solution. */
   constructionSolved:
-    "Step through your solution below to see each instruction's halves, and which half changed and which was kept.",
+    "Step through your solution below to see the two halves of `w0` after each instruction. Watch which half changes and which is kept.",
   buildTask:
     "Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The starting text, `mov w0, 1000000` then `ret`, does not assemble.",
   buildHints: [
@@ -67,10 +69,11 @@ export const PROSE = {
     "A constant that does not fit in one `mov` is built half by half, with `mov` then `movk`.",
 
   generalisation:
-    "A `long` in C is an integer type. On the system GCC compiles for here, it is 64 bits, so GCC 16.1 at `-O1` turns `return -1;` with `long` into `mov x0, -1`, which uses the `x` name.\n\n" +
+    "A `long` in C is an integer type. It is 64 bits on the system GCC compiles for here.\n\n" +
+    "For a function returning `long`, GCC 16.1 at `-O1` loads the result of `return -1;` with `mov x0, -1`. The `x` name gives the instruction access to all 64 bits.\n\n" +
     "The `u` in `4294967295u` marks the constant as `unsigned`.\n\n" +
     "GCC 16.1 at `-O1` turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.\n\n" +
-    "Every constant in every listing is a pattern of bits. The C type only decides how the program reads it later.",
+    "Every constant in these listings is a pattern of bits. The C type affects how many bits the instructions use and how the program interprets those bits.",
 
   challenge:
     "The figure shows four instructions: `mov x1, -1`, `mov w1, 5`, `mov w2, 16960`, `movk w2, 0xf, lsl 16`.",
@@ -85,7 +88,7 @@ export const PROSE = {
 
   reflection:
     "- Not every constant fits in a single `mov`.\n" +
-    "- `movk` replaces one chosen 16-bit half and keeps the rest.\n" +
+    "- With a `w` name, `movk` replaces one 16-bit half of the 32 bits and keeps the other half.\n" +
     "- `wN` names the lower 32 bits of `xN`.\n" +
     "- Writing `wN` clears the upper 32 bits of `xN`.\n\n" +
     "**`x5` holds `0xffffffffffffffff`. Then `mov w5, 7` runs. What does `x5` hold?**",

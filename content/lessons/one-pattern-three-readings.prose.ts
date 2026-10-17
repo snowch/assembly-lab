@@ -23,11 +23,11 @@ export const PROSE = {
   investigation:
     "Thirty-two ones and zeros are hard to read, so they are written in **hexadecimal**. Each group of four bits becomes one digit: 0 to 9, then `a` to `f` for ten to fifteen. `1111` is fifteen, so it is `f`; `0100` is four, so it is `4`. The eight bits `1111 0100` are written `f4`.\n\n" +
     "A `0x` in front marks a number as hexadecimal. The pattern in `w0` is eight groups of four, `1111 1111 1111 1111 1111 1111 1111 0100`, written `0xfffffff4`.\n\n" +
-    "Hexadecimal is only a shorter way to write the bits. It is not a reading of them as a number. The figure below shows each digit under its four bits.\n\n" +
+    "Hexadecimal is a compact way to write a bit pattern. It does not tell you whether to read that pattern as signed or unsigned. The figure below shows each digit under its four bits.\n\n" +
     "Each bit is worth twice the bit to its right: 1, 2, 4, 8 and so on. The leftmost bit, bit 31, is the **top bit**. It is worth 2147483648.\n\n" +
-    "The **unsigned reading** adds the worths of the bits that are 1. The **signed reading** does the same, except the top bit counts as minus 2147483648.\n\n" +
+    "The **unsigned reading** adds the values of the bits that are 1. The **signed reading** does the same, except the top bit counts as minus 2147483648.\n\n" +
     "The other 31 bits count the same in both readings. So when the top bit is 0, the two readings agree.\n\n" +
-    "The figure starts with `0xfffffff4`, the pattern `sub` left in `w0`. It shows the top bit's worth and the other 31 bits' total in each reading. The full sum of every bit is under \"Show calculation\".\n\n" +
+    "The figure starts with `0xfffffff4`, the pattern `sub` left in `w0`. It shows the top bit's value and the other 31 bits' total in each reading. The full sum of every bit is under \"Show calculation\".\n\n" +
     "A bit that is 1 is **set**, and a bit that is 0 is **clear**: to set a bit is to make it 1, and to clear it is to make it 0.\n\n" +
     'Set or clear any bit, or press "Clear bits" to start from zero.',
 
@@ -61,7 +61,7 @@ export const PROSE = {
 
   generalisation:
     "Every 32-bit pattern has an unsigned reading from 0 to 4294967295, and a signed reading from −2147483648 to 2147483647.\n\n" +
-    "Some instructions depend on the reading. Later modules meet these instructions, and they are where a C type finally shows in the instructions.",
+    "Some instructions depend on whether the bits are read as signed or unsigned. Later modules show how to choose between them.",
 
   challenge: "Use what you have learned to read three new patterns.",
   readTask: "Give both readings of three patterns: `0x0000002a`, `0x80000000` and `0xffffff38`.",

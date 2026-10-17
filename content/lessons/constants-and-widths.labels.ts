@@ -25,8 +25,7 @@ export const LABELS = {
     reflection: "What you now know",
   },
   captions: {
-    listing:
-      "service_interval in C, int service_interval(void), where void in the brackets means it takes no arguments, and the one instruction GCC makes for it.",
+    listing: "service_interval in C and the instructions GCC produces for it.",
     tester: "Type a number; the figure shows whether one mov can hold it, and what w0 then holds.",
     halves: "x3 drawn as two halves of 32 bits, with w3 its lower half.",
     // The prose file gives no caption for these three figures: each is marked DRAFT until it has
@@ -41,7 +40,7 @@ export const LABELS = {
       "Your solution to Build 1000000, one instruction at a time, with w0 in two halves of 16 bits.",
     // The prose file gives no caption for these four figures; Haiku drafted them (16 October 2026).
     predictFits:
-      "A prediction about which of several numbers a single mov instruction can put in w0.",
+      "Use the rule about set bits in one half to choose a number that must fit in one mov.",
     build:
       "The assembly editor starts with text the assembler refuses: one mov with a number it cannot hold. Write instructions that put that number in w0.",
     predictWidth: "A prediction about what all 64 bits of x3 hold after mov w3, -1.",

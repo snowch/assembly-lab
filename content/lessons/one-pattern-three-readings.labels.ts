@@ -27,7 +27,7 @@ export const LABELS = {
   captions: {
     fuelRun: "fuel_used_wrong(50, 38) as first written; w0 after its subtraction.",
     reader:
-      "One register, set bit by bit, with each hexadecimal digit under its four bits, and the top bit's worth and the rest shown for each reading.",
+      "One register, with each hexadecimal digit under its four bits. Each reading shows the top bit's value and the total from the other bits.",
     compare: "The two functions side by side, with GCC's listing for each.",
     // The prose file gives no caption for these four figures; Haiku drafted them (16 October 2026).
     predictAdd12:

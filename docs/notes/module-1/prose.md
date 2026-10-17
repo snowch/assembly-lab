@@ -51,21 +51,21 @@ Thirty-two ones and zeros are hard to read, so they are written in **hexadecimal
 
 A `0x` in front marks a number as hexadecimal. The pattern in `w0` is eight groups of four, `1111 1111 1111 1111 1111 1111 1111 0100`, written `0xfffffff4`.
 
-Hexadecimal is only a shorter way to write the bits. It is not a reading of them as a number. The figure below shows each digit under its four bits.
+Hexadecimal is a compact way to write a bit pattern. It does not tell you whether to read that pattern as signed or unsigned. The figure below shows each digit under its four bits.
 
 Each bit is worth twice the bit to its right: 1, 2, 4, 8 and so on. The leftmost bit, bit 31, is the **top bit**. It is worth 2147483648.
 
-The **unsigned reading** adds the worths of the bits that are 1. The **signed reading** does the same, except the top bit counts as minus 2147483648.
+The **unsigned reading** adds the values of the bits that are 1. The **signed reading** does the same, except the top bit counts as minus 2147483648.
 
 The other 31 bits count the same in both readings. So when the top bit is 0, the two readings agree.
 
-The figure starts with `0xfffffff4`, the pattern `sub` left in `w0`. It shows the top bit's worth and the other 31 bits' total in each reading. The full sum of every bit is under "Show calculation".
+The figure starts with `0xfffffff4`, the pattern `sub` left in `w0`. It shows the top bit's value and the other 31 bits' total in each reading. The full sum of every bit is under "Show calculation".
 
 A bit that is 1 is **set**, and a bit that is 0 is **clear**: to set a bit is to make it 1, and to clear it is to make it 0.
 
 Set or clear any bit, or press "Clear bits" to start from zero.
 
-*One register, set bit by bit, with each hexadecimal digit under its four bits, and the top bit's worth and the rest shown for each reading.*
+*One register, with each hexadecimal digit under its four bits. Each reading shows the top bit's value and the total from the other bits.*
 
 ## 5. Bits that read as −1
 
@@ -122,7 +122,7 @@ Both −12 and 4294967284 are readings of the same 32 bits. The C type says whic
 
 Every 32-bit pattern has an unsigned reading from 0 to 4294967295, and a signed reading from −2147483648 to 2147483647.
 
-Some instructions depend on the reading. Later modules meet these instructions, and they are where a C type finally shows in the instructions.
+Some instructions depend on whether the bits are read as signed or unsigned. Later modules show how to choose between them.
 
 ## 9. Three more patterns
 
@@ -171,7 +171,9 @@ A real processor's registers hold bits with no type, as the simulator's do. Each
 
 The trip computer's service interval is 30000 kilometres. The odometer's limit is 1000000.
 
-For `return 30000;`, GCC makes one instruction: `mov w0, 30000`. For `return 1000000;`, it makes two.
+For `return 30000;`, GCC loads the result with one instruction: `mov w0, 30000`. For `return 1000000;`, it needs two instructions to load the result. In both cases, `ret` then returns to the caller.
+
+The C listing uses `int service_interval(void)`. The `void` inside the brackets means the function takes no arguments.
 
 *Closed note.*
 
@@ -179,13 +181,13 @@ For `return 30000;`, GCC makes one instruction: `mov w0, 30000`. For `return 100
 
 The listings in this lesson are from GCC 16.1 with `-O1`, as in Module 0.
 
-*service_interval in C, int service_interval(void), where void in the brackets means it takes no arguments, and the one instruction GCC makes for it.*
+*service_interval in C and the instructions GCC produces for it.*
 
 ## 2. Numbers inside instructions
 
 `mov` puts a fixed number in a register: `mov w0, 30000` puts 30000 in `w0`. A number written inside an instruction is a **constant**.
 
-An instruction is 32 bits long, so it cannot hold every 32-bit constant.
+An instruction is 32 bits long. Some bits identify the operation and the destination register, leaving fewer than 32 for the constant. So one instruction cannot hold every 32-bit constant.
 
 Split a register's 32 bits into two halves. The upper half is the left 16 bits. The lower half is the right 16 bits.
 
@@ -199,7 +201,7 @@ In hexadecimal each half is four digits, so the boundary falls in the middle of 
 
 Here are three of the four in hexadecimal, with a space between the halves. 65536 is `0x0001 0000`, 70000 is `0x0001 1170`, and 100000 is `0x0001 86a0`. The fourth, 1000000, is the odometer limit from the first section, which GCC needs two instructions for. Look at which halves of the three numbers have set bits.
 
-**Which of these can one `mov` put in `w0`?**
+**Which number does the rule above guarantee will fit in one `mov` to `w0`?**
 
 - 65536
 - 70000
@@ -208,7 +210,7 @@ Here are three of the four in hexadecimal, with a space between the halves. 6553
 
 *Shown after the answer is checked.*
 
-Only 65536 fits. Its only set bit is in the upper half, so its lower half is `0000`. The other three numbers have set bits in both halves.
+The rule guarantees that 65536 fits. Its only set bit is in the upper half, so its lower half is `0000`. The other three numbers have set bits in both halves, so the rule does not tell us whether they fit. The assembler rejects all three; you can check them in the next figure.
 
 ## 4. Trying a number
 
@@ -234,13 +236,13 @@ The full rule is longer than this course needs. The figure checks any number.
 
 ## 5. Building 1000000
 
-`movk` replaces one 16-bit half of a register and keeps the rest. `mov` replaces the whole register.
+With a `w` name, `movk` replaces one 16-bit half of the 32 bits and keeps the other half. `mov` replaces all 32 bits.
 
 `lsl 16` after the number tells `movk` to put it in the upper half, bits 16 to 31. Without `lsl 16`, `movk` puts it in the lower half.
 
 For example, `mov w0, 3` gives `0x0000 0003`. Then `movk w0, 2, lsl 16` gives `0x0002 0003`, which is 131075. The upper half is new, and the lower half is kept. The figure draws each step.
 
-To split a number into its two halves, divide it by 65536. That is the worth of the lowest bit of the upper half. The whole-number answer is the upper half, and what is left over is the lower half.
+To split a non-negative 32-bit integer into halves, divide it by 65536. This is the value of the lowest bit in the upper half. Take the result without its fractional part for the upper half. The remainder gives the lower half. In the example above, 131075 = 2 × 65536 + 3, so the upper half is 2 and the lower half is 3.
 
 Writing `#` before a number is optional. `mov w0, 30000` and `mov w0, #30000` are the same instruction.
 
@@ -256,7 +258,7 @@ Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The start
 
 *Shown once Build 1000000 has passed.*
 
-Step through your solution below to see each instruction's halves, and which half changed and which was kept.
+Step through your solution below to see the two halves of `w0` after each instruction. Watch which half changes and which is kept.
 
 ## 6. Two names, one register
 
@@ -285,13 +287,15 @@ A constant that does not fit in one `mov` is built half by half, with `mov` then
 
 ## 8. Constants and C types
 
-A `long` in C is an integer type. On the system GCC compiles for here, it is 64 bits, so GCC 16.1 at `-O1` turns `return -1;` with `long` into `mov x0, -1`, which uses the `x` name.
+A `long` in C is an integer type. It is 64 bits on the system GCC compiles for here.
+
+For a function returning `long`, GCC 16.1 at `-O1` loads the result of `return -1;` with `mov x0, -1`. The `x` name gives the instruction access to all 64 bits.
 
 The `u` in `4294967295u` marks the constant as `unsigned`.
 
 GCC 16.1 at `-O1` turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.
 
-Every constant in every listing is a pattern of bits. The C type only decides how the program reads it later.
+Every constant in these listings is a pattern of bits. The C type affects how many bits the instructions use and how the program interprets those bits.
 
 ## 9. Four instructions
 
@@ -312,7 +316,7 @@ Field labels: "`x1` at the end"; "`w2` at the end".
 ## 10. What you now know
 
 - Not every constant fits in a single `mov`.
-- `movk` replaces one chosen 16-bit half and keeps the rest.
+- With a `w` name, `movk` replaces one 16-bit half of the 32 bits and keeps the other half.
 - `wN` names the lower 32 bits of `xN`.
 - Writing `wN` clears the upper 32 bits of `xN`.
 

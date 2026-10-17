@@ -115,9 +115,14 @@ describe("which numbers one mov can put in w0", () => {
     }
   });
 
-  it("takes exactly one of the prediction's four numbers", () => {
+  it("the one-half rule identifies one prediction option, and the assembler confirms it", () => {
     const options = lesson.sections[2]!.interactives[0]!.props["options"] as { value: string }[];
     expect(options.map((o) => o.value)).toEqual(["65536", "70000", "100000", "1000000"]);
+    const guaranteed = options.filter((o) => {
+      const halves = readingsOfValue(Number(o.value)).digits;
+      return halves.slice(0, 4) === "0000" || halves.slice(4) === "0000";
+    });
+    expect(guaranteed.map((o) => o.value)).toEqual(["65536"]);
     expect(options.filter((o) => mov(o.value).ok).map((o) => o.value)).toEqual(["65536"]);
   });
 
@@ -240,6 +245,9 @@ describe("the worked example, mov w0, 3 then movk w0, 2, lsl 16", () => {
     expect(x(stateAfter(result, 1), 0)).toBe(0x00020003n);
     expect(0x00020003).toBe(131075);
     expect(2 * 65536 + 3).toBe(131075);
+    const value = Number(x(stateAfter(result, 1), 0));
+    expect(Math.floor(value / 65536)).toBe(2);
+    expect(value % 65536).toBe(3);
     expect(readingsOfValue(131075).digits).toBe("00020003");
   });
 

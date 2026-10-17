@@ -16,6 +16,7 @@ import { LESSONS } from "@al/content";
 import { TEXT_BASE, assemble, message, run, stateAfter } from "@al/machine";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { MODULE1_STRINGS } from "../../packages/views/src/strings.module1";
+import { PROSE } from "../../content/lessons/constants-and-widths.prose";
 import { DEFAULT_STRINGS as S } from "../../platform/lesson-runtime/src/strings";
 
 import {
@@ -115,7 +116,9 @@ test.describe("the prediction about which numbers fit", () => {
       await expect(figure.locator(".al-outcome")).toContainText(
         V.fits.one("65536", 3).replace(/`/g, ""),
       );
-      await expect(figure.locator(".al-outcome .prose")).toContainText("Only 65536 fits.");
+      await expect(figure.locator(".al-outcome .prose")).toContainText(
+        PROSE.predictionExplain.replace(/`/g, ""),
+      );
     });
   }
 
