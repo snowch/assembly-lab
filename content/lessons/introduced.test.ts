@@ -25,7 +25,14 @@ const gateName = (m: string): string => (CONDITIONAL.test(m) ? "b.cond" : m);
  */
 export function instructionsNamedIn(text: string): string[] {
   const out: string[] = [];
-  for (const span of text.matchAll(/`([^`]+)`/g)) {
+  // Fenced code blocks first, so their three backticks do not pair with an inline span's.
+  const blocks: string[] = [];
+  const inline = text.replace(/```[a-z]*\n([\s\S]*?)```/g, (_, body: string) => {
+    blocks.push(body);
+    return " ";
+  });
+  const spans = [...blocks, ...[...inline.matchAll(/`([^`]+)`/g)].map((m) => m[1] as string)];
+  for (const span of spans.map((s) => [s, s] as const)) {
     for (const line of (span[1] as string).split("\n")) {
       const words = line.trim().split(/[\s,]+/);
       const first = words[0] ?? "";

@@ -30,8 +30,8 @@ In this C, `w` is the warning word, a C variable, not the register `w0`, and `DO
 
 **Why is the constant −5?**
 
-- −5 is `0xfffffffb`, every bit set except bit 2;
 - −5 is bit 2 counted backwards;
+- −5 is `0xfffffffb`, every bit set except bit 2;
 - the compiler subtracts 5 from the word;
 - −5 is an error in the listing.
 
@@ -75,9 +75,9 @@ The figure runs `set_gear` without the step that clears the field: `and w1, w1, 
 
 **What does it return?**
 
-- `0x75`
-- `0x55`
 - `0x35`
+- `0x55`
+- `0x75`
 - the run stops with an error
 
 *Shown after the answer is checked.*
@@ -146,9 +146,9 @@ The figure takes −7, which is `0xfffffff9`, and moves its bits one place right
 
 **What fills the top bit for an `int`?**
 
-- A copy of the old top bit, which is 1
 - A 0
 - The bit that fell off the bottom
+- A copy of the old top bit, which is 1
 - Nothing: the word gets shorter
 
 *Shown after the answer is checked.*
@@ -187,8 +187,8 @@ C's `g / 2` for an `int` rounds towards zero: −7 / 2 is −3. GCC does not mak
 
 **What does the first instruction add?**
 
-- 1 when `g` is negative, 0 otherwise
 - always 1
+- 1 when `g` is negative, 0 otherwise
 - 31
 - half of `g`
 

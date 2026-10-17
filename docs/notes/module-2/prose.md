@@ -94,13 +94,13 @@ The figure runs `sum_flags(0x7fffffff, 1, 0xffffffff)`, with `w0` as `0x7fffffff
 **After `add`, what do the flags show?**
 
 - N and V are 1, from the addition
-- N and C are still 1, as `adds` left them
 - All four are 0
+- N and C are still 1, as `adds` left them
 - The run stops with an error
 
 *Shown after the answer is checked.*
 
-N and C are still 1, as `adds` left them. `add` gives the same answer as `adds` would, `0x80000000`, but records nothing. Had `add` recorded flags, they would be N 1, Z 0, C 0 and V 1, the same as `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had it cleared them, all four would be 0. The three outcomes differ, so the run tells them apart. Of `add`, `adds`, `sub` and `subs`, only those whose names end in `s` record the four facts.
+N and C are still 1, as `adds` left them. `add` gives the same answer as `adds` would, `0x80000000`, but records nothing. Had `add` recorded flags, they would be N 1, Z 0, C 0 and V 1, the same as `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had it cleared them, all four would be 0. The three outcomes differ, so the run tells them apart. Of `add`, `adds` and `sub`, only `adds`, whose name ends in `s`, records the four facts.
 
 ## 7. Which flag judges which reading
 
@@ -170,9 +170,9 @@ A program that measures time with a counter like this one runs for weeks before 
 
 **What does `elapsed(1000, 4294966296)` return?**
 
-- 2000
 - −4294965296
 - 4294965296
+- 2000
 - 0
 
 *Shown after the answer is checked.*
@@ -213,8 +213,8 @@ You may use `add`, `sub`, `adds`, `subs` and `ret`.
 
 **What does `w0` hold afterwards?**
 
-- `0x80000000`, unchanged
 - `0x7fffffff`
+- `0x80000000`, unchanged
 - 0
 - The run stops with an error
 

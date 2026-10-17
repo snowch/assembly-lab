@@ -73,8 +73,8 @@ The figure shows two functions side by side: `fuel_used_wrong`, with `int`, and 
 
 **What does GCC do differently for the `unsigned` version?**
 
-- Nothing: the instructions are the same.
 - It uses a different subtraction.
+- Nothing: the instructions are the same.
 - It adds a check for a negative answer.
 - It uses different register names.
 

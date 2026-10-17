@@ -59,7 +59,7 @@ export const PROSE = {
     "The figure runs `sum_flags(0x7fffffff, 1, 0xffffffff)`, with `w0` as `0x7fffffff`, `w1` as 1 and `w2` as `0xffffffff`. First it runs `adds w3, w2, w2`, which adds `0xffffffff` to itself and leaves N and C at 1. Then it runs `add w0, w0, w1` instead of `adds`, on `0x7fffffff` plus 1.",
   failureQuestion: "**After `add`, what do the flags show?**",
   failureExplain:
-    "N and C are still 1, as `adds` left them. `add` gives the same answer as `adds` would, `0x80000000`, but records nothing. Had `add` recorded flags, they would be N 1, Z 0, C 0 and V 1, the same as `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had it cleared them, all four would be 0. The three outcomes differ, so the run tells them apart. Of `add`, `adds`, `sub` and `subs`, only those whose names end in `s` record the four facts.",
+    "N and C are still 1, as `adds` left them. `add` gives the same answer as `adds` would, `0x80000000`, but records nothing. Had `add` recorded flags, they would be N 1, Z 0, C 0 and V 1, the same as `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had it cleared them, all four would be 0. The three outcomes differ, so the run tells them apart. Of `add`, `adds` and `sub`, only `adds`, whose name ends in `s`, records the four facts.",
 
   explanation:
     "The adder adds bits. It gives one answer for both readings. N and Z describe that answer: its top bit, and whether it is 0.\n\n" +
