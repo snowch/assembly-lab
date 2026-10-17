@@ -296,13 +296,15 @@ test.describe("lesson 1, Compare, and the condition that carries the type", () =
       await box.fill("cmp w0, w1\ncsel w0, w0, w1, hi\nret");
       await press(page, run(c));
       await expect(c.locator(".challenge-complete")).toHaveCount(0);
-      // An instruction the lesson has not met is refused by the gate.
+      // `cset` is taught in this lesson, so the gate says what the challenge allows and not that
+      // `cset` is not met.
       await box.fill("cmp w0, w1\ncset w0, cc\nret");
       await expect(c.locator(".asm-problems")).toContainText("Line 2");
-      await expect(c.locator(".asm-problems")).toContainText("cset");
+      await expect(c.locator(".asm-problems")).toContainText("allows only");
+      await expect(c.locator(".asm-problems")).not.toContainText("not met");
       await press(page, run(c));
       await expect(status(c)).toHaveText(blocked);
-      await expect(c.locator(".verdict.blocked")).toContainText("cset");
+      await expect(c.locator(".verdict.blocked")).toContainText("allows only");
     });
 
     test("survives a reload, graded again, and goes back to the starting point when cleared", async ({
@@ -429,9 +431,11 @@ test.describe("lesson 1, Compare, and the condition that carries the type", () =
       );
       // A value that is not a number gives a sentence, and no list that would be about nothing.
       await first.fill("banana");
+      // The sentence has `0x` in it, drawn as code, never as backticks.
       await expect(f.locator('[data-register="w0"] .al-cond-readings')).toHaveText(
-        V.tester.notNumber,
+        V.tester.notNumber.replace(/`/g, ""),
       );
+      await expect(f.locator('[data-register="w0"] .al-cond-readings code')).toHaveText("0x");
       await expect(f.locator(".al-cond")).toHaveCount(0);
       await first.fill("4294967296");
       await expect(f.locator('[data-register="w0"] .al-cond-readings')).toHaveText(
@@ -1095,6 +1099,30 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
     expect(wValue(model.result.final, 0)).toBe(2);
     expect(model.result.steps).toHaveLength(5);
     await expect(figure.locator(".al-nomatch")).toContainText("w0 held 2");
+  });
+
+  test("the failure experiment's stepper stays shut until the prediction is checked, then runs bge on describe(10) with the flags and the count", async ({
+    page,
+  }) => {
+    await openLesson(page, TWO);
+    const stepper = page.locator("#ix-step-describe-bge");
+    await expect(stepper.locator(".al-locked")).toBeVisible();
+    await expect(stepper.getByRole("button", { name: V.stepper.next })).toHaveCount(0);
+    await commit(page, "predict-describe-bge", /^0$/);
+    await stepper.scrollIntoViewIfNeeded();
+    const model = traceOf(DESCRIBE_BGE, { entry: "describe", args: [10] });
+    await expect(stepper.locator(".al-insn .al-text").nth(1)).toHaveText("bge .L9");
+    await expect(stepper.locator(".al-count")).toHaveText(B.stepper.count(0));
+    await expect(registerValue(stepper, "w0")).toHaveText("10");
+    for (let k = 1; k <= model.result.steps.length; k++) {
+      await press(page, stepper.getByRole("button", { name: V.stepper.next }));
+      await expect(stepper.locator(".al-count")).toHaveText(B.stepper.count(k));
+    }
+    // The compare left NZCV 0110 (10 minus 10), bge reads it as taken, and describe(10) returns 2.
+    const flags = viewAt(model, 1).state.flags;
+    expect([flags.n, flags.z, flags.c, flags.v].map(Number)).toEqual([0, 1, 1, 0]);
+    await expect(registerValue(stepper, "w0")).toHaveText("2");
+    await expect(stepper.locator(".al-flag")).toHaveCount(4);
   });
 
   test.describe("the last challenge, the runs of describe", () => {
