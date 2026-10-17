@@ -23,13 +23,16 @@ export const LABELS = {
     explanation: "What each condition reads",
     generalisation: "What GCC does for a yes or no answer",
     challenge: "Read four conditions after one cmp",
-    reflection: "Looking back",
+    reflection: "What you now know",
   },
   captions: {
     runs: "The C of both functions, steeper_s's three instructions, and what each function returns for 0xffffffff and 1.",
     predictChange: "A prediction about what GCC changes in steeper_s to make steeper_u.",
     diff: "steeper_s and steeper_u side by side; the one operand that differs is marked.",
     lessFuel: "The assembly editor, starting from a function that is only ret.",
+    // DRAFT
+    stepOwn:
+      "Your less_fuel, stepped on the test you choose, with the stages of its compare and select.",
     predictGe: "A prediction about what steeper_u returns once its last operand is ge.",
     stepGe:
       "steeper_u with ge in place of cs, on 0x80000000 and 1, with the flags under the registers. A register or flag with an outline has just changed.",

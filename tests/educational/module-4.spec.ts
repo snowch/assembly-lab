@@ -16,7 +16,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { LESSONS } from "@al/content";
 import { BRANCH_STRINGS as B, CONDITION_ROWS } from "../../packages/views/src/strings.branch";
-import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
+import { VIEW_STRINGS as V, quoted } from "../../packages/views/src/strings";
 import { branchArrows, compareResult } from "../../packages/views/src/branch";
 import { traceOf, viewAt, wValue } from "../../packages/views/src/trace";
 import { DEFAULT_STRINGS as S } from "../../platform/lesson-runtime/src/strings";
@@ -32,6 +32,7 @@ import {
   FUEL_WARNING_SHARED_RET_TEXT,
   FUEL_WARNING_TEXT,
 } from "../../content/lessons/branches.listings";
+import { PROSE as P1 } from "../../content/lessons/compare-and-choose.prose";
 import { designProblems } from "./design";
 import {
   blocked,
@@ -98,7 +99,7 @@ const O = (n: number) => V.editor.operand(n);
 const LESS = "write-less-fuel";
 const HOLDS = "read-four-conditions";
 
-test.describe("lesson 1, Compare, and the condition that carries the type", () => {
+test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
   test("loads with no console error, ten sections, two challenges and no figure problem", async ({
     page,
   }) => {
@@ -273,7 +274,12 @@ test.describe("lesson 1, Compare, and the condition that carries the type", () =
         "less_fuel(7, 3)",
         "less_fuel(0x80000000, 1)",
       ]);
-      await expect(c.locator(".verdict-failure").first()).toContainText("w0=7");
+      // The first card says what the run shows (the larger value comes back), in the lesson's words;
+      // the second keeps the values the grader prints.
+      await expect(c.locator(".verdict-failure").first()).toContainText(
+        quoted(P1.lessFuelFeedback.larger),
+      );
+      await expect(c.locator(".verdict-failure").last()).toContainText("w0=2147483648");
       await expect(c.locator(".challenge-complete")).toHaveCount(0);
     });
 
@@ -362,7 +368,8 @@ test.describe("lesson 1, Compare, and the condition that carries the type", () =
     await stepper.scrollIntoViewIfNeeded();
     const flags = () =>
       stepper
-        .locator(".al-flag")
+        // The row of four under the registers, not the flags the panel beside it draws again.
+        .locator(".al-stepper > .al-flags .al-flag")
         .evaluateAll((els) => els.map((e) => e.getAttribute("data-value")));
     expect(await flags()).toEqual(["0", "0", "0", "0"]);
     await press(page, stepper.getByRole("button", { name: V.stepper.next }));
@@ -713,10 +720,10 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
       // ret is not drawn as a branch: two arrows for eight instructions.
       await expect(f.locator(".al-arrow")).toHaveCount(2);
       await expect(f.locator(".al-brow-insn")).toHaveCount(8);
-      await expect(f.locator(".al-btag")).toHaveText(["taken", "taken"]);
-      await expect(f.locator(".al-branch-result")).toHaveText(
-        plain(B.arrows.result("describe(15)", 2, 5)),
-      );
+      await expect(f.locator(".al-brow .al-btag")).toHaveText(["taken", "taken"]);
+      await expect(f.locator(".al-branch-ran")).toHaveText(B.arrows.ranCount(5));
+      await expect(f.locator(".al-branch-returned")).toHaveText(B.arrows.returned(2));
+      await expect(f.locator(".al-path-item")).toHaveCount(5);
       // The three instructions the run skipped are greyed.
       await expect(f.locator('.al-brow-insn[data-ran="false"]')).toHaveCount(3);
     });
@@ -734,33 +741,57 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
         [".L9", "not-taken"],
         [".L7", "not-run"],
       ]);
-      await expect(f.locator(".al-btag")).toHaveText(["not taken"]);
+      await expect(f.locator(".al-brow .al-btag")).toHaveText(["not taken", "not reached"]);
       await expect(f.locator('.al-brow-insn[data-ran="false"]')).toHaveCount(2);
-      await expect(f.locator(".al-branch-result")).toHaveText(
-        plain(B.arrows.result("describe(10)", 0, 6)),
-      );
+      await expect(f.locator(".al-branch-ran")).toHaveText(B.arrows.ranCount(6));
+      await expect(f.locator(".al-branch-returned")).toHaveText(B.arrows.returned(0));
     });
 
-    test("follow a gradient that is typed, a negative one included, and say when it is not a whole number", async ({
+    test("run the four gradients the text names and no other: there is no box to type a gradient the challenge asks about", async ({
       page,
     }) => {
       await openLesson(page, TWO);
       await commit(page, "predict-describe-count", /^5$/);
       const f = figure(page);
       await f.scrollIntoViewIfNeeded();
-      const box = f.getByRole("textbox");
-      await box.fill("-15");
-      expect(await arrows(f)).toEqual(modelArrows(-15));
-      await expect(f.locator(".al-branch-result")).toHaveText(
-        plain(B.arrows.result("describe(-15)", -2, 6)),
-      );
-      await box.fill("0");
-      await expect(f.locator(".al-branch-result")).toHaveText(
-        plain(B.arrows.result("describe(0)", 0, 6)),
-      );
-      await box.fill("ten");
-      await expect(f).toContainText(B.arrows.notWhole);
-      await expect(f.locator(".al-blist")).toHaveCount(0);
+      await expect(f.getByRole("textbox")).toHaveCount(0);
+      await expect(f.locator(".al-branch-presets button")).toHaveText(["15", "10", "-15", "0"]);
+      for (const g of [-15, 0]) {
+        await press(page, f.getByRole("button", { name: String(g), exact: true }));
+        expect(await arrows(f)).toEqual(modelArrows(g));
+        const model = traceOf(DESCRIBE, { entry: "describe", args: [g] });
+        await expect(f.locator(".al-branch-ran")).toHaveText(
+          B.arrows.ranCount(model.result.steps.length),
+        );
+        await expect(f.locator(".al-branch-returned")).toHaveText(
+          B.arrows.returned(Number(BigInt.asIntN(32, model.result.final.x[0] ?? 0n))),
+        );
+      }
+    });
+
+    test("tag each branch in words and by shape, and list the path in order with ret last", async ({
+      page,
+    }) => {
+      await openLesson(page, TWO);
+      await commit(page, "predict-describe-count", /^5$/);
+      const f = figure(page);
+      await f.scrollIntoViewIfNeeded();
+      await expect(f.locator(".al-bstart")).toHaveText(B.arrows.start);
+      const path = () => f.locator(".al-path-item code").allTextContents();
+      expect(await path()).toEqual(["cmp w0, 10", "bgt .L9", "mov w0, 2", "b .L7", "ret"]);
+      await press(page, f.getByRole("button", { name: "10", exact: true }));
+      expect((await path()).at(-1)).toBe("ret");
+      await expect(f.locator(".al-path-item .al-btag")).toHaveText(["not taken"]);
+      // The tag of a branch the run never reached is dotted, of one not taken dashed, of one taken solid.
+      const borders = await f
+        .locator(".al-brow .al-btag")
+        .evaluateAll((els) => els.map((e) => getComputedStyle(e).borderTopStyle));
+      expect(borders).toEqual(["dashed", "dotted"]);
+      await press(page, f.getByRole("button", { name: "15", exact: true }));
+      const taken = await f
+        .locator(".al-brow .al-btag")
+        .evaluateAll((els) => els.map((e) => getComputedStyle(e).borderTopStyle));
+      expect(taken).toEqual(["solid", "solid"]);
     });
 
     test("fit the screen: the arrows and the listing stay inside their box", async ({ page }) => {
@@ -1122,7 +1153,7 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
     const flags = viewAt(model, 1).state.flags;
     expect([flags.n, flags.z, flags.c, flags.v].map(Number)).toEqual([0, 1, 1, 0]);
     await expect(registerValue(stepper, "w0")).toHaveText("2");
-    await expect(stepper.locator(".al-flag")).toHaveCount(4);
+    await expect(stepper.locator(".al-stepper > .al-flags .al-flag")).toHaveCount(4);
   });
 
   test.describe("the last challenge, the runs of describe", () => {

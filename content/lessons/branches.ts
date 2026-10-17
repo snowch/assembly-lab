@@ -2,9 +2,10 @@
 
 // Lesson 2 of Module 4: Branches, and the run that skips. `describe` is the first listing whose run
 // does not go straight down. The learner predicts how many instructions it runs for 15, steps
-// through it, follows each branch with an arrow to its label for any gradient, writes
-// `fuel_warning` with `cbz` and a conditional branch, predicts what `bge` for `bgt` does, and counts
-// the runs of `describe` for three gradients.
+// through it with a sentence after each branch, follows each branch with an arrow to its label for
+// four gradients (taken, not taken and not reached told apart, the path listed), writes
+// `fuel_warning` with `cbz` and a conditional branch, predicts what `bge` for `bgt` does and sees
+// the two conditions read off the same flags, and counts the runs of `describe` for three gradients.
 //
 // The structure is here; the words are in branches.prose.ts and .labels.ts (kept from
 // docs/notes/module-4/prose.md), and the programs are in branches.listings.ts. The plan for the
@@ -71,6 +72,7 @@ export const branches: LessonInput = {
       kind: "question",
       title: LABELS.titles.question,
       prose: PROSE.question,
+      details: { summary: PROSE.questionNoteSummary, prose: PROSE.questionNote },
       interactives: [
         {
           id: "describe-listing",
@@ -112,6 +114,7 @@ export const branches: LessonInput = {
             registers: [0],
             flags: true,
             count: true,
+            branchStatus: true,
             after: "predict-describe-count",
           },
         },
@@ -121,6 +124,7 @@ export const branches: LessonInput = {
       kind: "investigation",
       title: LABELS.titles.investigation,
       prose: PROSE.investigation,
+      details: { summary: PROSE.investigationNoteSummary, prose: PROSE.investigationNote },
       interactives: [
         {
           id: "describe-arrows",
@@ -133,6 +137,9 @@ export const branches: LessonInput = {
             argument: "gradient",
             start: 15,
             presets: [...TOLD_GRADIENTS],
+            // The last challenge asks for the runs of three other gradients, so the figure runs
+            // only these four and never shows what the challenge asks for.
+            choices: "presets",
             after: "predict-describe-count",
           },
         },
@@ -183,12 +190,20 @@ export const branches: LessonInput = {
             registers: [0],
             flags: true,
             count: true,
+            branchStatus: true,
+            // The flags the compare leaves, read by `gt` (GCC's) and by `ge` (this run's).
+            panel: { kind: "two-conditions", conditions: ["gt", "ge"] },
             after: "predict-describe-bge",
           },
         },
       ],
     },
-    { kind: "explanation", title: LABELS.titles.explanation, prose: PROSE.explanation },
+    {
+      kind: "explanation",
+      title: LABELS.titles.explanation,
+      prose: PROSE.explanation,
+      details: { summary: PROSE.explanationNoteSummary, prose: PROSE.explanationNote },
+    },
     { kind: "generalisation", title: LABELS.titles.generalisation, prose: PROSE.generalisation },
     {
       kind: "challenge",
@@ -204,7 +219,12 @@ export const branches: LessonInput = {
         },
       ],
     },
-    { kind: "reflection", title: LABELS.titles.reflection, prose: PROSE.reflection },
+    {
+      kind: "reflection",
+      title: LABELS.titles.reflection,
+      prose: PROSE.reflection,
+      details: { summary: PROSE.reflectionNoteSummary, prose: PROSE.reflectionNote },
+    },
   ],
   challenges: [
     {
@@ -215,7 +235,14 @@ export const branches: LessonInput = {
       // The registers the tap editor offers, and the instructions the lesson's assembler allows.
       palette: ["w0", "w1"],
       allowedConstructs: ["cmp", "b.cond", "cbz", "b", "mov", "ret"],
-      initial: { text: FUEL_WARNING_STARTING_TEXT, data: { editor: FUEL_WARNING_EDITOR } },
+      initial: {
+        text: FUEL_WARNING_STARTING_TEXT,
+        data: {
+          editor: FUEL_WARNING_EDITOR,
+          // What the grader says for a failed call, chosen by what the run shows.
+          feedback: { rule: "fuel-warning", sentences: { ...PROSE.fuelWarningFeedback } },
+        },
+      },
       tests: {
         kind: "answers",
         grader: RUN_REGISTERS,
@@ -264,7 +291,12 @@ export const branches: LessonInput = {
           ] as const
         ).map(([id, gradient, what]) => ({
           label: LABELS.challenges.counts.fields[id].replaceAll("`", ""),
-          given: { entry: "describe", w0: GRADIENTS[gradient] },
+          // A wrong count is told where to look; a wrong result keeps the grader's own sentence.
+          given: {
+            entry: "describe",
+            w0: GRADIENTS[gradient],
+            ...(what === "steps" ? { [`feedback.${id}`]: PROSE.countsFeedback } : {}),
+          },
           expect: { [id]: what },
         })),
       },

@@ -30,6 +30,7 @@ import { ListingRuns } from "./ListingRuns";
 import { BfiCompare } from "./BfiCompare";
 import { ClearCompare } from "./ClearCompare";
 import { FieldReadingFigure } from "./FieldReadingFigure";
+import { SelectStepper } from "./SelectStepper";
 import { SolutionStepper } from "./SolutionStepper";
 import { WarningWordFigure } from "./WarningWordFigure";
 import { WordStepperFigure } from "./WordStepperFigure";
@@ -49,6 +50,7 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   "listing-runs": ListingRuns,
   "listing-change": ListingChange,
   "listing-diff": ListingDiff,
+  "select-stepper": SelectStepper,
   "condition-table": ConditionTable,
   "count-prediction": CountPrediction,
   "branch-listing": BranchListing,

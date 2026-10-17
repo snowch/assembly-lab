@@ -3,9 +3,12 @@
 Drafted by Haiku from the fact brief `brief.md` beside this file, 16 October 2026; every number
 checked against the course's simulator (runs recorded with the brief) and the recorded GCC 16.1
 `-O1` listings in `listings.md`. Two sentences of provenance meant for the checker were removed. The build found that the section *Changing `bgt` to `bge`* of Lesson 2 named `describe(11)`, one of the last challenge's gradients; it now names `describe(12)`, which the simulator also returns 2 for.
+On 17 October 2026 the text of most sections was replaced by the improved text of brief 58 (24 items, checked for facts); the figure that draws it was extended to match. Lesson 1 is retitled "Compare, and the signed or unsigned condition".
 This file is the lesson's words: the lesson files keep them word for word.
 
-# Lesson 1: Compare, and the condition that carries the type
+How this file marks what the page does with a passage. A *Closed note* is the section's closed `details`, titled as the marker says; the marker lines are not words of the lesson. A line that starts `>` is a sentence a figure or a grader says (the stepper's status lines, the feedback after a failed test); the lesson's files hold it word for word where the grader or the figure reads it, and a test holds the two together.
+
+# Lesson 1: Compare, and the signed or unsigned condition
 
 ## 0. Objectives
 - say what `cmp` leaves behind, and which flags each condition reads;
@@ -14,7 +17,7 @@ This file is the lesson's words: the lesson files keep them word for word.
 
 ## 1. What does GCC change for `unsigned`?
 
-The trip computer returns the larger of two gradients with `steeper_s`. `steeper_u` is the same function with `unsigned` arguments.
+The trip computer returns the larger of two gradients with `steeper_s`. `steeper_u` is the same C with `unsigned` arguments.
 
 ```c
 int steeper_s(int a, int b)
@@ -30,11 +33,17 @@ unsigned steeper_u(unsigned a, unsigned b)
 
 `a > b ? a : b` means "`a` if `a` is greater than `b`, otherwise `b`".
 
-Both are given the same two 32-bit patterns, `0xffffffff` and `1`. `steeper_s` returns 1, and `steeper_u` returns 4294967295.
+Both functions get the same two 32-bit patterns, `0xffffffff` and 1. They return different results: `steeper_s` returns 1, and `steeper_u` returns 4294967295.
 
 Module 1 showed that one pattern can have two readings. `0xffffffff` is −1 signed and 4294967295 unsigned.
 
-GCC 16.1 at `-O1` compiled `steeper_s` to three instructions:
+GCC compiled `steeper_s` to the three instructions below.
+
+*Closed note: Which compiler?*
+
+GCC 16.1 with `-O1`, as in Module 0.
+
+*End of closed note.*
 
 ```
 steeper_s:
@@ -43,17 +52,27 @@ steeper_s:
         ret
 ```
 
-`csel d, x, y, cond` puts `x` in `d` if the test `cond` says yes, and `y` if it says no. Here `cond` is a test of the flags that `cmp` set.
+`cmp` and `csel` are explained in the next sections. For now, the one fact you need is that `csel` picks one of two registers.
 
-`steeper_u` also gets the same bits, and it gives a different answer.
-
-**What does GCC change in its three instructions?**
+**Two functions receive the same 32-bit patterns but return different results. What changes in the instructions when the C type changes?**
 
 *The C of both functions, `steeper_s`'s three instructions, and what each function returns for `0xffffffff` and 1.*
 
 ## 2. Why a decision needs the flags
 
-Module 2 showed that `subs` subtracts, writes the answer and records the four flags, N, Z, C and V. A decision often needs only the flags, not the answer. `cmp w1, w0` does the subtraction of `subs` and sets the same four flags, but it writes no register. This is a **compare**. `cmp` also takes a constant, as `subs` does: `cmp w0, 10`. `cmn w0, w1` does the same for addition. It gives the flags of `adds`, with no result, and Module 2's `add_overflows` used `cmn w0, w1`. The flags keep their values until another instruction records them, as Module 2 showed.
+A decision often needs only the flags, not the result. `cmp w1, w0` sets the flags exactly as `subs` would for `w1` minus `w0`. It writes no register, because no result is kept. This is a **compare**.
+
+The order matters. `cmp w1, w0` is `w1` minus `w0`. `cmp w0, w1` is the other way round, and its flags can differ.
+
+`cmp` also takes a constant, as `subs` does: `cmp w0, 10`.
+
+The flags keep their values until another instruction writes them.
+
+*Closed note: cmn*
+
+`cmn w0, w1` sets the flags as `adds` would for `w0` plus `w1`, with no result. Module 2's `add_overflows` used it.
+
+*End of closed note.*
 
 ## 3. Predict the change in `steeper_u`
 
@@ -68,9 +87,9 @@ The figure shows `steeper_s`'s three instructions from above, and runs `steeper_
 
 *Shown after the answer is checked.*
 
-Only the last operand of `csel` changes. In `steeper_u` the instruction is `csel w0, w1, w0, cs`, where `steeper_s` has `ge`. The `cmp w1, w0` and the `ret` are identical.
+Only the last operand of `csel` changes: `ge` in `steeper_s`, and `cs` in `steeper_u`.
 
-GCC 16.1 at `-O1` compiled `steeper_u` to these three instructions:
+GCC compiled `steeper_u` to the three instructions below.
 
 ```
 steeper_u:
@@ -79,25 +98,23 @@ steeper_u:
         ret
 ```
 
-The two listings differ in one operand, the last operand of `csel`: `ge` in `steeper_s`, `cs` in `steeper_u`.
+The `cmp` instruction is identical in both functions. It sets the same flags. The condition on `csel` determines whether those flags are read by the signed or the unsigned rules.
 
-`cs` asks about the unsigned reading: higher or same. It answers yes when C is 1, which is when the subtraction needed no borrow.
+`cs` asks about the unsigned reading: higher or same. It is yes when C is 1. After a compare, C is 1 when no borrow was needed.
 
 ## 4. What the last operand of `csel` asks
 
-`csel w0, w1, w0, ge` gives `w0` the value of `w1` if the answer to a yes-or-no question about the flags is yes. If the answer is no, `w0` keeps its own value. That question is a **condition**. The last operand names it.
+The compare comes first. `w0` holds `a`, and `w1` holds `b`. `cmp w1, w0` sets the flags of `b` minus `a`.
 
-`ge` asks about the signed reading: greater than or equal. It answers yes when N equals V.
+The condition comes next. The last operand of `csel` names a yes-or-no question about the flags. That question is a **condition**. `ge` (greater than or equal, signed) is yes when N equals V. `cs` (higher or same, unsigned) is yes when C is 1.
 
-`w0` holds `a` and `w1` holds `b`. `cmp w1, w0` sets the flags of `w1` minus `w0`, so it compares `b` with `a`.
+Last comes the select. `csel w0, w1, w0, ge` writes `w1` to `w0` when the condition is yes. When the condition is no, `w0` keeps its own value. No instruction is skipped. `csel` only chooses a value.
 
-Because GCC compares `w1` with `w0`, `ge` and `cs` ask whether `b` is at least `a`. `csel` then picks `b` if so, and `a` if not. That is the larger one.
+So both functions return `b` when `b` is at least `a`, and `a` otherwise. That is the larger value.
 
-With `a` as `0xffffffff` and `b` as 1: `cmp w1, w0` is 1 minus `0xffffffff`, and it leaves NZCV 0000. That lists the four flags N, Z, C and V in that order, so all four are 0. `ge` is yes (N 0 equals V 0), so `w0` gets `w1`, which is 1. `cs` is no (C 0, a borrow), so `w0` keeps `0xffffffff`, which is 4294967295.
+The figure shows the three stages for `0xffffffff` and 1, from the run.
 
-With `a` as 3 and `b` as 7: `cmp w1, w0` is 7 minus 3, and it leaves NZCV 0010. Both `ge` and `cs` are yes. Both functions return 7.
-
-The compare is the same, and so are the flags. Only the condition differs, and it carries the type. The signed names are *greater* and *less*. The unsigned names are *higher* and *lower*.
+The signed names are *greater* and *less*. The unsigned names are *higher* and *lower*. For these two functions, the difference between `int` and `unsigned` is in the condition GCC chose.
 
 *`steeper_s` and `steeper_u` side by side; the one operand that differs is marked.*
 
@@ -107,15 +124,29 @@ The compare is the same, and so are the flags. Only the condition differs, and i
 
 **Write `less_fuel`**
 
-Write `less_fuel(a, b)`, which returns the smaller of two `unsigned` litres values. Use only `cmp`, `csel` and `ret`. Five calls test it. In two of them, one value has the top bit set.
+Write `less_fuel(a, b)`. It returns the smaller of two `unsigned` litres values. Use only `cmp`, `csel` and `ret`.
 
-`a` arrives in `w0` and `b` in `w1`; the answer leaves in `w0`. A comment starts with `//`.
+`a` arrives in `w0`, and `b` arrives in `w1`. The answer leaves in `w0`. A comment starts with `//`.
+
+Five calls test it. In two of them, one value has the top bit set. That makes it a large unsigned number. A signed condition gives the wrong answer for it.
 
 1. Compare the two, then let one `csel` choose between them.
 2. The values are `unsigned`, so use the unsigned pair of conditions.
 3. `csel w0, w0, w1, cc` would give `w0` when `cc` is yes and `w1` when it is no.
 4. `cc` is yes when C is 0, that is, when `w0` is lower than `w1` (also written `lo`). Compare `w0` with `w1`, in that order.
 5. `cmp w0, w1`, `csel w0, w0, w1, cc`, `ret`.
+
+*Feedback after a failed test.*
+
+> Only the calls with the top bit set fail. Does your condition read the signed order or the unsigned order?
+
+> The larger value comes back. Check the order of `cmp`'s operands, and the order of `csel`'s two sources.
+
+> Equal values give the wrong one. Which source does `csel` take when the condition is yes, and which when it is no?
+
+*Shown after the challenge passes.*
+
+Step through one of the tests below to see the compare, the flags, the condition and the value `csel` chose.
 
 ## 6. Running `steeper_u` with `ge`
 
@@ -130,13 +161,34 @@ The figure runs `steeper_u` with its last operand changed from `cs` to `ge`, so 
 
 *Shown after the answer is checked.*
 
-It returns 1. `cmp w1, w0` leaves NZCV 1001. `ge` is yes, because N and V are both 1, so `w0` gets `w1`, which is 1. GCC's `steeper_u`, with `cs`, returns 2147483648 here. C is 0, so `w0` keeps its value. With `ge`, the function reads the same bits as signed, where `0x80000000` is the smallest `int`.
+The run has the same operands as GCC's `steeper_u`: `0x80000000` and 1. It uses the same `cmp`, `cmp w1, w0`. That `cmp` leaves NZCV 1001: N is 1, Z is 0, C is 0 and V is 1.
+
+`ge` is yes, because N equals V. So `w0` gets `w1`, which is 1.
+
+`cs` is no, because C is 0. So `w0` keeps `0x80000000`, which is 2147483648.
+
+With `ge`, the function reads the bits as signed. `0x80000000` is the smallest `int`, so the function returns 1. GCC's `steeper_u`, with `cs`, returns 2147483648.
 
 ## 7. What each condition reads
 
 GCC prints the conditions `cs` and `cc`. Arm also writes them `hs` and `lo`, and the assembler accepts both.
 
-Each name and the flags it reads, checked at all sixteen settings of the flags:
+After `cmp a, b`, the core conditions come in groups. Each line says what the condition means, and which flags it reads.
+
+- Equality: `eq` (a = b, Z is 1) and `ne` (a ≠ b, Z is 0).
+- Unsigned order: `cs` (a ≥ b, C is 1) and `cc` (a < b, C is 0).
+- Signed order: `ge` (a ≥ b, N equals V) and `lt` (a < b, N differs from V).
+
+The strict versions add Z to the test.
+
+- `hi` (higher, unsigned) is `cs` without equality: C is 1 and Z is 0. Its opposite is `ls` (lower or same, unsigned): C is 0 or Z is 1.
+- `gt` (greater than, signed) is `ge` without equality: Z is 0 and N equals V. Its opposite is `le` (less than or equal, signed): Z is 1 or N differs from V.
+
+`vs`, which Module 2 met, is yes when V is 1.
+
+The figure below compares two values you choose with `cmp w0, w1`, in that order. So `a` is `w0` and `b` is `w1`. This is the reverse of `steeper_s`'s `cmp w1, w0`. For each condition, the figure shows its rule, the flag values it read and whether it holds.
+
+*Closed note: All condition codes*
 
 - `eq`, equal (either reading): Z is 1.
 - `ne`, not equal (either reading): Z is 0.
@@ -150,29 +202,23 @@ Each name and the flags it reads, checked at all sixteen settings of the flags:
 - `le`, less than or equal, signed: Z is 1 or N differs from V.
 - `vs` (met in Module 2): V is 1.
 
-In every setting of the flags, exactly one of each pair holds: `eq` and `ne`, `cs` and `cc`, `hi` and `ls`, `ge` and `lt`, `gt` and `le`.
+Exactly one of each pair holds at every setting of the flags: `eq` or `ne`, `cs` or `cc`, `hi` or `ls`, `ge` or `lt`, `gt` or `le`. This is checked at all sixteen settings of the flags.
 
-After `cmp a, b`, `eq` means a = b, and `ne` means a ≠ b. `cs`, `cc`, `hi` and `ls` mean a ≥ b, a < b, a > b and a ≤ b, all unsigned. `ge`, `lt`, `gt` and `le` mean the same four relations, signed.
+`cmp w0, w1` with 8 and 8 leaves NZCV 0110. So `eq`, `ge`, `le`, `cs` and `ls` are yes. `ne`, `gt`, `lt`, `hi` and `cc` are no.
 
-At equality, `cmp w0, w1` with 8 and 8 leaves NZCV 0110. Then `eq`, `ge`, `le`, `cs` and `ls` are yes, and `ne`, `gt`, `lt`, `hi` and `cc` are no.
+With `0x7fffffff` and `0xffffffff`, `cmp w0, w1` leaves NZCV 1001. N is 1, yet 2147483647 is not less than −1. The signed subtraction overflowed, so V is 1 too. N equals V, so `ge` is yes. As unsigned, `cc` is yes.
 
-`gt` is `ge` with equality left out, which is why `gt` reads Z as well as N and V. `hi` is `cs` with equality left out, which is why it reads Z as well as C.
+A condition read after something other than `cmp` uses the flags that the last instruction to set them wrote.
 
-The signed pairs read V as well as N. Take `cmp w0, w1` with `0x7fffffff` and `0xffffffff`. It leaves NZCV 1001.
-
-N is 1, yet 2147483647 is not less than −1. The signed subtraction overflowed, so V is 1 too. N equals V, so `ge` is yes and `lt` is no.
-
-In the same compare, `cc` is yes, because as unsigned, 2147483647 is lower than 4294967295, and `cs` is no. One compare, two answers.
-
-A condition read after something other than `cmp` uses the flags that the instruction before it set. Lesson 2 shows one.
+*End of closed note.*
 
 *Two values you choose, the flags `cmp` leaves, and each condition beside whether it holds.*
 
 ## 8. What GCC does for a yes or no answer
 
-`bool` is a C type that holds 0 or 1. A comparison such as `litres < reserve` gives 1 if it is true and 0 if not.
+`bool` is a C type that holds 0 or 1. A comparison, such as `litres < reserve`, gives 1 if it is true and 0 if it is not.
 
-GCC 16.1 at `-O1` compiled `fuel_low`, `bool fuel_low(unsigned litres, unsigned reserve) { return litres < reserve; }`, to this:
+GCC 16.1 at `-O1` compiled `fuel_low`, `bool fuel_low(unsigned litres, unsigned reserve) { return litres < reserve; }`, to these three instructions:
 
 ```
 fuel_low:
@@ -181,9 +227,15 @@ fuel_low:
         ret
 ```
 
-`cset w0, cc` writes 1 to `w0` when `cc` is yes, and 0 when it is no. `cc` is "lower", unsigned. Module 2's `cset w0, vs` worked the same way. `fuel_low(5, 8)` is 1 (NZCV 1000), `fuel_low(8, 8)` is 0 (NZCV 0110), and `fuel_low(0x80000000, 8)` is 0 (NZCV 0011). With the top bit set, `litres` is a large unsigned number. Each runs three instructions.
+`cset w0, cc` writes 1 to `w0` when `cc` is yes, and 0 when it is no. `csel` selects between register values. `cset` writes 0 or 1.
 
-`warning_light` has an `if (litres < reserve) return 1;` followed by `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing:
+`fuel_low(5, 8)` is 1, and `fuel_low(8, 8)` is 0.
+
+Not every C `if` needs a branch. `warning_light` is written with `if (litres < reserve) return 1;` and then `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing, with no branch. The closed note "`warning_light`" shows that listing and its two results.
+
+*Closed note: warning_light, and tst and ands*
+
+**`warning_light`**
 
 ```
 warning_light:
@@ -192,9 +244,19 @@ warning_light:
         ret
 ```
 
-The two instructions are the same as in `fuel_low`. For this `if`, GCC 16.1 at `-O1` needed nothing more. `warning_light(5, 8)` is 1, and `warning_light(8, 8)` is 0.
+`warning_light(5, 8)` is 1, and `warning_light(8, 8)` is 0.
 
-`downhill` is `bool downhill(int gradient) { return gradient < 0; }`. GCC 16.1 at `-O1` compiled it to:
+**`tst` and `ands`**
+
+Two more instructions exist in the architecture: `tst` and `ands`. GCC 16.1 at `-O1` did not use either in any listing here. This is not a claim about GCC's output.
+
+`tst w0, 2` sets the flags from `w0` AND 2, and writes no register. N is the top bit of the AND result. Z is 1 when the AND result is 0. C and V are set to 0. With the warning word `0x2a`, `tst w0, 2` leaves NZCV 0000. With `0x28`, it leaves NZCV 0100, so Z is 1 when the service-due bit (bit 1) is clear.
+
+`ands w1, w0, 2` writes the AND result to `w1` as well. With `0x2a`, `w1` is 2 and NZCV is 0000. `and` alone leaves the flags as they were.
+
+*End of closed note.*
+
+`downhill` is `bool downhill(int gradient) { return gradient < 0; }`. GCC 16.1 at `-O1` compiled it to two instructions:
 
 ```
 downhill:
@@ -202,13 +264,7 @@ downhill:
         ret
 ```
 
-There is no compare. The signed reading is negative exactly when the top bit is 1, and `lsr` by 31 moves the top bit to the bottom. `downhill(-3)` is 1, `downhill(4)` is 0, `downhill(0)` is 0, and `downhill(0x80000000)` is 1. Each runs two instructions.
-
-Two more instructions exist in the architecture: `tst` and `ands`. GCC 16.1 at `-O1` did not use either in any listing here, so this is not a claim about GCC's output.
-
-`tst w0, 2` sets the flags of `w0` AND 2 and writes no register. N is the top bit of that AND, Z is 1 when it is 0, and C and V are set to 0. With the warning word `0x2a`, `tst w0, 2` leaves NZCV 0000. With `0x28`, it leaves NZCV 0100, so Z is 1 when the service-due bit (bit 1) is clear.
-
-`ands w1, w0, 2` writes the AND to `w1` as well. With `0x2a`, `w1` is 2 and NZCV is 0000. `and` alone leaves the flags as they were.
+There is no compare. The signed reading of a number is negative exactly when its top bit is 1. `lsr w0, w0, 31` moves the top bit to the bottom, as Module 3 showed. So the result is 1 for a negative gradient, and 0 otherwise.
 
 ## 9. Read four conditions after one `cmp`
 
@@ -226,11 +282,22 @@ Field labels: "`ge`"; "`cs`"; "`lt`"; "`cc`".
 4. The flags are NZCV 1010. `ge` needs N equal to V; `cs` needs C to be 1.
 5. `ge` 0; `cs` 1; `lt` 1; `cc` 0.
 
-## 10. Looking back
+## 10. What you now know
 
-- Why does `steeper_u` need no instruction that `steeper_s` lacks?
-- Which flag does `cs` read, and what does it say about the subtraction?
-- Why do `ge` and `lt` read V as well as N?
+- `cmp` sets the flags as a subtraction would, and keeps no result.
+- The order of its operands matters.
+- A condition reads the flags.
+- Signed and unsigned comparisons use different conditions.
+- `csel` chooses one of two register values without skipping any instruction.
+- `cset` writes 0 or 1 from a condition.
+
+Question: `w0` holds 2, and `w1` holds `0xfffffffe`. After `cmp w0, w1`, what does `csel w0, w0, w1, gt` leave in `w0`? What would `hi` in place of `gt` leave?
+
+*Closed note: Answer*
+
+The flags are NZCV 0000. `gt` (Z is 0 and N equals V) is yes: as signed, 2 is greater than −2, so `w0` keeps 2. `hi` (C is 1 and Z is 0) is no, because C is 0: as unsigned, 2 is lower than 4294967294, so `w0` gets `0xfffffffe`.
+
+*End of closed note.*
 
 ## 11. The model and the real processor
 
@@ -245,7 +312,9 @@ The simulator's conditions follow the architecture's, and its tests hold each on
 
 ## 1. Which instruction runs next?
 
-The trip computer's `describe` returns 2 when the gradient is above 10, −2 when it is below −10, and 0 otherwise. It is the C function:
+The trip computer classifies a gradient as steep uphill, steep downhill or neither. The result depends on which conditions are true.
+
+`describe` returns 2 when the gradient is above 10, −2 when it is below −10, and 0 otherwise. Its C is below.
 
 ```c
 int describe(int gradient)
@@ -258,7 +327,7 @@ int describe(int gradient)
 }
 ```
 
-GCC 16.1 at `-O1` made eight instructions:
+GCC made the eight instructions below.
 
 ```
 describe:
@@ -274,19 +343,31 @@ describe:
         b       .L7
 ```
 
-`wzr` is a register name that always reads as 0.
+`wzr` is a register name that always reads as 0. A write to it is thrown away.
 
-Every listing so far ran from its first instruction to its `ret`, in order. This one has two more names that end in a colon, `.L7:` and `.L9:`, and two instructions that use them, `bgt .L9` and `b .L7`.
+Every listing so far ran from its first instruction to its `ret`, in order. This one has two lines that end in a colon, `.L7:` and `.L9:`. Two instructions name them.
 
-**How does the processor decide which instruction runs next?**
+**How does the processor execute only the instructions needed for that result?**
 
-`cmn`, `mov w0, -2` and `csel` sit beside `return 0;`, and no instruction sits beside `if (gradient < -10)` or `return -2;`.
+*Closed note: Which compiler?*
+
+GCC 16.1 with `-O1`, as in Module 0. GCC records, for each instruction, the C line it came from. Here `cmn`, `mov w0, -2` and `csel` sit beside `return 0;`. No instruction sits beside `if (gradient < -10)` or `return -2;`.
+
+*End of closed note.*
 
 *`describe` in C and the eight instructions GCC made from it. GCC notes, for each instruction, the C line it came from. Each instruction sits beside that line.*
 
 ## 2. Why a function needs to skip instructions
 
-A C `if` runs some statements and not others. `describe` returns different numbers for different gradients, so some instructions must be skipped for some gradients. Until now, each instruction ran after the one before it. A function that decides needs an instruction that changes which one runs next. In `describe`, `b .L7` makes the run go on at the place named `.L7`, and `bgt .L9` does so only when a test of the flags says greater than.
+A **label** is a name that ends in a colon. It names the place of the instruction on the line below it. A label is not an instruction, and it does not run.
+
+A **branch** is an instruction that can change which instruction runs next.
+
+`b .L7` always continues at `.L7`.
+
+`bgt .L9` continues at `.L9` only when the condition `gt` holds. The condition is read from the flags, as `csel` read them. Otherwise, the next instruction runs.
+
+When a branch goes to its label, it is **taken**. When it does not, it is **not taken**.
 
 ## 3. Predict how many instructions run
 
@@ -301,25 +382,37 @@ The figure runs `describe(15)` on the listing above.
 
 *Shown after the answer is checked.*
 
-The answer is 5. The run is `cmp w0, 10`, `bgt .L9`, `mov w0, 2`, `b .L7` and `ret`. The three instructions between `bgt .L9` and `.L7` (`cmn`, `mov w0, -2` and `csel`) did not run. `describe(15)` returns 2.
+The answer is 5. For `describe(15)`, the run is `cmp w0, 10`, `bgt .L9` (taken), `mov w0, 2`, `b .L7` (taken) and `ret`.
+
+`cmn`, `mov w0, -2` and `csel` were skipped. `describe(15)` returns 2.
 
 ## 4. How a branch chooses its path
 
-A **branch** is an instruction that can change which instruction runs next. A **label** is a name for the place of an instruction: `.L9:` names the `mov w0, 2` under it. A branch names the label it goes to.
+Different gradients run different instructions, so the run can have a different length. The figure runs `describe` on the gradient you choose: above 10, exactly 10, below −10, or between. It draws the path the run took, marks each branch as taken, not taken or not reached, and counts the instructions that ran.
 
-`b .L7` always goes to `.L7`. `bgt .L9` goes to `.L9` only if the condition `gt` is yes, read from the flags exactly as `csel` read them in Lesson 1. When a branch goes to its label, it is **taken**. When it does not, the next instruction runs, and the branch is **not taken**. GCC writes `bgt`. Arm writes `b.gt`, which is the same instruction, and the course's assembler accepts both.
+GCC writes `bgt`. Arm writes `b.gt`. It is the same instruction, and the course's assembler accepts both.
 
-- `describe(10)`: `cmp w0, 10` leaves NZCV 0110. `gt` is no, since Z is 1, so `bgt` is not taken. The run goes down the listing: `cmn`, `mov`, `csel` and `ret`. The result is 0, in six instructions.
-- `describe(-15)`: `cmp w0, 10` leaves NZCV 1010, so `bgt` is not taken. `cmn w0, #10` leaves NZCV 1000. The result is −2 (`0xfffffffe`), in six instructions.
-- `describe(0)`: `cmp` leaves NZCV 1000, and `cmn` leaves NZCV 0000. The result is 0, in six instructions.
+`cmn w0, #10` sets the flags as though it added 10 to the gradient. The signed `lt` that follows is yes exactly when the gradient is below −10.
 
-`cmn w0, #10` sets the flags of `w0` plus 10. After it, `lt` is yes exactly when `w0` plus 10 is below 0, that is, when `w0` is below −10. It is the same test as comparing with −10.
+`mov w0, -2` sits between `cmn` and `csel`. It leaves the flags alone, so `csel` still reads `cmn`'s flags. `csel w0, w0, wzr, lt` gives −2 when `lt` is yes, and 0 when it is no.
 
-The GNU assembler (`as`) itself turns `cmp w0, -10` into `cmn w0, 10`, and the simulator gives the same flags for both. GCC prints `cmp w0, 10` without `#` and `cmn w0, #10` with it. Both forms are accepted.
+Both paths end at the one `ret` under `.L7`.
 
-`mov w0, -2` sits between `cmn` and `csel` and leaves the flags alone, so `csel` still reads `cmn`'s flags. `csel w0, w0, wzr, lt` gives `w0` (now −2) when `lt` is yes, and `wzr` when it is no. Both paths end at the one `ret` under `.L7`: the first by running on from `csel`, and the second by `b .L7`.
+*Closed note: cmp with a negative number*
+
+The GNU assembler turns `cmp w0, -10` into `cmn w0, 10`. The simulator gives the same flags for both. GCC prints `cmp w0, 10` without `#`, and `cmn w0, #10` with it. Both forms are accepted.
+
+*End of closed note.*
 
 *`describe` with an arrow from each branch to its label, for the gradient you choose. The instructions that did not run are greyed.*
+
+*Said by the stepper after a step that ran a branch.*
+
+> `{branch}` was taken. Next: `{instruction}` at `{label}`.
+
+> `{branch}` was not taken. Next: `{instruction}`.
+
+> `{branch}` always goes to `{label}`. Next: `{instruction}`.
 
 ## 5. Three outcomes from two tests
 
@@ -327,15 +420,39 @@ The GNU assembler (`as`) itself turns `cmp w0, -10` into `cmn w0, 10`, and the s
 
 **Write `fuel_warning`**
 
-Write `fuel_warning(litres, reserve)`. It returns 2 when `litres` is 0, 1 when `litres` is below `reserve`, and 0 otherwise. Both are `unsigned`. Use only `cmp`, a branch with a condition, `cbz`, `b`, `mov` and `ret`. Five calls test it: one with `litres` equal to `reserve`, and one with the top bit of `litres` set.
+Write `fuel_warning(litres, reserve)`. Both are `unsigned`. Its rules, in order:
 
-`litres` arrives in `w0` and `reserve` in `w1`; the answer leaves in `w0`. `cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags. You name your own labels, and any name works. The `.L` that starts each of GCC's labels is only GCC's habit. GCC puts each label on its own line, followed by a colon, before the instruction it names.
+- If `litres` is 0, return 2.
+- Otherwise, if `litres` is below `reserve`, return 1.
+- Otherwise, return 0.
+
+A `litres` of 0 is also below any `reserve` above 0, so the order of the checks matters.
+
+Use only `cmp`, a branch with a condition, `cbz`, `b`, `mov` and `ret`. Five calls test it. One has `litres` equal to `reserve`. One has the top bit of `litres` set.
+
+`litres` arrives in `w0`, and `reserve` arrives in `w1`. The answer leaves in `w0`.
+
+`cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags.
+
+You name your own labels, and any name works. The `.L` that starts each of GCC's labels is only GCC's habit.
+
+A label goes on its own line, followed by a colon, before the instruction it names.
 
 1. Two questions need two tests: is `litres` 0, and is it below `reserve`. Does a `litres` of 0 also pass the second test?
 2. Ask "below `reserve`" first and `litres` 0 also passes it, so it returns 1, not 2.
 3. `cbz w0, label` goes to the label when `w0` is 0. `cmp w0, w1` sets the flags of `litres` minus `reserve`.
 4. `litres` and `reserve` are `unsigned`: a value with the top bit set is a large number, so use the unsigned condition for "below", `cc`. A signed condition gets one test wrong.
 5. `cbz w0, .Lempty`, `cmp w0, w1`, `b.cc .Llow`, `mov w0, 0`, `ret`, then `.Llow:` `mov w0, 1`, `ret`, then `.Lempty:` `mov w0, 2`, `ret`.
+
+*Feedback after a failed test.*
+
+> A `litres` of 0 returns 1. Does the check for 0 come first?
+
+> The call with the top bit set fails. Is "below" read as unsigned?
+
+> The wrong value comes back. Which label did the run reach, and which branch sent it there?
+
+> An input was overwritten. Does a `mov` into `w0` run before the last test? It would replace `litres`, which is in `w0`.
 
 ## 6. Changing `bgt` to `bge`
 
@@ -350,11 +467,26 @@ The figure runs `describe` with `bgt .L9` changed to `bge .L9`, on `describe(10)
 
 *Shown after the answer is checked.*
 
-It returns 2, in five instructions. `cmp w0, 10` leaves NZCV 0110. `ge` is yes when N equals V, and both are 0, so the branch is taken. `gt` also needs Z to be 0, and Z is 1, so GCC's `bgt` is not taken and `describe(10)` returns 0. With `bge`, `describe(12)` still returns 2, and `describe(9)` still returns 0.
+`cmp w0, 10` with 10 leaves Z 1, so NZCV is 0110.
+`gt` needs Z to be 0. Z is 1, so `gt` is no.
+`ge` needs N to equal V. N and V are both 0, so `ge` is yes.
+
+GCC's `bgt` is not taken, so `describe(10)` returns 0 in six instructions. With `bge`, the branch is taken. `describe(10)` then returns 2 in five instructions.
+
+The boundary moved: 10 now returns 2. The values on either side did not change. `describe(12)` still returns 2, and `describe(9)` still returns 0.
 
 ## 7. Branches that test a register
 
-`cbz w0, .L17` goes to `.L17` when `w0` is 0, and `cbnz` goes when it is not 0. Neither reads nor changes the flags. `tbz w0, 1, label` goes to the label when bit 1 of `w0` is 0, and `tbnz` goes when it is 1. GCC did not use `cbnz`, `tbz` or `tbnz` in any listing here, so this example is the course's own, not GCC's:
+Four branches test a register, not the flags.
+
+- `cbz` goes when the register is 0.
+- `cbnz` goes when the register is not 0.
+- `tbz w0, 1, label` goes when bit 1 of `w0` is 0.
+- `tbnz` goes when that bit is 1.
+
+None of them reads or changes the flags. `bgt` reads them.
+
+GCC did not use `cbnz`, `tbz` or `tbnz` in any listing here. So `service` is the course's own example, not GCC's. Its listing is below. Bit 1 of the warning word is the service-due bit, as Module 3 showed.
 
 ```
 service:
@@ -366,9 +498,15 @@ service:
         ret
 ```
 
-`service(0x2a)` returns 1. Bit 1 is set, so `tbz` is not taken, and three instructions run. `service(0x28)` returns 0. `tbz` is taken, and three instructions run.
+`service(0x2a)` returns 1. `tbz` is not taken, and three instructions run.
 
-GCC 16.1 at `-O1` compiled `void maybe_beep(unsigned litres) { if (litres == 0) beep(); }`, and the excerpt below shows its first two instructions only. `beep` is another function, and `void` means it returns nothing:
+`service(0x28)` returns 0. `tbz` is taken, and three instructions run.
+
+*Closed note: An excerpt of GCC's maybe_beep*
+
+GCC 16.1 at `-O1` compiled `void maybe_beep(unsigned litres) { if (litres == 0) beep(); }`. `beep` is another function. `void` means it returns nothing.
+
+The listing below is an excerpt. It shows the first two instructions only.
 
 ```
 maybe_beep:
@@ -376,11 +514,19 @@ maybe_beep:
         ret
 ```
 
-The instructions from `.L17` run `beep`. They belong to a later module, so they are not shown. `maybe_beep(5)` runs two instructions: `cbz` is not taken, and `ret` follows. `maybe_beep(0)` sends the run to `.L17`, because `cbz` is taken. GCC put the part that runs `beep` after the `ret`, so the straight-line path is the one where `litres` is not 0.
+The instructions from `.L17` run `beep`. They belong to a later module, so they are not shown here.
+
+`maybe_beep(5)` runs two instructions: `cbz` is not taken, and `ret` follows. `maybe_beep(0)` sends the run to `.L17`, because `cbz` is taken. GCC put the part that runs `beep` after the `ret`, so the straight-line path is the one where `litres` is not 0.
+
+*End of closed note.*
 
 ## 8. When GCC uses a branch
 
-In Lesson 1, GCC 16.1 at `-O1` turned the `if` in `warning_light` into `cmp` and `cset`, with no branch. In `describe`, it used one branch, for `gradient > 10`, and a `csel` for `gradient < -10`. In `maybe_beep`, it used a branch, `cbz`. This is what one compiler did at one level: GCC 16.1 at `-O1`. `csel` and `cset` choose between values in registers. Running `beep` is not a value in a register, so `maybe_beep` needs a branch. That reasoning comes from what `csel` does. It is not a claim about why GCC chose the branch.
+GCC 16.1 at `-O1` made different choices for different `if`s. In `warning_light`, the `if` became `cmp` and `cset`, with no branch. In `describe`, one `if` became a branch, for `gradient > 10`, and the other became a `csel`, for `gradient < -10`. In `maybe_beep`, the `if` became a branch, `cbz`.
+
+`csel` and `cset` choose between values in registers. Running `beep` is not a value in a register, so `maybe_beep` needs a branch.
+
+That reasoning comes from what `csel` does. It is not a claim about why GCC chose the branch.
 
 ## 9. Count the runs of `describe`
 
@@ -388,7 +534,9 @@ This challenge counts the instructions in three runs of `describe`.
 
 **Count the runs of `describe`**
 
-For `describe`, give what it returns and how many instructions run, for gradients 11, −10 and −11. Enter results in decimal.
+For `describe`, give what it returns and how many instructions run, for gradients 11, −10 and −11. Enter results in decimal. The boxes are grouped by gradient.
+
+Count only instructions that run. Labels are not instructions. Include `ret`.
 
 Field labels: "`describe(11)` returns"; "instructions run for `describe(11)`"; "`describe(-10)` returns"; "instructions run for `describe(-10)`"; "`describe(-11)` returns"; "instructions run for `describe(-11)`".
 
@@ -398,11 +546,26 @@ Field labels: "`describe(11)` returns"; "instructions run for `describe(11)`"; "
 4. 11 is above 10. −11 is below −10. −10 is neither.
 5. 2 in 5 instructions; 0 in 6; −2 in 6.
 
-## 10. Looking back
+*Feedback after a wrong count.*
 
-- What decides whether a branch is taken?
-- Why does `describe(10)` run six instructions and `describe(15)` run five?
-- Why must `fuel_warning` test for 0 before it tests against the reserve?
+> Look at which branch was taken, and which instructions it skipped.
+
+## 10. What you now know
+
+- A label names a place in the code. It is not an instruction.
+- A branch can change which instruction runs next.
+- A conditional branch is taken only when its condition holds.
+- A branch that is not taken lets the next instruction run.
+- `cbz` and `tbz` test a register or one bit, not the flags.
+- Different inputs can run different instructions.
+
+Question: `service` is given `0x29`. Is `tbz` taken, what does `service` return, and how many instructions run?
+
+*Closed note: Answer*
+
+`0x29` is `0010 1001`. Bit 1 is 0, so `tbz` is taken. The run is `tbz`, `mov w0, 0` and `ret`: three instructions. (`.Lno:` is a label, not counted.) `service` returns 0.
+
+*End of closed note.*
 
 ## 11. The model and the real processor
 

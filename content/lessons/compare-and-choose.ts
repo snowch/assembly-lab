@@ -1,9 +1,10 @@
 // Copyright © 2026 Christopher Snow
 
-// Lesson 1 of Module 4: Compare, and the condition that carries the type. The learner is shown that
+// Lesson 1 of Module 4: Compare, and the signed or unsigned condition. The learner is shown that
 // GCC makes `steeper_s` and `steeper_u` from the same instructions but for one item of `csel`,
-// predicts the change, sees both listings with the differing item marked, builds `less_fuel` from
-// `cmp` and `csel`, predicts what `steeper_u` returns with `ge`, sets two values and sees which of
+// predicts the change, sees both listings with the differing item marked and the compare, the
+// condition and the select of either function, builds `less_fuel` from `cmp` and `csel` and steps
+// their own solution, predicts what `steeper_u` returns with `ge`, sets two values and sees which of
 // the conditions hold after one compare, and reads four conditions off a compare.
 //
 // The structure is here; the words are in compare-and-choose.prose.ts and .labels.ts (kept from
@@ -64,16 +65,27 @@ const LESS_FUEL_CASES = [
 
 export const compareAndChoose: LessonInput = {
   id: "compare-and-choose",
-  title: "Compare, and the condition that carries the type",
+  title: "Compare, and the signed or unsigned condition",
   module: 4,
   order: 0,
   objectives: [...LABELS.objectives],
   introduces: ["condition"],
+  // The checked text of section 8 says that not every C `if` needs a branch, a lesson before the one
+  // that introduces the word. The words are the author's; the gate is told, and the exemption is
+  // listed in a test, so that the next review sees the conflict and decides.
+  termExemptions: [
+    {
+      term: "branch",
+      reason:
+        "Section 8's checked text says that a C `if` does not always need a branch, in the plain sense; Lesson 2 defines the instruction.",
+    },
+  ],
   sections: [
     {
       kind: "question",
       title: LABELS.titles.question,
       prose: PROSE.question,
+      details: { summary: PROSE.questionNoteSummary, prose: PROSE.questionNote },
       interactives: [
         {
           id: "steeper-runs",
@@ -84,7 +96,12 @@ export const compareAndChoose: LessonInput = {
         },
       ],
     },
-    { kind: "motivation", title: LABELS.titles.motivation, prose: PROSE.motivation },
+    {
+      kind: "motivation",
+      title: LABELS.titles.motivation,
+      prose: PROSE.motivation,
+      details: { summary: PROSE.motivationNoteSummary, prose: PROSE.motivationNote },
+    },
     {
       kind: "prediction",
       title: LABELS.titles.prediction,
@@ -116,7 +133,14 @@ export const compareAndChoose: LessonInput = {
           kind: "listing-diff",
           timeModel: STEPS,
           caption: LABELS.captions.diff,
-          props: { left: STEEPER_S, right: STEEPER_U, after: "predict-steeper-change" },
+          props: {
+            left: STEEPER_S,
+            right: STEEPER_U,
+            after: "predict-steeper-change",
+            // The three stages (compare, condition, select) of either function on the same two
+            // patterns, run on the model.
+            panel: { args: [...ARGS], names: ["a", "b"] },
+          },
         },
       ],
     },
@@ -131,6 +155,20 @@ export const compareAndChoose: LessonInput = {
           timeModel: STEPS,
           caption: LABELS.captions.lessFuel,
           props: { challengeId: "write-less-fuel" },
+        },
+        {
+          // The learner's own solution, once it has passed, stepped on a test call they choose.
+          id: "step-own-less-fuel",
+          kind: "select-stepper",
+          timeModel: STEPS,
+          caption: LABELS.captions.stepOwn,
+          props: {
+            challenge: "write-less-fuel",
+            entry: "less_fuel",
+            registers: [0, 1],
+            intro: PROSE.lessFuelAfterPass,
+            panel: { kind: "select", names: ["a", "b"], also: [] },
+          },
         },
       ],
     },
@@ -165,6 +203,8 @@ export const compareAndChoose: LessonInput = {
             registers: [0, 1],
             flags: true,
             after: "predict-steeper-ge",
+            // The same panel as above, and `cs`, GCC's condition, read off the same flags.
+            panel: { kind: "select", names: ["a", "b"], also: ["cs"] },
           },
         },
       ],
@@ -173,6 +213,7 @@ export const compareAndChoose: LessonInput = {
       kind: "explanation",
       title: LABELS.titles.explanation,
       prose: PROSE.explanation,
+      details: { summary: PROSE.explanationNoteSummary, prose: PROSE.explanationNote },
       interactives: [
         {
           id: "every-condition",
@@ -191,7 +232,14 @@ export const compareAndChoose: LessonInput = {
         },
       ],
     },
-    { kind: "generalisation", title: LABELS.titles.generalisation, prose: PROSE.generalisation },
+    {
+      kind: "generalisation",
+      title: LABELS.titles.generalisation,
+      prose: PROSE.generalisation,
+      // The section has two notes in the draft and the platform's section holds one `details`, so
+      // the two are one note under one summary.
+      details: { summary: PROSE.generalisationNoteSummary, prose: PROSE.generalisationNote },
+    },
     {
       kind: "challenge",
       title: LABELS.titles.challenge,
@@ -206,7 +254,12 @@ export const compareAndChoose: LessonInput = {
         },
       ],
     },
-    { kind: "reflection", title: LABELS.titles.reflection, prose: PROSE.reflection },
+    {
+      kind: "reflection",
+      title: LABELS.titles.reflection,
+      prose: PROSE.reflection,
+      details: { summary: PROSE.reflectionNoteSummary, prose: PROSE.reflectionNote },
+    },
   ],
   challenges: [
     {
@@ -217,7 +270,14 @@ export const compareAndChoose: LessonInput = {
       // The registers the tap editor offers, and the instructions the lesson's assembler allows.
       palette: ["w0", "w1"],
       allowedConstructs: ["cmp", "csel", "ret"],
-      initial: { text: LESS_FUEL_STARTING_TEXT, data: { editor: LESS_FUEL_EDITOR } },
+      initial: {
+        text: LESS_FUEL_STARTING_TEXT,
+        data: {
+          editor: LESS_FUEL_EDITOR,
+          // What the grader says for a failed call, chosen by what the run shows.
+          feedback: { rule: "less-fuel", sentences: { ...PROSE.lessFuelFeedback } },
+        },
+      },
       tests: {
         kind: "answers",
         grader: RUN_REGISTERS,

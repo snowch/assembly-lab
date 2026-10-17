@@ -129,7 +129,7 @@ describe("the listings the lesson shows or describes", () => {
     // maybe_beep's C is recorded over five lines; the prose gives it on one, with the same tokens.
     const oneLine = RECORDED_C.slice(22, 27).join(" ").replace(/\s+/g, " ");
     expect(oneLine).toBe("void maybe_beep(unsigned litres) { if (litres == 0) beep(); }");
-    expect(PROSE.explanation).toContain(oneLine);
+    expect(PROSE.explanationNote).toContain(oneLine);
   });
 });
 
@@ -215,8 +215,8 @@ describe("cmn w0, #10", () => {
     const a = callText("f:\n  cmp w0, -10\n  ret\n", "f", [0]).result;
     const b = callText("f:\n  cmn w0, 10\n  ret\n", "f", [0]).result;
     expect(a.steps[0]!.flagsAfter).toEqual(b.steps[0]!.flagsAfter);
-    expect(PROSE.investigation).toContain(
-      "The GNU assembler (`as`) itself turns `cmp w0, -10` into `cmn w0, 10`",
+    expect(PROSE.investigationNote).toContain(
+      "The GNU assembler turns `cmp w0, -10` into `cmn w0, 10`",
     );
   });
 
@@ -314,7 +314,10 @@ describe("cbz and the branches that test a register", () => {
     expect(a.result.steps[0]!.branch?.taken).toBe(false);
     expect(b.result.steps[0]!.branch?.taken).toBe(true);
     expect(PROSE.explanation).toContain(
-      "`service(0x2a)` returns 1. Bit 1 is set, so `tbz` is not taken",
+      "`service(0x2a)` returns 1. `tbz` is not taken, and three instructions run.",
+    );
+    expect(PROSE.explanation).toContain(
+      "`service(0x28)` returns 0. `tbz` is taken, and three instructions run.",
     );
   });
 
@@ -333,14 +336,14 @@ describe("cbz and the branches that test a register", () => {
     const after = zero.result.steps[1]!;
     expect(after.address).toBe(l17);
     expect(after.text.startsWith("stp")).toBe(true);
-    expect(PROSE.explanation).toContain("`maybe_beep(5)` runs two instructions");
+    expect(PROSE.explanationNote).toContain("`maybe_beep(5)` runs two instructions");
   });
 
   it("show maybe_beep's first two instructions as an excerpt: its rest runs beep and is not shown", () => {
     expect(listingOf("maybe_beep").filter((l) => l.kind === "instruction")).toHaveLength(7);
-    expect(PROSE.explanation).toContain("not shown");
-    expect(PROSE.explanation).not.toContain("stp");
-    expect(PROSE.explanation).not.toContain("bl ");
+    expect(PROSE.explanationNote).toContain("so they are not shown here");
+    expect(PROSE.explanationNote).not.toContain("stp");
+    expect(PROSE.explanationNote).not.toContain("bl ");
   });
 });
 
@@ -411,8 +414,8 @@ describe("the construction challenge, fuel_warning", () => {
     const calls = c.tests.cases.map((t) => [Number(t.given["w0"]), Number(t.given["w1"])] as const);
     expect(calls.filter(([l, r]) => l === r)).toHaveLength(1);
     expect(calls.filter(([l]) => l >= TOP)).toHaveLength(1);
-    expect(PROSE.fuelWarningTask).toContain("one with `litres` equal to `reserve`");
-    expect(PROSE.fuelWarningTask).toContain("one with the top bit of `litres` set");
+    expect(PROSE.fuelWarningTask).toContain("One has `litres` equal to `reserve`.");
+    expect(PROSE.fuelWarningTask).toContain("One has the top bit of `litres` set.");
   });
 
   it("runs the first reference in three instructions for 0 and five for the others, cmp leaving 1000, 0110, 0010 and 0011", () => {

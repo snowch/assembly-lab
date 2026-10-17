@@ -6,6 +6,14 @@
 // its backticks taken out, because the page draws those as plain text). A caption or label the file
 // does not give is marked DRAFT; module-4.prose.test.ts lists the marks.
 
+/**
+ * The three groups the last challenge's boxes fall into, one for each gradient. The groups are not
+ * drawn yet: the answer editor takes them when it can group fields, which the managing session wires
+ * in after the merge. Unused for now.
+ */
+// DRAFT
+export const COUNT_GROUPS = ["`describe(11)`", "`describe(-10)`", "`describe(-11)`"] as const;
+
 export const LABELS = {
   objectives: [
     "follow a run that skips instructions, and say how many ran;",
@@ -22,7 +30,7 @@ export const LABELS = {
     explanation: "Branches that test a register",
     generalisation: "When GCC uses a branch",
     challenge: "Count the runs of describe",
-    reflection: "Looking back",
+    reflection: "What you now know",
   },
   captions: {
     listing:
