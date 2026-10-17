@@ -470,6 +470,22 @@
   flex-wrap: nowrap;
   gap: var(--space-1);
 }
+/* A number or a word in a group is a text box with a sentence for a label: it takes the whole row,
+   and its box shrinks to fit a phone instead of widening the page. */
+.answer-group-row > label.answer-compact {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+.answer-group-row > label.answer-compact .answer-label {
+  font-family: inherit;
+  font-weight: 650;
+}
+.answer-group-row > label.answer-compact .answer-input {
+  min-width: 0;
+}
+.answer-group-row > label.answer-compact .answer-input input {
+  min-width: 0;
+}
 
 /* A block of code in a prediction's explanation (the three lines of negation) must not widen the
    figure on a phone: it is set a little smaller there, and a line too long for the screen wraps. */
