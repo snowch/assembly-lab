@@ -1,0 +1,90 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 38,
+  "processExecutionResultTime": 0.004083999898284674,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 4493,
+  "asm": [
+    {
+      "text": "dim_do:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": ".L2:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        lsr     w0, w0, 1",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 20
+      },
+      "labels": []
+    },
+    {
+      "text": "        subs    w1, w1, #1",
+      "source": {
+        "file": null,
+        "line": 8,
+        "column": 20
+      },
+      "labels": []
+    },
+    {
+      "text": "        bne     .L2",
+      "source": {
+        "file": null,
+        "line": 8,
+        "column": 20
+      },
+      "labels": [
+        {
+          "name": ".L2",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 10,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "dim_do": 1,
+    ".L2": 2
+  },
+  "parsingTime": 0,
+  "filteredCount": 285,
+  "popularArguments": {},
+  "queueTime": 6
+}

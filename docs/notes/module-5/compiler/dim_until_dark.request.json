@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\nunsigned dim_until_dark(unsigned brightness, unsigned ticks)\n{\n    while (ticks != 0 && brightness != 0) {\n        brightness >>= 1;\n        ticks--;\n    }\n    return brightness;\n}\n",
+  "options": {
+    "userArguments": "-O1",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

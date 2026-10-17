@@ -78,7 +78,10 @@ function statusOf(trace: Trace, view: StepView, branchStatus: boolean, afterRan?
   const next = at(view.next);
   if (view.k === 0) return S.stepper.start;
   const branch = branchStatus ? branchStatusAt(trace, view) : null;
-  if (branch !== null) return branch;
+  if (branch !== null) {
+    const stopped = view.stop === null ? null : stopSentence(view.stop);
+    return stopped === null ? branch : stopped;
+  }
   const parts: string[] = [];
   if (ran) parts.push(S.stepper.ran(ran.text));
   if (afterRan) parts.push(afterRan);

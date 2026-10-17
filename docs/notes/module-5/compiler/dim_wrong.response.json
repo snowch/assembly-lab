@@ -1,0 +1,63 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 49,
+  "processExecutionResultTime": 0.0032779998145997524,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 2860,
+  "asm": [
+    {
+      "text": "dim_wrong:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": ".L2:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        b       .L2",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 11
+      },
+      "labels": [
+        {
+          "name": ".L2",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "dim_wrong": 1,
+    ".L2": 2
+  },
+  "parsingTime": 1,
+  "filteredCount": 183,
+  "popularArguments": {},
+  "queueTime": 4
+}

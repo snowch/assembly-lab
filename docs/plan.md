@@ -264,9 +264,9 @@ The way digital-design was built, because it worked there:
 1. **Plan.** The module's note records the facts the lessons rest on, each checked against the
    model or a source; the terms each lesson may introduce; and an originality note naming the
    textbook example to avoid.
-2. **Build.** Code first. Then briefs to a Haiku subagent as lists of checked facts; Haiku drafts
-   every sentence a learner reads; the builder checks the facts and nothing else, and sends a
-   wrong draft back with a note.
+2. **Build.** Code and checked facts first. A separate drafting agent or session writes from
+   those facts. Edit for accuracy and clarity, then obtain independent learner and technical
+   reviews, following `CLAUDE.md` and `docs/authoring.md`.
 3. **Read.** A reader is given the built site and screenshots at phone and desktop widths, in the
    light and the dark theme, and presses everything. Each finding quotes the page, gives a severity, suggests a direction
    without rewriting, and never contains a challenge's answer.

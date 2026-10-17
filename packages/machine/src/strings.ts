@@ -120,7 +120,8 @@ export const strings = {
     "The run went past the end of the instructions without running a `ret`. The last instruction it ran was line {line}, `{text}`.",
   "fault.entry": "The call starts at the address {address}. No instruction is at that address.",
   "stop.returned": "The function returned.",
-  "stop.limit": "The run stopped after {steps} instructions. It may be a loop that does not end.",
+  "stop.limit":
+    "The simulator stopped at its instruction limit of {steps}. The function has not returned.",
 } as const;
 
 export type MessageKey = keyof typeof strings;

@@ -14,7 +14,12 @@ import type { InteractiveProps } from "@platform/lesson-runtime";
 export const RecordedSchema = z.object({ c: z.string(), listing: z.string() });
 
 /** A call: a label in the listing, and the values of `w0`, `w1` and on. */
-export const CallSchema = z.object({ entry: z.string(), args: z.array(z.number().int()) });
+export const CallSchema = z.object({
+  entry: z.string(),
+  args: z.array(z.number().int()),
+  /** Bounded traces for loops. Calls that omit it retain the machine's default. */
+  maxSteps: z.number().int().min(1).max(1000).optional(),
+});
 
 /** One line of a listing that a figure can take out. */
 export const DeleteSchema = z.object({ label: z.string(), text: z.string() });

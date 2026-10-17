@@ -1,0 +1,131 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 61,
+  "processExecutionResultTime": 0.003260000143200159,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 4924,
+  "asm": [
+    {
+      "text": "dim_up:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        cmp     w1, w2",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 15
+      },
+      "labels": []
+    },
+    {
+      "text": "        bcs     .L2",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 15
+      },
+      "labels": [
+        {
+          "name": ".L2",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    },
+    {
+      "text": ".L3:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        lsr     w0, w0, 1",
+      "source": {
+        "file": null,
+        "line": 9,
+        "column": 20
+      },
+      "labels": []
+    },
+    {
+      "text": "        add     w1, w1, 1",
+      "source": {
+        "file": null,
+        "line": 8,
+        "column": 14
+      },
+      "labels": []
+    },
+    {
+      "text": "        cmp     w2, w1",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 15
+      },
+      "labels": []
+    },
+    {
+      "text": "        bne     .L3",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 15
+      },
+      "labels": [
+        {
+          "name": ".L3",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    },
+    {
+      "text": ".L2:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 11,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "dim_up": 1,
+    ".L3": 4,
+    ".L2": 9
+  },
+  "parsingTime": 1,
+  "filteredCount": 320,
+  "popularArguments": {},
+  "queueTime": 4
+}

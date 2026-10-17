@@ -28,6 +28,8 @@ import { sentence } from "./messages";
 export interface TraceCall {
   readonly entry: string;
   readonly args: readonly number[];
+  /** Stop recording after this many instructions, even if the function has not returned. */
+  readonly maxSteps?: number;
 }
 
 export interface Trace {
@@ -58,6 +60,7 @@ export function traceOf(
   const result = run(program, {
     entry: call.entry,
     args: call.args.map((value) => ({ value: BigInt(value), width: 32 })),
+    ...(call.maxSteps === undefined ? {} : { maxSteps: call.maxSteps }),
   });
   const lineAt = new Map<number, number>();
   for (const ins of program.instructions) lineAt.set(ins.address, ins.line - 1);

@@ -32,6 +32,12 @@ records which section of which issue it was checked against. Memory is not a sou
 
 open-std.org and gcc.gnu.org were not reachable from the build containers at checkpoint 1, nor on 17 October 2026; GitHub's raw files were.
 
+During the Module 5 work later on 17 October 2026, open-std.org was reachable. The review used
+[C23 draft N3096](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf), dated 1 April 2023:
+6.2.5 paragraph 11 for unsigned arithmetic, and 6.8.5 through 6.8.5.3 for repetition,
+the permission to assume termination, and the order of `while`, `do` and `for` operations.
+`docs/notes/module-5/listings.md` records the application of those clauses to the lessons.
+
 ## What the site ships, and its licences
 
 | What | Licence |

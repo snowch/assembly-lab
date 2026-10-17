@@ -107,6 +107,9 @@ const UNSIGNED_WRITTEN = [
   "write-set-gear",
   "write-less-fuel",
   "write-fuel-warning",
+  "write-dim-up",
+  "write-dim-down",
+  "write-dim-until-dark",
 ];
 
 describe("the written challenges' readings", () => {

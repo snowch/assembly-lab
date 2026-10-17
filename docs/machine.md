@@ -131,8 +131,8 @@ data (`.bss`), each aligned as `ld` aligns it; and a 64 KiB stack from `0x420000
 **Faults.** A run stops, with a sentence saying why and where, on: an address outside every
 region; a store into text or read-only data; a load from an instruction's place in text (the
 machine keeps no encodings, so those bytes do not exist; data placed in text can be read); a
-branch to an address that is not an instruction; or more steps than the run's limit (a loop that
-does not end). QEMU does not stop for a misaligned
+branch to an address that is not an instruction; or reaching the run's step limit. Reaching that limit says only that
+the function has not returned within the allowed steps; a long finite loop can reach it too. QEMU does not stop for a misaligned
 `sp` [qemu]; neither does the simulator, but the trace marks it, because AAPCS64 requires `sp` to
 be a multiple of 16 at every call [aapcs].
 
@@ -174,6 +174,16 @@ hardware, if any.
 3. runs the same call on the simulator;
 4. compares, instruction by instruction inside the function: the program counter, `x0` to `x30`,
    `sp` and NZCV; and at the end, the data regions' bytes.
+
+A corpus call may instead set `prefixSteps` (an integer from 1 to 10 000). The harness
+collects that many instructions and the following register state from QEMU, then stops
+QEMU. It compares the same prefix on the simulator, including all registers, NZCV and
+the next program counter. The simulator must reach its step limit at that point. A
+prefix call makes no return or final-memory claim and is rejected if its corpus requests
+final-memory comparisons. It can test the first iterations of a very long or nonterminating
+loop without waiting for a return. A matching prefix does not prove either termination or
+nontermination. Both kinds of real-tool run have a 30-second timeout to catch accidental
+nontermination in a call that was expected to return.
 
 A difference fails the test and prints the first instruction where the two disagree. The corpus
 holds a program for every rule above, and every program a lesson shows is added to it. CI runs it

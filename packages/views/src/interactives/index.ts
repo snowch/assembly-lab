@@ -35,6 +35,8 @@ import { SelectStepper } from "./SelectStepper";
 import { SolutionStepper } from "./SolutionStepper";
 import { WarningWordFigure } from "./WarningWordFigure";
 import { WordStepperFigure } from "./WordStepperFigure";
+import { LoopFigure } from "./LoopFigure";
+import { LoopPrediction } from "./LoopPrediction";
 
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
   listing: ListingFigure,
@@ -66,4 +68,6 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   "solution-stepper": SolutionStepper,
   "bfi-compare": BfiCompare,
   "clear-compare": ClearCompare,
+  "loop-runs": LoopFigure,
+  "loop-prediction": LoopPrediction,
 };

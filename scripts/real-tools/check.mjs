@@ -16,7 +16,7 @@
 // [--corpus-dir dir] [--lines-dir dir]. A lines file whose first line is `// each line alone` has each
 // line assembled on its own; the others are assembled as one file (twice for GNU as: see gnuVerdicts).
 
-import { execFile } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -71,6 +71,47 @@ async function exec(file, args, options = {}) {
     }
     return { ok: false, stdout: e.stdout, stderr: e.stderr, code: e.code };
   }
+}
+
+/** Read enough complete CPU records for a bounded prefix, then stop QEMU.
+ * A prefix is evidence only for those instructions. It does not prove whether a loop ends.
+ */
+async function qemuPrefix(file, entry, steps) {
+  return new Promise((resolve) => {
+    const child = spawn(tools.qemu, ["-one-insn-per-tb", "-d", "cpu", file], {
+      env: tools.env,
+      stdio: ["ignore", "ignore", "pipe"],
+    });
+    let stderr = "";
+    let enough = false;
+    let failure = "";
+    const timer = setTimeout(() => {
+      failure = "QEMU did not produce the requested prefix within 30 seconds";
+      child.kill("SIGKILL");
+    }, 30000);
+    child.stderr.on("data", (chunk) => {
+      if (enough || failure) return;
+      stderr += chunk.toString("latin1");
+      // The marker after the final requested state establishes that its whole record arrived.
+      const markers = [...stderr.matchAll(/^ ?PC=([0-9a-f]+)/gm)];
+      const first = markers.findIndex((m) => BigInt("0x" + m[1]) === BigInt(entry));
+      if (first >= 0 && markers.length >= first + steps + 2) {
+        stderr = stderr.slice(0, markers[first + steps + 1].index);
+        enough = true;
+        child.kill("SIGKILL");
+      } else if (stderr.length > 64 * 1024 * 1024) {
+        failure = "QEMU prefix log exceeded 64 MiB";
+        child.kill("SIGKILL");
+      }
+    });
+    child.on("error", (error) => {
+      failure = error.message;
+    });
+    child.on("close", () => {
+      clearTimeout(timer);
+      resolve({ ok: enough && !failure, stderr, failure });
+    });
+  });
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -203,14 +244,31 @@ async function checkCall(name, source, spec, call, index) {
         return `${name}: the label ${label} is at 0x${sym[label].toString(16)} in the real link and 0x${s.address.toString(16)} in the simulator`;
       }
     }
-    const q = await exec(tools.qemu, ["-one-insn-per-tb", "-d", "cpu", join(dir, "p")], {
-      binary: true,
-    });
+    const prefixSteps = call.prefixSteps;
+    if (
+      prefixSteps !== undefined &&
+      (!Number.isInteger(prefixSteps) || prefixSteps < 1 || prefixSteps > 10000)
+    ) {
+      return `${name}, call ${index}: prefixSteps must be an integer from 1 to 10000`;
+    }
+    if (prefixSteps !== undefined && compare.length) {
+      return `${name}, call ${index}: incomplete prefixes do not compare final memory`;
+    }
+    const q =
+      prefixSteps === undefined
+        ? await exec(tools.qemu, ["-one-insn-per-tb", "-d", "cpu", join(dir, "p")], {
+            binary: true,
+            spawn: { timeout: 30000 },
+          })
+        : await qemuPrefix(join(dir, "p"), sym[entry], prefixSteps);
+    if (prefixSteps !== undefined && !q.ok) {
+      return `${name}, call ${index}: ${q.failure || "QEMU stopped before the requested prefix"}`;
+    }
     const logText = Buffer.from(q.stderr).toString("latin1");
     const records = parseQemuLog(logText);
     const first = records.findIndex((r) => r.pc === BigInt(sym[entry]));
     const last = records.findIndex((r, i) => i > first && r.pc === BigInt(retAddr));
-    if (first < 0 || last < 0) {
+    if (first < 0 || (prefixSteps === undefined && last < 0)) {
       const lastPc = records.length ? "0x" + records[records.length - 1].pc.toString(16) : "none";
       const noise = logText
         .split("\n")
@@ -221,7 +279,10 @@ async function checkCall(name, source, spec, call, index) {
         .join(" | ");
       return `${name}, call ${index}: QEMU stopped at ${lastPc} after ${records.length} records, before the return address. ${noise}`;
     }
-    const real = records.slice(first, last + 1);
+    const real = records.slice(
+      first,
+      prefixSteps === undefined ? last + 1 : first + prefixSteps + 1,
+    );
 
     const result = run(asm.program, {
       entry: entry,
@@ -235,7 +296,7 @@ async function checkCall(name, source, spec, call, index) {
             v: call.flags[3] === "1",
           }
         : undefined,
-      maxSteps: 200000,
+      maxSteps: prefixSteps ?? 200000,
     });
 
     const describe = () =>
@@ -276,6 +337,13 @@ async function checkCall(name, source, spec, call, index) {
       return `${describe()}: the simulator ran ${result.steps.length} instructions and then stopped (${stop.kind}${
         stop.kind === "fault" ? " " + stop.key + " " + JSON.stringify(stop.params) : ""
       }); QEMU ran ${real.length - 1}`;
+    }
+    if (prefixSteps !== undefined) {
+      if (result.stop.kind !== "limit" || result.steps.length !== prefixSteps) {
+        return `${describe()}: expected ${prefixSteps} prefix instructions, simulator stopped with ${result.stop.kind}`;
+      }
+      // No return or final-memory claim is made for an incomplete execution.
+      return null;
     }
     if (result.stop.kind !== "returned") {
       return `${describe()}: the simulator stopped with ${result.stop.kind}`;

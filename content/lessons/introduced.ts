@@ -23,6 +23,8 @@ export const TAUGHT: Readonly<Record<string, readonly string[]>> = {
   shifts: ["lsr", "asr"],
   "compare-and-choose": ["cmp", "cmn", "tst", "ands", "cset", "csel"],
   branches: ["b", "b.cond", "cbz", "cbnz", "tbz", "tbnz"],
+  "counting-up": [],
+  "counting-down": [],
 };
 
 /**

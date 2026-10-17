@@ -1,0 +1,77 @@
+/* Copyright © 2026 Christopher Snow */
+
+/* Body execution counts and values, both read from the recorded model trace. */
+.al-loop-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.al-loop-choices .button {
+  min-height: 40px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.al-loop-bars,
+.al-loop-values {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.al-loop-bars {
+  display: grid;
+  gap: var(--space-3);
+}
+.al-loop-bar-row {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+}
+.al-loop-bar-row[data-selected="true"] {
+  border-color: var(--accent);
+}
+.al-loop-label,
+.al-loop-count {
+  overflow-wrap: anywhere;
+  font-size: var(--text-sm);
+}
+.al-loop-bar-track {
+  display: block;
+  height: 18px;
+  background: var(--accent-soft);
+  border-left: 1px solid var(--fg);
+}
+.al-loop-bar {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+.al-loop-bar-row[data-returned="false"] .al-loop-bar {
+  border-right: 3px dashed var(--fg);
+}
+.al-loop-history-title {
+  font-weight: 600;
+}
+.al-loop-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.al-loop-values li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 5rem;
+  max-width: 100%;
+  padding: var(--space-2);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  overflow-wrap: anywhere;
+  font-size: var(--text-sm);
+}
+.al-loop-values strong {
+  font-size: var(--text-lg);
+  font-variant-numeric: tabular-nums;
+}
