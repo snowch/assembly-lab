@@ -34,11 +34,11 @@ describe("the Module 4 figures' words", () => {
     expect(all.filter(([, s]) => s.includes("—")).map(([p]) => p)).toEqual([]);
   });
 
-  it("went through the prose process (17 October 2026), so none of those is marked DRAFT; the 40 interface labels added with the panels, the condition table and the branch path since are", () => {
+  it("went through the prose process (17 October 2026), so none of those is marked DRAFT; the 39 interface labels added with the panels, the condition table and the branch path since are (the disclosure's title, Conditions beyond the first six, went through it on 17 October 2026 and lost its mark)", () => {
     // Each is a short label of a figure, not a sentence of a lesson, and is marked on the line above
     // it. The count is the list: a new string is a decision somebody sees.
     const marks = source.match(/^\s*\/\/ DRAFT$/gm) ?? [];
-    expect(marks).toHaveLength(40);
+    expect(marks).toHaveLength(39);
     // Every mark sits directly above a string of the file.
     const lines = source.split("\n");
     lines.forEach((l, i) => {

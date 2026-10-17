@@ -293,11 +293,11 @@ describe("the table of every condition after one compare", () => {
     expect(container.querySelectorAll(".al-flag")).toHaveLength(4);
   });
 
-  it("shows six conditions and keeps the rest behind a closed disclosure, All condition codes", () => {
+  it("shows six conditions and keeps the rest behind a closed disclosure, Conditions beyond the first six", () => {
     const { container } = table();
     const more = container.querySelector("details.al-cond-more")!;
     expect(more).not.toHaveAttribute("open");
-    expect(more.querySelector("summary")).toHaveTextContent("All condition codes");
+    expect(more.querySelector("summary")).toHaveTextContent("Conditions beyond the first six");
     const outside = [...container.querySelectorAll(".al-cond")]
       .filter((c) => !more.contains(c))
       .map((c) => c.getAttribute("data-cond"));

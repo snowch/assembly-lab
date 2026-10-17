@@ -7,17 +7,17 @@
 
 export const PROSE = {
   question:
-    "The trip computer classifies a gradient as steep uphill, steep downhill or neither. The result depends on which conditions are true.\n\n" +
+    "The trip computer classifies a gradient as steep uphill, steep downhill or neither. The result depends on how the gradient compares with 10 and −10.\n\n" +
     "`describe` returns 2 when the gradient is above 10, −2 when it is below −10, and 0 otherwise. Its C is below.\n\n" +
     "```c\nint describe(int gradient)\n{\n    if (gradient > 10)\n        return 2;\n    if (gradient < -10)\n        return -2;\n    return 0;\n}\n```\n\n" +
     "GCC made the eight instructions below.\n\n" +
     "```\ndescribe:\n        cmp     w0, 10\n        bgt     .L9\n        cmn     w0, #10\n        mov     w0, -2\n        csel    w0, w0, wzr, lt\n.L7:\n        ret\n.L9:\n        mov     w0, 2\n        b       .L7\n```\n\n" +
+    "GCC records, for each instruction, the C line it came from. Here `cmn`, `mov w0, -2` and `csel` sit beside `return 0;`, and no instruction sits beside `if (gradient < -10)` or `return -2;`.\n\n" +
     "`wzr` is a register name that always reads as 0. A write to it is thrown away.\n\nEvery listing so far ran from its first instruction to its `ret`, in order. This one has two lines that end in a colon, `.L7:` and `.L9:`. Two instructions name them.\n\n" +
     "**How does the processor execute only the instructions needed for that result?**",
 
   questionNoteSummary: "Which compiler?",
-  questionNote:
-    "GCC 16.1 with `-O1`, as in Module 0. GCC records, for each instruction, the C line it came from. Here `cmn`, `mov w0, -2` and `csel` sit beside `return 0;`. No instruction sits beside `if (gradient < -10)` or `return -2;`.",
+  questionNote: "GCC 16.1 with `-O1`, as in Module 0.",
 
   motivation:
     "A **label** is a name that ends in a colon. It names the place of the instruction on the line below it. A label is not an instruction, and it does not run.\n\n" +
@@ -28,7 +28,7 @@ export const PROSE = {
 
   prediction: "The figure runs `describe(15)` on the listing above.",
 
-  predictionQuestion: "**How many instructions run before the function returns?**",
+  predictionQuestion: "**How many instructions run, counting `ret`?**",
 
   predictionExplain:
     "The answer is 5. For `describe(15)`, the run is `cmp w0, 10`, `bgt .L9` (taken), `mov w0, 2`, `b .L7` (taken) and `ret`.\n\n" +
@@ -50,7 +50,6 @@ export const PROSE = {
   fuelWarningTask:
     "Write `fuel_warning(litres, reserve)`. Both are `unsigned`. Its rules, in order:\n\n" +
     "- If `litres` is 0, return 2.\n- Otherwise, if `litres` is below `reserve`, return 1.\n- Otherwise, return 0.\n\n" +
-    "A `litres` of 0 is also below any `reserve` above 0, so the order of the checks matters.\n\n" +
     "Use only `cmp`, a branch with a condition, `cbz`, `b`, `mov` and `ret`. Five calls test it. One has `litres` equal to `reserve`. One has the top bit of `litres` set.\n\n" +
     "`litres` arrives in `w0`, and `reserve` arrives in `w1`. The answer leaves in `w0`.\n\n" +
     "`cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags.\n\n" +
@@ -68,6 +67,8 @@ export const PROSE = {
   /** What the grader says for a failed test, chosen by what the run shows (the rule is `fuel-warning`). */
   fuelWarningFeedback: {
     zeroFirst: "A `litres` of 0 returns 1. Does the check for 0 come first?",
+    fellThrough:
+      "The run for a `litres` of 0 went on into the next block instead of returning. Does every block end in `ret` or `b`?",
     topBit: 'The call with the top bit set fails. Is "below" read as unsigned?',
     label:
       "The wrong value comes back. Which label did the run reach, and which branch sent it there?",
@@ -106,8 +107,6 @@ export const PROSE = {
     "GCC 16.1 at `-O1` made different choices for different `if`s. In `warning_light`, the `if` became `cmp` and `cset`, with no branch. In `describe`, one `if` became a branch, for `gradient > 10`, and the other became a `csel`, for `gradient < -10`. In `maybe_beep`, the `if` became a branch, `cbz`.\n\n" +
     "`csel` and `cset` choose between values in registers. Running `beep` is not a value in a register, so `maybe_beep` needs a branch.\n\n" +
     "That reasoning comes from what `csel` does. It is not a claim about why GCC chose the branch.",
-
-  challenge: "This challenge counts the instructions in three runs of `describe`.",
 
   countsTask:
     "For `describe`, give what it returns and how many instructions run, for gradients 11, −10 and −11. Enter results in decimal. The boxes are grouped by gradient.\n\n" +

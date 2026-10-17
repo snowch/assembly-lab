@@ -367,6 +367,23 @@ describe("the instruction gate", () => {
       expect(firstError("f:\n  adds w0, w0, 1", allowed, introduced).key).toBe("gate.notYet");
     });
 
+    it("names the conditional branches as b with a condition, such as b.cc, and never as b.cond", () => {
+      const withBranches = new Set(["cmp", "b.cond", "cbz", "b", "mov", "ret"]);
+      const e = firstError("f:\n  add w0, w0, 1", withBranches, new Set([...withBranches, "add"]));
+      expect(e.key).toBe("gate.notAllowedHere");
+      const said = message(e.key, e.params);
+      expect(said).toBe(
+        "This challenge allows only `cmp`, `b` with a condition, such as `b.cc`, `cbz`, `b`, `mov` and `ret`.",
+      );
+      expect(said).not.toContain("b.cond");
+      // A list of one is the item alone.
+      const only = new Set(["b.cond"]);
+      const alone = firstError("f:\n  add w0, w0, 1", only, new Set(["b.cond", "add"]));
+      expect(message(alone.key, alone.params)).toBe(
+        "This challenge allows only `b` with a condition, such as `b.cc`.",
+      );
+    });
+
     it("is told apart for each instruction of one program", () => {
       const { errors } = assemble("f:\n  add w0, w0, 1\n  b f\n  sub w0, w0, 1\n  ret", {
         allowed,

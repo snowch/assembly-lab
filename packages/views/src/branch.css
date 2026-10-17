@@ -64,7 +64,8 @@
   gap: var(--space-1);
   min-width: 0;
 }
-.al-cond-value label {
+.al-cond-value label,
+.al-cond-label {
   font-weight: 650;
 }
 .al-cond-value .al-tester-input {

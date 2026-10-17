@@ -210,13 +210,17 @@ export const compareAndChoose: LessonInput = {
           kind: "condition-table",
           timeModel: STEPS,
           caption: LABELS.captions.conditions,
-          // The figure starts at 8 and 8. It never starts at the last challenge's pair, and the
-          // buttons offer only pairs the part's sentences have used.
+          // The figure starts at 8 and 8 and takes only the buttons, so it never shows the last
+          // challenge's pair or the reflection question's. The buttons offer the pairs the lesson has
+          // used: the two in the closed note, the Question's and the failure experiment's.
           props: {
             start: ["8", "8"],
+            choices: "presets",
             presets: [
               ["8", "8"],
               ["0x7fffffff", "0xffffffff"],
+              ["0xffffffff", "1"],
+              ["0x80000000", "1"],
             ],
           },
         },
@@ -233,7 +237,7 @@ export const compareAndChoose: LessonInput = {
     {
       kind: "challenge",
       title: LABELS.titles.challenge,
-      prose: PROSE.challenge,
+      prose: "",
       interactives: [
         {
           id: "read-four-conditions",

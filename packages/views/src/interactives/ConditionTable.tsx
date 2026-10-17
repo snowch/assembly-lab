@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-// One compare, every condition. The learner types two values; the model runs `cmp w0, w1` on them and
+// One compare, every condition. The learner types two values, or with `choices: "presets"` picks a pair; the model runs `cmp w0, w1` on them and
 // one `cset` for each condition, and the figure draws the four flags the compare left and, for each
 // condition, its meaning, its rule, the flags it read with their values and whether it holds. Whether
 // a condition holds is what the model's own `cset` gave. The figure holds no table of when a condition
@@ -25,7 +25,13 @@ const Props = z.object({
   start: z.tuple([z.string(), z.string()]).default(["8", "8"]),
   /** Pairs of values the lesson has already used, offered as buttons. */
   presets: z.array(z.tuple([z.string(), z.string()])).default([]),
-  /** The conditions the compact view shows; the others are behind "All condition codes". */
+  /**
+   * Where the pair comes from: "any" is two boxes the learner types in (and the buttons), "presets"
+   * only the buttons. A lesson whose challenge asks about another pair uses the buttons only, so the
+   * figure never shows what the challenge asks for.
+   */
+  choices: z.enum(["any", "presets"]).default("any"),
+  /** The conditions the compact view shows; the others are behind "Conditions beyond the first six". */
   primary: z.array(z.string()).default(["eq", "ne", "cs", "cc", "ge", "lt"]),
 });
 
@@ -35,6 +41,22 @@ function problem(t: Typed): string | null {
   if (t.kind === "empty" || t.kind === "not-a-number") return S.tester.notNumber;
   if (t.kind === "out-of-range") return B.conditions.outOfRange;
   return null;
+}
+
+/** A value the learner cannot change: its label, and its two readings. */
+function FixedValue({ name, label, typed }: { name: string; label: string; typed: Typed }) {
+  return (
+    <div className="al-cond-value" data-register={name}>
+      <span className="al-cond-label">{withCode(label)}</span>
+      {typed.kind === "ok" && (
+        <span className="al-cond-readings">
+          {withCode(
+            B.conditions.readings(typed.pattern, Number(BigInt.asIntN(32, BigInt(typed.pattern)))),
+          )}
+        </span>
+      )}
+    </div>
+  );
 }
 
 function ValueBox({
@@ -130,8 +152,17 @@ export const ConditionTable = withProps(Props, function ConditionTable({ data })
     <div className="al-figure al-conditions" data-figure="condition-table">
       <p className="al-cond-heading al-cond-compare">{withCode(B.conditions.compareLine)}</p>
       <div className="al-cond-values" role="group" aria-label={B.conditions.group}>
-        <ValueBox name="w0" label={B.conditions.first} text={a} onText={setA} typed={first} />
-        <ValueBox name="w1" label={B.conditions.second} text={b} onText={setB} typed={second} />
+        {data.choices === "any" ? (
+          <>
+            <ValueBox name="w0" label={B.conditions.first} text={a} onText={setA} typed={first} />
+            <ValueBox name="w1" label={B.conditions.second} text={b} onText={setB} typed={second} />
+          </>
+        ) : (
+          <>
+            <FixedValue name="w0" label={B.conditions.first} typed={first} />
+            <FixedValue name="w1" label={B.conditions.second} typed={second} />
+          </>
+        )}
       </div>
       {data.presets.length > 0 && (
         <div className="al-cond-presets" role="group" aria-label={B.conditions.presets}>

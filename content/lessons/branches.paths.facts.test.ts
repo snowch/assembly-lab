@@ -348,6 +348,110 @@ describe("what the graders say for a failed call", () => {
     expect(details(swapped)).toEqual([quoted(said.zeroFirst)]);
   });
 
+  describe("a litres of 0 that returned 1", () => {
+    const wrongOrder = [
+      "cmp w0, w1",
+      "b.cc .Llow",
+      "cbz w0, .Lempty",
+      "mov w0, 0",
+      "ret",
+      ".Llow:",
+      "mov w0, 1",
+      "ret",
+      ".Lempty:",
+      "mov w0, 2",
+      "ret",
+    ].join("\n");
+    // The check for 0 is first, and the block under `.Lempty` has no `ret`: the run goes on into `.Llow`.
+    const missingRet = [
+      "cbz w0, .Lempty",
+      "cmp w0, w1",
+      "b.cc .Llow",
+      "mov w0, 0",
+      "ret",
+      ".Lempty:",
+      "mov w0, 2",
+      ".Llow:",
+      "mov w0, 1",
+      "ret",
+    ].join("\n");
+    // The same, with the test of 0 made by `cmp` and `b.eq`.
+    const missingRetEq = [
+      "cmp w0, 0",
+      "b.eq .Lempty",
+      "cmp w0, w1",
+      "b.cc .Llow",
+      "mov w0, 0",
+      "ret",
+      ".Lempty:",
+      "mov w0, 2",
+      ".Llow:",
+      "mov w0, 1",
+      "ret",
+    ].join("\n");
+    // The order is wrong with the test of 0 made by `cmp` and `b.eq`.
+    const wrongOrderEq = [
+      "cmp w0, w1",
+      "b.cc .Llow",
+      "cmp w0, 0",
+      "b.eq .Lempty",
+      "mov w0, 0",
+      "ret",
+      ".Llow:",
+      "mov w0, 1",
+      "ret",
+      ".Lempty:",
+      "mov w0, 2",
+      "ret",
+    ].join("\n");
+    // Right order, shared `ret`, and the wrong value for 0. The block for 0 falls into the `ret` that
+    // two other blocks branch to, which is a right layout.
+    const sharedRetWrongValue = [
+      "cbz w0, .Lempty",
+      "cmp w0, w1",
+      "b.cs .Lok",
+      "mov w0, 1",
+      "b .Ldone",
+      ".Lok:",
+      "mov w0, 0",
+      "b .Ldone",
+      ".Lempty:",
+      "mov w0, 1",
+      ".Ldone:",
+      "ret",
+    ].join("\n");
+    // Right order and right values, and a `ret` for the block of 0, but the value 1 comes from there.
+    const wrongValueWithRet = FUEL_WARNING_TEXT.replace("mov w0, 2", "mov w0, 1");
+
+    it("says the run went on into the next block when the test of 0 was taken and a block has no ret", () => {
+      expect(details(missingRet)).toEqual([quoted(said.fellThrough)]);
+      expect(details(missingRetEq)).toEqual([quoted(said.fellThrough)]);
+    });
+
+    it("does not say the check for 0 comes first when it does: that was not the fault", () => {
+      for (const text of [missingRet, missingRetEq])
+        expect(details(text)).not.toContain(quoted(said.zeroFirst));
+    });
+
+    it("still says the check for 0 comes first when the run took no branch for the test of 0", () => {
+      expect(details(wrongOrder)).toEqual([quoted(said.zeroFirst)]);
+      expect(details(wrongOrderEq)).toEqual([quoted(said.zeroFirst)]);
+    });
+
+    it("says neither when the run went into a shared ret, which is right, and the value was wrong", () => {
+      expect(grade(warning, { text: FUEL_WARNING_SHARED_RET_TEXT }).passed).toBe(true);
+      expect(details(sharedRetWrongValue)).toEqual([quoted(said.label)]);
+      expect(details(wrongValueWithRet)).toEqual([quoted(said.label)]);
+    });
+
+    it("says the one sentence once, and never the value a test wanted", () => {
+      expect(said.fellThrough).not.toMatch(/\bexpected\b/);
+      const found = details(missingRet).filter((d) => d === quoted(said.fellThrough));
+      expect(found).toHaveLength(1);
+      expect(said.fellThrough).not.toContain("returns 2");
+    });
+  });
+
   it("says is below read as unsigned when only the call with the top bit set fails, and it returned 1", () => {
     const signed = FUEL_WARNING_TEXT.replace("b.cc", "b.lt");
     expect(details(signed)).toEqual([quoted(said.topBit)]);

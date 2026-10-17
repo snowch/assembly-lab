@@ -69,8 +69,7 @@ export const BRANCH_STRINGS = {
     // DRAFT
     read: (values: string) => `Reads ${values}`,
     /** The disclosure over the conditions the compact view leaves out. */
-    // DRAFT
-    all: "All condition codes",
+    all: "Conditions beyond the first six",
   },
 
   /** After a step that ran a branch (the stepper's `branchStatus`); prose.md, Lesson 2 part 4. */

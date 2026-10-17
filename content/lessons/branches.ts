@@ -208,7 +208,7 @@ export const branches: LessonInput = {
     {
       kind: "challenge",
       title: LABELS.titles.challenge,
-      prose: PROSE.challenge,
+      prose: "",
       interactives: [
         {
           id: "count-describe-runs",
