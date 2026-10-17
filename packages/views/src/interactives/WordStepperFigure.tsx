@@ -142,7 +142,7 @@ function StepFacts({
   const written = step.writes.flatMap((w) => (typeof w.reg === "number" ? [w.reg] : []));
   if (written.length === 0) return null;
   return (
-    <table className="al-facts" data-step={k}>
+    <table className="al-key al-facts" data-step={k}>
       <caption className="visually-hidden">{S.operand.facts}</caption>
       <tbody>
         {written.map((n) => {

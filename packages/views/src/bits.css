@@ -473,3 +473,47 @@
 .al-facts td {
   font-family: var(--font-mono);
 }
+
+/* Review fixes: a long row name wraps instead of running under its value on a phone, a closed part
+   shows that it opens, and the warning labels fit seven to a row at 360 px. */
+.al-reg.al-bitrow {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+@media (min-width: 48rem) {
+  .al-reg.al-bitrow {
+    grid-template-columns: 8rem minmax(0, 1fr) 13rem;
+  }
+}
+.al-bitrow .al-reg-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.al-all32 > summary::before {
+  content: "▸";
+  margin-right: var(--space-2);
+}
+.al-all32[open] > summary::before {
+  content: "▾";
+}
+.al-use {
+  column-gap: 2px;
+}
+.al-use-label {
+  padding: 4px 1px;
+  overflow-wrap: break-word;
+}
+
+/* A row of glyphs has no name on a phone: the glyphs sit under their bits, and the legend and the
+   sentence say what they are. */
+@media (max-width: 47.99rem) {
+  .al-markrow .al-reg-name,
+  .al-markrow .al-reg-value {
+    display: none;
+  }
+}
+.al-facts {
+  width: 100%;
+}
+.al-facts tbody th {
+  white-space: normal;
+}
