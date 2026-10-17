@@ -22,12 +22,22 @@ export const LABELS = {
     explanation: "Constants in halves",
     generalisation: "Constants and C types",
     challenge: "Four instructions",
-    reflection: "Looking back",
+    reflection: "What you now know",
   },
   captions: {
     listing: "service_interval in C, and the one instruction GCC makes for it.",
     tester: "Type a number; the figure shows whether one mov can hold it, and what w0 then holds.",
     halves: "x3 drawn as two halves of 32 bits, with w3 its lower half.",
+    // The prose file gives no caption for these three figures: each is marked DRAFT until it has
+    // been through the prose process.
+    // DRAFT
+    serviceHalves: "w0 after mov w0, 30000, in two halves of 16 bits.",
+    // DRAFT
+    workedHalves:
+      "w0 in two halves of 16 bits, through mov w0, 3 and movk w0, 2, lsl 16. A half is new or kept after each step.",
+    // DRAFT
+    solutionHalves:
+      "Your solution to Build 1000000, one instruction at a time, with w0 in two halves of 16 bits.",
     // The prose file gives no caption for these four figures; Haiku drafted them (16 October 2026).
     predictFits:
       "A prediction about which of several numbers a single mov instruction can put in w0.",

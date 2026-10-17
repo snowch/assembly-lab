@@ -25,21 +25,26 @@ export { ListingView, RegisterRow, withCode } from "./parts";
 export { VIEW_STRINGS, quoted } from "./strings";
 export { fieldList } from "./fields";
 export { bitsOf, traceOf, viewAt, wValue, wValueAsInt } from "./trace";
-export { traceText } from "./traceText";
 export {
   NO_BITS,
   MINUS,
   isPattern,
+  parseHexEntry,
+  patternAfterRun,
   patternOf,
   readingsOf,
   readingsOfPattern,
   readingsOfValue,
   shown,
   stateHolding,
+  topBitTable,
   wholeNumber,
   worths,
 } from "./readings";
-export type { Readings } from "./readings";
+export type { HexEntry, Readings, TopBitTable } from "./readings";
+export { halves16, wide64 } from "./halves";
+export type { HalfTag, Halves16, Wide64, WideTag } from "./halves";
+export { traceAssembly, traceText } from "./traceText";
 export { BIT_READINGS, PATTERN_READINGS, REGISTERS_AFTER } from "./readingGraders";
 export { compareListings } from "./interactives/ListingCompare";
 export { tryMov } from "./interactives/ConstantTester";
@@ -62,4 +67,5 @@ export {
 export type { BranchArrow, Change, DiffRow } from "./branch";
 export { BRANCH_OUTCOMES } from "./grader-branch";
 export { MODULE1_STRINGS } from "./strings.module1";
+export { passedChallenge } from "./interactives/gate";
 export { introducedOf } from "./interactives/props";

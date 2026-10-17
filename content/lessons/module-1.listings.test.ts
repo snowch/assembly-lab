@@ -16,10 +16,12 @@ import {
   FUEL_USED_WRONG,
   FUEL_USED_WRONG_PLUS_12,
   FUEL_USED_WRONG_U,
+  MOVK_EXAMPLE,
   ODOMETER_LIMIT_TEXT,
   SERVICE_AND_ODOMETER,
   SERVICE_INTERVAL,
   WIDTHS,
+  X5_QUESTION,
 } from "./module-1.listings";
 
 const recorded = readFileSync(
@@ -198,6 +200,31 @@ describe("the programs the differential test runs against QEMU", () => {
         ),
       ),
     );
+  });
+
+  it("hold the worked example of movk and the closing question's program, which no compiler made, and two other solutions of Build 1000000", () => {
+    const labelled = (name: string, program: { listing: string }) => [
+      { kind: "label" as const, text: name },
+      ...parseListing(program.listing),
+    ];
+    expect(corpus("module1-halves")).toBe(
+      assemblyOf([
+        ...labelled("worked", MOVK_EXAMPLE),
+        ...labelled("five", X5_QUESTION),
+        ...labelled("movk_first", { listing: "movk w0, 16960\nmovk w0, 15, lsl 16\nret" }),
+        ...labelled("three_steps", {
+          listing: "mov w0, 1\nmovk w0, 15, lsl 16\nmovk w0, 16960\nret",
+        }),
+      ]),
+    );
+  });
+
+  it("say, in the corpus file, that the programs are hand-written", () => {
+    const header = readFileSync(
+      new URL("../../scripts/real-tools/corpus/module1-halves.s", import.meta.url),
+      "utf8",
+    ).split("\n")[0];
+    expect(header).toContain("no compiler made");
   });
 
   it("hold the two programs no compiler made, the second with the ret the figure leaves out", () => {

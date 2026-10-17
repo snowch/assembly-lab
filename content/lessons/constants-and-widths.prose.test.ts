@@ -70,7 +70,7 @@ describe("the lesson's words", () => {
     expect(chunks.filter((c) => c.trim() !== "" && !fileFlat.includes(flat(c)))).toEqual([]);
   });
 
-  it("have the captions the file gives, and only four captions of their own, each through the prose process", () => {
+  it("have the captions the file gives, and only seven captions of their own: four through the prose process, three marked DRAFT", () => {
     expect(fileFlat).toContain(flat(LABELS.captions.listing));
     expect(fileFlat).toContain(flat(LABELS.captions.tester));
     expect(fileFlat).toContain(flat(LABELS.captions.halves));
@@ -80,15 +80,22 @@ describe("the lesson's words", () => {
       LABELS.captions.predictWidth,
       LABELS.captions.predictTwo,
     ];
-    expect(Object.keys(LABELS.captions)).toHaveLength(3 + own.length);
+    // The three figures the improvement pass adds are drafted for the page and marked.
+    const draft = [
+      LABELS.captions.serviceHalves,
+      LABELS.captions.workedHalves,
+      LABELS.captions.solutionHalves,
+    ];
+    expect(Object.keys(LABELS.captions)).toHaveLength(3 + own.length + draft.length);
+    for (const caption of draft) expect(fileFlat, caption).not.toContain(flat(caption));
     for (const caption of own) expect(fileFlat, caption).not.toContain(flat(caption));
     const source = readFileSync(
       new URL("./constants-and-widths.labels.ts", import.meta.url),
       "utf8",
     );
-    // Each of the four is marked; one that goes through the prose process loses its mark, and the
+    // Each of the three is marked; one that goes through the prose process loses its mark, and the
     // count here goes down with it.
-    expect(source.match(/^\s*\/\/ DRAFT$/gm) ?? []).toHaveLength(0);
+    expect(source.match(/^\s*\/\/ DRAFT$/gm) ?? []).toHaveLength(draft.length);
   });
 
   it("name the one written challenge's test after the function the listing records, which the file does not", () => {

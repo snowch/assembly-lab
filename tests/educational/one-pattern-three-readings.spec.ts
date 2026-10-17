@@ -13,7 +13,14 @@ import { expect, test, type Page } from "@playwright/test";
 
 import { LESSONS } from "@al/content";
 import { assemble } from "@al/machine";
-import { readingsOfPattern, worths, shown, patternOf } from "../../packages/views/src/readings";
+import {
+  readingsOfPattern,
+  worths,
+  shown,
+  patternOf,
+  topBitTable,
+} from "../../packages/views/src/readings";
+import { MODULE1_STRINGS as M1 } from "../../packages/views/src/strings.module1";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { assemblyOf, parseListing } from "../../packages/views/src/listing";
 import { traceOf, viewAt, wValue } from "../../packages/views/src/trace";
@@ -166,42 +173,111 @@ test.describe("the prediction about adding 12", () => {
 test.describe("the register to read", () => {
   const reader = (page: Page) => page.locator("#ix-read-register");
   const reading = (page: Page, name: string) => reader(page).locator(`[data-reading="${name}"]`);
+  const cell = (page: Page, row: string, column: "unsigned" | "signed") =>
+    reader(page).locator(
+      `tr[data-row="${row}"] td[data-cell="${column}"], tr[data-row="${row}"] td[data-reading="${column}"]`,
+    );
+  /** The pattern `w0` holds after fuel_used_wrong(50, 38), from the model: what the figure starts at. */
+  const START = patternOf(wValue(traceOf(FUEL_USED_WRONG, FUEL_CALL).result.final, 0));
+  const clear = (page: Page) =>
+    press(page, reader(page).getByRole("button", { name: M1.reader.clearBits }));
+  /** A part of a reading as the table writes it. */
+  const part = (n: number) => (n > 0 ? `+${n}` : shown(n));
 
   /** What the page shows for a pattern is what the model gives. */
   async function expectReadings(page: Page, pattern: string) {
     const r = readingsOfPattern(pattern);
+    const t = topBitTable(pattern);
     await expect(reading(page, "hex")).toContainText(`0x${r.digits}`);
-    await expect(reading(page, "unsigned").locator(".al-reading-value")).toHaveText(
-      String(r.unsigned),
-    );
-    await expect(reading(page, "signed").locator(".al-reading-value")).toHaveText(shown(r.signed));
+    await expect(reading(page, "hex").locator(".al-reading-name")).toHaveText(M1.reader.pattern);
+    await expect(cell(page, "top", "unsigned")).toHaveText(part(t.top.unsigned));
+    await expect(cell(page, "top", "signed")).toHaveText(part(t.top.signed));
+    await expect(cell(page, "other", "unsigned")).toHaveText(part(t.other));
+    await expect(cell(page, "other", "signed")).toHaveText(part(t.other));
+    await expect(cell(page, "result", "unsigned")).toHaveText(String(r.unsigned));
+    await expect(cell(page, "result", "signed")).toHaveText(shown(r.signed));
     for (const way of ["unsigned", "signed"] as const) {
       const terms = worths(pattern, way).map(shown);
       const total = shown(r[way]);
       const want = terms.length === 0 ? "0" : terms.join(" + ");
-      await expect(reading(page, way).locator(".al-sum")).toHaveText(`${want} = ${total}`);
+      await expect(reader(page).locator(`[data-sum="${way}"] .al-sum`)).toHaveText(
+        `${want} = ${total}`,
+      );
     }
     await expect(reader(page).locator(".al-digit")).toHaveText(r.digits.split(""));
+    // Each digit is the hexadecimal digit of its four bits.
+    for (let i = 0; i < 8; i++) {
+      const four = pattern.slice(i * 4, i * 4 + 4);
+      await expect(reader(page).locator(`.al-digit[data-digit="${i}"]`)).toHaveText(
+        parseInt(four, 2).toString(16),
+      );
+    }
   }
 
-  test("starts with every bit clear: 32 buttons, each a 0", async ({ page }) => {
-    await openLesson(page);
-    await reader(page).scrollIntoViewIfNeeded();
-    await expect(reader(page).locator(".al-toggle")).toHaveCount(32);
-    await expect(reader(page).locator('.al-toggle[aria-pressed="true"]')).toHaveCount(0);
-    await expectReadings(page, "0".repeat(32));
-  });
-
-  test("shows the three readings of the pattern w0 holds after the subtraction, each with its sum", async ({
+  test("starts at the pattern the model leaves in w0, with 29 of the 32 bits set, and the page does not write it", async ({
     page,
   }) => {
     await openLesson(page);
     await reader(page).scrollIntoViewIfNeeded();
+    await expect(reader(page).locator(".al-toggle")).toHaveCount(32);
+    await expect(reader(page).locator('.al-toggle[aria-pressed="true"]')).toHaveCount(29);
+    await expectReadings(page, START);
+    await expect(reading(page, "hex")).toContainText("0xfffffff4");
+  });
+
+  test("gives 4294967284 and −12 in the result row, from +2147483648 or −2147483648 and 2147483636", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await reader(page).scrollIntoViewIfNeeded();
+    await expect(cell(page, "top", "unsigned")).toHaveText("+2147483648");
+    await expect(cell(page, "top", "signed")).toHaveText("−2147483648");
+    await expect(cell(page, "other", "unsigned")).toHaveText("+2147483636");
+    await expect(cell(page, "other", "signed")).toHaveText("+2147483636");
+    await expect(cell(page, "result", "unsigned")).toHaveText("4294967284");
+    await expect(cell(page, "result", "signed")).toHaveText("−12");
+  });
+
+  test("has the table's own words: the columns, the rows, and the pattern named as the pattern", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await reader(page).scrollIntoViewIfNeeded();
+    await expect(reader(page).locator("thead th")).toHaveText([V.reader.unsigned, V.reader.signed]);
+    await expect(reader(page).locator("tbody th")).toHaveText([
+      "Top bit (bit 31)",
+      "Other 31 bits",
+      "Result",
+    ]);
+    // The pattern is not in the table of readings.
+    await expect(reader(page).locator("table [data-reading='hex']")).toHaveCount(0);
+  });
+
+  test("updates both readings when bit 31 is pressed, and the two agree with the top bit at 0", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await reader(page).scrollIntoViewIfNeeded();
+    await press(page, bit(reader(page), 31));
+    const without = "0" + START.slice(1);
+    await expectReadings(page, without);
+    await expect(cell(page, "top", "unsigned")).toHaveText("0");
+    await expect(cell(page, "top", "signed")).toHaveText("0");
+    const unsigned = await cell(page, "result", "unsigned").textContent();
+    await expect(cell(page, "result", "signed")).toHaveText(unsigned!);
+    await press(page, bit(reader(page), 31));
+    await expectReadings(page, START);
+  });
+
+  test("clears every bit with Clear bits, and sets bits from zero", async ({ page }) => {
+    await openLesson(page);
+    await reader(page).scrollIntoViewIfNeeded();
+    await clear(page);
+    await expect(reader(page).locator('.al-toggle[aria-pressed="true"]')).toHaveCount(0);
+    await expectReadings(page, "0".repeat(32));
     await setBits(page, reader(page), MINUS_12);
     await expectReadings(page, MINUS_12);
     await expect(reading(page, "hex")).toContainText("0xfffffff4");
-    await expect(reading(page, "unsigned").locator(".al-reading-value")).toHaveText("4294967284");
-    await expect(reading(page, "signed").locator(".al-reading-value")).toHaveText("−12");
   });
 
   test("shows plus and minus 2147483648 for the top bit alone, and every other bit the same in both", async ({
@@ -209,31 +285,119 @@ test.describe("the register to read", () => {
   }) => {
     await openLesson(page);
     await reader(page).scrollIntoViewIfNeeded();
+    await clear(page);
     await press(page, bit(reader(page), 31));
     await expectReadings(page, "1" + "0".repeat(31));
-    await expect(reading(page, "unsigned").locator(".al-sum")).toHaveText(
+    await expect(reader(page).locator('[data-sum="unsigned"] .al-sum')).toHaveText(
       "2147483648 = 2147483648",
     );
-    await expect(reading(page, "signed").locator(".al-sum")).toHaveText(
+    await expect(reader(page).locator('[data-sum="signed"] .al-sum')).toHaveText(
       "−2147483648 = −2147483648",
     );
     await press(page, bit(reader(page), 31));
     await press(page, bit(reader(page), 5));
     await expectReadings(page, "0".repeat(26) + "100000");
-    await expect(reading(page, "unsigned").locator(".al-reading-value")).toHaveText("32");
-    await expect(reading(page, "signed").locator(".al-reading-value")).toHaveText("32");
+    await expect(cell(page, "result", "unsigned")).toHaveText("32");
+    await expect(cell(page, "result", "signed")).toHaveText("32");
   });
 
-  test("a bit pressed twice is back to 0, and a pattern read again is the same", async ({
+  test("a bit pressed twice is back to what it was, and a pattern read again is the same", async ({
     page,
   }) => {
     await openLesson(page);
     await reader(page).scrollIntoViewIfNeeded();
+    await clear(page);
     await press(page, bit(reader(page), 0));
     await expect(bit(reader(page), 0)).toHaveAttribute("aria-pressed", "true");
     await press(page, bit(reader(page), 0));
     await expect(bit(reader(page), 0)).toHaveAttribute("aria-pressed", "false");
     await expectReadings(page, "0".repeat(32));
+  });
+
+  test("marks bit 31 as the top bit with a word and a border as well as its worth", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await reader(page).scrollIntoViewIfNeeded();
+    await expect(reader(page).locator(".al-top-flag")).toHaveText(M1.toggles.topBit);
+    await expect(reader(page).locator('.al-toggle[data-top="true"]')).toHaveCount(1);
+    const style = await bit(reader(page), 31).evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return [cs.borderTopStyle, cs.borderTopWidth];
+    });
+    expect(style).toEqual(["double", "4px"]);
+    const other = await bit(reader(page), 30).evaluate((el) => getComputedStyle(el).borderTopStyle);
+    expect(other).toBe("solid");
+  });
+
+  test("outlines the four bits and their digit together when a bit has the focus or the pointer", async ({
+    page,
+  }, info) => {
+    await openLesson(page);
+    await reader(page).scrollIntoViewIfNeeded();
+    const lit = reader(page).locator('.al-nibble[data-lit="true"]');
+    await expect(lit).toHaveCount(0);
+    await bit(reader(page), 21).focus();
+    await expect(lit).toHaveCount(1);
+    await expect(lit.locator(".al-toggle")).toHaveCount(4);
+    await expect(lit.locator(".al-digit")).toHaveAttribute("data-digit", "2");
+    // The outline is a line, and the digit is underlined: not colour alone.
+    const marks = await lit.evaluate((el) => [
+      getComputedStyle(el).outlineStyle,
+      getComputedStyle(el).outlineWidth,
+      getComputedStyle(el.querySelector(".al-digit")!).textDecorationLine,
+    ]);
+    expect(marks).toEqual(["solid", "2px", "underline"]);
+    await bit(reader(page), 21).blur();
+    await expect(lit).toHaveCount(0);
+    if (info.project.name === "desktop") {
+      await bit(reader(page), 9).hover();
+      await expect(lit).toHaveCount(1);
+      await expect(lit.locator(".al-digit")).toHaveAttribute("data-digit", "5");
+    }
+  });
+
+  test("keeps each digit under its four bits at the width of the screen", async ({ page }) => {
+    await openLesson(page);
+    await reader(page).scrollIntoViewIfNeeded();
+    for (let i = 0; i < 8; i++) {
+      const nibble = reader(page).locator(".al-nibble").nth(i);
+      const bits = await nibble
+        .locator(".al-toggle")
+        .evaluateAll((els) => els.map((e) => e.getBoundingClientRect()));
+      const digit = await nibble.locator(".al-digit").boundingBox();
+      expect(digit, `digit ${i}`).not.toBeNull();
+      const left = Math.min(...bits.map((b) => b.left));
+      const right = Math.max(...bits.map((b) => b.right));
+      const bottom = Math.max(...bits.map((b) => b.bottom));
+      // The digit is inside the span of its four bits, and below them.
+      expect(digit!.x + digit!.width / 2).toBeGreaterThan(left);
+      expect(digit!.x + digit!.width / 2).toBeLessThan(right);
+      expect(digit!.y).toBeGreaterThanOrEqual(bottom - 1);
+    }
+  });
+
+  test("holds the sum of every bit in Show calculation, shut at first, opened with the keyboard, and the table does not move", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await reader(page).scrollIntoViewIfNeeded();
+    const calc = reader(page).locator("details.al-calc");
+    const summary = calc.locator("summary");
+    await expect(summary).toHaveText("Show calculation");
+    await expect(calc).not.toHaveAttribute("open", "");
+    await expect(reader(page).locator('[data-sum="unsigned"] .al-sum')).toBeHidden();
+    const table = reader(page).locator("table");
+    const before = await table.boundingBox();
+    await summary.focus();
+    await page.keyboard.press("Enter");
+    await expect(calc).toHaveAttribute("open", "");
+    await expect(reader(page).locator('[data-sum="unsigned"] .al-sum')).toBeVisible();
+    const after = await table.boundingBox();
+    expect(after).toEqual(before);
+    expect(await figureOverflow(page)).toEqual([]);
+    await page.keyboard.press("Enter");
+    await expect(calc).not.toHaveAttribute("open", "");
   });
 
   test("draws the bits in groups that fit the screen: a byte to a row on a phone, two on a desk", async ({
@@ -262,6 +426,24 @@ test.describe("the register to read", () => {
     expect(boxes[0]!.x).toBeLessThan(boxes[7]!.x);
     expect(await reader(page).locator(".al-toggle").first().getAttribute("data-bit")).toBe("31");
     expect(await reader(page).locator(".al-toggle").last().getAttribute("data-bit")).toBe("0");
+  });
+
+  test("keeps the controls at least 40 pixels tall on a phone, and nothing wider than the screen", async ({
+    page,
+  }, info) => {
+    await openLesson(page);
+    await reader(page).scrollIntoViewIfNeeded();
+    if (info.project.name === "phone") {
+      for (const control of [
+        reader(page).getByRole("button", { name: M1.reader.clearBits }),
+        reader(page).locator("details.al-calc summary"),
+      ]) {
+        const box = await control.boundingBox();
+        expect(box!.height).toBeGreaterThanOrEqual(40);
+      }
+    }
+    expect(await figureOverflow(page)).toEqual([]);
+    expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
   });
 });
 
@@ -430,6 +612,123 @@ test.describe("Make −1", () => {
   });
 });
 
+test.describe("Make −1, with the bits typed in hexadecimal", () => {
+  const box = (page: Page) =>
+    challenge(page, MAKE).getByRole("textbox", { name: M1.hexEntry.label });
+  const answerBox = (page: Page) => challenge(page, MAKE).locator('[data-field="unsigned"] input');
+  const pressed = (page: Page) => challenge(page, MAKE).locator('.al-toggle[aria-pressed="true"]');
+  const solved =
+    "With all 32 bits set, the signed reading is −1 and the unsigned reading is 4294967295.";
+
+  test("has a box beside the 32 buttons, which starts as the bits are and fills in no answer", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await challenge(page, MAKE).scrollIntoViewIfNeeded();
+    await expect(box(page)).toHaveValue("0x00000000");
+    await expect(pressed(page)).toHaveCount(0);
+    await expect(answerBox(page)).toHaveValue("");
+    expect((await stored(page, LESSON_ID))?.challenges?.[MAKE]).toBeUndefined();
+  });
+
+  test("sets all 32 bits when ffffffff or 0xffffffff is typed, and stores them as 32 characters", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await challenge(page, MAKE).scrollIntoViewIfNeeded();
+    for (const text of ["ffffffff", "0xffffffff"]) {
+      await box(page).fill("");
+      await box(page).fill(text);
+      await expect(pressed(page), text).toHaveCount(32);
+      expect((await stored(page, LESSON_ID)).challenges[MAKE].artifact.answers.bits, text).toBe(
+        ONES,
+      );
+      await press(page, bit(challenge(page, MAKE), 5));
+      await expect(pressed(page), text).toHaveCount(31);
+      await expect(box(page), text).toHaveValue("0xffffffdf");
+    }
+  });
+
+  test("puts the digits in the box when a bit is pressed", async ({ page }) => {
+    await openLesson(page);
+    const c = challenge(page, MAKE);
+    await c.scrollIntoViewIfNeeded();
+    await press(page, bit(c, 31));
+    await expect(box(page)).toHaveValue("0x80000000");
+    await press(page, bit(c, 0));
+    await expect(box(page)).toHaveValue("0x80000001");
+  });
+
+  test("changes no bit for text that is not hexadecimal or has more than eight digits, says so, and does not move the page", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const c = challenge(page, MAKE);
+    await c.scrollIntoViewIfNeeded();
+    await press(page, bit(c, 4));
+    const before = (await stored(page, LESSON_ID)).challenges[MAKE].artifact.answers.bits;
+    const actions = c.locator(".challenge-actions");
+    const y = (await actions.boundingBox())!.y;
+    for (const text of ["xyz", "fffffffff", "0xg1"]) {
+      await box(page).fill(text);
+      await expect(c.locator(".answer-hex-problem"), text).toHaveText(M1.hexEntry.invalid);
+      await expect(box(page), text).toHaveAttribute("aria-invalid", "true");
+      expect((await stored(page, LESSON_ID)).challenges[MAKE].artifact.answers.bits, text).toBe(
+        before,
+      );
+      expect((await actions.boundingBox())!.y, text).toBe(y);
+    }
+    await box(page).fill("10");
+    await expect(c.locator(".answer-hex-problem")).toHaveText("");
+    await expect(pressed(page)).toHaveCount(1);
+  });
+
+  test("is completed with the bits typed, graded as before, and only then shows the words about the solved challenge", async ({
+    page,
+  }) => {
+    const errors = watchErrors(page);
+    await openLesson(page);
+    const c = challenge(page, MAKE);
+    await c.scrollIntoViewIfNeeded();
+    await expect(page.getByText(solved)).toHaveCount(0);
+    // All bits but one, and the right unsigned reading for them, is not Make −1.
+    await box(page).fill("fffffffe");
+    await answerBox(page).fill("4294967294");
+    await press(page, run(c));
+    await expect(status(c)).toHaveText(failing(1, 2));
+    await expect(c.locator(".verdict")).not.toContainText("4294967295");
+    await expect(page.getByText(solved)).toHaveCount(0);
+    await box(page).fill("0xffffffff");
+    await answerBox(page).fill("4294967295");
+    await press(page, run(c));
+    await expect(status(c)).toHaveText(passing(2));
+    await expect(c.locator(".challenge-complete")).toHaveText(complete);
+    await expect(page.getByText(solved)).toBeVisible();
+    // The words are the lesson's own, in the section after the challenge.
+    expect(PROSE.constructionSolved).toBe(solved);
+    expect(errors).toEqual([]);
+    // And they go again if the work stops passing, and after Clear work.
+    await press(page, bit(c, 3));
+    await expect(page.getByText(solved)).toHaveCount(0);
+    await press(page, bit(c, 3));
+    await expect(page.getByText(solved)).toBeVisible();
+    await press(page, c.getByRole("button", { name: new RegExp(`^${S.challenge.reset}`) }));
+    await press(page, c.getByRole("button", { name: S.challenge.resetConfirm }));
+    await expect(page.getByText(solved)).toHaveCount(0);
+  });
+
+  test("has the box 40 pixels tall on a phone, inside the screen, in both themes' text sizes", async ({
+    page,
+  }, info) => {
+    await openLesson(page);
+    await challenge(page, MAKE).scrollIntoViewIfNeeded();
+    const b = await box(page).boundingBox();
+    if (info.project.name === "phone") expect(b!.height).toBeGreaterThanOrEqual(40);
+    expect(b!.x + b!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+    expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
+  });
+});
+
 test.describe("Two readings each", () => {
   const fill = async (page: Page, values: Record<string, string>) => {
     const c = challenge(page, READ);
@@ -523,6 +822,49 @@ test.describe("Two readings each", () => {
   });
 });
 
+test.describe("the closed notes and the closing question", () => {
+  const note = (page: Page, kind: string) =>
+    page.locator(`section.lesson-section[data-kind="${kind}"] details.lesson-details`);
+
+  test("has the compiler note shut beside the comparison, and the answer shut at the end", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const compiler = note(page, "failureExperiment");
+    await compiler.scrollIntoViewIfNeeded();
+    await expect(compiler.locator("summary")).toHaveText("Which compiler?");
+    await expect(compiler).not.toHaveAttribute("open", "");
+    await press(page, compiler.locator("summary"));
+    await expect(compiler).toHaveAttribute("open", "");
+    await expect(compiler).toContainText("GCC 16.1");
+    const answer = note(page, "reflection");
+    await answer.scrollIntoViewIfNeeded();
+    await expect(answer.locator("summary")).toHaveText("Answer");
+    await expect(answer).not.toHaveAttribute("open", "");
+    await expect(answer.locator(".prose")).toBeHidden();
+    await press(page, answer.locator("summary"));
+    await expect(answer.locator(".prose")).toContainText("2147483649");
+    await expect(answer.locator(".prose")).toContainText("−2147483647");
+  });
+
+  test("closes with the title What you now know, and the question before its answer", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const last = page.locator('section.lesson-section[data-kind="reflection"]');
+    await expect(last.locator(".section-title")).toHaveText("What you now know");
+    await expect(last.locator(".prose").first()).toContainText("0x80000001");
+    await expect(last.locator(".prose").first()).not.toContainText("2147483649");
+  });
+
+  test("keeps its route, and shows its new title on the page and in the tab", async ({ page }) => {
+    await openLesson(page);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Same bits, two readings");
+    await expect(page).toHaveTitle("Same bits, two readings / Assembly Lab");
+    expect(page.url()).toContain("#/lesson/one-pattern-three-readings");
+  });
+});
+
 test.describe("the look of the lesson page", () => {
   test("text is legible, controls are reachable, nothing scrolls sideways, prose keeps its measure", async ({
     page,
@@ -545,8 +887,8 @@ test.describe("the look of the lesson page", () => {
     const step = page.locator("#ix-step-add-12");
     await press(page, step.getByRole("button", { name: V.stepper.next }));
     await press(page, step.getByRole("button", { name: V.stepper.next }));
-    // A dense pattern makes the longest sums.
-    await setBits(page, page.locator("#ix-read-register"), MINUS_12);
+    // The reader starts at a dense pattern, which makes long sums.
+    await press(page, page.locator("#ix-read-register").getByText(M1.reader.showCalculation));
     await commit(page, "compare-int-unsigned", /^Nothing/);
     const make = challenge(page, MAKE);
     await setBits(page, make, MINUS_12);
@@ -565,10 +907,17 @@ test.describe("the look of the lesson page", () => {
     page,
   }) => {
     await openLesson(page);
-    await setBits(page, page.locator("#ix-read-register"), ONES);
     const reader = page.locator("#ix-read-register");
-    await expect(reader.locator('[data-reading="signed"] .al-sum')).toContainText("= −1");
+    await reader.scrollIntoViewIfNeeded();
+    await press(page, reader.getByRole("button", { name: M1.reader.clearBits }));
+    await setBits(page, reader, ONES);
+    await press(page, reader.getByText(M1.reader.showCalculation));
+    await expect(reader.locator('[data-sum="signed"] .al-sum')).toContainText("= −1");
+    await expect(reader.locator('tr[data-row="result"] td[data-reading="signed"]')).toHaveText(
+      "−1",
+    );
     expect(await figureOverflow(page)).toEqual([]);
+    expect(await designProblems(page, page.viewportSize()!.width < 500)).toEqual([]);
   });
 });
 

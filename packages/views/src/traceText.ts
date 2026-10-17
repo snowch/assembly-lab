@@ -6,9 +6,9 @@
 // instruction, with the stop that says no instruction is there; the registers at that point are
 // what the program left.
 
-import { TEXT_BASE, assemble, run } from "@al/machine";
+import { TEXT_BASE, assemble, run, type AssembleOptions } from "@al/machine";
 
-import { assemblyOf, parseListing } from "./listing";
+import { assemblyOf, parseListing, type ListingLine } from "./listing";
 import { sentence } from "./messages";
 import type { Trace } from "./trace";
 
@@ -28,4 +28,21 @@ export function traceText(listing: string): Trace {
   const lineAt = new Map<number, number>();
   for (const ins of program.instructions) lineAt.set(ins.address, ins.line - 1);
   return { lines, program, result, lineAt };
+}
+
+/**
+ * Assemble text a learner wrote, with the gate its challenge gives the assembler, and run it from
+ * its first instruction as the grader does. The lines of the trace are the assembled instructions,
+ * as the learner wrote them, with no C beside them. Null when the text does not assemble.
+ */
+export function traceAssembly(text: string, options?: AssembleOptions): Trace | null {
+  const { program } = assemble(text, options);
+  if (program === null) return null;
+  const lines: ListingLine[] = program.instructions.map((ins) => ({
+    kind: "instruction",
+    text: ins.text.replace(/\s+/g, " "),
+    cLine: null,
+  }));
+  const lineAt = new Map(program.instructions.map((ins, i) => [ins.address, i] as const));
+  return { lines, program, result: run(program, { entry: TEXT_BASE }), lineAt };
 }

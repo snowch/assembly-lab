@@ -10,7 +10,7 @@
 // completion survives a reload and is graded again; Clear work removes it; and the page keeps the
 // look the shell's own pages keep.
 
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { LESSONS } from "@al/content";
 import { TEXT_BASE, assemble, message, run, stateAfter } from "@al/machine";
@@ -20,8 +20,10 @@ import { DEFAULT_STRINGS as S } from "../../platform/lesson-runtime/src/strings"
 
 import {
   FOUR_INSTRUCTIONS,
+  MOVK_EXAMPLE,
   ODOMETER_LIMIT_START_TEXT,
   ODOMETER_LIMIT_TEXT,
+  SERVICE_INTERVAL,
   WIDTHS,
 } from "../../content/lessons/module-1.listings";
 import { designProblems } from "./design";
@@ -113,7 +115,7 @@ test.describe("the prediction about which numbers fit", () => {
       await expect(figure.locator(".al-outcome")).toContainText(
         V.fits.one("65536", 3).replace(/`/g, ""),
       );
-      await expect(figure.locator(".al-outcome .prose")).toContainText("Only 65536.");
+      await expect(figure.locator(".al-outcome .prose")).toContainText("Only 65536 fits.");
     });
   }
 
@@ -251,11 +253,11 @@ test.describe("the constant tester", () => {
   test("keeps the closed note closed until it is opened", async ({ page }) => {
     await openLesson(page);
     const note = page.locator("section[data-kind='investigation'] details.lesson-details");
-    await expect(note.locator("summary")).toHaveText("Some more numbers fit.");
+    await expect(note.locator("summary")).toHaveText("Other patterns that fit");
     await expect(note).not.toHaveAttribute("open", "");
     await expect(note.locator(".prose")).toBeHidden();
     await press(page, note.locator("summary"));
-    await expect(note.locator(".prose")).toContainText("65537, which is 0x00010001");
+    await expect(note.locator(".prose")).toContainText("65537 (0x00010001) fits.");
   });
 });
 
@@ -494,7 +496,7 @@ test.describe("the prediction about the lower name", () => {
         "x3 held 0x00000000ffffffff when the run ended.",
       );
       await expect(figure.locator(".al-outcome .prose")).toContainText(
-        "Writing a w name always clears the upper half of the register.",
+        "Writing a w name always clears the upper 32 bits of the x register.",
       );
     });
   }
@@ -512,7 +514,11 @@ test.describe("the prediction about the lower name", () => {
       "ret",
     ]);
     await expect(figure.locator(".al-pane.al-c")).toHaveCount(0);
-    await expect(figure.locator(".al-half-name")).toHaveText([V.wide.upper, V.wide.lower("w3")]);
+    await expect(figure.locator(".al-half-name")).toContainText([
+      V.wide.upper,
+      MODULE1_STRINGS.wide.lower,
+    ]);
+    await expect(figure.locator(".al-half-alias")).toHaveText("w3");
     const { program } = assemble(WIDTHS.listing.replace(/ C\d+$/gm, "") + "\n");
     const result = run(program!, { entry: TEXT_BASE });
     const hex = (k: number) =>
@@ -668,6 +674,436 @@ test.describe("the answers challenge", () => {
     await press(page, again.getByRole("button", { name: S.challenge.resetConfirm }));
     await expect(again.locator('[data-field="x1"] input')).toHaveValue("");
     expect((await stored(page, LESSON_ID)).challenges[TWO]).toBeUndefined();
+  });
+});
+
+test.describe("the halves of sixteen", () => {
+  const figureOf = (page: Page, id: string) => page.locator(`#ix-${id}`);
+  const halves = (figure: Locator) =>
+    figure.locator(".al-h16").evaluateAll((els) =>
+      els.map((h) => ({
+        half: h.getAttribute("data-half"),
+        digits: [...h.querySelectorAll(".al-h16-digit")].map((d) => d.textContent).join(""),
+        bits: [...h.querySelectorAll(".al-bit")].map((b) => b.textContent).join(""),
+        tag: (h.querySelector(".al-h16-tag")?.textContent ?? "").trim(),
+      })),
+    );
+  const next = (figure: Locator) => figure.getByRole("button", { name: V.stepper.next });
+  /** What w0 holds in the model after k instructions of a listing. */
+  const w0After = (listing: string, k: number) => {
+    const { program } = assemble(listing.replace(/ C\d+$/gm, "") + "\n");
+    return BigInt.asUintN(32, stateAfter(run(program!, { entry: TEXT_BASE }), k - 1).x[0]!);
+  };
+  const hex4 = (n: bigint) => n.toString(16).padStart(8, "0");
+
+  test("draws mov w0, 30000 as 0000 over 7530, the boundary between them, from the recorded listing", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const figure = figureOf(page, "service-halves");
+    await figure.scrollIntoViewIfNeeded();
+    await expect(figure.locator(".al-insn .al-text")).toHaveText(["mov w0, 30000", "ret"]);
+    expect(await halves(figure)).toEqual([
+      { half: "upper", digits: "0000", bits: "0".repeat(16), tag: "" },
+      { half: "lower", digits: "0000", bits: "0".repeat(16), tag: "" },
+    ]);
+    await press(page, next(figure));
+    const value = w0After(SERVICE_INTERVAL.listing, 1);
+    expect(value).toBe(30000n);
+    const [upper, lower] = await halves(figure);
+    expect([upper!.digits, lower!.digits]).toEqual([hex4(value).slice(0, 4), hex4(value).slice(4)]);
+    expect([upper!.digits, lower!.digits]).toEqual(["0000", "7530"]);
+    expect(lower!.bits).toBe("0111010100110000");
+    expect([upper!.tag, lower!.tag]).toEqual(["new", "new"]);
+    await expect(figure.locator(".al-reg-hex")).toHaveText("0x00007530");
+    await expect(registerValue(figure, "w0")).toHaveText("30000");
+    await expect(figure.locator("[role=status]")).toContainText("Ran mov w0, 30000.");
+  });
+
+  test("draws the worked example: both halves new after the mov, then the upper new and the lower kept after the movk", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const figure = figureOf(page, "movk-halves");
+    await figure.scrollIntoViewIfNeeded();
+    await expect(figure.locator(".al-insn .al-text")).toHaveText([
+      "mov w0, 3",
+      "movk w0, 2, lsl 16",
+      "ret",
+    ]);
+    await expect(figure.locator(".al-pane.al-c")).toHaveCount(0);
+    await press(page, next(figure));
+    expect((await halves(figure)).map((h) => [h.digits, h.tag])).toEqual([
+      ["0000", "new"],
+      ["0003", "new"],
+    ]);
+    expect(w0After(MOVK_EXAMPLE.listing, 1)).toBe(3n);
+    await press(page, next(figure));
+    expect((await halves(figure)).map((h) => [h.digits, h.tag])).toEqual([
+      ["0002", "new"],
+      ["0003", "kept"],
+    ]);
+    expect(hex4(w0After(MOVK_EXAMPLE.listing, 2))).toBe("00020003");
+    await expect(figure.locator(".al-reg-hex")).toHaveText("0x00020003");
+    await expect(registerValue(figure, "w0")).toHaveText("131075");
+    await expect(figure.locator("[role=status]")).toContainText("Ran movk w0, 2, lsl 16.");
+    // A new half has a solid outline and a kept one a dashed outline, besides their words.
+    const lines = await figure
+      .locator(".al-h16-groups")
+      .evaluateAll((els) => els.map((e) => getComputedStyle(e).borderTopStyle));
+    expect(lines).toEqual(["solid", "dashed"]);
+    await press(page, figure.getByRole("button", { name: V.stepper.back }));
+    expect((await halves(figure)).map((h) => [h.digits, h.tag])).toEqual([
+      ["0000", "new"],
+      ["0003", "new"],
+    ]);
+    await press(page, figure.getByRole("button", { name: V.stepper.reset }));
+    expect((await halves(figure)).map((h) => h.tag)).toEqual(["", ""]);
+  });
+
+  test("writes each digit over its own four bits, and names the halves upper then lower", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const figure = figureOf(page, "service-halves");
+    await figure.scrollIntoViewIfNeeded();
+    await press(page, next(figure));
+    const groups = await figure.locator(".al-h16-group").evaluateAll((els) =>
+      els.map((g) => ({
+        digit: g.querySelector(".al-h16-digit")!.textContent,
+        bits: [...g.querySelectorAll(".al-bit")].map((b) => b.textContent).join(""),
+        box: g.getBoundingClientRect().toJSON(),
+        digitBox: g.querySelector(".al-h16-digit")!.getBoundingClientRect().toJSON(),
+        bitsBox: g.querySelector(".al-h16-bits")!.getBoundingClientRect().toJSON(),
+      })),
+    );
+    expect(groups).toHaveLength(8);
+    for (const g of groups) {
+      expect(parseInt(g.bits, 2).toString(16)).toBe(g.digit);
+      // The digit is over its four bits, inside their width.
+      expect(g.digitBox.y + g.digitBox.height).toBeLessThanOrEqual(g.bitsBox.y + 1);
+      expect(g.digitBox.x + g.digitBox.width / 2).toBeGreaterThan(g.bitsBox.x);
+      expect(g.digitBox.x + g.digitBox.width / 2).toBeLessThan(g.bitsBox.x + g.bitsBox.width);
+    }
+    await expect(figure.locator(".al-h16 .al-half-name")).toHaveText([
+      MODULE1_STRINGS.register.upperHalf,
+      MODULE1_STRINGS.register.lowerHalf,
+    ]);
+  });
+
+  test("puts the halves side by side on a desk and one above the other on a phone, with a rule between them", async ({
+    page,
+  }, info) => {
+    await openLesson(page);
+    const figure = figureOf(page, "movk-halves");
+    await figure.scrollIntoViewIfNeeded();
+    const [upper, lower] = await figure
+      .locator(".al-h16")
+      .evaluateAll((els) => els.map((e) => e.getBoundingClientRect().toJSON()));
+    if (info.project.name === "phone") {
+      expect(lower.y).toBeGreaterThan(upper.y + upper.height - 1);
+      expect(Math.abs(lower.x - upper.x)).toBeLessThan(2);
+    } else {
+      expect(lower.x).toBeGreaterThan(upper.x + upper.width - 1);
+      expect(Math.abs(lower.y - upper.y)).toBeLessThan(2);
+    }
+    const phone = info.project.name === "phone";
+    const rule = await figure
+      .locator(".al-h16")
+      .nth(1)
+      .evaluate((e, onPhone) => {
+        const cs = getComputedStyle(e);
+        return onPhone
+          ? [cs.borderTopStyle, cs.borderTopWidth]
+          : [cs.borderLeftStyle, cs.borderLeftWidth];
+      }, phone);
+    expect(rule).toEqual(["solid", "2px"]);
+    expect(await figureOverflow(page)).toEqual([]);
+  });
+
+  test("shows the same halves in the dark and the light theme, with a 1 and a 0 told apart", async ({
+    page,
+  }) => {
+    for (const theme of ["light", "dark"] as const) {
+      await page.goto("#/");
+      await page.evaluate((t) => localStorage.setItem("assembly-lab:v1:theme", t), theme);
+      await page.reload();
+      await openLesson(page);
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      const figure = figureOf(page, "service-halves");
+      await figure.scrollIntoViewIfNeeded();
+      await press(page, next(figure));
+      const colours = await figure.evaluate((el) => {
+        const on = el.querySelector('.al-bit[data-on="true"]')!;
+        const off = el.querySelector('.al-bit[data-on="false"]')!;
+        return [getComputedStyle(on).backgroundColor, getComputedStyle(off).backgroundColor];
+      });
+      expect(colours[0], theme).not.toBe(colours[1]);
+      expect(await designProblems(page, page.viewportSize()!.width < 500), theme).toEqual([]);
+    }
+  });
+});
+
+test.describe("the stepper through the learner's own solution", () => {
+  const box = (page: Page) =>
+    challenge(page, BUILD).getByRole("textbox", { name: V.editor.textLabel });
+  const stepper = (page: Page) => page.locator("#ix-solution-halves");
+  const words = "Step through your solution below";
+  const solve = async (page: Page, text: string) => {
+    const c = challenge(page, BUILD);
+    await c.scrollIntoViewIfNeeded();
+    await box(page).fill(text);
+    await press(page, runTests(c));
+  };
+  const halves = (figure: Locator) =>
+    figure
+      .locator(".al-h16")
+      .evaluateAll((els) =>
+        els.map(
+          (h) =>
+            `${[...h.querySelectorAll(".al-h16-digit")].map((d) => d.textContent).join("")} ${(h.querySelector(".al-h16-tag")?.textContent ?? "").trim()}`,
+        ),
+      );
+
+  test("shows nothing of a solution, and not the words that introduce it, before Build 1000000 is passed", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await stepper(page).scrollIntoViewIfNeeded();
+    await expect(stepper(page).locator(".al-locked")).toBeVisible();
+    await expect(stepper(page).locator(".al-h16")).toHaveCount(0);
+    await expect(stepper(page).locator(".al-insn")).toHaveCount(0);
+    await expect(stepper(page).getByRole("button", { name: V.stepper.next })).toHaveCount(0);
+    await expect(page.getByText(words)).toHaveCount(0);
+    // The lower half alone is not a pass either.
+    await solve(page, "mov w0, 16960\nret");
+    await expect(stepper(page).locator(".al-locked")).toBeVisible();
+    await expect(page.getByText(words)).toHaveCount(0);
+    // The reference solution is not on the page for the learner, in the stepper or around it.
+    await expect(stepper(page)).not.toContainText("movk");
+    await expect(stepper(page)).not.toContainText("0xf");
+  });
+
+  test("opens when the usual solution passes, and steps it: the upper half new, the lower kept", async ({
+    page,
+  }) => {
+    const errors = watchErrors(page);
+    await openLesson(page);
+    await solve(page, ODOMETER_LIMIT_TEXT);
+    await expect(challenge(page, BUILD).locator(".challenge-complete")).toBeVisible();
+    await expect(page.getByText(words)).toBeVisible();
+    const f = stepper(page);
+    await f.scrollIntoViewIfNeeded();
+    await expect(f.locator(".al-locked")).toHaveCount(0);
+    await expect(f.locator(".al-insn .al-text")).toHaveText([
+      "mov w0, 16960",
+      "movk w0, 0xf, lsl 16",
+      "ret",
+    ]);
+    expect(await halves(f)).toEqual(["0000 ", "0000 "]);
+    const next = f.getByRole("button", { name: V.stepper.next });
+    await press(page, next);
+    expect(await halves(f)).toEqual(["0000 new", "4240 new"]);
+    await press(page, next);
+    expect(await halves(f)).toEqual(["000f new", "4240 kept"]);
+    await expect(registerValue(f, "w0")).toHaveText("1000000");
+    await expect(f.locator(".al-reg-hex")).toHaveText("0x000f4240");
+    await expect(f.locator("[role=status]")).toContainText("Ran movk w0, 0xf, lsl 16.");
+    await press(page, next);
+    await expect(next).toBeDisabled();
+    await expect(f.locator("[role=status]")).toContainText(V.stepper.ended);
+    expect(await figureOverflow(page)).toEqual([]);
+    expect(errors).toEqual([]);
+  });
+
+  test("steps a different passing solution, mov then movk then movk, as that solution runs", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await solve(page, "mov w0, 1\nmovk w0, 15, lsl 16\nmovk w0, 16960\nret");
+    await expect(challenge(page, BUILD).locator(".challenge-complete")).toBeVisible();
+    const f = stepper(page);
+    await f.scrollIntoViewIfNeeded();
+    await expect(f.locator(".al-insn .al-text")).toHaveText([
+      "mov w0, 1",
+      "movk w0, 15, lsl 16",
+      "movk w0, 16960",
+      "ret",
+    ]);
+    const next = f.getByRole("button", { name: V.stepper.next });
+    const seen: string[][] = [];
+    for (let i = 0; i < 3; i++) {
+      await press(page, next);
+      seen.push(await halves(f));
+    }
+    expect(seen).toEqual([
+      ["0000 new", "0001 new"],
+      ["000f new", "0001 kept"],
+      ["000f kept", "4240 new"],
+    ]);
+  });
+
+  test("steps a solution typed with # and written lower half first with movk, as the tap editor builds it", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await solve(page, "movk w0, #16960\nmovk w0, #15, lsl 16\nret");
+    await expect(challenge(page, BUILD).locator(".challenge-complete")).toBeVisible();
+    const f = stepper(page);
+    await f.scrollIntoViewIfNeeded();
+    const next = f.getByRole("button", { name: V.stepper.next });
+    await press(page, next);
+    expect(await halves(f)).toEqual(["0000 kept", "4240 new"]);
+    await press(page, next);
+    expect(await halves(f)).toEqual(["000f new", "4240 kept"]);
+    await expect(registerValue(f, "w0")).toHaveText("1000000");
+  });
+
+  test("shuts again if the saved work stops passing, and opens from the saved work after a reload", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await solve(page, ODOMETER_LIMIT_TEXT);
+    await expect(stepper(page).locator(".al-h16")).toHaveCount(2);
+    await page.reload();
+    await expect(stepper(page).locator(".al-h16")).toHaveCount(2);
+    await expect(page.getByText(words)).toBeVisible();
+    // What was kept is the work: change it in storage to a program that fails, and the page does
+    // not believe the old completion.
+    await page.evaluate((k) => {
+      const s = JSON.parse(localStorage.getItem(k)!);
+      s.challenges["build-1000000"].artifact.text = "mov w0, 16960\nret";
+      localStorage.setItem(k, JSON.stringify(s));
+    }, `assembly-lab:v1:${LESSON_ID}`);
+    await page.reload();
+    await expect(stepper(page).locator(".al-locked")).toBeVisible();
+    await expect(stepper(page).locator(".al-h16")).toHaveCount(0);
+    await expect(page.getByText(words)).toHaveCount(0);
+  });
+
+  test("goes when the work is cleared, with the words that introduce it", async ({ page }) => {
+    await openLesson(page);
+    await solve(page, ODOMETER_LIMIT_TEXT);
+    await expect(page.getByText(words)).toBeVisible();
+    const c = challenge(page, BUILD);
+    await press(page, c.getByRole("button", { name: new RegExp(`^${S.challenge.reset}`) }));
+    await press(page, c.getByRole("button", { name: S.challenge.resetConfirm }));
+    await expect(page.getByText(words)).toHaveCount(0);
+    await expect(stepper(page).locator(".al-locked")).toBeVisible();
+  });
+});
+
+test.describe("x3 and w3 as one register", () => {
+  const figure = (page: Page) => page.locator("#ix-x3-halves");
+  const half = (page: Page, which: string) =>
+    figure(page).locator(`[data-register="x3"] [data-half="${which}"]`);
+  const tag = (page: Page, which: string) => half(page, which).locator(".al-half-tag");
+  const next = (page: Page) => figure(page).getByRole("button", { name: V.stepper.next });
+
+  test("is headed x3: 64 bits, with the halves Upper 32 bits and Lower 32 bits, and w3 marking the lower", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await commit(page, "predict-width", "The lower 32 bits set and the upper 32 cleared.");
+    await figure(page).scrollIntoViewIfNeeded();
+    await expect(figure(page).locator(".al-wide-named .al-reg-name")).toHaveText(
+      MODULE1_STRINGS.wide.heading("x3"),
+    );
+    await expect(figure(page).locator(".al-wide-named .al-reg-name")).toHaveText("x3: 64 bits");
+    await expect(half(page, "upper").locator(".al-half-name")).toContainText("Upper 32 bits");
+    await expect(half(page, "lower").locator(".al-half-name")).toContainText("Lower 32 bits");
+    await expect(half(page, "lower").locator(".al-half-alias")).toHaveText("w3");
+    await expect(half(page, "upper").locator(".al-half-alias")).toHaveCount(0);
+    // One register: one box holds both halves, and nothing else is named w3 or x3.
+    await expect(figure(page).locator("[data-register]")).toHaveCount(1);
+    const box = (await figure(page).locator('[data-register="x3"]').boundingBox())!;
+    for (const which of ["upper", "lower"]) {
+      const h = (await half(page, which).boundingBox())!;
+      expect(h.x).toBeGreaterThanOrEqual(box.x - 1);
+      expect(h.x + h.width).toBeLessThanOrEqual(box.x + box.width + 1);
+      expect(h.y).toBeGreaterThanOrEqual(box.y - 1);
+      expect(h.y + h.height).toBeLessThanOrEqual(box.y + box.height + 1);
+    }
+  });
+
+  test("says in words what each step did: both halves written, then the upper cleared and the lower written", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await commit(page, "predict-width", "The lower 32 bits set and the upper 32 cleared.");
+    await figure(page).scrollIntoViewIfNeeded();
+    const note = figure(page).locator(".al-wide-note");
+    await expect(tag(page, "upper")).toHaveText("");
+    await expect(note).toHaveText("");
+    await press(page, next(page));
+    await expect(tag(page, "upper")).toHaveText("written");
+    await expect(tag(page, "lower")).toHaveText("written");
+    await expect(note).toHaveText("");
+    await press(page, next(page));
+    await expect(tag(page, "upper")).toHaveText("cleared");
+    await expect(tag(page, "lower")).toHaveText("written");
+    await expect(note).toHaveText("Writing w3 cleared the upper 32 bits of x3.");
+    await expect(figure(page).locator('[data-register="x3"] .al-reg-value')).toHaveText(
+      "0x00000000ffffffff",
+    );
+    // A cleared half is outlined with a dashed line, a written one with a solid line.
+    const lines = await figure(page)
+      .locator("[data-half]")
+      .evaluateAll((els) => els.map((e) => getComputedStyle(e).borderTopStyle));
+    expect(lines).toEqual(["dashed", "solid"]);
+    await press(page, next(page));
+    await expect(note).toHaveText("");
+  });
+
+  test("keeps the halves labelled, one above the other, on a phone, and inside the box", async ({
+    page,
+  }, info) => {
+    await openLesson(page);
+    await commit(page, "predict-width", "The lower 32 bits set and the upper 32 cleared.");
+    await figure(page).scrollIntoViewIfNeeded();
+    await press(page, next(page));
+    await press(page, next(page));
+    const upper = (await half(page, "upper").boundingBox())!;
+    const lower = (await half(page, "lower").boundingBox())!;
+    if (info.project.name === "phone") expect(lower.y).toBeGreaterThan(upper.y + upper.height - 2);
+    await expect(half(page, "upper").locator(".al-half-name")).toBeVisible();
+    await expect(half(page, "lower").locator(".al-half-name")).toBeVisible();
+    expect(await figureOverflow(page)).toEqual([]);
+    expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
+  });
+});
+
+test.describe("the closed notes and the closing question", () => {
+  const note = (page: Page, kind: string) =>
+    page.locator(`section.lesson-section[data-kind="${kind}"] details.lesson-details`);
+
+  test("has the compiler note shut at the start, and opens it", async ({ page }) => {
+    await openLesson(page);
+    const n = note(page, "question");
+    await expect(n.locator("summary")).toHaveText("Which compiler?");
+    await expect(n).not.toHaveAttribute("open", "");
+    await expect(n.locator(".prose")).toBeHidden();
+    await press(page, n.locator("summary"));
+    await expect(n.locator(".prose")).toContainText("GCC 16.1");
+    await expect(n.locator(".prose")).toContainText("-O1");
+  });
+
+  test("closes with what you now know, the question about x5, and its answer shut", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const last = page.locator('section.lesson-section[data-kind="reflection"]');
+    await last.scrollIntoViewIfNeeded();
+    await expect(last.locator(".section-title")).toHaveText("What you now know");
+    await expect(last.locator(".prose").first()).toContainText("mov w5, 7");
+    const answer = note(page, "reflection");
+    await expect(answer.locator("summary")).toHaveText("Answer");
+    await expect(answer.locator(".prose")).toBeHidden();
+    await press(page, answer.locator("summary"));
+    await expect(answer.locator(".prose")).toContainText("x5 holds 7.");
+    // The model agrees.
+    const { program } = assemble("mov x5, -1\nmov w5, 7\nret\n");
+    expect(run(program!, { entry: TEXT_BASE }).final.x[5]).toBe(7n);
   });
 });
 

@@ -94,3 +94,25 @@ refusal, not from the encoding.
 
 Encodings are not shown (`docs/machine.md`), so which constants fit is taken from GNU as's
 behaviour, not explained from the instruction's bits; the closed note says so.
+
+## The improvement pass (17 October 2026)
+
+Lesson 1 is titled "Same bits, two readings" (its id and route are unchanged). The words are in
+`prose.md`, kept word for word. The figures changed as follows, each by an optional prop or mode of
+an existing component, so every other module's figures are as they were.
+
+- **The register to read** takes `start` (a recorded program and call, whose `w0` the register starts
+  as, so `0xfffffff4` is in no string) and `topBit` (the top bit's table, `Show calculation`,
+  `Clear bits`, bit 31 marked, a group of four bits outlined with its digit).
+- **A field of bits** takes a hexadecimal box, named in the challenge's `initial.data.hexEntry`; the
+  stored answer is still the 32 bits.
+- **The wide stepper** takes `mode`: `w16` draws a `w` register as two halves of 16 bits, each tagged
+  new or kept by the last step (used for `service_interval`, for the hand-written `movk` example, and,
+  with `fromChallenge`, for the learner's own saved solution of Build 1000000 once it passes), and
+  `x64-named` draws `x3` as one box with `w3` inside it and says when a write to `w3` cleared the
+  upper half.
+- **A challenge note** (`challenge-note`) draws a few of the lesson's words only once a challenge
+  passes.
+
+The hand-written programs these figures run are in the differential test
+(`scripts/real-tools/corpus/module1-halves.s`).

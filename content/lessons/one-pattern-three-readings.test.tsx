@@ -114,9 +114,77 @@ describe("the lesson", () => {
       ["step-add-12", "stepper"],
       ["read-register", "register-reader"],
       ["make-minus-one", "challenge"],
+      ["make-minus-one-solved", "challenge-note"],
       ["compare-int-unsigned", "listing-compare"],
       ["two-readings-each", "challenge"],
     ]);
+  });
+});
+
+describe("the improvement pass", () => {
+  it("is titled Same bits, two readings, and keeps its id, so its route and its stored work stay", () => {
+    expect(lesson.title).toBe("Same bits, two readings");
+    expect(lesson.id).toBe("one-pattern-three-readings");
+  });
+
+  it("closes with what you now know, a question, and its answer in a closed note", () => {
+    const last = lesson.sections[9]!;
+    expect(last.title).toBe("What you now know");
+    expect(last.prose).toContain("`0x80000001`");
+    expect(last.details?.summary).toBe("Answer");
+    expect(last.details?.prose).toContain("2147483649");
+    // The answer is in the closed note only, not in the section's open words.
+    expect(last.prose).not.toContain("2147483649");
+    expect(last.prose).not.toContain("2147483647");
+  });
+
+  it("has the compiler note as the comparison's closed note, and the explanation only after the check", () => {
+    const section = lesson.sections[5]!;
+    expect(section.details?.summary).toBe("Which compiler?");
+    expect(section.details?.prose).toContain("GCC 16.1");
+    expect(section.prose).not.toContain("GCC 16.1");
+    const compare = section.interactives[0]!;
+    expect(String(compare.props["explain"])).toContain("GCC used the same `sub` instruction");
+    expect(section.prose).not.toContain("GCC used the same");
+  });
+
+  it("starts the register to read at the model's pattern, with the top bit's table, and a hexadecimal box for Make −1", () => {
+    const reader = lesson.sections[3]!.interactives[0]!;
+    expect(reader.kind).toBe("register-reader");
+    expect(reader.props["topBit"]).toBe(true);
+    expect(challenge("make-minus-one").initial.data).toEqual({ hexEntry: ["bits"] });
+    expect(challenge("two-readings-each").initial.data).toBeUndefined();
+  });
+
+  it("shows the words about the solved Make −1 only when the saved work passes", () => {
+    const solved =
+      "With all 32 bits set, the signed reading is −1 and the unsigned reading is 4294967295.";
+    const page = (answers?: Record<string, string>) => {
+      const storage = memoryStorage();
+      if (answers)
+        storage.set(
+          `assembly-lab:v1:${lesson.id}`,
+          JSON.stringify({
+            version: 1,
+            slots: {},
+            challenges: {
+              "make-minus-one": { artifact: { answers }, attempts: 1, hintsRevealed: 0 },
+            },
+          }),
+        );
+      return render(<LessonView book={book} lesson={lesson} storage={storage} />);
+    };
+    for (const answers of [
+      undefined,
+      { bits: "1".repeat(31) + "0", unsigned: "4294967295" },
+      { bits: "1".repeat(32), unsigned: "1" },
+    ]) {
+      const view = page(answers);
+      expect(view.container.textContent, JSON.stringify(answers)).not.toContain(solved);
+      view.unmount();
+    }
+    const passed = page({ bits: "1".repeat(32), unsigned: "4294967295" });
+    expect(passed.container.textContent).toContain(solved);
   });
 });
 

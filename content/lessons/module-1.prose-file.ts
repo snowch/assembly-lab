@@ -23,8 +23,10 @@ export function lessonBody(n: 1 | 2): string {
 
 /**
  * The lines of a lesson's body that carry words the lesson shows, without their list marks:
- * headings, the stage direction after a prediction, and the lines that name the fields a challenge
- * asks for are left out (the fields' labels are held to the file one by one).
+ * headings, the stage directions (`*Shown after the answer is checked.*`, `*Shown once a challenge
+ * has passed.*`, `*Closed note.*`), and the lines that name the fields a challenge asks for are
+ * left out (the fields' labels are held to the file one by one). The words a stage direction
+ * introduces are kept: the summary of a closed note is the bold line after its direction.
  */
 export function wordsOf(body: string): string[] {
   return body
@@ -33,7 +35,8 @@ export function wordsOf(body: string): string[] {
       (l) =>
         l.trim() !== "" &&
         !l.startsWith("## ") &&
-        !l.startsWith("*Shown after") &&
+        !l.startsWith("*Shown") &&
+        !l.startsWith("*Closed note") &&
         !l.startsWith("Field labels"),
     )
     .map((l) => l.replace(/^- /, "").replace(/^\d+\. /, ""));

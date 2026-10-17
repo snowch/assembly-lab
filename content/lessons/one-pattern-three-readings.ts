@@ -1,6 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
-// Lesson: One pattern, three readings (module 1, the first of its two lessons). The learner opens
+// Lesson: Same bits, two readings (module 1, the first of its two lessons; its id is still
+// one-pattern-three-readings, so its route and its stored work do not change). The learner opens
 // the value Module 0's mistaken `fuel_used(50, 38)` left in `w0`: 32 bits, written shorter in
 // hexadecimal, read as an unsigned number and as a signed one. The signed reading is derived on the
 // machine (adding 12 gives 0), and the learner finds that GCC makes the same instruction from the
@@ -39,7 +40,7 @@ const PATTERNS = ["0x0000002a", "0x80000000", "0xffffff38"] as const;
 
 export const onePatternThreeReadings: LessonInput = {
   id: "one-pattern-three-readings",
-  title: "One pattern, three readings",
+  title: "Same bits, two readings",
   module: 1,
   order: 0,
   objectives: [...LABELS.objectives],
@@ -103,7 +104,13 @@ export const onePatternThreeReadings: LessonInput = {
           kind: "register-reader",
           timeModel: STEPS,
           caption: LABELS.captions.reader,
-          props: { register: "w0" },
+          // The register starts as `fuel_used_wrong(50, 38)` leaves `w0`, from the model; the top
+          // bit's table is drawn, and the sum of every bit is under "Show calculation".
+          props: {
+            register: "w0",
+            start: { program: FUEL_USED_WRONG, call: FUEL_CALL },
+            topBit: true,
+          },
         },
       ],
     },
@@ -119,12 +126,21 @@ export const onePatternThreeReadings: LessonInput = {
           caption: LABELS.captions.make,
           props: { challengeId: "make-minus-one" },
         },
+        {
+          // A few words that appear once Make −1 has passed. Its caption is the challenge's title.
+          id: "make-minus-one-solved",
+          kind: "challenge-note",
+          timeModel: "none",
+          caption: MAKE.title,
+          props: { afterChallenge: "make-minus-one", text: PROSE.constructionSolved },
+        },
       ],
     },
     {
       kind: "failureExperiment",
       title: LABELS.titles.failureExperiment,
       prose: PROSE.failureExperiment,
+      details: { summary: PROSE.failureDetailsSummary, prose: PROSE.failureDetails },
       interactives: [
         {
           id: "compare-int-unsigned",
@@ -157,7 +173,12 @@ export const onePatternThreeReadings: LessonInput = {
         },
       ],
     },
-    { kind: "reflection", title: LABELS.titles.reflection, prose: PROSE.reflection },
+    {
+      kind: "reflection",
+      title: LABELS.titles.reflection,
+      prose: PROSE.reflection,
+      details: { summary: PROSE.reflectionDetailsSummary, prose: PROSE.reflectionDetails },
+    },
   ],
   challenges: [
     {
@@ -169,6 +190,8 @@ export const onePatternThreeReadings: LessonInput = {
         { id: "bits", label: MAKE.fields.bits, kind: "bits", width: 32, weights: "signed" },
         { id: "unsigned", label: MAKE.fields.unsigned, kind: "number" },
       ],
+      // The field of bits also takes hexadecimal, typed. The stored answer is still the 32 bits.
+      initial: { data: { hexEntry: ["bits"] } },
       // The first test reads the learner's bits as signed and wants −1; the second wants the
       // number to be what the learner's own bits give as unsigned. Both readings come from the model.
       tests: {

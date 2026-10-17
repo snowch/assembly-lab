@@ -13,8 +13,11 @@ import {
   assemblyOf,
   compareListings,
   parseListing,
+  parseHexEntry,
+  patternAfterRun,
   readingsOfPattern,
   readingsOfValue,
+  topBitTable,
   traceOf,
   viewAt,
   wValue,
@@ -178,6 +181,111 @@ describe("the int and the unsigned function", () => {
   });
 });
 
+// ---------------------------------------------------------------------------------------------
+// The register to read: its first pattern, and the top bit's table
+
+describe("the pattern the register to read starts with", () => {
+  it("is what w0 holds after fuel_used_wrong(50, 38), taken from the model: 0xfffffff4", () => {
+    const start = patternAfterRun(FUEL_USED_WRONG, FUEL_CALL);
+    expect(grouped(start)).toBe("1111 1111 1111 1111 1111 1111 1111 0100");
+    expect(readingsOfPattern(start).digits).toBe("fffffff4");
+    expect(start).toBe(readingsOfValue(w0(fuel(FUEL_USED_WRONG).final)).pattern);
+  });
+
+  it("is a start that the lesson's data names by program and call, not by the pattern", () => {
+    const reader = lesson.sections
+      .flatMap((s) => s.interactives)
+      .find((x) => x.kind === "register-reader")!;
+    expect(reader.props["topBit"]).toBe(true);
+    expect(reader.props["start"]).toEqual({ program: FUEL_USED_WRONG, call: FUEL_CALL });
+    const data = JSON.stringify(reader.props);
+    expect(data).not.toContain("fffffff4");
+    expect(data).not.toContain("4294967284");
+    expect(data).not.toContain("1111111");
+  });
+});
+
+describe("the top bit's table", () => {
+  const worth = readingsOfPattern("1" + "0".repeat(31)).unsigned;
+
+  it("has the top bit at bit 31, worth 2147483648, and 31 other bits", () => {
+    expect(worth).toBe(2147483648);
+    expect(2 ** 31).toBe(worth);
+    expect(32 - 1).toBe(31);
+    expect(readingsOfPattern("1" + "0".repeat(31)).digits).toBe("80000000");
+  });
+
+  it("gives 0xfffffff4 as +2147483648 and 2147483636 unsigned, −2147483648 and 2147483636 signed", () => {
+    const t = topBitTable(patternAfterRun(FUEL_USED_WRONG, FUEL_CALL));
+    expect(t).toEqual({
+      top: { unsigned: 2147483648, signed: -2147483648 },
+      other: 2147483636,
+      unsigned: 4294967284,
+      signed: -12,
+    });
+    // 2147483636 is what the other 31 bits of 0xfffffff4 are: 0x7ffffff4.
+    expect(readingsOfValue(0x7ffffff4).unsigned).toBe(2147483636);
+    expect(2147483648 + 2147483636).toBe(4294967284);
+    expect(-2147483648 + 2147483636).toBe(-12);
+  });
+
+  it("gives all 32 bits set as 4294967295 and −1", () => {
+    const t = topBitTable("1".repeat(32));
+    expect([t.unsigned, t.signed, t.other]).toEqual([4294967295, -1, 2147483647]);
+  });
+
+  it("gives 0x80000001 as 2147483649 unsigned and −2147483647 signed", () => {
+    const r = readingsOfValue(0x80000001);
+    expect([r.digits, r.unsigned, r.signed]).toEqual(["80000001", 2147483649, -2147483647]);
+    const t = topBitTable(r.pattern);
+    expect(t.top).toEqual({ unsigned: 2147483648, signed: -2147483648 });
+    expect(t.other).toBe(1);
+    expect(2147483648 + 1).toBe(2147483649);
+    expect(-2147483648 + 1).toBe(-2147483647);
+  });
+
+  it("has the top bit's part 0 in both columns, and both readings agreeing, when bit 31 is 0", () => {
+    let seed = 7;
+    for (let i = 0; i < 200; i++) {
+      seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+      const t = topBitTable(readingsOfValue(seed).pattern);
+      expect(t.top).toEqual({ unsigned: 0, signed: 0 });
+      expect(t.signed).toBe(t.unsigned);
+      expect(t.other).toBe(t.unsigned);
+    }
+  });
+
+  it("adds up, in each column, for any pattern: the top bit's part plus the other 31 bits", () => {
+    let seed = 11;
+    for (let i = 0; i < 200; i++) {
+      seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+      const value = (seed * 2 + (i % 2)) >>> 0;
+      const t = topBitTable(readingsOfValue(value).pattern);
+      expect(t.top.unsigned + t.other, String(value)).toBe(t.unsigned);
+      expect(t.top.signed + t.other, String(value)).toBe(t.signed);
+    }
+  });
+});
+
+describe("the hexadecimal a learner may type for the bits", () => {
+  it("reads ffffffff and 0xffffffff as all 32 bits set, and fewer digits as the low bits", () => {
+    for (const text of ["ffffffff", "0xffffffff", "0XFFFFFFFF", " ffffffff "])
+      expect(parseHexEntry(text), text).toEqual({ kind: "ok", pattern: "1".repeat(32) });
+    expect(parseHexEntry("fffffff4")).toEqual({
+      kind: "ok",
+      pattern: patternAfterRun(FUEL_USED_WRONG, FUEL_CALL),
+    });
+    expect(parseHexEntry("f")).toEqual({ kind: "ok", pattern: "0".repeat(28) + "1111" });
+  });
+
+  it("is empty for nothing or only 0x, and invalid for more than eight digits or a letter past f", () => {
+    expect(parseHexEntry("")).toEqual({ kind: "empty" });
+    expect(parseHexEntry("0x")).toEqual({ kind: "empty" });
+    for (const text of ["fffffffff", "0xfffffffff", "xyz", "0xg", "12 34", "-1", "1.5"])
+      expect(parseHexEntry(text), text).toEqual({ kind: "invalid" });
+  });
+});
+
 describe("the challenges", () => {
   it("Make −1: all 32 bits set read as −1 signed and 4294967295 unsigned, and adding 1 gives 0", () => {
     const ones = readingsOfPattern("1".repeat(32));
@@ -253,6 +361,9 @@ describe("every number the lesson states", () => {
     9,
     // The range of the readings, and the patterns of the last challenge.
     4294967295, 2147483647, 42, 4294967096, 200,
+    // The top bit is bit 31 and the rest are 31 bits (the tests below), and the unsigned reading of
+    // 0x80000001, the closing question's pattern.
+    31, 2147483649,
   ]);
 
   const text = learnerText(lesson).join("\n");
@@ -273,7 +384,7 @@ describe("every number the lesson states", () => {
 
   it("writes each hexadecimal number as the pattern the model holds", () => {
     expect([...new Set(hexes)].sort()).toEqual(
-      ["0x0000002a", "0x80000000", "0xffffff38", "0xfffffff4", "0xffffffff"].sort(),
+      ["0x0000002a", "0x80000000", "0x80000001", "0xffffff38", "0xfffffff4", "0xffffffff"].sort(),
     );
     for (const h of hexes) {
       const r = readingsOfValue(BigInt(h));
