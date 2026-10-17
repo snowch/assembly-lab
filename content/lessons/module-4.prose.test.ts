@@ -153,7 +153,8 @@ describe.each(cases)("module 4, lesson $n: the lesson's words", (c) => {
     expect([...new Set(drafted)].sort()).toEqual([...new Set(c.own)].sort());
     // Each is marked DRAFT where it is written until it has been through the prose process; the
     // ones that have are listed, and nothing else is marked.
-    const checked: readonly string[] = [L2.captions.stepBge];
+    // Every one went through it on 17 October 2026.
+    const checked: readonly string[] = c.own;
     const source = readFileSync(new URL(c.labelsFile, import.meta.url), "utf8");
     expect(source.match(/^\s*\/\/ DRAFT$/gm) ?? []).toHaveLength(
       c.own.filter((x) => !checked.includes(x)).length,

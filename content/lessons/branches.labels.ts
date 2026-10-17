@@ -27,20 +27,15 @@ export const LABELS = {
   captions: {
     listing:
       "describe in C and the eight instructions GCC made from it. GCC notes, for each instruction, the C line it came from. Each instruction sits beside that line.",
-    // DRAFT
     predictCount: "A prediction about how many instructions describe(15) runs.",
-    // DRAFT
     stepCount:
-      "describe(15), one instruction at a time, with the number that have run. A register or flag with an outline has just changed.",
+      "describe(15), one instruction at a time, with a count of the instructions that have run. A register or flag with an outline has just changed.",
     arrows:
       "describe with an arrow from each branch to its label, for the gradient you choose. The instructions that did not run are greyed.",
-    // DRAFT
     fuelWarning: "The assembly editor, starting from a function that returns 0.",
-    // DRAFT
     predictBge: "A prediction about what describe returns for 10 once bgt is changed to bge.",
     stepBge:
-      "The stepper runs describe with bgt changed to bge, on 10, one instruction at a time. It shows the flags and the number of instructions that have run. A register or flag with an outline has just changed.",
-    // DRAFT
+      "The figure runs describe with bgt changed to bge, on 10, one instruction at a time. It shows the flags and a count of the instructions that have run. A register or flag with an outline has just changed.",
     counts: "describe, and six numbers to give for three gradients.",
   },
   options: {

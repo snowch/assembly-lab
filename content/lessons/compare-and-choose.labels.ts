@@ -27,19 +27,14 @@ export const LABELS = {
   },
   captions: {
     runs: "The C of both functions, steeper_s's three instructions, and what each function returns for 0xffffffff and 1.",
-    // DRAFT
     predictChange: "A prediction about what GCC changes in steeper_s to make steeper_u.",
     diff: "steeper_s and steeper_u side by side; the one operand that differs is marked.",
-    // DRAFT
     lessFuel: "The assembly editor, starting from a function that is only ret.",
-    // DRAFT
-    predictGe: "A prediction about what steeper_u returns once its last item is ge.",
-    // DRAFT
+    predictGe: "A prediction about what steeper_u returns once its last operand is ge.",
     stepGe:
-      "steeper_u with ge on 0x80000000 and 1, with the flags under the registers. A register or flag with an outline has just changed.",
+      "steeper_u with ge in place of cs, on 0x80000000 and 1, with the flags under the registers. A register or flag with an outline has just changed.",
     conditions:
       "Two values you choose, the flags cmp leaves, and each condition beside whether it holds.",
-    // DRAFT
     holds: "The compare, and four conditions to read from the flags it leaves.",
   },
   options: {
@@ -78,13 +73,9 @@ export const LABELS = {
       },
       // Plain text, for the name of each test in a verdict.
       tests: {
-        // DRAFT
         ge: "Whether ge holds",
-        // DRAFT
         cs: "Whether cs holds",
-        // DRAFT
         lt: "Whether lt holds",
-        // DRAFT
         cc: "Whether cc holds",
       },
     },

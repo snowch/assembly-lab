@@ -34,10 +34,9 @@ describe("the Module 4 figures' words", () => {
     expect(all.filter(([, s]) => s.includes("—")).map(([p]) => p)).toEqual([]);
   });
 
-  it("are each marked DRAFT where written, except the headings the lesson's list gives", () => {
+  it("went through the prose process (17 October 2026), so none is marked DRAFT; a new one would be", () => {
     const marks = source.match(/^\s*\/\/ DRAFT$/gm) ?? [];
-    // Three headings (either, unsigned and signed) are the lesson's own words; the rest are not.
-    expect(marks.length).toBe(all.length - 3);
+    expect(marks).toHaveLength(0);
   });
 
   it("use sentences a learner can read: a code span is closed and a name is not left in braces", () => {

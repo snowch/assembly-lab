@@ -166,7 +166,7 @@ export const VIEW_STRINGS = {
         : `Nothing is graded until each of ${fields} has a whole number.`,
     /** Between the last two names in a list. */
     and: "and",
-    // DRAFT: says "in decimal", because `0x5` is a whole number and is refused.
+    // Says "in decimal", because `0x5` is a whole number and is refused.
     notWhole: (field: string) =>
       `The answer for ${field} must be a whole number written in decimal.`,
     noProgram: "This challenge has no program to run.",
@@ -175,10 +175,9 @@ export const VIEW_STRINGS = {
     fieldNotRight: (field: string) => `Your answer for ‘${field}’ is not right.`,
   },
 
-  // DRAFT: the words of Module 3's figures and graders, drafted with the figures and not yet
-  // through the prose process. Every key below is listed in the build report.
+  // The words of Module 3's figures and graders, redrafted by Haiku and checked for meaning
+  // (17 October 2026).
   bits: {
-    // DRAFT
     keyHeading: "What the bits mean",
     keyBits: "Bits",
     keyMeaning: "Meaning",
@@ -190,7 +189,7 @@ export const VIEW_STRINGS = {
     /** Bit numbers already joined into a phrase: `Bits 2 and 5`. */
     bitsList: (list: string) => `Bits ${list}`,
     /** The row for a register at the start of a call. */
-    onEntry: (register: string) => `${register} on entry`,
+    onEntry: (register: string) => `${register} when the call starts`,
     /** What a screen reader hears for a row of 32 bits: its name and its value. */
     rowGroup: (name: string, hex: string) => `${name}: ${hex}`,
     /** Joins a list of bit numbers: 2; 2 and 3; 0, 2 and 3. */
@@ -198,16 +197,15 @@ export const VIEW_STRINGS = {
   },
 
   bitOps: {
-    // DRAFT
     functions: "Function",
     cLabel: "C",
     instructionLabel: "Instruction",
     rowMask: "Mask",
     rowBefore: (register: string) => `${register} before`,
     rowAfter: (register: string) => `${register} after`,
-    inputLabel: (register: string) => `Value of ${register} on entry`,
-    inputProblem: "Type a whole number, or hexadecimal starting 0x.",
-    // DRAFT: `list` is the bit numbers joined into a phrase (`2`, `4 and 6`), `count` how many.
+    inputLabel: (register: string) => `Value of ${register} when the call starts`,
+    inputProblem: "Type a whole number, or a hexadecimal number starting with `0x`.",
+    // `list` is the bit numbers joined into a phrase (`2`, `4 and 6`), `count` how many.
     changed: (list: string, count: number) =>
       count === 1 ? `Bit ${list} changed.` : `Bits ${list} changed.`,
     unchanged: "No bit changed.",
@@ -217,11 +215,10 @@ export const VIEW_STRINGS = {
   },
 
   shift: {
-    // DRAFT
     instruction: "Instruction",
     by: "Shift by",
-    inputLabel: "Value of w0 on entry",
-    inputProblem: "Type a whole number, or hexadecimal starting 0x.",
+    inputLabel: "Value of w0 when the call starts",
+    inputProblem: "Type a whole number, or a hexadecimal number starting with `0x`.",
     rowBefore: "Before",
     rowAfter: "After",
     fellOff: (bits: string) => `Fell off: ${bits}`,
@@ -232,15 +229,13 @@ export const VIEW_STRINGS = {
   },
 
   pair: {
-    // DRAFT
     differs: "This instruction differs from the other listing",
   },
 
   probe: {
-    // DRAFT
     clearedBits: (bits: string) =>
       `The simulator ran the function on a word with every bit set. ${bits} came out 0.`,
-    // DRAFT: the one bit that came out 0, when it was only one, so that a function that also clears
+    // The one bit that came out 0, when it was only one, so that a function that also clears
     // other bits is told apart.
     clearedOnly: (bit: number) =>
       `The simulator ran the function on a word with every bit set. Only bit ${bit} came out 0.`,
@@ -251,22 +246,20 @@ export const VIEW_STRINGS = {
     fillFell: "The top bit was filled with the bit that fell off the bottom.",
     fillOther: "The top bit was filled in a way none of the choices describe.",
     firstAdds: (instruction: string, negative: string, other: string) =>
-      `The simulator ran \`${instruction}\` on negative and non-negative values. It added ${negative} to a negative value and ${other} to any other.`,
+      `The simulator ran \`${instruction}\` on negative and non-negative values. It added ${negative} to a negative value and ${other} to any other value.`,
     firstAddsVaries: (instruction: string) =>
-      `The simulator ran \`${instruction}\` on negative and non-negative values. The amount it added changed from value to value.`,
+      `The simulator ran \`${instruction}\` on negative and non-negative values. The amount it added varied from one value to the next.`,
     endedWithHex: (register: string, hex: string) =>
       `The simulator ran the program. \`${register}\` held ${hex} when the run ended.`,
   },
 
   answers: {
-    // DRAFT
     notHex: (field: string) =>
-      `The answer for ${field} must be a hexadecimal number, such as 0x2f.`,
+      `The answer for ${field} must be a hexadecimal number, such as \`0x2f\`.`,
     unanswered: (fields: string) => `Give an answer for ${fields} first.`,
   },
 
   tap: {
-    // DRAFT
     sign: "Change sign",
   },
 } as const;

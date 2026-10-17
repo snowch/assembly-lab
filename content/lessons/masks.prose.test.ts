@@ -71,11 +71,10 @@ describe("the lesson's words", () => {
     const own = Object.values(LABELS.drafts.captions);
     expect(own).toHaveLength(5);
     for (const caption of own) expect(partFlat, caption).not.toContain(flat(caption));
-    // Five captions and five labels, each marked DRAFT in the source and listed in the build report.
+    // Five captions and five labels, through the prose process on 17 October 2026, so none is
+    // marked DRAFT; a new one would be.
     const source = readFileSync(new URL("./masks.labels.ts", import.meta.url), "utf8");
-    expect(source.match(/\/\/ DRAFT/g) ?? []).toHaveLength(
-      own.length + LABELS.drafts.keyEntries.length,
-    );
+    expect(source.match(/\/\/ DRAFT/g) ?? []).toHaveLength(0);
     expect(LABELS.drafts.keyEntries.map((e) => e.label)).toEqual([
       "fuel low",
       "service due",

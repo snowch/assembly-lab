@@ -12,106 +12,73 @@
 
 export const BRANCH_STRINGS = {
   stepper: {
-    // DRAFT
     count: (k: number) => `Instructions run: ${k}`,
   },
 
   runs: {
-    // DRAFT
     group: "What each function returns",
-    // DRAFT
     returns: (call: string, value: string) => `\`${call}\` returns ${value}`,
   },
 
   change: {
     /** What the model found when it compared the changed listing with the one shown. */
     said: {
-      // DRAFT
       last: (mnemonic: string) =>
-        `The simulator compared the two listings. Only \`${mnemonic}\` differs, and only in its last item.`,
-      // DRAFT
+        `The simulator compared the two listings. Only \`${mnemonic}\` differs, and only in its last operand.`,
       operands: (mnemonic: string) =>
-        `The simulator compared the two listings. Only \`${mnemonic}\` differs, in more than its last item.`,
-      // DRAFT
+        `The simulator compared the two listings. Only \`${mnemonic}\` differs, in more than its last operand.`,
       instruction: (mnemonic: string) =>
         `The simulator compared the two listings. Only one instruction differs, and \`${mnemonic}\` is not the same instruction in both.`,
-      // DRAFT
       several: "The simulator compared the two listings. More than one instruction differs.",
-      // DRAFT
       none: "The simulator compared the two listings. They are the same.",
     },
   },
 
   diff: {
-    // DRAFT
     table: "The two listings, instruction by instruction, with each differing item marked",
-    // DRAFT
     mark: "differs",
-    // DRAFT
     summary: (items: number) => (items === 1 ? "One item differs." : `${items} items differ.`),
   },
 
   conditions: {
-    // DRAFT
     group: "Two values and a compare",
-    // DRAFT
     first: "First value, held in w0",
-    // DRAFT
     second: "Second value, held in w1",
-    // DRAFT
     outOfRange: "That number does not fit in 32 bits.",
-    // DRAFT
     readings: (unsigned: number, signed: number) => `unsigned ${unsigned}, signed ${signed}`,
-    // DRAFT
     presets: "Values used in the text",
-    // DRAFT
     preset: (a: string, b: string) => `${a} and ${b}`,
-    // DRAFT
     flagsHeading: "The flags after `cmp w0, w1`",
-    // DRAFT
     list: "Each condition, what it reads, and whether it holds",
-    // DRAFT
     yes: "yes",
-    // DRAFT
     no: "no",
     /** The headings over the groups, as the lesson's list words them. */
     groups: {
       either: "Either reading",
       unsigned: "Unsigned",
       signed: "Signed",
-      // DRAFT
       other: "Met in Module 2",
     },
   },
 
   count: {
-    // DRAFT
     ran: (n: number) =>
-      `The simulator ran the function. It ran ${n} instructions, \`ret\` included.`,
+      `The simulator ran the function. It ran ${n} instructions, including \`ret\`.`,
   },
 
   arrows: {
-    // DRAFT
     chooser: (name: string) => `The ${name} you choose`,
-    // DRAFT
     presets: "Values used in the text",
-    // DRAFT
     notWhole: "Type a whole number from -2147483648 to 2147483647.",
-    // DRAFT
     figure: "The listing, with an arrow from each branch to its label",
-    // DRAFT
     taken: "taken",
-    // DRAFT
     notTaken: "not taken",
-    // DRAFT
     didNotRun: "Did not run",
-    // DRAFT
     result: (call: string, value: number, n: number) =>
       `\`${call}\` returns ${value}, in ${n} instructions.`,
   },
 
   grader: {
-    // DRAFT
     cannotRun: "The grader could not run this challenge.",
   },
 } as const;
@@ -136,7 +103,7 @@ export const CONDITION_ROWS = [
     means: "less than or equal",
     reads: "Z is 1 or N differs from V",
   },
-  // The lesson gives `vs` only its rule, met in Module 2. DRAFT: the name.
+  // The lesson gives `vs` only its rule, met in Module 2; its name is the course's own.
   { name: "vs", group: "other", means: "overflow", reads: "V is 1" },
 ] as const;
 

@@ -78,28 +78,20 @@ export const LABELS = {
       },
     },
   },
-  /** The words the prose file does not give. Each is marked DRAFT and listed in the build report. */
+  /** The words the prose file does not give, through the prose process (17 October 2026). */
   drafts: {
     captions: {
-      // DRAFT
       compareHalves:
         "The C and the instructions GCC made for halve_gradient and halve_count. An instruction that differs from the other listing is marked.",
-      // DRAFT
-      predictFill: "A prediction about what fills the top bit of -7 when it moves one place right.",
-      // DRAFT
-      compareShifts: "Work out six results for 21 and -21, then give them.",
-      // DRAFT
+      predictFill: "A prediction about what fills the top bit of −7 when it moves one place right.",
+      compareShifts: "Work out six results for 21 and −21, then give them.",
       predictFirstAdd: "A prediction about the first instruction GCC uses for g / 2.",
-      // DRAFT
       stepDiv2: "div2(-7), one instruction at a time. A register with an outline has just changed.",
-      // DRAFT
       pickInstruction: "Say which instruction GCC uses for each shift, then give your answers.",
     },
     /** The C type over each of the two listings. */
     types: {
-      // DRAFT
       int: "int",
-      // DRAFT
       unsigned: "unsigned",
     },
   },

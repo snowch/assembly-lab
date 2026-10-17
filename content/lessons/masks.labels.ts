@@ -61,32 +61,22 @@ export const LABELS = {
       },
     },
   },
-  /** The words the prose file does not give. Each is marked DRAFT and listed in the build report. */
+  /** The words the prose file does not give, through the prose process (17 October 2026). */
   drafts: {
     captions: {
-      // DRAFT
       predictMinusFive: "A prediction about the constant in the listing.",
-      // DRAFT
       setGear: "The assembly editor, with a single ret to start from.",
-      // DRAFT
       predictNoClear: "A prediction about what set_gear returns without the clearing step.",
-      // DRAFT
       stepNoClear:
         "set_gear(0x35, 5) without the clearing step, one instruction at a time. A register with an outline has just changed.",
-      // DRAFT
       traceThree: "Work out three results for the warning word 0x2a, then give them.",
     },
     /** What the warning word's bits mean: the figure's key. */
     keyEntries: [
-      // DRAFT
       { from: 0, to: 0, label: "fuel low" },
-      // DRAFT
       { from: 1, to: 1, label: "service due" },
-      // DRAFT
       { from: 2, to: 2, label: "door open" },
-      // DRAFT
       { from: 3, to: 3, label: "lights on" },
-      // DRAFT
       { from: 4, to: 6, label: "gear" },
     ],
   },
