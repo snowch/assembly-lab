@@ -293,7 +293,7 @@ test.describe("the comparison challenge", () => {
       "lsr of 21 by 2",
       "21 / 4",
       "asr of −21 by 2",
-      "lsr of −21 by 2, unsigned reading",
+      "lsr of −21 by 2 (−21 taken as unsigned)",
       "-21 / 4",
     ]);
     // A field that takes a negative number gets the full keyboard.
@@ -315,7 +315,7 @@ test.describe("the comparison challenge", () => {
     await fill(c, ["5", "5", "5", "-6", "-1073741830", "-5"]);
     await press(page, run(c));
     await expect(c.locator(".verdict-failure h4")).toHaveText([
-      "lsr of −21 by 2, unsigned reading",
+      "lsr of −21 by 2 (−21 taken as unsigned)",
     ]);
   });
 

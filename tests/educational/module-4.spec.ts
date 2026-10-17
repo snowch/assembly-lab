@@ -133,7 +133,7 @@ test.describe("lesson 1, Compare, and the condition that carries the type", () =
     ]);
   });
 
-  test("the prediction commits before it reveals, and the model says only the last item of csel changes", async ({
+  test("the prediction commits before it reveals, and the model says only the last operand of csel changes", async ({
     page,
   }) => {
     await openLesson(page, ONE);
@@ -144,7 +144,7 @@ test.describe("lesson 1, Compare, and the condition that carries the type", () =
     await predictionCommitsBeforeItReveals(
       page,
       "predict-steeper-change",
-      /^Only the last item of csel changes\.$/,
+      /^Only the last operand of csel changes\.$/,
       /^The operands of cmp change\.$/,
     );
     await expect(figure.locator(".al-nomatch")).toContainText(plain(B.change.said.last("csel")));
@@ -157,7 +157,7 @@ test.describe("lesson 1, Compare, and the condition that carries the type", () =
     const diff = page.locator("#ix-compare-steeper");
     await expect(diff.locator(".al-locked")).toBeVisible();
     await expect(diff.locator(".al-diff-row")).toHaveCount(0);
-    await commit(page, "predict-steeper-change", /^Only the last item of csel changes\.$/);
+    await commit(page, "predict-steeper-change", /^Only the last operand of csel changes\.$/);
     await diff.scrollIntoViewIfNeeded();
     await expect(diff.locator(".al-diff-row")).toHaveCount(3);
     await expect(diff.locator("mark.al-diff-item")).toHaveCount(2);
@@ -169,7 +169,7 @@ test.describe("lesson 1, Compare, and the condition that carries the type", () =
 
   test("a commitment is kept, and is still there after a reload", async ({ page }) => {
     await openLesson(page, ONE);
-    await commit(page, "predict-steeper-change", /^Only the last item of csel changes\.$/);
+    await commit(page, "predict-steeper-change", /^Only the last operand of csel changes\.$/);
     await page.reload();
     await expect(page.locator("#ix-predict-steeper-change .al-match")).toBeVisible();
     await expect(page.locator("#ix-compare-steeper .al-locked")).toHaveCount(0);
