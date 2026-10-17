@@ -61,13 +61,15 @@ The other 31 bits count the same in both readings. So when the top bit is 0, the
 
 The figure starts with `0xfffffff4`, the pattern `sub` left in `w0`. It shows the top bit's worth and the other 31 bits' total in each reading. The full sum of every bit is under "Show calculation".
 
+A bit that is 1 is **set**, and a bit that is 0 is **clear**: to set a bit is to make it 1, and to clear it is to make it 0.
+
 Set or clear any bit, or press "Clear bits" to start from zero.
 
 *One register, set bit by bit, with each hexadecimal digit under its four bits, and the top bit's worth and the rest shown for each reading.*
 
-## 5. Setting the bits
+## 5. Bits that read as −1
 
-Set the bits of `w0` so that its signed reading is −1, then give the unsigned reading of the same bits. You can click bits, or type a pattern in hexadecimal and the bits follow it. The figure in "Reading the bits" shows both readings of any bits you set there.
+You can press bits one at a time, or type a pattern in hexadecimal and the bits follow it. The figure in "Reading the bits" shows both readings of any bits you change there.
 
 **Make −1**
 
@@ -106,13 +108,15 @@ Both listings are from GCC 16.1 with the setting `-O1`, as in Module 0.
 
 *Shown after the answer is checked.*
 
-Both listings are `sub w0, w1, w0` then `ret`. GCC used the same `sub` instruction for both functions. The subtraction produces the same 32-bit pattern for these inputs. Signed and unsigned values differ in how that pattern is interpreted. Other operations, such as division and comparisons, can require different instructions.
+Both listings are `sub w0, w1, w0` then `ret`. GCC used the same `sub` instruction for both functions. The subtraction produces the same 32-bit pattern. Signed and unsigned values differ in how that pattern is read. Other operations, such as division and comparisons, can require different instructions.
 
 ## 7. Bits and readings
 
 A register has no type.
 
 An addition or a subtraction gives the same bits, whichever reading the program uses later. That is why one `sub` serves both `int` and `unsigned` here.
+
+Both −12 and 4294967284 are readings of the same 32 bits. The C type says which reading the program means: `fuel_used_wrong` returns an `int`, so it means −12.
 
 ## 8. Every 32-bit pattern
 
@@ -131,7 +135,7 @@ Give both readings of three patterns: `0x0000002a`, `0x80000000` and `0xffffff38
 Field labels, in order: "unsigned reading of `0x0000002a`"; "signed reading of `0x0000002a`"; "unsigned reading of `0x80000000`"; "signed reading of `0x80000000`"; "unsigned reading of `0xffffff38`"; "signed reading of `0xffffff38`".
 
 1. The unsigned reading counts the top bit as plus 2147483648. The signed reading counts it as minus 2147483648.
-2. The two readings differ only when the top bit is 1.
+2. Do not expect two different numbers from every pattern. When the top bit is 0, the two readings agree.
 3. `0xfffffff4` reads as 4294967284 unsigned and −12 signed.
 4. `0x0000002a` has its top bit 0, so both readings are 42.
 5. The answers, unsigned first in each pair: 42 and 42; 2147483648 and −2147483648; 4294967096 and −200.
@@ -175,7 +179,7 @@ For `return 30000;`, GCC makes one instruction: `mov w0, 30000`. For `return 100
 
 The listings in this lesson are from GCC 16.1 with `-O1`, as in Module 0.
 
-*service_interval in C, and the one instruction GCC makes for it.*
+*service_interval in C, int service_interval(void), where void in the brackets means it takes no arguments, and the one instruction GCC makes for it.*
 
 ## 2. Numbers inside instructions
 
@@ -193,7 +197,7 @@ In hexadecimal each half is four digits, so the boundary falls in the middle of 
 
 ## 3. Which numbers fit?
 
-Here are the four in hexadecimal, with a space between the halves. 65536 is `0x0001 0000`, 70000 is `0x0001 1170`, 100000 is `0x0001 86a0`, and 1000000 is `0x000f 4240`. Look at which halves of each number have set bits.
+Here are three of the four in hexadecimal, with a space between the halves. 65536 is `0x0001 0000`, 70000 is `0x0001 1170`, and 100000 is `0x0001 86a0`. The fourth, 1000000, is the odometer limit from the first section, which GCC needs two instructions for. Look at which halves of the three numbers have set bits.
 
 **Which of these can one `mov` put in `w0`?**
 
@@ -212,7 +216,7 @@ The figure assembles `mov w0,` followed by the number you type. Assembling turns
 
 The course's assembler accepts and rejects the same numbers as the GNU assembler, the program GCC uses to turn its listings into instructions. So the figure is the authority on whether a number fits.
 
-`mov` is a name the assembler accepts for more than one instruction. It chooses the one that can hold the constant.
+Other patterns load with one `mov` because `mov` is a name the assembler accepts for more than one instruction. It picks the one that can hold the constant.
 
 *Closed note.*
 
@@ -244,7 +248,7 @@ Writing `#` before a number is optional. `mov w0, 30000` and `mov w0, #30000` ar
 
 Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The starting text, `mov w0, 1000000` then `ret`, does not assemble.
 
-1. One `mov` holds a number whose bits fall in one 16-bit half. `movk` sets the other half without touching the first.
+1. One `mov` holds a number whose bits fall in one 16-bit half. `movk` writes the other half without touching the first.
 2. A second `mov` replaces the whole register. Only `movk` keeps the other half.
 3. `mov w0, 1` then `movk w0, 1, lsl 16` leaves 65537 in `w0`.
 4. The lower half is 16960, and `mov w0, 16960` puts it there.
@@ -281,7 +285,11 @@ A constant that does not fit in one `mov` is built half by half, with `mov` then
 
 ## 8. Constants and C types
 
-A `long` in C is an integer type; on 64-bit Arm Linux it is 64 bits, so GCC 16.1 at `-O1` turns `return -1;` with `long` into `mov x0, -1`, which uses the `x` name. The `u` in `4294967295u` marks the constant as `unsigned`. GCC 16.1 at `-O1` turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.
+A `long` in C is an integer type. On the system GCC compiles for here, it is 64 bits, so GCC 16.1 at `-O1` turns `return -1;` with `long` into `mov x0, -1`, which uses the `x` name.
+
+The `u` in `4294967295u` marks the constant as `unsigned`.
+
+GCC 16.1 at `-O1` turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.
 
 Every constant in every listing is a pattern of bits. The C type only decides how the program reads it later.
 
@@ -295,8 +303,8 @@ Without running them, give `x1` and `w2` after all four, as decimal numbers.
 
 Field labels: "`x1` at the end"; "`w2` at the end".
 
-1. Writing `w1` clears the upper half of `x1`.
-2. `mov w1, 5` does not keep the 1s that `mov x1, -1` set in the upper half.
+1. Writing `w1` clears the upper 32 bits of `x1`.
+2. `mov w1, 5` does not keep the 1s that `mov x1, -1` set in the upper 32 bits.
 3. After `mov x3, -1` then `mov w3, -1`, `x3` is `0x00000000ffffffff`.
 4. `w2` ends as `0x000f4240`.
 5. `x1` is 5 and `w2` is 1000000.

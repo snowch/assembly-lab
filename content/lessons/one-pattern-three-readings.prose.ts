@@ -28,10 +28,11 @@ export const PROSE = {
     "The **unsigned reading** adds the worths of the bits that are 1. The **signed reading** does the same, except the top bit counts as minus 2147483648.\n\n" +
     "The other 31 bits count the same in both readings. So when the top bit is 0, the two readings agree.\n\n" +
     "The figure starts with `0xfffffff4`, the pattern `sub` left in `w0`. It shows the top bit's worth and the other 31 bits' total in each reading. The full sum of every bit is under \"Show calculation\".\n\n" +
+    "A bit that is 1 is **set**, and a bit that is 0 is **clear**: to set a bit is to make it 1, and to clear it is to make it 0.\n\n" +
     'Set or clear any bit, or press "Clear bits" to start from zero.',
 
   construction:
-    'Set the bits of `w0` so that its signed reading is −1, then give the unsigned reading of the same bits. You can click bits, or type a pattern in hexadecimal and the bits follow it. The figure in "Reading the bits" shows both readings of any bits you set there.',
+    'You can press bits one at a time, or type a pattern in hexadecimal and the bits follow it. The figure in "Reading the bits" shows both readings of any bits you change there.',
   /** Shown once Make −1 has passed. */
   constructionSolved:
     "With all 32 bits set, the signed reading is −1 and the unsigned reading is 4294967295.",
@@ -51,11 +52,12 @@ export const PROSE = {
   failureDetails: "Both listings are from GCC 16.1 with the setting `-O1`, as in Module 0.",
   failureQuestion: "**What does GCC do differently for the `unsigned` version?**",
   failureExplain:
-    "Both listings are `sub w0, w1, w0` then `ret`. GCC used the same `sub` instruction for both functions. The subtraction produces the same 32-bit pattern for these inputs. Signed and unsigned values differ in how that pattern is interpreted. Other operations, such as division and comparisons, can require different instructions.",
+    "Both listings are `sub w0, w1, w0` then `ret`. GCC used the same `sub` instruction for both functions. The subtraction produces the same 32-bit pattern. Signed and unsigned values differ in how that pattern is read. Other operations, such as division and comparisons, can require different instructions.",
 
   explanation:
     "A register has no type.\n\n" +
-    "An addition or a subtraction gives the same bits, whichever reading the program uses later. That is why one `sub` serves both `int` and `unsigned` here.",
+    "An addition or a subtraction gives the same bits, whichever reading the program uses later. That is why one `sub` serves both `int` and `unsigned` here.\n\n" +
+    "Both −12 and 4294967284 are readings of the same 32 bits. The C type says which reading the program means: `fuel_used_wrong` returns an `int`, so it means −12.",
 
   generalisation:
     "Every 32-bit pattern has an unsigned reading from 0 to 4294967295, and a signed reading from −2147483648 to 2147483647.\n\n" +
@@ -65,7 +67,7 @@ export const PROSE = {
   readTask: "Give both readings of three patterns: `0x0000002a`, `0x80000000` and `0xffffff38`.",
   readHints: [
     "The unsigned reading counts the top bit as plus 2147483648. The signed reading counts it as minus 2147483648.",
-    "The two readings differ only when the top bit is 1.",
+    "Do not expect two different numbers from every pattern. When the top bit is 0, the two readings agree.",
     "`0xfffffff4` reads as 4294967284 unsigned and −12 signed.",
     "`0x0000002a` has its top bit 0, so both readings are 42.",
     "The answers, unsigned first in each pair: 42 and 42; 2147483648 and −2147483648; 4294967096 and −200.",

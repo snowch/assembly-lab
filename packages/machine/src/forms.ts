@@ -120,9 +120,22 @@ class Reader {
       if (OTHER_REGISTER.test(op.text.trim())) {
         return fail("notInMachine", { text: this.c.text }, op.col);
       }
-      return fail("operand.register", { text: op.text }, op.col);
+      return this.notRegister(op);
     }
     return { tok, op };
+  }
+
+  /**
+   * Fails because `op` should be a register and is not. An operand left empty (the tap editor can
+   * leave one) has no text to quote, so the message names which operand it is and the instruction.
+   * Past the third operand there is no name for the position, and the general message is used.
+   */
+  notRegister(op: RawOp): never {
+    const which = ["first", "second", "third"][this.c.ops.indexOf(op)];
+    if (op.text.trim() === "" && which !== undefined) {
+      return fail("operand.registerMissing", { which, mnemonic: this.c.mnemonic }, op.col);
+    }
+    return fail("operand.register", { text: op.text }, op.col);
   }
 
   note(op: RawOp, tok: RegName): void {
@@ -310,10 +323,10 @@ function shiftedSource(
  * `mov` with a number is whichever of `movz`, `movn` or `orr` (a bit pattern) can hold it, tried in
  * that order. `sp` can only be the destination of `orr`; the zero register cannot be.
  */
-function immediateMove(value: bigint, rd: RegName, op: RawOp, text: string): Op {
+function immediateMove(value: bigint, rd: RegName, op: RawOp): Op {
   const w = rd.width;
   const pat = immediatePattern(value, w);
-  if (pat === null) return fail("immediate.move", { text }, op.col);
+  if (pat === null) return fail("immediate.move", { text: op.text }, op.col);
   const all = maskOf(w);
   const chunks = w / 16;
   const chunkOf = (v: bigint): { shift: number; imm: bigint } | null => {
@@ -343,7 +356,7 @@ function immediateMove(value: bigint, rd: RegName, op: RawOp, text: string): Op 
       src: { t: "imm", v: pat },
     };
   }
-  return fail("immediate.move", { text }, op.col);
+  return fail("immediate.move", { text: op.text }, op.col);
 }
 
 const mov: Handler = (r) => {
@@ -393,7 +406,7 @@ const mov: Handler = (r) => {
   r.note(rdOp, rd);
   const { value, op } = r.imm();
   r.end();
-  return immediateMove(value, rd, op, r.c.text);
+  return immediateMove(value, rd, op);
 };
 
 function wide(kind: "movz" | "movn" | "movk"): Handler {
@@ -440,7 +453,7 @@ function addsubHandler(sub: boolean, setFlags: boolean, alias: "none" | "cmp" | 
 
     // Forms with an immediate second source (not for `neg`).
     if (rm === null) {
-      if (alias === "neg") return fail("operand.register", { text: third.text }, third.col);
+      if (alias === "neg") return r.notRegister(third);
       // Destination takes `sp` unless the flags are set; the first source never takes the zero register.
       if (setFlags ? rd.role === "sp" : rd.role === "zero") {
         const at = rdPair ? rdPair.op : third;
@@ -606,7 +619,7 @@ function logicHandler(
     const rm = parseRegName(third.text);
     if (rm === null) {
       if (!immAllowed || alias === "mvn") {
-        return fail("operand.register", { text: third.text }, third.col);
+        return r.notRegister(third);
       }
       if (setFlags ? rd.role === "sp" : rd.role === "zero") {
         const at = rdPair ? rdPair.op : third;

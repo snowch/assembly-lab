@@ -266,7 +266,7 @@ describe("the constant tester", () => {
     );
     await type("1000000");
     expect(container.querySelector(".al-nomatch")).toHaveTextContent(
-      "No single instruction can put mov w0, 1000000 in a register.",
+      "No single instruction can put 1000000 in a register.",
     );
     expect(container.querySelector("[data-register]")).toBeNull();
   });

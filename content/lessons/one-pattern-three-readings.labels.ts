@@ -17,7 +17,7 @@ export const LABELS = {
     motivation: "Why the readings matter",
     prediction: "Adding 12",
     investigation: "Reading the bits",
-    construction: "Setting the bits",
+    construction: "Bits that read as −1",
     failureExperiment: "The unsigned version",
     explanation: "Bits and readings",
     generalisation: "Every 32-bit pattern",

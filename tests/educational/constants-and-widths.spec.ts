@@ -278,7 +278,7 @@ test.describe("the written challenge", () => {
     await press(page, runTests(c));
     await expect(status(c)).toHaveText(blocked);
     await expect(c.locator(".verdict.blocked")).toContainText(
-      "Line 1: No single instruction can put mov w0, 1000000 in a register.",
+      "Line 1: No single instruction can put 1000000 in a register.",
     );
     await expect(c.locator(".challenge-complete")).toHaveCount(0);
   });

@@ -20,7 +20,7 @@ export const PROSE = {
     "In hexadecimal each half is four digits, so the boundary falls in the middle of the eight digits.",
 
   prediction:
-    "Here are the four in hexadecimal, with a space between the halves. 65536 is `0x0001 0000`, 70000 is `0x0001 1170`, 100000 is `0x0001 86a0`, and 1000000 is `0x000f 4240`. Look at which halves of each number have set bits.",
+    "Here are three of the four in hexadecimal, with a space between the halves. 65536 is `0x0001 0000`, 70000 is `0x0001 1170`, and 100000 is `0x0001 86a0`. The fourth, 1000000, is the odometer limit from the first section, which GCC needs two instructions for. Look at which halves of the three numbers have set bits.",
   predictionQuestion: "**Which of these can one `mov` put in `w0`?**",
   predictionExplain:
     "Only 65536 fits. Its only set bit is in the upper half, so its lower half is `0000`. The other three numbers have set bits in both halves.",
@@ -28,7 +28,7 @@ export const PROSE = {
   investigation:
     "The figure assembles `mov w0,` followed by the number you type. Assembling turns that text into an instruction.\n\n" +
     "The course's assembler accepts and rejects the same numbers as the GNU assembler, the program GCC uses to turn its listings into instructions. So the figure is the authority on whether a number fits.\n\n" +
-    "`mov` is a name the assembler accepts for more than one instruction. It chooses the one that can hold the constant.",
+    "Other patterns load with one `mov` because `mov` is a name the assembler accepts for more than one instruction. It picks the one that can hold the constant.",
   investigationDetailsSummary: "Other patterns that fit",
   investigationDetails:
     "`-1` fits, with all 32 bits set.\n\n" +
@@ -48,7 +48,7 @@ export const PROSE = {
   buildTask:
     "Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The starting text, `mov w0, 1000000` then `ret`, does not assemble.",
   buildHints: [
-    "One `mov` holds a number whose bits fall in one 16-bit half. `movk` sets the other half without touching the first.",
+    "One `mov` holds a number whose bits fall in one 16-bit half. `movk` writes the other half without touching the first.",
     "A second `mov` replaces the whole register. Only `movk` keeps the other half.",
     "`mov w0, 1` then `movk w0, 1, lsl 16` leaves 65537 in `w0`.",
     "The lower half is 16960, and `mov w0, 16960` puts it there.",
@@ -67,15 +67,17 @@ export const PROSE = {
     "A constant that does not fit in one `mov` is built half by half, with `mov` then `movk`.",
 
   generalisation:
-    "A `long` in C is an integer type; on 64-bit Arm Linux it is 64 bits, so GCC 16.1 at `-O1` turns `return -1;` with `long` into `mov x0, -1`, which uses the `x` name. The `u` in `4294967295u` marks the constant as `unsigned`. GCC 16.1 at `-O1` turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.\n\n" +
+    "A `long` in C is an integer type. On the system GCC compiles for here, it is 64 bits, so GCC 16.1 at `-O1` turns `return -1;` with `long` into `mov x0, -1`, which uses the `x` name.\n\n" +
+    "The `u` in `4294967295u` marks the constant as `unsigned`.\n\n" +
+    "GCC 16.1 at `-O1` turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.\n\n" +
     "Every constant in every listing is a pattern of bits. The C type only decides how the program reads it later.",
 
   challenge:
     "The figure shows four instructions: `mov x1, -1`, `mov w1, 5`, `mov w2, 16960`, `movk w2, 0xf, lsl 16`.",
   predictTask: "Without running them, give `x1` and `w2` after all four, as decimal numbers.",
   predictHints: [
-    "Writing `w1` clears the upper half of `x1`.",
-    "`mov w1, 5` does not keep the 1s that `mov x1, -1` set in the upper half.",
+    "Writing `w1` clears the upper 32 bits of `x1`.",
+    "`mov w1, 5` does not keep the 1s that `mov x1, -1` set in the upper 32 bits.",
     "After `mov x3, -1` then `mov w3, -1`, `x3` is `0x00000000ffffffff`.",
     "`w2` ends as `0x000f4240`.",
     "`x1` is 5 and `w2` is 1000000.",

@@ -450,6 +450,8 @@ describe("errors", () => {
       allowed: "`a`",
       bits: 32,
       repeats: "2, 4, 8 or 16",
+      which: "first",
+      mnemonic: "movk",
     };
     for (const key of Object.keys(strings) as MessageKey[]) {
       expect(message(key, params), key).not.toMatch(/\{/);
@@ -480,6 +482,7 @@ describe("every message key an error can have", () => {
     ["operands.few", "f:\n  add x0, x1"],
     ["operands.many", "f:\n  nop x0"],
     ["operand.register", "f:\n  add x0, 5, x2"],
+    ["operand.registerMissing", "f:\n  movk , #3, lsl 16"],
     ["syntax.missingComma", "f:\n  sub w0 w0 w1"],
     ["operand.noSp", "f:\n  and x0, sp, x1"],
     ["operand.noZr", "f:\n  add xzr, xzr, 5"],
@@ -545,6 +548,44 @@ describe("every message key an error can have", () => {
     expect(firstError("f:\n  add w0, w0 #5").key).toBe("syntax.missingComma");
     // A shift or a memory operand is not one.
     expect(assemble("f:\n  add x0, x1, x2, lsl 2\n  ldr x0, [x1, 8]\n  ret").errors).toEqual([]);
+  });
+
+  it("an empty operand where a register should be names which operand and the instruction", () => {
+    // What the tap editor leaves when `movk` has its number and shift and no register.
+    const e = firstError("f:\n  movk , #3, lsl 16\n  ret");
+    expect(e.key).toBe("operand.registerMissing");
+    expect(e.params).toEqual({ which: "first", mnemonic: "movk" });
+    expect(e.line).toBe(2);
+    expect(message(e.key, e.params)).toBe("The first operand of `movk` should be a register.");
+    // The same for the second and third operands, and for a register that is not the first operand.
+    const second = firstError("f:\n  add w0, , 5");
+    expect(second.key).toBe("operand.registerMissing");
+    expect(message(second.key, second.params)).toBe(
+      "The second operand of `add` should be a register.",
+    );
+    expect(message("operand.registerMissing", firstError("f:\n  neg w0, ").params)).toBe(
+      "The second operand of `neg` should be a register.",
+    );
+    expect(message("operand.registerMissing", firstError("f:\n  mvn w0, ").params)).toBe(
+      "The second operand of `mvn` should be a register.",
+    );
+    expect(message("operand.registerMissing", firstError("f:\n  mov , 5").params)).toBe(
+      "The first operand of `mov` should be a register.",
+    );
+  });
+
+  it("an operand that is written but is not a register still quotes it", () => {
+    const e = firstError("f:\n  add x0, 5, x2");
+    expect(e.key).toBe("operand.register");
+    expect(message(e.key, e.params)).toBe("`5` should be a register here.");
+  });
+
+  it("immediate.move quotes the number alone, as written", () => {
+    const e = firstError("f:\n  mov w0, 1000000");
+    expect(e.key).toBe("immediate.move");
+    expect(e.params).toEqual({ text: "1000000" });
+    expect(message(e.key, e.params)).toBe("No single instruction can put `1000000` in a register.");
+    expect(firstError("f:\n  mov x0, 0x123456789").params).toEqual({ text: "0x123456789" });
   });
 
   it("gate.notYet", () => {

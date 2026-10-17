@@ -752,6 +752,18 @@ test.describe("Two readings each", () => {
     ]);
   });
 
+  test("gives the three signed readings the full keyboard, and the unsigned ones the number keypad", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const c = challenge(page, READ);
+    await c.scrollIntoViewIfNeeded();
+    for (const id of ["s1", "s2", "s3"])
+      await expect(c.locator(`[data-field="${id}"] input`)).toHaveAttribute("inputmode", "text");
+    for (const id of ["u1", "u2", "u3"])
+      await expect(c.locator(`[data-field="${id}"] input`)).toHaveAttribute("inputmode", "numeric");
+  });
+
   test("blocks until all six are given, and names the empty ones", async ({ page }) => {
     await openLesson(page);
     await fill(page, { u1: "42" });

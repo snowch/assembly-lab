@@ -9,7 +9,15 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { INTERACTIVES, STEPS, VIEW_STRINGS, createBook, grade, parseListing } from "@al/views";
+import {
+  AnswerEditor,
+  INTERACTIVES,
+  STEPS,
+  VIEW_STRINGS,
+  createBook,
+  grade,
+  parseListing,
+} from "@al/views";
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
 import {
   SECTION_KINDS,
@@ -255,6 +263,38 @@ describe("the challenges", () => {
     const c = challenge("two-readings-each");
     const answers = { ...c.reference.answers, s2: "−2147483648", s3: "−200" };
     expect(grade(c, { answers }).passed).toBe(true);
+  });
+});
+
+describe("the answer boxes of Two readings each", () => {
+  const modeOf = (field: string) => {
+    const { container } = render(
+      <AnswerEditor
+        lesson={{} as typeof lesson}
+        challenge={challenge("two-readings-each")}
+        artifact={{}}
+        onChange={() => {}}
+      />,
+    );
+    return container.querySelector(`[data-field="${field}"] input`)?.getAttribute("inputmode");
+  };
+
+  it("give the three signed readings, which are negative or can be, the full keyboard", () => {
+    // A number keypad has no minus sign on every phone, and −2147483648 and −200 are answers.
+    expect(["s1", "s2", "s3"].map(modeOf)).toEqual(["text", "text", "text"]);
+  });
+
+  it("keep the number keypad for the three unsigned readings, which are never negative", () => {
+    expect(["u1", "u2", "u3"].map(modeOf)).toEqual(["numeric", "numeric", "numeric"]);
+  });
+
+  it("still take the lowest signed answer the keyboard can give them", () => {
+    const c = challenge("two-readings-each");
+    expect(c.fields.filter((f) => f.min !== undefined).map((f) => [f.id, f.min])).toEqual([
+      ["s1", -2147483648],
+      ["s2", -2147483648],
+      ["s3", -2147483648],
+    ]);
   });
 });
 

@@ -43,6 +43,9 @@ export const strings = {
   "operands.few": "`{text}` needs more operands.",
   "operands.many": "`{text}` has too many operands.",
   "operand.register": "`{text}` should be a register here.",
+  // `{which}` is "first", "second" or "third"; `{mnemonic}` is the instruction's name. Used when the
+  // operand that should be a register is empty.
+  "operand.registerMissing": "The {which} operand of `{mnemonic}` should be a register.",
   "operand.noSp": "`{text}` cannot be the stack pointer here.",
   "operand.noZr": "`{text}` cannot be the zero register here.",
   "operand.width": "The registers in `{text}` must all be w registers or all be x registers.",

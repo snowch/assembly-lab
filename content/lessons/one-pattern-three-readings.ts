@@ -29,6 +29,9 @@ const STEPS = "steps";
 const BIT_READINGS = "bit-readings";
 const PATTERN_READINGS = "pattern-readings";
 
+/** The smallest `int`: a field that takes a negative number says so, and gets a full keyboard. */
+const MOST_NEGATIVE = -2147483648;
+
 /** A label as plain text: a verdict shows no code marks. */
 const plain = (text: string) => text.replaceAll("`", "");
 
@@ -220,11 +223,11 @@ export const onePatternThreeReadings: LessonInput = {
       gradedDirection: "answer",
       fields: [
         { id: "u1", label: READ.fields.u1, kind: "number" },
-        { id: "s1", label: READ.fields.s1, kind: "number" },
+        { id: "s1", label: READ.fields.s1, kind: "number", min: MOST_NEGATIVE },
         { id: "u2", label: READ.fields.u2, kind: "number" },
-        { id: "s2", label: READ.fields.s2, kind: "number" },
+        { id: "s2", label: READ.fields.s2, kind: "number", min: MOST_NEGATIVE },
         { id: "u3", label: READ.fields.u3, kind: "number" },
-        { id: "s3", label: READ.fields.s3, kind: "number" },
+        { id: "s3", label: READ.fields.s3, kind: "number", min: MOST_NEGATIVE },
       ],
       // Each pattern is put in `w0` on the model, and each answer is compared with the reading of
       // what `w0` then holds; the expected numbers are never in this file.

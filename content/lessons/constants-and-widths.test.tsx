@@ -232,9 +232,7 @@ describe("the challenges", () => {
     const c = challenge("build-1000000");
     const verdict = grade(c, c.initial);
     expect(verdict.passed).toBe(false);
-    expect(verdict.blocked).toBe(
-      "Line 1: No single instruction can put `mov w0, 1000000` in a register.",
-    );
+    expect(verdict.blocked).toBe("Line 1: No single instruction can put `1000000` in a register.");
   });
 
   it("build-1000000: the text the tap editor builds passes, and so does movk alone with the lower half first", () => {
@@ -313,6 +311,19 @@ describe("the challenges", () => {
     expect(props).not.toContain("odometer_limit");
     // service_interval stays, with its test against the recorded listing.
     expect(props).toContain("service_interval");
+  });
+
+  it("the words before Build 1000000 give neither of 1000000's halves, in hexadecimal or decimal", () => {
+    const construction = lesson.sections.findIndex((s) => s.kind === "construction");
+    const words = lesson.sections
+      .slice(0, construction)
+      .flatMap((s) => [s.title, s.prose, s.details?.prose ?? ""])
+      .join("\n");
+    // The prediction names 1000000 as the Question's number and prints the halves of the other three.
+    expect(words).toContain("0x0001 1170");
+    expect(words).toContain("The fourth, 1000000, is the odometer limit from the first section");
+    for (const half of ["0x000f 4240", "0x000f4240", "4240", "16960", "0xf,"])
+      expect(words).not.toContain(half);
   });
 
   it("build-1000000: a second mov replaces the whole register, so mov then mov does not pass", () => {
