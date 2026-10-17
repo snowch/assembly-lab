@@ -6,9 +6,9 @@ The numbered rules below are copied unchanged from `STYLE.md` in the author's bo
 
 Where a rule says a number must never be typed into prose, read it for this course this way. The number may be a register's value, a flag, an address or a count, and it may appear in prose only if the course's simulator, or a recorded compiler listing, produced it. Where a rule mentions the stamped result, read that as the simulator's trace or the recorded compiler listing. The vocabulary ration means terms are unlocked lesson by lesson, and so are the instructions the course's assembler accepts. `docs/authoring.md` says how.
 
-The checklist applies to every string a learner reads. That covers lesson prose, hints, the feedback after a failed test, model-versus-reality notes, labels in the figures, and the front page. Both closing passes run over every lesson before it is called finished. For this course, the second pass also asks whether the figure on the page showed the mechanism that the prose claims it shows. A Haiku subagent drafts the prose from a list of checked facts. The managing model checks the facts and nothing else. `CLAUDE.md` in the repository root describes the process.
+The checklist applies to every string a learner reads. That covers lesson prose, hints, the feedback after a failed test, model-versus-reality notes, labels in the figures, and the front page. Both closing passes run over every lesson before it is called finished. For this course, the second pass also asks whether the figure on the page showed the mechanism that the prose claims it shows. A separate drafting agent or session writes from a list of checked facts. Editing checks clarity as well as accuracy, followed by independent learner and technical reviews. `CLAUDE.md` sets the process; `docs/authoring.md` gives model and effort recommendations.
 
-*This preamble was drafted by a Haiku subagent from eleven facts, as the process requires, and checked for facts only. The copied file follows.*
+*The original preamble was drafted by a Haiku subagent from eleven facts and checked for facts only. It has since been updated to reflect the current authoring process. The copied file follows.*
 
 ---
 

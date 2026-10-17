@@ -81,26 +81,30 @@ This course teaches a real instruction set, so every claim about it is checkable
   simulator leaves out (pipelines, caches, exceptions, most of the instruction set), and what
   that changes.
 
-## Haiku drafts the prose; you check it
+## Draft and review in separate passes
 
-Every string a learner reads goes to a Haiku subagent to draft before it lands: lesson prose,
-hints, the feedback after a failed test, model-versus-reality notes, labels inside the figures,
-the front page. Haiku writes shorter, plainer sentences than a model with the whole repository in
-its head. It also drops facts and copies wrong ones faithfully. So the work splits four ways:
+Every string a learner reads follows this process: lesson prose, hints, feedback after a failed
+test, model-versus-reality notes, labels inside figures and the front page. No particular model
+is required. Short sentences alone do not show that an explanation is clear.
 
-1. **You write the brief as a list of facts**, not as prose: what the text must say, each point
-   checked against the model, a recorded listing or a source *before* the brief goes out. Attach
-   `docs/style.md`. A prose brief gets its wording copied.
-2. **Haiku writes the sentences, a section at a time.**
-3. **You check the facts, and nothing else.** Where a fact is missing, add the fewest words that
-   carry it. Do not rewrite Haiku's sentences. If a draft is wrong, send it back with a note.
-4. **Then read the whole lesson, start to finish**: `docs/style.md`'s second pass, where repeats
-   and broken joins show, and where you ask whether the figure showed the mechanism the prose
-   claims it shows.
+1. **Write a brief as a list of checked facts.** Check each point against the simulator, a
+   recorded listing or a source before drafting. Include the learning objective, the learner's
+   prior knowledge and `docs/style.md`.
+2. **Use a separate drafting agent or session**, a section at a time. Give it the facts and
+   relevant context. Avoid supplying finished sentences for it to copy.
+3. **Check accuracy and edit for clarity.** Correct missing facts, awkward wording, repetition
+   and broken joins. Recheck any technical claim affected by an edit. Return substantial
+   problems to the drafting pass with a specific explanation.
+4. **Read the whole lesson for understanding.** Can the learner explain the mechanism and use
+   it in an exercise? Does the figure demonstrate what the prose claims? Run both closing
+   passes in `docs/style.md`.
+5. **Obtain independent learner and technical reviews**, following the review rules below.
+   Give reviewers the lesson, prerequisites and sources without the author's account of why
+   the lesson works. A fresh reviewer can use the same model as the author.
 
-The mechanism is the Agent tool with `model: "haiku"`. Engineering documents (this file,
-`docs/plan.md`, `docs/machine.md`, `docs/sources.md`) are written directly. They still pass the
-checklist.
+`docs/authoring.md` gives model and effort recommendations and the brief for each review.
+Engineering documents (this file, `docs/plan.md`, `docs/machine.md`, `docs/sources.md`) may be
+drafted directly. They still pass the style checklist and independent review.
 
 ## No verdict on your own work
 
