@@ -9,6 +9,7 @@ import {
   lineText,
   numberOf,
   parseLine,
+  replaceLine,
   splitOperands,
   textOf,
   withInstruction,
@@ -97,5 +98,55 @@ describe("lines and text", () => {
   it("do not count a final newline as a line", () => {
     expect(linesOf("a\nb\n")).toEqual(["a", "b"]);
     expect(linesOf("")).toEqual([]);
+  });
+});
+
+describe("renaming a label", () => {
+  const program = [
+    "cbz w0, .Lempty",
+    "cmp w0, w1",
+    "b.cc .Llow",
+    "mov w0, 0",
+    "ret",
+    ".Llow:",
+    "mov w0, 1",
+    "ret",
+    ".Lempty:",
+    "mov w0, 2",
+    "ret",
+  ];
+
+  it("takes every branch to the old name to the new one", () => {
+    expect(replaceLine(program, 5, ".Lok:")).toEqual([
+      "cbz w0, .Lempty",
+      "cmp w0, w1",
+      "b.cc .Lok",
+      "mov w0, 0",
+      "ret",
+      ".Lok:",
+      "mov w0, 1",
+      "ret",
+      ".Lempty:",
+      "mov w0, 2",
+      "ret",
+    ]);
+    const renamed = replaceLine(program, 8, ".Lzero:");
+    expect(renamed[0]).toBe("cbz w0, .Lzero");
+    expect(renamed[2]).toBe("b.cc .Llow");
+  });
+
+  it("leaves a line that is not a label alone, and a label given the name it has", () => {
+    expect(replaceLine(program, 3, "mov w0, 7")[3]).toBe("mov w0, 7");
+    expect(replaceLine(program, 3, "mov w0, 7").filter((l, i) => l !== program[i])).toEqual([
+      "mov w0, 7",
+    ]);
+    expect(replaceLine(program, 5, ".Llow:")).toEqual(program);
+    // A label line turned into an instruction renames nothing.
+    expect(replaceLine(program, 5, "ret")[2]).toBe("b.cc .Llow");
+  });
+
+  it("changes only a name in a label slot: the same word as a register or a number stays", () => {
+    const odd = ["mov w0, 5", "b .L5", ".L5:", "ret"];
+    expect(replaceLine(odd, 2, ".Lx:")).toEqual(["mov w0, 5", "b .Lx", ".Lx:", "ret"]);
   });
 });

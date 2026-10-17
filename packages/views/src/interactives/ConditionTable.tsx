@@ -2,17 +2,20 @@
 
 // One compare, every condition. The learner types two values; the model runs `cmp w0, w1` on them and
 // one `cset` for each condition, and the figure draws the four flags the compare left and, for each
-// condition, its meaning, the flags it reads and whether it holds. Whether a condition holds is what
-// the model's own `cset` gave. The figure holds no table of when a condition holds: it holds only the
-// names and the rules the lesson's list gives, which are words.
+// condition, its meaning, its rule, the flags it read with their values and whether it holds. Whether
+// a condition holds is what the model's own `cset` gave. The figure holds no table of when a condition
+// holds: it holds only the names and the rules the lesson's list gives, which are words. A compact
+// view shows the six conditions the lesson leans on, and the rest sit behind a closed disclosure.
 
 import { useMemo, useState } from "react";
 import { z } from "zod";
 
+import { ConditionItem } from "../ConditionItem";
 import { FlagsRow } from "../FlagsRow";
 import { compareResult, parseTyped, type Typed } from "../branch";
 import { withCode } from "../parts";
 import { RegisterRow } from "../parts";
+import { conditionRead } from "../select";
 import { VIEW_STRINGS as S } from "../strings";
 import { BRANCH_STRINGS as B, CONDITION_ROWS } from "../strings.branch";
 import { withProps } from "./props";
@@ -22,6 +25,8 @@ const Props = z.object({
   start: z.tuple([z.string(), z.string()]).default(["8", "8"]),
   /** Pairs of values the lesson has already used, offered as buttons. */
   presets: z.array(z.tuple([z.string(), z.string()])).default([]),
+  /** The conditions the compact view shows; the others are behind "All condition codes". */
+  primary: z.array(z.string()).default(["eq", "ne", "cs", "cc", "ge", "lt"]),
 });
 
 const GROUPS = ["either", "unsigned", "signed", "other"] as const;
@@ -91,8 +96,39 @@ export const ConditionTable = withProps(Props, function ConditionTable({ data })
         )
       : null;
   }, [a, b]);
+  const reads = useMemo(
+    () =>
+      result
+        ? CONDITION_ROWS.map((c) =>
+            conditionRead(c.name, result.flags, result.holds[c.name] === true),
+          )
+        : [],
+    [result],
+  );
+  /** The groups of some of the conditions, in the order the lesson's list gives them. */
+  const groups = (shown: (name: string) => boolean) =>
+    GROUPS.map((group) => ({
+      group,
+      items: reads.filter((r) => r.row?.group === group && shown(r.name)),
+    })).filter((g) => g.items.length > 0);
+  const primary = new Set(data.primary);
+  const list = (shown: (name: string) => boolean, label: string) => (
+    <div className="al-cond-list" role="group" aria-label={label}>
+      {groups(shown).map(({ group, items }) => (
+        <div key={group} className="al-cond-group" data-group={group}>
+          <p className="al-cond-group-head">{withCode(B.conditions.groups[group])}</p>
+          <ul>
+            {items.map((item) => (
+              <ConditionItem key={item.name} item={item} />
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
   return (
     <div className="al-figure al-conditions" data-figure="condition-table">
+      <p className="al-cond-heading al-cond-compare">{withCode(B.conditions.compareLine)}</p>
       <div className="al-cond-values" role="group" aria-label={B.conditions.group}>
         <ValueBox name="w0" label={B.conditions.first} text={a} onText={setA} typed={first} />
         <ValueBox name="w1" label={B.conditions.second} text={b} onText={setB} typed={second} />
@@ -125,28 +161,11 @@ export const ConditionTable = withProps(Props, function ConditionTable({ data })
         <>
           <p className="al-cond-heading">{withCode(B.conditions.flagsHeading)}</p>
           <FlagsRow flags={result.flags} />
-          <div className="al-cond-list" role="group" aria-label={B.conditions.list}>
-            {GROUPS.map((group) => (
-              <div key={group} className="al-cond-group" data-group={group}>
-                <p className="al-cond-group-head">{withCode(B.conditions.groups[group])}</p>
-                <ul>
-                  {CONDITION_ROWS.filter((c) => c.group === group).map((c) => {
-                    const yes = result.holds[c.name] === true;
-                    return (
-                      <li key={c.name} className="al-cond" data-cond={c.name} data-holds={yes}>
-                        <code className="al-cond-name">{c.name}</code>
-                        <span className="al-cond-means">{withCode(c.means)}</span>
-                        <span className="al-cond-reads">{withCode(c.reads)}</span>
-                        <span className="al-cond-verdict">
-                          {withCode(yes ? B.conditions.yes : B.conditions.no)}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
-          </div>
+          {list((name) => primary.has(name), B.conditions.list)}
+          <details className="al-cond-more">
+            <summary>{B.conditions.all}</summary>
+            {list((name) => !primary.has(name), B.conditions.all)}
+          </details>
         </>
       )}
     </div>

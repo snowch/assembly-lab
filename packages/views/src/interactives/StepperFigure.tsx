@@ -11,9 +11,11 @@ import { z } from "zod";
 
 import { useSlot } from "@platform/lesson-runtime";
 
+import { branchStatusAt, jumpedAt } from "../branchPath";
 import { cLinesOf, labelOf } from "../listing";
 import { FlagsRow } from "../FlagsRow";
 import { stopSentence } from "../messages";
+import { PanelSchema, StepPanel } from "../panels";
 import { ListingView, RegisterRow, withCode } from "../parts";
 import { VIEW_STRINGS as S } from "../strings";
 import { BRANCH_STRINGS as B } from "../strings.branch";
@@ -33,14 +35,20 @@ const Props = z.object({
   flags: z.boolean().default(false),
   /** Say how many instructions have run so far. */
   count: z.boolean().default(false),
+  /** After a step that ran a branch, say whether it was taken and what runs next (Module 4). */
+  branchStatus: z.boolean().default(false),
+  /** A panel under the flags: a compare and `csel` in three stages, or two conditions (Module 4). */
+  panel: PanelSchema.optional(),
 });
 
 /** What the status line says: what ran, what runs next, how the run ended. */
-function statusOf(trace: Trace, view: StepView) {
+function statusOf(trace: Trace, view: StepView, branchStatus: boolean) {
   const at = (i: number | null) => (i === null ? undefined : trace.lines[i]);
   const ran = at(view.ran);
   const next = at(view.next);
   if (view.k === 0) return S.stepper.start;
+  const branch = branchStatus ? branchStatusAt(trace, view) : null;
+  if (branch !== null) return branch;
   const parts: string[] = [];
   if (ran) parts.push(S.stepper.ran(ran.text));
   if (view.stop !== null) parts.push(stopSentence(view.stop) ?? S.stepper.ended);
@@ -75,7 +83,12 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
   const view = viewAt(trace, k);
   const atEnd = view.k >= view.total;
   return (
-    <div className="al-figure al-stepper" data-figure="stepper" data-k={view.k}>
+    <div
+      className="al-figure al-stepper"
+      data-figure="stepper"
+      data-k={view.k}
+      data-jump={data.branchStatus && jumpedAt(trace, view) ? "true" : undefined}
+    >
       {data.removable && (
         <label className="al-switch">
           <input
@@ -123,7 +136,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
         </button>
       </div>
       <p className="al-status" role="status">
-        {withCode(statusOf(trace, view))}
+        {withCode(statusOf(trace, view, data.branchStatus))}
       </p>
       {data.count && (
         <p className="al-count" data-count={view.k}>
@@ -146,6 +159,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           before={view.k > 0 ? viewAt(trace, view.k - 1).state.flags : null}
         />
       )}
+      {data.panel && <StepPanel panel={data.panel} trace={trace} k={view.k} />}
     </div>
   );
 });

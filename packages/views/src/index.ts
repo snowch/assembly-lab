@@ -60,6 +60,9 @@ export {
   ranLines,
 } from "./branch";
 export type { BranchArrow, Change, DiffRow } from "./branch";
+export { conditionsHold, readConditions, selectModel, twoConditions } from "./select";
+export { branchStatusAt, goesToLabel, outcomeOf, pathOf } from "./branchPath";
+export { listingOfText } from "./interactives/SolutionStepper";
 export { BRANCH_OUTCOMES } from "./grader-branch";
 export { MODULE1_STRINGS } from "./strings.module1";
 export { introducedOf } from "./interactives/props";

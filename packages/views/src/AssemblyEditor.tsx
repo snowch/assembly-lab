@@ -34,6 +34,7 @@ import {
   negated,
   numberOf,
   parseLine,
+  replaceLine,
   slotsOf,
   textOf,
   withDigit,
@@ -445,7 +446,7 @@ function TapMode({
   conditions: readonly string[];
 }) {
   const [open, setOpen] = useState<number | null>(null);
-  const replace = (i: number, text: string) => setLines(lines.map((l, k) => (k === i ? text : l)));
+  const replace = (i: number, text: string) => setLines(replaceLine(lines, i, text));
   const insertBelow = (i: number) => {
     const next = [...lines];
     next.splice(i + 1, 0, "");

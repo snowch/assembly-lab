@@ -194,6 +194,34 @@ export function negated(number: string): string {
   return number.startsWith("-") ? number.slice(1) : `-${number}`;
 }
 
+/**
+ * The lines with line `index` replaced by `text`. When that line is a label line and `text` is a
+ * label line with another name, the label is renamed: every other line that goes to the old name
+ * (an operand in a label slot, such as the target of `b.cc` or `cbz`) goes to the new one, so a
+ * rename does not leave the branches pointing at a label that is no longer there.
+ */
+export function replaceLine(lines: readonly string[], index: number, text: string): string[] {
+  const next = lines.map((l, k) => (k === index ? text : l));
+  const was = labelNameOf(lines[index] ?? "");
+  const now = labelNameOf(text);
+  if (was === null || now === null || was === now) return next;
+  return next.map((l, k) => {
+    if (k === index) return l;
+    const line = parseLine(l);
+    const slots = slotsOf(line.mnemonic);
+    if (slots === undefined) return l;
+    let renamed = false;
+    const operands = line.operands.map((operand, j) => {
+      if (slots[j] === "label" && operand.trim() === was) {
+        renamed = true;
+        return now;
+      }
+      return operand;
+    });
+    return renamed ? lineText({ mnemonic: line.mnemonic, operands }) : l;
+  });
+}
+
 /** A program's text as the lines the tap editor lists. A final newline is not a line of its own. */
 export function linesOf(text: string): string[] {
   if (text === "") return [];

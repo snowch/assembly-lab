@@ -27,6 +27,7 @@ import { CountPrediction } from "./CountPrediction";
 import { ListingChange } from "./ListingChange";
 import { ListingDiff } from "./ListingDiff";
 import { ListingRuns } from "./ListingRuns";
+import { SolutionStepper } from "./SolutionStepper";
 import { WarningWordFigure } from "./WarningWordFigure";
 import { WordStepperFigure } from "./WordStepperFigure";
 
@@ -45,6 +46,7 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   "listing-runs": ListingRuns,
   "listing-change": ListingChange,
   "listing-diff": ListingDiff,
+  "solution-stepper": SolutionStepper,
   "condition-table": ConditionTable,
   "count-prediction": CountPrediction,
   "branch-listing": BranchListing,

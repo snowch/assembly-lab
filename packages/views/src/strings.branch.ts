@@ -54,11 +54,104 @@ export const BRANCH_STRINGS = {
     no: "no",
     /** The headings over the groups, as the lesson's list words them. */
     groups: {
-      either: "Either reading",
-      unsigned: "Unsigned",
-      signed: "Signed",
-      other: "Met in Module 2",
+      // DRAFT
+      either: "Equality",
+      // DRAFT
+      unsigned: "Unsigned order",
+      // DRAFT
+      signed: "Signed order",
+      // DRAFT
+      other: "Others",
     },
+    // DRAFT
+    compareLine: "`cmp w0, w1` with a = `w0` and b = `w1`",
+    /** The flags a condition read, as "N = 1, V = 1". */
+    // DRAFT
+    read: (values: string) => `Reads ${values}`,
+    /** The disclosure over the conditions the compact view leaves out. */
+    // DRAFT
+    all: "All condition codes",
+  },
+
+  /** After a step that ran a branch (the stepper's `branchStatus`); prose.md, Lesson 2 part 4. */
+  status: {
+    taken: (branch: string, instruction: string, label: string) =>
+      `\`${branch}\` was taken. Next: \`${instruction}\` at \`${label}\`.`,
+    notTaken: (branch: string, instruction: string) =>
+      `\`${branch}\` was not taken. Next: \`${instruction}\`.`,
+    always: (branch: string, label: string, instruction: string) =>
+      `\`${branch}\` always goes to \`${label}\`. Next: \`${instruction}\`.`,
+  },
+
+  /** The three stages of a compare followed by a `csel`, drawn from the run. */
+  select: {
+    // DRAFT
+    panel: "Compare, condition, select",
+    // DRAFT
+    choose: "Function to follow",
+    // DRAFT
+    compare: "Compare",
+    // DRAFT
+    condition: "Condition",
+    // DRAFT
+    select: "Select",
+    // DRAFT
+    notYet: "Not run yet",
+    /** A register that holds a value the call was given: `w0` = a, with its value. */
+    // DRAFT
+    holds: (register: string, name: string, value: string) => `\`${register}\` = ${name}: ${value}`,
+    /** The compare as a sum: `cmp w1, w0` is b minus a. */
+    // DRAFT
+    sum: (instruction: string, first: string, sign: string, second: string) =>
+      `\`${instruction}\` is ${first} ${sign} ${second}`,
+    // DRAFT
+    minus: "minus",
+    // DRAFT
+    plus: "plus",
+    // DRAFT
+    flagsAfter: "Flags after the compare",
+    // DRAFT
+    noRegister: "No register written",
+    // DRAFT
+    wrote: (registers: string) => `Registers written: ${registers}`,
+    /** The condition `csel` names. */
+    // DRAFT
+    asks: (instruction: string, condition: string, means: string) =>
+      `\`${instruction}\` asks \`${condition}\` (${means})`,
+    // DRAFT
+    rule: (rule: string) => `Rule: ${rule}`,
+    // DRAFT
+    flagsRead: (values: string) => `Flags it read: ${values}`,
+    // DRAFT
+    answer: (yes: boolean) => (yes ? "Answer: yes" : "Answer: no"),
+    // DRAFT
+    also: (condition: string) => `The same flags, read by \`${condition}\``,
+    // DRAFT
+    ifYes: (register: string, value: string) => `If yes: \`${register}\` holds ${value}`,
+    // DRAFT
+    ifNo: (register: string, value: string) => `If no: \`${register}\` holds ${value}`,
+    // DRAFT
+    chosen: "chosen",
+    // DRAFT
+    notChosen: "not chosen",
+    // DRAFT
+    result: (register: string, value: string) => `\`${register}\` now holds ${value}`,
+  },
+
+  /** Two conditions read off the same flags, beside a stepper. */
+  twoConditions: {
+    // DRAFT
+    panel: "The same flags, read by two conditions",
+    // DRAFT
+    usedBy: (instruction: string) => `used by \`${instruction}\``,
+  },
+
+  /** The learner's own solution, stepped after the challenge it follows has passed. */
+  solution: {
+    // DRAFT
+    choose: "Test to step through",
+    // DRAFT
+    figure: "Your solution, one instruction at a time",
   },
 
   count: {
@@ -74,8 +167,18 @@ export const BRANCH_STRINGS = {
     taken: "taken",
     notTaken: "not taken",
     didNotRun: "Did not run",
-    result: (call: string, value: number, n: number) =>
-      `\`${call}\` returns ${value}, in ${n} instructions.`,
+    // DRAFT
+    notReached: "not reached",
+    // DRAFT
+    start: "start",
+    // DRAFT
+    jumpedHere: "jumped here",
+    // DRAFT
+    path: "The instructions that ran, in order",
+    // DRAFT
+    ranCount: (n: number) => `Ran: ${n} ${n === 1 ? "instruction" : "instructions"}`,
+    // DRAFT
+    returned: (value: number) => `Returned: ${value}`,
   },
 
   grader: {

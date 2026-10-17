@@ -189,9 +189,14 @@ describe("one compare, every condition", () => {
     expect(row).toHaveTextContent("ge");
     expect(row).toHaveTextContent("greater than or equal");
     expect(row).toHaveTextContent("N equals V");
-    expect(
-      [...container.querySelectorAll(".al-cond-group-head")].map((h) => h.textContent),
-    ).toEqual(["Either reading", "Unsigned", "Signed", "Met in Module 2"]);
+    // The compact view groups the six the lesson leans on; the rest sit behind a closed disclosure.
+    const heads = (root: ParentNode) =>
+      [...root.querySelectorAll(".al-cond-group-head")].map((h) => h.textContent);
+    const more = container.querySelector("details.al-cond-more")!;
+    expect(more).not.toHaveAttribute("open");
+    expect(heads(container).slice(0, 3)).toEqual(["Equality", "Unsigned order", "Signed order"]);
+    expect(heads(more)).toEqual(["Unsigned order", "Signed order", "Others"]);
+    expect(more.querySelector("summary")).toHaveTextContent(B.conditions.all);
   });
 
   it("runs the compare again for a pair that is typed: 0x7fffffff and 0xffffffff leave NZCV 1001", async () => {
@@ -359,10 +364,9 @@ describe("the listing with an arrow from each branch to its label", () => {
       "true",
       "true",
     ]);
-    expect(container.querySelector(".al-branch-result")).toHaveTextContent(
-      plain(B.arrows.result("describe(15)", 2, 5)),
-    );
-    expect([...container.querySelectorAll(".al-btag")].map((t) => t.textContent)).toEqual([
+    expect(container.querySelector(".al-branch-ran")).toHaveTextContent(B.arrows.ranCount(5));
+    expect(container.querySelector(".al-branch-returned")).toHaveTextContent(B.arrows.returned(2));
+    expect([...container.querySelectorAll(".al-brow .al-btag")].map((t) => t.textContent)).toEqual([
       "taken",
       "taken",
     ]);
@@ -386,11 +390,12 @@ describe("the listing with an arrow from each branch to its label", () => {
       "false",
       "false",
     ]);
-    expect(container.querySelector(".al-branch-result")).toHaveTextContent(
-      plain(B.arrows.result("describe(10)", 0, 6)),
-    );
-    expect([...container.querySelectorAll(".al-btag")].map((t) => t.textContent)).toEqual([
+    expect(container.querySelector(".al-branch-ran")).toHaveTextContent(B.arrows.ranCount(6));
+    expect(container.querySelector(".al-branch-returned")).toHaveTextContent(B.arrows.returned(0));
+    // The branch that was not taken, and the one the run never reached, are told apart in words.
+    expect([...container.querySelectorAll(".al-brow .al-btag")].map((t) => t.textContent)).toEqual([
       "not taken",
+      "not reached",
     ]);
   });
 
@@ -414,9 +419,8 @@ describe("the listing with an arrow from each branch to its label", () => {
     const box = screen.getByRole("textbox");
     await user.clear(box);
     await user.type(box, "-15");
-    expect(container.querySelector(".al-branch-result")).toHaveTextContent(
-      plain(B.arrows.result("describe(-15)", -2, 6)),
-    );
+    expect(container.querySelector(".al-branch-ran")).toHaveTextContent(B.arrows.ranCount(6));
+    expect(container.querySelector(".al-branch-returned")).toHaveTextContent(B.arrows.returned(-2));
     await user.clear(box);
     await user.type(box, "ten");
     expect(container).toHaveTextContent(B.arrows.notWhole);

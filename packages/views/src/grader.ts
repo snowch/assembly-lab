@@ -25,6 +25,7 @@ import {
   gradeSmallest,
 } from "./grader-arith";
 import { BRANCH_OUTCOMES, gradeBranchOutcomes } from "./grader-branch";
+import { withFeedback, type FailedRun } from "./grader-feedback";
 import { RecordedSchema, introducedOf } from "./interactives/props";
 import { errorSentence, stopSentence } from "./messages";
 import {
@@ -96,6 +97,8 @@ export function gradeWritten(challenge: Challenge, artifact: Artifact): Verdict 
     return { passed: false, total, failures: [], blocked: lines.join("\n") };
   }
   const failures: VerdictFailure[] = [];
+  // The calls that ran to a return and failed, for the sentences a challenge may give (Module 4).
+  const ranWrong = new Map<number, FailedRun>();
   cases.forEach((c, index) => {
     const args = argsOf(c.given);
     const inputs = Object.fromEntries(args.map((v, n) => [`w${n}`, String(v)]));
@@ -128,9 +131,21 @@ export function gradeWritten(challenge: Challenge, artifact: Artifact): Verdict 
       expected[name] = String(unsigned ? pattern(want) : want);
       if (pattern(want) !== BigInt.asUintN(32, result.final.x[n] ?? 0n)) ok = false;
     }
-    if (!ok) failures.push({ index, label: c.label, inputs, actual, expected });
+    if (!ok) {
+      failures.push({ index, label: c.label, inputs, actual, expected });
+      ranWrong.set(index, {
+        args,
+        actual: wValue(result.final, 0),
+        steps: result.steps,
+        program,
+      });
+    }
   });
-  return { passed: failures.length === 0, total, failures };
+  return {
+    passed: failures.length === 0,
+    total,
+    failures: withFeedback(challenge, failures, ranWrong),
+  };
 }
 
 /**
