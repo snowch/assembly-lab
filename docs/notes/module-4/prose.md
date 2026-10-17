@@ -231,7 +231,7 @@ fuel_low:
 
 `fuel_low(5, 8)` is 1, and `fuel_low(8, 8)` is 0.
 
-Not every C `if` needs a branch. `warning_light` is written with `if (litres < reserve) return 1;` and then `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing, with no branch. The closed note "`warning_light`" shows that listing and its two results.
+Not every C `if` makes the processor skip instructions. `warning_light` is written with `if (litres < reserve) return 1;` and then `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing, which runs every instruction. The closed note "`warning_light`" shows that listing and its two results.
 
 *Closed note: warning_light, and tst and ands*
 

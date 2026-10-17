@@ -45,25 +45,10 @@ describe("the lesson", () => {
 
   it("uses none of the words the lesson after it introduces, or the ones the brief withholds", () => {
     const withheld =
-      /\b(labels?|taken|wzr|bgt|cbz|tbz|jump\w*|goto|link register|stack|program counter|pipeline\w*|speculat\w*|sign extension|two's complement|encoding|opcode|mnemonic|immediate|barrel shifter|loops?)\b/i;
+      /\b(branch\w*|labels?|taken|wzr|bgt|cbz|tbz|jump\w*|goto|link register|stack|program counter|pipeline\w*|speculat\w*|sign extension|two's complement|encoding|opcode|mnemonic|immediate|barrel shifter|loops?)\b/i;
     expect(learnerText(lesson).filter((t) => withheld.test(t))).toEqual([]);
     // `b` as an instruction: a lone b between code marks or spaces.
     expect(learnerText(lesson).filter((t) => /`b\s/.test(t))).toEqual([]);
-  });
-
-  it("uses branch in one place only, the checked sentences of section 8, and the gate is told so", () => {
-    // The author's text says that not every C `if` needs a branch, a lesson before the one that
-    // introduces the word. The gate is exempted for that word alone, and only that section says it.
-    expect(lesson.termExemptions.map((e) => e.term)).toEqual(["branch"]);
-    expect(lesson.termExemptions[0]?.reason).not.toBe("");
-    const withBranch = lesson.sections.filter((s) =>
-      learnerText({ ...lesson, sections: [s] } as typeof lesson).some((t) => /\bbranch/i.test(t)),
-    );
-    expect(withBranch.map((s) => s.kind)).toEqual(["generalisation"]);
-    const prose = lesson.sections.find((s) => s.kind === "generalisation")!.prose;
-    expect(prose.match(/\bbranch/gi)).toHaveLength(2);
-    expect(prose).toContain("Not every C `if` needs a branch.");
-    expect(prose).toContain("the same listing, with no branch.");
   });
 
   it("uses call only as the word for a test: five calls test it", () => {

@@ -70,16 +70,6 @@ export const compareAndChoose: LessonInput = {
   order: 0,
   objectives: [...LABELS.objectives],
   introduces: ["condition"],
-  // The checked text of section 8 says that not every C `if` needs a branch, a lesson before the one
-  // that introduces the word. The words are the author's; the gate is told, and the exemption is
-  // listed in a test, so that the next review sees the conflict and decides.
-  termExemptions: [
-    {
-      term: "branch",
-      reason:
-        "Section 8's checked text says that a C `if` does not always need a branch, in the plain sense; Lesson 2 defines the instruction.",
-    },
-  ],
   sections: [
     {
       kind: "question",

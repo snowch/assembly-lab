@@ -111,7 +111,7 @@ export const PROSE = {
     "```\nfuel_low:\n        cmp     w0, w1\n        cset    w0, cc\n        ret\n```\n\n" +
     "`cset w0, cc` writes 1 to `w0` when `cc` is yes, and 0 when it is no. `csel` selects between register values. `cset` writes 0 or 1.\n\n" +
     "`fuel_low(5, 8)` is 1, and `fuel_low(8, 8)` is 0.\n\n" +
-    'Not every C `if` needs a branch. `warning_light` is written with `if (litres < reserve) return 1;` and then `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing, with no branch. The closed note "`warning_light`" shows that listing and its two results.\n\n' +
+    'Not every C `if` makes the processor skip instructions. `warning_light` is written with `if (litres < reserve) return 1;` and then `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing, which runs every instruction. The closed note "`warning_light`" shows that listing and its two results.\n\n' +
     "`downhill` is `bool downhill(int gradient) { return gradient < 0; }`. GCC 16.1 at `-O1` compiled it to two instructions:\n\n" +
     "```\ndownhill:\n        lsr     w0, w0, 31\n        ret\n```\n\n" +
     "There is no compare. The signed reading of a number is negative exactly when its top bit is 1. `lsr w0, w0, 31` moves the top bit to the bottom, as Module 3 showed. So the result is 1 for a negative gradient, and 0 otherwise.",
