@@ -25,6 +25,10 @@ export default defineConfig({
       "apps/**/*.test.tsx",
     ],
     environment: "node",
+    // The figures' tests click through whole editors and rows of 32 bits in jsdom; with all the
+    // test files running at once, a busy machine needs longer than Vitest's five seconds. (A few
+    // files already say so for themselves; this is the same allowance for all of them.)
+    testTimeout: 30_000,
     setupFiles: ["./tests/vitest.setup.ts"],
     passWithNoTests: false,
   },
