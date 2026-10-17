@@ -14,14 +14,14 @@ export const PROSE = {
     summary: "Which compiler made these instructions?",
     body:
       "The instructions were made by GCC version 16.1, with the setting `-O1`. That setting is chosen when the C is compiled. It asks the compiler to make the code shorter and faster.\n\n" +
-      "With `-O0`, which means no optimisation, the same GCC makes twenty instructions from this C. It keeps every value in memory, outside the processor.\n\n" +
+      "With `-O0`, which means no optimisation, the same GCC makes twenty instructions from this C. It keeps every value outside the processor's registers.\n\n" +
       "The course uses `-O1` because its listings are short enough to follow.",
   },
   lineNote: {
     summary: "Why does GCC show line 7?",
     body:
       "The figure shows each line number as GCC recorded it, beside its instruction.\n\n" +
-      "GCC 16.1 at `-O1` records both `sub w0, w0, w3` and `ret` as line 7, the closing brace. That one `sub` does the work of line 5, `total = total - detour;`, and line 6, `return total;`.\n\n" +
+      "GCC 16.1 at `-O1` records both `sub w0, w0, w3` and `ret` as line 7, the closing brace. That one `sub` does the work of line 5, `total = total - detour;`. Line 6, `return total;`, needs no instruction of its own here.\n\n" +
       "With `-O0`, the same GCC records its subtraction as line 5.\n\n" +
       "The record is there to lead you from an instruction back to the C. When the compiler merges lines, the line it records can move.",
   },
@@ -41,7 +41,7 @@ export const PROSE = {
       "The instructions name only registers, never variables. Look at the first instruction, `add w0, w0, w1`. Which register does it write to, and what does that register hold before it runs?",
     "not-kept":
       "Look at line 6 of the C, `return total;`. What does the function still need when it reaches that line, and where must the processor keep it?",
-    w3: "`w3` holds `detour`, and the last instruction still needs it. What happens to a value when another value is written into the same register?",
+    w3: "`w3` holds `detour`. The third instruction, `sub w0, w0, w3`, still needs it. What happens to a value when another value is written into the same register?",
   },
 
   investigation:
@@ -66,7 +66,7 @@ export const PROSE = {
     "Change the instructions so the function returns `at_start` minus `at_end`. Three calls test it. You can type the instructions, or tap a line to change it.",
   fixHints: [
     "`sub` writes its first operand as its second operand minus its third.",
-    "The registers are right. Their order is not.",
+    "In the code you start with, the registers are right. Their order is not.",
     "`sub w0, w2, w3` puts `w2` minus `w3` into `w0`.",
     "The result must still go into `w0`. The second operand must be `at_start`, which is in `w0`.",
     "The whole answer is `sub w0, w0, w1`, then `ret`.",
@@ -93,7 +93,7 @@ export const PROSE = {
 
   generalisation:
     "Every function in this course works this way. Longer functions have more instructions. Later modules add instructions that change which one runs next, and instructions that read and write memory.\n\n" +
-    "The compiler chooses the registers and the instructions. GCC 16.1 at `-O0`, with no optimisation, makes twenty instructions from the same C, and they keep every variable in memory, outside the registers. GCC 16.1 at `-O1`, the setting used here, keeps the values inside the processor, in registers. So a listing belongs to one compiler at one setting.",
+    "The compiler chooses the registers and the instructions. `-O0` and `-O1` are two of GCC's optimisation settings, and a setting is chosen when the C is compiled. At `-O0`, which means no optimisation, GCC 16.1 makes twenty instructions from the same C, and it keeps every variable in memory, outside the processor's registers. At `-O1`, the setting used here, it keeps the values inside the processor, in registers. So a listing belongs to one compiler at one setting.",
 
   challenge:
     "The car needs a service when its odometer reaches a set reading. The odometer reading does not yet include the trip so far. `km_to_service` returns the kilometres left before the service, once the trip so far and a planned trip are counted. It keeps 50 km spare. Its four arguments are `service_at`, `odometer`, `trip_so_far` and `planned`, in `w0` to `w3`. GCC made five instructions from it, shown in the challenge below. The `#50` in the last `sub` is the number 50 written inside the instruction.",
@@ -110,9 +110,8 @@ export const PROSE = {
   traceFeedbackW0: "Take each `sub` in turn, and write down `w0` after each one.",
 
   reflection:
-    "- An instruction reads values from registers and writes its result to a register.\n" +
-    "- A register does not keep the name of the C variable whose value it holds.\n" +
-    "- The processor runs instructions, not C variable names.\n" +
+    "- `add` and `sub` read values from registers and write their result to a register.\n" +
+    "- The processor runs instructions, not C variable names. A register does not keep the name of the C variable whose value it holds.\n" +
     "- Instructions run one after another unless an instruction changes that.\n" +
     "- `ret` returns to the code that called the function.\n\n" +
     "Before `sub w1, w2, w1` runs, `w1` holds 5 and `w2` holds 9. Which register changes, and what do `w1` and `w2` hold afterwards?",

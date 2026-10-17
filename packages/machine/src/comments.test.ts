@@ -33,6 +33,12 @@ describe("a line that is one word the machine does not know", () => {
     expect(errorsOf("f:\n  fadd d0, d1, d2\n  ret")[0]?.key).toBe("notInMachine");
     expect(errorsOf("f:\n  low:\n  ret")).toEqual([]);
   });
+
+  it("names only the instruction it does not have, not the operands after it", () => {
+    expect(errorsOf("f:\n  subtract w0, w0, w1\n  ret")[0]?.text).toBe(
+      "The course's simulator does not have `subtract`.",
+    );
+  });
 });
 
 describe("a comment written with # or ;", () => {

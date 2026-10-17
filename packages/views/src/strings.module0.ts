@@ -35,12 +35,12 @@ export const MODULE0_STRINGS = {
     was: (name: string, value: string) => `${name} was ${value}`,
     // DRAFT: `list` is the registers written, joined with commas: `Changed: w0`.
     changed: (list: string) => `Changed: ${list}`,
-    // DRAFT: `list` is the registers read and not written: `Unchanged: w1`.
+    // DRAFT: `list` is the registers the figure draws that the instruction did not write: `Unchanged: w1, w2, w3`.
     unchanged: (list: string) => `Unchanged: ${list}`,
     // DRAFT
     none: "none",
     // DRAFT
-    ret: "`ret` does no arithmetic. Control returns to the code that called the function.",
+    ret: "`ret` does no arithmetic. The function ends, and the code that called it carries on.",
     // DRAFT
     continues: (label: string) =>
       `The next instruction is in \`${label}\`. The run continues into it.`,

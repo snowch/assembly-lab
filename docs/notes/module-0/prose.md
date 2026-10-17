@@ -10,8 +10,8 @@ After the author's second read (17 October 2026) thirteen texts were drafted by 
 
 - Step through a compiled function one instruction at a time, and say what each instruction changed.
 - Say where a function's arguments arrive and where its result leaves.
-- Fix a compiled function whose instructions use their values in the wrong order.
-- Explain why removing `ret` changes what a function returns.
+- Fix a compiled function so that it returns the right value.
+- Say what `ret` does, and what happens without it.
 
 ## 1. What does the processor do?
 
@@ -21,7 +21,7 @@ The C function `trip_distance` does this with three arithmetic statements and a 
 
 You will follow those four instructions one at a time, to see what the processor does.
 
-*The C function and the four instructions GCC made from it. GCC notes, for each instruction, the C line it came from. Each instruction sits beside that line.*
+*The C function and the four instructions GCC made from it. GCC notes, for each instruction, the C line it came from. Each instruction sits beside that line. The line ending in a colon, trip_distance:, is the function's name.*
 
 *Closed note under the listing, shut until the learner opens it.*
 
@@ -29,7 +29,7 @@ You will follow those four instructions one at a time, to see what the processor
 
 The instructions were made by GCC version 16.1, with the setting `-O1`. That setting is chosen when the C is compiled. It asks the compiler to make the code shorter and faster.
 
-With `-O0`, which means no optimisation, the same GCC makes twenty instructions from this C. It keeps every value in memory, outside the processor.
+With `-O0`, which means no optimisation, the same GCC makes twenty instructions from this C. It keeps every value outside the processor's registers.
 
 The course uses `-O1` because its listings are short enough to follow.
 
@@ -39,7 +39,7 @@ The course uses `-O1` because its listings are short enough to follow.
 
 The figure shows each line number as GCC recorded it, beside its instruction.
 
-GCC 16.1 at `-O1` records both `sub w0, w0, w3` and `ret` as line 7, the closing brace. That one `sub` does the work of line 5, `total = total - detour;`, and line 6, `return total;`.
+GCC 16.1 at `-O1` records both `sub w0, w0, w3` and `ret` as line 7, the closing brace. That one `sub` does the work of line 5, `total = total - detour;`. Line 6, `return total;`, needs no instruction of its own here.
 
 With `-O0`, the same GCC records its subtraction as line 5.
 
@@ -70,7 +70,7 @@ The first instruction, `add w0, w0, w1`, writes its result into `w0`. So `total`
 
 *Feedback for the option "It does not keep it until the function returns.":* Look at line 6 of the C, `return total;`. What does the function still need when it reaches that line, and where must the processor keep it?
 
-*Feedback for the option "In `w3`, in place of `detour`.":* `w3` holds `detour`, and the last instruction still needs it. What happens to a value when another value is written into the same register?
+*Feedback for the option "In `w3`, in place of `detour`.":* `w3` holds `detour`. The third instruction, `sub w0, w0, w3`, still needs it. What happens to a value when another value is written into the same register?
 
 ## 4. Stepping through
 
@@ -86,13 +86,13 @@ Press Next to run one instruction. The figure then shows what that instruction r
 
 At each step, look for two things: which register changes, and which registers do not.
 
-*`trip_distance(120, 85, 42, 15)`, one instruction at a time. A register with an outline has just changed.*
+*`trip_distance(120, 85, 42, 15)`, one instruction at a time. A register with an outline has just changed. The lit C line and the dark line-number chip mark the instruction that just ran; the arrow marks the next one.*
 
 *Shown once the run has ended.*
 
 `ret` ends the function. Its result is whatever `w0` holds at that moment.
 
-## 5. The wrong way round
+## 5. Fixing `fuel_used`
 
 A second function, `fuel_used`, should return the litres used on a trip. That is the fuel at the start minus the fuel at the end. Its C was written the wrong way round: `return at_end - at_start;`. GCC turned it into `sub w0, w1, w0` and `ret`.
 
@@ -105,7 +105,7 @@ In a real project you would correct the C and compile it again; here you fix the
 Change the instructions so the function returns `at_start` minus `at_end`. Three calls test it. You can type the instructions, or tap a line to change it.
 
 1. `sub` writes its first operand as its second operand minus its third.
-2. The registers are right. Their order is not.
+2. In the code you start with, the registers are right. Their order is not.
 3. `sub w0, w2, w3` puts `w2` minus `w3` into `w0`.
 4. The result must still go into `w0`. The second operand must be `at_start`, which is in `w0`.
 5. The whole answer is `sub w0, w0, w1`, then `ret`.
@@ -147,7 +147,7 @@ A function's arguments arrive in `w0`, `w1` and onwards, and an `int` result lea
 
 Every function in this course works this way. Longer functions have more instructions. Later modules add instructions that change which one runs next, and instructions that read and write memory.
 
-The compiler chooses the registers and the instructions. GCC 16.1 at `-O0`, with no optimisation, makes twenty instructions from the same C, and they keep every variable in memory, outside the registers. GCC 16.1 at `-O1`, the setting used here, keeps the values inside the processor, in registers. So a listing belongs to one compiler at one setting.
+The compiler chooses the registers and the instructions. `-O0` and `-O1` are two of GCC's optimisation settings, and a setting is chosen when the C is compiled. At `-O0`, which means no optimisation, GCC 16.1 makes twenty instructions from the same C, and it keeps every variable in memory, outside the processor's registers. At `-O1`, the setting used here, it keeps the values inside the processor, in registers. So a listing belongs to one compiler at one setting.
 
 ## 9. Kilometres to service
 
@@ -172,9 +172,8 @@ Without running the call `km_to_service(30000, 28750, 140, 390)`, give two value
 
 ## 10. What you now know
 
-- An instruction reads values from registers and writes its result to a register.
-- A register does not keep the name of the C variable whose value it holds.
-- The processor runs instructions, not C variable names.
+- `add` and `sub` read values from registers and write their result to a register.
+- The processor runs instructions, not C variable names. A register does not keep the name of the C variable whose value it holds.
 - Instructions run one after another unless an instruction changes that.
 - `ret` returns to the code that called the function.
 

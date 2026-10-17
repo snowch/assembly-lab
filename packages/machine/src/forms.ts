@@ -1410,7 +1410,8 @@ export function buildInstruction(ctx: FormContext): FormResult {
     if (ctx.ops.length === 0 && /^[A-Za-z_.$][\w.$]*$/.test(ctx.text)) {
       return fail("notInMachineWord", { text: ctx.text }, ctx.col);
     }
-    return fail("notInMachine", { text: ctx.text }, ctx.col);
+    // Name the instruction alone: the operands are not what the simulator lacks.
+    return fail("notInMachine", { text: ctx.mnemonic }, ctx.col);
   }
   // `cmp w0, w1 # compare`: GNU as takes `#` after the start of a line as the start of a number, so
   // the tail is an error there too. A `#` after a space, not at the start of an operand, and not

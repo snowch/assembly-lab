@@ -9,15 +9,15 @@ export const LABELS = {
   objectives: [
     "Step through a compiled function one instruction at a time, and say what each instruction changed.",
     "Say where a function's arguments arrive and where its result leaves.",
-    "Fix a compiled function whose instructions use their values in the wrong order.",
-    "Explain why removing `ret` changes what a function returns.",
+    "Fix a compiled function so that it returns the right value.",
+    "Say what `ret` does, and what happens without it.",
   ],
   titles: {
     question: "What does the processor do?",
     motivation: "Why the instructions matter",
     prediction: "Where a variable is kept",
     investigation: "Stepping through",
-    construction: "The wrong way round",
+    construction: "Fixing fuel_used",
     failureExperiment: "Removing ret",
     explanation: "How a program runs",
     generalisation: "Other functions",
@@ -31,9 +31,9 @@ export const LABELS = {
   },
   captions: {
     listing:
-      "The C function and the four instructions GCC made from it. GCC notes, for each instruction, the C line it came from. Each instruction sits beside that line.",
+      "The C function and the four instructions GCC made from it. GCC notes, for each instruction, the C line it came from. Each instruction sits beside that line. The line ending in a colon, trip_distance:, is the function's name.",
     stepper:
-      "trip_distance(120, 85, 42, 15), one instruction at a time. A register with an outline has just changed.",
+      "trip_distance(120, 85, 42, 15), one instruction at a time. A register with an outline has just changed. The lit C line and the dark line-number chip mark the instruction that just ran; the arrow marks the next one.",
     // The prose file gives no caption for these figures; these were drafted by Haiku.
     predictTotal: "A prediction about where the processor keeps total.",
     predictNoRet: "A prediction about what w0 holds when the run ends without ret.",

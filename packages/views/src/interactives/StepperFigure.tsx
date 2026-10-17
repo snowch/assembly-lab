@@ -76,9 +76,19 @@ function statusOf(trace: Trace, view: StepView) {
   return parts.join(" ");
 }
 
-/** What the last instruction read and wrote, in words and numbers. Nothing before the first step. */
-function FlowPanel({ trace, k }: { trace: Trace; k: number }) {
+/**
+ * What the last instruction read and wrote, in words and numbers. Nothing before the first step.
+ * "Unchanged" lists every register the figure draws that the instruction did not write, so it
+ * agrees with the registers below it, not only the ones the instruction read.
+ */
+function FlowPanel({ trace, k, shown }: { trace: Trace; k: number; shown: readonly number[] }) {
   const flow = flowAt(trace, k);
+  const kept =
+    flow?.kind === "arith"
+      ? shown
+          .map((n) => `${flow.destination.name.charAt(0)}${n}`)
+          .filter((name) => !flow.changed.includes(name))
+      : [];
   const F = M0.flow;
   return (
     <div
@@ -121,7 +131,7 @@ function FlowPanel({ trace, k }: { trace: Trace; k: number }) {
           <p className="al-flow-order">{flow.operation === "add" ? F.adds : F.subtracts}</p>
           <p className="al-flow-sets">
             <span data-set="changed">{F.changed(flow.changed.join(", ") || F.none)}</span>{" "}
-            <span data-set="unchanged">{F.unchanged(flow.unchanged.join(", ") || F.none)}</span>
+            <span data-set="unchanged">{F.unchanged(kept.join(", ") || F.none)}</span>
           </p>
           {flow.continuesInto !== null && (
             <p className="al-flow-continues">{withCode(F.continues(flow.continuesInto))}</p>
@@ -220,7 +230,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           {B.stepper.count(view.k)}
         </p>
       )}
-      {data.flow && <FlowPanel trace={trace} k={view.k} />}
+      {data.flow && <FlowPanel trace={trace} k={view.k} shown={data.registers} />}
       {data.decimal && (
         <div className="al-registers-head">
           <span className="al-registers-title">{S.stepper.registers}</span>
