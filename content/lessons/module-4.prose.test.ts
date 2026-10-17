@@ -151,9 +151,13 @@ describe.each(cases)("module 4, lesson $n: the lesson's words", (c) => {
       ),
     ].filter((x) => !fileFlat.includes(flat(x)));
     expect([...new Set(drafted)].sort()).toEqual([...new Set(c.own)].sort());
-    // Each is marked DRAFT where it is written, and nothing else is.
+    // Each is marked DRAFT where it is written until it has been through the prose process; the
+    // ones that have are listed, and nothing else is marked.
+    const checked: readonly string[] = [L2.captions.stepBge];
     const source = readFileSync(new URL(c.labelsFile, import.meta.url), "utf8");
-    expect(source.match(/^\s*\/\/ DRAFT$/gm) ?? []).toHaveLength(c.own.length);
+    expect(source.match(/^\s*\/\/ DRAFT$/gm) ?? []).toHaveLength(
+      c.own.filter((x) => !checked.includes(x)).length,
+    );
   });
 
   it("keep the figures' captions and the challenges' titles as plain text", () => {

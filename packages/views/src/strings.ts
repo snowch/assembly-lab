@@ -170,7 +170,7 @@ export const VIEW_STRINGS = {
     notWhole: (field: string) =>
       `The answer for ${field} must be a whole number written in decimal.`,
     noProgram: "This challenge has no program to run.",
-    // DRAFT: the failure card's sentence for a wrong field that has no sentence of its own. It names
+    // The failure card's sentence for a wrong field that has no sentence of its own. It names
     // the field and never the value. Without it the card prints its labels with nothing under them.
     fieldNotRight: (field: string) => `Your answer for ‘${field}’ is not right.`,
   },

@@ -38,9 +38,8 @@ export const LABELS = {
     fuelWarning: "The assembly editor, starting from a function that returns 0.",
     // DRAFT
     predictBge: "A prediction about what describe returns for 10 once bgt is changed to bge.",
-    // DRAFT
     stepBge:
-      "describe with bge on 10, one instruction at a time, with the flags and the number of instructions that have run. A register or flag with an outline has just changed.",
+      "The stepper runs describe with bgt changed to bge, on 10, one instruction at a time. It shows the flags and the number of instructions that have run. A register or flag with an outline has just changed.",
     // DRAFT
     counts: "describe, and six numbers to give for three gradients.",
   },
