@@ -59,7 +59,7 @@ The C names a variable, `total`. The instructions name no variable at all. They 
 
 **Where does the processor keep `total`?**
 
-- In `w0`, in place of `leg1`.
+- In `w0`, which now holds `leg1 + leg2`.
 - In a new place of its own.
 - It does not keep it until the function returns.
 - In `w3`, in place of `detour`.

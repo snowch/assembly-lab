@@ -44,7 +44,7 @@ export const LABELS = {
   },
   options: {
     total: [
-      { value: "w0", label: "In `w0`, in place of `leg1`." },
+      { value: "w0", label: "In `w0`, which now holds `leg1 + leg2`." },
       { value: "new-place", label: "In a new place of its own." },
       { value: "not-kept", label: "It does not keep it until the function returns." },
       { value: "w3", label: "In `w3`, in place of `detour`." },

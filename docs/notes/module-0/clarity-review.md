@@ -37,3 +37,10 @@ The reviewer inspected the opening, listing, compiler note, generalisation, chal
 completed stepper. The return-to-caller note appeared at the right stage; prediction feedback
 stayed hidden before commitment. No material layout issue, horizontal overflow or page error
 was found.
+
+## Follow-up: naming the first sum
+
+The author found "in place of `leg1`" confusing and approved "In `w0`, which now holds
+`leg1 + leg2`." The option and canonical prose now use that wording. Independent source review
+confirmed that it matches the first instruction and the prediction's first-write measurement.
+All 56 scoped tests, formatting and the production build passed for this follow-up.
