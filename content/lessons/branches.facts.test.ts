@@ -468,9 +468,10 @@ describe("the construction challenge, fuel_warning", () => {
       ].join("\n"),
     );
     expect(callText(swapped, "fuel_warning", [0, 10]).w0).toBe(1);
-    expect(PROSE.fuelWarningHints[1]).toContain(
-      "`litres` 0 also passes it, so it returns 1, not 2",
-    );
+    // Empty fuel is below a positive reserve, but not below a reserve of zero.
+    expect(callText(swapped, "fuel_warning", [0, 0]).w0).toBe(2);
+    expect(PROSE.fuelWarningHints[1]).toContain("When `reserve` is above 0");
+    expect(PROSE.fuelWarningHints[1]).toContain("return 1 instead of 2");
   });
 
   it("starts from a function that returns 0, which fails the first two calls only", () => {

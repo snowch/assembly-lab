@@ -2,6 +2,8 @@
 
 Drafted by Haiku from the fact brief in `docs/notes/module-3/brief.md`, a part at a time, and checked for facts by the managing session. Every number was produced by the simulator before the brief went out; the last challenge's claims about GCC are recorded in `listings.md`, under "The shifts in Lesson 2's last challenge".
 
+Revised on 17 October 2026 in a separate Codex drafting pass from checked findings. The accompanying clarity review records the independent reviews and verification.
+
 # Lesson 1: Masks and fields
 
 ## 0. Objectives
@@ -32,7 +34,7 @@ Each warning is on or off on its own. How can the program change one warning wit
 
 In this C, `w` is the warning word. It is a C variable, not the register `w0`. `DOOR_OPEN` is a name for 4, the worth of bit 2.
 
-In C, `&` takes the AND of each pair of bits. `~` turns every bit over: each 1 becomes 0, and each 0 becomes 1. So `return w & ~DOOR_OPEN;` clears bit 2. GCC compiled that line to `and w0, w0, -5`.
+In C, `&` takes the AND of each pair of bits: the result is 1 only when both input bits are 1. `~` turns every bit over: each 1 becomes 0, and each 0 becomes 1. So `return w & ~DOOR_OPEN;` clears bit 2. GCC compiled that line to `and w0, w0, -5`.
 
 C has other bit operators too. `|` takes the OR of each pair of bits. `^` takes the exclusive OR of each pair. `<<` moves bits towards the top. `FUEL_LOW` is a name for 1, the worth of bit 0.
 
@@ -51,7 +53,7 @@ GCC 16.1 at `-O1` compiled this, as in Module 0.
 
 `0xfffffffb` and −5 are the same 32-bit pattern. Read as a signed number, the pattern is −5, and GCC prints it that way. Every bit of the pattern is 1 except bit 2.
 
-The processor does not subtract 5. `and` keeps the bits where the mask has a 1, and clears bit 2, where the mask has a 0. So only bit 2 changes. The figure shows the low eight bits of the word, the mask and the result, with bit 2 marked.
+The processor does not subtract 5. `and` keeps the bits where the mask has a 1, and clears bit 2, where the mask has a 0. Every other bit stays as it was. The figure shows the low eight bits of the word, the mask and the result, with bit 2 marked.
 
 ## 4. Masks, fields and the three rules
 
@@ -61,7 +63,7 @@ A value chosen to pick out bits is a **mask**. Each of the three operations trea
 - **OR** (`orr`): a mask bit of 1 sets the bit, and a 0 keeps it. `orr w0, w0, 1` sets bit 0.
 - **Exclusive OR** (`eor`): a mask bit of 1 flips the bit, and a 0 keeps it. `eor w0, w0, 8` flips bit 3.
 
-C uses `~` to turn every bit over. In `w & ~DOOR_OPEN`, GCC worked out `~DOOR_OPEN` itself, as the constant −5. So the listing needs no separate instruction that turns bits over.
+C uses `~` to turn every bit over. In `w & ~DOOR_OPEN`, GCC worked out the bits of `~DOOR_OPEN` itself. It printed those bits as −5, their signed reading. So the listing needs no separate instruction that turns bits over.
 
 The figure combines a word and a mask with the instruction you choose. It marks which bits changed.
 
@@ -71,7 +73,7 @@ A run of bits that together hold one number is called a **field**. The gear is a
 
 GCC reads the gear with `ubfx x0, x0, 4, 3`. This takes 3 bits, starting at bit 4, and moves them to the lowest three places. The result is their unsigned value.
 
-`gear_of` is the function whose C returns the gear. GCC compiled it to that one instruction. For `0x35`, which is `0011 0101`, bits 6 to 4 are `011`. So `gear_of(0x35)` is 3.
+`gear_of` returns the gear. Its C uses `>> 4` to move the bits four places right, then `& 7` to keep the lowest three. GCC uses `ubfx` to do both operations, then `ret` to return. For `0x35`, which is `0011 0101`, bits 6 to 4 are `011`. So `gear_of(0x35)` is 3.
 
 The listing names `x0`, the 64-bit name of the register. The gear lies in its lower 32 bits, which `w0` names, so the result is the same.
 
@@ -87,10 +89,10 @@ Writing a field changes only its own bits and leaves the rest as they were. The 
 
 Write `set_gear(w, g)`. It puts the low 3 bits of `g` into bits 4 to 6 of `w`, and returns the word. `w` arrives in `w0`, and `g` arrives in `w1`. Put the result in `w0`.
 
-Use only `and`, `lsl`, `orr` and `ret`. Four calls test your code. In one of them, `g` is 13, which is larger than 7. Only its low 3 bits may land in the field. Every bit outside bits 4 to 6 must come out as it went in.
+Use only `and`, `lsl`, `orr` and `ret`. Four calls test your code. In one of them, `g` is 13, which is larger than 7. Only its low 3 bits may land in the field. Every bit outside bits 4 to 6 must stay unchanged.
 
 1. Clear the field in the word, move the new gear into place, then join the two.
-2. Bits outside 4 to 6 must come out as they went in, and bits 4 to 6 must hold the low 3 bits of `g`.
+2. Bits outside 4 to 6 must stay unchanged. Bits 4 to 6 must hold the low 3 bits of `g`.
 3. `lsl w1, w1, 4` moves bits 0 to 2 of `w1` up to bits 4 to 6.
 4. `and w1, w1, 7` keeps only the low 3 bits of `g`. `and w0, w0, -113` clears bits 4 to 6 of `w`, because −113 is `0xffffff8f`.
 5. `and w1, w1, 7`, `lsl w1, w1, 4`, `and w0, w0, -113`, `orr w0, w0, w1`, `ret`.
@@ -103,7 +105,7 @@ Step through your own instructions below: the figure shows the word after each o
 
 Only the low 3 bits of `g` may land in the field. A value larger than 7 must not spill out of it. 13 is `1101` in its low four bits. Without keeping only the low 3 bits, its bit 3 would land in bit 7 of the word, outside the field.
 
-GCC writes the field in one instruction, `bfi w0, w1, 4, 3`. `w0` holds the word, and `w1` holds the new gear. The 4 is the first bit of the field, and the 3 is its width. The instruction puts the low 3 bits of `w1` into bits 4 to 6 of `w0`, and keeps every other bit. Your code and GCC's both return `0x55` for `set_gear(0x35, 5)`.
+GCC writes the field in one instruction, `bfi w0, w1, 4, 3`, then returns with `ret`. `w0` holds the word, and `w1` holds the new gear. The 4 is the first bit of the field, and the 3 is its width. The instruction puts the low 3 bits of `w1` into bits 4 to 6 of `w0`, and keeps every other bit. Your code and GCC's both return `0x55` for `set_gear(0x35, 5)`.
 
 ## 6. Leaving out the clear
 
@@ -163,9 +165,9 @@ Field labels: "after `orr`"; "after `and`"; "the gear".
 
 ## 10. What you now know
 
-- AND with a mask clears the chosen bits.
-- OR sets them.
-- Exclusive OR flips them.
+- AND clears bits where the mask has a 0 and keeps the others.
+- OR sets bits where the mask has a 1 and keeps the others.
+- Exclusive OR flips bits where the mask has a 1 and keeps the others.
 - A mask chooses which bits an operation changes.
 - A field holds a small number across several bits.
 - Writing a field means clearing it, moving the new value into place and combining, so the bits around it are kept.
@@ -187,13 +189,13 @@ The warning word is `0x47`. What does `ubfx x0, x0, 4, 3` give, and what does `e
 
 - shift a word left or right, and say what fills the gap;
 - explain why GCC uses `asr` for `int` and `lsr` for `unsigned`;
-- say why dividing a negative `int` by 2 is not the same as shifting it.
+- explain why division and right shift can round a negative `int` differently.
 
 ## 1. Why does the C type change the instruction?
 
 C writes a shift right as `>>` and a shift left as `<<`. `g >> 1` shifts the bits of `g` one place right.
 
-GCC turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns the same expression into `lsr w0, w0, 1`. This is the first place in the course where the C type changes the instruction.
+GCC 16.1 at `-O1` turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns the same expression into `lsr w0, w0, 1`. Both types use the same register width here. Their signed and unsigned readings lead GCC to choose different right shifts.
 
 What does each instruction do differently?
 
@@ -209,7 +211,7 @@ Moving every bit one place left doubles an `unsigned` value, as long as no 1 mov
 
 The figure takes −7, which is `0xfffffff9`, and moves its bits one place right.
 
-**What fills the top bit for an `int`?**
+**Which general rule does GCC use for the top bit when shifting an `int` right?**
 
 - A 0
 - The bit that fell off the bottom
@@ -227,10 +229,10 @@ The figure takes −7, which is `0xfffffff9`. For an `int`, the top bit is fille
 Moving every bit along by a number of places is a **shift**. Bits that move past the end are lost.
 
 - `lsl` moves bits left and fills the gap on the right with zeros.
-- `lsr`, a **logical shift**, moves bits right and fills the gap on the left with zeros. It halves the unsigned reading.
-- `asr`, an **arithmetic shift**, moves bits right and fills the gap on the left with copies of the old top bit. It halves the signed reading and rounds down, towards the more negative whole number.
+- `lsr`, a **logical shift**, moves bits right and fills the gap on the left with zeros. A shift by one place halves the unsigned reading and drops any remainder.
+- `asr`, an **arithmetic shift**, moves bits right and fills the gap on the left with copies of the old top bit. A shift by one place halves the signed reading and rounds down to the next whole number if needed.
 
-The figure shifts a word by the instruction you choose. Arrows show the direction, the bits lost and the bits filled.
+For either right shift, repeat that halving once for each place moved. A shift by two places divides by 4, with the same rounding rule. The figure shifts a word by the instruction and distance you choose. Arrows show the direction, the bits lost and the bits filled.
 
 *One word, shifted by the instruction you choose; the bits that fall off, and what fills the gap.*
 
@@ -277,7 +279,7 @@ In the `add`, the last operand is `w0, lsr 31`. That is the value of `w0`, shift
 
 For `div2(-7)`, the top bit of −7 is 1. The `add` writes −6 to `w0`, and `asr w0, w0, 1` then gives −3. For `div2(7)`, the `add` adds 0, so the result is 3.
 
-Adding 1 to a negative odd value before `asr` makes the shift round towards zero, as C requires. The figure shows `w0` after each instruction.
+Adding 1 to a negative odd value before `asr` makes the shift round towards zero, as C requires. For a negative even value, halving already gives a whole number. Adding 1 before halving puts the value halfway above that number, so rounding down gives the same result. The figure shows `w0` after each instruction.
 
 ## 7. Why the type picks the shift
 
@@ -286,7 +288,7 @@ Adding 1 to a negative odd value before `asr` makes the shift round towards zero
 | `int` | `asr` | a copy of the old top bit |
 | `unsigned` | `lsr` | zeros |
 
-The two readings give the top bit different worths. So halving them needs different fills. The add and subtract of earlier modules did not depend on the type. The right shift does.
+For a negative signed value, `asr` keeps the top bit set, so the result stays negative. `lsr` fills with zeros to divide the unsigned value. The table shows the choices made by GCC 16.1 at `-O1` for the types used here. With the same register width, signed and unsigned addition used the same instruction in earlier modules. Right shift needs a different instruction for each reading.
 
 ## 8. Shifts inside other instructions
 
@@ -315,7 +317,7 @@ Field labels: "`int x >> 3`"; "`unsigned x >> 3`"; "`x << 3`".
 - `lsl` moves bits left and fills with zeros.
 - `lsr` moves bits right and fills with zeros.
 - `asr` moves bits right and fills with copies of the top bit.
-- The C type decides between `asr` and `lsr` for `>>`.
+- For these C types, GCC chooses `asr` or `lsr` for `>>` according to the signed or unsigned reading.
 - For a negative value, `asr` rounds down, and C's `/` rounds towards zero.
 - A shift inside another instruction's operand does not change the register it reads.
 

@@ -11,7 +11,7 @@
 export const PROSE = {
   question:
     "C writes a shift right as `>>` and a shift left as `<<`. `g >> 1` shifts the bits of `g` one place right.\n\n" +
-    "GCC turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns the same expression into `lsr w0, w0, 1`. This is the first place in the course where the C type changes the instruction.\n\n" +
+    "GCC 16.1 at `-O1` turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns the same expression into `lsr w0, w0, 1`. Both types use the same register width here. Their signed and unsigned readings lead GCC to choose different right shifts.\n\n" +
     "What does each instruction do differently?",
   questionNote: {
     summary: "What C says",
@@ -23,7 +23,8 @@ export const PROSE = {
     "Moving every bit one place left doubles an `unsigned` value, as long as no 1 moves past the top. Moving every bit one place right halves it, and drops any remainder. GCC turns `n * 8` into `lsl w0, w0, 3`.",
 
   prediction: "The figure takes −7, which is `0xfffffff9`, and moves its bits one place right.",
-  predictionQuestion: "**What fills the top bit for an `int`?**",
+  predictionQuestion:
+    "**Which general rule does GCC use for the top bit when shifting an `int` right?**",
   predictionExplain:
     "The figure takes −7, which is `0xfffffff9`. For an `int`, the top bit is filled with a copy of the old top bit. The old top bit is 1, so `asr w0, w0, 1` fills the top with 1. The result is `0xfffffffc`, which is −4.\n\n" +
     "`lsr w0, w0, 1` fills the top with 0 instead. The result is `0x7ffffffc`, which is 2147483644. The figure marks the filled top bit in each case.",
@@ -31,9 +32,9 @@ export const PROSE = {
   investigation:
     "Moving every bit along by a number of places is a **shift**. Bits that move past the end are lost.\n\n" +
     "- `lsl` moves bits left and fills the gap on the right with zeros.\n" +
-    "- `lsr`, a **logical shift**, moves bits right and fills the gap on the left with zeros. It halves the unsigned reading.\n" +
-    "- `asr`, an **arithmetic shift**, moves bits right and fills the gap on the left with copies of the old top bit. It halves the signed reading and rounds down, towards the more negative whole number.\n\n" +
-    "The figure shifts a word by the instruction you choose. Arrows show the direction, the bits lost and the bits filled.",
+    "- `lsr`, a **logical shift**, moves bits right and fills the gap on the left with zeros. A shift by one place halves the unsigned reading and drops any remainder.\n" +
+    "- `asr`, an **arithmetic shift**, moves bits right and fills the gap on the left with copies of the old top bit. A shift by one place halves the signed reading and rounds down to the next whole number if needed.\n\n" +
+    "For either right shift, repeat that halving once for each place moved. A shift by two places divides by 4, with the same rounding rule. The figure shifts a word by the instruction and distance you choose. Arrows show the direction, the bits lost and the bits filled.",
 
   construction:
     "C's `/` divides, and a shift can seem to do the same job. This challenge compares them for a positive value and for a negative one.",
@@ -61,14 +62,14 @@ export const PROSE = {
   failureExplain:
     "`w0, lsr 31` moves the top bit of `g` to the bottom. So the `add` adds 1 when `g` is negative, and 0 otherwise.\n\n" +
     "For `div2(-7)`, the top bit of −7 is 1. The `add` writes −6 to `w0`, and `asr w0, w0, 1` then gives −3. For `div2(7)`, the `add` adds 0, so the result is 3.\n\n" +
-    "Adding 1 to a negative odd value before `asr` makes the shift round towards zero, as C requires. The figure shows `w0` after each instruction.",
+    "Adding 1 to a negative odd value before `asr` makes the shift round towards zero, as C requires. For a negative even value, halving already gives a whole number. Adding 1 before halving puts the value halfway above that number, so rounding down gives the same result. The figure shows `w0` after each instruction.",
 
   explanation:
     "| C type | Right shift | Fills the top bit with |\n" +
     "| --- | --- | --- |\n" +
     "| `int` | `asr` | a copy of the old top bit |\n" +
     "| `unsigned` | `lsr` | zeros |\n\n" +
-    "The two readings give the top bit different worths. So halving them needs different fills. The add and subtract of earlier modules did not depend on the type. The right shift does.",
+    "For a negative signed value, `asr` keeps the top bit set, so the result stays negative. `lsr` fills with zeros to divide the unsigned value. The table shows the choices made by GCC 16.1 at `-O1` for the types used here. With the same register width, signed and unsigned addition used the same instruction in earlier modules. Right shift needs a different instruction for each reading.",
 
   generalisation:
     "A shift can be part of another instruction's operand, as `w0, lsr 31` was in the `add`. The shift does not change the register it reads.\n\n" +
@@ -89,7 +90,7 @@ export const PROSE = {
     "- `lsl` moves bits left and fills with zeros.\n" +
     "- `lsr` moves bits right and fills with zeros.\n" +
     "- `asr` moves bits right and fills with copies of the top bit.\n" +
-    "- The C type decides between `asr` and `lsr` for `>>`.\n" +
+    "- For these C types, GCC chooses `asr` or `lsr` for `>>` according to the signed or unsigned reading.\n" +
     "- For a negative value, `asr` rounds down, and C's `/` rounds towards zero.\n" +
     "- A shift inside another instruction's operand does not change the register it reads.\n\n" +
     "For `int g = -9`, what do `g / 2` and `asr` by 1 give?",

@@ -8,7 +8,7 @@
 export const LABELS = {
   objectives: [
     "Step through a compiled function one instruction at a time, and say what each instruction changed.",
-    "Say where a function's arguments arrive and where its result leaves.",
+    "Say which registers hold the arguments and results of this lesson's functions.",
     "Fix a compiled function so that it returns the right value.",
     "Say what `ret` does, and what happens without it.",
   ],

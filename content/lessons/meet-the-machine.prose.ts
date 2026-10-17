@@ -6,15 +6,15 @@
 
 export const PROSE = {
   question:
-    "The trip computer logs each trip's distance. The distance is the trip's three legs added together, minus a private detour. The detour must not appear in the log.\n\n" +
-    "The C function `trip_distance` does this with three arithmetic statements and a return statement. GCC, a C compiler, translated that function into four instructions for a 64-bit Arm processor. They are shown beside the C.\n\n" +
-    "You will follow those four instructions one at a time, to see what the processor does.",
+    "The trip computer logs each trip's distance. Each trip has three parts, called legs. Their distances include a private detour. To leave that detour out of the log, the computer adds the three distances and subtracts the detour.\n\n" +
+    "The C function `trip_distance` does this with three arithmetic statements and a return statement. GCC, a C compiler, translated that function into four instructions for a 64-bit Arm processor. Each **instruction** tells the processor to perform an operation. The instructions are shown beside the C.\n\n" +
+    "The instructions are written in **assembly language**, which uses names such as `add` for operations. The compiler's output shown this way is called a **listing**. You will follow its four instructions one at a time, to see what the processor does.",
   // Two notes under the listing, each shut until the learner opens it.
   compilerNote: {
     summary: "Which compiler made these instructions?",
     body:
       "The instructions were made by GCC version 16.1, with the setting `-O1`. That setting is chosen when the C is compiled. It asks the compiler to make the code shorter and faster.\n\n" +
-      "With `-O0`, which means no optimisation, the same GCC makes twenty instructions from this C. It keeps every value outside the processor's registers.\n\n" +
+      "With `-O0`, which means no optimisation, the same GCC makes twenty instructions from this C.\n\n" +
       "The course uses `-O1` because its listings are short enough to follow.",
   },
   lineNote: {
@@ -52,7 +52,8 @@ export const PROSE = {
     "Press Next to run one instruction. The figure then shows what that instruction read, what it wrote, and which registers did not change. Press Back to undo a step.\n\n" +
     "At each step, look for two things: which register changes, and which registers do not.",
   // Shown by the stepper once the run has ended.
-  investigationEnd: "`ret` ends the function. Its result is whatever `w0` holds at that moment.",
+  investigationEnd:
+    "`ret` returns to the code that called this function. The function's result is whatever `w0` holds at that moment.",
 
   construction:
     "A second function, `fuel_used`, should return the litres used on a trip. That is the fuel at the start minus the fuel at the end. Its C was written the wrong way round: `return at_end - at_start;`. GCC turned it into `sub w0, w1, w0` and `ret`.\n\n" +
@@ -89,14 +90,14 @@ export const PROSE = {
   explanation:
     "The instructions are kept one after another in memory. The program counter tracks which one runs next. After most instructions, it moves on to the next one. `ret`, and the instructions of later modules, can send it to a different instruction.\n\n" +
     "So far, `add` and `sub` read registers and write one register. The names `leg1` and `total` are not in the instructions.\n\n" +
-    "A function's arguments arrive in `w0`, `w1` and onwards, and an `int` result leaves in `w0`. `ret` ends the function and goes back to the code that called it. Instructions written one per line are **assembly language**. A compiler's output, written that way, is its **listing**.",
+    "For the functions in this lesson, the `int` arguments arrive in order in `w0`, `w1` and so on. Each function leaves its `int` result in `w0`. `ret` returns to the code that called the function.",
 
   generalisation:
-    "Every function in this course works this way. Longer functions have more instructions. Later modules add instructions that change which one runs next, and instructions that read and write memory.\n\n" +
-    "The compiler chooses the registers and the instructions. `-O0` and `-O1` are two of GCC's optimisation settings, and a setting is chosen when the C is compiled. At `-O0`, which means no optimisation, GCC 16.1 makes twenty instructions from the same C, and it keeps every variable in memory, outside the processor's registers. At `-O1`, the setting used here, it keeps the values inside the processor, in registers. So a listing belongs to one compiler at one setting.",
+    "Later modules add instructions that change which instruction runs next, and instructions that read and write memory. You will follow their effects in the same way.\n\n" +
+    "The compiler chooses the registers and the instructions. `-O0` and `-O1` are two of GCC's optimisation settings. You choose a setting when you compile the C.\n\nAt `-O0`, which means no optimisation, GCC 16.1 makes twenty instructions from `trip_distance`. It stores the variables in memory, loads their values into registers for arithmetic, and stores the results back in memory. At `-O1`, the setting used here, GCC produces four instructions and keeps this function's values in registers. The compiler version and settings matter when you compare listings.",
 
   challenge:
-    "The car needs a service when its odometer reaches a set reading. The odometer reading does not yet include the trip so far. `km_to_service` returns the kilometres left before the service, once the trip so far and a planned trip are counted. It keeps 50 km spare. Its four arguments are `service_at`, `odometer`, `trip_so_far` and `planned`, in `w0` to `w3`. GCC made five instructions from it, shown in the challenge below. The `#50` in the last `sub` is the number 50 written inside the instruction.",
+    "The car's odometer records the total distance it has travelled. The car needs a service when that reading reaches `service_at`. The `odometer` argument is the reading recorded before the current trip began. It does not include `trip_so_far`.\n\n`km_to_service` returns the kilometres left before the service, after allowing for the current trip and a planned trip. It also keeps 50 km spare. Its arguments are `service_at`, `odometer`, `trip_so_far` and `planned`, in `w0` to `w3`.\n\nGCC made the five instructions shown below. The `#50` in the last `sub` is the number 50 written inside the instruction.",
   traceTask: "Without running the call `km_to_service(30000, 28750, 140, 390)`, give two values.",
   traceHints: [
     "Each `sub` writes only its first operand.",

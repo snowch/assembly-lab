@@ -23,7 +23,7 @@ export const PROSE = {
 
   prediction:
     "In this C, `w` is the warning word. It is a C variable, not the register `w0`. `DOOR_OPEN` is a name for 4, the worth of bit 2.\n\n" +
-    "In C, `&` takes the AND of each pair of bits. `~` turns every bit over: each 1 becomes 0, and each 0 becomes 1. So `return w & ~DOOR_OPEN;` clears bit 2. GCC compiled that line to `and w0, w0, -5`.\n\n" +
+    "In C, `&` takes the AND of each pair of bits: the result is 1 only when both input bits are 1. `~` turns every bit over: each 1 becomes 0, and each 0 becomes 1. So `return w & ~DOOR_OPEN;` clears bit 2. GCC compiled that line to `and w0, w0, -5`.\n\n" +
     "C has other bit operators too. `|` takes the OR of each pair of bits. `^` takes the exclusive OR of each pair. `<<` moves bits towards the top. `FUEL_LOW` is a name for 1, the worth of bit 0.",
   predictionNote: {
     summary: "Which compiler?",
@@ -32,19 +32,19 @@ export const PROSE = {
   predictionQuestion: "**Why is the constant −5?**",
   predictionExplain:
     "`0xfffffffb` and −5 are the same 32-bit pattern. Read as a signed number, the pattern is −5, and GCC prints it that way. Every bit of the pattern is 1 except bit 2.\n\n" +
-    "The processor does not subtract 5. `and` keeps the bits where the mask has a 1, and clears bit 2, where the mask has a 0. So only bit 2 changes. The figure shows the low eight bits of the word, the mask and the result, with bit 2 marked.",
+    "The processor does not subtract 5. `and` keeps the bits where the mask has a 1, and clears bit 2, where the mask has a 0. Every other bit stays as it was. The figure shows the low eight bits of the word, the mask and the result, with bit 2 marked.",
 
   investigation:
     "A value chosen to pick out bits is a **mask**. Each of the three operations treats a mask bit in its own way.\n\n" +
     "- **AND** (`and`): a mask bit of 0 clears the bit, and a 1 keeps it. `and w0, w0, -5` clears bit 2.\n" +
     "- **OR** (`orr`): a mask bit of 1 sets the bit, and a 0 keeps it. `orr w0, w0, 1` sets bit 0.\n" +
     "- **Exclusive OR** (`eor`): a mask bit of 1 flips the bit, and a 0 keeps it. `eor w0, w0, 8` flips bit 3.\n\n" +
-    "C uses `~` to turn every bit over. In `w & ~DOOR_OPEN`, GCC worked out `~DOOR_OPEN` itself, as the constant −5. So the listing needs no separate instruction that turns bits over.\n\n" +
+    "C uses `~` to turn every bit over. In `w & ~DOOR_OPEN`, GCC worked out the bits of `~DOOR_OPEN` itself. It printed those bits as −5, their signed reading. So the listing needs no separate instruction that turns bits over.\n\n" +
     "The figure combines a word and a mask with the instruction you choose. It marks which bits changed.\n\n" +
     "A run of bits that together hold one number is called a **field**. The gear is a field, in bits 4 to 6.\n\n" +
     "`lsl` moves every bit towards the top by a number of places. `lsl w1, w1, 4` moves each bit of `w1` up four places. Zeros fill the four lowest bits. Bits moved past bit 31 are lost. So bits 0 to 2 move to bits 4 to 6. The `lsl 16` in `movk`, from Module 1, moved a number into the upper half the same way.\n\n" +
     "GCC reads the gear with `ubfx x0, x0, 4, 3`. This takes 3 bits, starting at bit 4, and moves them to the lowest three places. The result is their unsigned value.\n\n" +
-    "`gear_of` is the function whose C returns the gear. GCC compiled it to that one instruction. For `0x35`, which is `0011 0101`, bits 6 to 4 are `011`. So `gear_of(0x35)` is 3.\n\n" +
+    "`gear_of` returns the gear. Its C uses `>> 4` to move the bits four places right, then `& 7` to keep the lowest three. GCC uses `ubfx` to do both operations, then `ret` to return. For `0x35`, which is `0011 0101`, bits 6 to 4 are `011`. So `gear_of(0x35)` is 3.\n\n" +
     "The listing names `x0`, the 64-bit name of the register. The gear lies in its lower 32 bits, which `w0` names, so the result is the same.\n\n" +
     "`clear_door` is the function whose C is `return w & ~DOOR_OPEN;`. `clear_door(0xf)` gives `0xb`, which is 11.",
 
@@ -52,10 +52,10 @@ export const PROSE = {
     "Writing a field changes only its own bits and leaves the rest as they were. The challenge below writes a new gear into a word.",
   setGearTask:
     "Write `set_gear(w, g)`. It puts the low 3 bits of `g` into bits 4 to 6 of `w`, and returns the word. `w` arrives in `w0`, and `g` arrives in `w1`. Put the result in `w0`.\n\n" +
-    "Use only `and`, `lsl`, `orr` and `ret`. Four calls test your code. In one of them, `g` is 13, which is larger than 7. Only its low 3 bits may land in the field. Every bit outside bits 4 to 6 must come out as it went in.",
+    "Use only `and`, `lsl`, `orr` and `ret`. Four calls test your code. In one of them, `g` is 13, which is larger than 7. Only its low 3 bits may land in the field. Every bit outside bits 4 to 6 must stay unchanged.",
   setGearHints: [
     "Clear the field in the word, move the new gear into place, then join the two.",
-    "Bits outside 4 to 6 must come out as they went in, and bits 4 to 6 must hold the low 3 bits of `g`.",
+    "Bits outside 4 to 6 must stay unchanged. Bits 4 to 6 must hold the low 3 bits of `g`.",
     "`lsl w1, w1, 4` moves bits 0 to 2 of `w1` up to bits 4 to 6.",
     "`and w1, w1, 7` keeps only the low 3 bits of `g`. `and w0, w0, -113` clears bits 4 to 6 of `w`, because −113 is `0xffffff8f`.",
     "`and w1, w1, 7`, `lsl w1, w1, 4`, `and w0, w0, -113`, `orr w0, w0, w1`, `ret`.",
@@ -66,7 +66,7 @@ export const PROSE = {
   /** With the comparison with GCC's `bfi`; shown once the challenge passes. */
   afterPass:
     "Only the low 3 bits of `g` may land in the field. A value larger than 7 must not spill out of it. 13 is `1101` in its low four bits. Without keeping only the low 3 bits, its bit 3 would land in bit 7 of the word, outside the field.\n\n" +
-    "GCC writes the field in one instruction, `bfi w0, w1, 4, 3`. `w0` holds the word, and `w1` holds the new gear. The 4 is the first bit of the field, and the 3 is its width. The instruction puts the low 3 bits of `w1` into bits 4 to 6 of `w0`, and keeps every other bit. Your code and GCC's both return `0x55` for `set_gear(0x35, 5)`.",
+    "GCC writes the field in one instruction, `bfi w0, w1, 4, 3`, then returns with `ret`. `w0` holds the word, and `w1` holds the new gear. The 4 is the first bit of the field, and the 3 is its width. The instruction puts the low 3 bits of `w1` into bits 4 to 6 of `w0`, and keeps every other bit. Your code and GCC's both return `0x55` for `set_gear(0x35, 5)`.",
 
   failureExperiment:
     "The figure runs `set_gear` without the step that clears the field: `and w1, w1, 7`, `lsl w1, w1, 4`, `orr w0, w0, w1`, `ret`, on `set_gear(0x35, 5)`.",
@@ -105,9 +105,9 @@ export const PROSE = {
   },
 
   reflection:
-    "- AND with a mask clears the chosen bits.\n" +
-    "- OR sets them.\n" +
-    "- Exclusive OR flips them.\n" +
+    "- AND clears bits where the mask has a 0 and keeps the others.\n" +
+    "- OR sets bits where the mask has a 1 and keeps the others.\n" +
+    "- Exclusive OR flips bits where the mask has a 1 and keeps the others.\n" +
     "- A mask chooses which bits an operation changes.\n" +
     "- A field holds a small number across several bits.\n" +
     "- Writing a field means clearing it, moving the new value into place and combining, so the bits around it are kept.\n" +

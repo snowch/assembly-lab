@@ -12,7 +12,7 @@ export const LABELS = {
   objectives: [
     "shift a word left or right, and say what fills the gap;",
     "explain why GCC uses `asr` for `int` and `lsr` for `unsigned`;",
-    "say why dividing a negative `int` by 2 is not the same as shifting it.",
+    "explain why division and right shift can round a negative `int` differently.",
   ],
   titles: {
     question: "Why does the C type change the instruction?",

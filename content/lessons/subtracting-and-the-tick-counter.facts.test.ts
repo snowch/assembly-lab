@@ -446,12 +446,18 @@ describe("subtraction as addition, in the four columns the lesson draws", () => 
   });
 
   it("gives 2^32 minus b for b with every bit changed and 1 added, which is 4294967296 minus b", () => {
-    for (const b of [1, 3, 2500, 4294966296, 4294967000, 4294967295]) {
+    for (const b of [0, 1, 3, 2500, 4294966296, 4294967000, 4294967295]) {
       const rec = additionSteps(traceOf(ELAPSED_SUBS, { entry: "elapsed_subs", args: [0, b] }))[0]!
         .addition!;
-      expect((rec.b + BigInt(rec.carryIn)) % 2n ** 32n, `${b}`).toBe(
-        (2n ** 32n - BigInt(b)) % 2n ** 32n,
-      );
+      const fullSum = rec.b + BigInt(rec.carryIn);
+      expect(fullSum, `${b}`).toBe(2n ** 32n - BigInt(b));
+      expect(rec.result, `${b}`).toBe(fullSum % 2n ** 32n);
+      expect(rec.carryOut, `${b}`).toBe(Number(fullSum >> 32n));
+      if (b === 0) {
+        expect(fullSum).toBe(4294967296n);
+        expect(rec.result).toBe(0n);
+        expect(subs(0, b).flags.c).toBe(true);
+      }
     }
     expect(2 ** 32).toBe(4294967296);
   });

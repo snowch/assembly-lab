@@ -132,11 +132,8 @@ describe("the listings the lesson shows or describes", () => {
     expect(layout(c.lines.join(" "))).toBe(
       layout([shownFunction("steeper_s").c, shownFunction("steeper_u").c].join(" ")),
     );
-    expect(PROSE.generalisation).toContain(
-      shownFunction("fuel_low")
-        .c.replace(/^bool /, "bool ")
-        .trim(),
-    );
+    const fuelLow = fencesOf(PROSE.generalisation).find((f) => f.lang === "c")!;
+    expect(layout(fuelLow.lines.join(" "))).toBe(layout(shownFunction("fuel_low").c));
     expect(PROSE.generalisation).toContain(shownFunction("downhill").c);
   });
 });

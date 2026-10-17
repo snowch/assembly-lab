@@ -6,20 +6,22 @@ After the lesson's first review (16 October 2026) six parts were redrafted by Ha
 
 After the author's second read (17 October 2026) thirteen texts were drafted by Haiku from a fact brief and checked for facts, and they replace or join the words below: section 1 (and the two closed notes beside its listing), the wrong-answer sentences of the prediction in section 3, section 4's paragraphs and its sentence for the end of the run, a sentence before the construction challenge and the feedback for the reversed subtraction in section 5, section 6's first paragraph, its wrong-answer sentences and its explanation, section 7's first paragraph, and section 10, which is now the list of what the lesson taught, a question and a closed answer. The lesson's `.prose.ts` and `.labels.ts` take these from this file too.
 
+On 17 October 2026, a separate Codex drafting agent revised the prose from checked findings, followed by independent learner and technical review. See [the review record](./clarity-review.md).
+
 ## 0. Objectives
 
 - Step through a compiled function one instruction at a time, and say what each instruction changed.
-- Say where a function's arguments arrive and where its result leaves.
+- Say which registers hold the arguments and results of this lesson's functions.
 - Fix a compiled function so that it returns the right value.
 - Say what `ret` does, and what happens without it.
 
 ## 1. What does the processor do?
 
-The trip computer logs each trip's distance. The distance is the trip's three legs added together, minus a private detour. The detour must not appear in the log.
+The trip computer logs each trip's distance. Each trip has three parts, called legs. Their distances include a private detour. To leave that detour out of the log, the computer adds the three distances and subtracts the detour.
 
-The C function `trip_distance` does this with three arithmetic statements and a return statement. GCC, a C compiler, translated that function into four instructions for a 64-bit Arm processor. They are shown beside the C.
+The C function `trip_distance` does this with three arithmetic statements and a return statement. GCC, a C compiler, translated that function into four instructions for a 64-bit Arm processor. Each **instruction** tells the processor to perform an operation. The instructions are shown beside the C.
 
-You will follow those four instructions one at a time, to see what the processor does.
+The instructions are written in **assembly language**, which uses names such as `add` for operations. The compiler's output shown this way is called a **listing**. You will follow its four instructions one at a time, to see what the processor does.
 
 *The C function and the four instructions GCC made from it. GCC notes, for each instruction, the C line it came from. Each instruction sits beside that line. The line ending in a colon, trip_distance:, is the function's name.*
 
@@ -29,7 +31,7 @@ You will follow those four instructions one at a time, to see what the processor
 
 The instructions were made by GCC version 16.1, with the setting `-O1`. That setting is chosen when the C is compiled. It asks the compiler to make the code shorter and faster.
 
-With `-O0`, which means no optimisation, the same GCC makes twenty instructions from this C. It keeps every value outside the processor's registers.
+With `-O0`, which means no optimisation, the same GCC makes twenty instructions from this C.
 
 The course uses `-O1` because its listings are short enough to follow.
 
@@ -90,7 +92,7 @@ At each step, look for two things: which register changes, and which registers d
 
 *Shown once the run has ended.*
 
-`ret` ends the function. Its result is whatever `w0` holds at that moment.
+`ret` returns to the code that called this function. The function's result is whatever `w0` holds at that moment.
 
 ## 5. Fixing `fuel_used`
 
@@ -141,17 +143,23 @@ The instructions are kept one after another in memory. The program counter track
 
 So far, `add` and `sub` read registers and write one register. The names `leg1` and `total` are not in the instructions.
 
-A function's arguments arrive in `w0`, `w1` and onwards, and an `int` result leaves in `w0`. `ret` ends the function and goes back to the code that called it. Instructions written one per line are **assembly language**. A compiler's output, written that way, is its **listing**.
+For the functions in this lesson, the `int` arguments arrive in order in `w0`, `w1` and so on. Each function leaves its `int` result in `w0`. `ret` returns to the code that called the function.
 
 ## 8. Other functions
 
-Every function in this course works this way. Longer functions have more instructions. Later modules add instructions that change which one runs next, and instructions that read and write memory.
+Later modules add instructions that change which instruction runs next, and instructions that read and write memory. You will follow their effects in the same way.
 
-The compiler chooses the registers and the instructions. `-O0` and `-O1` are two of GCC's optimisation settings, and a setting is chosen when the C is compiled. At `-O0`, which means no optimisation, GCC 16.1 makes twenty instructions from the same C, and it keeps every variable in memory, outside the processor's registers. At `-O1`, the setting used here, it keeps the values inside the processor, in registers. So a listing belongs to one compiler at one setting.
+The compiler chooses the registers and the instructions. `-O0` and `-O1` are two of GCC's optimisation settings. You choose a setting when you compile the C.
+
+At `-O0`, which means no optimisation, GCC 16.1 makes twenty instructions from `trip_distance`. It stores the variables in memory, loads their values into registers for arithmetic, and stores the results back in memory. At `-O1`, the setting used here, GCC produces four instructions and keeps this function's values in registers. The compiler version and settings matter when you compare listings.
 
 ## 9. Kilometres to service
 
-The car needs a service when its odometer reaches a set reading. The odometer reading does not yet include the trip so far. `km_to_service` returns the kilometres left before the service, once the trip so far and a planned trip are counted. It keeps 50 km spare. Its four arguments are `service_at`, `odometer`, `trip_so_far` and `planned`, in `w0` to `w3`. GCC made five instructions from it, shown in the challenge below. The `#50` in the last `sub` is the number 50 written inside the instruction.
+The car's odometer records the total distance it has travelled. The car needs a service when that reading reaches `service_at`. The `odometer` argument is the reading recorded before the current trip began. It does not include `trip_so_far`.
+
+`km_to_service` returns the kilometres left before the service, after allowing for the current trip and a planned trip. It also keeps 50 km spare. Its arguments are `service_at`, `odometer`, `trip_so_far` and `planned`, in `w0` to `w3`.
+
+GCC made the five instructions shown below. The `#50` in the last `sub` is the number 50 written inside the instruction.
 
 **Trace the call**
 

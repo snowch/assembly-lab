@@ -316,7 +316,7 @@ test.describe("the stepper's panel of what the last instruction read and wrote",
     await expect(figure.locator(".al-endnote")).toHaveCount(0);
     await press(page, next);
     await expect(figure.locator(".al-endnote")).toContainText(
-      "ret ends the function. Its result is whatever w0 holds at that moment.",
+      "ret returns to the code that called this function. The function's result is whatever w0 holds at that moment.",
     );
   });
 });

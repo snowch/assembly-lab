@@ -37,7 +37,7 @@ export const PROSE = {
   investigation:
     "Different gradients run different instructions, so the run can have a different length. The figure runs `describe` on the gradient you choose: above 10, exactly 10, below −10, or between. It draws the path the run took, marks each branch as taken, not taken or not reached, and counts the instructions that ran.\n\n" +
     "GCC writes `bgt`. Arm writes `b.gt`. It is the same instruction, and the course's assembler accepts both.\n\n" +
-    "`cmn w0, #10` sets the flags as though it added 10 to the gradient. The signed `lt` that follows is yes exactly when the gradient is below −10.\n\n" +
+    "`cmn w0, #10` sets the flags from adding 10 to the gradient. Adding 10 is the same calculation as subtracting −10, so these flags compare the gradient with −10. The signed `lt` condition is therefore yes when the gradient is below −10.\n\n" +
     "`mov w0, -2` sits between `cmn` and `csel`. It leaves the flags alone, so `csel` still reads `cmn`'s flags. `csel w0, w0, wzr, lt` gives −2 when `lt` is yes, and 0 when it is no.\n\n" +
     "Both paths end at the one `ret` under `.L7`.",
 
@@ -53,12 +53,12 @@ export const PROSE = {
     "Use only `cmp`, a branch with a condition, `cbz`, `b`, `mov` and `ret`. Five calls test it. One has `litres` equal to `reserve`. One has the top bit of `litres` set.\n\n" +
     "`litres` arrives in `w0`, and `reserve` arrives in `w1`. The answer leaves in `w0`.\n\n" +
     "`cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags.\n\n" +
-    "You name your own labels, and any name works. The `.L` that starts each of GCC's labels is only GCC's habit.\n\n" +
+    "Choose a different name for each label. A simple convention is to use letters and underscores, starting with a letter. Do not use a register name. You can also use GCC's `.L` prefix, but it is not required.\n\n" +
     "A label goes on its own line, followed by a colon, before the instruction it names.",
 
   fuelWarningHints: [
     "Two questions need two tests: is `litres` 0, and is it below `reserve`. Does a `litres` of 0 also pass the second test?",
-    'Ask "below `reserve`" first and `litres` 0 also passes it, so it returns 1, not 2.',
+    'When `reserve` is above 0, zero litres is also below the reserve. Checking "below `reserve`" first would then return 1 instead of 2.',
     "`cbz w0, label` goes to the label when `w0` is 0. `cmp w0, w1` sets the flags of `litres` minus `reserve`.",
     '`litres` and `reserve` are `unsigned`: a value with the top bit set is a large number, so use the unsigned condition for "below", `cc`. A signed condition gets one test wrong.',
     "`cbz w0, .Lempty`, `cmp w0, w1`, `b.cc .Llow`, `mov w0, 0`, `ret`, then `.Llow:` `mov w0, 1`, `ret`, then `.Lempty:` `mov w0, 2`, `ret`.",
@@ -105,8 +105,8 @@ export const PROSE = {
 
   generalisation:
     "GCC 16.1 at `-O1` made different choices for different `if`s. In `warning_light`, the `if` became `cmp` and `cset`, with no branch. In `describe`, one `if` became a branch, for `gradient > 10`, and the other became a `csel`, for `gradient < -10`. In `maybe_beep`, the `if` became a branch, `cbz`.\n\n" +
-    "`csel` and `cset` choose between values in registers. Running `beep` is not a value in a register, so `maybe_beep` needs a branch.\n\n" +
-    "That reasoning comes from what `csel` does. It is not a claim about why GCC chose the branch.",
+    "`csel` chooses between register values. `cset` writes 0 or 1. Neither can decide whether another function runs. In `maybe_beep`, the branch decides whether execution reaches the instructions that run `beep`.\n\n" +
+    "These examples show what GCC produced at this setting. They do not tell us why GCC chose each instruction.",
 
   countsTask:
     "For `describe`, give what it returns and how many instructions run, for gradients 11, −10 and −11. Enter results in decimal. The boxes are grouped by gradient.\n\n" +

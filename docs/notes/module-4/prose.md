@@ -6,6 +6,7 @@ checked against the course's simulator (runs recorded with the brief) and the re
 On 17 October 2026 the text of most sections was replaced by the improved text of brief 58 (24 items, checked for facts); the figure that draws it was extended to match. Lesson 1 is retitled "Compare, and the signed or unsigned condition".
 The same day the review's fixes (15 items, checked for facts) changed Lesson 1's sections 5, 7, 8 and 9 and Lesson 2's sections 1, 3, 5 and 9, and added the feedback sentence for a run that goes on into the next block.
 This file is the lesson's words: the lesson files keep them word for word.
+On 17 October 2026 a separate Codex drafting pass clarified the operand roles, conditions, label names and branch explanations. See `clarity-review.md` for the independent reviews and checks.
 
 How this file marks what the page does with a passage. A *Closed note* is the section's closed `details`, titled as the marker says; the marker lines are not words of the lesson. A line that starts `>` is a sentence a figure or a grader says (the stepper's status lines, the feedback after a failed test); the lesson's files hold it word for word where the grader or the figure reads it, and a test holds the two together.
 
@@ -110,7 +111,9 @@ The compare comes first. `w0` holds `a`, and `w1` holds `b`. `cmp w1, w0` sets t
 
 The condition comes next. The last operand of `csel` names a yes-or-no question about the flags. That question is a **condition**. `ge` (greater than or equal, signed) is yes when N equals V. `cs` (higher or same, unsigned) is yes when C is 1.
 
-Last comes the select. `csel w0, w1, w0, ge` writes `w1` to `w0` when the condition is yes. When the condition is no, `w0` keeps its own value. No instruction is skipped. `csel` only chooses a value.
+Last comes the select. The first register in `csel` is the destination: the register it writes. The next two registers hold the values to choose between. When the condition is yes, `csel` copies the first source; when it is no, it copies the second.
+
+Here, `csel w0, w1, w0, ge` writes to `w0`. It copies `w1` when `ge` is yes, and `w0` when `ge` is no. The second source is also the destination, so the no case leaves `w0` unchanged. No instruction is skipped.
 
 So both functions return `b` when `b` is at least `a`, and `a` otherwise. That is the larger value.
 
@@ -152,7 +155,7 @@ Step through one of the tests below to see the compare, the flags, the condition
 
 ## 6. Running `steeper_u` with `ge`
 
-The figure runs `steeper_u` with its last operand changed from `cs` to `ge`, so the run is `cmp w1, w0`, `csel w0, w1, w0, ge` and `ret`, on `0x80000000` and 1.
+The figure runs `steeper_u` with its last operand changed from `cs` to `ge`. The instructions are `cmp w1, w0`, `csel w0, w1, w0, ge` and `ret`. The inputs are `0x80000000` and 1.
 
 **What does it return?**
 
@@ -181,14 +184,14 @@ In `cmp a, b`, `a` is the first operand and `b` is the second. After that compar
 - Unsigned order: `cs` (a ≥ b, C is 1) and `cc` (a < b, C is 0).
 - Signed order: `ge` (a ≥ b, N equals V) and `lt` (a < b, N differs from V).
 
-The next conditions are the versions without equality. They read Z as well.
+`hi` and `gt` exclude equality. Each has an opposite condition that includes equality. These conditions read Z as well.
 
 - `hi` (higher, unsigned) is `cs` without equality: C is 1 and Z is 0. Its opposite is `ls` (lower or same, unsigned): C is 0 or Z is 1.
 - `gt` (greater than, signed) is `ge` without equality: Z is 0 and N equals V. Its opposite is `le` (less than or equal, signed): Z is 1 or N differs from V.
 
 `vs`, which Module 2 met, is yes when V is 1.
 
-The figure below compares a pair of values with `cmp w0, w1`, in that order, and you choose the pair. It offers four pairs: `0xffffffff` and 1, `0x80000000` and 1, and two more that it shows. So `a` is `w0` and `b` is `w1`. This is the reverse of `steeper_s`'s `cmp w1, w0`. For each condition, the figure shows its rule, the flag values it read and whether it holds.
+The figure below uses `cmp w0, w1`, the reverse of `steeper_s`'s `cmp w1, w0`. Here, `a` is `w0` and `b` is `w1`. Choose a pair of values. For each condition, the figure shows the rule, the flags it reads and whether the condition holds.
 
 *Closed note: Every condition this course uses*
 
@@ -220,7 +223,17 @@ A condition read after something other than `cmp` uses the flags that the last i
 
 `bool` is a C type that holds 0 or 1. A comparison, such as `litres < reserve`, gives 1 if it is true and 0 if it is not.
 
-GCC 16.1 at `-O1` compiled `fuel_low`, `bool fuel_low(unsigned litres, unsigned reserve) { return litres < reserve; }`, to these three instructions:
+`fuel_low` returns the result of this comparison:
+
+```c
+bool fuel_low(unsigned litres,
+              unsigned reserve)
+{
+    return litres < reserve;
+}
+```
+
+GCC 16.1 at `-O1` compiled it to these three instructions:
 
 ```
 fuel_low:
@@ -394,7 +407,7 @@ Different gradients run different instructions, so the run can have a different 
 
 GCC writes `bgt`. Arm writes `b.gt`. It is the same instruction, and the course's assembler accepts both.
 
-`cmn w0, #10` sets the flags as though it added 10 to the gradient. The signed `lt` that follows is yes exactly when the gradient is below −10.
+`cmn w0, #10` sets the flags from adding 10 to the gradient. Adding 10 is the same calculation as subtracting −10, so these flags compare the gradient with −10. The signed `lt` condition is therefore yes when the gradient is below −10.
 
 `mov w0, -2` sits between `cmn` and `csel`. It leaves the flags alone, so `csel` still reads `cmn`'s flags. `csel w0, w0, wzr, lt` gives −2 when `lt` is yes, and 0 when it is no.
 
@@ -434,12 +447,12 @@ Use only `cmp`, a branch with a condition, `cbz`, `b`, `mov` and `ret`. Five cal
 
 `cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags.
 
-You name your own labels, and any name works. The `.L` that starts each of GCC's labels is only GCC's habit.
+Choose a different name for each label. A simple convention is to use letters and underscores, starting with a letter. Do not use a register name. You can also use GCC's `.L` prefix, but it is not required.
 
 A label goes on its own line, followed by a colon, before the instruction it names.
 
 1. Two questions need two tests: is `litres` 0, and is it below `reserve`. Does a `litres` of 0 also pass the second test?
-2. Ask "below `reserve`" first and `litres` 0 also passes it, so it returns 1, not 2.
+2. When `reserve` is above 0, zero litres is also below the reserve. Checking "below `reserve`" first would then return 1 instead of 2.
 3. `cbz w0, label` goes to the label when `w0` is 0. `cmp w0, w1` sets the flags of `litres` minus `reserve`.
 4. `litres` and `reserve` are `unsigned`: a value with the top bit set is a large number, so use the unsigned condition for "below", `cc`. A signed condition gets one test wrong.
 5. `cbz w0, .Lempty`, `cmp w0, w1`, `b.cc .Llow`, `mov w0, 0`, `ret`, then `.Llow:` `mov w0, 1`, `ret`, then `.Lempty:` `mov w0, 2`, `ret`.
@@ -526,9 +539,9 @@ The instructions from `.L17` run `beep`. They belong to a later module, so they 
 
 GCC 16.1 at `-O1` made different choices for different `if`s. In `warning_light`, the `if` became `cmp` and `cset`, with no branch. In `describe`, one `if` became a branch, for `gradient > 10`, and the other became a `csel`, for `gradient < -10`. In `maybe_beep`, the `if` became a branch, `cbz`.
 
-`csel` and `cset` choose between values in registers. Running `beep` is not a value in a register, so `maybe_beep` needs a branch.
+`csel` chooses between register values. `cset` writes 0 or 1. Neither can decide whether another function runs. In `maybe_beep`, the branch decides whether execution reaches the instructions that run `beep`.
 
-That reasoning comes from what `csel` does. It is not a claim about why GCC chose the branch.
+These examples show what GCC produced at this setting. They do not tell us why GCC chose each instruction.
 
 ## 9. Count the runs of `describe`
 

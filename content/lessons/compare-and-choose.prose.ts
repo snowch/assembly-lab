@@ -44,7 +44,7 @@ export const PROSE = {
   investigation:
     "The compare comes first. `w0` holds `a`, and `w1` holds `b`. `cmp w1, w0` sets the flags of `b` minus `a`.\n\n" +
     "The condition comes next. The last operand of `csel` names a yes-or-no question about the flags. That question is a **condition**. `ge` (greater than or equal, signed) is yes when N equals V. `cs` (higher or same, unsigned) is yes when C is 1.\n\n" +
-    "Last comes the select. `csel w0, w1, w0, ge` writes `w1` to `w0` when the condition is yes. When the condition is no, `w0` keeps its own value. No instruction is skipped. `csel` only chooses a value.\n\n" +
+    "Last comes the select. The first register in `csel` is the destination: the register it writes. The next two registers hold the values to choose between. When the condition is yes, `csel` copies the first source; when it is no, it copies the second.\n\nHere, `csel w0, w1, w0, ge` writes to `w0`. It copies `w1` when `ge` is yes, and `w0` when `ge` is no. The second source is also the destination, so the no case leaves `w0` unchanged. No instruction is skipped.\n\n" +
     "So both functions return `b` when `b` is at least `a`, and `a` otherwise. That is the larger value.\n\n" +
     "The figure shows the three stages for `0xffffffff` and 1, from the run.\n\n" +
     "The signed names are *greater* and *less*. The unsigned names are *higher* and *lower*. For these two functions, the difference between `int` and `unsigned` is in the condition GCC chose.",
@@ -79,7 +79,7 @@ export const PROSE = {
     "Step through one of the tests below to see the compare, the flags, the condition and the value `csel` chose.",
 
   failureExperiment:
-    "The figure runs `steeper_u` with its last operand changed from `cs` to `ge`, so the run is `cmp w1, w0`, `csel w0, w1, w0, ge` and `ret`, on `0x80000000` and 1.",
+    "The figure runs `steeper_u` with its last operand changed from `cs` to `ge`. The instructions are `cmp w1, w0`, `csel w0, w1, w0, ge` and `ret`. The inputs are `0x80000000` and 1.",
 
   failureQuestion: "**What does it return?**",
 
@@ -93,10 +93,10 @@ export const PROSE = {
     "GCC prints the conditions `cs` and `cc`. Arm also writes them `hs` and `lo`, and the assembler accepts both.\n\n" +
     "In `cmp a, b`, `a` is the first operand and `b` is the second. After that compare, the core conditions come in groups. Each line says what the condition means, and which flags it reads.\n\n" +
     "- Equality: `eq` (a = b, Z is 1) and `ne` (a ≠ b, Z is 0).\n- Unsigned order: `cs` (a ≥ b, C is 1) and `cc` (a < b, C is 0).\n- Signed order: `ge` (a ≥ b, N equals V) and `lt` (a < b, N differs from V).\n\n" +
-    "The next conditions are the versions without equality. They read Z as well.\n\n" +
+    "`hi` and `gt` exclude equality. Each has an opposite condition that includes equality. These conditions read Z as well.\n\n" +
     "- `hi` (higher, unsigned) is `cs` without equality: C is 1 and Z is 0. Its opposite is `ls` (lower or same, unsigned): C is 0 or Z is 1.\n- `gt` (greater than, signed) is `ge` without equality: Z is 0 and N equals V. Its opposite is `le` (less than or equal, signed): Z is 1 or N differs from V.\n\n" +
     "`vs`, which Module 2 met, is yes when V is 1.\n\n" +
-    "The figure below compares a pair of values with `cmp w0, w1`, in that order, and you choose the pair. It offers four pairs: `0xffffffff` and 1, `0x80000000` and 1, and two more that it shows. So `a` is `w0` and `b` is `w1`. This is the reverse of `steeper_s`'s `cmp w1, w0`. For each condition, the figure shows its rule, the flag values it read and whether it holds.",
+    "The figure below uses `cmp w0, w1`, the reverse of `steeper_s`'s `cmp w1, w0`. Here, `a` is `w0` and `b` is `w1`. Choose a pair of values. For each condition, the figure shows the rule, the flags it reads and whether the condition holds.",
 
   explanationNoteSummary: "Every condition this course uses",
   explanationNote:
@@ -107,7 +107,7 @@ export const PROSE = {
     "A condition read after something other than `cmp` uses the flags that the last instruction to set them wrote.",
 
   generalisation:
-    "`bool` is a C type that holds 0 or 1. A comparison, such as `litres < reserve`, gives 1 if it is true and 0 if it is not.\n\nGCC 16.1 at `-O1` compiled `fuel_low`, `bool fuel_low(unsigned litres, unsigned reserve) { return litres < reserve; }`, to these three instructions:\n\n" +
+    "`bool` is a C type that holds 0 or 1. A comparison, such as `litres < reserve`, gives 1 if it is true and 0 if it is not.\n\n`fuel_low` returns the result of this comparison:\n\n```c\nbool fuel_low(unsigned litres,\n              unsigned reserve)\n{\n    return litres < reserve;\n}\n```\n\nGCC 16.1 at `-O1` compiled it to these three instructions:\n\n" +
     "```\nfuel_low:\n        cmp     w0, w1\n        cset    w0, cc\n        ret\n```\n\n" +
     "`cset w0, cc` writes 1 to `w0` when `cc` is yes, and 0 when it is no. `csel` selects between register values. `cset` writes 0 or 1.\n\n" +
     "`fuel_low(5, 8)` is 1, and `fuel_low(8, 8)` is 0.\n\n" +

@@ -58,8 +58,8 @@ const cases = [
     labelsFile: "./adding-and-the-flags.labels.ts",
     // The captions, field labels and test names the file does not give: each was drafted for the
     // page, and the file's parts name none of them.
+    canonicalCaptions: [L1.captions.adder, L1.captions.adderCarryOut],
     own: [
-      L1.captions.adderCarryOut,
       L1.captions.predictReadings,
       L1.captions.predictAdd,
       L1.captions.stepAdd,
@@ -84,6 +84,7 @@ const cases = [
     prose: P2,
     labels: L2,
     labelsFile: "./subtracting-and-the-tick-counter.labels.ts",
+    canonicalCaptions: [L2.captions.ring],
     own: [
       L2.captions.subtractWrapped,
       L2.captions.subtractNoWrap,
@@ -173,8 +174,8 @@ describe.each(cases)("module 2, lesson $n: the lesson's words", (c) => {
 
   it("have only the captions and labels drafted for the page, each through the prose process", () => {
     const captions = lesson.sections.flatMap((s) => s.interactives.map((x) => x.caption));
-    // The one caption the file gives is the one in italics under the figure.
-    expect(captions.filter((x) => fileFlat.includes(flat(x)))).toHaveLength(1);
+    // Captions recorded in the prose file appear there in italics.
+    expect(captions.filter((x) => fileFlat.includes(flat(x)))).toEqual(c.canonicalCaptions);
     const pieces = [
       ...captions,
       ...lesson.challenges.flatMap((ch) => [

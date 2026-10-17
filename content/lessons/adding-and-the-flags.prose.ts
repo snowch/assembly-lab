@@ -1,18 +1,18 @@
 // Copyright © 2026 Christopher Snow
 
-// Lesson 1 of Module 2: the paragraphs, hints, tasks and notes, as drafted by Haiku from checked
-// facts and kept word for word from docs/notes/module-2/prose.md (the part under "# Lesson 1").
+// Lesson 1 of Module 2: the paragraphs, hints, tasks and notes, revised in a separate drafting pass
+// from checked facts and kept word for word from docs/notes/module-2/prose.md (the part under "# Lesson 1").
 // module-2.prose.test.ts holds every string here to that file, so a change of wording is
 // made there first.
 
 export const PROSE = {
   question:
-    "In Module 1, the same 32 bits could represent different signed and unsigned numbers. Addition has the same problem. The processor adds bits, but the result may not fit the number range the program expects. How can the processor tell us when that happens?",
+    "In Module 1, the same 32 bits could represent different signed and unsigned numbers. The processor adds these bits without knowing which reading the program uses. The sum may not fit that reading's range. How can the processor tell us when that happens?",
 
   motivation:
-    "An addition in 32 bits can give a result that does not fit the reading the program uses. The 32 bits kept are then wrong for that reading.\n\n" +
-    "`add` does the addition and nothing more. `adds` does the same addition and also records four facts about the result. Each fact sits in a **flag**. The four flags are named N, Z, C and V.\n\n" +
-    "Neither instruction stops the program or reports an error when the result does not fit. A program that cares must read a flag.",
+    "Every addition in this lesson uses a `w` name, so it keeps 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.\n\n" +
+    "`add` writes the result and leaves the flags unchanged. `adds` writes the same result and also records four facts about the addition. Each fact is stored in a **flag**: a single bit that is either 0 or 1. The four flags are named N, Z, C and V.\n\n" +
+    "Neither instruction stops the program or reports an error when the sum does not fit. To detect this, the program must read a flag.",
 
   prediction:
     "The figure adds 2147483647 and 1 with `adds w0, w0, w1`, which is `0x7fffffff` plus `0x00000001` in hexadecimal.",
@@ -71,16 +71,16 @@ export const PROSE = {
     "Of `add`, `adds` and `sub`, only `adds` writes the flags.",
 
   explanation:
-    "The adder gives one result for both readings. N and Z describe that result.\n\n" +
-    "C reports a carry out of bit 31. For an addition, a carry out of bit 31 means the unsigned result did not fit.\n\n" +
-    "V reports signed **overflow**. V is 1 when the carry into bit 31 differs from the carry out of it; the top bit then came out wrong for the signed result.\n\n" +
+    "The adder produces the same 32 result bits for both readings. N records the top bit, and Z records whether all the result bits are zero.\n\n" +
+    "C records the carry out of bit 31. After an addition, C is 1 when the sum of the unsigned numbers is too large for 32 bits.\n\n" +
+    "V reports signed **overflow**: the sum of the signed numbers is outside the signed range. V is 1 when the carry into bit 31 differs from the carry out of it.\n\n" +
     "C and V are separate tests.",
 
   generalisation:
     "Every `adds` writes all four flags. The flags keep their values until another instruction writes them. `add` and `sub` do not write the flags.\n\n" +
-    "A program reads the flag that matches its reading. Later modules show instructions that read the flags.",
+    "To check whether an addition fits, a program reads C for unsigned numbers or V for signed numbers. Later modules show instructions that read the flags.",
 
-  challenge: "This challenge uses V, the flag that judges the signed reading.",
+  challenge: "This challenge uses V to detect a sum outside the signed range.",
   overflowTask:
     "Give the smallest positive number that, added to `0x7ffffffe` with `adds`, makes V 1.\n\n" +
     "Enter the number in decimal.",

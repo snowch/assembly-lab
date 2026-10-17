@@ -1,5 +1,7 @@
 # Module 2: the lessons' words, as drafted
 
+The clarity revision on 17 October 2026 uses a separate Codex drafting pass and independent review, with the session's model and inherited effort. The earlier drafting history follows.
+
 Drafted by Haiku from the fact brief in `docs/notes/module-2/brief.md`, a part at a time; checked for facts by the managing session, which narrowed two sentences the brief had overstated (which instructions set the flags; how a real processor adds), cut one repeat, and set the answers' explanations in plain type as Module 0's are. After the build, Haiku replaced the generic titles of parts 2 to 10 with titles that name each section's content (16 October 2026). After the module's review, Haiku redrafted the parts its sceptic upheld (the failure experiment's new program, the subtraction drawn bit by bit, the ungated answer moved into the prediction's explanation, the meaning of C after a subtraction), from facts the simulator produced. Every number was produced by the simulator before the brief went out. On 17 October 2026 the author asked for the carries to be drawn where they matter. Lesson 1's sections 1, 2, 4 to 8 and 10 and lesson 2's sections 1 to 8 and 10 now carry improved text, checked for facts, and each section 10 is "What you now know". The interface lines at the end are the words the figures and graders say.
 
 # Lesson 1: Adding, and the four flags
@@ -8,19 +10,19 @@ Drafted by Haiku from the fact brief in `docs/notes/module-2/brief.md`, a part a
 
 - Follow an addition column by column, with the carry into each column.
 - Say what each of the four flags records after `adds`.
-- Explain why one adder serves both readings, and which flag judges which.
+- Explain why one adder serves both readings, and how C and V report whether each sum fits.
 
 ## 1. How can the processor say when an answer does not fit?
 
-In Module 1, the same 32 bits could represent different signed and unsigned numbers. Addition has the same problem. The processor adds bits, but the result may not fit the number range the program expects. How can the processor tell us when that happens?
+In Module 1, the same 32 bits could represent different signed and unsigned numbers. The processor adds these bits without knowing which reading the program uses. The sum may not fit that reading's range. How can the processor tell us when that happens?
 
 ## 2. When an addition does not fit
 
-An addition in 32 bits can give a result that does not fit the reading the program uses. The 32 bits kept are then wrong for that reading.
+Every addition in this lesson uses a `w` name, so it keeps 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.
 
-`add` does the addition and nothing more. `adds` does the same addition and also records four facts about the result. Each fact sits in a **flag**. The four flags are named N, Z, C and V.
+`add` writes the result and leaves the flags unchanged. `adds` writes the same result and also records four facts about the addition. Each fact is stored in a **flag**: a single bit that is either 0 or 1. The four flags are named N, Z, C and V.
 
-Neither instruction stops the program or reports an error when the result does not fit. A program that cares must read a flag.
+Neither instruction stops the program or reports an error when the sum does not fit. To detect this, the program must read a flag.
 
 ## 3. Two readings of one addition
 
@@ -91,6 +93,8 @@ Check your answers. A wrong flag is named, and the answers you got right stay.
 4. `0xffffffff` plus 1 is 0 with a carry out of the top bit, so Z is 1 and C is 1.
 5. `0xffffffff` plus 1 gives N 0, Z 1, C 1 and V 0. 5 plus 3 has all four at 0. `0x80000000` plus `0x80000000` gives N 0, Z 1, C 1 and V 1.
 
+*Step through the addition column by column to inspect the result bits, carries and flags.*
+
 *Shown after the challenge is passed.*
 
 C and V are separate tests, one for each reading, so either can be 1 without the other. `0xffffffff` plus 1 carries into bit 31 and out of it, so C is 1 and V is 0; `0x7fffffff` plus 1 carries into bit 31 but not out, so C is 0 and V is 1. `0x80000000` plus `0x80000000` makes C and V both 1.
@@ -116,13 +120,13 @@ Had `add` set the flags, they would be N 1, Z 0, C 0 and V 1. That is what `adds
 
 Of `add`, `adds` and `sub`, only `adds` writes the flags.
 
-## 7. Which flag judges which reading
+## 7. Unsigned carry and signed overflow
 
-The adder gives one result for both readings. N and Z describe that result.
+The adder produces the same 32 result bits for both readings. N records the top bit, and Z records whether all the result bits are zero.
 
-C reports a carry out of bit 31. For an addition, a carry out of bit 31 means the unsigned result did not fit.
+C records the carry out of bit 31. After an addition, C is 1 when the sum of the unsigned numbers is too large for 32 bits.
 
-V reports signed **overflow**. V is 1 when the carry into bit 31 differs from the carry out of it; the top bit then came out wrong for the signed result.
+V reports signed **overflow**: the sum of the signed numbers is outside the signed range. V is 1 when the carry into bit 31 differs from the carry out of it.
 
 C and V are separate tests.
 
@@ -130,11 +134,11 @@ C and V are separate tests.
 
 Every `adds` writes all four flags. The flags keep their values until another instruction writes them. `add` and `sub` do not write the flags.
 
-A program reads the flag that matches its reading. Later modules show instructions that read the flags.
+To check whether an addition fits, a program reads C for unsigned numbers or V for signed numbers. Later modules show instructions that read the flags.
 
 ## 9. The smallest signed overflow
 
-This challenge uses V, the flag that judges the signed reading.
+This challenge uses V to detect a sum outside the signed range.
 
 **Find the smallest overflow**
 
@@ -171,13 +175,13 @@ The architecture is Arm's published definition of what each instruction does. Th
 
 ## 0. Objectives
 
-- Explain why `elapsed(now, then)` is right when the counter has wrapped.
+- Explain why `elapsed(now, then)` works across a wrap when the counter advances normally and less than a full turn passes.
 - Say what C records after `subs`.
 - Write `elapsed` and pass tests across the wrap.
 
 ## 1. Is the answer still right after a wrap?
 
-The trip computer counts milliseconds using a 32-bit unsigned counter. After 4294967295, the next value is 0. This is called wrapping.
+The trip computer counts milliseconds using a 32-bit unsigned counter. After 4294967295, the next value is 0.
 
 Each count is a **tick**. Going back to 0 is a **wrap**.
 
@@ -185,11 +189,13 @@ Each count is a **tick**. Going back to 0 is a **wrap**.
 
 One full turn of the counter, 4294967296 ticks, is about 49.71 days.
 
+Throughout this lesson, assume the counter advances one tick per millisecond without being reset. Fewer than 4294967296 ticks pass between the two readings.
+
 How can you work out the elapsed time if the counter wraps between the two readings?
 
-## 2. Why the mistake shows up late
+## 2. Why tests need to cross a wrap
 
-A wrong `elapsed` gives a wrong answer only when a wrap falls between the two readings, so `now` is less than `then`. Whether that happens depends on the counter's value when the program starts. So a short test may never meet the case. A long run may meet it at any time.
+It is easy to assume that a later reading is always larger than an earlier one. After a wrap, `now` can be less than `then`. Tests that never cross the wrap will not catch a mistake based on that assumption. Include readings on both sides of the wrap.
 
 ## 3. Elapsed across the wrap
 
@@ -212,6 +218,8 @@ After 4294967295 comes 0, so the counter's values form a ring. The figure draws 
 
 Two readings close together sit at almost one spot on a ring of 4294967296 values. So the strip under the ring enlarges the stretch round the wrap. The strip shows `then`, the wrap from 4294967295 to 0, `now`, the ticks before the wrap, the ticks after it, and their total.
 
+`subs` does the same subtraction as `sub` and also replaces all four flags, N, Z, C and V. `sub` leaves the flags unchanged.
+
 The processor subtracts by adding. To work out `a - b`, it changes every bit of `b`: each 1 becomes 0, and each 0 becomes 1. It adds the result to `a`, and adds 1 more as the carry into the first column.
 
 The example uses four bits only, to show the method. The real instruction uses 32. 5 is `0101`. 3 is `0011`, and with every bit changed it is `1100`.
@@ -226,7 +234,7 @@ The example uses four bits only, to show the method. The real instruction uses 3
   1         carry out of the top
 ```
 
-The extra 1 completes the change. Changing every bit of `b` and adding 1 gives 2³² minus `b`, that is, 4294967296 minus `b`, in 32 bits.
+For 32 bits, changing every bit of `b` gives 4294967295 minus `b`. Adding 1 gives 4294967296 minus `b`, or 2³² minus `b`. This is the full sum, before keeping only the low 32 bits. When `b` is 0, the full sum is 4294967296: the low 32 bits are 0, with a carry out of the top bit.
 
 The figures below show the same steps for the real 32-bit `subs`: the second operand, its bits changed, the carry in of 1, the result and the carry out.
 
@@ -246,7 +254,7 @@ Earlier, GCC wrote `elapsed` for you. Here you write it yourself.
 
 Write `elapsed(now, then)`. It returns the ticks from `then` to `now`. `now` arrives in `w0`, `then` arrives in `w1`, and the result goes back in `w0`.
 
-It must work whether or not the counter wrapped between the two readings. Four calls test it, two of them across the wrap.
+Assume the counter advances normally and less than one full turn passes between readings. Your function must work whether or not the counter wrapped. Four calls test it, two of them across the wrap.
 
 You may use `add`, `sub`, `adds`, `subs` and `ret`.
 
@@ -285,7 +293,7 @@ The negative does not fit the signed range. So the 32 bits that come back are `0
 
 ## 7. Why the low bits are enough
 
-N, Z and V mean what they meant in lesson 1. C is still the carry out of the top bit. After a subtraction, C = 1 means no borrow was needed.
+N and Z describe the 32-bit result, as before. V reports whether the signed difference is outside the signed range. C is still the carry out of the top bit. After `subs`, C = 1 means no borrow was needed.
 
 The adder adds `now` to `then` with every bit changed, plus 1. That sum is `now - then + 4294967296`.
 
@@ -322,7 +330,7 @@ Enter the result in decimal, and C as 0 or 1.
 - A subtraction is done as an addition of the second operand with every bit changed, plus 1.
 - C = 1 after `subs` means no borrow.
 - A 32-bit unsigned counter wraps from 4294967295 to 0.
-- One 32-bit subtraction gives the elapsed ticks across a wrap.
+- For a counter advancing normally, one 32-bit subtraction gives the elapsed ticks if less than a full turn has passed.
 - The readings alone cannot show how many full turns passed.
 - `negs` can set V even when the 32 bits come back unchanged.
 

@@ -10,7 +10,7 @@ export const LABELS = {
   objectives: [
     "Follow an addition column by column, with the carry into each column.",
     "Say what each of the four flags records after `adds`.",
-    "Explain why one adder serves both readings, and which flag judges which.",
+    "Explain why one adder serves both readings, and how C and V report whether each sum fits.",
   ],
   titles: {
     question: "How can the processor say when an answer does not fit?",
@@ -19,7 +19,7 @@ export const LABELS = {
     investigation: "Carries and the four flags",
     construction: "Three additions to predict",
     failureExperiment: "Running add instead of adds",
-    explanation: "Which flag judges which reading",
+    explanation: "Unsigned carry and signed overflow",
     generalisation: "Flags keep their values",
     challenge: "The smallest signed overflow",
     reflection: "What you now know",
@@ -27,9 +27,9 @@ export const LABELS = {
   captions: {
     adder:
       "adds w0, w0, w1 column by column, with the carry into each column above it, and the four flags after it.",
-    // A placeholder for the figure after the flags challenge: the prose process replaces it.
+    // Visible while the follow-up figure is locked, so it must not reveal the answer.
     adderCarryOut:
-      "adds w0, w0, w1 on 1 and 0xffffffff, column by column. The answer is 0, and a carry goes out of the top bit. The four flags after it are drawn.",
+      "Step through the addition column by column to inspect the result bits, carries and flags.",
     predictReadings: "A prediction about which readings of the answer are right.",
     predictAdd: "A prediction about what the flags show after add.",
     stepAdd:

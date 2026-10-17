@@ -8,13 +8,13 @@
 
 export const LABELS = {
   objectives: [
-    "Explain why `elapsed(now, then)` is right when the counter has wrapped.",
+    "Explain why `elapsed(now, then)` works across a wrap when the counter advances normally and less than a full turn passes.",
     "Say what C records after `subs`.",
     "Write `elapsed` and pass tests across the wrap.",
   ],
   titles: {
     question: "Is the answer still right after a wrap?",
-    motivation: "Why the mistake shows up late",
+    motivation: "Why tests need to cross a wrap",
     prediction: "Elapsed across the wrap",
     investigation: "Subtraction as addition, and borrows",
     construction: "Writing elapsed yourself",
