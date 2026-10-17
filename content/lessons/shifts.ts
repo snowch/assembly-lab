@@ -48,6 +48,7 @@ export const shifts: LessonInput = {
       kind: "question",
       title: LABELS.titles.question,
       prose: PROSE.question,
+      details: { summary: PROSE.questionNote.summary, prose: PROSE.questionNote.prose },
       interactives: [
         {
           id: "halve-compare",
@@ -146,9 +147,16 @@ export const shifts: LessonInput = {
           props: {
             program: DIV2,
             call: { entry: "div2", args: [-7] },
+            // A second call, for a value whose top bit is 0: the operand is then 0.
+            calls: [
+              { label: "div2(-7)", call: { entry: "div2", args: [-7] } },
+              { label: "div2(7)", call: { entry: "div2", args: [7] } },
+            ],
             registers: [0],
             reading: "signed",
             showC: true,
+            // For the instruction that has a shifted last operand: that operand's value.
+            operand: true,
             after: "predict-first-add",
           },
         },
@@ -170,7 +178,12 @@ export const shifts: LessonInput = {
         },
       ],
     },
-    { kind: "reflection", title: LABELS.titles.reflection, prose: PROSE.reflection },
+    {
+      kind: "reflection",
+      title: LABELS.titles.reflection,
+      prose: PROSE.reflection,
+      details: { summary: PROSE.reflectionNote.summary, prose: PROSE.reflectionNote.prose },
+    },
   ],
   challenges: [
     {
@@ -225,32 +238,56 @@ export const shifts: LessonInput = {
         cases: [
           {
             label: LABELS.challenges.compare.tests.asr21,
-            given: { entry: "asr_by_2", w0: 21 },
+            given: {
+              entry: "asr_by_2",
+              w0: 21,
+              "feedback.asr21": PROSE.compareFeedback.asr,
+            },
             expect: { asr21: "w0" },
           },
           {
             label: LABELS.challenges.compare.tests.lsr21,
-            given: { entry: "lsr_by_2", w0: 21 },
+            given: {
+              entry: "lsr_by_2",
+              w0: 21,
+              "feedback.lsr21": PROSE.compareFeedback.lsr,
+            },
             expect: { lsr21: "w0" },
           },
           {
             label: LABELS.challenges.compare.tests.div21,
-            given: { entry: "div_by_4", w0: 21 },
+            given: {
+              entry: "div_by_4",
+              w0: 21,
+              "feedback.div21": PROSE.compareFeedback.div,
+            },
             expect: { div21: "w0" },
           },
           {
             label: LABELS.challenges.compare.tests.asrNeg,
-            given: { entry: "asr_by_2", w0: -21 },
+            given: {
+              entry: "asr_by_2",
+              w0: -21,
+              "feedback.asr_neg": PROSE.compareFeedback.asr,
+            },
             expect: { asr_neg: "w0" },
           },
           {
             label: LABELS.challenges.compare.tests.lsrNeg,
-            given: { entry: "lsr_by_2", w0: -21 },
+            given: {
+              entry: "lsr_by_2",
+              w0: -21,
+              "feedback.lsr_neg": PROSE.compareFeedback.lsr,
+            },
             expect: { lsr_neg: "w0" },
           },
           {
             label: LABELS.challenges.compare.tests.divNeg,
-            given: { entry: "div_by_4", w0: -21 },
+            given: {
+              entry: "div_by_4",
+              w0: -21,
+              "feedback.div_neg": PROSE.compareFeedback.div,
+            },
             expect: { div_neg: "w0" },
           },
         ],

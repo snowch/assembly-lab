@@ -24,6 +24,7 @@ import {
 import { LESSONS } from ".";
 import { MASKS_INSTRUCTIONS } from "./masks";
 import { SHIFTS_INSTRUCTIONS, shifts } from "./shifts";
+import { PROSE } from "./shifts.prose";
 
 const lesson = LESSONS.find((l) => l.id === "shifts")!;
 const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
@@ -147,6 +148,31 @@ describe("the challenges", () => {
     expect(verdict.failures.map((f) => f.label)).toEqual([
       "lsr of −21 by 2 (−21 taken as unsigned)",
     ]);
+  });
+
+  it("compare-shifts: each wrong answer is told what its operation does, and never a value", () => {
+    const c = challenge("compare-shifts");
+    const right = {
+      asr21: "5",
+      lsr21: "5",
+      div21: "5",
+      asr_neg: "-6",
+      lsr_neg: "1073741818",
+      div_neg: "-5",
+    };
+    const detail = (wrong: Record<string, string>) =>
+      grade(c, { answers: { ...right, ...wrong } }).failures.map((f) =>
+        f.detail?.replace(/“([^”]*)”/g, "`$1`"),
+      );
+    expect(detail({ asr_neg: "-5" })).toEqual([PROSE.compareFeedback.asr]);
+    expect(detail({ div_neg: "-6" })).toEqual([PROSE.compareFeedback.div]);
+    expect(detail({ lsr_neg: "-6" })).toEqual([PROSE.compareFeedback.lsr]);
+    expect(detail({ asr21: "6" })).toEqual([PROSE.compareFeedback.asr]);
+    expect(detail({ div21: "4" })).toEqual([PROSE.compareFeedback.div]);
+    expect(detail({ lsr21: "6" })).toEqual([PROSE.compareFeedback.lsr]);
+    expect(detail({})).toEqual([]);
+    const all = Object.values(PROSE.compareFeedback).join(" ");
+    expect(all).not.toMatch(/-?\b(5|6|1073741818)\b/);
   });
 
   it("compare-shifts: asks for every answer first, and for whole numbers", () => {

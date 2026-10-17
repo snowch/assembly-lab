@@ -11,14 +11,16 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
-import { learnerText } from "@platform/lesson-schema";
+import { learnerText, termProblems } from "@platform/lesson-schema";
 
 import { LESSONS } from ".";
 import { LABELS } from "./shifts.labels";
 import { PROSE } from "./shifts.prose";
 import {
+  feedbackOf,
   fieldLabelsOf,
   flat,
+  notesOf,
   partOf,
   shownOf,
   stringsIn,
@@ -70,11 +72,16 @@ describe("the lesson's words", () => {
     const own = Object.values(LABELS.drafts.captions);
     expect(own).toHaveLength(6);
     for (const caption of own) expect(partFlat, caption).not.toContain(flat(caption));
-    // Six captions and two type names, through the prose process on 17 October 2026, so none is
-    // marked DRAFT; a new one would be.
+    // Six captions and two type names went through the prose process on 17 October 2026. Added for
+    // the figures' rework that day, and marked DRAFT until they have been through it: the caption
+    // of the div2 stepper (it now offers a second call) and the labels of the two groups of answer
+    // boxes, which the answer editor will take once it can group fields.
     const source = readFileSync(new URL("./shifts.labels.ts", import.meta.url), "utf8");
-    expect(source.match(/\/\/ DRAFT/g) ?? []).toHaveLength(0);
+    expect(source.match(/\/\/ DRAFT/g) ?? []).toHaveLength(3);
     expect(Object.values(LABELS.drafts.types)).toEqual(["int", "unsigned"]);
+    expect(LABELS.drafts.groups).toEqual({ input21: "Input: 21", inputNeg21: "Input: −21" });
+    // The two group labels are not words of the lesson yet: no field, test or prose shows them.
+    expect(shown).not.toContain("Input: 21");
   });
 
   it("keep the figures' captions as plain text, and the objectives as the file has them", () => {
@@ -86,5 +93,56 @@ describe("the lesson's words", () => {
 
   it("use no em dash", () => {
     expect(learnerText(lesson).filter((t) => t.includes("—"))).toEqual([]);
+  });
+});
+
+describe("the closed notes and the feedback", () => {
+  it("open with the summaries the file gives, in the sections it puts them in", () => {
+    expect(notesOf(part)).toEqual(["What C says", "Answer"]);
+    const withNote = lesson.sections.filter((s) => s.details);
+    expect(withNote.map((s) => [s.kind, s.details?.summary])).toEqual([
+      ["question", "What C says"],
+      ["reflection", "Answer"],
+    ]);
+    for (const s of withNote) expect(partFlat).toContain(flat(s.details!.prose));
+    expect(lesson.sections.at(-1)?.title).toBe("What you now know");
+  });
+
+  it("keep the answer to the closing question out of the section's prose", () => {
+    const reflection = lesson.sections.find((s) => s.kind === "reflection")!;
+    expect(reflection.prose).toContain("For `int g = -9`, what do `g / 2` and `asr` by 1 give?");
+    expect(reflection.prose).not.toContain("−8");
+    expect(reflection.details?.prose).toContain("−8");
+  });
+
+  it("give each wrong field of the comparison the sentence for its operation, from the file", () => {
+    const c = lesson.challenges.find((x) => x.id === "compare-shifts")!;
+    const feedback = feedbackOf(c);
+    expect(feedback).toHaveLength(6);
+    for (const sentence of feedback) expect(partFlat).toContain(flat(sentence));
+    if (c.tests.kind !== "answers") throw new Error("answer tests");
+    const byField = Object.fromEntries(
+      c.tests.cases.map((t) => {
+        const field = Object.keys(t.expect)[0]!;
+        return [field, t.given[`feedback.${field}`]];
+      }),
+    );
+    expect(byField).toEqual({
+      asr21: PROSE.compareFeedback.asr,
+      lsr21: PROSE.compareFeedback.lsr,
+      div21: PROSE.compareFeedback.div,
+      asr_neg: PROSE.compareFeedback.asr,
+      lsr_neg: PROSE.compareFeedback.lsr,
+      div_neg: PROSE.compareFeedback.div,
+    });
+  });
+
+  it("read by the term gate, with the feedback sentences added to each lesson's text", () => {
+    const withFeedback = LESSONS.map((l) => ({
+      ...l,
+      modelVsReality: [l.modelVsReality, ...l.challenges.flatMap(feedbackOf)].join("\n"),
+    }));
+    expect(termProblems(withFeedback)).toEqual([]);
+    expect(learnerText(lesson)).toContain(PROSE.questionNote.prose);
   });
 });

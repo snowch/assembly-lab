@@ -12,10 +12,17 @@ import { assemblyOf, parseListing } from "./listing";
 import { sentence } from "./messages";
 import type { Trace } from "./trace";
 
-/** Assemble a listing and run it from its first instruction, with the registers at 0. */
-export function traceText(listing: string): Trace {
+/**
+ * Assemble a listing and run it from its first instruction, with the registers at 0 or, if `args`
+ * is given, with `w0`, `w1` and on holding those values (the way a call puts its arguments).
+ */
+export function traceText(
+  listing: string,
+  args: readonly number[] = [],
+  allowed?: ReadonlySet<string>,
+): Trace {
   const lines = parseListing(listing);
-  const { program, errors } = assemble(assemblyOf(lines));
+  const { program, errors } = assemble(assemblyOf(lines), allowed ? { allowed } : undefined);
   if (program === null) {
     const first = errors[0];
     throw new Error(
@@ -24,7 +31,10 @@ export function traceText(listing: string): Trace {
         : "The listing does not assemble.",
     );
   }
-  const result = run(program, { entry: TEXT_BASE });
+  const result = run(program, {
+    entry: TEXT_BASE,
+    args: args.map((value) => ({ value: BigInt(value), width: 32 })),
+  });
   const lineAt = new Map<number, number>();
   for (const ins of program.instructions) lineAt.set(ins.address, ins.line - 1);
   return { lines, program, result, lineAt };

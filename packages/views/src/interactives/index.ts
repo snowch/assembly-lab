@@ -27,6 +27,10 @@ import { CountPrediction } from "./CountPrediction";
 import { ListingChange } from "./ListingChange";
 import { ListingDiff } from "./ListingDiff";
 import { ListingRuns } from "./ListingRuns";
+import { BfiCompare } from "./BfiCompare";
+import { ClearCompare } from "./ClearCompare";
+import { FieldReadingFigure } from "./FieldReadingFigure";
+import { SolutionStepper } from "./SolutionStepper";
 import { WarningWordFigure } from "./WarningWordFigure";
 import { WordStepperFigure } from "./WordStepperFigure";
 
@@ -54,4 +58,8 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   "probe-prediction": ProbePrediction,
   "word-stepper": WordStepperFigure,
   "listing-pair": ListingPairFigure,
+  "field-reading": FieldReadingFigure,
+  "solution-stepper": SolutionStepper,
+  "bfi-compare": BfiCompare,
+  "clear-compare": ClearCompare,
 };

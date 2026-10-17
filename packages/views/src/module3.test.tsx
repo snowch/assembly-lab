@@ -175,7 +175,7 @@ describe("the bit figure", () => {
     expect(screen.getByRole("status")).toHaveTextContent(S.bitOps.unchanged);
   });
 
-  it("keeps the last word it could read, and says so, when the learner types something else", async () => {
+  it("shows the message and no computed result when the learner types a word it cannot read, and never the starting word in its place", async () => {
     const user = userEvent.setup();
     const { container } = figure(BitOpsFigure, "b", "bit-ops", props);
     const input = screen.getByLabelText(S.bitOps.inputLabel("w0"));
@@ -183,8 +183,55 @@ describe("the bit figure", () => {
     await user.type(input, "banana");
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(screen.getByText(S.bitOps.inputProblem)).toBeInTheDocument();
-    // Nothing the learner typed reached the model; the figure still shows a run, of the starting word.
-    expect(bits(container, "word")).toBe(pad32(0xf));
+    // Nothing the learner typed reached the model: no row of bits, no result, no key.
+    expect(container.querySelectorAll(".al-bit")).toHaveLength(0);
+    expect(container.querySelector('[data-row="word"]')).toBeNull();
+    expect(container.querySelector('[data-row="result"]')).toBeNull();
+    expect(container.querySelector(".al-key")).toBeNull();
+    expect(screen.queryByRole("status")).toBeNull();
+    // The instruction does not depend on the word, so it is still shown.
+    expect(container.querySelector(".al-code-ins")).toHaveTextContent("and w0, w0, -5");
+    // A word it can read brings everything back.
+    await user.clear(input);
+    await user.type(input, "0x35");
+    expect(input).toHaveAttribute("aria-invalid", "false");
+    expect(bits(container, "word")).toBe(pad32(0x35));
+  });
+
+  it.each([
+    ["empty", "", S.bitOps.inputProblem],
+    ["incomplete (0x)", "0x", S.bitOps.inputProblem],
+    ["not a number", "12abc", S.bitOps.inputProblem],
+    ["a sign alone", "-", S.bitOps.inputProblem],
+    ["more than 32 bits in hexadecimal", "0x123456789", S.bitOps.inputRange],
+    ["more than 32 bits in decimal", "4294967296", S.bitOps.inputRange],
+    ["negative below -2147483648", "-2147483649", S.bitOps.inputRange],
+  ])("gives %s its message and no result", async (_name, text, message) => {
+    const user = userEvent.setup();
+    const { container } = figure(BitOpsFigure, "b", "bit-ops", props);
+    const input = screen.getByLabelText(S.bitOps.inputLabel("w0"));
+    await user.clear(input);
+    if (text !== "") await user.type(input, text);
+    expect(screen.getByText(message)).toBeInTheDocument();
+    expect(container.querySelectorAll(".al-bit")).toHaveLength(0);
+    expect(screen.queryByRole("status")).toBeNull();
+  });
+
+  it.each([
+    ["0xffffffff", 0xffffffff],
+    ["4294967295", 0xffffffff],
+    ["-2147483648", 0x80000000],
+    ["-1", 0xffffffff],
+    ["0X1F", 0x1f],
+    ["  7 ", 7],
+  ])("still accepts %s, in decimal or hexadecimal", async (text, value) => {
+    const user = userEvent.setup();
+    const { container } = figure(BitOpsFigure, "b", "bit-ops", props);
+    const input = screen.getByLabelText(S.bitOps.inputLabel("w0"));
+    await user.clear(input);
+    await user.type(input, text);
+    expect(input).toHaveAttribute("aria-invalid", "false");
+    expect(bits(container, "word")).toBe(pad32(value));
   });
 
   it("underlines the field of ubfx in the word, and shows the gear at the bottom of the answer", async () => {
@@ -289,6 +336,27 @@ describe("the shift figure", () => {
     await user.clear(input);
     await user.type(input, "zzz");
     expect(screen.getByText(S.shift.inputProblem)).toBeInTheDocument();
+    // No result is drawn for a word that cannot be read, and the starting word is not put in its place.
+    expect(container.querySelectorAll(".al-bit")).toHaveLength(0);
+    expect(screen.queryByRole("status")).toBeNull();
+    expect(container.querySelector('[data-part="fell"]')).toBeNull();
+  });
+
+  it.each([
+    ["empty", "", S.shift.inputProblem],
+    ["incomplete (0x)", "0x", S.shift.inputProblem],
+    ["more than 32 bits", "0x1ffffffff", S.bitOps.inputRange],
+    ["more than 32 bits in decimal", "4294967296", S.bitOps.inputRange],
+    ["negative below -2147483648", "-2147483649", S.bitOps.inputRange],
+  ])("gives %s its message and no result", async (_name, text, message) => {
+    const user = userEvent.setup();
+    const { container } = figure(ShiftFigure, "s", "shift", props);
+    const input = screen.getByLabelText(S.shift.inputLabel);
+    await user.clear(input);
+    if (text !== "") await user.type(input, text);
+    expect(screen.getByText(message)).toBeInTheDocument();
+    expect(container.querySelectorAll(".al-bit")).toHaveLength(0);
+    expect(screen.queryByRole("status")).toBeNull();
   });
 
   it("stays shut until the prediction before it is checked", () => {

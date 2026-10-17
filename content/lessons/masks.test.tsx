@@ -24,6 +24,7 @@ import {
 
 import { LESSONS } from ".";
 import { masks, MASKS_INSTRUCTIONS } from "./masks";
+import { PROSE } from "./masks.prose";
 import { SET_GEAR_START_TEXT } from "./logic-shifts-masks.listings";
 
 const lesson = LESSONS.find((l) => l.id === "masks")!;
@@ -71,7 +72,16 @@ describe("the lesson", () => {
     expect(gated.map((x) => [x.id, x.props["after"]])).toEqual([
       ["mask-bits", "predict-minus-five"],
       ["step-no-clear", "predict-no-clear"],
+      ["compare-no-clear", "predict-no-clear"],
     ]);
+    // The two figures after the written challenge wait for the challenge, not for a prediction.
+    const waits = all.filter((x) => "afterRun" in x.props || "afterChallenge" in x.props);
+    expect(waits.map((x) => [x.id, x.props["afterRun"] ?? x.props["afterChallenge"]])).toEqual([
+      ["step-solution", "write-set-gear"],
+      ["compare-bfi", "write-set-gear"],
+    ]);
+    for (const x of waits)
+      expect(ids.indexOf("write-set-gear-here")).toBeLessThan(ids.indexOf(x.id));
     for (const x of gated)
       expect(ids.indexOf(x.props["after"] as string)).toBeLessThan(ids.indexOf(x.id));
   });
@@ -176,6 +186,34 @@ describe("the challenges", () => {
     expect(JSON.stringify(verdict)).not.toContain("0x22");
   });
 
+  it("trace-three-results: each wrong field gets its own sentence, never the value, and a chained `and` gets the chained one", () => {
+    const c = challenge("trace-three-results");
+    const right = { after_orr: "0x2b", after_and: "0x22", the_gear: "0x2" };
+    // The verdict shows no code marks: they come out as curly quotes. Put them back to compare.
+    const detail = (answers: Record<string, string>) =>
+      grade(c, { answers: { ...right, ...answers } }).failures.map((f) =>
+        f.detail?.replace(/“([^”]*)”/g, "`$1`"),
+      );
+    expect(detail({ after_orr: "0x2a" })).toEqual([PROSE.traceFeedback.after_orr]);
+    expect(detail({ after_and: "0x2a" })).toEqual([PROSE.traceFeedback.after_and]);
+    expect(detail({ the_gear: "0x5" })).toEqual([PROSE.traceFeedback.the_gear]);
+    // 0x23 is what the same `and` gives on 0x2b, the `orr` result, run on the model: the chained mistake.
+    expect(detail({ after_and: "0x23" })).toEqual([PROSE.traceFeedback.chained]);
+    expect(detail({ after_and: "23" })).toEqual([PROSE.traceFeedback.chained]);
+    // Any other wrong `and` answer is the ordinary sentence, and the right answer is none.
+    expect(detail({ after_and: "0x24" })).toEqual([PROSE.traceFeedback.after_and]);
+    expect(detail({})).toEqual([]);
+    // Two wrong fields, two cases, two sentences.
+    expect(detail({ after_orr: "0x0", the_gear: "0x0" })).toEqual([
+      PROSE.traceFeedback.after_orr,
+      PROSE.traceFeedback.the_gear,
+    ]);
+    // No sentence gives the value of any of the three answers.
+    const all = Object.values(PROSE.traceFeedback).join(" ");
+    expect(all).not.toMatch(/0x2b|0x22|0x23/);
+    expect(all).not.toMatch(/\b0x2\b(?!a)/);
+  });
+
   it("trace-three-results: answers are read as hexadecimal, with or without 0x", () => {
     const c = challenge("trace-three-results");
     expect(grade(c, { answers: { after_orr: "2B", after_and: "22", the_gear: "2" } }).passed).toBe(
@@ -205,8 +243,10 @@ describe("the page", () => {
     expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
-    // The bit figure and the stepper wait for their predictions; nothing of either run is on the page.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
+    // The bit figure, the stepper and the comparison wait for their predictions, and the solution
+    // stepper and the comparison with GCC's function wait for the challenge; nothing of any run is
+    // on the page.
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(5);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
     expect(container.querySelectorAll('[data-figure="warning-word"] .al-bit')).toHaveLength(32);

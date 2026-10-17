@@ -211,7 +211,29 @@ export const VIEW_STRINGS = {
     unchanged: "No bit changed.",
     result: (register: string, hex: string, decimal: string) =>
       `${register} holds ${hex}, which is ${decimal}.`,
-    legend: "Outlined: bits that changed. Underlined: the field the instruction uses.",
+    // Everything from here to the end of this object is Module 3's rework of 17 October 2026, and
+    // is DRAFT until it has been through the prose process (a test counts the marks).
+    legend:
+      "Outlined and marked ▲: bits that changed. Underlined: the field the instruction uses. Dotted frame: the bit you picked.", // DRAFT
+    /** The rule for the operation the function's instruction is, one line. */
+    rule: {
+      and: "AND: a mask bit of 0 clears the bit, and a 1 keeps it.", // DRAFT
+      orr: "OR: a mask bit of 1 sets the bit, and a 0 keeps it.", // DRAFT
+      eor: "Exclusive OR: a mask bit of 1 flips the bit, and a 0 keeps it.", // DRAFT
+    },
+    inputRange:
+      "A word has 32 bits. Use a number from -2147483648 to 4294967295, or up to eight hexadecimal digits after 0x.", // DRAFT
+    noResult: "No result is shown until the word can be read.", // DRAFT
+    rowChanged: "Changed", // DRAFT
+    changedGlyph: "▲", // DRAFT
+    pickGroup: "Read one bit", // DRAFT
+    higherBit: "Higher bit", // DRAFT
+    lowerBit: "Lower bit", // DRAFT
+    pickHint: "Press a bit, or use the buttons, to read its column.", // DRAFT
+    column: (bit: number, input: number, mask: number, result: number) =>
+      `Bit ${bit}: input ${input}, mask ${mask}, result ${result}.`, // DRAFT
+    columnPlain: (bit: number, input: number, result: number) =>
+      `Bit ${bit}: input ${input}, result ${result}.`, // DRAFT
   },
 
   shift: {
@@ -225,7 +247,24 @@ export const VIEW_STRINGS = {
     filledWith: (bits: string) => `Filled with: ${bits}`,
     result: (instruction: string, hex: string, unsigned: string, signed: string) =>
       `After \`${instruction}\`, w0 holds ${hex}: ${unsigned} as unsigned, ${signed} as signed.`,
-    legend: "Struck through: bits that fall off. Dashed: bits the shift filled in.",
+    // From here to the end of this object is the rework of 17 October 2026: DRAFT.
+    legend:
+      "Struck through and marked ×: bits that fall off. Dashed and marked +: bits the shift filled in.", // DRAFT
+    arrowLeft: "←", // DRAFT
+    arrowRight: "→", // DRAFT
+    moves: (op: string, amount: number, left: boolean) =>
+      `\`${op}\` moves every bit ${amount} ${amount === 1 ? "place" : "places"} ${left ? "left" : "right"}.`, // DRAFT
+    /** What fills the gap, by instruction. */
+    rule: {
+      lsl: "The gap on the right is filled with zeros.", // DRAFT
+      lsr: "The gap on the left is filled with zeros.", // DRAFT
+      asr: "The gap on the left is filled with copies of the old top bit.", // DRAFT
+    },
+    rowLost: "Lost", // DRAFT
+    rowFilled: "Filled", // DRAFT
+    lostGlyph: "×", // DRAFT
+    filledGlyph: "+", // DRAFT
+    noResult: "No result is shown until the word can be read.", // DRAFT
   },
 
   pair: {
@@ -252,6 +291,89 @@ export const VIEW_STRINGS = {
     endedWithHex: (register: string, hex: string) =>
       `The simulator ran the program. \`${register}\` held ${hex} when the run ended.`,
   },
+
+  // ---- Module 3's rework of 17 October 2026 (module3-block-start) -------------------------------
+  // Every string from here to the end marker is DRAFT until it has been through the prose process.
+  // A test counts the marks, so a new one is a decision somebody sees.
+
+  /** The glyphs under a big cell, and the words each one stands for. */
+  cells: {
+    tag: {
+      changed: "changed", // DRAFT
+      cleared: "cleared", // DRAFT
+      moved: "moved up", // DRAFT
+      combined: "combined in", // DRAFT
+      kept: "unchanged from the start of the call", // DRAFT
+      survives: "still set from the old word", // DRAFT
+      lost: "lost off the end", // DRAFT
+      fill: "filled in", // DRAFT
+      differs: "differs from the result with the clear", // DRAFT
+    },
+  },
+
+  warning: {
+    inUse: "The bits in use", // DRAFT
+    unused: (from: number, to: number) => `Bits ${from} to ${to} are not used in this example.`, // DRAFT
+    on: "on", // DRAFT
+    off: "off", // DRAFT
+  },
+
+  maskView: {
+    mask: (signed: string, hex: string) => `The mask is ${signed}, which is ${hex}.`, // DRAFT
+    // `list` is the bit or bits framed (`Bit 2`), `count` how many.
+    frame: (list: string, count: number) =>
+      count === 1
+        ? `Dotted frame: ${list}, the only bit where the mask has a 0.`
+        : `Dotted frame: ${list}, the bits where the mask has a 0.`, // DRAFT
+    all: "Show all 32 bits", // DRAFT
+  },
+
+  fieldReading: {
+    noField: "This figure needs a function whose first instruction reads a field.", // DRAFT
+    // `bits` is the selected bits as 0 and 1, highest first.
+    selected: (from: number, to: number, bits: string) => `Bits ${to} to ${from} are ${bits}.`, // DRAFT
+    gives: (call: string, value: string) => `\`${call}\` gives ${value}.`, // DRAFT
+    legend: "Underlined: the bits the instruction takes.", // DRAFT
+  },
+
+  calls: {
+    group: "Call", // DRAFT
+  },
+
+  solution: {
+    locked: "Run your instructions above first. The figure opens once you have run them.", // DRAFT
+    noRun: "Your instructions do not assemble yet, so there is nothing to step through.", // DRAFT
+    all: "Show all 32 bits", // DRAFT
+    marks: "Marks", // DRAFT
+    returns: (register: string) => `${register} when it returns`, // DRAFT
+  },
+
+  bfi: {
+    locked: "Pass the challenge above first. The figure opens once you have passed it.", // DRAFT
+    yours: "Your code", // DRAFT
+    gcc: "GCC's code", // DRAFT
+    // `same` is whether the two answers are the same word.
+    result: (call: string, yours: string, gcc: string, same: boolean) =>
+      same
+        ? `\`${call}\` gives ${yours} from your code and from GCC's.`
+        : `\`${call}\` gives ${yours} from your code and ${gcc} from GCC's.`, // DRAFT
+  },
+
+  clearCompare: {
+    noOr: "This figure needs a function that joins a value to the word with an `orr`.", // DRAFT
+    old: "Old word", // DRAFT
+    moved: "New gear, moved into place", // DRAFT
+    without: "OR without the clear", // DRAFT
+    with: "OR with the clear", // DRAFT
+    summary: (without: string, full: string) =>
+      `Without the clear the OR gives ${without}. With the clear, GCC's function gives ${full}.`, // DRAFT
+  },
+
+  operand: {
+    facts: "The register before and after the instruction", // DRAFT
+    operand: (text: string) => `Operand \`${text}\``, // DRAFT
+  },
+  // ---- end of Module 3's rework (module3-block-end) ---------------------------------------------
 
   answers: {
     notHex: (field: string) =>

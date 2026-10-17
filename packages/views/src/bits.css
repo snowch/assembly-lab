@@ -187,3 +187,289 @@
 .numpad-keys .numpad-sign {
   grid-column: 1 / -1;
 }
+
+/* ---- Module 3's rework of 17 October 2026 ------------------------------------------------------
+   Bits this example does not use, the column the learner picked, the glyph rows under the bits, the
+   big cells for a few bits of a word, the warning word's labels, and the small parts around them.
+   Nothing rests on colour alone: a mark is a shape (an outline, an underline, a strike, a dash, a
+   bar, a dotted frame) and a glyph with its words in the legend. */
+
+.al-bit[data-unused="true"] {
+  background: transparent;
+  color: var(--fg-muted);
+  outline: 1px dotted var(--border-strong);
+  outline-offset: -1px;
+  opacity: 0.75;
+}
+.al-bit[data-picked="true"] {
+  position: relative;
+}
+.al-bit[data-picked="true"]::after {
+  content: "";
+  position: absolute;
+  inset: -2px -1px;
+  border: 2px dotted var(--fg);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.al-bitops .al-bit {
+  cursor: pointer;
+}
+.al-bit[role="button"]:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 1px;
+}
+
+/* A row of glyphs under the bits: in the same layout, so a glyph sits under its bit */
+.al-reg.al-markrow {
+  padding-top: 0;
+  padding-bottom: 0;
+  border-color: transparent;
+}
+.al-markrow .al-reg-name {
+  color: var(--fg-muted);
+  font-size: var(--text-xs);
+  font-weight: 400;
+}
+.al-mark {
+  min-height: 1.2em;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--fg);
+}
+
+/* One-line statements around the figures */
+.al-rule,
+.al-direction,
+.al-maskline {
+  margin: 0;
+  max-width: 40rem;
+}
+.al-rule {
+  font-weight: 600;
+}
+.al-arrow {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.al-pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+.al-readout {
+  flex: 1 1 14rem;
+  margin: 0;
+  min-height: 1.5em;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+/* Big cells: a few bits of a word, each with its number above and its glyph below */
+.al-cellrows {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 34rem;
+}
+.al-cellgroup {
+  display: grid;
+  gap: var(--space-1);
+}
+.al-cellrow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-1);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+}
+.al-cellrow[data-changed="true"] {
+  border-color: var(--accent);
+}
+.al-cellrow-name {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+.al-cellrow-value {
+  justify-self: end;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.al-cells {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 4px;
+}
+.al-cell {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 2px;
+}
+.al-cell-n {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  color: var(--fg-muted);
+}
+.al-cell-bit {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--bg-sunken);
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+}
+.al-cell[data-on="true"] .al-cell-bit {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+.al-cell-g {
+  min-height: 1.2em;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  color: var(--fg);
+}
+.al-cell-label {
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.al-cell[data-changed="true"] .al-cell-bit {
+  outline: 2px solid var(--warn);
+  outline-offset: 1px;
+}
+.al-cell[data-field="true"] .al-cell-bit {
+  box-shadow: inset 0 -4px 0 var(--fg);
+}
+.al-cell[data-lost="true"] .al-cell-bit {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  box-shadow: inset 0 0 0 1px var(--bad);
+}
+.al-cell[data-fill="true"] .al-cell-bit {
+  outline: 2px dashed var(--ok);
+  outline-offset: 1px;
+}
+.al-cell[data-unused="true"] .al-cell-bit {
+  background: transparent;
+  outline: 1px dotted var(--border-strong);
+  opacity: 0.75;
+}
+.al-cell[data-picked="true"]::after {
+  content: "";
+  position: absolute;
+  inset: -3px -2px;
+  border: 2px dotted var(--fg);
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+}
+/* What an instruction did to a bit, by the shape of the mark as well as its glyph */
+.al-cell[data-tag="cleared"] .al-cell-bit {
+  outline: 2px dashed var(--bad);
+  outline-offset: 1px;
+}
+.al-cell[data-tag="moved"] .al-cell-bit {
+  outline: 2px solid var(--ok);
+  outline-offset: 1px;
+}
+.al-cell[data-tag="combined"] .al-cell-bit {
+  outline: 2px dotted var(--ok);
+  outline-offset: 1px;
+}
+.al-cell[data-tag="survives"] .al-cell-bit {
+  box-shadow: inset 0 -4px 0 var(--bad);
+}
+.al-cell[data-tag="differs"] .al-cell-bit {
+  outline: 2px solid var(--warn);
+  outline-offset: 1px;
+}
+.al-cell-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-3);
+}
+.al-cell-glyph {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--fg);
+}
+
+/* The warning word: seven bits in use, each warning its own label, the gear one bracketed field */
+.al-use {
+  display: grid;
+  gap: var(--space-1) 4px;
+  max-width: 34rem;
+}
+.al-use-cell {
+  min-width: 0;
+}
+.al-use-label {
+  box-sizing: border-box;
+  min-height: 2.75rem;
+  min-width: 0;
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  padding: 4px 2px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.al-use-label[data-kind="field"] {
+  border-top: 4px solid var(--fg);
+}
+.al-use-label[aria-pressed="true"] {
+  background: var(--bg-sunken);
+  outline: 2px dotted var(--fg);
+  outline-offset: 1px;
+}
+.al-use-name {
+  font-weight: 600;
+}
+.al-use-state {
+  font-family: var(--font-mono);
+}
+.al-key-pick {
+  font: inherit;
+}
+
+/* A closed part that shows all 32 bits, and a register before and after an instruction */
+.al-all32 > summary {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+.al-all32[open] > summary {
+  margin-bottom: var(--space-2);
+}
+.al-facts {
+  max-width: 30rem;
+}
+.al-facts tbody th,
+.al-facts td {
+  font-family: var(--font-mono);
+}

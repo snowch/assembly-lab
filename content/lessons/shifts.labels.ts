@@ -4,7 +4,9 @@
 // docs/notes/module-3/prose.md gives are kept word for word (a title that holds code has its
 // backticks taken out; an option has no list mark). Everything the prose file does not give is in
 // `drafts`, marked DRAFT: the captions of figures it gives none for, and the type names over the
-// two listings. The prose test lists them, so a new one is a decision somebody sees.
+// two listings. The prose test lists them, so a new one is a decision somebody sees. The two labels
+// over the groups of answer boxes (17 October 2026) are marked DRAFT until they have been through
+// the prose process; the prose test counts the marks.
 
 export const LABELS = {
   objectives: [
@@ -22,7 +24,7 @@ export const LABELS = {
     explanation: "Why the type picks the shift",
     generalisation: "Shifts inside other instructions",
     challenge: "Which instruction for which type",
-    reflection: "Looking back",
+    reflection: "What you now know",
   },
   captions: {
     shiftWord:
@@ -86,13 +88,23 @@ export const LABELS = {
       predictFill: "A prediction about what fills the top bit of −7 when it moves one place right.",
       compareShifts: "Work out six results for 21 and −21, then give them.",
       predictFirstAdd: "A prediction about the first instruction GCC uses for g / 2.",
-      stepDiv2: "div2(-7), one instruction at a time. A register with an outline has just changed.",
+      stepDiv2:
+        "div2 for -7 or for 7, one instruction at a time. A register with an outline has just changed.", // DRAFT
       pickInstruction: "Say which instruction GCC uses for each shift, then give your answers.",
     },
     /** The C type over each of the two listings. */
     types: {
       int: "int",
       unsigned: "unsigned",
+    },
+    /**
+     * The labels over the two groups of answer boxes in "Compare shifts with division", one group
+     * for each input. Not used yet: the answer editor takes an optional grouping of fields from
+     * Module 2's build, and the managing session wires these two labels in after the merge.
+     */
+    groups: {
+      input21: "Input: 21", // DRAFT
+      inputNeg21: "Input: −21", // DRAFT
     },
   },
 } as const;

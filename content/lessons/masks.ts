@@ -16,6 +16,7 @@ import { PROSE } from "./masks.prose";
 import {
   CLEAR_DOOR,
   GEAR_OF,
+  SET_GEAR,
   SET_GEAR_REFERENCE_TEXT,
   SET_GEAR_START_TEXT,
   SET_GEAR_WITHOUT_CLEAR,
@@ -77,6 +78,7 @@ export const masks: LessonInput = {
       kind: "prediction",
       title: LABELS.titles.prediction,
       prose: PROSE.prediction,
+      details: { summary: PROSE.predictionNote.summary, prose: PROSE.predictionNote.prose },
       interactives: [
         {
           id: "predict-minus-five",
@@ -90,6 +92,8 @@ export const masks: LessonInput = {
             program: CLEAR_DOOR,
             call: { entry: "clear_door", args: [0xffffffff] },
             measure: { kind: "cleared-bits" },
+            // After the commit the figure shows the mask and the low eight bits of this run.
+            maskView: { word: 0xf },
           },
         },
       ],
@@ -117,6 +121,13 @@ export const masks: LessonInput = {
             after: "predict-minus-five",
           },
         },
+        {
+          id: "read-gear",
+          kind: "field-reading",
+          timeModel: STEPS,
+          caption: LABELS.drafts.captions.readGear,
+          props: { program: GEAR_OF, call: { entry: "gear_of", args: [0x35] } },
+        },
       ],
     },
     {
@@ -130,6 +141,32 @@ export const masks: LessonInput = {
           timeModel: STEPS,
           caption: LABELS.drafts.captions.setGear,
           props: { challengeId: "write-set-gear" },
+        },
+        {
+          id: "step-solution",
+          kind: "solution-stepper",
+          timeModel: STEPS,
+          caption: LABELS.drafts.captions.stepSolution,
+          props: {
+            // Shut until the challenge has been run; then the learner's own instructions, stepped.
+            afterRun: "write-set-gear",
+            intro: PROSE.afterRun,
+            field: { from: 4, to: 6 },
+          },
+        },
+        {
+          id: "compare-bfi",
+          kind: "bfi-compare",
+          timeModel: STEPS,
+          caption: LABELS.drafts.captions.compareBfi,
+          props: {
+            // Shut until the challenge passes; then the learner's code beside GCC's `bfi`.
+            afterChallenge: "write-set-gear",
+            note: PROSE.afterPass,
+            gcc: SET_GEAR,
+            call: SET_GEAR_CALL,
+            field: { from: 4, to: 6 },
+          },
         },
       ],
     },
@@ -166,6 +203,19 @@ export const masks: LessonInput = {
             after: "predict-no-clear",
           },
         },
+        {
+          id: "compare-no-clear",
+          kind: "clear-compare",
+          timeModel: STEPS,
+          caption: LABELS.drafts.captions.compareClear,
+          props: {
+            without: SET_GEAR_WITHOUT_CLEAR,
+            gcc: SET_GEAR,
+            call: SET_GEAR_CALL,
+            field: { from: 4, to: 6 },
+            after: "predict-no-clear",
+          },
+        },
       ],
     },
     { kind: "explanation", title: LABELS.titles.explanation, prose: PROSE.explanation },
@@ -184,7 +234,12 @@ export const masks: LessonInput = {
         },
       ],
     },
-    { kind: "reflection", title: LABELS.titles.reflection, prose: PROSE.reflection },
+    {
+      kind: "reflection",
+      title: LABELS.titles.reflection,
+      prose: PROSE.reflection,
+      details: { summary: PROSE.reflectionNote.summary, prose: PROSE.reflectionNote.prose },
+    },
   ],
   challenges: [
     {
@@ -245,17 +300,34 @@ export const masks: LessonInput = {
         cases: [
           {
             label: LABELS.challenges.three.tests.afterOrr,
-            given: { entry: "after_orr", w0: 0x2a },
+            given: {
+              entry: "after_orr",
+              w0: 0x2a,
+              "feedback.after_orr": PROSE.traceFeedback.after_orr,
+            },
             expect: { after_orr: "w0" },
           },
           {
             label: LABELS.challenges.three.tests.afterAnd,
-            given: { entry: "after_and", w0: 0x2a },
+            given: {
+              entry: "after_and",
+              w0: 0x2a,
+              "feedback.after_and": PROSE.traceFeedback.after_and,
+              // An `and` answer that is what the same `and` gives on the `orr` result is the
+              // chained mistake. The grader runs `after_orr` on w0, then this function on that
+              // result, to find it.
+              "chained.after_and": "after_orr",
+              "feedback.chained.after_and": PROSE.traceFeedback.chained,
+            },
             expect: { after_and: "w0" },
           },
           {
             label: LABELS.challenges.three.tests.gear,
-            given: { entry: "the_gear", w0: 0x2a },
+            given: {
+              entry: "the_gear",
+              w0: 0x2a,
+              "feedback.the_gear": PROSE.traceFeedback.the_gear,
+            },
             expect: { the_gear: "w0" },
           },
         ],
