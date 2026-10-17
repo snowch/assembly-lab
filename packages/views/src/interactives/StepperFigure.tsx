@@ -20,11 +20,12 @@ import { useSlot } from "@platform/lesson-runtime";
 import { branchStatusAt, jumpedAt } from "../branchPath";
 import { crossedFrom, flowAt } from "../flow";
 import { cLinesOf, labelOf } from "../listing";
-import { FlagsRow } from "../FlagsRow";
+import { FlagsRow, type FlagsExplained } from "../FlagsRow";
 import { stopSentence } from "../messages";
 import { PanelSchema, StepPanel } from "../panels";
 import { DecimalRegister, ListingView, RegisterRow, withCode } from "../parts";
 import { VIEW_STRINGS as S } from "../strings";
+import { ARITH_STRINGS as A } from "../strings.arith";
 import { BRANCH_STRINGS as B } from "../strings.branch";
 import { MODULE0_STRINGS as M0 } from "../strings.module0";
 import { traceOf, viewAt, wValue, type StepView, type Trace } from "../trace";
@@ -58,10 +59,20 @@ const Props = z.object({
   branchStatus: z.boolean().default(false),
   /** A panel under the flags: a compare and `csel` in three stages, or two conditions (Module 4). */
   panel: PanelSchema.optional(),
+  /**
+   * Write "changed" beside each register and under each flag the last instruction changed, and say
+   * after an `add` or `sub` that it left the flags alone. The outline stays as it is.
+   */
+  showChanges: z.boolean().default(false),
+  /** Say under each flag what it records. */
+  explainFlags: z.boolean().default(false),
 });
 
-/** What the status line says: what ran, what runs next, how the run ended. */
-function statusOf(trace: Trace, view: StepView, branchStatus: boolean) {
+/**
+ * What the status line says: what ran, what runs next, how the run ended. A sentence about what the
+ * instruction that ran did or did not do (`afterRan`) comes straight after the one that names it.
+ */
+function statusOf(trace: Trace, view: StepView, branchStatus: boolean, afterRan?: string | null) {
   const at = (i: number | null) => (i === null ? undefined : trace.lines[i]);
   const ran = at(view.ran);
   const next = at(view.next);
@@ -70,6 +81,7 @@ function statusOf(trace: Trace, view: StepView, branchStatus: boolean) {
   if (branch !== null) return branch;
   const parts: string[] = [];
   if (ran) parts.push(S.stepper.ran(ran.text));
+  if (afterRan) parts.push(afterRan);
   if (view.stop !== null) parts.push(stopSentence(view.stop) ?? S.stepper.ended);
   else if (next) {
     // Say which function the run has crossed into, only when the label changes.
@@ -156,6 +168,31 @@ function FlowPanel({ trace, k, shown }: { trace: Trace; k: number; shown: readon
   );
 }
 
+/**
+ * What the instruction that just ran did not do: an `add` or a `sub` writes a register and leaves
+ * the flags alone. It is read from the instruction's kind, never from the flags before and after,
+ * so an `adds` that happens to leave the flags as they were is not described this way.
+ */
+function leftFlagsAlone(trace: Trace, k: number): string | null {
+  const step = k > 0 ? trace.result.steps[k - 1] : undefined;
+  const ins = step && trace.program.instructions.find((i) => i.address === step.address);
+  if (!step || !ins || ins.op.k !== "addsub" || ins.op.setFlags) return null;
+  const written = step.writes.find((w) => w.reg !== "sp");
+  if (!written || written.reg === "sp") return null;
+  return A.stepper.notUpdated(`${ins.op.w === 32 ? "w" : "x"}${written.reg}`, ins.mnemonic);
+}
+
+/** What the flags now showing record: an addition's carry out, or a subtraction's borrow. */
+function flagsKind(trace: Trace, k: number): FlagsExplained {
+  for (let i = k - 1; i >= 0; i--) {
+    const step = trace.result.steps[i];
+    const ins = step && trace.program.instructions.find((n) => n.address === step.address);
+    if (ins && ins.op.k === "addsub" && ins.op.setFlags)
+      return ins.op.sub ? "subtraction" : "addition";
+  }
+  return "addition";
+}
+
 export const StepperFigure = withProps(Props, function StepperFigure({ data, store }) {
   const [removed, setRemoved] = useState(false);
   const [k, setK] = useState(0);
@@ -233,7 +270,14 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
         </button>
       </div>
       <p className="al-status" role="status">
-        {withCode(statusOf(trace, view, data.branchStatus))}
+        {withCode(
+          statusOf(
+            trace,
+            view,
+            data.branchStatus,
+            data.showChanges ? leftFlagsAlone(trace, view.k) : null,
+          ),
+        )}
       </p>
       {data.endNote !== undefined && atEnd && (
         <p className="al-endnote">{withCode(data.endNote)}</p>
@@ -279,6 +323,9 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
               name={`w${n}`}
               value={wValue(view.state, n)}
               changed={view.written.has(n)}
+              {...(data.showChanges
+                ? { tag: view.written.has(n) ? A.stepper.registerChanged : "" }
+                : {})}
             />
           ),
         )}
@@ -287,6 +334,8 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
         <FlagsRow
           flags={view.state.flags}
           before={view.k > 0 ? viewAt(trace, view.k - 1).state.flags : null}
+          {...(data.explainFlags ? { explain: flagsKind(trace, view.k) } : {})}
+          tagChanged={data.showChanges}
         />
       )}
       {data.panel && <StepPanel panel={data.panel} trace={trace} k={view.k} />}

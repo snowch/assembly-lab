@@ -7,11 +7,11 @@
 // wrong answer is answered without the right value, and the whole page renders with no figure
 // problem.
 
-import { render } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, within } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
-import { INTERACTIVES, STEPS, createBook, grade } from "@al/views";
-import { LessonView, memoryStorage } from "@platform/lesson-runtime";
+import { ARITH_STRINGS, BOOK_ID, INTERACTIVES, STEPS, createBook, grade } from "@al/views";
+import { LessonStore, LessonView, memoryStorage } from "@platform/lesson-runtime";
 import {
   SECTION_KINDS,
   checkLesson,
@@ -24,10 +24,14 @@ import {
 
 import { LESSONS } from ".";
 import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
+import { PROSE } from "./subtracting-and-the-tick-counter.prose";
 
 const lesson = LESSONS.find((l) => l.id === "subtracting-and-the-tick-counter")!;
 const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
 const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
+
+// Rendering a whole lesson and pressing its buttons takes a while on a busy machine.
+vi.setConfig({ testTimeout: 30_000 });
 
 describe("the lesson", () => {
   it("parses and passes the schema's checks: ten sections in order, every challenge mounted", () => {
@@ -76,6 +80,40 @@ describe("the lesson", () => {
     ]);
     for (const x of gated)
       expect(ids.indexOf(x.props["after"] as string), x.id).toBeLessThan(ids.indexOf(x.id));
+  });
+
+  it("gates a third adder behind the construction challenge, after the challenge in the page", () => {
+    const figures = lesson.sections.flatMap((s) => s.interactives);
+    const gated = figures.filter((x) => typeof x.props["afterChallenge"] === "string");
+    expect(gated.map((x) => x.id)).toEqual(["subtract-own"]);
+    const mount = figures.find(
+      (m) => m.props["challengeId"] === gated[0]!.props["afterChallenge"],
+    )!;
+    expect(figures.indexOf(mount)).toBeLessThan(figures.indexOf(gated[0]!));
+    // It draws one of the challenge's own calls, which the learner's elapsed has just passed.
+    const call = gated[0]!.props["call"] as { args: number[] };
+    const c = challenge("write-elapsed");
+    if (c.tests.kind !== "answers") throw new Error("answers");
+    expect(c.tests.cases.map((t) => [t.given["w0"], t.given["w1"]])).toContainEqual(call.args);
+  });
+
+  it("says nowhere that a subtraction, or C, counts or detects how many times a counter wrapped", () => {
+    const sentences = [
+      ...learnerText(lesson),
+      ...Object.values(ARITH_STRINGS.ring).flatMap((v) => (typeof v === "string" ? [v] : [])),
+    ].flatMap((t) => t.split(/(?<=[.?!])\s+/));
+    const about = sentences.filter(
+      (t) =>
+        /\bwraps?\b|\bwrapped\b/i.test(t) &&
+        /how many|number of|counts? (the )?wraps|detect/i.test(t),
+    );
+    // The only such sentences are the denials.
+    expect(about.length).toBeGreaterThan(0);
+    expect(about.every((t) => /not record|does not/.test(t))).toBe(true);
+    // And it says what a borrow means only under the assumption.
+    expect(PROSE.generalisation).toContain(
+      "When the counter advances normally and fewer than 2³² ticks have passed, C = 0 also means the counter wrapped once between the readings.",
+    );
   });
 
   it("gives the construction challenge the gate add, sub, adds, subs and ret, and not neg", () => {
@@ -190,8 +228,83 @@ describe("the page", () => {
     expect(problems.map((p) => p.textContent)).toEqual([]);
     // The ring, the two adders and the stepper wait for their predictions; nothing of any run is
     // on the page.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(4);
+    // The adder after the construction challenge waits for it too.
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(5);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
+    // The closed answer of the last section, and no other closed note.
+    expect(container.querySelectorAll("details.lesson-details")).toHaveLength(1);
+  });
+
+  it("shows nothing of the negs explanation, the strip's split or the closed answer before they are earned", () => {
+    const { container } = render(
+      <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
+    );
+    const page = container.textContent ?? "";
+    expect(page).not.toContain("the largest signed 32-bit value");
+    expect(page).not.toContain("Counting forward from 4294966296");
+    expect(page).not.toContain(PROSE.elapsedAfter.slice(0, 40));
+    expect(container.querySelector("#ix-counter-ring svg")).toBeNull();
+    const answer = container.querySelector("details.lesson-details") as HTMLDetailsElement;
+    expect(answer.open).toBe(false);
+    expect(within(answer).getByText("Answer")).toBeTruthy();
+  });
+
+  it("opens the adder that follows the construction challenge only once elapsed passes, and then says what the subtraction kept", () => {
+    // The work the learner has saved is read when the page opens: one page for each piece of work.
+    const pageWith = (text: string | null) => {
+      const storage = memoryStorage();
+      if (text !== null)
+        new LessonStore(storage, BOOK_ID, lesson.id).setChallenge("write-elapsed", (c) => ({
+          ...c,
+          artifact: { text },
+        }));
+      const view = render(<LessonView book={book} lesson={lesson} storage={storage} />);
+      return view;
+    };
+    const none = pageWith(null);
+    expect(none.container.querySelector("#ix-subtract-own .al-locked")).not.toBeNull();
+    expect(none.container.textContent).not.toContain(PROSE.elapsedAfter.slice(0, 40));
+    none.unmount();
+    // An addition does not pass the four calls, so the adder stays shut.
+    const wrong = pageWith("add w0, w0, w1\nret");
+    expect(wrong.container.querySelector("#ix-subtract-own .al-locked")).not.toBeNull();
+    expect(wrong.container.textContent).not.toContain(PROSE.elapsedAfter.slice(0, 40));
+    wrong.unmount();
+    const { container } = pageWith("sub w0, w0, w1\nret");
+    const own = () => container.querySelector("#ix-subtract-own") as HTMLElement;
+    expect(own().querySelector(".al-locked")).toBeNull();
+    expect(own().querySelector(".al-adder-note")?.textContent).toContain(
+      "A single 32-bit subtraction keeps the low 32 bits of now - then.",
+    );
+    // It opens at the final state of the call: 250 minus 4294967046 is 500, with a borrow.
+    expect(own().querySelector('[data-line="result"]')?.textContent).toBe(
+      "Result: 0x000001f4, which is 500",
+    );
+    expect(own().querySelector('[data-line="c"]')?.textContent).toBe("C = 0: a borrow was needed");
+  });
+
+  it("opens the two subtraction figures at their final states once the prediction is checked, side by side in order", () => {
+    const { container } = render(
+      <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
+    );
+    const prediction = container.querySelector("#ix-predict-elapsed") as HTMLElement;
+    fireEvent.click(within(prediction).getByRole("radio", { name: "2000" }));
+    fireEvent.click(within(prediction).getByRole("button", { name: "Check your prediction" }));
+    const line = (id: string, key: string) =>
+      container.querySelector(`#ix-${id} [data-line="${key}"]`)?.textContent;
+    expect(line("subtract-wrapped", "c")).toBe("C = 0: a borrow was needed");
+    expect(line("subtract-no-wrap", "c")).toBe("C = 1: no borrow");
+    expect(line("subtract-no-wrap", "result")).toBe("Result: 0x00001964, which is 6500");
+    expect(line("subtract-wrapped", "result")).toBe("Result: 0x000007d0, which is 2000");
+    const order = [...container.querySelectorAll("figure.interactive")].map((f) => f.id);
+    expect(order.indexOf("ix-subtract-wrapped")).toBeLessThan(order.indexOf("ix-subtract-no-wrap"));
+    // Each has its column-by-column view: the controls to step from the start.
+    for (const id of ["subtract-wrapped", "subtract-no-wrap"])
+      expect(
+        within(container.querySelector(`#ix-${id}`) as HTMLElement).getByRole("button", {
+          name: ARITH_STRINGS.adder.reset,
+        }),
+      ).toBeTruthy();
   });
 });

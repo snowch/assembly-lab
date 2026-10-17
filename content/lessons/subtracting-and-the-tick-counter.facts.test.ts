@@ -10,7 +10,8 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
-import { additionSteps, bitAt, parseListing, traceOf } from "@al/views";
+import { additionSteps, bitAt, parseListing, ringReading, secondAsGiven, traceOf } from "@al/views";
+import { learnerText } from "@platform/lesson-schema";
 
 import { LESSONS } from ".";
 import {
@@ -24,6 +25,7 @@ import {
 } from "./subtracting-and-the-tick-counter.listings";
 import { PROSE } from "./subtracting-and-the-tick-counter.prose";
 import { shownFunction } from "./module-2.recorded";
+import { statedNumbers } from "./stated-numbers";
 import {
   ALL_SET,
   assembly,
@@ -63,7 +65,7 @@ describe("the listings the lesson shows or describes", () => {
 
   it("make elapsed one subtraction and a return, which the question counts without writing out", () => {
     expect(functionIn(assembly(ELAPSED.listing), "elapsed")).toEqual(["sub w0, w0, w1", "ret"]);
-    expect(PROSE.question).toContain("two instructions, one subtraction and a `ret`");
+    expect(PROSE.question).toContain("GCC makes it one subtraction and a `ret`");
     // The subtraction is the Write elapsed challenge's answer, so no text before it gives it.
     expect(PROSE.question).not.toContain("sub w0, w0, w1");
   });
@@ -100,7 +102,9 @@ describe("the counter", () => {
     expect(2 ** 32 / 86400000).toBeCloseTo(49.71, 2);
     expect((2 ** 32 / 86400000).toFixed(2)).toBe("49.71");
     expect(Math.round(2 ** 32 / 86400000)).toBe(50);
-    expect(PROSE.question).toContain("4294967296 milliseconds is about 49.71 days");
+    expect(PROSE.question).toContain(
+      "One full turn of the counter, 4294967296 ticks, is about 49.71 days",
+    );
   });
 
   it("goes from 4294967295 back to 0, which is the wrap", () => {
@@ -226,6 +230,9 @@ describe("the adder drawing elapsed_subs", () => {
       );
     expect(has("1000", "4294966296")).toBe(true);
     expect(has("9000", "2500")).toBe(true);
+    // The question of the last section, and the call the adder after the challenge draws.
+    expect(has("296", "4294967000")).toBe(true);
+    expect(has("250", "4294967046")).toBe(true);
   });
 });
 
@@ -285,7 +292,7 @@ describe("the construction challenge", () => {
     const across = c.tests.cases.filter((t) => Number(t.given["w0"]) < Number(t.given["w1"]));
     expect(across).toHaveLength(2);
     expect(elapsed(5000, 1000).w0).toBe(4000);
-    expect(PROSE.elapsedTask).toContain("Four calls test it, two across the wrap");
+    expect(PROSE.elapsedTask).toContain("Four calls test it, two of them across the wrap");
   });
 
   it("does not test the step from 4294967295 to 0, which the last challenge asks about", () => {
@@ -402,5 +409,214 @@ describe("the programs the lesson wrote itself", () => {
       ["negate", NEGATE],
     ] as const)
       expect(functionIn(gcc, label)).toEqual(functionIn(assembly(listing.listing), label));
+  });
+});
+
+describe("subtraction as addition, in the four columns the lesson draws", () => {
+  const record = additionSteps(traceOf(ELAPSED_SUBS, { entry: "elapsed_subs", args: [5, 3] }))[0]!
+    .addition!;
+  const low = (value: bigint, n = 4) =>
+    value
+      .toString(2)
+      .padStart(32, "0")
+      .slice(32 - n);
+
+  it("shows 5 as 0101, 3 as 0011 and 3 with every bit changed as 1100, in the low four columns of a real subs", () => {
+    expect(record.subtraction).toBe(true);
+    expect(low(record.a)).toBe("0101");
+    expect(low(secondAsGiven(record))).toBe("0011");
+    expect(low(record.b)).toBe("1100");
+    expect(secondAsGiven(record)).toBe(3n);
+  });
+
+  it("adds the 1 into the first column: the low four columns of the sum are 0010, kept as 2, with a carry out of the fourth", () => {
+    expect(record.carryIn).toBe(1);
+    expect(low(record.result)).toBe("0010");
+    expect(Number.parseInt(low(record.result), 2)).toBe(2);
+    // The carry out of column 3 is the carry into column 4.
+    expect(bitAt(record.carries, 4)).toBe(1);
+    // The four-bit sum on paper: 0101 + 1100 + 1 is 10010.
+    expect((0b0101 + 0b1100 + 1).toString(2)).toBe("10010");
+  });
+
+  it("makes the real instruction's result 2, with C 1: 5 is at least 3, so no borrow", () => {
+    expect(record.result).toBe(2n);
+    expect(subs(5, 3).flags.c).toBe(true);
+    expect(subs(5, 3).w0).toBe(2);
+  });
+
+  it("gives 2^32 minus b for b with every bit changed and 1 added, which is 4294967296 minus b", () => {
+    for (const b of [1, 3, 2500, 4294966296, 4294967000, 4294967295]) {
+      const rec = additionSteps(traceOf(ELAPSED_SUBS, { entry: "elapsed_subs", args: [0, b] }))[0]!
+        .addition!;
+      expect((rec.b + BigInt(rec.carryIn)) % 2n ** 32n, `${b}`).toBe(
+        (2n ** 32n - BigInt(b)) % 2n ** 32n,
+      );
+    }
+    expect(2 ** 32).toBe(4294967296);
+  });
+
+  it("is drawn by the figures that follow: the second operand, its bits changed, the carry in of 1, the result and the carry out", () => {
+    const rec = additionSteps(
+      traceOf(ELAPSED_SUBS, { entry: "elapsed_subs", args: [1000, 4294966296] }),
+    )[0]!.addition!;
+    expect(secondAsGiven(rec)).toBe(4294966296n);
+    expect(rec.carryIn).toBe(1);
+    expect(rec.result).toBe(2000n);
+    expect(rec.carryOut).toBe(0);
+  });
+});
+
+describe("the final states the two subtraction figures open with", () => {
+  it("shows 9000 minus 2500 as 6500 with C 1, no borrow", () => {
+    expect(subs(9000, 2500).w0).toBe(6500);
+    expect(9000 - 2500).toBe(6500);
+    expect(subs(9000, 2500).flags.c).toBe(true);
+    expect(elapsed(9000, 2500).w0).toBe(6500);
+  });
+
+  it("shows 1000 minus 4294966296 as 2000 with C 0, a borrow", () => {
+    expect(subs(1000, 4294966296).w0).toBe(2000);
+    expect(subs(1000, 4294966296).flags.c).toBe(false);
+  });
+
+  it("makes both figures open after the prediction, at their final states, with the detail", () => {
+    for (const id of ["subtract-wrapped", "subtract-no-wrap"]) {
+      const figure = lesson.sections.flatMap((s) => s.interactives).find((x) => x.id === id)!;
+      expect(figure.props["after"]).toBe("predict-elapsed");
+      expect(figure.props["opensAtEnd"]).toBe(true);
+      expect(figure.props["detail"]).toBe(true);
+      expect(figure.props["summary"]).toBe(true);
+    }
+  });
+});
+
+describe("the strip's two stretches and their total", () => {
+  const reading = (now: number, then: number) =>
+    ringReading(ELAPSED, ELAPSED_SUBS, { entry: "elapsed", args: [now, then] }, "elapsed_subs");
+
+  it("split elapsed(1000, 4294966296) into 1000 ticks to the wrap and 1000 after it, 2000 in all", () => {
+    const r = reading(1000, 4294966296);
+    expect(r.segments).toEqual({ before: 1000, after: 1000 });
+    expect(r.elapsed).toBe(2000);
+    expect(r.segments!.before + r.segments!.after).toBe(elapsed(1000, 4294966296).w0);
+    expect(2 ** 32 - 4294966296).toBe(1000);
+  });
+
+  it("split the answer to the lesson's question, 296 and 296, into 592 in all", () => {
+    const r = reading(296, 4294967000);
+    expect(r.segments).toEqual({ before: 296, after: 296 });
+    expect(r.elapsed).toBe(592);
+    expect(2 ** 32 - 4294967000).toBe(296);
+  });
+
+  it("make elapsed(0, 4294967295) one tick, all of it before the wrap", () => {
+    const r = reading(0, MAX);
+    expect(r.elapsed).toBe(1);
+    expect(r.segments).toEqual({ before: 1, after: 0 });
+  });
+
+  it("are called a borrow and say no more: a wrap once is what a borrow means only while fewer than 2^32 ticks passed", () => {
+    // Fewer than a full turn passed: a borrow means the counter wrapped once.
+    for (const then of [0, 1, 1000, 0x7fffffff, 4294966296, MAX])
+      for (const d of [0, 1, 2000, 86400000, 0x7fffffff, MAX]) {
+        const now = Number((BigInt(then) + BigInt(d)) % 2n ** 32n);
+        const wrapped = then + d >= 2 ** 32;
+        expect(reading(now, then).borrowed, `${then} + ${d}`).toBe(wrapped);
+      }
+    // But the readings are the same for a gap of 2000 ticks and for 2000 ticks and one full turn.
+    const then = 1000;
+    const nowShort = Number((BigInt(then) + 2000n) % 2n ** 32n);
+    const nowLong = Number((BigInt(then) + 2000n + 2n ** 32n) % 2n ** 32n);
+    expect(nowLong).toBe(nowShort);
+    expect(elapsed(nowLong, then).w0).toBe(2000);
+  });
+});
+
+describe("the question of the last section: then 4294967000, now 296", () => {
+  it("returns 592, and subs sets C to 0: a borrow was needed", () => {
+    expect(elapsed(296, 4294967000).w0).toBe(592);
+    expect(subs(296, 4294967000).flags.c).toBe(false);
+    expect(2 ** 32 - 4294967000).toBe(296);
+    expect(296 + 296).toBe(592);
+  });
+});
+
+describe("negs on 0x80000000: the three lines of the explanation", () => {
+  it("has an input of −2147483648, a negative of +2147483648, and a largest signed value of +2147483647", () => {
+    expect(BigInt.asIntN(32, 0x80000000n)).toBe(-2147483648n);
+    expect(-BigInt.asIntN(32, 0x80000000n)).toBe(2147483648n);
+    expect(BigInt.asIntN(32, 0x7fffffffn)).toBe(2147483647n);
+    expect(2147483648).toBeGreaterThan(2147483647);
+    // The explanation's block, line by line.
+    expect(PROSE.failureExplain).toContain("the input                         −2147483648");
+    expect(PROSE.failureExplain).toContain("its negative                      +2147483648");
+    expect(PROSE.failureExplain).toContain("the largest signed 32-bit value   +2147483647");
+  });
+
+  it("gives back 0x80000000 and sets V: the negative does not fit, so the same 32 bits return", () => {
+    const out = callText(assembly(NEGATE_FLAGS.listing), "negate_flags", [0x80000000]);
+    expect(out.w0).toBe(0x80000000);
+    expect(out.flags.v).toBe(true);
+    expect(nzcv(out.flags)).toBe("1001");
+  });
+});
+
+describe("the numbers the improved text states", () => {
+  const stated = statedNumbers([
+    ...learnerText(lesson),
+    ...lesson.challenges.flatMap((c) => c.fields.map((f) => f.label)),
+  ]);
+
+  it("are each a result of the model, an argument of a call, a count of bits, or a pattern of the four-bit example", () => {
+    const decimal = new Map<number, string>([
+      [0, "the wrap's first value, a flag"],
+      [1, "a carry in, a flag, a bit"],
+      [2, "kept in the four-bit example, and a flag"],
+      [3, "the second operand of the four-bit example"],
+      [5, "the first operand of the four-bit example"],
+      [10, "0010, the four bits kept"],
+      [11, "0011, 3 in four bits"],
+      [32, "the bits of a register"],
+      [49.71, "days in a turn of the counter"],
+      [101, "0101, 5 in four bits"],
+      [250, "a call of the challenge"],
+      [296, "the question's now, and its ticks to the wrap"],
+      [592, "the question's answer"],
+      [1000, "now of the prediction, and its ticks to the wrap"],
+      [1100, "1100, 3 with every bit changed"],
+      [2000, "the prediction's answer"],
+      [2500, "the no-borrow figure's second operand"],
+      [4000, "elapsed(5000, 1000)"],
+      [5000, "a call of the challenge"],
+      [6500, "9000 minus 2500"],
+      [9000, "the no-borrow figure's first operand"],
+      [10010, "10010, the four-bit sum"],
+      [2147483647, "the largest signed value"],
+      [2147483648, "the negative of the smallest signed value, and 2^31"],
+      [4294965296, "the prediction's option"],
+      [4294966296, "then of the prediction"],
+      [4294967000, "then of the question"],
+      [4294967046, "then of a call of the challenge"],
+      [4294967295, "the counter's largest value"],
+      [4294967296, "2^32, one full turn"],
+    ]);
+    expect(stated.decimal.filter((n) => !decimal.has(n))).toEqual([]);
+    expect(stated.binary).toEqual([]);
+    const hexes = new Set(["0x80000000", "0x7fffffff", "0x00000000"]);
+    expect(stated.hex.filter((h) => !hexes.has(h))).toEqual([]);
+  });
+
+  it("agrees with the model on each result the new text states", () => {
+    expect(elapsed(5000, 1000).w0).toBe(4000);
+    expect(elapsed(250, 4294967046).w0).toBe(500);
+    expect(elapsed(1000, 4294966296).w0).toBe(2000);
+    expect(elapsed(296, 4294967000).w0).toBe(592);
+    expect(subs(9000, 2500).w0).toBe(6500);
+    expect(2 ** 32).toBe(4294967296);
+    expect(4294967296 - 4294966296).toBe(1000);
+    expect(4294967296 - 4294967000).toBe(296);
+    expect((2 ** 32 / 86400000).toFixed(2)).toBe("49.71");
+    expect(1000 - 4294966296).toBe(-4294965296);
   });
 });

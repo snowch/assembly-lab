@@ -18,8 +18,32 @@ export interface RingReading {
   readonly elapsed: number;
   /** C after the same subtraction with `subs`: 0 when a borrow was needed. */
   readonly c: 0 | 1;
-  /** Whether the counter wrapped between the two readings: the subtraction needed a borrow. */
-  readonly wrapped: boolean;
+  /**
+   * Whether the subtraction needed a borrow (C is 0 after `subs`). That is all it says. Under the
+   * lesson's assumption, that the counter advances normally and fewer than 2^32 ticks passed
+   * between the readings, a borrow means the counter wrapped once between them. The subtraction
+   * cannot say how many times a counter wrapped.
+   */
+  readonly borrowed: boolean;
+  /**
+   * The elapsed ticks split at the wrap, for a subtraction that borrowed: the ticks from `then` to
+   * the wrap, and the ticks after it up to `now`. Their sum is `elapsed`. Null when nothing was
+   * borrowed, and the whole of `elapsed` is one stretch.
+   */
+  readonly segments: { readonly before: number; readonly after: number } | null;
+}
+
+/**
+ * The two stretches of a borrowed subtraction: the ticks that take `then` to the wrap (2^32 minus
+ * `then`) and the rest of the distance, which is where `now` is counted from 0. The distance is the
+ * model's, so the two always sum to it.
+ */
+export function segmentsOf(
+  then: number,
+  elapsed: number,
+): { readonly before: number; readonly after: number } {
+  const before = COUNTER_VALUES - then;
+  return { before, after: elapsed - before };
 }
 
 /**
@@ -43,7 +67,8 @@ export function ringReading(
     then,
     elapsed: wValue(distance.result.final, 0),
     c,
-    wrapped: c === 0,
+    borrowed: c === 0,
+    segments: c === 0 ? segmentsOf(then, wValue(distance.result.final, 0)) : null,
   };
 }
 

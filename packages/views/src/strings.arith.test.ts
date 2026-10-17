@@ -33,14 +33,20 @@ describe("the arithmetic figures' words", () => {
     expect(all.filter(([, s]) => s.includes("—")).map(([p]) => p)).toEqual([]);
   });
 
-  it("went through the prose process, but the six added after Module 2's review: each is marked DRAFT, so it is seen", () => {
-    // The rest were redrafted by Haiku and checked for meaning, 16 October 2026. The six marked
-    // are the top bit's status sentence and the key under the carry row, the lock on a figure
-    // that waits for a challenge, the fixed sentence for a wrong flag and for a wrong value, and
-    // the sentence for flags chosen from but not yet chosen.
+  it("went through the prose process, but the 40 added when the carries were drawn where they matter: each is marked DRAFT, so it is seen", () => {
+    // The rest were redrafted by Haiku and checked for meaning, 16 October 2026. The six added after
+    // Module 2's review (the top bit's status sentence and the key under the carry row, the lock on a
+    // figure that waits for a challenge, the fixed sentence for a wrong flag and for a wrong value,
+    // and the sentence for flags chosen from but not yet chosen) went through that process after it.
+    // The 40 marked now are, from 17 October 2026: the words under a flag and the word "changed" (7),
+    // the buttons "Show all" and "Next group of four", the sentence for a group move and the bit
+    // labels (4), the column just worked (9), the carries at bit 31 with the lines for C and V, after
+    // an addition and after a subtraction (6), the result line and the name of the result and C (2),
+    // the word beside a register that changed (1), the strip under the ring (6), and the rule for
+    // each wrong flag with its letter (5). The status after an add is checked text, not marked.
     const source = readFileSync(new URL("./strings.arith.ts", import.meta.url), "utf8");
     const marked = source.match(/\/\/ DRAFT/g) ?? [];
-    expect(marked).toHaveLength(0);
+    expect(marked).toHaveLength(40);
   });
 });
 

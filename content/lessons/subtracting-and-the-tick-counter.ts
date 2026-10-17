@@ -38,6 +38,9 @@ const BORROW_CALL = { entry: "elapsed_subs", args: [1000, 4294966296] } as const
 /** A subtraction that does not wrap, through `subs`: C is 1 (no borrow). No challenge calls it. */
 const NO_BORROW_CALL = { entry: "elapsed_subs", args: [9000, 2500] } as const;
 
+/** One of the construction challenge's four calls, drawn once the challenge is passed: it borrows. */
+const OWN_CALL = { entry: "elapsed_subs", args: [250, 4294967046] } as const;
+
 export const subtractingAndTheTickCounter: LessonInput = {
   id: "subtracting-and-the-tick-counter",
   title: "Subtracting, and the tick counter",
@@ -93,14 +96,28 @@ export const subtractingAndTheTickCounter: LessonInput = {
           kind: "adder",
           timeModel: STEPS,
           caption: LABELS.captions.subtractWrapped,
-          props: { program: ELAPSED_SUBS, call: BORROW_CALL, after: "predict-elapsed" },
+          props: {
+            program: ELAPSED_SUBS,
+            call: BORROW_CALL,
+            after: "predict-elapsed",
+            detail: true,
+            summary: true,
+            opensAtEnd: true,
+          },
         },
         {
           id: "subtract-no-wrap",
           kind: "adder",
           timeModel: STEPS,
           caption: LABELS.captions.subtractNoWrap,
-          props: { program: ELAPSED_SUBS, call: NO_BORROW_CALL, after: "predict-elapsed" },
+          props: {
+            program: ELAPSED_SUBS,
+            call: NO_BORROW_CALL,
+            after: "predict-elapsed",
+            detail: true,
+            summary: true,
+            opensAtEnd: true,
+          },
         },
       ],
     },
@@ -115,6 +132,21 @@ export const subtractingAndTheTickCounter: LessonInput = {
           timeModel: STEPS,
           caption: LABELS.captions.elapsed,
           props: { challengeId: "write-elapsed" },
+        },
+        {
+          id: "subtract-own",
+          kind: "adder",
+          timeModel: STEPS,
+          caption: LABELS.captions.subtractOwn,
+          props: {
+            program: ELAPSED_SUBS,
+            call: OWN_CALL,
+            afterChallenge: "write-elapsed",
+            detail: true,
+            summary: true,
+            opensAtEnd: true,
+            note: PROSE.elapsedAfter,
+          },
         },
       ],
     },
@@ -169,7 +201,12 @@ export const subtractingAndTheTickCounter: LessonInput = {
         },
       ],
     },
-    { kind: "reflection", title: LABELS.titles.reflection, prose: PROSE.reflection },
+    {
+      kind: "reflection",
+      title: LABELS.titles.reflection,
+      prose: PROSE.reflection,
+      details: { summary: PROSE.reflectionAnswerSummary, prose: PROSE.reflectionAnswer },
+    },
   ],
   challenges: [
     {
