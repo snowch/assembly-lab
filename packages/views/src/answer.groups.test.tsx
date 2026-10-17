@@ -237,9 +237,7 @@ describe("a group of numbers", () => {
       reference: { answers: {} },
     });
     const onChange = vi.fn();
-    const { container } = render(
-      <AnswerEditor challenge={numbers} artifact={{ answers: {} }} onChange={onChange} />,
-    );
+    const { container } = editor(numbers, { answers: {} }, onChange);
     const groups = [...container.querySelectorAll(".answer-group")];
     expect(groups).toHaveLength(2);
     expect(groups.map((g) => g.querySelector("legend")?.textContent)).toEqual(["f(1)", "f(2)"]);
