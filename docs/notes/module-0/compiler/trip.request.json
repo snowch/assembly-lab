@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\nint trip_distance(int leg1, int leg2, int leg3, int detour)\n{\n    int total = leg1 + leg2;\n    total = total + leg3;\n    total = total - detour;\n    return total;\n}\n",
+  "options": {
+    "userArguments": "-O1",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

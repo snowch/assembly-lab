@@ -1,0 +1,76 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 737,
+  "processExecutionResultTime": 0.004735000431537628,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 4824,
+  "asm": [
+    {
+      "text": "trip_distance:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        add     w0, w0, w1",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 9
+      },
+      "labels": []
+    },
+    {
+      "text": "        add     w0, w0, w2",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 11
+      },
+      "labels": []
+    },
+    {
+      "text": "        sub     w0, w0, w3",
+      "source": {
+        "file": null,
+        "line": 8,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 8,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "trip_distance": 1
+  },
+  "parsingTime": 1,
+  "filteredCount": 313,
+  "popularArguments": {},
+  "queueTime": 5
+}

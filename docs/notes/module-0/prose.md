@@ -29,11 +29,28 @@ The instructions are written in **assembly language**, which uses names such as 
 
 **Which compiler made these instructions?**
 
-The instructions were made by GCC version 16.1, with the setting `-O1`. That setting is chosen when the C is compiled. It asks the compiler to make the code shorter and faster.
+Compiler Explorer, an online compiler service, ran GCC version 16.1.0 for 64-bit Arm Linux to make these instructions. It used the optimisation setting `-O1`, which asks GCC to make the code shorter and faster.
 
-With `-O0`, which means no optimisation, the same GCC makes twenty instructions from this C.
+To use the same settings locally, save the C shown above as `trip.c`. With GCC 16.1.0 for 64-bit Arm Linux installed as `aarch64-linux-gnu-gcc`, the equivalent command is:
 
-The course uses `-O1` because its listings are short enough to follow.
+```sh
+aarch64-linux-gnu-gcc \
+  -g \
+  -o trip.s \
+  -fno-verbose-asm \
+  -S \
+  -fdiagnostics-color=always \
+  -O1 \
+  trip.c
+```
+
+Each backslash continues the command on the next line. This command includes every option Compiler Explorer used. The local filenames `trip.c` and `trip.s` replace the service's temporary paths `/app/example.c` and `/app/output.s`.
+
+`-S` produces assembly text, and `-o trip.s` names the output file. `-g` includes the C source-line information used beside the instructions. `-fno-verbose-asm` suppresses extra assembly comments. `-fdiagnostics-color=always` colours compiler messages; it does not change the instructions.
+
+The assembly file also contains compiler and debugging information that this page filters out.
+
+With `-O0`, which means no optimisation, the same GCC makes twenty instructions from this C. The course uses `-O1` because its listings are short enough to follow.
 
 *Closed note under the listing, shut until the learner opens it.*
 
