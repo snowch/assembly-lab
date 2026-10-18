@@ -563,7 +563,7 @@ This exercise supplies the memory bytes. Remove data declarations and section di
 
 ## Simulator model note
 
-Each step runs one instruction on the course's simulator. An instruction can read or change registers, flags or memory. It also determines which instruction runs next, or returns from the function. Nothing else happens between steps.
+Each step runs one instruction in the simulator. Between steps, the simulated processor stays as the last instruction left it.
 
 ## Before you start: C prerequisites
 
