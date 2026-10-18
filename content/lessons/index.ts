@@ -14,6 +14,17 @@ import { constantsAndWidths } from "./constants-and-widths";
 import { countingUp } from "./counting-up";
 import { countingDown } from "./counting-down";
 import { withIntroduced } from "./introduced";
+import { arrayAddresses } from "./array-addresses";
+import { productsAndWidths } from "./products-and-widths";
+import { divisionAndRemainders } from "./division-and-remainders";
+import { callsAndReturns } from "./calls-and-returns";
+import { recursiveCalls } from "./recursive-calls";
+import { fromCToInstructions } from "./from-c-to-instructions";
+import { compileALoop } from "./compile-a-loop";
+import { cAndOverflow } from "./c-and-overflow";
+import { checkedArithmetic } from "./checked-arithmetic";
+import { sameCOnA32 } from "./same-c-on-a32";
+import { zeroTerminatedStrings } from "./zero-terminated-strings";
 import { masks } from "./masks";
 import { meetTheMachine } from "./meet-the-machine";
 import { memoryAndAddresses } from "./memory-and-addresses";
@@ -36,6 +47,17 @@ export const LESSONS: readonly Lesson[] = [
   countingDown,
   memoryAndAddresses,
   loadingWidths,
+  arrayAddresses,
+  zeroTerminatedStrings,
+  productsAndWidths,
+  divisionAndRemainders,
+  callsAndReturns,
+  recursiveCalls,
+  fromCToInstructions,
+  compileALoop,
+  cAndOverflow,
+  checkedArithmetic,
+  sameCOnA32,
 ]
   .map(withIntroduced)
   .map(parseLesson);

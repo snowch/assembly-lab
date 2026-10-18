@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\nunsigned long consumption(unsigned fuel, unsigned distance)\n{\n    if (distance == 0) return 0;\n    return (unsigned long)fuel * 100 / distance;\n}\n",
+  "options": {
+    "userArguments": "-O1",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

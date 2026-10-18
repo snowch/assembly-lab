@@ -1,0 +1,228 @@
+// Copyright © 2026 Christopher Snow
+
+import { useMemo, useState } from "react";
+import { z } from "zod";
+import { useSlot } from "@platform/lesson-runtime";
+import { cLinesOf } from "../listing";
+import { hexAddress, hexByte, memoryRegister } from "../memoryFigure";
+import { stopSentence } from "../messages";
+import { ListingView, withCode } from "../parts";
+import {
+  stackFrames,
+  stackDepth,
+  stackReturnTarget,
+  type StackFrame,
+  type StackSlot,
+} from "../stack";
+import { VIEW_STRINGS as S } from "../strings";
+import { STACK_STRINGS as T } from "../strings.stack";
+import { traceOf, viewAt } from "../trace";
+import { MemoryCallSchema, RecordedSchema, withProps } from "./props";
+
+const Props = z.object({
+  program: RecordedSchema,
+  call: MemoryCallSchema,
+  registers: z
+    .array(z.string().regex(/^[wx](?:[0-9]|[12][0-9]|30)$/))
+    .min(1)
+    .max(8),
+  after: z.string().optional(),
+  initialStep: z.number().int().min(0).default(0),
+});
+
+/** Each label encloses only the bytes written by its store, with unlabelled gaps kept visible. */
+function byteGroups(frame: StackFrame) {
+  const groups: { address: number; bytes: readonly number[]; slot?: StackSlot }[] = [];
+  let offset = 0;
+  while (offset < frame.bytes.length) {
+    const address = frame.base + offset;
+    const slot = frame.slots.find((saved) => saved.address === address);
+    const next = frame.slots.find((saved) => saved.address > address)?.address ?? frame.top;
+    const length = slot?.size ?? next - address;
+    groups.push({
+      address,
+      bytes: frame.bytes.slice(offset, offset + length),
+      ...(slot ? { slot } : {}),
+    });
+    offset += length;
+  }
+  return groups;
+}
+
+export const StackStepper = withProps(Props, function StackStepper({ data, store }) {
+  const [k, setK] = useState(data.initialStep);
+  const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
+  const unlocked = data.after === undefined || prediction !== undefined;
+  const trace = useMemo(
+    () =>
+      unlocked
+        ? traceOf(data.program, { ...data.call, maxSteps: data.call.maxSteps ?? 512 })
+        : null,
+    [unlocked, data.program, data.call],
+  );
+  if (trace === null)
+    return (
+      <p role="note" className="al-locked">
+        {S.stepper.locked}
+      </p>
+    );
+  const view = viewAt(trace, k),
+    frames = stackFrames(trace, view.k),
+    returnTarget = stackReturnTarget(trace, view.k);
+  const step = view.k > 0 ? trace.result.steps[view.k - 1] : undefined;
+  const next = view.next === null ? undefined : trace.lines[view.next];
+  const status =
+    view.k === 0
+      ? S.stepper.start
+      : [
+          step && S.stepper.ran(step.text),
+          view.stop !== null
+            ? (stopSentence(view.stop) ?? S.stepper.ended)
+            : next && S.stepper.upNext(next.text),
+        ]
+          .filter(Boolean)
+          .join(" ");
+  return (
+    <div className="al-figure al-stepper al-stack" data-figure="stack-stepper" data-k={view.k}>
+      <ListingView
+        cLines={cLinesOf(data.program.c)}
+        lines={trace.lines}
+        next={view.next}
+        litC={view.litC}
+        ran={view.ran}
+      />
+      <div className="al-controls" role="group" aria-label={S.stepper.controls}>
+        <button
+          type="button"
+          className="button secondary"
+          disabled={view.k === 0}
+          onClick={() => setK(view.k - 1)}
+        >
+          {S.stepper.back}
+        </button>
+        <button
+          type="button"
+          className="button primary"
+          disabled={view.k >= view.total}
+          onClick={() => setK(view.k + 1)}
+        >
+          {S.stepper.next}
+        </button>
+        <button
+          type="button"
+          className="button secondary"
+          disabled={view.k === 0}
+          onClick={() => setK(0)}
+        >
+          {S.stepper.reset}
+        </button>
+      </div>
+      <label className="al-stack-slider">
+        {T.position}
+        <input
+          type="range"
+          min={0}
+          max={view.total}
+          value={view.k}
+          onChange={(e) => setK(Number(e.target.value))}
+        />
+      </label>
+      <p className="al-status" role="status">
+        {withCode(status)}
+      </p>
+      <div className="al-memory-registers" role="group" aria-label={S.stepper.registers}>
+        <div
+          className="al-memory-register"
+          data-register="sp"
+          data-changed={step?.writes.some((w) => w.reg === "sp") ?? false}
+        >
+          <code>{T.sp}</code>
+          <code>{hexAddress(Number(view.state.sp))}</code>
+        </div>
+        {data.registers.map((name) => (
+          <div
+            key={name}
+            className="al-memory-register"
+            data-register={name}
+            data-changed={view.written.has(Number(name.slice(1)))}
+          >
+            <code>{name}</code>
+            <code>{memoryRegister(trace, view.k, name)}</code>
+          </div>
+        ))}
+      </div>
+      <p className="al-stack-return-target" data-return-target={returnTarget.address.toString()}>
+        {withCode(
+          returnTarget.instruction === null
+            ? T.returnOutside(`0x${returnTarget.address.toString(16)}`)
+            : T.returnTarget(`0x${returnTarget.address.toString(16)}`, returnTarget.instruction),
+        )}
+      </p>
+      <div role="group" aria-label={T.stack} className="al-stack-memory">
+        <p>{T.depth(stackDepth(trace, view.k))}</p>
+        <p>{T.lower}</p>
+        {frames.length === 0 ? (
+          <p>{T.empty}</p>
+        ) : (
+          <ol className="al-stack-frames">
+            {frames.map((frame) => (
+              <li
+                key={frame.base}
+                className="al-stack-frame"
+                data-base={hexAddress(frame.base)}
+                data-invocation={frame.invocation}
+              >
+                <p>
+                  <strong>{T.invocation(frame.invocation)}</strong> ·{" "}
+                  {T.frame(frame.name, frame.top - frame.base)}
+                </p>
+                <div className="al-stack-bytes">
+                  {byteGroups(frame).map((group) => (
+                    <div
+                      key={group.address}
+                      className="al-stack-byte-group"
+                      data-saved-slot={group.slot !== undefined}
+                    >
+                      {group.slot && (
+                        <span
+                          className="al-stack-slot-label"
+                          data-saved-register={group.slot.register}
+                          data-slot-address={hexAddress(group.address)}
+                        >
+                          <span>{T.savedRegister(group.slot.register)}</span>
+                          <code>{`0x${group.slot.value.toString(16)}`}</code>
+                        </span>
+                      )}
+                      {group.bytes.map((byte, i) => {
+                        const address = group.address + i;
+                        const stored =
+                          step?.stores.some(
+                            (s) => address >= s.address && address < s.address + s.after.length,
+                          ) ?? false;
+                        const loaded =
+                          step?.loads.some(
+                            (l) => address >= l.address && address < l.address + l.size,
+                          ) ?? false;
+                        return (
+                          <span
+                            key={address}
+                            data-access={stored ? "stored" : loaded ? "loaded" : "unchanged"}
+                            aria-label={T.byte(hexAddress(address), hexByte(byte))}
+                          >
+                            <small>{hexAddress(address)}</small>
+                            <code>{hexByte(byte)}</code>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ol>
+        )}
+        <p>{T.active}</p>
+      </div>
+    </div>
+  );
+});

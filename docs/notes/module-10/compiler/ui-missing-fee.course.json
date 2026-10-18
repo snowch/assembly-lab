@@ -1,0 +1,39 @@
+{
+  "compiler": "Assembly Lab C subset 1",
+  "source": "// Copyright © 2026 Christopher Snow\nunsigned trip_charge(unsigned distance, unsigned rate)\n{\n    unsigned charge = distance * rate;\n    return charge;\n}\n",
+  "listing": "trip_charge:\n    mov w8, w0\n    mov w9, w1\n    mul w8, w8, w9\n    mov w2, w8\n    mov w8, w2\n    mov w0, w8\n    ret",
+  "lineMap": [
+    {
+      "assemblyLine": 1,
+      "cLine": 3
+    },
+    {
+      "assemblyLine": 2,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 3,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 4,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 5,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 6,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 7,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 8,
+      "cLine": 5
+    }
+  ]
+}

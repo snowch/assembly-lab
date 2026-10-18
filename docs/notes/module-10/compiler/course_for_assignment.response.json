@@ -1,0 +1,131 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 115,
+  "processExecutionResultTime": 0.002952001988887787,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 5142,
+  "asm": [
+    {
+      "text": "course_for_assignment:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        cbz     w0, .L1",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 19
+      },
+      "labels": [
+        {
+          "name": ".L1",
+          "range": {
+            "startCol": 21,
+            "endCol": 24
+          }
+        }
+      ]
+    },
+    {
+      "text": "        mov     w2, 0",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 12
+      },
+      "labels": []
+    },
+    {
+      "text": ".L3:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        add     w2, w2, 1",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 30
+      },
+      "labels": []
+    },
+    {
+      "text": "        cmp     w0, w2",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 19
+      },
+      "labels": []
+    },
+    {
+      "text": "        bne     .L3",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 19
+      },
+      "labels": [
+        {
+          "name": ".L3",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    },
+    {
+      "text": "        mul     w0, w1, w2",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 19
+      },
+      "labels": []
+    },
+    {
+      "text": ".L1:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 10,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "course_for_assignment": 1,
+    ".L3": 4,
+    ".L1": 9
+  },
+  "parsingTime": 1,
+  "filteredCount": 327,
+  "popularArguments": {},
+  "queueTime": 33676
+}

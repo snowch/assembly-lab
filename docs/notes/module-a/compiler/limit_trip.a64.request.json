@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\nunsigned limit_trip(unsigned distance, unsigned limit)\n{\n    return distance > limit ? limit : distance;\n}\n",
+  "options": {
+    "userArguments": "-O1",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

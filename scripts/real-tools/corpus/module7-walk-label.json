@@ -1,0 +1,17 @@
+{
+  "entry": "walk_label",
+  "calls": [
+    {
+      "args": [["0x410000", 64]]
+    },
+    {
+      "args": [["0x410008", 64]]
+    }
+  ],
+  "compare": [
+    {
+      "label": "sensor",
+      "length": 28
+    }
+  ]
+}

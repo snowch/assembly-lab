@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\n#include <limits.h>\nint safe_increment(int distance)\n{\n    if (distance == INT_MAX)\n        return distance;\n    return distance + 1;\n}\n",
+  "options": {
+    "userArguments": "-O1 -std=c23 -fno-if-conversion -fno-if-conversion2",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

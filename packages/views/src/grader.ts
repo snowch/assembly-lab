@@ -19,6 +19,8 @@
 // computes, never values in the lesson's data. A wrong field gives the case's own sentence for
 // that field (`given["feedback.<field>"]`) as the failure's detail, and never the right value.
 
+import { RUN_C, gradeC } from "./grader-c";
+import { RECORDED_TOKENS, gradeRecorded } from "./grader-recorded";
 import { failureDetail, fieldList } from "./fields";
 import { TEXT_BASE, assemble, run } from "@al/machine";
 import type { Verdict, VerdictFailure } from "@platform/lesson-runtime";
@@ -323,6 +325,8 @@ export function gradeInstructions(challenge: Challenge, artifact: Artifact): Ver
 
 export function grade(challenge: Challenge, artifact: Artifact): Verdict {
   const { grader } = answerTests(challenge);
+  if (grader === RUN_C) return gradeC(challenge, artifact);
+  if (grader === RECORDED_TOKENS) return gradeRecorded(challenge, artifact);
   if (grader === RUN_REGISTERS) return gradeWritten(challenge, artifact);
   if (grader === REGISTERS_AT_RETURN) return gradeAnswers(challenge, artifact);
   if (grader === OUTCOMES_AT_RETURN) return gradeOutcomes(challenge, artifact);

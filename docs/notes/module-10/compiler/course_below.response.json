@@ -1,0 +1,67 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 55,
+  "processExecutionResultTime": 0.0030220001935958862,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 3591,
+  "asm": [
+    {
+      "text": "course_below:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        cmp     w0, w1",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 14
+      },
+      "labels": []
+    },
+    {
+      "text": "        cset    w0, cc",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "course_below": 1
+  },
+  "parsingTime": 3,
+  "filteredCount": 231,
+  "popularArguments": {},
+  "queueTime": 4
+}

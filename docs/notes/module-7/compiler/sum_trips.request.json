@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\nunsigned sum_trips(const unsigned *trips, unsigned count)\n{\n    unsigned total = 0;\n    while (count != 0) {\n        total += *trips++;\n        count--;\n    }\n    return total;\n}\n",
+  "options": {
+    "userArguments": "-O1",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

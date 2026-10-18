@@ -1,0 +1,68 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 42,
+  "processExecutionResultTime": 0.0032440051436424255,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "-std=c23",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 3531,
+  "asm": [
+    {
+      "text": "promoted_gradient:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        sxtb    w0, w0",
+      "source": {
+        "file": null,
+        "line": 3,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        add     w0, w0, 1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "promoted_gradient": 1
+  },
+  "parsingTime": 0,
+  "filteredCount": 222,
+  "popularArguments": {},
+  "queueTime": 8
+}

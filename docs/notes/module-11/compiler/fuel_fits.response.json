@@ -1,0 +1,68 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 135,
+  "processExecutionResultTime": 0.003561999648809433,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "-std=c23",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 3280,
+  "asm": [
+    {
+      "text": "fuel_fits:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        cmp     w0, 255",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 17
+      },
+      "labels": []
+    },
+    {
+      "text": "        cset    w0, ls",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "fuel_fits": 1
+  },
+  "parsingTime": 2,
+  "filteredCount": 208,
+  "popularArguments": {},
+  "queueTime": 1388
+}

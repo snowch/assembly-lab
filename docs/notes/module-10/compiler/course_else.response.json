@@ -1,0 +1,94 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 45,
+  "processExecutionResultTime": 0.004317000508308411,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 3640,
+  "asm": [
+    {
+      "text": "course_else:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        sub     w3, w1, w0",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 18
+      },
+      "labels": []
+    },
+    {
+      "text": "        sub     w2, w0, w1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 18
+      },
+      "labels": []
+    },
+    {
+      "text": "        lsl     w2, w2, 1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 18
+      },
+      "labels": []
+    },
+    {
+      "text": "        cmp     w0, w1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 18
+      },
+      "labels": []
+    },
+    {
+      "text": "        csel    w0, w2, w3, cs",
+      "source": {
+        "file": null,
+        "line": 9,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 9,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "course_else": 1
+  },
+  "parsingTime": 0,
+  "filteredCount": 231,
+  "popularArguments": {},
+  "queueTime": 5
+}

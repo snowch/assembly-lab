@@ -1,0 +1,181 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 827,
+  "processExecutionResultTime": 0.0035620001144707203,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 5801,
+  "asm": [
+    {
+      "text": "sum_trips:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        mov     x2, x0",
+      "source": {
+        "file": null,
+        "line": 3,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        cbz     w1, .L4",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 18
+      },
+      "labels": [
+        {
+          "name": ".L4",
+          "range": {
+            "startCol": 21,
+            "endCol": 24
+          }
+        }
+      ]
+    },
+    {
+      "text": "        add     x3, x0, w1, uxtw 2",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 18
+      },
+      "labels": []
+    },
+    {
+      "text": "        mov     w0, 0",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 14
+      },
+      "labels": []
+    },
+    {
+      "text": ".L3:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        ldr     w1, [x2], 4",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 15
+      },
+      "labels": []
+    },
+    {
+      "text": "        add     w0, w0, w1",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 15
+      },
+      "labels": []
+    },
+    {
+      "text": "        cmp     x2, x3",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 18
+      },
+      "labels": []
+    },
+    {
+      "text": "        bne     .L3",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 18
+      },
+      "labels": [
+        {
+          "name": ".L3",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    },
+    {
+      "text": ".L1:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 10,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": ".L4:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        mov     w0, w1",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 14
+      },
+      "labels": []
+    },
+    {
+      "text": "        b       .L1",
+      "source": {
+        "file": null,
+        "line": 9,
+        "column": 12
+      },
+      "labels": [
+        {
+          "name": ".L1",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "sum_trips": 1,
+    ".L3": 6,
+    ".L1": 11,
+    ".L4": 13
+  },
+  "parsingTime": 5,
+  "filteredCount": 359,
+  "popularArguments": {},
+  "queueTime": 5
+}

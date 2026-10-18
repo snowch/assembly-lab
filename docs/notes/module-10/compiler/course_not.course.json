@@ -1,0 +1,57 @@
+{
+  "compiler": "Assembly Lab C subset 1",
+  "source": "// Copyright © 2026 Christopher Snow\nunsigned course_not(unsigned a)\n{\n    return !a;\n}\n",
+  "listing": "course_not:\n    mov w8, w0\n    cmp w8, #0\n    cset w8, eq\n    mov w0, w8\n    ret",
+  "lineMap": [
+    {
+      "assemblyLine": 1,
+      "cLine": 3
+    },
+    {
+      "assemblyLine": 2,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 3,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 4,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 5,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 6,
+      "cLine": 4
+    }
+  ],
+  "calls": [
+    {
+      "args": [0],
+      "value": 1
+    },
+    {
+      "args": [1],
+      "value": 0
+    },
+    {
+      "args": [7],
+      "value": 0
+    },
+    {
+      "args": [2147483647],
+      "value": 0
+    },
+    {
+      "args": [2147483648],
+      "value": 0
+    },
+    {
+      "args": [4294967295],
+      "value": 0
+    }
+  ]
+}

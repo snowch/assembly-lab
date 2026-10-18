@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\n#include <stdckdint.h>\n_Bool checked_trip(int distance, int adjustment, int *result)\n{\n    return ckd_add(result, distance, adjustment);\n}\n",
+  "options": {
+    "userArguments": "-O1 -std=c23",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

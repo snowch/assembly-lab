@@ -4,6 +4,9 @@
 @import "./branch.css";
 @import "./loop.css";
 @import "./memory.css";
+@import "./products.css";
+@import "./stack.css";
+@import "./compiler.css";
 @import "./module0.css";
 
 /* The course's figures, assembly editor and answer boxes. Phone first: the C sits above the

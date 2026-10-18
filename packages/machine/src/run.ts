@@ -561,6 +561,12 @@ export function run(program: Program, call: Call): RunResult {
     m.x[i] = BigInt.asUintN(arg.width, arg.value);
   });
   m.x[30] = BigInt(returnAddress);
+  for (const [name, value] of Object.entries(call.preserved ?? {})) {
+    const register = Number(name);
+    if (!Number.isInteger(register) || register < 19 || register > 29 || value === undefined)
+      throw new Error("Caller seeds must name registers x19 to x29.");
+    m.x[register] = BigInt.asUintN(64, value);
+  }
   if (call.flags) m.flags = { ...call.flags };
   m.pc = entry;
   const initial = snapshot(m);

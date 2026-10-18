@@ -11,6 +11,8 @@ export const STATUSES = ["planned", "drafting", "published"] as const;
 export type ModuleStatus = (typeof STATUSES)[number];
 
 export interface PlannedModule {
+  /** Numeric lesson-schema key; the optional chapter uses 12 while displaying A. */
+  readonly lessonModule: number;
   /** Unique, lower-case, and the stem a lesson's id may start with. */
   readonly id: string;
   /** What the module is called in the course: "0" to "11", and "A" for the optional chapter. */
@@ -27,6 +29,7 @@ export interface PlanPart {
 }
 
 const M = (label: string, id: string, title: string, line: string): PlannedModule => ({
+  lessonModule: label === "A" ? 12 : Number(label),
   id,
   label,
   title,
@@ -137,7 +140,7 @@ export const OPTIONAL_PART: PlanPart = {
       "A",
       "the-same-programs-on-32-bit-arm",
       "The same programs on 32-bit ARM",
-      "Run the course's programs on 32-bit ARM, and see what changed.",
+      "Compare the course's A64 programs with recorded 32-bit Arm compiler output.",
     ),
   ],
 };
@@ -150,7 +153,7 @@ export const MODULES: readonly PlannedModule[] = PLAN.flatMap((p) => p.modules);
 
 /** A module by its number: the label a lesson's `module` field holds. */
 export function moduleByNumber(n: number): PlannedModule | undefined {
-  return MODULES.find((m) => m.label === String(n));
+  return MODULES.find((m) => m.lessonModule === n);
 }
 
 /** What the plan needs to know of a lesson: where it is, and which module it belongs to. */
@@ -160,12 +163,12 @@ export interface LessonRef {
   readonly module: number;
 }
 
-/** The lessons of a module, in the order given. The optional chapter has none yet. */
+/** The lessons of a module, in the order given. */
 export function lessonsOf<L extends LessonRef>(
   module: PlannedModule,
   lessons: readonly L[],
 ): readonly L[] {
-  return lessons.filter((l) => String(l.module) === module.label);
+  return lessons.filter((l) => l.module === module.lessonModule);
 }
 
 /** A module's status, worked out from the lessons that are written. */

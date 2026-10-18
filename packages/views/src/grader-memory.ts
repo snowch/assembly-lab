@@ -11,13 +11,20 @@ import { introducedOf } from "./interactives/props";
 import { errorSentence, stopSentence } from "./messages";
 import { VIEW_STRINGS as S, quoted } from "./strings";
 import { MEMORY_RUNTIME_STRINGS } from "./strings.memory-runtime";
+import { STACK_STRINGS } from "./strings.stack";
+import { executedCall } from "./callContract";
 
 type Case = Extract<Challenge["tests"], { kind: "answers" }>["cases"][number];
 
 export function needsMemoryGrader(cases: readonly Case[]): boolean {
   return cases.some((c) =>
     [...Object.keys(c.given), ...Object.keys(c.expect)].some(
-      (name) => name === "memory" || /^x\d+$/.test(name),
+      (name) =>
+        name === "memory" ||
+        name === "sp" ||
+        name === "requiredCall" ||
+        /^x\d+$/.test(name) ||
+        /^seed\.x/.test(name),
     ),
   );
 }
@@ -60,7 +67,19 @@ export function gradeMemoryWritten(challenge: Challenge, artifact: Artifact): Ve
       else inputs[`${arg.width === 64 ? "x" : "w"}${n}`] = String(arg.value);
     });
     if (memory !== undefined) inputs["memory"] = memory.join(", ");
-    const result = run(built.program, { entry: TEXT_BASE, args: machineArgs(args) });
+    const preserved: Partial<Record<number, bigint>> = {};
+    for (const [name, value] of Object.entries(c.given)) {
+      if (!name.startsWith("seed.")) continue;
+      const seed = /^seed\.x(19|2[0-9])$/.exec(name);
+      if (!seed) throw new Error("A caller seed must name x19 to x29.");
+      preserved[Number(seed[1])] = machineArgs([{ value, width: 64 }])[0]!.value;
+      inputs[name.slice(5)] = String(value);
+    }
+    const result = run(built.program, {
+      entry: c.given["entry"] === undefined ? TEXT_BASE : String(c.given["entry"]),
+      args: machineArgs(args),
+      preserved,
+    });
     const stopped = stopSentence(result.stop);
     if (stopped !== null) {
       failures.push({
@@ -73,10 +92,29 @@ export function gradeMemoryWritten(challenge: Challenge, artifact: Artifact): Ve
       });
       return;
     }
+    const required = c.given["requiredCall"];
+    if (required !== undefined && !executedCall(built.program, result, String(required))) {
+      failures.push({
+        index,
+        label: c.label,
+        inputs,
+        actual: {},
+        expected: {},
+        detail: quoted(STACK_STRINGS.requiredCall(String(required))),
+      });
+      return;
+    }
     const actual: Record<string, string> = {};
     const expected: Record<string, string> = {};
     let ok = true;
     for (const [name, want] of Object.entries(c.expect)) {
+      if (name === "sp") {
+        const target = machineArgs([{ value: want, width: 64 }])[0]!.value;
+        actual[name] = String(result.final.sp);
+        expected[name] = String(BigInt.asUintN(64, target));
+        if (result.final.sp !== BigInt.asUintN(64, target)) ok = false;
+        continue;
+      }
       if (name === "memory") {
         const bytes = memoryBytes(want);
         if (memory === undefined || bytes.length !== memory.length)

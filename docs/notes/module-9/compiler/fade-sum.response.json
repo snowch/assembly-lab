@@ -1,0 +1,194 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 44,
+  "processExecutionResultTime": 0.0045809997245669365,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "-fno-inline",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 4654,
+  "asm": [
+    {
+      "text": "fade_sum:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        stp     x29, x30, [sp, -32]!",
+      "source": {
+        "file": null,
+        "line": 3,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        mov     x29, sp",
+      "source": {
+        "file": null,
+        "line": 3,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        str     x19, [sp, 16]",
+      "source": {
+        "file": null,
+        "line": 3,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        mov     w19, w0",
+      "source": {
+        "file": null,
+        "line": 3,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        cbnz    w0, .L4",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 8
+      },
+      "labels": [
+        {
+          "name": ".L4",
+          "range": {
+            "startCol": 21,
+            "endCol": 24
+          }
+        }
+      ]
+    },
+    {
+      "text": ".L2:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        mov     w0, w19",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ldr     x19, [sp, 16]",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ldp     x29, x30, [sp], 32",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": ".L4:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        lsr     w0, w0, 1",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 25
+      },
+      "labels": []
+    },
+    {
+      "text": "        bl      fade_sum",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 25
+      },
+      "labels": [
+        {
+          "name": "fade_sum",
+          "range": {
+            "startCol": 17,
+            "endCol": 25
+          }
+        }
+      ]
+    },
+    {
+      "text": "        add     w19, w19, w0",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 23
+      },
+      "labels": []
+    },
+    {
+      "text": "        b       .L2",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 23
+      },
+      "labels": [
+        {
+          "name": ".L2",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "fade_sum": 1,
+    ".L2": 7,
+    ".L4": 12
+  },
+  "parsingTime": 1,
+  "filteredCount": 281,
+  "popularArguments": {},
+  "queueTime": 4
+}

@@ -104,7 +104,7 @@ describe("a line of the tap editor, for Module 4's instructions", () => {
     expect(slotsOf("b")).toEqual(["label"]);
     expect(slotsOf("b.cc")).toEqual(["label"]);
     expect(slotsOf("b.cond")).toBeUndefined();
-    expect(slotsOf("bl")).toBeUndefined();
+    expect(slotsOf("bl")).toEqual(["label"]);
   });
 
   it("reads a label line with its name's case, and builds one from a chip", () => {

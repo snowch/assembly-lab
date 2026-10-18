@@ -7,7 +7,7 @@
 export const PROSE = {
   question:
     "The trip computer's service interval is 30000 kilometres. The odometer's limit is 1000000.\n\n" +
-    "For `return 30000;`, GCC loads the result with one instruction: `mov w0, 30000`. For `return 1000000;`, it needs two instructions to load the result. In both cases, `ret` then returns to the caller.\n\n" +
+    "For `return 30000;`, GCC loads the result with one instruction: `mov w0, 30000`. For `return 1000000;`, it needs two instructions to load the result. In both cases, `ret` then returns to the code that called the function.\n\n" +
     "The C listing uses `int service_interval(void)`. The `void` inside the brackets means the function takes no arguments.",
   questionDetailsSummary: "Which compiler?",
   questionDetails: "The listings in this lesson are from GCC 16.1 with `-O1`, as in Module 0.",
@@ -42,7 +42,7 @@ export const PROSE = {
     "With a `w` name, `movk` replaces one 16-bit half of the 32 bits and keeps the other half. `mov` replaces all 32 bits.\n\n" +
     "`lsl 16` after the number tells `movk` to put it in the upper half, bits 16 to 31. Without `lsl 16`, `movk` puts it in the lower half.\n\n" +
     "For example, `mov w0, 3` gives `0x0000 0003`. Then `movk w0, 2, lsl 16` gives `0x0002 0003`, which is 131075. The upper half is new, and the lower half is kept. The figure draws each step.\n\n" +
-    "To split a non-negative 32-bit integer into halves, divide it by 65536. This is the value of the lowest bit in the upper half. Take the result without its fractional part for the upper half. The remainder gives the lower half. In the example above, 131075 = 2 × 65536 + 3, so the upper half is 2 and the lower half is 3.\n\n" +
+    "To split a non-negative 32-bit integer into halves, divide it by 65536. This is the value of the lowest bit in the upper half. Take the result without its fractional part for the upper half. The amount left after this whole-number division is the **remainder**. It gives the lower half. In the example above, 131075 = 2 × 65536 + 3, so the upper half is 2 and the lower half is 3.\n\n" +
     "Writing `#` before a number is optional. `mov w0, 30000` and `mov w0, #30000` are the same instruction.",
   /** Shown once Build 1000000 has passed, above the stepper through the learner's own solution. */
   constructionSolved:

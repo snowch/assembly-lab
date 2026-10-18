@@ -1,0 +1,77 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 68,
+  "processExecutionResultTime": 0.005535999312996864,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "-std=c23",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 4144,
+  "asm": [
+    {
+      "text": "checked_trip:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        adds    w0, w0, w1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 12
+      },
+      "labels": []
+    },
+    {
+      "text": "        str     w0, [x2]",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 12
+      },
+      "labels": []
+    },
+    {
+      "text": "        cset    w0, vs",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "checked_trip": 1
+  },
+  "parsingTime": 1,
+  "filteredCount": 270,
+  "popularArguments": {},
+  "queueTime": 1379
+}

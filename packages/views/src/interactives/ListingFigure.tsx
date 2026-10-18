@@ -7,19 +7,29 @@
 
 import { z } from "zod";
 
-import { Prose } from "@platform/lesson-runtime";
+import { Prose, useStored } from "@platform/lesson-runtime";
 
+import { passedChallenge } from "./gate";
+import { ARITH_STRINGS } from "../strings.arith";
 import { cLinesOf, parseListing } from "../listing";
 import { ListingView } from "../parts";
 import { RecordedSchema, withProps } from "./props";
 
 const Props = z.object({
   program: RecordedSchema,
+  afterChallenge: z.string().optional(),
   /** Closed notes under the listing: the words on the control, and Markdown for what opens. */
   notes: z.array(z.object({ summary: z.string().min(1), body: z.string().min(1) })).default([]),
 });
 
-export const ListingFigure = withProps(Props, function ListingFigure({ data }) {
+export const ListingFigure = withProps(Props, function ListingFigure({ data, lesson, store }) {
+  const stored = useStored(store);
+  if (data.afterChallenge && !passedChallenge(lesson, stored, data.afterChallenge))
+    return (
+      <p role="note" className="al-locked">
+        {ARITH_STRINGS.adder.lockedUntilPassed}
+      </p>
+    );
   return (
     <div className="al-figure" data-figure="listing">
       <ListingView cLines={cLinesOf(data.program.c)} lines={parseListing(data.program.listing)} />

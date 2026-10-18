@@ -1,0 +1,84 @@
+/* Copyright © 2026 Christopher Snow */
+.al-stack-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.al-stack-slider input {
+  width: 100%;
+  min-height: 44px;
+}
+.al-stack-frames {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.al-stack-frame {
+  border: 2px solid var(--fg);
+  border-radius: 0.3rem;
+  padding: 0.6rem;
+}
+.al-stack-frame p {
+  margin-top: 0;
+  overflow-wrap: anywhere;
+}
+.al-stack-return-target {
+  overflow-wrap: anywhere;
+}
+.al-stack-bytes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.al-stack-byte-group {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+.al-stack-byte-group[data-saved-slot="true"] {
+  border-left: 2px solid var(--fg);
+  padding-left: 0.25rem;
+}
+.al-stack-byte-group > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.4rem 0.1rem;
+  border: 1px solid var(--fg);
+}
+.al-stack-bytes small {
+  font-size: 11px;
+}
+.al-stack-bytes code {
+  font-size: 1rem;
+}
+.al-stack-byte-group > .al-stack-slot-label {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  border: 0;
+  padding: 0.35rem 0;
+  overflow-wrap: anywhere;
+}
+.al-stack-slot-label code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.al-stack-bytes [data-access="stored"] {
+  border: 3px double var(--fg);
+  font-weight: bold;
+}
+.al-stack-bytes [data-access="loaded"] {
+  outline: 2px dashed var(--fg);
+  outline-offset: -4px;
+}
+@media (min-width: 650px) {
+  .al-stack-byte-group {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}

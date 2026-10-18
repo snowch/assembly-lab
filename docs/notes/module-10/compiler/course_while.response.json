@@ -1,0 +1,113 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 64,
+  "processExecutionResultTime": 0.003109999932348728,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 4009,
+  "asm": [
+    {
+      "text": "course_while:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        cbz     w1, .L2",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 18
+      },
+      "labels": [
+        {
+          "name": ".L2",
+          "range": {
+            "startCol": 21,
+            "endCol": 24
+          }
+        }
+      ]
+    },
+    {
+      "text": ".L3:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        lsr     w0, w0, 1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 15
+      },
+      "labels": []
+    },
+    {
+      "text": "        subs    w1, w1, #1",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 18
+      },
+      "labels": []
+    },
+    {
+      "text": "        bne     .L3",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 18
+      },
+      "labels": [
+        {
+          "name": ".L3",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    },
+    {
+      "text": ".L2:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 9,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "course_while": 1,
+    ".L3": 3,
+    ".L2": 7
+  },
+  "parsingTime": 1,
+  "filteredCount": 245,
+  "popularArguments": {},
+  "queueTime": 5
+}

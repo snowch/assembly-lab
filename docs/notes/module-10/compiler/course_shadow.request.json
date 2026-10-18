@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\nunsigned course_shadow(unsigned a)\n{\n    unsigned b = 7;\n    {\n        unsigned b = a + 1;\n        a = b;\n    }\n    return a + b;\n}\n",
+  "options": {
+    "userArguments": "-O1",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\nunsigned accumulated_charge(unsigned count, unsigned rate)\n{\n    unsigned total = 0;\n    for (unsigned i = 0; i < count; i++) {\n        total = total + rate;\n    }\n    return total;\n}\n",
+  "options": {
+    "userArguments": "-O1",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

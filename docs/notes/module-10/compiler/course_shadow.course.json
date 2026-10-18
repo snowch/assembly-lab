@@ -1,0 +1,89 @@
+{
+  "compiler": "Assembly Lab C subset 1",
+  "source": "// Copyright © 2026 Christopher Snow\nunsigned course_shadow(unsigned a)\n{\n    unsigned b = 7;\n    {\n        unsigned b = a + 1;\n        a = b;\n    }\n    return a + b;\n}\n",
+  "listing": "course_shadow:\n    movz w8, #7\n    mov w1, w8\n    mov w8, w0\n    movz w9, #1\n    add w8, w8, w9\n    mov w2, w8\n    mov w8, w2\n    mov w0, w8\n    mov w8, w0\n    mov w9, w1\n    add w8, w8, w9\n    mov w0, w8\n    ret",
+  "lineMap": [
+    {
+      "assemblyLine": 1,
+      "cLine": 3
+    },
+    {
+      "assemblyLine": 2,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 3,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 4,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 5,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 6,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 7,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 8,
+      "cLine": 7
+    },
+    {
+      "assemblyLine": 9,
+      "cLine": 7
+    },
+    {
+      "assemblyLine": 10,
+      "cLine": 9
+    },
+    {
+      "assemblyLine": 11,
+      "cLine": 9
+    },
+    {
+      "assemblyLine": 12,
+      "cLine": 9
+    },
+    {
+      "assemblyLine": 13,
+      "cLine": 9
+    },
+    {
+      "assemblyLine": 14,
+      "cLine": 9
+    }
+  ],
+  "calls": [
+    {
+      "args": [0],
+      "value": 8
+    },
+    {
+      "args": [1],
+      "value": 9
+    },
+    {
+      "args": [7],
+      "value": 15
+    },
+    {
+      "args": [2147483647],
+      "value": 2147483655
+    },
+    {
+      "args": [2147483648],
+      "value": 2147483656
+    },
+    {
+      "args": [4294967295],
+      "value": 7
+    }
+  ]
+}

@@ -253,6 +253,8 @@ export interface Call {
   returnAddress?: number;
   /** The flags when the call starts. Default all clear. */
   flags?: Flags;
+  /** Test caller values in callee-preserved x19 to x29; ordinary calls start them at zero. */
+  preserved?: Readonly<Partial<Record<number, bigint>>>;
 }
 
 export interface RegisterWrite {

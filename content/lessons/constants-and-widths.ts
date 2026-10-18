@@ -38,7 +38,7 @@ export const constantsAndWidths: LessonInput = {
   module: 1,
   order: 1,
   objectives: [...LABELS.objectives],
-  introduces: ["constant", "w register", "x register"],
+  introduces: ["constant", "w register", "x register", "remainder"],
   sections: [
     {
       kind: "question",

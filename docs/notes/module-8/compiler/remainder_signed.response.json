@@ -1,0 +1,67 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 146,
+  "processExecutionResultTime": 0.003282000310719013,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 3650,
+  "asm": [
+    {
+      "text": "remainder_signed:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        sdiv    w2, w0, w1",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 18
+      },
+      "labels": []
+    },
+    {
+      "text": "        msub    w0, w2, w1, w0",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "remainder_signed": 1
+  },
+  "parsingTime": 0,
+  "filteredCount": 233,
+  "popularArguments": {},
+  "queueTime": 5
+}

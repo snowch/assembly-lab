@@ -1,0 +1,103 @@
+{
+  "compiler": "Assembly Lab C subset 1",
+  "source": "// Copyright © 2026 Christopher Snow\nunsigned accumulated_charge(unsigned count, unsigned rate)\n{\n    unsigned total = 0;\n    for (unsigned i = 0; i <= count; i++) {\n        total = total + rate;\n    }\n    return total;\n}\n",
+  "listing": "accumulated_charge:\n    movz w8, #0\n    mov w2, w8\n    movz w8, #0\n    mov w3, w8\n.Lcourse0:\n    mov w8, w3\n    mov w9, w0\n    cmp w8, w9\n    cset w8, ls\n    cbz w8, .Lcourse1\n    mov w8, w2\n    mov w9, w1\n    add w8, w8, w9\n    mov w2, w8\n    mov w8, w3\n    movz w9, #1\n    add w8, w8, w9\n    mov w3, w8\n    b .Lcourse0\n.Lcourse1:\n    mov w8, w2\n    mov w0, w8\n    ret",
+  "lineMap": [
+    {
+      "assemblyLine": 1,
+      "cLine": 3
+    },
+    {
+      "assemblyLine": 2,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 3,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 4,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 5,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 6,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 7,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 8,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 9,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 10,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 11,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 12,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 13,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 14,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 15,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 16,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 17,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 18,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 19,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 20,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 21,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 22,
+      "cLine": 8
+    },
+    {
+      "assemblyLine": 23,
+      "cLine": 8
+    },
+    {
+      "assemblyLine": 24,
+      "cLine": 8
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\nunsigned average_trip(unsigned distance, unsigned trips)\n{\n    return distance / trips;\n}\n",
+  "options": {
+    "userArguments": "-O1 -marm -march=armv7-a",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

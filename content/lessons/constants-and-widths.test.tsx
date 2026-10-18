@@ -70,8 +70,8 @@ describe("the lesson", () => {
     expect([lesson.module, lesson.order]).toEqual([1, 1]);
   });
 
-  it("introduces its three terms, and passes the term gate with every other lesson", () => {
-    expect(lesson.introduces).toEqual(["constant", "w register", "x register"]);
+  it("introduces its terms, and passes the term gate with every other lesson", () => {
+    expect(lesson.introduces).toEqual(["constant", "w register", "x register", "remainder"]);
     expect(termProblems(LESSONS)).toEqual([]);
   });
 

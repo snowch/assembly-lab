@@ -1,0 +1,158 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 54,
+  "processExecutionResultTime": 0.004160999786108732,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 4501,
+  "asm": [
+    {
+      "text": "consumption:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        cbz     w1, .L3",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 8
+      },
+      "labels": [
+        {
+          "name": ".L3",
+          "range": {
+            "startCol": 21,
+            "endCol": 24
+          }
+        }
+      ]
+    },
+    {
+      "text": "        ubfiz   x2, x0, 2, 32",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 32
+      },
+      "labels": []
+    },
+    {
+      "text": "        add     x0, x2, w0, uxtw",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 32
+      },
+      "labels": []
+    },
+    {
+      "text": "        add     x0, x0, x0, lsl 2",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 32
+      },
+      "labels": []
+    },
+    {
+      "text": "        lsl     x0, x0, 2",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 32
+      },
+      "labels": []
+    },
+    {
+      "text": "        uxtw    x1, w1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 38
+      },
+      "labels": []
+    },
+    {
+      "text": "        udiv    x0, x0, x1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 38
+      },
+      "labels": []
+    },
+    {
+      "text": ".L1:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": ".L3:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        mov     x0, 0",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 31
+      },
+      "labels": []
+    },
+    {
+      "text": "        b       .L1",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 31
+      },
+      "labels": [
+        {
+          "name": ".L1",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "consumption": 1,
+    ".L1": 9,
+    ".L3": 11
+  },
+  "parsingTime": 1,
+  "filteredCount": 274,
+  "popularArguments": {},
+  "queueTime": 4
+}

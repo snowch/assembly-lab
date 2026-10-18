@@ -1,0 +1,85 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 32,
+  "processExecutionResultTime": 0.0028429999947547913,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 3322,
+  "asm": [
+    {
+      "text": "groups_of_ten:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        mov     w1, 52429",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 19
+      },
+      "labels": []
+    },
+    {
+      "text": "        movk    w1, 0xcccc, lsl 16",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 19
+      },
+      "labels": []
+    },
+    {
+      "text": "        umull   x0, w0, w1",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 19
+      },
+      "labels": []
+    },
+    {
+      "text": "        lsr     x0, x0, 35",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "groups_of_ten": 1
+  },
+  "parsingTime": 2,
+  "filteredCount": 207,
+  "popularArguments": {},
+  "queueTime": 6
+}

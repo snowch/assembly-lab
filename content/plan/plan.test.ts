@@ -56,7 +56,13 @@ describe("the course's plan", () => {
 
   it("types no status: the plan's data has none, and statusOf works it out from the lessons", () => {
     for (const m of MODULES)
-      expect(Object.keys(m).sort(), m.title).toEqual(["id", "label", "line", "title"]);
+      expect(Object.keys(m).sort(), m.title).toEqual([
+        "id",
+        "label",
+        "lessonModule",
+        "line",
+        "title",
+      ]);
   });
 
   it("gives every module a title nobody else has", () => {
@@ -67,10 +73,10 @@ describe("the course's plan", () => {
   it("publishes a module exactly when a lesson of it is written, and plans every other", () => {
     const published = MODULES.filter((m) => statusOf(m, LESSONS) === "published");
     expect(published.map((m) => m.label)).toEqual([
-      ...new Set(LESSONS.map((l) => String(l.module))),
+      ...new Set(LESSONS.map((l) => moduleByNumber(l.module)!.label)),
     ]);
     expect(published.map((m) => m.title)).toEqual(
-      MODULES.filter((m) => LESSONS.some((l) => String(l.module) === m.label)).map((m) => m.title),
+      MODULES.filter((m) => LESSONS.some((l) => l.module === m.lessonModule)).map((m) => m.title),
     );
     expect(published.slice(0, 4).map((m) => m.title)).toEqual([
       "Meet the machine",
@@ -96,7 +102,10 @@ describe("the course's plan", () => {
     ]);
     // Module 3 has two lessons, in the order they are taught.
     expect(lessonsOf(moduleByNumber(3)!, LESSONS).map((l) => l.id)).toEqual(["masks", "shifts"]);
-    expect(lessonsOf(moduleByNumber(11)!, LESSONS)).toEqual([]);
+    expect(lessonsOf(moduleByNumber(11)!, LESSONS).map((l) => l.id)).toEqual([
+      "c-and-overflow",
+      "checked-arithmetic",
+    ]);
     expect(statusOf(meet, [])).toBe("planned");
     expect(statusOf(meet, [{ id: "x", module: 0 }])).toBe("published");
     expect(statusOf(meet, [{ id: "y", module: 1 }])).toBe("planned");
@@ -105,7 +114,11 @@ describe("the course's plan", () => {
   it("finds a module by the number a lesson holds", () => {
     expect(moduleByNumber(0)?.title).toBe("Meet the machine");
     expect(moduleByNumber(11)?.title).toBe("Where C and the machine disagree");
-    expect(moduleByNumber(12)).toBeUndefined();
+    expect(moduleByNumber(12)?.label).toBe("A");
+    expect(lessonsOf(moduleByNumber(12)!, [{ id: "arm32", module: 12 }])).toEqual([
+      { id: "arm32", module: 12 },
+    ]);
+    expect(moduleByNumber(13)).toBeUndefined();
   });
 
   it("names its parts and modules exactly as docs/plan.md does, so the two cannot drift", () => {

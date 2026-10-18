@@ -1,0 +1,14 @@
+{
+  "entry": "pre_index",
+  "calls": [
+    {
+      "args": [["0x410000", 64]]
+    }
+  ],
+  "compare": [
+    {
+      "label": "sensor",
+      "length": 48
+    }
+  ]
+}

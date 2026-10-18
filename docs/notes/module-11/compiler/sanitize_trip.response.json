@@ -1,0 +1,284 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 76,
+  "processExecutionResultTime": 0.0031789997592568398,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "-std=c23",
+    "-fsanitize=undefined",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 6559,
+  "asm": [
+    {
+      "text": "add_trip:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        stp     x29, x30, [sp, -32]!",
+      "source": {
+        "file": null,
+        "line": 3,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        mov     x29, sp",
+      "source": {
+        "file": null,
+        "line": 3,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        str     x19, [sp, 16]",
+      "source": {
+        "file": null,
+        "line": 3,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        adds    w19, w0, w1",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 21
+      },
+      "labels": []
+    },
+    {
+      "text": "        bvs     .L5",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 21
+      },
+      "labels": [
+        {
+          "name": ".L5",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    },
+    {
+      "text": ".L2:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        mov     w0, w19",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ldr     x19, [sp, 16]",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ldp     x29, x30, [sp], 32",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": ".L5:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        sxtw    x2, w1",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 21
+      },
+      "labels": []
+    },
+    {
+      "text": "        sxtw    x1, w0",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 21
+      },
+      "labels": []
+    },
+    {
+      "text": "        adrp    x0, .LANCHOR0",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 21
+      },
+      "labels": []
+    },
+    {
+      "text": "        add     x0, x0, :lo12:.LANCHOR0",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 21
+      },
+      "labels": []
+    },
+    {
+      "text": "        bl      __ubsan_handle_add_overflow",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 21
+      },
+      "labels": []
+    },
+    {
+      "text": "        b       .L2",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 21
+      },
+      "labels": [
+        {
+          "name": ".L2",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    },
+    {
+      "text": ".LC0:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        .string \"/app/example.c\"",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": ".Lubsan_type0:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        .hword  0",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        .hword  11",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        .string \"'int'\"",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        .set    .LANCHOR0,. + 0",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": ".Lubsan_data0:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        .xword  .LC0",
+      "source": null,
+      "labels": [
+        {
+          "name": ".LC0",
+          "range": {
+            "startCol": 17,
+            "endCol": 21
+          }
+        }
+      ]
+    },
+    {
+      "text": "        .word   4",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        .word   21",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        .xword  .Lubsan_type0",
+      "source": null,
+      "labels": [
+        {
+          "name": ".Lubsan_type0",
+          "range": {
+            "startCol": 17,
+            "endCol": 30
+          }
+        }
+      ]
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "add_trip": 1,
+    ".L2": 7,
+    ".L5": 12,
+    ".LC0": 19,
+    ".Lubsan_type0": 21,
+    ".Lubsan_data0": 26
+  },
+  "parsingTime": 3,
+  "filteredCount": 392,
+  "popularArguments": {},
+  "queueTime": 4
+}

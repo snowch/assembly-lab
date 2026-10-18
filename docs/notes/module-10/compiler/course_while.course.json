@@ -1,0 +1,209 @@
+{
+  "compiler": "Assembly Lab C subset 1",
+  "source": "// Copyright © 2026 Christopher Snow\nunsigned course_while(unsigned value, unsigned count)\n{\n    while (count != 0) {\n        value = value >> 1;\n        count--;\n    }\n    return value;\n}\n",
+  "listing": "course_while:\n.Lcourse0:\n    mov w8, w1\n    movz w9, #0\n    cmp w8, w9\n    cset w8, ne\n    cbz w8, .Lcourse1\n    mov w8, w0\n    movz w9, #1\n    lsr w8, w8, w9\n    mov w0, w8\n    mov w8, w1\n    movz w9, #1\n    sub w8, w8, w9\n    mov w1, w8\n    b .Lcourse0\n.Lcourse1:\n    mov w8, w0\n    mov w0, w8\n    ret",
+  "lineMap": [
+    {
+      "assemblyLine": 1,
+      "cLine": 3
+    },
+    {
+      "assemblyLine": 2,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 3,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 4,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 5,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 6,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 7,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 8,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 9,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 10,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 11,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 12,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 13,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 14,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 15,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 16,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 17,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 18,
+      "cLine": 8
+    },
+    {
+      "assemblyLine": 19,
+      "cLine": 8
+    },
+    {
+      "assemblyLine": 20,
+      "cLine": 8
+    }
+  ],
+  "calls": [
+    {
+      "args": [0, 0],
+      "value": 0
+    },
+    {
+      "args": [0, 1],
+      "value": 0
+    },
+    {
+      "args": [0, 3],
+      "value": 0
+    },
+    {
+      "args": [0, 31],
+      "value": 0
+    },
+    {
+      "args": [0, 32],
+      "value": 0
+    },
+    {
+      "args": [1, 0],
+      "value": 1
+    },
+    {
+      "args": [1, 1],
+      "value": 0
+    },
+    {
+      "args": [1, 3],
+      "value": 0
+    },
+    {
+      "args": [1, 31],
+      "value": 0
+    },
+    {
+      "args": [1, 32],
+      "value": 0
+    },
+    {
+      "args": [7, 0],
+      "value": 7
+    },
+    {
+      "args": [7, 1],
+      "value": 3
+    },
+    {
+      "args": [7, 3],
+      "value": 0
+    },
+    {
+      "args": [7, 31],
+      "value": 0
+    },
+    {
+      "args": [7, 32],
+      "value": 0
+    },
+    {
+      "args": [2147483647, 0],
+      "value": 2147483647
+    },
+    {
+      "args": [2147483647, 1],
+      "value": 1073741823
+    },
+    {
+      "args": [2147483647, 3],
+      "value": 268435455
+    },
+    {
+      "args": [2147483647, 31],
+      "value": 0
+    },
+    {
+      "args": [2147483647, 32],
+      "value": 0
+    },
+    {
+      "args": [2147483648, 0],
+      "value": 2147483648
+    },
+    {
+      "args": [2147483648, 1],
+      "value": 1073741824
+    },
+    {
+      "args": [2147483648, 3],
+      "value": 268435456
+    },
+    {
+      "args": [2147483648, 31],
+      "value": 1
+    },
+    {
+      "args": [2147483648, 32],
+      "value": 0
+    },
+    {
+      "args": [4294967295, 0],
+      "value": 4294967295
+    },
+    {
+      "args": [4294967295, 1],
+      "value": 2147483647
+    },
+    {
+      "args": [4294967295, 3],
+      "value": 536870911
+    },
+    {
+      "args": [4294967295, 31],
+      "value": 1
+    },
+    {
+      "args": [4294967295, 32],
+      "value": 0
+    }
+  ]
+}

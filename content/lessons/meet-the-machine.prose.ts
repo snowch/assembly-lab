@@ -27,7 +27,7 @@ export const PROSE = {
   },
 
   motivation:
-    "The C is a description. The compiler translates it, and the instructions are what the processor runs. When a program does something its C does not seem to say, the difference shows in the instructions. Every later module reads instructions like these. This function has only four, which is few enough to follow one at a time.",
+    "The compiler translates C into instructions that the processor runs. Following those instructions shows each step of the calculation and where the processor keeps each result. This function has four instructions, so you can follow them one at a time. You will read instructions like these throughout the course.",
 
   prediction:
     "A **register** is a small store inside the processor that holds one value. `w0`, `w1`, `w2` and `w3` are four of them.\n\n" +

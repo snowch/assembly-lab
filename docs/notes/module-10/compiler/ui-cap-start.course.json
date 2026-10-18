@@ -1,0 +1,23 @@
+{
+  "compiler": "Assembly Lab C subset 1",
+  "source": "unsigned cap_charge(unsigned distance, unsigned rate, unsigned limit)\n{\n    return 0;\n}",
+  "listing": "cap_charge:\n    movz w8, #0\n    mov w0, w8\n    ret",
+  "lineMap": [
+    {
+      "assemblyLine": 1,
+      "cLine": 2
+    },
+    {
+      "assemblyLine": 2,
+      "cLine": 3
+    },
+    {
+      "assemblyLine": 3,
+      "cLine": 3
+    },
+    {
+      "assemblyLine": 4,
+      "cLine": 3
+    }
+  ]
+}

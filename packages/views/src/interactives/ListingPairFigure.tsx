@@ -11,15 +11,41 @@ import { VIEW_STRINGS as S } from "../strings";
 import { RecordedSchema, withProps } from "./props";
 
 const Side = z.object({ title: z.string(), program: RecordedSchema });
-const Props = z.object({ sides: z.tuple([Side, Side]) });
+const Props = z.object({ sides: z.tuple([Side, Side]), alignCommon: z.boolean().default(false) });
 
 const instructionsOf = (lines: readonly ListingLine[]): string[] =>
   lines.flatMap((l) => (l.kind === "instruction" ? [l.text] : []));
+
+/** Match unchanged instruction text in order, allowing inserted or removed instructions. */
+export function commonInstructions(
+  left: readonly string[],
+  right: readonly string[],
+): [Set<number>, Set<number>] {
+  const lengths = Array.from({ length: left.length + 1 }, () => new Uint32Array(right.length + 1));
+  for (let i = left.length - 1; i >= 0; i--)
+    for (let j = right.length - 1; j >= 0; j--)
+      lengths[i]![j] =
+        left[i] === right[j]
+          ? 1 + lengths[i + 1]![j + 1]!
+          : Math.max(lengths[i + 1]![j]!, lengths[i]![j + 1]!);
+  const matched: [Set<number>, Set<number>] = [new Set(), new Set()];
+  let i = 0,
+    j = 0;
+  while (i < left.length && j < right.length) {
+    if (left[i] === right[j]) {
+      matched[0].add(i++);
+      matched[1].add(j++);
+    } else if (lengths[i + 1]![j]! >= lengths[i]![j + 1]!) i++;
+    else j++;
+  }
+  return matched;
+}
 
 export const ListingPairFigure = withProps(Props, function ListingPairFigure({ data }) {
   const [left, right] = data.sides;
   const parsed = [left, right].map((s) => parseListing(s.program.listing));
   const texts = parsed.map(instructionsOf);
+  const matched = commonInstructions(texts[0] ?? [], texts[1] ?? []);
   return (
     <div className="al-figure al-pair" data-figure="listing-pair">
       <div className="al-pair-sides">
@@ -41,7 +67,7 @@ export const ListingPairFigure = withProps(Props, function ListingPairFigure({ d
                       {line.text}:
                     </div>
                   );
-                const differs = line.text !== other[n];
+                const differs = data.alignCommon ? !matched[s]!.has(n) : line.text !== other[n];
                 n += 1;
                 return (
                   <div className="al-insn al-pair-insn" key={i} data-differs={differs}>

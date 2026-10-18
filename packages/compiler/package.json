@@ -1,0 +1,11 @@
+{
+  "name": "@al/compiler",
+  "author": "Christopher Snow",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "A bounded C subset compiler and independent expression interpreter.",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

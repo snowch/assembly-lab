@@ -10,7 +10,7 @@ import { subsetMnemonics } from "@al/machine";
 import { learnerText } from "@platform/lesson-schema";
 
 import { LESSONS } from ".";
-import { TAUGHT, introducedBy } from "./introduced";
+import { TAUGHT, introducedBy, withIntroduced } from "./introduced";
 
 const MNEMONICS = new Set(subsetMnemonics());
 const CONDITIONAL = /^b\.?(eq|ne|cs|hs|cc|lo|mi|pl|vs|vc|hi|ls|ge|lt|gt|le|al)$/;
@@ -76,9 +76,31 @@ describe("what each lesson teaches", () => {
     LESSONS.forEach((lesson, index) => {
       const taught = new Set(LESSONS.slice(0, index + 1).flatMap((l) => TAUGHT[l.id] ?? []));
       for (const c of lesson.challenges)
-        for (const name of c.allowedConstructs ?? [])
-          expect(taught.has(name), `${lesson.id}: ${c.id} allows ${name}`).toBe(true);
+        if (c.tests.kind === "answers" && c.tests.grader === "run-registers")
+          for (const name of c.allowedConstructs ?? [])
+            expect(taught.has(name), `${lesson.id}: ${c.id} allows ${name}`).toBe(true);
     });
+  });
+
+  it("keeps C grammar and editor data separate from the assembly gate", () => {
+    const base = LESSONS[0]!;
+    const assembly = base.challenges.find((c) => c.gradedDirection === "write")!;
+    const cChallenge = {
+      ...assembly,
+      id: "synthetic-c",
+      allowedConstructs: ["unsigned", "return"],
+      initial: {
+        text: "unsigned f(void) { return 0; }",
+        data: { editor: { variables: ["count"] } },
+      },
+      tests: { kind: "answers" as const, grader: "run-c", cases: [] },
+    };
+    const mixed = { ...base, challenges: [assembly, cChallenge] };
+    const result = withIntroduced(mixed, 0, [mixed]);
+    expect(introducedBy([mixed], 0)).not.toContain("unsigned");
+    expect(introducedBy([mixed], 0)).not.toContain("return");
+    expect(result.challenges![0]!.initial?.data?.["introduced"]).toContain("add");
+    expect(result.challenges![1]!.initial).toEqual(cChallenge.initial);
   });
 
   it("counts an instruction as met from the lesson that teaches it", () => {

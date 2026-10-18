@@ -41,6 +41,33 @@ function draw(props: Record<string, unknown>) {
 }
 
 describe("memory stepper", () => {
+  it("optionally shows arithmetic flags across a store and rewinds them", () => {
+    const { container } = draw({
+      program: { c: "", listing: "f:\nadds w0, w0, w1\nstr w0, [x2]\ncset w0, vs\nret" },
+      call: {
+        entry: "f",
+        args: [2147483647, 1, { value: "0x410000", width: 64 }],
+        memory: [0, 0, 0, 0],
+      },
+      registers: ["w0", "w1", "x2"],
+      extension: false,
+      flags: true,
+    });
+    const flag = (name: string) => container.querySelector(`[data-flag="${name}"]`)!;
+    expect(flag("v")).toHaveAttribute("data-value", "0");
+    const next = screen.getByRole("button", { name: S.stepper.next });
+    fireEvent.click(next);
+    expect(flag("v")).toHaveAttribute("data-value", "1");
+    expect(flag("c")).toHaveAttribute("data-value", "0");
+    fireEvent.click(next);
+    expect(flag("v")).toHaveAttribute("data-value", "1");
+    expect(container.querySelector('[data-address="0x410003"] .al-memory-value')).toHaveTextContent(
+      "80",
+    );
+    fireEvent.click(screen.getByRole("button", { name: S.stepper.reset }));
+    expect(flag("v")).toHaveAttribute("data-value", "0");
+  });
+
   it("reveals no listing, memory or result before a gated prediction", () => {
     const { container } = draw({ after: "predict" });
     expect(screen.getByRole("note")).toHaveTextContent(S.stepper.locked);

@@ -8,6 +8,7 @@ import { useSlot } from "@platform/lesson-runtime";
 import { cLinesOf } from "../listing";
 import { hexAddress, hexByte, memoryRegister, memoryTransferAt } from "../memoryFigure";
 import { stopSentence } from "../messages";
+import { FlagsRow } from "../FlagsRow";
 import { ListingView, withCode } from "../parts";
 import { VIEW_STRINGS as S } from "../strings";
 import { MEMORY_STRINGS as M } from "../strings.memory";
@@ -34,6 +35,8 @@ const Props = z.object({
   after: z.string().optional(),
   /** Show the loaded bytes and the bits added by extension in the full physical register. */
   extension: z.boolean().default(false),
+  /** Optional for memory operations whose surrounding arithmetic tests NZCV. */
+  flags: z.boolean().default(false),
 });
 
 export const MemoryStepper = withProps(Props, function MemoryStepper({ data, store }) {
@@ -119,6 +122,12 @@ export const MemoryStepper = withProps(Props, function MemoryStepper({ data, sto
           </div>
         ))}
       </div>
+      {data.flags && (
+        <FlagsRow
+          flags={view.state.flags}
+          before={view.k > 0 ? viewAt(trace, view.k - 1).state.flags : null}
+        />
+      )}
       {memory !== undefined && (
         <div role="group" aria-label={M.memory}>
           <p className="al-memory-heading">{M.memory}</p>

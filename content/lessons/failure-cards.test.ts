@@ -113,6 +113,22 @@ const UNSIGNED_WRITTEN = [
   "write-save-distance",
   "write-copy-distance",
   "write-read-sensors",
+  "write-read-trip",
+  "write-sum-trips",
+  "write-label-length",
+  "write-count-marker",
+  "write-scaled-total",
+  "write-wide-product",
+  "write-consumption",
+  "write-call-report",
+  "write-preserve-reserve",
+  "write-fade-sum",
+  "write-lit-count",
+  "write-fuel-fits",
+  "write-trip-charge",
+  "write-accumulated-charge",
+  "write-cap-charge",
+  "write-c-dimming",
 ];
 
 describe("the written challenges' readings", () => {

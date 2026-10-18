@@ -1,0 +1,193 @@
+{
+  "compiler": "Assembly Lab C subset 1",
+  "source": "// Copyright © 2026 Christopher Snow\nunsigned trip_charge(unsigned distance, unsigned rate)\n{\n    unsigned charge = distance * rate;\n    return charge + 7;\n}\n",
+  "listing": "trip_charge:\n    mov w8, w0\n    mov w9, w1\n    mul w8, w8, w9\n    mov w2, w8\n    mov w8, w2\n    movz w9, #7\n    add w8, w8, w9\n    mov w0, w8\n    ret",
+  "lineMap": [
+    {
+      "assemblyLine": 1,
+      "cLine": 3
+    },
+    {
+      "assemblyLine": 2,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 3,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 4,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 5,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 6,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 7,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 8,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 9,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 10,
+      "cLine": 5
+    }
+  ],
+  "calls": [
+    {
+      "args": [0, 0],
+      "value": 7
+    },
+    {
+      "args": [0, 1],
+      "value": 7
+    },
+    {
+      "args": [0, 7],
+      "value": 7
+    },
+    {
+      "args": [0, 2147483647],
+      "value": 7
+    },
+    {
+      "args": [0, 2147483648],
+      "value": 7
+    },
+    {
+      "args": [0, 4294967295],
+      "value": 7
+    },
+    {
+      "args": [1, 0],
+      "value": 7
+    },
+    {
+      "args": [1, 1],
+      "value": 8
+    },
+    {
+      "args": [1, 7],
+      "value": 14
+    },
+    {
+      "args": [1, 2147483647],
+      "value": 2147483654
+    },
+    {
+      "args": [1, 2147483648],
+      "value": 2147483655
+    },
+    {
+      "args": [1, 4294967295],
+      "value": 6
+    },
+    {
+      "args": [7, 0],
+      "value": 7
+    },
+    {
+      "args": [7, 1],
+      "value": 14
+    },
+    {
+      "args": [7, 7],
+      "value": 56
+    },
+    {
+      "args": [7, 2147483647],
+      "value": 2147483648
+    },
+    {
+      "args": [7, 2147483648],
+      "value": 2147483655
+    },
+    {
+      "args": [7, 4294967295],
+      "value": 0
+    },
+    {
+      "args": [2147483647, 0],
+      "value": 7
+    },
+    {
+      "args": [2147483647, 1],
+      "value": 2147483654
+    },
+    {
+      "args": [2147483647, 7],
+      "value": 2147483648
+    },
+    {
+      "args": [2147483647, 2147483647],
+      "value": 8
+    },
+    {
+      "args": [2147483647, 2147483648],
+      "value": 2147483655
+    },
+    {
+      "args": [2147483647, 4294967295],
+      "value": 2147483656
+    },
+    {
+      "args": [2147483648, 0],
+      "value": 7
+    },
+    {
+      "args": [2147483648, 1],
+      "value": 2147483655
+    },
+    {
+      "args": [2147483648, 7],
+      "value": 2147483655
+    },
+    {
+      "args": [2147483648, 2147483647],
+      "value": 2147483655
+    },
+    {
+      "args": [2147483648, 2147483648],
+      "value": 7
+    },
+    {
+      "args": [2147483648, 4294967295],
+      "value": 2147483655
+    },
+    {
+      "args": [4294967295, 0],
+      "value": 7
+    },
+    {
+      "args": [4294967295, 1],
+      "value": 6
+    },
+    {
+      "args": [4294967295, 7],
+      "value": 0
+    },
+    {
+      "args": [4294967295, 2147483647],
+      "value": 2147483656
+    },
+    {
+      "args": [4294967295, 2147483648],
+      "value": 2147483655
+    },
+    {
+      "args": [4294967295, 4294967295],
+      "value": 8
+    }
+  ]
+}

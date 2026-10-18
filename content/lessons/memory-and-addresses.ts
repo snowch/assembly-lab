@@ -54,7 +54,7 @@ export const memoryAndAddresses: LessonInput = {
   module: 6,
   order: 0,
   objectives: [...LABELS.objectives],
-  introduces: ["address", "byte", "little-endian", "halfword"],
+  introduces: ["address", "byte", "little-endian", "halfword", "low half"],
   sections: [
     {
       kind: "question",

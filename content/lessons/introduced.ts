@@ -27,6 +27,17 @@ export const TAUGHT: Readonly<Record<string, readonly string[]>> = {
   "counting-down": [],
   "memory-and-addresses": ["ldr", "str", "strb", "strh"],
   "loading-widths": ["ldrb", "ldrsb", "ldrh", "ldrsh", "ldrsw", "sxtb", "uxtb", "sxtw"],
+  "array-addresses": [],
+  "zero-terminated-strings": [],
+  "products-and-widths": ["mul", "madd", "msub", "smull", "umull", "smulh", "umulh"],
+  "division-and-remainders": ["sdiv", "udiv"],
+  "calls-and-returns": ["bl", "stp", "ldp"],
+  "recursive-calls": [],
+  "from-c-to-instructions": ["movz"],
+  "compile-a-loop": [],
+  "c-and-overflow": [],
+  "checked-arithmetic": [],
+  "same-c-on-a32": [],
 };
 
 /**
@@ -38,7 +49,8 @@ export function introducedBy(lessons: readonly LessonInput[], index: number): st
   for (const lesson of lessons.slice(0, index + 1)) {
     for (const name of TAUGHT[lesson.id] ?? []) names.add(name);
     for (const challenge of lesson.challenges ?? [])
-      for (const name of challenge.allowedConstructs ?? []) names.add(name);
+      if (challenge.tests.kind === "answers" && challenge.tests.grader === "run-registers")
+        for (const name of challenge.allowedConstructs ?? []) names.add(name);
   }
   return [...names];
 }
@@ -57,7 +69,7 @@ export function withIntroduced(
   return {
     ...lesson,
     challenges: (lesson.challenges ?? []).map((challenge) =>
-      challenge.gradedDirection === "write"
+      challenge.tests.kind === "answers" && challenge.tests.grader === "run-registers"
         ? {
             ...challenge,
             initial: {

@@ -1,0 +1,209 @@
+{
+  "compiler": "Assembly Lab C subset 1",
+  "source": "// Copyright © 2026 Christopher Snow\nunsigned course_for_assignment(unsigned count, unsigned rate)\n{\n    unsigned i = 0;\n    unsigned total = 0;\n    for (i = 0; i < count; i = i + 1) {\n        total = total + rate;\n    }\n    return total;\n}\n",
+  "listing": "course_for_assignment:\n    movz w8, #0\n    mov w2, w8\n    movz w8, #0\n    mov w3, w8\n    movz w8, #0\n    mov w2, w8\n.Lcourse0:\n    mov w8, w2\n    mov w9, w0\n    cmp w8, w9\n    cset w8, cc\n    cbz w8, .Lcourse1\n    mov w8, w3\n    mov w9, w1\n    add w8, w8, w9\n    mov w3, w8\n    mov w8, w2\n    movz w9, #1\n    add w8, w8, w9\n    mov w2, w8\n    b .Lcourse0\n.Lcourse1:\n    mov w8, w3\n    mov w0, w8\n    ret",
+  "lineMap": [
+    {
+      "assemblyLine": 1,
+      "cLine": 3
+    },
+    {
+      "assemblyLine": 2,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 3,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 4,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 5,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 6,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 7,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 8,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 9,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 10,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 11,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 12,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 13,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 14,
+      "cLine": 7
+    },
+    {
+      "assemblyLine": 15,
+      "cLine": 7
+    },
+    {
+      "assemblyLine": 16,
+      "cLine": 7
+    },
+    {
+      "assemblyLine": 17,
+      "cLine": 7
+    },
+    {
+      "assemblyLine": 18,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 19,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 20,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 21,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 22,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 23,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 24,
+      "cLine": 9
+    },
+    {
+      "assemblyLine": 25,
+      "cLine": 9
+    },
+    {
+      "assemblyLine": 26,
+      "cLine": 9
+    }
+  ],
+  "calls": [
+    {
+      "args": [0, 0],
+      "value": 0
+    },
+    {
+      "args": [0, 1],
+      "value": 0
+    },
+    {
+      "args": [0, 7],
+      "value": 0
+    },
+    {
+      "args": [0, 2147483647],
+      "value": 0
+    },
+    {
+      "args": [0, 2147483648],
+      "value": 0
+    },
+    {
+      "args": [0, 4294967295],
+      "value": 0
+    },
+    {
+      "args": [1, 0],
+      "value": 0
+    },
+    {
+      "args": [1, 1],
+      "value": 1
+    },
+    {
+      "args": [1, 7],
+      "value": 7
+    },
+    {
+      "args": [1, 2147483647],
+      "value": 2147483647
+    },
+    {
+      "args": [1, 2147483648],
+      "value": 2147483648
+    },
+    {
+      "args": [1, 4294967295],
+      "value": 4294967295
+    },
+    {
+      "args": [3, 0],
+      "value": 0
+    },
+    {
+      "args": [3, 1],
+      "value": 3
+    },
+    {
+      "args": [3, 7],
+      "value": 21
+    },
+    {
+      "args": [3, 2147483647],
+      "value": 2147483645
+    },
+    {
+      "args": [3, 2147483648],
+      "value": 2147483648
+    },
+    {
+      "args": [3, 4294967295],
+      "value": 4294967293
+    },
+    {
+      "args": [16, 0],
+      "value": 0
+    },
+    {
+      "args": [16, 1],
+      "value": 16
+    },
+    {
+      "args": [16, 7],
+      "value": 112
+    },
+    {
+      "args": [16, 2147483647],
+      "value": 4294967280
+    },
+    {
+      "args": [16, 2147483648],
+      "value": 0
+    },
+    {
+      "args": [16, 4294967295],
+      "value": 4294967280
+    }
+  ]
+}

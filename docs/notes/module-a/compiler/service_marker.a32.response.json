@@ -1,0 +1,60 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 52,
+  "processExecutionResultTime": 0.0027699992060661316,
+  "instructionSet": "arm32",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "-marm",
+    "-march=armv7-a",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 2742,
+  "asm": [
+    {
+      "text": "service_marker:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        movw    r0, #1001",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        bx      lr",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "service_marker": 1
+  },
+  "parsingTime": 0,
+  "filteredCount": 158,
+  "popularArguments": {},
+  "queueTime": 4
+}

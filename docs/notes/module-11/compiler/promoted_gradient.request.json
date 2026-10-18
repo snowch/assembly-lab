@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\nint promoted_gradient(signed char gradient)\n{\n    return gradient + 1;\n}\n",
+  "options": {
+    "userArguments": "-O1 -std=c23",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

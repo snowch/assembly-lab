@@ -1,0 +1,154 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 66,
+  "processExecutionResultTime": 0.0025839991867542267,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "-fno-inline",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 5792,
+  "asm": [
+    {
+      "text": "half_distance:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        lsr     w0, w0, 1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "trip_report:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        stp     x29, x30, [sp, -32]!",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        mov     x29, sp",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        str     x19, [sp, 16]",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        mov     w19, w1",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        bl      half_distance",
+      "source": {
+        "file": null,
+        "line": 8,
+        "column": 12
+      },
+      "labels": [
+        {
+          "name": "half_distance",
+          "range": {
+            "startCol": 17,
+            "endCol": 30
+          }
+        }
+      ]
+    },
+    {
+      "text": "        add     w0, w0, w19",
+      "source": {
+        "file": null,
+        "line": 9,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ldr     x19, [sp, 16]",
+      "source": {
+        "file": null,
+        "line": 9,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ldp     x29, x30, [sp], 32",
+      "source": {
+        "file": null,
+        "line": 9,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 9,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "half_distance": 1,
+    "trip_report": 4
+  },
+  "parsingTime": 5,
+  "filteredCount": 364,
+  "popularArguments": {},
+  "queueTime": 4
+}

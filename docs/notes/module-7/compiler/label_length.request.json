@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\nunsigned long label_length(const unsigned char *label, unsigned long capacity)\n{\n    unsigned long length = 0;\n    while (length < capacity) {\n        if (label[length] == 0) break;\n        length++;\n    }\n    return length;\n}\n",
+  "options": {
+    "userArguments": "-O1",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

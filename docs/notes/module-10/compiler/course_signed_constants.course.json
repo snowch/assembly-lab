@@ -1,0 +1,73 @@
+{
+  "compiler": "Assembly Lab C subset 1",
+  "source": "// Copyright © 2026 Christopher Snow\nunsigned course_signed_constants(void)\n{\n    return (1 - 8) / 2 + ((1 - 8) % 2);\n}\n",
+  "listing": "course_signed_constants:\n    movz w8, #1\n    movz w9, #8\n    sub w8, w8, w9\n    movz w9, #2\n    sdiv w8, w8, w9\n    movz w9, #1\n    movz w10, #8\n    sub w9, w9, w10\n    movz w10, #2\n    sdiv w17, w9, w10\n    msub w9, w17, w10, w9\n    add w8, w8, w9\n    mov w0, w8\n    ret",
+  "lineMap": [
+    {
+      "assemblyLine": 1,
+      "cLine": 3
+    },
+    {
+      "assemblyLine": 2,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 3,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 4,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 5,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 6,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 7,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 8,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 9,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 10,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 11,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 12,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 13,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 14,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 15,
+      "cLine": 4
+    }
+  ],
+  "calls": [
+    {
+      "args": [],
+      "value": 4294967292
+    }
+  ]
+}

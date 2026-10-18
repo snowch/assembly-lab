@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\n#include <stdio.h>\nvoid show_trip(unsigned distance)\n{\n    printf(\"%d\\n\", distance);\n}\n",
+  "options": {
+    "userArguments": "-O1 -std=c23 -Wall -Wextra -Wformat=2 -Wformat-signedness",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

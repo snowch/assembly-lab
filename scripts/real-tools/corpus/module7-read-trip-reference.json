@@ -1,0 +1,23 @@
+{
+  "entry": "read_trip_reference",
+  "calls": [
+    {
+      "args": [
+        ["0x410000", 64],
+        [2, 64]
+      ]
+    },
+    {
+      "args": [
+        ["0x410024", 64],
+        [1, 64]
+      ]
+    }
+  ],
+  "compare": [
+    {
+      "label": "sensor",
+      "length": 48
+    }
+  ]
+}

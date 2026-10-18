@@ -1,0 +1,101 @@
+{
+  "compiler": "Assembly Lab C subset 1",
+  "source": "// Copyright © 2026 Christopher Snow\nunsigned cap_charge(unsigned distance, unsigned rate, unsigned limit)\n{\n    unsigned charge = distance * rate;\n    if (charge > limit) {\n        charge = limit;\n    }\n    return charge;\n}\n",
+  "listing": "cap_charge:\n    mov w8, w0\n    mov w9, w1\n    mul w8, w8, w9\n    mov w3, w8\n    mov w8, w3\n    mov w9, w2\n    cmp w8, w9\n    cset w8, hi\n    cbz w8, .Lcourse0\n    mov w8, w2\n    mov w3, w8\n    b .Lcourse1\n.Lcourse0:\n.Lcourse1:\n    mov w8, w3\n    mov w0, w8\n    ret",
+  "lineMap": [
+    {
+      "assemblyLine": 1,
+      "cLine": 3
+    },
+    {
+      "assemblyLine": 2,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 3,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 4,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 5,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 6,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 7,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 8,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 9,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 10,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 11,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 12,
+      "cLine": 6
+    },
+    {
+      "assemblyLine": 13,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 14,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 15,
+      "cLine": 5
+    },
+    {
+      "assemblyLine": 16,
+      "cLine": 8
+    },
+    {
+      "assemblyLine": 17,
+      "cLine": 8
+    },
+    {
+      "assemblyLine": 18,
+      "cLine": 8
+    }
+  ],
+  "calls": [
+    {
+      "args": [0, 3, 50],
+      "value": 0
+    },
+    {
+      "args": [12, 3, 50],
+      "value": 36
+    },
+    {
+      "args": [12, 7, 50],
+      "value": 50
+    },
+    {
+      "args": [4294967295, 2, 4294967295],
+      "value": 4294967294
+    },
+    {
+      "args": [2147483648, 2, 20],
+      "value": 0
+    }
+  ]
+}

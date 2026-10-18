@@ -1,0 +1,102 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 139,
+  "processExecutionResultTime": 0.0028050001710653305,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "-std=c23",
+    "-fno-if-conversion",
+    "-fno-if-conversion2",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 3399,
+  "asm": [
+    {
+      "text": "safe_increment:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        mov     w1, 2147483647",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 8
+      },
+      "labels": []
+    },
+    {
+      "text": "        cmp     w0, w1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 8
+      },
+      "labels": []
+    },
+    {
+      "text": "        beq     .L1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 8
+      },
+      "labels": [
+        {
+          "name": ".L1",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    },
+    {
+      "text": "        add     w0, w0, 1",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 21
+      },
+      "labels": []
+    },
+    {
+      "text": ".L1:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 8,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "safe_increment": 1,
+    ".L1": 6
+  },
+  "parsingTime": 3,
+  "filteredCount": 207,
+  "popularArguments": {},
+  "queueTime": 30674
+}

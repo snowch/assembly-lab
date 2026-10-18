@@ -1,0 +1,88 @@
+/* Copyright © 2026 Christopher Snow */
+.al-c-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 0.8rem 0;
+}
+.al-c-fields label {
+  display: flex;
+  flex: 1 1 140px;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.al-c-fields select,
+.al-c-fields input {
+  min-height: 44px;
+  max-width: 100%;
+  min-width: 0;
+  font: inherit;
+  color: inherit;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.4rem;
+}
+.al-c-lines {
+  padding-left: 1.5rem;
+  max-height: 24rem;
+  overflow: auto;
+}
+.al-c-lines button {
+  width: 100%;
+  text-align: left;
+  min-height: 44px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.al-c-lines [aria-pressed="true"] {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
+.al-c-registers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+.al-c-output {
+  max-width: 100%;
+  overflow: auto;
+  font-size: 0.85rem;
+}
+.al-compiler a {
+  overflow-wrap: anywhere;
+}
+.al-c-editor .al-controls {
+  flex-wrap: wrap;
+}
+.al-compiler summary {
+  min-height: 44px;
+  padding: 0.4rem 0;
+  cursor: pointer;
+}
+@media (max-width: 600px) {
+  .al-compiler a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+.al-compiler-current {
+  padding: 0.6rem;
+  margin: 0.8rem 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+.al-compiler-current code {
+  white-space: pre-wrap;
+}
+.al-compiler-current > div > code {
+  display: block;
+  margin-top: 0.3rem;
+}
+.al-c-preview pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

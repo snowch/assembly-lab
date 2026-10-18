@@ -52,6 +52,9 @@ export const SLOTS: Readonly<Record<string, readonly Slot[]>> = {
   cbz: ["register", "label"],
   cbnz: ["register", "label"],
   b: ["label"],
+  bl: ["label"],
+  stp: ["register", "register", "address"],
+  ldp: ["register", "register", "address"],
   ldr: ["register", "address"],
   str: ["register", "address"],
   ldrb: ["register", "address"],
@@ -64,6 +67,15 @@ export const SLOTS: Readonly<Record<string, readonly Slot[]>> = {
   sxtb: ["register", "register"],
   uxtb: ["register", "register"],
   sxtw: ["register", "register"],
+  mul: ["register", "register", "register"],
+  smull: ["register", "register", "register"],
+  umull: ["register", "register", "register"],
+  smulh: ["register", "register", "register"],
+  umulh: ["register", "register", "register"],
+  sdiv: ["register", "register", "register"],
+  udiv: ["register", "register", "register"],
+  madd: ["register", "register", "register", "register"],
+  msub: ["register", "register", "register", "register"],
 };
 
 /** The conditions the tap editor offers, in the order the lessons list them. */
@@ -127,10 +139,19 @@ export function parseLine(text: string): Line {
   if (labelNameOf(trimmed) !== null) return { mnemonic: trimmed, operands: [] };
   const space = trimmed.search(/\s/);
   if (space < 0) return { mnemonic: trimmed.toLowerCase(), operands: [] };
-  return {
-    mnemonic: trimmed.slice(0, space).toLowerCase(),
-    operands: splitOperands(trimmed.slice(space + 1)),
-  };
+  const mnemonic = trimmed.slice(0, space).toLowerCase();
+  const operands = splitOperands(trimmed.slice(space + 1));
+  const addressAt = slotsOf(mnemonic)?.indexOf("address") ?? -1;
+  // A post-index immediate belongs to the address chip, even though its comma is outside
+  // the brackets. Keeping it together prevents a later edit from leaving a stale offset.
+  if (
+    addressAt >= 0 &&
+    operands.length === addressAt + 2 &&
+    /^\[[^\]]+\]$/.test(operands[addressAt] ?? "") &&
+    NUMBER.test(operands[addressAt + 1] ?? "")
+  )
+    operands.splice(addressAt, 2, `${operands[addressAt]}, ${operands[addressAt + 1]}`);
+  return { mnemonic, operands };
 }
 
 /** The line's text. Operands left empty at the end are dropped; one left empty before a later one stays as a gap. */
@@ -164,7 +185,9 @@ export function fitsSlot(operand: string, slot: Slot): boolean {
       // A name: not a register, a number or a condition word with a space in it.
       return /^[A-Za-z_.][\w.$]*$/.test(text) && !REGISTER.test(text);
     case "address":
-      return /^\[\s*(?:x\d{1,2}|sp)\s*(?:,\s*#?-?(?:0x[0-9a-f]+|\d+)\s*)?\]$/i.test(text);
+      return /^\[\s*(?:x\d{1,2}|sp)\s*(?:,\s*(?:#?-?(?:0x[0-9a-f]+|\d+)|[wx]\d{1,2}(?:\s*,\s*(?:lsl|[su]xt[wx])(?:\s+#?\d+)?)?)\s*)?\](?:!|\s*,\s*#?-?(?:0x[0-9a-f]+|\d+))?$/i.test(
+        text,
+      );
     case "extension":
       return /^(?:[su]xt[bwhx])(?:\s+#?\d+)?$/i.test(text);
   }

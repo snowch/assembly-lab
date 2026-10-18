@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\nunsigned half_distance(unsigned distance)\n{\n    return distance >> 1;\n}\nunsigned trip_report(unsigned distance, unsigned reserve)\n{\n    return half_distance(distance) + reserve;\n}\n",
+  "options": {
+    "userArguments": "-O1 -fno-inline",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

@@ -74,7 +74,7 @@ describe("the page before any script runs", () => {
     const written = new Set(LESSONS.map((l) => String(l.module)));
     expect(labels).toEqual(
       MODULES.map((m) =>
-        written.has(m.label) ? STRINGS.status.published : STRINGS.status.planned,
+        written.has(String(m.lessonModule)) ? STRINGS.status.published : STRINGS.status.planned,
       ),
     );
     expect(written.has("0")).toBe(true);

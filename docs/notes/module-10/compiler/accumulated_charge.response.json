@@ -1,0 +1,131 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 70,
+  "processExecutionResultTime": 0.0031829997897148132,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 5352,
+  "asm": [
+    {
+      "text": "accumulated_charge:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        cbz     w0, .L1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 28
+      },
+      "labels": [
+        {
+          "name": ".L1",
+          "range": {
+            "startCol": 21,
+            "endCol": 24
+          }
+        }
+      ]
+    },
+    {
+      "text": "        mov     w2, 0",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 19
+      },
+      "labels": []
+    },
+    {
+      "text": ".L3:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        add     w2, w2, 1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 38
+      },
+      "labels": []
+    },
+    {
+      "text": "        cmp     w0, w2",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 28
+      },
+      "labels": []
+    },
+    {
+      "text": "        bne     .L3",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 28
+      },
+      "labels": [
+        {
+          "name": ".L3",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    },
+    {
+      "text": "        mul     w0, w1, w2",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 28
+      },
+      "labels": []
+    },
+    {
+      "text": ".L1:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 9,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "accumulated_charge": 1,
+    ".L3": 4,
+    ".L1": 9
+  },
+  "parsingTime": 1,
+  "filteredCount": 343,
+  "popularArguments": {},
+  "queueTime": 4
+}

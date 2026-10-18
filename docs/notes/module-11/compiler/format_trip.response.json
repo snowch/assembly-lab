@@ -1,0 +1,173 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [
+    {
+      "text": "\u001b[01m\u001b[K<source>:\u001b[m\u001b[K In function '\u001b[01m\u001b[Kshow_trip\u001b[m\u001b[K':"
+    },
+    {
+      "text": "\u001b[01m\u001b[K<source>:5:14:\u001b[m\u001b[K \u001b[01;35m\u001b[Kwarning: \u001b[m\u001b[Kformat '\u001b[01m\u001b[K\u001b[01;32m\u001b[K%d\u001b[m\u001b[K\u001b[m\u001b[K' expects argument of type '\u001b[01m\u001b[K\u001b[01;32m\u001b[Kint\u001b[m\u001b[K\u001b[m\u001b[K', but argument 2 has type '\u001b[01m\u001b[K\u001b[01;34m\u001b[Kunsigned int\u001b[m\u001b[K\u001b[m\u001b[K' [\u001b[01;35m\u001b[K-Wformat=\u001b[m\u001b[K]",
+      "tag": {
+        "line": 5,
+        "column": 14,
+        "text": "warning: format '%d' expects argument of type 'int', but argument 2 has type 'unsigned int' [-Wformat=]",
+        "severity": 2,
+        "file": "example.c"
+      }
+    },
+    {
+      "text": "    5 |     printf(\"\u001b[01;32m\u001b[K%d\u001b[m\u001b[K\\n\", \u001b[01;34m\u001b[Kdistance\u001b[m\u001b[K);"
+    },
+    {
+      "text": "      |             \u001b[01;32m\u001b[K~^\u001b[m\u001b[K     \u001b[01;34m\u001b[K~~~~~~~~\u001b[m\u001b[K"
+    },
+    {
+      "text": "      |              \u001b[01;32m\u001b[K|\u001b[m\u001b[K     \u001b[01;34m\u001b[K|\u001b[m\u001b[K"
+    },
+    {
+      "text": "      |              \u001b[01;32m\u001b[Kint\u001b[m\u001b[K   \u001b[01;34m\u001b[Kunsigned int\u001b[m\u001b[K"
+    },
+    {
+      "text": "      |             \u001b[32m\u001b[K%d\u001b[m\u001b[K"
+    }
+  ],
+  "truncated": false,
+  "execTime": 93,
+  "processExecutionResultTime": 0.09966999990865588,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "-std=c23",
+    "-Wall",
+    "-Wextra",
+    "-Wformat=2",
+    "-Wformat-signedness",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 5947,
+  "asm": [
+    {
+      "text": ".LC0:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        .string \"%d\\n\"",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "show_trip:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        stp     x29, x30, [sp, -16]!",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        mov     x29, sp",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        mov     w1, w0",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 5
+      },
+      "labels": []
+    },
+    {
+      "text": "        adrp    x0, .LC0",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 5
+      },
+      "labels": [
+        {
+          "name": ".LC0",
+          "range": {
+            "startCol": 21,
+            "endCol": 25
+          }
+        }
+      ]
+    },
+    {
+      "text": "        add     x0, x0, :lo12:.LC0",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 5
+      },
+      "labels": [
+        {
+          "name": ".LC0",
+          "range": {
+            "startCol": 31,
+            "endCol": 35
+          }
+        }
+      ]
+    },
+    {
+      "text": "        bl      printf",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 5
+      },
+      "labels": []
+    },
+    {
+      "text": "        ldp     x29, x30, [sp], 16",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    ".LC0": 1,
+    "show_trip": 3
+  },
+  "parsingTime": 3,
+  "filteredCount": 381,
+  "popularArguments": {},
+  "queueTime": 4
+}

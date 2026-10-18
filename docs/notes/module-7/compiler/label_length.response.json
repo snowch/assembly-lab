@@ -1,0 +1,172 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 37,
+  "processExecutionResultTime": 0.0028409999795258045,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 5105,
+  "asm": [
+    {
+      "text": "label_length:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        mov     x3, x0",
+      "source": {
+        "file": null,
+        "line": 3,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        cbz     x1, .L2",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 19
+      },
+      "labels": [
+        {
+          "name": ".L2",
+          "range": {
+            "startCol": 21,
+            "endCol": 24
+          }
+        }
+      ]
+    },
+    {
+      "text": "        mov     x0, 0",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 19
+      },
+      "labels": []
+    },
+    {
+      "text": ".L4:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        ldrb    w2, [x3, x0]",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 12
+      },
+      "labels": []
+    },
+    {
+      "text": "        cbz     w2, .L1",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 12
+      },
+      "labels": [
+        {
+          "name": ".L1",
+          "range": {
+            "startCol": 21,
+            "endCol": 24
+          }
+        }
+      ]
+    },
+    {
+      "text": "        add     x0, x0, 1",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 15
+      },
+      "labels": []
+    },
+    {
+      "text": "        cmp     x1, x0",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 19
+      },
+      "labels": []
+    },
+    {
+      "text": "        bne     .L4",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 19
+      },
+      "labels": [
+        {
+          "name": ".L4",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    },
+    {
+      "text": ".L2:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        mov     x0, x1",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 19
+      },
+      "labels": []
+    },
+    {
+      "text": ".L1:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 10,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "label_length": 1,
+    ".L4": 5,
+    ".L2": 11,
+    ".L1": 13
+  },
+  "parsingTime": 2,
+  "filteredCount": 318,
+  "popularArguments": {},
+  "queueTime": 3
+}

@@ -189,6 +189,14 @@ input[type="checkbox"]:focus-visible {
 .prose > *:last-child {
   margin-bottom: 0;
 }
+@media (max-width: 600px) {
+  .prose a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    max-width: 100%;
+  }
+}
 .figure-lead {
   margin-bottom: var(--space-4);
 }

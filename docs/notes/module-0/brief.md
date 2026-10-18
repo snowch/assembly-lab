@@ -46,7 +46,7 @@ Also a caption for the figure (one line): the C function and the four instructio
 ## 2. Motivation (title: a short label; one paragraph)
 
 - The C is a description; the compiler translates it; the instructions are what the processor runs.
-- When a program does something its C does not seem to say, the instructions are where the difference shows.
+- Following the instructions reveals the calculation steps and where the processor keeps their results. It does not imply that C and its compiled instructions disagree.
 - Every later module reads instructions like these.
 - Here there are only four, which is few enough to follow one at a time.
 

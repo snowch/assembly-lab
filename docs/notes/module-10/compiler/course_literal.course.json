@@ -1,0 +1,61 @@
+{
+  "compiler": "Assembly Lab C subset 1",
+  "source": "// Copyright © 2026 Christopher Snow\nunsigned course_literal(unsigned a)\n{\n    return a + 0x12345678u;\n}\n",
+  "listing": "course_literal:\n    mov w8, w0\n    movz w9, #22136\n    movk w9, #4660, lsl #16\n    add w8, w8, w9\n    mov w0, w8\n    ret",
+  "lineMap": [
+    {
+      "assemblyLine": 1,
+      "cLine": 3
+    },
+    {
+      "assemblyLine": 2,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 3,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 4,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 5,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 6,
+      "cLine": 4
+    },
+    {
+      "assemblyLine": 7,
+      "cLine": 4
+    }
+  ],
+  "calls": [
+    {
+      "args": [0],
+      "value": 305419896
+    },
+    {
+      "args": [1],
+      "value": 305419897
+    },
+    {
+      "args": [7],
+      "value": 305419903
+    },
+    {
+      "args": [2147483647],
+      "value": 2452903543
+    },
+    {
+      "args": [2147483648],
+      "value": 2452903544
+    },
+    {
+      "args": [4294967295],
+      "value": 305419895
+    }
+  ]
+}

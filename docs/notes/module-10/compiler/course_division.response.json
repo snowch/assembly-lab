@@ -1,0 +1,131 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 61,
+  "processExecutionResultTime": 0.004712998867034912,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 4307,
+  "asm": [
+    {
+      "text": "course_division:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        cbz     w1, .L3",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 8
+      },
+      "labels": [
+        {
+          "name": ".L3",
+          "range": {
+            "startCol": 21,
+            "endCol": 24
+          }
+        }
+      ]
+    },
+    {
+      "text": "        udiv    w2, w0, w1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 14
+      },
+      "labels": []
+    },
+    {
+      "text": "        msub    w1, w2, w1, w0",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 22
+      },
+      "labels": []
+    },
+    {
+      "text": "        add     w0, w2, w1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 18
+      },
+      "labels": []
+    },
+    {
+      "text": ".L1:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": ".L3:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        mov     w0, w1",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 24
+      },
+      "labels": []
+    },
+    {
+      "text": "        b       .L1",
+      "source": {
+        "file": null,
+        "line": 4,
+        "column": 24
+      },
+      "labels": [
+        {
+          "name": ".L1",
+          "range": {
+            "startCol": 17,
+            "endCol": 20
+          }
+        }
+      ]
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "course_division": 1,
+    ".L1": 6,
+    ".L3": 8
+  },
+  "parsingTime": 1,
+  "filteredCount": 264,
+  "popularArguments": {},
+  "queueTime": 4
+}

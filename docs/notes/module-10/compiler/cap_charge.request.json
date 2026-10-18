@@ -1,0 +1,12 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\nunsigned cap_charge(unsigned distance, unsigned rate, unsigned limit)\n{\n    unsigned charge = distance * rate;\n    if (charge > limit) {\n        charge = limit;\n    }\n    return charge;\n}\n",
+  "options": {
+    "userArguments": "-O1",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

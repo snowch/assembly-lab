@@ -40,6 +40,11 @@ import { LoopPrediction } from "./LoopPrediction";
 import { MemoryStepper } from "./MemoryStepper";
 import { MemoryPrediction } from "./MemoryPrediction";
 
+import { ProductHalves, DivisionParts } from "./ProductHalves";
+import { CompilerPlayground } from "./CompilerPlayground";
+import { RecordedPrediction } from "./RecordedPrediction";
+import { StackStepper } from "./StackStepper";
+
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
   listing: ListingFigure,
   "listing-compare": ListingCompare,
@@ -74,4 +79,9 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   "loop-prediction": LoopPrediction,
   "memory-stepper": MemoryStepper,
   "memory-prediction": MemoryPrediction,
+  "product-halves": ProductHalves,
+  "division-parts": DivisionParts,
+  "stack-stepper": StackStepper,
+  "compiler-playground": CompilerPlayground,
+  "recorded-prediction": RecordedPrediction,
 };
