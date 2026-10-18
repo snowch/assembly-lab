@@ -43,39 +43,42 @@ function BeforeYouStart() {
   return (
     <section className="prereqs" aria-labelledby="prereqs-title">
       <h2 id="prereqs-title">{P.heading}</h2>
-      <div className="prereqs-grid">
-        <div className="prereqs-needs">
-          <p>{P.lead}</p>
-          <p>{P.cLead}</p>
-          <ul>
-            {P.cItems.map((item) => (
-              <li key={item}>
-                <Marked text={item} />
-              </li>
-            ))}
-          </ul>
-          <p>
-            <Marked text={P.cNot} />
-          </p>
-          <p>{P.numbers}</p>
-          <p>{P.assembly}</p>
+      <p>{P.lead}</p>
+      <details className="prereqs-details">
+        <summary>{P.showDetails}</summary>
+        <div className="prereqs-grid">
+          <div className="prereqs-needs">
+            <p>{P.cLead}</p>
+            <ul>
+              {P.cItems.map((item) => (
+                <li key={item}>
+                  <Marked text={item} />
+                </li>
+              ))}
+            </ul>
+            <p>
+              <Marked text={P.cNot} />
+            </p>
+            <p>{P.numbers}</p>
+            <p>{P.assembly}</p>
+          </div>
+          <div className="prereqs-check">
+            <p>
+              <Marked text={P.checkLead} />
+            </p>
+            <pre className="prereqs-code">
+              <code>{P.checkCode}</code>
+            </pre>
+            <details className="prereqs-answer">
+              <summary>{P.checkShow}</summary>
+              <p>{P.checkAnswer}</p>
+            </details>
+          </div>
         </div>
-        <div className="prereqs-check">
-          <p>
-            <Marked text={P.checkLead} />
-          </p>
-          <pre className="prereqs-code">
-            <code>{P.checkCode}</code>
-          </pre>
-          <details className="prereqs-answer">
-            <summary>{P.checkShow}</summary>
-            <p>{P.checkAnswer}</p>
-          </details>
-        </div>
-      </div>
-      <p className="prereqs-further">
-        <Marked text={P.further} />
-      </p>
+        <p className="prereqs-further">
+          <Marked text={P.further} />
+        </p>
+      </details>
     </section>
   );
 }

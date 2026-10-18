@@ -341,6 +341,7 @@ test("the footer carries the copyright and links to the companion courses", asyn
 test("the note on further reading links each companion work by its title", async ({ page }) => {
   await page.goto("#/");
   await ready(page);
+  await page.locator(".prereqs-details > summary").click();
   const further = page.locator(".prereqs-further");
   await expect(further.getByRole("link", { name: "Digital Design" })).toHaveAttribute(
     "href",

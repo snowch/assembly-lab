@@ -24,6 +24,7 @@ export const STRINGS = {
   /** "Before you start", between the status note and the plan: what the course assumes. */
   prereqs: {
     heading: "Before you start",
+    showDetails: "Check what you need to know",
     lead: "You need a little C and some basic arithmetic. You do not need any assembly experience.",
     cLead: "You should be able to read small C functions that use:",
     cItems: [
