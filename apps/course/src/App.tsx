@@ -9,6 +9,7 @@ import { useEffect, useMemo } from "react";
 import { browserStorage, LessonView } from "@platform/lesson-runtime";
 
 import { createBook } from "./book";
+import { useOffline } from "./offline";
 import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
 import { RUNTIME_STRINGS } from "./runtime-strings";
@@ -26,6 +27,7 @@ function skipToContent(e: React.MouseEvent<HTMLAnchorElement>) {
 }
 
 export function App() {
+  const offline = useOffline();
   const route = useRoute();
   const [theme, setTheme] = useTheme();
   const storage = useMemo(() => browserStorage(), []);
@@ -104,6 +106,18 @@ export function App() {
         {page}
       </main>
       <footer className="shell-footer">
+        {offline && (
+          <div className="offline-status" data-offline={offline.state}>
+            <p aria-live="polite">{STRINGS.offline[offline.state]}</p>
+            {offline.updateWaiting && <p>{STRINGS.offline.updateWaiting}</p>}
+            {offline.state === "ready" && (
+              <>
+                <p>{STRINGS.offline.limitations}</p>
+                <p>{STRINGS.offline.storage}</p>
+              </>
+            )}
+          </div>
+        )}
         <p className="footer-intro">
           {STRINGS.companions.intro.map((part, i) =>
             typeof part === "string" ? part : <em key={i}>{part.title}</em>,

@@ -18,6 +18,7 @@ import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import { createServer, defineConfig, type Plugin } from "vite";
 
+import { offlineApp } from "./offline/plugin";
 import { MANIFEST_FILE, webManifest } from "./src/web-manifest";
 
 type StaticPage = typeof import("./src/static-page");
@@ -72,7 +73,7 @@ function coverWords(): Plugin {
 
 export default defineConfig({
   base: process.env.BASE_PATH ?? "/assembly-lab/",
-  plugins: [react(), coverWords()],
+  plugins: [react(), coverWords(), offlineApp()],
   build: {
     outDir: "dist",
     sourcemap: true,

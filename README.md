@@ -11,6 +11,17 @@ what its bits mean, and this course drives a real one.
 **The course is published at <https://snowch.github.io/assembly-lab/>.** The site is deployed
 from the `main` branch by `.github/workflows/deploy.yml`.
 
+## Offline use
+
+Open the course with an internet connection and wait until the footer says
+“Ready to use offline in this browser.” You can then reopen the course and use its
+lessons and exercises without a connection. Links to other websites and the optional
+“Compare with GCC” feature need an internet connection.
+
+Clearing this site's browser data removes the saved course. Your browser may also
+remove it to free space. See [offline operation](docs/offline.md) for build, update
+and testing details.
+
 **Status.** Checkpoint 1: the plan is proposed and under the author's review, and the scaffold is
 live. The front page lists the planned modules; no lesson is written until the plan's decisions
 are taken.

@@ -85,6 +85,23 @@ export const STRINGS = {
   noLesson: (id: string) => `The course has no lesson named ${id}.`,
   backToPlan: "Back to the course plan",
 
+  // Drafted from docs/notes/offline/brief.md in a separate prose pass.
+  offline: {
+    preparing:
+      "Saving the course for offline use. Keep this page open and stay connected until it is ready.",
+    ready: "Ready to use offline in this browser.",
+    unavailable:
+      "The course could not be saved for offline use. Reopen it with an internet connection to try again.",
+    unsupported:
+      "This browser cannot save the course for offline use. You can use it while connected to the internet.",
+    updateWaiting:
+      "An update is ready. Close every Assembly Lab tab or window, then reopen the course to use the update.",
+    limitations:
+      "Links to other websites and the optional “Compare with GCC” feature need an internet connection.",
+    storage:
+      "Clearing this site's browser data removes the saved course. Your browser may also remove it to free space.",
+  },
+
   // the cover's live figure: the name a screen reader gives it, and what it says as it runs.
   cover: {
     // Names the cover's call, which is in no lesson (content/cover.ts).

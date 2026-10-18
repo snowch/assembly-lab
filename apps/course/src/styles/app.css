@@ -169,6 +169,10 @@ svg {
   max-width: 62ch;
   margin: 0 auto var(--space-2);
 }
+.offline-status {
+  max-width: 62ch;
+  margin: 0 auto var(--space-4);
+}
 .footer-links {
   list-style: none;
   display: flex;
