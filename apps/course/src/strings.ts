@@ -86,11 +86,16 @@ export const STRINGS = {
   noLesson: (id: string) => `The course has no lesson named ${id}.`,
   backToPlan: "Back to the course plan",
 
-  // Drafted from docs/notes/offline/brief.md in a separate prose pass.
+  // Separate prose passes: docs/notes/offline/brief.md and offline-clarity/brief.md.
   offline: {
     preparing:
-      "Saving the course for offline use. Keep this page open and stay connected until it is ready.",
+      "Preparing the course for offline use. Keep this page open and stay connected until it is ready.",
     ready: "Ready to use offline in this browser.",
+    detailsLabel: "How offline use works",
+    downloadExplanation:
+      "When you first open the course online, your browser automatically downloads the whole course. You do not need to open each lesson.",
+    readinessExplanation:
+      "Wait until the message above says “Ready to use offline in this browser.” You can then return to the course in this browser without an internet connection.",
     unavailable:
       "The course could not be saved for offline use. Reopen it with an internet connection to try again.",
     unsupported:

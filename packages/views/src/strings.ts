@@ -6,12 +6,15 @@
 // Haiku and checked for meaning (16 October 2026); a new one is marked DRAFT until it has been. A `code` span is written between backticks.
 
 export const VIEW_STRINGS = {
-  /** The note under the badge of every figure that runs the simulator (the book's `steps` model). */
+  /** The note for the simulator (the book's `steps` model), shown on figures without a role badge. */
   modelNote:
-    "Each step runs one instruction on the course's simulator. An instruction can read or change registers, flags or memory. It also determines which instruction runs next, or returns from the function. Nothing else happens between steps.",
+    "Each step runs one instruction in the simulator. Between steps, the simulated processor stays as the last instruction left it.",
   /** The badge on a figure that runs the simulator, and the heading over its note. */
   modelBadge: "Stepped",
   modelHeading: "How the simulator steps",
+  figureRoles: {
+    prediction: "Prediction",
+  },
 
   register: {
     /** What a screen reader hears for a register: its name and its value as a number. */
@@ -21,6 +24,20 @@ export const VIEW_STRINGS = {
 
   listing: {
     cHeading: "C",
+    sourceHeading: "C operations",
+    sourceConnections: "How the instructions relate to C",
+    fullSource: "Complete C source",
+    repeatedSourceNote:
+      "The instructions stay in their original order. A C line appears again when later instructions also relate to it.",
+    multiSourceNote:
+      "Several C statements can relate to one instruction. The instruction may combine their operations or serve different paths through the function. Highlighting these statements does not mean they all run at that step.",
+    noDirectSource: "No C statement is linked to this instruction.",
+    compilerLinesSummary: "Compiler's C line references",
+    compilerLinesExplanation:
+      "These are the compiler's original line references. They may point to a brace instead of the C operation an instruction carries out.",
+    sourceLines: (numbers: readonly number[]) =>
+      numbers.length === 1 ? `C line ${numbers[0]}` : `C lines ${numbers.join(", ")}`,
+    returnControl: "Returns to the code that called this function.",
     instructionsHeading: "Instructions",
     cLineHeading: "C line",
     /** The C line number beside an instruction, for a screen reader. */

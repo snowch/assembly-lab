@@ -58,6 +58,31 @@ gives away a prediction's or a challenge's answer before the learner has worked 
 over time, memory laid out by address, the stack at each call, the path a branch takes. A table
 beside a drawing can index it; a table in its place cannot.
 
+## Pair C with its instructions
+
+Every recorded example and local-compiler result that shows C and assembly must make their
+relationship visible. Where the listing has enough width, place related C statements and
+instructions side by side; otherwise, place each C statement or group directly above its
+instructions. An explanation of mismatched line numbers does not replace this pairing.
+
+Use checked source associations for the teaching view. Do not alter the compiler's output,
+instruction order or original debug line references to arrange the pairs; show those references
+in optional details. Clearly labelled experiments may still modify or delete instructions.
+Do not assume that one C statement produces one instruction. For combined operations, repeated
+source lines or alternative paths, show the relevant statements and explain the relationship
+without implying that every highlighted statement executes at that step. Where excerpts repeat
+or reorder C statements, keep the complete C available.
+
+During stepping, highlight the instruction that ran and its related C statements together. Keep
+the current operation visible near the controls, including in long listings, without moving
+keyboard focus or scrolling the page. Preserve prediction gates and comparison markings. Check
+new or changed snippets in the built site at phone and desktop widths, in both themes.
+
+Use the shared listing renderer for these paired examples and follow the source-association
+rules in [`docs/authoring.md`](docs/authoring.md). Assembly-only snippets do not need invented C
+mappings. Optional raw output from the online GCC service may remain unpaired when no checked
+source associations are available; never invent associations to make it align.
+
 ## Accuracy
 
 This course teaches a real instruction set, so every claim about it is checkable, and is checked.

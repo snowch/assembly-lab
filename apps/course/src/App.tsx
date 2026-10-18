@@ -103,21 +103,26 @@ export function App() {
         </label>
       </header>
       <main id="main" className="shell-main" tabIndex={-1}>
-        {page}
-      </main>
-      <footer className="shell-footer">
         {offline && (
           <div className="offline-status" data-offline={offline.state}>
-            <p aria-live="polite">{STRINGS.offline[offline.state]}</p>
+            <p className="offline-current" role="status">
+              {STRINGS.offline[offline.state]}
+            </p>
             {offline.updateWaiting && <p>{STRINGS.offline.updateWaiting}</p>}
-            {offline.state === "ready" && (
-              <>
+            {offline.state !== "unsupported" && (
+              <details>
+                <summary>{STRINGS.offline.detailsLabel}</summary>
+                <p>{STRINGS.offline.downloadExplanation}</p>
+                <p>{STRINGS.offline.readinessExplanation}</p>
                 <p>{STRINGS.offline.limitations}</p>
                 <p>{STRINGS.offline.storage}</p>
-              </>
+              </details>
             )}
           </div>
         )}
+        {page}
+      </main>
+      <footer className="shell-footer">
         <p className="footer-intro">
           {STRINGS.companions.intro.map((part, i) =>
             typeof part === "string" ? part : <em key={i}>{part.title}</em>,

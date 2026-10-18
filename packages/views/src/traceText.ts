@@ -20,8 +20,9 @@ export function traceText(
   listing: string,
   args: readonly number[] = [],
   allowed?: ReadonlySet<string>,
+  sourceLines?: readonly (readonly number[])[],
 ): Trace {
-  const lines = parseListing(listing);
+  const lines = parseListing(listing, sourceLines);
   const { program, errors } = assemble(assemblyOf(lines), allowed ? { allowed } : undefined);
   if (program === null) {
     const first = errors[0];

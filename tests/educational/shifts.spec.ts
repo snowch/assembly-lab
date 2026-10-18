@@ -73,11 +73,18 @@ test.describe("the two listings", () => {
     await open(page);
     const figure = page.locator("#ix-halve-compare");
     await figure.scrollIntoViewIfNeeded();
-    await expect(figure.locator(".al-pair-side .al-pane-head")).toHaveText(["int", "unsigned"]);
-    await expect(figure.locator('[data-side="int"] .al-pair-c')).toHaveText(HALVE_GRADIENT.c);
-    await expect(figure.locator('[data-side="unsigned"] .al-pair-c')).toHaveText(HALVE_COUNT.c);
-    await expect(figure.locator('[data-side="int"] .al-text')).toHaveText(["asr w0, w0, 1", "ret"]);
-    await expect(figure.locator('[data-side="unsigned"] .al-text')).toHaveText([
+    await expect(figure.locator(".al-pair-side > .al-pane-head")).toHaveText(["int", "unsigned"]);
+    await expect(figure.locator('[data-side="int"] .al-cline .al-src')).toHaveText(
+      HALVE_GRADIENT.c.split("\n"),
+    );
+    await expect(figure.locator('[data-side="unsigned"] .al-cline .al-src')).toHaveText(
+      HALVE_COUNT.c.split("\n"),
+    );
+    await expect(figure.locator('[data-side="int"] .al-insn .al-text')).toHaveText([
+      "asr w0, w0, 1",
+      "ret",
+    ]);
+    await expect(figure.locator('[data-side="unsigned"] .al-insn .al-text')).toHaveText([
       "lsr w0, w0, 1",
       "ret",
     ]);
@@ -268,8 +275,8 @@ test.describe("the stepper after the second prediction", () => {
     await expect(next).toBeDisabled();
     await expect(rowValue(stepper, "w0")).toHaveText("0xfffffffd (-3)");
     await expect(stepper.locator("[role=status]")).toContainText(V.stepper.ended);
-    // The C line GCC recorded is lit as the instructions run.
-    await expect(stepper.locator(".al-c")).toBeVisible();
+    // The related C operation is lit as the instructions run.
+    await expect(stepper.locator(".al-c:has(.al-cline)").first()).toBeVisible();
   });
 });
 

@@ -394,7 +394,14 @@ test.describe("the register to read", () => {
     await expect(calc).toHaveAttribute("open", "");
     await expect(reader(page).locator('[data-sum="unsigned"] .al-sum')).toBeVisible();
     const after = await table.boundingBox();
-    expect(after).toEqual(before);
+    expect(after).not.toBeNull();
+    expect(before).not.toBeNull();
+    expect(after!.width).toBe(before!.width);
+    expect(after!.height).toBe(before!.height);
+    // Keyboard focus can round the phone's scroll position by a fraction of a CSS pixel.
+    // Keep the table's size exact and reject any position change of a pixel or more.
+    expect(Math.abs(after!.x - before!.x)).toBeLessThan(1);
+    expect(Math.abs(after!.y - before!.y)).toBeLessThan(1);
     expect(await figureOverflow(page)).toEqual([]);
     await page.keyboard.press("Enter");
     await expect(calc).not.toHaveAttribute("open", "");

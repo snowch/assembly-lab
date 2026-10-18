@@ -13,7 +13,7 @@ import { Prose, useSlot } from "@platform/lesson-runtime";
 import { PredictionChallenge } from "@platform/primitives";
 
 import { additionSteps, flagDigits, hex32 } from "../arith";
-import { cLinesOf, parseListing } from "../listing";
+import { cLinesOf, programLines } from "../listing";
 import { ListingView, RegisterRow, withCode } from "../parts";
 import { ARITH_STRINGS as A } from "../strings.arith";
 import { VIEW_STRINGS as S } from "../strings";
@@ -63,7 +63,7 @@ interface Stored {
 
 export const RunPrediction = withProps(Props, function RunPrediction({ data, interactive, store }) {
   const [stored, setStored] = useSlot<Stored>(store, interactive.id);
-  const lines = useMemo(() => parseListing(data.program.listing), [data.program.listing]);
+  const lines = useMemo(() => programLines(data.program), [data.program]);
   const outcome = useMemo(() => {
     if (!stored) return undefined;
     const trace = traceOf(data.program, data.call);

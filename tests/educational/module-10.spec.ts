@@ -90,8 +90,20 @@ for (const route of routes) {
         String(wValue(view.state, 0)),
       );
       const lit = fig.locator('.al-cline[data-lit="true"]');
-      await expect(lit).toHaveCount(view.litC === null ? 0 : 1);
-      if (view.litC !== null) await expect(lit).toHaveAttribute("data-line", String(view.litC));
+      if (view.litC === null) await expect(lit).toHaveCount(0);
+      else {
+        expect(await lit.count()).toBeGreaterThan(0);
+        expect(
+          await lit.evaluateAll((rows) => [
+            ...new Set(rows.map((row) => row.getAttribute("data-line"))),
+          ]),
+        ).toEqual([String(view.litC)]);
+        await expect(
+          fig.locator(
+            `.al-source-row:has(.al-insn[data-ran="true"]) .al-cline[data-line="${view.litC}"]`,
+          ),
+        ).toHaveAttribute("data-lit", "true");
+      }
       const next = view.next === null ? undefined : result.trace.lines[view.next];
       const context = fig.locator(".al-compiler-current");
       if (next?.kind === "instruction") {

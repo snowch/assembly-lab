@@ -17,7 +17,7 @@ import {
 import {
   assemblyOf,
   deleteLine,
-  parseListing,
+  programLines,
   type DeleteSpec,
   type ListingLine,
   type RecordedProgram,
@@ -49,11 +49,11 @@ export interface Trace {
 
 /** Assemble a recorded program (with a line taken out, if asked) and run one call on it. */
 export function traceOf(
-  recorded: Pick<RecordedProgram, "listing">,
+  recorded: Pick<RecordedProgram, "listing" | "sourceLines">,
   call: TraceCall | MemoryTraceCall,
   without?: DeleteSpec,
 ): Trace {
-  const parsed = parseListing(recorded.listing);
+  const parsed = programLines(recorded);
   const lines = without ? deleteLine(parsed, without) : parsed;
   const { program, errors } = assemble(withMemory(assemblyOf(lines), call.memory));
   if (program === null) {

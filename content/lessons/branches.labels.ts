@@ -30,7 +30,7 @@ export const LABELS = {
   },
   captions: {
     listing:
-      "describe in C and the eight instructions GCC made from it. GCC notes, for each instruction, the C line it came from. Each instruction sits beside that line.",
+      "describe in C and the eight instructions GCC made from it. The figure pairs instructions with their related C operations, keeping the instructions in GCC's order.",
     predictCount: "A prediction about how many instructions describe(15) runs.",
     stepCount:
       "describe(15), one instruction at a time, with a count of the instructions that have run. A register or flag with an outline has just changed.",

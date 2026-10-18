@@ -12,7 +12,8 @@ import { z } from "zod";
 import { assemble, type Instruction } from "@al/machine";
 import { useSlot } from "@platform/lesson-runtime";
 
-import { assemblyOf, cLinesOf, parseListing } from "../listing";
+import { assemblyOf, cLinesOf, parseListing, programLines } from "../listing";
+import { ListingView } from "../parts";
 import { VIEW_STRINGS as S } from "../strings";
 import { PredictionBox, type Outcome } from "./PredictionBox";
 import { RecordedSchema, withProps } from "./props";
@@ -131,6 +132,17 @@ export const ListingCompare = withProps(
             <p role="status" className="al-compare-summary">
               {rows.every((r) => r.same) ? S.compare.allSame(rows.length) : S.compare.notAllSame}
             </p>
+            <details className="al-source-connections">
+              <summary>{S.listing.sourceConnections}</summary>
+              <div className="al-pair-sides">
+                {[data.left, data.right].map((recorded, i) => (
+                  <div key={i}>
+                    <p>{names[i]}</p>
+                    <ListingView cLines={cLinesOf(recorded.c)} lines={programLines(recorded)} />
+                  </div>
+                ))}
+              </div>
+            </details>
           </div>
         )}
       </div>

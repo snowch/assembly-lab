@@ -39,10 +39,18 @@ const describeListing = (branch: string) =>
   ].join("\n");
 
 /** `describe`, as GCC 16.1 at `-O1` made it. */
-export const DESCRIBE = { c: DESCRIBE_C, listing: describeListing("bgt") } as const;
+export const DESCRIBE = {
+  c: DESCRIBE_C,
+  listing: describeListing("bgt"),
+  sourceLines: [[3], [3], [5], [6], [5, 6, 7], [4, 6, 7], [4], [4]],
+} as const;
 
 /** `describe` with `bgt .L9` changed to `bge .L9`: the failure experiment. */
-export const DESCRIBE_BGE = { c: DESCRIBE_C, listing: describeListing("bge") } as const;
+export const DESCRIBE_BGE = {
+  c: DESCRIBE_C,
+  listing: describeListing("bge"),
+  sourceLines: DESCRIBE.sourceLines,
+} as const;
 
 /** The gradients the lesson's sentences run, offered as buttons in the figure of arrows. */
 export const TOLD_GRADIENTS = [15, 10, -15, 0] as const;

@@ -14,7 +14,7 @@ import { z } from "zod";
 
 import { useSlot } from "@platform/lesson-runtime";
 
-import { cLinesOf, parseListing } from "../listing";
+import { cLinesOf, programLines } from "../listing";
 import { ListingView, withCode } from "../parts";
 import { COUNTER_VALUES, onRing, ringReading } from "../ring";
 import { ARITH_STRINGS as A } from "../strings.arith";
@@ -83,7 +83,7 @@ export const CounterRing = withProps(Props, function CounterRing({ data, store }
   return (
     <div className="al-figure al-ring" data-figure="counter-ring">
       {data.listing && (
-        <ListingView cLines={cLinesOf(data.program.c)} lines={parseListing(data.program.listing)} />
+        <ListingView cLines={cLinesOf(data.program.c)} lines={programLines(data.program)} />
       )}
       <svg
         className="al-ring-svg"

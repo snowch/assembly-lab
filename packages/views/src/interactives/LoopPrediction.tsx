@@ -3,7 +3,7 @@
 // Commit before observing a run. A budget stop is a limit, never evidence that a loop is infinite.
 import { useCallback } from "react";
 import { z } from "zod";
-import { cLinesOf, parseListing } from "../listing";
+import { cLinesOf, programLines } from "../listing";
 import { loopSummary } from "../loop";
 import { ListingView, RegisterRow } from "../parts";
 import { ARITH_STRINGS as A } from "../strings.arith";
@@ -42,7 +42,7 @@ export const LoopPrediction = withProps(
     }, [data.program, data.call, data.measure, data.bodyLabel]);
     return (
       <div className="al-figure" data-figure="loop-prediction">
-        <ListingView cLines={cLinesOf(data.program.c)} lines={parseListing(data.program.listing)} />
+        <ListingView cLines={cLinesOf(data.program.c)} lines={programLines(data.program)} />
         {data.inputs.length > 0 && (
           <div className="al-registers" role="group" aria-label={A.prediction.registers}>
             {data.inputs.map((n) => (

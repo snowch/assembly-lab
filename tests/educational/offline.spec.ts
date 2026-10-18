@@ -23,6 +23,13 @@ test("the whole course reopens offline, including lessons never visited online",
   await session.send("Network.setCacheDisabled", { cacheDisabled: true });
   await page.goto("#/");
   await saved(page);
+  const offlineStatus = page.locator(".offline-status");
+  await expect(offlineStatus.locator(".offline-current")).toBeInViewport();
+  const explanation = offlineStatus.getByText(STRINGS.offline.downloadExplanation, { exact: true });
+  await expect(explanation).toBeHidden();
+  await offlineStatus.getByText(STRINGS.offline.detailsLabel, { exact: true }).click();
+  await expect(explanation).toBeVisible();
+  await offlineStatus.getByText(STRINGS.offline.detailsLabel, { exact: true }).click();
   await context.setOffline(true);
   for (const lesson of LESSONS) {
     const response = await page.goto(`./?offline-check=${lesson.id}#/lesson/${lesson.id}`);
@@ -30,6 +37,7 @@ test("the whole course reopens offline, including lessons never visited online",
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
     await expect(page.locator("section.lesson-section")).toHaveCount(10);
     await saved(page);
+    await expect(page.locator(".offline-current")).toBeInViewport();
   }
   await page.evaluate(async () => {
     await document.fonts.ready;

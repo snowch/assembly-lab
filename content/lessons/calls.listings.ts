@@ -3,11 +3,13 @@
 import type { RecordedProgram } from "@al/views";
 
 export const REPORT: RecordedProgram = {
+  sourceLines: [[3], [3], [], [], [], [], [7], [7], [], [], [7]],
   c: "unsigned half_distance(unsigned distance)\n{\n    return distance >> 1;\n}\nunsigned trip_report(unsigned distance, unsigned reserve)\n{\n    return half_distance(distance) + reserve;\n}",
   listing:
     "half_distance:\nlsr     w0, w0, 1 C4\nret C4\ntrip_report:\nstp     x29, x30, [sp, -32]! C6\nmov     x29, sp C6\nstr     x19, [sp, 16] C6\nmov     w19, w1 C6\nbl      half_distance C7\nadd     w0, w0, w19 C8\nldr     x19, [sp, 16] C8\nldp     x29, x30, [sp], 32 C8\nret C8",
 };
 export const FADE_SUM: RecordedProgram = {
+  sourceLines: [[], [], [], [], [3], [4, 5], [], [], [4, 5], [5], [5], [5], [5]],
   c: "unsigned fade_sum(unsigned brightness)\n{\n    if (brightness == 0)\n        return 0;\n    return brightness + fade_sum(brightness >> 1);\n}",
   listing:
     "fade_sum:\nstp     x29, x30, [sp, -32]! C2\nmov     x29, sp C2\nstr     x19, [sp, 16] C2\nmov     w19, w0 C2\ncbnz    w0, .L4 C3\n.L2:\nmov     w0, w19 C6\nldr     x19, [sp, 16] C6\nldp     x29, x30, [sp], 32 C6\nret C6\n.L4:\nlsr     w0, w0, 1 C5\nbl      fade_sum C5\nadd     w19, w19, w0 C5\nb       .L2 C5",

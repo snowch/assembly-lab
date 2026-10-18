@@ -16,6 +16,7 @@
 export const SERVICE_INTERVAL = {
   c: "int service_interval(void) { return 30000; }",
   listing: ["service_interval:", "  mov w0, 30000 C1", "  ret C1"].join("\n"),
+  sourceLines: [[1], [1]],
 } as const;
 
 /** The C and the listing of `service_interval` and `odometer_limit`: recorded lines 2 and 3. */
@@ -33,24 +34,28 @@ export const SERVICE_AND_ODOMETER = {
     "  movk w0, 0xf, lsl 16 C2",
     "  ret C2",
   ].join("\n"),
+  sourceLines: [[1], [1], [2], [2], [2]],
 } as const;
 
 /** `fuel_used_wrong`, which returns `int`: recorded line 9. */
 export const FUEL_USED_WRONG = {
   c: "int fuel_used_wrong(int at_start, int at_end) { return at_end - at_start; }",
   listing: ["fuel_used_wrong:", "  sub w0, w1, w0 C1", "  ret C1"].join("\n"),
+  sourceLines: [[1], [1]],
 } as const;
 
 /** `fuel_used_wrong_u`, the same C with `unsigned`: recorded line 10. */
 export const FUEL_USED_WRONG_U = {
   c: "unsigned fuel_used_wrong_u(unsigned at_start, unsigned at_end) { return at_end - at_start; }",
   listing: ["fuel_used_wrong_u:", "  sub w0, w1, w0 C1", "  ret C1"].join("\n"),
+  sourceLines: [[1], [1]],
 } as const;
 
 /** `fuel_used_wrong` with `add w0, w0, 12` before its `ret`: the instruction no compiler made has no C line. */
 export const FUEL_USED_WRONG_PLUS_12 = {
   c: FUEL_USED_WRONG.c,
   listing: ["fuel_used_wrong:", "  sub w0, w1, w0 C1", "  add w0, w0, 12", "  ret C1"].join("\n"),
+  sourceLines: [[1], [], [1]],
 } as const;
 
 /** The call every figure of the first lesson runs: `fuel_used(50, 38)`. */

@@ -356,7 +356,7 @@ describe:
         b       .L7
 ```
 
-GCC records, for each instruction, the C line it came from. Here `cmn`, `mov w0, -2` and `csel` sit beside `return 0;`, and no instruction sits beside `if (gradient < -10)` or `return -2;`.
+The figure pairs instructions with the C operations they carry out. It links `cmn` to `if (gradient < -10)` and `mov w0, -2` to `return -2;`. The `csel` instruction is linked to the choice between −2 and 0. GCC records all three against `return 0;`. Those original references are available in the compiler details.
 
 `wzr` is a register name that always reads as 0. A write to it is thrown away.
 
@@ -370,7 +370,7 @@ GCC 16.1 with `-O1`, as in Module 0.
 
 *End of closed note.*
 
-*`describe` in C and the eight instructions GCC made from it. GCC notes, for each instruction, the C line it came from. Each instruction sits beside that line.*
+*`describe` in C and the eight instructions GCC made from it. The figure pairs instructions with their related C operations, keeping the instructions in GCC's order.*
 
 ## 2. Why a function needs to skip instructions
 

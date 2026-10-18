@@ -12,7 +12,7 @@ import type { ChallengeEditorProps } from "@platform/lesson-runtime";
 import { BitToggles } from "./BitToggles";
 import { HexEntry } from "./HexEntry";
 import { RecordedSchema } from "./interactives/props";
-import { cLinesOf, parseListing } from "./listing";
+import { cLinesOf, programLines } from "./listing";
 import { ListingView, withCode } from "./parts";
 import { NO_BITS, isPattern } from "./readings";
 import { plain } from "./strings";
@@ -83,7 +83,7 @@ export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
   return (
     <div className="answer-editor">
       {program.success && (
-        <ListingView cLines={cLinesOf(program.data.c)} lines={parseListing(program.data.listing)} />
+        <ListingView cLines={cLinesOf(program.data.c)} lines={programLines(program.data)} />
       )}
       {groups.length > 0 && (
         <div className="answer-groups">

@@ -7,7 +7,7 @@
 
 import { z } from "zod";
 
-import { cLinesOf, parseListing } from "../listing";
+import { cLinesOf, programLines } from "../listing";
 import { ListingView } from "../parts";
 import { RunSchema, RunsList } from "./RunsList";
 import { RecordedSchema, withProps } from "./props";
@@ -22,7 +22,7 @@ const Props = z.object({
 export const ListingRuns = withProps(Props, function ListingRuns({ data }) {
   return (
     <div className="al-figure" data-figure="listing-runs">
-      <ListingView cLines={cLinesOf(data.program.c)} lines={parseListing(data.program.listing)} />
+      <ListingView cLines={cLinesOf(data.program.c)} lines={programLines(data.program)} />
       <RunsList runs={data.runs} />
     </div>
   );

@@ -3,9 +3,11 @@
 Copyright © 2026 Christopher Snow.
 
 The production app saves its complete release on the first successful online visit.
-The footer reports readiness after the controlling service worker confirms that all
-required files are present. Lessons, recorded listings, exercise grading, the assembler,
-simulator and small C compiler work without a connection. The optional Compiler Explorer
+The status near the top of each page reports readiness after the controlling service
+worker confirms that all required files are present. Its expandable explanation names
+the automatic download and the message to wait for. Lessons, recorded listings,
+exercise grading, the assembler, simulator and small C compiler work without a
+connection. The optional Compiler Explorer
 comparison and links to other websites require internet access.
 
 ## Build and cache
@@ -30,7 +32,7 @@ unverified response to the release cache.
 ## Updates and recovery
 
 A newly installed release waits until all tabs and installed windows controlled by the
-previous worker close. There is no forced reload or `skipWaiting`. The footer explains
+previous worker close. There is no forced reload or `skipWaiting`. The status area explains
 when an update is waiting. On activation, cleanup deletes only older caches with this
 app's exact registration scope. Other courses on the same origin keep their caches.
 
@@ -55,7 +57,7 @@ port from a production preview to avoid an already registered worker on that ori
 ## Verification
 
 `npm run build` produces the offline release. `npm run preview` serves it on localhost.
-Open the app while connected, wait for the footer's ready message, then disconnect and
+Open the app while connected, wait for the ready message near the top, then disconnect and
 reopen a lesson. A first-ever offline visit cannot download the app.
 
 The automated browser checks in `tests/educational/offline.spec.ts` exercise offline

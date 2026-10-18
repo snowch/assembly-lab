@@ -12,7 +12,7 @@ import { Prose, useStored } from "@platform/lesson-runtime";
 
 import { BitCells, callText, hex, range, unsignedOf } from "../bits";
 import { challengeOf, passedChallenge, ranText } from "../challengeState";
-import { cLinesOf, parseListing } from "../listing";
+import { cLinesOf, programLines } from "../listing";
 import { ListingView, withCode } from "../parts";
 import { VIEW_STRINGS as S } from "../strings";
 import { traceOf, wValue } from "../trace";
@@ -73,7 +73,7 @@ export const BfiCompare = withProps(Props, function BfiCompare({ data, store, le
   return (
     <div className="al-figure al-bficompare" data-figure="bfi-compare">
       <Prose markdown={data.note} />
-      <ListingView cLines={cLinesOf(data.gcc.c)} lines={parseListing(data.gcc.listing)} showC />
+      <ListingView cLines={cLinesOf(data.gcc.c)} lines={programLines(data.gcc)} showC />
       <div className="al-cellrows">
         <BitCells
           row="yours"

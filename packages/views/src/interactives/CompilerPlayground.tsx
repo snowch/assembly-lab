@@ -8,7 +8,7 @@ import { CSourceEditor } from "../CEditor";
 import { compareGcc, gccLink } from "../compilerExplorer";
 import { stopSentence } from "../messages";
 import { recordedC, runC, type CRun } from "../compilerRun";
-import { cLinesOf, labelOf, parseListing, type RecordedProgram } from "../listing";
+import { cLinesOf, labelOf, programLines, type RecordedProgram } from "../listing";
 import { ListingView, DecimalRegister } from "../parts";
 import { COMPILER_STRINGS as C } from "../strings.compiler";
 import { VIEW_STRINGS as S } from "../strings";
@@ -157,7 +157,7 @@ export const CompilerPlayground = withProps(
             <p>{C.playground.courseTitle}</p>
             <ListingView
               cLines={cLinesOf(program.c)}
-              lines={result?.ok ? result.trace.lines : parseListing(program.listing)}
+              lines={result?.ok ? result.trace.lines : programLines(program)}
               next={view?.next ?? null}
               litC={view?.litC ?? null}
               ran={view?.ran ?? null}

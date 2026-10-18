@@ -13,11 +13,13 @@
 interface RecordedProgram {
   readonly c: string;
   readonly listing: string;
+  readonly sourceLines?: readonly (readonly number[])[];
 }
 
 /** One recorded function: the C line that defines it, and its instructions, each tagged `C1`. */
 const recorded = (c: string, label: string, instructions: readonly string[]): RecordedProgram => ({
   c,
+  sourceLines: instructions.map(() => [1]),
   listing: [`${label}:`, ...instructions.map((text) => `  ${text} C1`)].join("\n"),
 });
 
@@ -178,6 +180,7 @@ export const COMPARE_SHIFTS = {
 /** Lesson 2's last challenge: GCC's four shifts by 3, which the grader runs and the learner is not shown. */
 export const PICK_INSTRUCTION = {
   c: [SHR3_INT.c, SHR3_UNSIGNED.c, SHL3_INT.c, SHL3_UNSIGNED.c].join("\n"),
+  sourceLines: [[1], [1], [2], [2], [3], [3], [4], [4]],
   listing: [SHR3_INT, SHR3_UNSIGNED, SHL3_INT, SHL3_UNSIGNED].map((p) => p.listing).join("\n"),
 } as const satisfies RecordedProgram;
 

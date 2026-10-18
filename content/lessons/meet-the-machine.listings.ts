@@ -24,6 +24,7 @@ export const TRIP_DISTANCE = {
     "  sub w0, w0, w3 C7",
     "  ret C7",
   ].join("\n"),
+  sourceLines: [[3], [4], [5], [6]],
 } as const;
 
 /** m0b.c whole: `fuel_used` comes straight after `trip_distance`, in the listing and in memory. */
@@ -37,6 +38,7 @@ export const TRIP_DISTANCE_AND_FUEL_USED = {
     "}",
   ].join("\n"),
   listing: [TRIP_DISTANCE.listing, "fuel_used:", "  sub w0, w0, w1 C12", "  ret C12"].join("\n"),
+  sourceLines: [...TRIP_DISTANCE.sourceLines, [11], [11]],
 } as const;
 
 /** m0c.c, the first function: four subtractions. */
@@ -58,6 +60,7 @@ export const KM_TO_SERVICE = {
     "  sub w0, w0, #50 C7",
     "  ret C7",
   ].join("\n"),
+  sourceLines: [[3], [4], [5], [6], [6]],
 } as const;
 
 /** m0c.c's second function, which is the mistaken `fuel_used` the construction challenge starts from. */

@@ -5,15 +5,19 @@ import { traceOf, type Trace } from "./trace";
 import type { RecordedProgram } from "./listing";
 export function recordedC(source: string, compiled: CompiledC): RecordedProgram {
   const mapped = new Map(compiled.lineMap.map((m) => [m.assemblyLine, m.cLine]));
+  const sourceLines: number[][] = [];
   return {
     c: source,
     listing: compiled.listing
       .split("\n")
       .map((line, index) => {
         const c = mapped.get(index + 1);
+        if (line.trim() !== "" && !line.trim().endsWith(":"))
+          sourceLines.push(c === undefined ? [] : [c]);
         return c === undefined || line.trim().endsWith(":") ? line : `${line} C${c}`;
       })
       .join("\n"),
+    sourceLines,
   };
 }
 export type CRun =

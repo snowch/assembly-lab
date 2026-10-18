@@ -12,7 +12,14 @@ import type { InteractiveProps } from "@platform/lesson-runtime";
 import { ArgumentSchema, MemorySchema } from "../call";
 
 /** A program as a lesson records it: its C and the compiler's listing. */
-export const RecordedSchema = z.object({ c: z.string(), listing: z.string() });
+export const RecordedSchema = z.object({
+  c: z.string(),
+  listing: z.string(),
+  sourceLines: z
+    .array(z.array(z.number().int().min(1)).readonly())
+    .readonly()
+    .optional(),
+});
 
 /** A call: a label in the listing, and the values of `w0`, `w1` and on. */
 export const CallSchema = z.object({

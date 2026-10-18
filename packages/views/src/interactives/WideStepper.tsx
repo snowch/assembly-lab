@@ -343,7 +343,9 @@ export const WideStepper = withProps(Props, function WideStepper({ data, store, 
   const gate = work?.challenge;
   const trace = useMemo(() => {
     if (data.fromChallenge === undefined)
-      return data.program ? traceText(data.program.listing) : null;
+      return data.program
+        ? traceText(data.program.listing, undefined, undefined, data.program.sourceLines)
+        : null;
     if (!open || gate === undefined) return null;
     return traceAssembly(text, {
       allowed: new Set(gate.allowedConstructs),

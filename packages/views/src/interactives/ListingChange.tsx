@@ -10,7 +10,7 @@ import { useCallback } from "react";
 import { z } from "zod";
 
 import { changeBetween } from "../branch";
-import { cLinesOf, parseListing } from "../listing";
+import { cLinesOf, programLines } from "../listing";
 import { ListingView } from "../parts";
 import { BRANCH_STRINGS as B } from "../strings.branch";
 import { PredictionBox, type Outcome } from "./PredictionBox";
@@ -52,7 +52,7 @@ export const ListingChange = withProps(Props, function ListingChange({ data, int
   }, [data.program, data.changed]);
   return (
     <div className="al-figure al-change" data-figure="listing-change">
-      <ListingView cLines={cLinesOf(data.program.c)} lines={parseListing(data.program.listing)} />
+      <ListingView cLines={cLinesOf(data.program.c)} lines={programLines(data.program)} />
       {data.runs.length > 0 && <RunsList runs={data.runs} />}
       <PredictionBox
         id={interactive.id}

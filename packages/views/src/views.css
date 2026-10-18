@@ -122,6 +122,119 @@
   color: var(--accent-fg);
 }
 
+/* One grid row contains both halves, so wrapping can never separate an operation from its
+   instructions. On a phone the halves of each row stack together, in assembly order. */
+.al-listing.al-listing-aligned {
+  grid-template-columns: minmax(0, 1fr);
+  container-type: inline-size;
+}
+.al-listing-aligned[data-stepping="true"] {
+  max-height: min(32rem, 55svh);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  align-content: start;
+}
+.al-listing-aligned[data-stepping="true"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.al-source-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.al-source-row + .al-source-row {
+  border-top: 1px solid var(--border);
+}
+.al-source-cell {
+  min-width: 0;
+  padding: var(--space-2) 0;
+}
+.al-source-cell[data-empty="true"]:empty {
+  display: none;
+}
+.al-source-cell.al-asm {
+  background: var(--bg-raised);
+}
+.al-source-head {
+  display: none;
+}
+.al-pair-source-label {
+  padding: 0 var(--space-3) var(--space-1);
+  color: var(--fg-muted);
+  font-family: var(--font-text);
+  font-size: var(--text-xs);
+}
+.al-source-note {
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  color: var(--fg-muted);
+  font-family: var(--font-text);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+.al-source-explanation {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+.al-listing-aligned .al-text {
+  overflow-wrap: anywhere;
+}
+.al-listing-aligned .al-cline {
+  min-height: 2rem;
+  align-items: center;
+}
+.al-listing-aligned .al-insn {
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+}
+.al-listing-aligned .al-insn[data-ran="true"] {
+  background: var(--accent-soft);
+  box-shadow: inset 3px 0 var(--accent);
+}
+.al-compiler-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  min-height: 2rem;
+  padding: var(--space-1) var(--space-3);
+}
+.al-full-source summary,
+.al-compiler-lines summary,
+.al-source-connections summary {
+  min-height: 2.75rem;
+  padding: var(--space-2) 0;
+  cursor: pointer;
+  font-weight: 600;
+}
+.al-full-source summary:focus-visible,
+.al-compiler-lines summary:focus-visible,
+.al-source-connections summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.al-compiler-lines > p {
+  margin-top: 0;
+  font-size: var(--text-sm);
+}
+@container (min-width: 48rem) {
+  .al-source-row {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+  .al-source-head {
+    display: grid;
+  }
+  .al-source-cell[data-empty="true"]:empty {
+    display: block;
+  }
+  .al-source-cell.al-asm {
+    border-left: 1px solid var(--border);
+  }
+  .al-pair-source-label {
+    display: none;
+  }
+}
+
 /* The stepper */
 .al-switch {
   display: flex;

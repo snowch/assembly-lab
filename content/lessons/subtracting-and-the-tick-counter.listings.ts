@@ -14,18 +14,21 @@
 export const ELAPSED = {
   c: "unsigned elapsed(unsigned now, unsigned then) { return now - then; }",
   listing: ["elapsed:", "  sub w0, w0, w1 C1", "  ret C1"].join("\n"),
+  sourceLines: [[1], [1]],
 } as const;
 
 /** `sub_overflows`: GCC's `__builtin_sub_overflow` on two `int`s. The lesson describes it in words. */
 export const SUB_OVERFLOWS = {
   c: "bool sub_overflows(int a, int b) { int r; return __builtin_sub_overflow(a, b, &r); }",
   listing: ["sub_overflows:", "  subs w0, w0, w1 C1", "  cset w0, vs C1", "  ret C1"].join("\n"),
+  sourceLines: [[1], [1], [1]],
 } as const;
 
 /** `negate`: `neg`, the instruction the failure experiment sets the flags with. */
 export const NEGATE = {
   c: "int negate(int x) { return -x; }",
   listing: ["negate:", "  neg w0, w0 C1", "  ret C1"].join("\n"),
+  sourceLines: [[1], [1]],
 } as const;
 
 /** The same two readings through `subs`, which sets the flags: the ring's borrow and the last challenge. */

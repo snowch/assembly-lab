@@ -7,7 +7,7 @@
 export const PROSE = {
   question:
     "The trip computer logs each trip's distance. Each trip has three parts, called legs. Their distances include a private detour. To leave that detour out of the log, the computer adds the three distances and subtracts the detour.\n\n" +
-    "The C function `trip_distance` does this with three arithmetic statements and a return statement. GCC, a C compiler, translated that function into four instructions for a 64-bit Arm processor. Each **instruction** tells the processor to perform an operation. The instructions are shown beside the C.\n\n" +
+    "The C function `trip_distance` does this with three arithmetic statements and a return statement. GCC, a C compiler, translated that function into four instructions for a 64-bit Arm processor. Each **instruction** tells the processor to perform an operation. The figure pairs the instructions with the related C statements.\n\n" +
     "The instructions are written in **assembly language**, which uses names such as `add` for operations. The compiler's output shown this way is called a **listing**. You will follow its four instructions one at a time, to see what the processor does.",
   // Two notes under the listing, each shut until the learner opens it.
   compilerNote: {
@@ -17,17 +17,16 @@ export const PROSE = {
       "To use the same settings locally, save the C shown above as `trip.c`. With GCC 16.1.0 for 64-bit Arm Linux installed as `aarch64-linux-gnu-gcc`, the equivalent command is:\n\n" +
       "```sh\naarch64-linux-gnu-gcc \\\n  -g \\\n  -o trip.s \\\n  -fno-verbose-asm \\\n  -S \\\n  -fdiagnostics-color=always \\\n  -O1 \\\n  trip.c\n```\n\n" +
       "Each backslash continues the command on the next line. This command includes every option Compiler Explorer used. The local filenames `trip.c` and `trip.s` replace the service's temporary paths `/app/example.c` and `/app/output.s`.\n\n" +
-      "`-S` produces assembly text, and `-o trip.s` names the output file. `-g` includes the C source-line information used beside the instructions. `-fno-verbose-asm` suppresses extra assembly comments. `-fdiagnostics-color=always` colours compiler messages; it does not change the instructions.\n\n" +
+      "`-S` produces assembly text, and `-o trip.s` names the output file. `-g` includes the C line references shown in the compiler details. `-fno-verbose-asm` suppresses extra assembly comments. `-fdiagnostics-color=always` colours compiler messages; it does not change the instructions.\n\n" +
       "The assembly file also contains compiler and debugging information that this page filters out.\n\n" +
       "With `-O0`, which means no optimisation, the same GCC makes twenty instructions from this C. The course uses `-O1` because its listings are short enough to follow.",
   },
   lineNote: {
-    summary: "Why does GCC show line 7?",
+    summary: "How are C statements matched to instructions?",
     body:
-      "The figure shows each line number as GCC recorded it, beside its instruction.\n\n" +
-      "GCC 16.1 at `-O1` records both `sub w0, w0, w3` and `ret` as line 7, the closing brace. That one `sub` does the work of line 5, `total = total - detour;`. Line 6, `return total;`, needs no instruction of its own here.\n\n" +
-      "With `-O0`, the same GCC records its subtraction as line 5.\n\n" +
-      "The record is there to lead you from an instruction back to the C. When the compiler merges lines, the line it records can move.",
+      "The course pairs instructions with the C operations they perform. Here, `sub w0, w0, w3` does the subtraction on line 5. The `ret` instruction returns from the function, as line 6 requires.\n\n" +
+      "The arithmetic has already calculated the result. `ret` returns control to the code that called the function; it does not calculate or move the result.\n\n" +
+      "GCC's original line references are kept in the compiler details. GCC 16.1 at `-O1` records both instructions against line 7, the closing brace. These references help debugging tools locate C code. They do not always identify the statement an instruction carries out.",
   },
 
   motivation:
@@ -35,10 +34,10 @@ export const PROSE = {
 
   prediction:
     "A **register** is a small store inside the processor that holds one value. `w0`, `w1`, `w2` and `w3` are four of them.\n\n" +
-    "The C names a variable, `total`. The instructions name no variable at all. They name `w0`, `w1`, `w2` and `w3`. The four arguments arrive in order: `leg1` in `w0`, `leg2` in `w1`, `leg3` in `w2` and `detour` in `w3`. Before you step through, commit to an answer.",
-  predictionQuestion: "**Where does the processor keep `total`?**",
+    "The C names a variable, `total`. The instructions name no variable at all. They name `w0`, `w1`, `w2` and `w3`. The four arguments arrive in order: `leg1` in `w0`, `leg2` in `w1`, `leg3` in `w2` and `detour` in `w3`. The first instruction performs the addition in `int total = leg1 + leg2;`. Predict where the processor keeps that result.",
+  predictionQuestion: "**After the first instruction runs, where is the value of `total` kept?**",
   predictionExplain:
-    "The first instruction, `add w0, w0, w1`, writes its result into `w0`. So `total` lives in `w0`, and the value of `leg1` is gone once it runs.",
+    "Before the first instruction, `w0` holds `leg1`. The first instruction, `add w0, w0, w1`, replaces that value with `leg1 + leg2`, the first value of `total`. In this function, the next two arithmetic instructions update `w0` again as `total` changes.",
   // For a wrong choice, by the option's value. The right option has none.
   predictionFeedback: {
     "new-place":

@@ -6,8 +6,8 @@
 
 import { z } from "zod";
 
-import { parseListing, type ListingLine } from "../listing";
-import { VIEW_STRINGS as S } from "../strings";
+import { cLinesOf, programLines, type ListingLine } from "../listing";
+import { ListingView } from "../parts";
 import { RecordedSchema, withProps } from "./props";
 
 const Side = z.object({ title: z.string(), program: RecordedSchema });
@@ -43,7 +43,7 @@ export function commonInstructions(
 
 export const ListingPairFigure = withProps(Props, function ListingPairFigure({ data }) {
   const [left, right] = data.sides;
-  const parsed = [left, right].map((s) => parseListing(s.program.listing));
+  const parsed = [left, right].map((s) => programLines(s.program));
   const texts = parsed.map(instructionsOf);
   const matched = commonInstructions(texts[0] ?? [], texts[1] ?? []);
   return (
@@ -52,31 +52,23 @@ export const ListingPairFigure = withProps(Props, function ListingPairFigure({ d
         {[left, right].map((side, s) => {
           const other = texts[1 - s] ?? [];
           let n = 0;
+          const lines = parsed[s] ?? [];
+          const differences = new Set<number>();
+          lines.forEach((line, i) => {
+            if (line.kind !== "instruction") return;
+            if (data.alignCommon ? !matched[s]!.has(n) : line.text !== other[n]) differences.add(i);
+            n += 1;
+          });
           return (
             <div className="al-pane al-pair-side" key={side.title} data-side={side.title}>
               <div className="al-pane-head">
                 <span>{side.title}</span>
               </div>
-              <div className="al-pair-c">
-                <code>{side.program.c}</code>
-              </div>
-              {(parsed[s] ?? []).map((line, i) => {
-                if (line.kind === "label")
-                  return (
-                    <div className="al-label" key={i}>
-                      {line.text}:
-                    </div>
-                  );
-                const differs = data.alignCommon ? !matched[s]!.has(n) : line.text !== other[n];
-                n += 1;
-                return (
-                  <div className="al-insn al-pair-insn" key={i} data-differs={differs}>
-                    <span className="al-mark" aria-hidden="true" />
-                    <code className="al-text">{line.text}</code>
-                    {differs && <span className="visually-hidden">{S.pair.differs}</span>}
-                  </div>
-                );
-              })}
+              <ListingView
+                cLines={cLinesOf(side.program.c)}
+                lines={lines}
+                differences={differences}
+              />
             </div>
           );
         })}

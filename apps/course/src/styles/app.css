@@ -170,8 +170,27 @@ svg {
   margin: 0 auto var(--space-2);
 }
 .offline-status {
+  margin: 0 0 var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--border-strong);
+  background: var(--bg-inset);
+  font-size: var(--text-sm);
+}
+.offline-status p {
   max-width: 62ch;
-  margin: 0 auto var(--space-4);
+  margin: 0;
+}
+.offline-status p + p {
+  margin-top: var(--space-2);
+}
+.offline-current {
+  font-weight: 600;
+}
+.offline-status summary {
+  min-height: 44px;
+  padding: var(--space-2) 0;
+  cursor: pointer;
+  color: var(--accent);
 }
 .footer-links {
   list-style: none;

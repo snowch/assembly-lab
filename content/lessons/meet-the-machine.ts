@@ -114,6 +114,7 @@ export const meetTheMachine: LessonInput = {
           id: "predict-total",
           kind: "trace-prediction",
           timeModel: STEPS,
+          role: "prediction",
           caption: LABELS.captions.predictTotal,
           props: {
             question: PROSE.predictionQuestion,
@@ -172,6 +173,7 @@ export const meetTheMachine: LessonInput = {
           id: "predict-no-ret",
           kind: "trace-prediction",
           timeModel: STEPS,
+          role: "prediction",
           caption: LABELS.captions.predictNoRet,
           props: {
             question: PROSE.failureQuestion,

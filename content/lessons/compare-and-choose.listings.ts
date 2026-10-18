@@ -16,18 +16,21 @@
 export const STEEPER_S = {
   c: "int steeper_s(int a, int b) { return a > b ? a : b; }",
   listing: ["steeper_s:", "  cmp w1, w0 C1", "  csel w0, w1, w0, ge C1", "  ret C1"].join("\n"),
+  sourceLines: [[1], [1], [1]],
 } as const;
 
 /** `steeper_u`: the same C with `unsigned`. */
 export const STEEPER_U = {
   c: "unsigned steeper_u(unsigned a, unsigned b) { return a > b ? a : b; }",
   listing: ["steeper_u:", "  cmp w1, w0 C1", "  csel w0, w1, w0, cs C1", "  ret C1"].join("\n"),
+  sourceLines: [[1], [1], [1]],
 } as const;
 
 /** The C of both functions beside the instructions of the first, as the first figure draws them. */
 export const STEEPER_BOTH = {
   c: [STEEPER_S.c, STEEPER_U.c].join("\n"),
   listing: STEEPER_S.listing,
+  sourceLines: STEEPER_S.sourceLines,
 } as const;
 
 /**
@@ -38,6 +41,7 @@ export const STEEPER_BOTH = {
 export const STEEPER_U_GE = {
   c: STEEPER_U.c,
   listing: ["steeper_u:", "  cmp w1, w0 C1", "  csel w0, w1, w0, ge C1", "  ret C1"].join("\n"),
+  sourceLines: STEEPER_U.sourceLines,
 } as const;
 
 /** The two patterns every figure of the first part runs: `0xffffffff` and 1. */

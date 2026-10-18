@@ -500,7 +500,7 @@ describe("the two listings side by side", () => {
       ],
     });
     expect(
-      [...container.querySelectorAll(".al-pair-side .al-pane-head")].map((h) => h.textContent),
+      [...container.querySelectorAll(".al-pair-side > .al-pane-head")].map((h) => h.textContent),
     ).toEqual(["int", "unsigned"]);
     const insns = (side: string) =>
       [...container.querySelectorAll(`[data-side="${side}"] .al-insn`)].map((r) => [
@@ -515,7 +515,7 @@ describe("the two listings side by side", () => {
       ["lsr w0, w0, 1", "true"],
       ["ret", "false"],
     ]);
-    expect(container.querySelector('[data-side="int"] .al-pair-c')).toHaveTextContent(
+    expect(container.querySelector('[data-side="int"] .al-cline .al-src')).toHaveTextContent(
       "halve_gradient",
     );
     expect(screen.queryAllByRole("button")).toHaveLength(0);

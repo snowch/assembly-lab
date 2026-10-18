@@ -9,7 +9,7 @@ import { useCallback } from "react";
 import { z } from "zod";
 
 import { RegisterRow, ListingView } from "../parts";
-import { cLinesOf, parseListing } from "../listing";
+import { cLinesOf, programLines } from "../listing";
 import { ARITH_STRINGS as A } from "../strings.arith";
 import { BRANCH_STRINGS as B } from "../strings.branch";
 import { traceOf } from "../trace";
@@ -38,7 +38,7 @@ export const CountPrediction = withProps(
     }, [data.program, data.call]);
     return (
       <div className="al-figure" data-figure="count-prediction">
-        <ListingView cLines={cLinesOf(data.program.c)} lines={parseListing(data.program.listing)} />
+        <ListingView cLines={cLinesOf(data.program.c)} lines={programLines(data.program)} />
         {data.inputs.length > 0 && (
           <div className="al-registers" role="group" aria-label={A.prediction.registers}>
             {data.inputs.map((n) => (

@@ -19,11 +19,11 @@ On 17 October 2026, a separate Codex drafting agent revised the prose from check
 
 The trip computer logs each trip's distance. Each trip has three parts, called legs. Their distances include a private detour. To leave that detour out of the log, the computer adds the three distances and subtracts the detour.
 
-The C function `trip_distance` does this with three arithmetic statements and a return statement. GCC, a C compiler, translated that function into four instructions for a 64-bit Arm processor. Each **instruction** tells the processor to perform an operation. The instructions are shown beside the C.
+The C function `trip_distance` does this with three arithmetic statements and a return statement. GCC, a C compiler, translated that function into four instructions for a 64-bit Arm processor. Each **instruction** tells the processor to perform an operation. The figure pairs the instructions with the related C statements.
 
 The instructions are written in **assembly language**, which uses names such as `add` for operations. The compiler's output shown this way is called a **listing**. You will follow its four instructions one at a time, to see what the processor does.
 
-*The C function and the four instructions GCC made from it. GCC notes, for each instruction, the C line it came from. Each instruction sits beside that line. The line ending in a colon, trip_distance:, is the function's name.*
+*The four instructions GCC made from trip_distance, paired with their related C statements. The line ending in a colon, trip_distance:, is the function's name.*
 
 *Closed note under the listing, shut until the learner opens it.*
 
@@ -46,7 +46,7 @@ aarch64-linux-gnu-gcc \
 
 Each backslash continues the command on the next line. This command includes every option Compiler Explorer used. The local filenames `trip.c` and `trip.s` replace the service's temporary paths `/app/example.c` and `/app/output.s`.
 
-`-S` produces assembly text, and `-o trip.s` names the output file. `-g` includes the C source-line information used beside the instructions. `-fno-verbose-asm` suppresses extra assembly comments. `-fdiagnostics-color=always` colours compiler messages; it does not change the instructions.
+`-S` produces assembly text, and `-o trip.s` names the output file. `-g` includes the C line references shown in the compiler details. `-fno-verbose-asm` suppresses extra assembly comments. `-fdiagnostics-color=always` colours compiler messages; it does not change the instructions.
 
 The assembly file also contains compiler and debugging information that this page filters out.
 
@@ -54,15 +54,13 @@ With `-O0`, which means no optimisation, the same GCC makes twenty instructions 
 
 *Closed note under the listing, shut until the learner opens it.*
 
-**Why does GCC show line 7?**
+**How are C statements matched to instructions?**
 
-The figure shows each line number as GCC recorded it, beside its instruction.
+The course pairs instructions with the C operations they perform. Here, `sub w0, w0, w3` does the subtraction on line 5. The `ret` instruction returns from the function, as line 6 requires.
 
-GCC 16.1 at `-O1` records both `sub w0, w0, w3` and `ret` as line 7, the closing brace. That one `sub` does the work of line 5, `total = total - detour;`. Line 6, `return total;`, needs no instruction of its own here.
+The arithmetic has already calculated the result. `ret` returns control to the code that called the function; it does not calculate or move the result.
 
-With `-O0`, the same GCC records its subtraction as line 5.
-
-The record is there to lead you from an instruction back to the C. When the compiler merges lines, the line it records can move.
+GCC's original line references are kept in the compiler details. GCC 16.1 at `-O1` records both instructions against line 7, the closing brace. These references help debugging tools locate C code. They do not always identify the statement an instruction carries out.
 
 ## 2. Why the instructions matter
 
@@ -72,9 +70,11 @@ The compiler translates C into instructions that the processor runs. Following t
 
 A **register** is a small store inside the processor that holds one value. `w0`, `w1`, `w2` and `w3` are four of them.
 
-The C names a variable, `total`. The instructions name no variable at all. They name `w0`, `w1`, `w2` and `w3`. The four arguments arrive in order: `leg1` in `w0`, `leg2` in `w1`, `leg3` in `w2` and `detour` in `w3`. Before you step through, commit to an answer.
+The C names a variable, `total`. The instructions name no variable at all. They name `w0`, `w1`, `w2` and `w3`. The four arguments arrive in order: `leg1` in `w0`, `leg2` in `w1`, `leg3` in `w2` and `detour` in `w3`. The first instruction performs the addition in `int total = leg1 + leg2;`. Predict where the processor keeps that result.
 
-**Where does the processor keep `total`?**
+*A prediction about where total is kept after the first instruction runs.*
+
+**After the first instruction runs, where is the value of `total` kept?**
 
 - In `w0`, which now holds `leg1 + leg2`.
 - In a new place of its own.
@@ -83,7 +83,7 @@ The C names a variable, `total`. The instructions name no variable at all. They 
 
 *Shown after the answer is checked.*
 
-The first instruction, `add w0, w0, w1`, writes its result into `w0`. So `total` lives in `w0`, and the value of `leg1` is gone once it runs.
+Before the first instruction, `w0` holds `leg1`. The first instruction, `add w0, w0, w1`, replaces that value with `leg1 + leg2`, the first value of `total`. In this function, the next two arithmetic instructions update `w0` again as `total` changes.
 
 *Feedback for the option "In a new place of its own.":* The instructions name only registers, never variables. Look at the first instruction, `add w0, w0, w1`. Which register does it write to, and what does that register hold before it runs?
 
@@ -105,7 +105,7 @@ Press Next to run one instruction. The figure then shows what that instruction r
 
 At each step, look for two things: which register changes, and which registers do not.
 
-*`trip_distance(120, 85, 42, 15)`, one instruction at a time. A register with an outline has just changed. The lit C line and the dark line-number chip mark the instruction that just ran; the arrow marks the next one.*
+*`trip_distance(120, 85, 42, 15)`, one instruction at a time. A register with an outline has just changed. The highlighted C statement and instruction show what just ran; the arrow marks the next instruction.*
 
 *Shown once the run has ended.*
 

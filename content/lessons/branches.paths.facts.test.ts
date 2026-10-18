@@ -133,6 +133,7 @@ describe("the path of describe for 15, 10, -15 and 0, from the trace", () => {
       kind: "instruction",
       text: "cmp w0, 10",
       cLine: 3,
+      sourceLines: [3],
     });
   });
 });

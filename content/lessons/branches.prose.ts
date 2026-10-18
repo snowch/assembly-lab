@@ -12,7 +12,7 @@ export const PROSE = {
     "```c\nint describe(int gradient)\n{\n    if (gradient > 10)\n        return 2;\n    if (gradient < -10)\n        return -2;\n    return 0;\n}\n```\n\n" +
     "GCC made the eight instructions below.\n\n" +
     "```\ndescribe:\n        cmp     w0, 10\n        bgt     .L9\n        cmn     w0, #10\n        mov     w0, -2\n        csel    w0, w0, wzr, lt\n.L7:\n        ret\n.L9:\n        mov     w0, 2\n        b       .L7\n```\n\n" +
-    "GCC records, for each instruction, the C line it came from. Here `cmn`, `mov w0, -2` and `csel` sit beside `return 0;`, and no instruction sits beside `if (gradient < -10)` or `return -2;`.\n\n" +
+    "The figure pairs instructions with the C operations they carry out. It links `cmn` to `if (gradient < -10)` and `mov w0, -2` to `return -2;`. The `csel` instruction is linked to the choice between −2 and 0. GCC records all three against `return 0;`. Those original references are available in the compiler details.\n\n" +
     "`wzr` is a register name that always reads as 0. A write to it is thrown away.\n\nEvery listing so far ran from its first instruction to its `ret`, in order. This one has two lines that end in a colon, `.L7:` and `.L9:`. Two instructions name them.\n\n" +
     "**How does the processor execute only the instructions needed for that result?**",
 

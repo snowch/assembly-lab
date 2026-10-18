@@ -98,7 +98,7 @@ test("the way back leads to the front page", async ({ page }) => {
 });
 
 test.describe("the listing figure", () => {
-  test("shows the C with line numbers beside the instructions, each with its recorded C line", async ({
+  test("pairs each C operation with its instructions and keeps compiler references in details", async ({
     page,
   }) => {
     await openLesson(page);
@@ -110,15 +110,35 @@ test.describe("the listing figure", () => {
       "sub w0, w0, w3",
       "ret",
     ]);
-    await expect(figure.locator(".al-ctag")).toHaveText(["3", "4", "7", "7"]);
-    // The C is beside the instructions on a desk and above them on a phone.
-    const [c, asm] = await Promise.all([
-      figure.locator(".al-c").boundingBox(),
-      figure.locator(".al-asm").boundingBox(),
-    ]);
-    if ((page.viewportSize()?.width ?? 0) >= 800)
-      expect(asm!.x).toBeGreaterThan(c!.x + c!.width - 1);
-    else expect(asm!.y).toBeGreaterThan(c!.y + c!.height - 1);
+    const details = figure.locator(".al-compiler-lines");
+    await expect(details).not.toHaveAttribute("open");
+    for (const [index, sourceLine] of [3, 4, 5, 6].entries()) {
+      const pair = figure
+        .locator(".al-source-row")
+        .filter({ has: page.locator(`.al-cline[data-line="${sourceLine}"]`) });
+      await expect(pair.locator(".al-insn .al-text")).toHaveText(
+        TRIP_DISTANCE.listing
+          .split("\n")
+          .filter((line) => / C\d+$/.test(line))
+          [index]!.replace(/ C\d+$/, "")
+          .trim(),
+      );
+      // Read both cells in one layout snapshot; offline status can change page height on load.
+      const [c, asm] = await pair.evaluate((row) =>
+        [".al-c", ".al-asm"].map((selector) => {
+          const box = row.querySelector(selector)!.getBoundingClientRect();
+          return { x: box.x, y: box.y, width: box.width, height: box.height };
+        }),
+      );
+      if (page.viewportSize()!.width >= 800) {
+        expect(asm!.x).toBeGreaterThanOrEqual(c!.x + c!.width - 1);
+        expect(Math.abs(asm!.y - c!.y)).toBeLessThan(1);
+      } else {
+        expect(asm!.y).toBeGreaterThanOrEqual(c!.y + c!.height - 1);
+      }
+    }
+    await press(page, details.locator("summary"));
+    await expect(details.locator(".al-ctag")).toHaveText(["3", "4", "7", "7"]);
   });
 
   test("hangs two closed notes directly under the listing, in place of an open paragraph", async ({
@@ -142,7 +162,7 @@ test.describe("the listing figure", () => {
     await expect(page.getByText("The record is there to lead you")).toBeHidden();
     // Directly under the listing, in the reading column.
     const [listing, first] = await Promise.all([
-      figure.locator(".al-asm").boundingBox(),
+      figure.locator(".al-listing").boundingBox(),
       notes.first().boundingBox(),
     ]);
     expect(first!.y).toBeGreaterThan(listing!.y + listing!.height - 1);
@@ -168,7 +188,8 @@ test.describe("the listing figure", () => {
     await expect(summary(1)).toBeFocused();
     await page.keyboard.press("Space");
     await expect(notes.nth(1)).toHaveJSProperty("open", true);
-    await expect(notes.nth(1)).toContainText("records both sub w0, w0, w3 and ret as line 7");
+    await expect(notes.nth(1)).toContainText("sub w0, w0, w3 does the subtraction on line 5");
+    await expect(notes.nth(1)).toContainText("records both instructions against line 7");
     await page.keyboard.press("Enter");
     await expect(notes.nth(1)).toHaveJSProperty("open", false);
   });
@@ -211,7 +232,7 @@ test.describe("the stepper", () => {
     await expect(figure.locator("[role=status]")).toContainText(V.stepper.ended);
   });
 
-  test("moves the marker, outlines the register just written and lights the recorded C line", async ({
+  test("moves the marker, outlines the register just written and lights the related C operation", async ({
     page,
   }) => {
     await openLesson(page);
@@ -230,8 +251,8 @@ test.describe("the stepper", () => {
     await expect(figure.locator('.al-cline[data-lit="true"]')).toHaveAttribute("data-line", "3");
     await press(page, figure.getByRole("button", { name: V.stepper.next }));
     await press(page, figure.getByRole("button", { name: V.stepper.next }));
-    // The last subtraction is recorded against the closing brace.
-    await expect(figure.locator('.al-cline[data-lit="true"]')).toHaveAttribute("data-line", "7");
+    // The teaching link follows the subtraction; the compiler tag remains 7 in details.
+    await expect(figure.locator('.al-cline[data-lit="true"]')).toHaveAttribute("data-line", "5");
     await press(page, figure.getByRole("button", { name: V.stepper.back }));
     await expect(registerValue(figure, "w0")).toHaveText("247");
     await press(page, figure.getByRole("button", { name: V.stepper.reset }));

@@ -11,7 +11,7 @@ import { Prose, useStored } from "@platform/lesson-runtime";
 
 import { passedChallenge } from "./gate";
 import { ARITH_STRINGS } from "../strings.arith";
-import { cLinesOf, parseListing } from "../listing";
+import { cLinesOf, programLines } from "../listing";
 import { ListingView } from "../parts";
 import { RecordedSchema, withProps } from "./props";
 
@@ -32,7 +32,7 @@ export const ListingFigure = withProps(Props, function ListingFigure({ data, les
     );
   return (
     <div className="al-figure" data-figure="listing">
-      <ListingView cLines={cLinesOf(data.program.c)} lines={parseListing(data.program.listing)} />
+      <ListingView cLines={cLinesOf(data.program.c)} lines={programLines(data.program)} />
       {data.notes.length > 0 && (
         <div className="al-notes">
           {data.notes.map((note) => (

@@ -12,5 +12,6 @@ export const RUNTIME_STRINGS: Strings = {
     ...DEFAULT_STRINGS.lesson,
     modelNote: VIEW_STRINGS.modelHeading,
     timeModel: { ...DEFAULT_STRINGS.lesson.timeModel, steps: VIEW_STRINGS.modelBadge },
+    role: { ...DEFAULT_STRINGS.lesson.role, ...VIEW_STRINGS.figureRoles },
   },
 };

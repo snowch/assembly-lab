@@ -81,7 +81,7 @@ test.describe("the listing figure", () => {
     await expect(figure.locator(".al-cline .al-src")).toHaveText([
       "int service_interval(void) { return 30000; }",
     ]);
-    await expect(figure.locator(".al-label")).toHaveText(["service_interval:"]);
+    await expect(figure.locator(".al-paired-source .al-label")).toHaveText(["service_interval:"]);
     await expect(figure.locator(".al-insn .al-text")).toHaveText(["mov w0, 30000", "ret"]);
     await expect(figure.locator(".al-ctag")).toHaveText(["1", "1"]);
     // The two instructions for 1000000 are the first challenge's answer: the figure holds neither.

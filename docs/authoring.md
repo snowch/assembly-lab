@@ -92,5 +92,15 @@ Keep the words out of the structure file: `<lesson>.prose.ts` holds every paragr
   which the assembler is given as its gate, and the tap editor offers only those (decided at
   Module 2's build, 16 October 2026).
 - **Every program a lesson shows is in the differential test** against QEMU.
+- **C-to-instruction links are checked separately from compiler debug references.** For each
+  recorded program with C, supply `sourceLines`: one array of displayed C line numbers per
+  instruction, excluding labels. Use several line numbers for a combined operation and an empty
+  array where no C statement is directly linked. Preserve the original `C<n>` tags in the listing.
+  Check each association against the operation, including shared returns and reordered loops.
+  Parse with `programLines(recorded)` before deleting an instruction so neighbouring links stay
+  attached to their instructions. The local compiler supplies its own emitted source map.
+  `content/source-links.test.ts` checks coverage; independent technical review checks meaning.
+  In the browser, check paired rows and highlights at both widths, including repeated excerpts
+  and the complete C source. Compiler references belong in the optional details.
 - **Every compiler listing a lesson shows is recorded** with the compiler, its version and its
   flags, and a facts test pins what the prose says about it.

@@ -11,15 +11,26 @@ export interface RecordedProgram {
   readonly c: string;
   /** Labels and instructions, one per line; each instruction line ends with `C<n>`. */
   readonly listing: string;
+  /** Checked C operations served by each instruction, excluding labels; independent of GCC tags. */
+  readonly sourceLines?: readonly (readonly number[])[];
 }
 
 export type ListingLine =
   | { readonly kind: "label"; readonly text: string }
-  | { readonly kind: "instruction"; readonly text: string; readonly cLine: number | null };
+  | {
+      readonly kind: "instruction";
+      readonly text: string;
+      readonly cLine: number | null;
+      readonly sourceLines?: readonly number[];
+    };
 
 /** The lines of a listing. Blank lines go; the white space inside an instruction becomes one space. */
-export function parseListing(listing: string): ListingLine[] {
+export function parseListing(
+  listing: string,
+  sourceLines?: readonly (readonly number[])[],
+): ListingLine[] {
   const out: ListingLine[] = [];
+  let instruction = 0;
   for (const raw of listing.split("\n")) {
     const line = raw.trim();
     if (line === "") continue;
@@ -29,9 +40,24 @@ export function parseListing(listing: string): ListingLine[] {
     }
     const tagged = /^(.*?)\s+C(\d+)$/.exec(line);
     const text = (tagged ? (tagged[1] as string) : line).replace(/\s+/g, " ");
-    out.push({ kind: "instruction", text, cLine: tagged ? Number(tagged[2]) : null });
+    const source = sourceLines?.[instruction++];
+    out.push({
+      kind: "instruction",
+      text,
+      cLine: tagged ? Number(tagged[2]) : null,
+      ...(source === undefined ? {} : { sourceLines: source }),
+    });
   }
+  if (sourceLines !== undefined && sourceLines.length !== instruction)
+    throw new Error("The source associations must cover every instruction.");
   return out;
+}
+
+/** Preserve both the compiler record and the independently checked teaching association. */
+export function programLines(
+  program: Pick<RecordedProgram, "listing" | "sourceLines">,
+): ListingLine[] {
+  return parseListing(program.listing, program.sourceLines);
 }
 
 /** The label an instruction is under: the nearest label above line `index`, or null if none. */

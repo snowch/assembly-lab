@@ -3,9 +3,10 @@
 // The parts the figures share: a sentence with code in it, a register as a row of bits, and the C
 // beside its instructions.
 
-import { Fragment, type ReactNode } from "react";
+import { Fragment, useLayoutEffect, useRef, type ReactNode } from "react";
 
 import type { ListingLine } from "./listing";
+import { sourceLayout, type SourceRow } from "./source-layout";
 import { VIEW_STRINGS as S } from "./strings";
 import { MODULE0_STRINGS as M0 } from "./strings.module0";
 import { MODULE1_STRINGS as M1 } from "./strings.module1";
@@ -116,7 +117,7 @@ export function DecimalRegister({
   );
 }
 
-/** The C with its line numbers, beside (on a phone, above) the instructions. */
+/** Pair checked C operations with instructions without changing the recorded assembly order. */
 export function ListingView({
   cLines,
   lines,
@@ -127,6 +128,7 @@ export function ListingView({
   grouped = false,
   stopAfter = null,
   crossedAfter = null,
+  differences,
 }: {
   cLines: readonly string[];
   lines: readonly ListingLine[];
@@ -148,20 +150,56 @@ export function ListingView({
   stopAfter?: number | null;
   /** Grouped: the index of the instruction the run left its function from; a link is drawn after its group. */
   crossedAfter?: number | null;
+  /** Original listing indexes that differ from a comparison listing. */
+  differences?: ReadonlySet<number>;
 }) {
   // Assembly the lesson wrote itself has no C beside it: the listing is then the instructions alone.
   // `showC` false asks for the same: the instructions alone, with no C pane.
   const hasC = showC && cLines.some((text) => text.trim() !== "");
+  const aligned =
+    hasC &&
+    lines.some((line) => line.kind === "instruction") &&
+    lines.every((line) => line.kind === "label" || line.sourceLines !== undefined);
+  const listingRef = useRef<HTMLDivElement>(null);
+  const stepping = next !== null || ran !== null;
+  useLayoutEffect(() => {
+    const listing = listingRef.current;
+    if (!aligned || !stepping || !listing) return;
+    const active = listing.querySelector<HTMLElement>(
+      ran === null ? '.al-insn[data-next="true"]' : '.al-insn[data-ran="true"]',
+    );
+    if (!active) return;
+    const pair = active.closest<HTMLElement>(".al-source-row");
+    const viewport = listing.getBoundingClientRect();
+    // The controls may leave part of the listing above the browser viewport. Reveal against
+    // the visible intersection, not merely the listing's own scroll bounds.
+    const visibleTop = Math.max(viewport.top, 0);
+    const visibleBottom = Math.min(viewport.top + listing.clientHeight, window.innerHeight);
+    const visibleHeight = visibleBottom - visibleTop;
+    if (visibleHeight <= 0) return;
+    const target = pair && pair.offsetHeight <= visibleHeight ? pair : active;
+    const box = target.getBoundingClientRect();
+    if (box.top < visibleTop) listing.scrollTop += box.top - visibleTop;
+    else if (box.bottom > visibleBottom) listing.scrollTop += box.bottom - visibleBottom;
+    // Scroll this listing only: stepping must not move the page or steal keyboard focus.
+  }, [aligned, stepping, ran, next, lines]);
   // One instruction's row: the marker, the text and the C line GCC recorded for it.
   const row = (i: number) => {
     const line = lines[i];
     if (!line || line.kind !== "instruction") return null;
     return (
-      <div className="al-insn" key={i} data-next={next === i} data-ran={ran === i}>
+      <div
+        className={`al-insn${differences === undefined ? "" : " al-pair-insn"}`}
+        key={i}
+        data-next={next === i}
+        data-ran={ran === i}
+        data-differs={differences === undefined ? undefined : differences.has(i)}
+      >
         <span className="al-mark" aria-hidden="true" />
         {next === i && <span className="visually-hidden">{S.listing.next}</span>}
         <code className="al-text">{line.text}</code>
-        {line.cLine !== null && (
+        {differences?.has(i) && <span className="visually-hidden">{S.pair.differs}</span>}
+        {!aligned && line.cLine !== null && (
           <span
             className="al-ctag"
             data-lit={litC === line.cLine && ran === i}
@@ -173,6 +211,159 @@ export function ListingView({
       </div>
     );
   };
+  if (aligned) {
+    const layout = sourceLayout(lines, cLines.length);
+    const last = ran === null ? undefined : lines[ran];
+    const litLines = new Set(last?.kind === "instruction" ? last.sourceLines : []);
+    const source = (numbers: readonly number[]) =>
+      numbers.map((number) => (
+        <div className="al-cline" key={number} data-line={number} data-lit={litLines.has(number)}>
+          <span className="al-ln">{number}</span>
+          <code className="al-src">{cLines[number - 1] || " "}</code>
+        </div>
+      ));
+    const pairedRow = (pair: SourceRow, key: number) => {
+      const hasInstruction = pair.listingIndexes.some((i) => lines[i]?.kind === "instruction");
+      return (
+        <div className="al-source-row" key={key}>
+          <div
+            className="al-source-cell al-c"
+            data-empty={pair.sourceLines.length === 0}
+            role={pair.sourceLines.length > 0 ? "group" : undefined}
+            aria-label={
+              pair.sourceLines.length > 0 ? S.listing.sourceLines(pair.sourceLines) : undefined
+            }
+          >
+            {pair.sourceLines.length > 0 ? (
+              <>
+                <div className="al-pair-source-label">
+                  {S.listing.sourceLines(pair.sourceLines)}
+                </div>
+                {source(pair.sourceLines)}
+              </>
+            ) : hasInstruction ? (
+              <p className="al-source-note">{S.listing.noDirectSource}</p>
+            ) : null}
+          </div>
+          <div
+            className="al-source-cell al-asm"
+            data-empty={pair.listingIndexes.length === 0}
+            role={hasInstruction ? "group" : undefined}
+            aria-label={hasInstruction ? S.listing.instructionsPane : undefined}
+          >
+            {hasInstruction && (
+              <div className="al-pair-source-label">{S.listing.instructionsHeading}</div>
+            )}
+            {pair.listingIndexes.map((i) => {
+              const line = lines[i];
+              if (!line) return null;
+              if (line.kind === "label")
+                return (
+                  <div className="al-label" key={i}>
+                    {line.text}:
+                  </div>
+                );
+              return (
+                <Fragment key={i}>
+                  {row(i)}
+                  {/^(?:ret(?:\s|$)|bx\s+lr$|pop\s+\{[^}]*\bpc\b[^}]*\}$)/i.test(line.text) && (
+                    <p className="al-source-note al-return-note">{S.listing.returnControl}</p>
+                  )}
+                  {grouped && stopAfter === i && (
+                    <div className="al-stop" role="note" data-mark="stop">
+                      {withCode(M0.listing.stop)}
+                    </div>
+                  )}
+                </Fragment>
+              );
+            })}
+          </div>
+        </div>
+      );
+    };
+    return (
+      <div
+        ref={listingRef}
+        className="al-listing al-listing-aligned"
+        data-stepping={stepping || undefined}
+        tabIndex={stepping ? 0 : undefined}
+        role={stepping ? "region" : undefined}
+        aria-label={stepping ? S.listing.sourceConnections : undefined}
+        data-c="shown"
+        data-source-layout={layout.inlineSource ? "inline" : "excerpts"}
+      >
+        {!layout.inlineSource && (
+          <>
+            <details className="al-full-source" open>
+              <summary>{S.listing.fullSource}</summary>
+              <div className="al-pane al-c" role="group" aria-label={S.listing.cPane}>
+                {source(cLines.map((_, i) => i + 1))}
+              </div>
+            </details>
+            <p className="al-source-explanation">{S.listing.repeatedSourceNote}</p>
+          </>
+        )}
+        {lines.some(
+          (line) => line.kind === "instruction" && (line.sourceLines?.length ?? 0) > 1,
+        ) && <p className="al-source-explanation">{S.listing.multiSourceNote}</p>}
+        <div className="al-pane al-paired-source">
+          <div className="al-source-row al-source-head" aria-hidden="true">
+            <div className="al-pane-head">{S.listing.sourceHeading}</div>
+            <div className="al-pane-head">{S.listing.instructionsHeading}</div>
+          </div>
+          {grouped
+            ? sourceGroups(layout.rows, lines).map((group, g, all) => {
+                const following = all[g + 1];
+                return (
+                  <Fragment key={g}>
+                    <div className="al-group" data-function={group.label ?? undefined}>
+                      {group.rows.map(pairedRow)}
+                    </div>
+                    {crossedAfter !== null &&
+                      group.rows.some((pair) => pair.listingIndexes.includes(crossedAfter)) &&
+                      following?.label != null &&
+                      group.label !== null && (
+                        <div className="al-link" role="note" data-mark="crossing">
+                          <span className="al-link-line" aria-hidden="true" />
+                          <span>{withCode(M0.listing.crossing(group.label, following.label))}</span>
+                        </div>
+                      )}
+                  </Fragment>
+                );
+              })
+            : layout.rows.map(pairedRow)}
+        </div>
+        {lines.some((line) => line.kind === "instruction" && line.cLine !== null) && (
+          <details className="al-compiler-lines">
+            <summary>{S.listing.compilerLinesSummary}</summary>
+            <p>{S.listing.compilerLinesExplanation}</p>
+            <div className="al-pane">
+              <div className="al-pane-head">
+                <span>{S.listing.instructionsHeading}</span>
+                <span>{S.listing.cLineHeading}</span>
+              </div>
+              {lines.map((line, i) =>
+                line.kind === "label" ? (
+                  <div className="al-label" key={i}>
+                    {line.text}:
+                  </div>
+                ) : (
+                  <div className="al-compiler-line" key={i}>
+                    <code className="al-text">{line.text}</code>
+                    {line.cLine !== null && (
+                      <span className="al-ctag" title={S.listing.recordedAgainst(line.cLine)}>
+                        {line.cLine}
+                      </span>
+                    )}
+                  </div>
+                ),
+              )}
+            </div>
+          </details>
+        )}
+      </div>
+    );
+  }
   return (
     <div className="al-listing" data-c={hasC ? "shown" : "none"}>
       {hasC && (
@@ -233,6 +424,18 @@ export function ListingView({
       </div>
     </div>
   );
+}
+
+/** Keep the existing function boxes and crossing markers around aligned rows. */
+function sourceGroups(rows: readonly SourceRow[], lines: readonly ListingLine[]) {
+  const groups: { label: string | null; rows: SourceRow[] }[] = [];
+  for (const row of rows) {
+    const line = lines[row.listingIndexes[0] ?? -1];
+    if (line?.kind === "label") groups.push({ label: line.text, rows: [] });
+    if (groups.length === 0) groups.push({ label: null, rows: [] });
+    groups.at(-1)?.rows.push(row);
+  }
+  return groups;
 }
 
 /** The instructions of a listing under their labels: the indexes of each label's instructions. */

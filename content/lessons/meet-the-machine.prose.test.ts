@@ -144,20 +144,20 @@ describe("the lesson's words", () => {
     expect(chunks.filter((c) => c.trim() !== "" && !fileFlat.includes(flat(c)))).toEqual([]);
   });
 
-  it("have the captions the file gives, and only five captions of their own, each drafted by Haiku", () => {
+  it("have the captions the file gives, and only four captions of their own, each drafted by Haiku", () => {
     expect(fileFlat).toContain(flat(LABELS.captions.listing));
     expect(fileFlat).toContain(flat(LABELS.captions.stepper));
+    expect(fileFlat).toContain(flat(LABELS.captions.predictTotal));
     const own = [
-      LABELS.captions.predictTotal,
       LABELS.captions.predictNoRet,
       LABELS.captions.noRet,
       LABELS.captions.fix,
       LABELS.captions.trace,
     ];
-    expect(Object.keys(LABELS.captions)).toHaveLength(2 + own.length);
+    expect(Object.keys(LABELS.captions)).toHaveLength(3 + own.length);
     for (const caption of own) expect(fileFlat, caption).not.toContain(flat(caption));
     const source = readFileSync(new URL("./meet-the-machine.labels.ts", import.meta.url), "utf8");
-    // Each of the five went through the prose process (16 October 2026); a new caption arrives
+    // Each of the four went through the prose process (16 October 2026); a new caption arrives
     // marked DRAFT, and this count fails until it has been through it too.
     expect(source.match(/\/\/ DRAFT/g) ?? []).toHaveLength(0);
   });

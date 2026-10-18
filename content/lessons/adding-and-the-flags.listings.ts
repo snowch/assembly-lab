@@ -14,6 +14,7 @@
 export const ADD_OVERFLOWS = {
   c: "bool add_overflows(int a, int b) { int r; return __builtin_add_overflow(a, b, &r); }",
   listing: ["add_overflows:", "  cmn w0, w1 C1", "  cset w0, vs C1", "  ret C1"].join("\n"),
+  sourceLines: [[1], [1], [1]],
 } as const;
 
 /** One `adds` and a return: the addition the figures draw and the challenges ask about. */
