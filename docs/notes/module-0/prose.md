@@ -93,7 +93,7 @@ The first instruction, `add w0, w0, w1`, writes its result into `w0`. So `total`
 
 ## 4. Stepping through
 
-The simulator is a program on this page. It imitates the processor, one instruction at a time. The instructions are GCC's real output. Only the running is imitated. The course calls the simulator its model of the processor.
+The simulator is a JavaScript program that loads with this page and runs in your browser. It imitates the processor, one instruction at a time. The instructions are GCC's real output. Only the running is imitated. The course calls the simulator its model of the processor.
 
 The figure runs `trip_distance(120, 85, 42, 15)`. Each register is shown as a decimal number. You can open a register to see its 32 bits. The `w` in `w0` names those 32 bits. Module 1 shows the rest of each register.
 

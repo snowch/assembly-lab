@@ -49,7 +49,7 @@ export const PROSE = {
   },
 
   investigation:
-    "The simulator is a program on this page. It imitates the processor, one instruction at a time. The instructions are GCC's real output. Only the running is imitated. The course calls the simulator its model of the processor.\n\n" +
+    "The simulator is a JavaScript program that loads with this page and runs in your browser. It imitates the processor, one instruction at a time. The instructions are GCC's real output. Only the running is imitated. The course calls the simulator its model of the processor.\n\n" +
     "The figure runs `trip_distance(120, 85, 42, 15)`. Each register is shown as a decimal number. You can open a register to see its 32 bits. The `w` in `w0` names those 32 bits. Module 1 shows the rest of each register.\n\n" +
     "The marker shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`.\n\n" +
     "An instruction's parts after its name are its **operands**. In `add w0, w0, w1`, the first operand is where the result goes. The other two are the values it adds.\n\n" +
