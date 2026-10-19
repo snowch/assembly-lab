@@ -101,3 +101,25 @@
   font-size: 11px;
   letter-spacing: 0;
 }
+
+/* Keep an array element together even when the surrounding diagram wraps. */
+.al-memory-elements {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: var(--space-3);
+}
+.al-memory-element {
+  min-width: 0;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.al-memory-element .al-memory-cells {
+  grid-template-columns: repeat(var(--array-byte-columns), minmax(0, 1fr));
+  gap: var(--space-1);
+}
+@media (max-width: 600px) {
+  .al-memory-element .al-memory-cells {
+    grid-template-columns: repeat(min(var(--array-byte-columns), 2), minmax(0, 1fr));
+  }
+}

@@ -22,8 +22,6 @@ The function making a call is the **caller**; the function receiving it is the *
 
 These listings use GCC 16.1 with `-O1 -fno-inline` for little-endian AArch64 Linux. The extra setting prevents inlining: replacing a call with a copy of the called function's body. Keeping the call makes the return mechanism visible.
 
-The shared register and stack rules form a **calling convention**. This course follows AAPCS64, the procedure-call standard for this target. These rules let separately written functions call one another.
-
 *End of closed note.*
 
 ## 2. Save the return address before a call
@@ -33,6 +31,8 @@ The shared register and stack rules form a **calling convention**. This course f
 A function that calls another function must protect its own return address. `bl` replaces `x30`, so the old value must be saved somewhere before that call and restored before the function returns.
 
 The **stack** is memory used to hold values needed by active calls. Its current boundary is the **stack pointer**, `sp`. A function reserves space by decreasing `sp` and releases it by increasing `sp` again. This stack grows towards lower addresses.
+
+The shared register and stack rules form a **calling convention**. This course follows AAPCS64, the procedure-call standard for this target. These rules let separately written functions call one another.
 
 ## 3. Call the distance helper
 
@@ -48,7 +48,7 @@ It returns 73, or `0x00000049`. The helper returns 64 in `w0`; the report then a
 
 Step through the call and watch the active stack bytes. The space reserved for one function invocation is its **stack frame**. The recorded report reserves 32 bytes.
 
-`stp x29, x30, [sp, #-32]!` decreases `sp` by 32, then stores the pair of 64-bit registers at consecutive addresses. `stp` means store pair. `ldp x29, x30, [sp], #32` loads the pair, then increases `sp` by 32. `ldp` means load pair. The `!` and the offset outside the brackets use the pre-index and post-index rules from Module 7.
+`stp x29, x30, [sp, #-32]!` decreases `sp` by 32, then stores the two 64-bit values in adjacent eight-byte regions. The saved `x29` starts at the new `sp`; the saved `x30` starts eight bytes later, at `sp + 8`. `stp` means store pair. `ldp x29, x30, [sp], #32` loads the pair, then increases `sp` by 32. `ldp` means load pair. The `!` and the offset outside the brackets use the pre-index and post-index rules from Module 7.
 
 GCC uses `x29` as a **frame pointer**, a register that identifies this function's frame. It saves the old value before setting `x29` to the new `sp`. It also saves `x19`, then uses `w19` to keep the reserve across the helper call. On return, it restores all three saved registers.
 
@@ -124,9 +124,9 @@ The helper overwrites `w1`. Keep the reserve across the call, and preserve the i
 *Hints, in order:*
 
 - Do not rely on `w1` still holding the reserve after the call.
-- Writing `w19` also changes `x19`. Save the incoming 64-bit value before using this register for the reserve.
+- Using `w19` without saving the incoming `x19` loses a value the caller expects to keep. Save all 64 bits before reusing the register.
 - With distance zero and reserve 9, the helper returns zero. The final result is still 9, so the reserve must survive the call.
-- Reserve 32 bytes. Use the first pair of slots for `x29` and `x30`, and another slot for `x19`.
+- Reserve 32 bytes. Save `x29` at `sp`, `x30` at `sp + 8`, and `x19` at `sp + 16`. Each saved value occupies eight bytes.
 - One complete solution is:
 
 ```asm
@@ -264,7 +264,7 @@ It returns `0x0000000b`, or 11. The calls receive 7, 3, 1 and 0. They return in 
 
 ## 4. Follow the frames down and back
 
-Step until all the calls are active, then follow the returns. Each invocation of this GCC function reserves 32 bytes. For brightness 7, the four active frames use 128 bytes at the deepest point.
+This figure starts at the deepest point, with all four calls active. Use Back to inspect how the calls built the stack, or Next to follow the remaining instructions and returns. Each invocation of this GCC function reserves 32 bytes. For brightness 7, the four active frames use 128 bytes at the deepest point.
 
 The repeated function name does not mean there is only one saved brightness or return address. Each frame holds the values for a different invocation. As calls return, those values become current again.
 
@@ -346,7 +346,7 @@ Use the supplied recursive structure: for a nonzero input, call `lit_count` with
 *Hints, in order:*
 
 - The zero path is the base case and should return zero.
-- The recursive call counts only the levels after the current one.
+- Returning the recursive result unchanged would leave the current nonzero level out of the count.
 - For brightness 1, the next brightness is zero. The recursive call counts no further lit levels, so the current level must make the result 1.
 - Put the addition after `bl lit_count`, so it uses the returned value in `w0`.
 - One complete solution is:

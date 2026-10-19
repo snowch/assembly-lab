@@ -37,7 +37,7 @@ export const LABELS = {
       { value: "counted-backwards", label: "−5 is bit 2 counted backwards" },
       { value: "cleared:2", label: "−5 is `0xfffffffb`, every bit set except bit 2" },
       { value: "subtracts", label: "the compiler subtracts 5 from the word" },
-      { value: "listing-error", label: "−5 is an error in the listing" },
+      { value: "listing-error", label: "−5 is an error in the instruction" },
     ],
     noClear: [
       { value: "53", label: "`0x35`" },
@@ -66,7 +66,7 @@ export const LABELS = {
   /** The words the prose file does not give, through the prose process (17 October 2026). */
   drafts: {
     captions: {
-      predictMinusFive: "A prediction about the constant in the listing.",
+      predictMinusFive: "A prediction about the constant in and w0, w0, -5.",
       setGear: "The assembly editor, with a single ret to start from.",
       predictNoClear: "A prediction about what set_gear returns without the clearing step.",
       readGear: "The gear of 0x35: the bits gear_of takes, and the number they make.", // DRAFT
@@ -74,7 +74,7 @@ export const LABELS = {
       compareBfi: "Your set_gear and GCC's set_gear, run on the same call.", // DRAFT
       compareClear: "The old word, the new gear and the two results, bit by bit.", // DRAFT
       stepNoClear:
-        "set_gear(0x35, 5) without the clearing step, one instruction at a time. A register with an outline has just changed.",
+        "set_gear(0x35, 5) without the clearing step, one instruction at a time. A register with an outline was written by the last instruction.",
       traceThree: "Work out three results for the warning word 0x2a, then give them.",
     },
     /** What the warning word's bits mean: the figure's key. */

@@ -44,6 +44,7 @@ export const countingUp: LessonInput = {
         {
           id: "dim-up-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: STEPS,
           caption: LABELS.captions.listing,
           props: { program: DIM_UP },
@@ -59,6 +60,7 @@ export const countingUp: LessonInput = {
         {
           id: "predict-dim-up-count",
           kind: "count-prediction",
+          role: "prediction",
           timeModel: STEPS,
           caption: LABELS.captions.predict,
           props: {
@@ -95,6 +97,7 @@ export const countingUp: LessonInput = {
         {
           id: "dim-up-runs",
           kind: "loop-runs",
+          role: "experiment",
           timeModel: STEPS,
           caption: LABELS.captions.runs,
           props: {
@@ -124,6 +127,7 @@ export const countingUp: LessonInput = {
         {
           id: "write-dim-up",
           kind: "challenge",
+          role: "exercise",
           timeModel: STEPS,
           caption: LABELS.captions.write,
           props: { challengeId: "write-dim-up" },
@@ -138,6 +142,7 @@ export const countingUp: LessonInput = {
         {
           id: "predict-dim-up-beq",
           kind: "run-prediction",
+          role: "prediction",
           timeModel: STEPS,
           caption: LABELS.captions.predictFailure,
           props: {
@@ -153,6 +158,7 @@ export const countingUp: LessonInput = {
         {
           id: "dim-up-beq-runs",
           kind: "loop-runs",
+          role: "experiment",
           timeModel: STEPS,
           caption: LABELS.captions.failureRuns,
           props: {
@@ -174,6 +180,7 @@ export const countingUp: LessonInput = {
         {
           id: "count-dim-up-runs",
           kind: "challenge",
+          role: "exercise",
           timeModel: STEPS,
           caption: LABELS.captions.final,
           props: { challengeId: "count-dim-up-runs" },

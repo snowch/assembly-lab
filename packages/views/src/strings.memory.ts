@@ -3,6 +3,8 @@
 // Module 6 memory figures. The matching prose is in docs/notes/module-6/prose.md.
 export const MEMORY_STRINGS = {
   memory: "Memory bytes",
+  element: (index: number) => `Element ${index}`,
+  elementAddresses: "Each element groups its bytes in address order.",
   addresses: "Addresses increase from left to right, then continue on the next row.",
   byte: (addressHex: string, valueHex: string) => `Address ${addressHex}: byte ${valueHex}`,
   loaded: "Read by this instruction",

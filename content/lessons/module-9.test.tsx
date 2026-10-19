@@ -81,6 +81,8 @@ describe("Module 9 lesson contracts", () => {
       <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
     );
     expect(container.querySelector(".interactive-problem")).toBeNull();
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(3);
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(
+      lesson.id === "calls-and-returns" ? 2 : 3,
+    );
   });
 });

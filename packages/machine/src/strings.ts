@@ -33,7 +33,7 @@ export const strings = {
   "program.dataTooBig": "The data is more than {limit} bytes. The data sections are full.",
 
   // --- directives
-  "directive.operands": "`{text}` is missing something, or has too much.",
+  "directive.operands": "`{text}` has missing, invalid or extra operands after the directive name.",
   "directive.string": "`{text}` is not a string in double quotes.",
   "directive.negative": "`{text}` asks for a negative number of bytes.",
   "directive.alignment": "`{text}` is not an alignment the machine can use.",
@@ -51,7 +51,7 @@ export const strings = {
   "operand.width": "The registers in `{text}` must all be w registers or all be x registers.",
   "operand.immediate": "`{text}` should be a number here, not a register.",
   "operand.label": "`{text}` should be a label or an address here, not a register.",
-  "operand.shift": "`{text}` should be a shift or an extend, such as `lsl 2` or `sxtw`.",
+  "operand.shift": "`{text}` should specify a shift or extension, such as `lsl 2` or `sxtw`.",
   "operand.condition": "`{text}` is not a condition such as `eq` or `lt`.",
   "operand.conditionAl": "`{text}` cannot be `al` here.",
   "operand.extendMissing":
@@ -65,7 +65,7 @@ export const strings = {
   "shift.onlyLsl": "`{text}` can only be `lsl` here.",
   "shift.multiple16": "The amount in `{text}` must be a multiple of 16.",
   "shift.zeroOr12": "The amount in `{text}` must be 0 or 12.",
-  "shift.extendExpected": "`{text}` should be an extend such as `uxtw` or `sxtx`.",
+  "shift.extendExpected": "`{text}` should specify an extension, such as `uxtw` or `sxtx`.",
 
   // --- immediates
   "immediate.range": "`{text}` must be from {min} to {max}.",
@@ -86,7 +86,7 @@ export const strings = {
   "mem.preNeedsOffset": "`{text}` has `!` but no offset to add.",
   "mem.registerPre": "`{text}` cannot add an offset register and then update the base.",
   "mem.index": "`{text}` cannot be the offset register.",
-  "mem.extend": "`{text}` is not an extend a load or store can use.",
+  "mem.extend": "`{text}` specifies a shift or extension that this load or store cannot use.",
   "mem.shiftMissing": "`{text}` needs an amount.",
   "mem.indexWidth":
     "`{text}` does not match. An x offset register takes `lsl` or `sxtx`, and a w register takes `uxtw` or `sxtw`.",
@@ -109,7 +109,7 @@ export const strings = {
   "fault.address":
     "Line {line}, `{text}`, used the address {address}. No memory is at that address.",
   "fault.readInstruction":
-    "Line {line}, `{text}`, read the address {address}, which holds an instruction. The machine does not keep instruction bytes.",
+    "Line {line}, `{text}`, tried to read instruction bytes at {address}. This simulator stores instructions without their encoded bytes, so it cannot read those bytes as data.",
   "fault.storeText":
     "Line {line}, `{text}`, stored to the address {address}. The address is in the instructions, which cannot be written.",
   "fault.storeRodata":

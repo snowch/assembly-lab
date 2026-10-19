@@ -40,16 +40,19 @@ export const CountPrediction = withProps(
       <div className="al-figure" data-figure="count-prediction">
         <ListingView cLines={cLinesOf(data.program.c)} lines={programLines(data.program)} />
         {data.inputs.length > 0 && (
-          <div className="al-registers" role="group" aria-label={A.prediction.registers}>
-            {data.inputs.map((n) => (
-              <RegisterRow
-                key={n}
-                name={`w${n}`}
-                value={Number(BigInt.asUintN(32, BigInt(data.call.args[n] ?? 0)))}
-                changed={false}
-              />
-            ))}
-          </div>
+          <section aria-label={A.prediction.registers}>
+            <p className="al-memory-heading">{A.prediction.registers}</p>
+            <div className="al-registers">
+              {data.inputs.map((n) => (
+                <RegisterRow
+                  key={n}
+                  name={`w${n}`}
+                  value={Number(BigInt.asUintN(32, BigInt(data.call.args[n] ?? 0)))}
+                  changed={false}
+                />
+              ))}
+            </div>
+          </section>
         )}
         <PredictionBox
           id={interactive.id}

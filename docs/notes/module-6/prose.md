@@ -48,9 +48,9 @@ The four bytes starting at the address in `x0` are `78 56 34 12`, in increasing 
 
 Writing `w0` replaces the low half of `x0` and clears its upper half. After the load, register 0 holds the distance reading. It no longer holds the pointer.
 
-## 4. Move bits between memory and registers
-
 Step through the load. The figure marks the bytes it reads and shows where their bits go in the register. The address identifies the first byte; the destination `w0` makes this `ldr` read four bytes.
+
+## 4. Move bits between memory and registers
 
 A **load** copies bits from memory into a register. A **store** copies bits from a register into memory. `str w1, [x0]` writes the four bytes from `w1`, starting at the address in `x0`. It leaves the source register unchanged.
 
@@ -69,8 +69,8 @@ The exercise supplies the memory bytes. Write instructions only; you do not need
 *Hints, in order:*
 
 - You need to change memory, so choose a store.
-- Use the value in `w1` as the source and the address in `x0` as the destination.
-- Put the address register inside square brackets.
+- A load would read memory instead of updating it. A store needs `w1` as its value source and `[x0]` as its memory destination.
+- For the value `0x12345678`, a four-byte store writes `78 56 34 12` in increasing address order. The address register belongs inside square brackets.
 - A store from a `w` register writes four bytes. Follow the store with `ret`.
 - Under `save_distance:`, write `str w1, [x0]` and then `ret`.
 
@@ -113,8 +113,8 @@ Leave the source bytes unchanged. Write the copied value into the destination's 
 *Hints, in order:*
 
 - A copy needs a load followed by a store.
-- Load four bytes from the address in `x0`.
-- You can load into `w0`: this task does not need the source address again.
+- Copying `x0` would copy the address, not the distance stored there. Read the four bytes at that address.
+- The bytes `78 56 34 12` load as `0x12345678`. Storing that register value at the destination reproduces the same four bytes.
 - Store the loaded value through `x1`. The value must remain in `w0` for the return.
 - Under `copy_distance:`, write `ldr w0, [x0]`, `str w0, [x1]` and `ret`.
 
@@ -136,7 +136,7 @@ Why does `strb w1, [x0]` need an `x` register even though it writes only one byt
 
 ## Model and reality
 
-The figures use prepared memory bytes at valid addresses. Only the prepared memory regions are available to these examples. They show ordinary memory, not a sensor's hardware interface. Real programs must also have permission to access memory, and C requires a valid object of a suitable type.
+The figures use prepared memory bytes at valid addresses. Only the prepared memory regions are available to these examples. They show ordinary memory, not a sensor's hardware interface. Real programs must also have permission to access memory. For these C functions, the pointer must refer to storage for a value of the declared type, such as an `unsigned` distance. A readable address alone is not enough.
 
 The simulator shows little-endian memory and the completed effect of each instruction. It does not model memory access timing or all faults a real processor can report.
 
@@ -273,8 +273,8 @@ All test results fit in a signed 32-bit value. The tests include positive and ne
 *Hints, in order:*
 
 - The byte is signed, so its sign must survive the load.
-- Choose the byte load that fills the added bits with copies of the sign bit.
-- You can hold the loaded gradient in `w2` while keeping the correction in `w1`.
+- Zero-extending a negative gradient turns it into a positive value. Use the byte load that copies the sign bit into the added bits.
+- The byte `f9` represents −7. A signed byte load into `w2` preserves −7 while leaving the correction in `w1` available for the addition.
 - Add the values in `w2` and `w1`, putting the result in `w0`, then return.
 - Under `adjust_gradient:`, write `ldrsb w2, [x0]`, `add w0, w2, w1` and `ret`.
 
@@ -332,8 +332,8 @@ This exercise checks all four registers. Only `w0` is the ordinary C return-valu
 *Hints, in order:*
 
 - Choose each load from the field's width and whether it is signed.
-- The gradient needs a signed byte load. The fuel and pulse count need unsigned loads of their respective widths.
-- The field offsets are 4 bytes for gradient, 5 for fuel and 6 for pulse count. Put each offset inside the brackets after `x0`.
+- Using one load width or one extension rule for every field can read neighbouring bytes or misread a negative gradient. Check each field separately.
+- Consider just the gradient: it occupies byte 4 and is signed. Its load must use offset 4 and copy the byte's sign bit into the added bits.
 - Loading the distance into `w0` also overwrites `x0`. Load the other fields first, or preserve the starting address in another register.
 - Under `read_sensors:`, use `ldrsb w1, [x0, #4]`, `ldrb w2, [x0, #5]`, `ldrh w3, [x0, #6]`, `ldr w0, [x0]` and `ret`.
 
@@ -357,7 +357,7 @@ The `w0` form sign-extends only to 32 bits, then clears the upper half of `x0`. 
 
 The diagrams show the simulator copying and extending bits. These operations describe the instruction's result, not the order of internal steps in a processor.
 
-The sensor record is a layout defined for this exercise. It is not a claim about how every C compiler lays out a structure. The prepared bytes and addresses let you study loads without also managing memory allocation or a hardware sensor.
+The sensor record has a byte layout defined for this exercise. A compiler may arrange the fields of a C record differently. The exercise supplies the bytes and addresses, so you can study loads without first obtaining storage or communicating with a hardware sensor.
 
 ## Figure captions and labels
 
@@ -552,6 +552,18 @@ w0 holds 0xfffffff9.
 sxtb copies low bits from w0 and extends them into w0.
 
 {instruction} copies low bits from {source} and extends them into {destination}.
+
+# Array element groups
+
+## elementAddresses
+
+Each element groups its bytes in address order.
+
+## element
+
+Element 0
+
+Element {index}
 
 # Memory runtime feedback
 

@@ -9,7 +9,7 @@ import { compareGcc, gccLink } from "../compilerExplorer";
 import { stopSentence } from "../messages";
 import { recordedC, runC, type CRun } from "../compilerRun";
 import { cLinesOf, labelOf, programLines, type RecordedProgram } from "../listing";
-import { ListingView, DecimalRegister } from "../parts";
+import { ListingView, DecimalRegister, withCode } from "../parts";
 import { COMPILER_STRINGS as C } from "../strings.compiler";
 import { VIEW_STRINGS as S } from "../strings";
 import { viewAt, wValue } from "../trace";
@@ -213,11 +213,13 @@ export const CompilerPlayground = withProps(
               </button>
             </div>
             <p role="status">
-              {view.k === view.total
-                ? C.playground.checked(result.value)
-                : view.k === 0
-                  ? S.stepper.start
-                  : S.stepper.ran(result.trace.result.steps[view.k - 1]!.text)}
+              {withCode(
+                view.k === view.total
+                  ? C.playground.checked(result.value)
+                  : view.k === 0
+                    ? S.stepper.start
+                    : S.stepper.ran(result.trace.result.steps[view.k - 1]!.text),
+              )}
             </p>
             <div className="al-c-registers">
               {[

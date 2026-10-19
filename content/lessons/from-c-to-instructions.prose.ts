@@ -8,7 +8,7 @@ export const PROSE = {
   questionNote:
     "The initial listing comes from the course compiler, which runs in your browser. It accepts a deliberately small C subset and translates it with fixed instruction patterns. It does not optimise those patterns like GCC.\n\nThe lesson also retains GCC 16.1 output at `-O1` for comparison. The optional live comparison sends source to Compiler Explorer only when you press its button. Local compilation and the exercises do not need that service.",
   motivation:
-    "The course compiler assigns registers to the parameters and local variables. In this function, distance uses `w0`, rate uses `w1`, and charge uses `w2`. Extra registers such as `w8` and `w9` hold intermediate working values. These are temporary values needed while evaluating an expression.\n\nThe generated instructions load inputs into working registers, perform the multiplication, and copy the product into the local variable's register. The return calculation adds the fixed charge and puts the answer in `w0`. Register 0 then holds the return value, not the original distance.\n\nThe compiler builds constants with `movz` and, when needed, `movk`. `movz` places a 16-bit immediate in a selected part of the destination and clears the other bits. `movk`, introduced in Module 1, replaces a selected part while keeping the other bits. For some constants, `mov` is a shorter way to write `movz`. Both forms produce the same instruction bit pattern for the processor. This compiler writes `movz` explicitly.",
+    "The course compiler assigns registers to the parameters and local variables. In this function, distance uses `w0`, rate uses `w1`, and charge uses `w2`. Extra registers such as `w8` and `w9` hold intermediate working values. These are temporary values needed while evaluating an expression.\n\nThe generated instructions copy inputs into working registers, perform the multiplication, and copy the product into the local variable's register. The return calculation adds the fixed charge and puts the answer in `w0`. Register 0 then holds the return value, not the original distance.\n\nThe compiler builds constants with `movz` and, when needed, `movk`. An **immediate** is a constant written in an instruction. `movz` places a 16-bit immediate in a selected part of the destination and clears the other bits. `movk`, introduced in Module 1, replaces a selected part while keeping the other bits. For some constants, `mov` is a shorter way to write `movz`. Both forms produce the same instruction bit pattern for the processor. This compiler writes `movz` explicitly.",
   prediction:
     "The distance is 6 and the rate is 4. The function multiplies them, then adds its fixed charge of 7.",
   predictionQuestion: "**What does `trip_charge(6, 4)` return?**",
@@ -22,7 +22,7 @@ export const PROSE = {
     "Write `trip_charge` in assembly. The unsigned distance arrives in `w0` and rate in `w1`. Return `distance * rate + 7` in `w0`, keeping the low 32 bits as unsigned arithmetic requires.",
   writeHints: [
     "Multiply the distance by the rate before adding the fixed charge.",
-    "The multiplication and addition both have unsigned 32-bit wrapping results.",
+    "Do not expect either operation to preserve bits above bit 31. Both results use unsigned 32-bit wrapping.",
     "With distance 1 and rate 1, the product is 1. Adding the fixed charge of 7 gives 8.",
     "After the multiplication, add 7 to `w0`, then return.",
     "Write `mul w0, w0, w1`, `add w0, w0, #7` and `ret`.",

@@ -37,7 +37,7 @@ export const LABELS = {
     predictElapsed: "A prediction about what elapsed returns across the wrap.",
     predictNegs: "A prediction about what w0 holds after negs.",
     stepNegs:
-      "negs w0, w0 on 0x80000000, with the flags under the register. A register or flag with an outline has just changed.",
+      "negs w0, w0 on 0x80000000, with the flags under the register. An outlined register was written by the last instruction. An outlined flag changed value.",
     elapsed: "The assembly editor, starting from a function that returns now unchanged.",
     step: "Give the result and C for one step past the top.",
   },

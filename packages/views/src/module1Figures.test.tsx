@@ -12,7 +12,7 @@ import { describe, expect, it } from "vitest";
 import { LessonStore, memoryStorage } from "@platform/lesson-runtime";
 import { Interactive, type Lesson } from "@platform/lesson-schema";
 
-import { ConstantTester } from "./interactives/ConstantTester";
+import { ConstantTester, tryMov } from "./interactives/ConstantTester";
 import { ListingCompare, compareListings } from "./interactives/ListingCompare";
 import { ModelPrediction } from "./interactives/ModelPrediction";
 import { RegisterReader } from "./interactives/RegisterReader";
@@ -367,5 +367,25 @@ describe("the register drawn as two halves", () => {
     const { container } = figure(WideStepper, "w", "wide-stepper", { ...props, after: "p" }, store);
     expect(container.querySelector(".al-locked")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: S.stepper.next })).toBeNull();
+  });
+});
+
+describe("grouped hexadecimal constants", () => {
+  it.each(["0x0001 0001", "0X0001\t0001", "  +0x0001 0001  "])(
+    "assembles %s as the displayed bits",
+    (text) => {
+      expect(tryMov(text)).toEqual(tryMov("0x00010001"));
+      expect(tryMov(text)).toEqual({ kind: "one", w0: 65537 });
+    },
+  );
+  it.each(["65 536", "0 x0001", "0x 0001", "0x0001 ret", "0x0001;ret"])(
+    "rejects malformed %s",
+    (text) => {
+      expect(tryMov(text)).toEqual({ kind: "not-a-number" });
+    },
+  );
+  it("still lets the assembler decide whether a grouped constant fits", () => {
+    expect(tryMov("0x1234 5678")).toEqual(tryMov("0x12345678"));
+    expect(tryMov("0x1234 5678").kind).toBe("refused");
   });
 });

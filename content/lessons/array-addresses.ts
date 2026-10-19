@@ -21,6 +21,7 @@ const prediction = (
 ) => ({
   id,
   kind: "memory-prediction",
+  role: "prediction",
   timeModel: "steps",
   caption: failure ? L.captions.predictFailure : L.captions.predict,
   props: {
@@ -50,13 +51,14 @@ const step = (
     program,
     call: { entry, args, memory: bytes },
     registers,
-    memory: { address: A.LOG_ADDRESS, length: bytes.length },
+    memory: { address: A.LOG_ADDRESS, length: bytes.length, elementBytes: 4 },
     after,
   },
 });
 const mount = (id: string, caption: string) => ({
   id,
   kind: "challenge",
+  role: "exercise",
   timeModel: "steps",
   caption,
   props: { challengeId: id },
@@ -93,6 +95,7 @@ export const arrayAddresses: LessonInput = {
         {
           id: "read-trip-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: "none",
           caption: L.captions.listing,
           props: { program: A.READ_TRIP },

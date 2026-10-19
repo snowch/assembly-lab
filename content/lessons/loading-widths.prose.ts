@@ -31,8 +31,8 @@ export const PROSE = {
     "All test results fit in a signed 32-bit value. The tests include positive and negative gradients and corrections.",
   writeHints: [
     "The byte is signed, so its sign must survive the load.",
-    "Choose the byte load that fills the added bits with copies of the sign bit.",
-    "You can hold the loaded gradient in `w2` while keeping the correction in `w1`.",
+    "Zero-extending a negative gradient turns it into a positive value. Use the byte load that copies the sign bit into the added bits.",
+    "The byte `f9` represents −7. A signed byte load into `w2` preserves −7 while leaving the correction in `w1` available for the addition.",
     "Add the values in `w2` and `w1`, putting the result in `w0`, then return.",
     "Under `adjust_gradient:`, write `ldrsb w2, [x0]`, `add w0, w2, w1` and `ret`.",
   ] as const,
@@ -61,8 +61,8 @@ export const PROSE = {
     "This exercise checks all four registers. Only `w0` is the ordinary C return-value register. Plan the order of your loads so that the starting address remains available until the last memory access.",
   finalHints: [
     "Choose each load from the field's width and whether it is signed.",
-    "The gradient needs a signed byte load. The fuel and pulse count need unsigned loads of their respective widths.",
-    "The field offsets are 4 bytes for gradient, 5 for fuel and 6 for pulse count. Put each offset inside the brackets after `x0`.",
+    "Using one load width or one extension rule for every field can read neighbouring bytes or misread a negative gradient. Check each field separately.",
+    "Consider just the gradient: it occupies byte 4 and is signed. Its load must use offset 4 and copy the byte's sign bit into the added bits.",
     "Loading the distance into `w0` also overwrites `x0`. Load the other fields first, or preserve the starting address in another register.",
     "Under `read_sensors:`, use `ldrsb w1, [x0, #4]`, `ldrb w2, [x0, #5]`, `ldrh w3, [x0, #6]`, `ldr w0, [x0]` and `ret`.",
   ] as const,
@@ -74,7 +74,7 @@ export const PROSE = {
     "The `w0` form sign-extends only to 32 bits, then clears the upper half of `x0`. The `x0` form sign-extends through all 64 bits. Their low 32 bits agree, but their upper 32 bits differ for a negative byte.",
   modelVsReality:
     "The diagrams show the simulator copying and extending bits. These operations describe the instruction's result, not the order of internal steps in a processor.\n\n" +
-    "The sensor record is a layout defined for this exercise. It is not a claim about how every C compiler lays out a structure. The prepared bytes and addresses let you study loads without also managing memory allocation or a hardware sensor.",
+    "The sensor record has a byte layout defined for this exercise. A compiler may arrange the fields of a C record differently. The exercise supplies the bytes and addresses, so you can study loads without first obtaining storage or communicating with a hardware sensor.",
   originalityNote: {
     textbookExample: "Loading the same byte as a signed and unsigned integer in isolation.",
     howThisDiffers:

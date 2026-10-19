@@ -83,7 +83,7 @@ export const LABELS = {
         "Multiply two maximum unsigned inputs",
         "Keep the bit above the low 32",
         "Multiply by zero",
-        "Multiply inputs that also fit in 32 bits",
+        "Keep a product that fits in 32 bits",
       ],
     },
   },

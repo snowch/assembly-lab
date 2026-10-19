@@ -157,6 +157,15 @@ describe("the adder drawing elapsed_subs", () => {
     additionSteps(traceOf(ELAPSED_SUBS, { entry: "elapsed_subs", args: [a, b] }))[0]!.addition!;
   const bits = (v: bigint) => v.toString(2).padStart(32, "0");
 
+  it("includes a in the full sum when subtracting zero", () => {
+    for (const a of [0, 1, 1000, MAX]) {
+      const record = recordOf(a, 0);
+      expect(record.a + record.b + BigInt(record.carryIn)).toBe(BigInt(a) + 2n ** 32n);
+      expect(record.result).toBe(BigInt(a));
+      expect(record.carryOut).toBe(1);
+    }
+  });
+
   it("draws 1000 minus 4294966296: b turned over is 999, 1 carried in, the answer 2000, no carry out, C 0", () => {
     expect(figure("subtract-wrapped").kind).toBe("adder");
     expect(figure("subtract-wrapped").props["call"]).toEqual({

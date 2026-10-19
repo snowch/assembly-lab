@@ -73,6 +73,7 @@ export const onePatternThreeReadings: LessonInput = {
           id: "predict-add-12",
           kind: "trace-prediction",
           timeModel: STEPS,
+          role: "prediction",
           caption: LABELS.captions.predictAdd12,
           props: {
             question: PROSE.predictionQuestion,
@@ -106,6 +107,7 @@ export const onePatternThreeReadings: LessonInput = {
           id: "read-register",
           kind: "register-reader",
           timeModel: STEPS,
+          role: "experiment",
           caption: LABELS.captions.reader,
           // The register starts as `fuel_used_wrong(50, 38)` leaves `w0`, from the model; the top
           // bit's table is drawn, and the sum of every bit is under "Show calculation".
@@ -126,6 +128,7 @@ export const onePatternThreeReadings: LessonInput = {
           id: "make-minus-one",
           kind: "challenge",
           timeModel: STEPS,
+          role: "exercise",
           caption: LABELS.captions.make,
           props: { challengeId: "make-minus-one" },
         },
@@ -149,6 +152,7 @@ export const onePatternThreeReadings: LessonInput = {
           id: "compare-int-unsigned",
           kind: "listing-compare",
           timeModel: STEPS,
+          role: "prediction",
           caption: LABELS.captions.compare,
           props: {
             left: FUEL_USED_WRONG,
@@ -171,6 +175,7 @@ export const onePatternThreeReadings: LessonInput = {
           id: "two-readings-each",
           kind: "challenge",
           timeModel: STEPS,
+          role: "exercise",
           caption: LABELS.captions.read,
           props: { challengeId: "two-readings-each" },
         },

@@ -122,16 +122,19 @@ export const RunPrediction = withProps(Props, function RunPrediction({ data, int
     >
       <ListingView cLines={cLinesOf(data.program.c)} lines={lines} />
       {data.inputs.length > 0 && (
-        <div className="al-registers" role="group" aria-label={A.prediction.registers}>
-          {data.inputs.map((n) => (
-            <RegisterRow
-              key={n}
-              name={`w${n}`}
-              value={Number(BigInt.asUintN(32, BigInt(data.call.args[n] ?? 0)))}
-              changed={false}
-            />
-          ))}
-        </div>
+        <section aria-label={A.prediction.registers}>
+          <p className="al-memory-heading">{A.prediction.registers}</p>
+          <div className="al-registers">
+            {data.inputs.map((n) => (
+              <RegisterRow
+                key={n}
+                name={`w${n}`}
+                value={Number(BigInt.asUintN(32, BigInt(data.call.args[n] ?? 0)))}
+                changed={false}
+              />
+            ))}
+          </div>
+        </section>
       )}
       <Prose markdown={data.question} />
       <PredictionChallenge

@@ -355,7 +355,8 @@ describe("the prediction about how many instructions run", () => {
     await user.click(screen.getByRole("radio", { name: "Five" }));
     await user.click(screen.getByRole("button", { name: S.prediction.commit }));
     expect(container.querySelector(".al-match")).not.toBeNull();
-    expect(A.prediction.registers).toBeTruthy();
+    expect(screen.getByText(A.prediction.registers)).toBeVisible();
+    expect(container.querySelector('[data-register="w0"] .al-reg-value')).toHaveTextContent("15");
   });
 });
 

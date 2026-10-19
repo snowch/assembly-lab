@@ -33,7 +33,7 @@ export const LABELS = {
     predictReadings: "A prediction about which readings of the answer are right.",
     predictAdd: "A prediction about what the flags show after add.",
     stepAdd:
-      "The two additions one instruction at a time, with the flags under the registers. A register or flag with an outline has just changed.",
+      "The two additions one instruction at a time, with the flags under the registers. An outlined register was written by the last instruction. An outlined flag changed value.",
     flags: "Predict N, Z, C and V for three additions.",
     overflow: "Find the smallest number that makes V 1.",
   },

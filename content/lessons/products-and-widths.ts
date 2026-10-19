@@ -9,6 +9,13 @@ const figure = (id: string, kind: string, caption: string, props: Record<string,
   kind,
   timeModel: kind === "listing" ? "none" : steps,
   caption,
+  ...(kind.endsWith("-prediction")
+    ? { role: "prediction" as const }
+    : kind === "challenge"
+      ? { role: "exercise" as const }
+      : ["listing", "product-halves", "division-parts"].includes(kind)
+        ? { role: "diagram" as const }
+        : {}),
   props,
 });
 const call = (entry: string, args: readonly unknown[]) => ({ entry, args });

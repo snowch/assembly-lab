@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { z } from "zod";
 
 import { useSlot } from "@platform/lesson-runtime";
@@ -30,7 +30,13 @@ const Props = z.object({
         .nonnegative()
         .max(Number.MAX_SAFE_INTEGER - 32),
       length: z.number().int().min(1).max(32),
+      /** Group declared array elements without inferring a type from byte contents. */
+      elementBytes: z.number().int().min(1).max(32).optional(),
+      firstElement: z.number().int().nonnegative().default(0),
     })
+    .refine(
+      (memory) => memory.elementBytes === undefined || memory.length % memory.elementBytes === 0,
+    )
     .optional(),
   after: z.string().optional(),
   /** Show the loaded bytes and the bits added by extension in the full physical register. */
@@ -131,44 +137,85 @@ export const MemoryStepper = withProps(Props, function MemoryStepper({ data, sto
       {memory !== undefined && (
         <div role="group" aria-label={M.memory}>
           <p className="al-memory-heading">{M.memory}</p>
-          <p className="al-memory-order">{M.addresses}</p>
-          <ol className="al-memory-cells">
-            {Array.from({ length: memory.length }, (_, index) => {
-              const address = memory.address + index;
-              const loaded =
-                step?.loads.some((a) => address >= a.address && address < a.address + a.size) ??
-                false;
-              const stored =
-                step?.stores.some(
-                  (a) => address >= a.address && address < a.address + a.after.length,
-                ) ?? false;
-              const value = bytes?.[index];
-              const mapped = transfer?.bytes.find((b) => b.address === address);
-              const access = loaded ? "loaded" : stored ? "stored" : "unchanged";
-              return (
-                <li
-                  key={address}
-                  data-address={hexAddress(address)}
-                  data-access={access}
-                  aria-label={M.byte(
-                    hexAddress(address),
-                    value === undefined ? "?" : hexByte(value),
-                  )}
+          <p className="al-memory-order">
+            {memory.elementBytes === undefined ? M.addresses : M.elementAddresses}
+          </p>
+          <div className={memory.elementBytes === undefined ? undefined : "al-memory-elements"}>
+            {Array.from(
+              { length: memory.length / (memory.elementBytes ?? memory.length) },
+              (_, element) => (
+                <div
+                  key={element}
+                  className={memory.elementBytes === undefined ? undefined : "al-memory-element"}
+                  data-element={
+                    memory.elementBytes === undefined ? undefined : memory.firstElement + element
+                  }
+                  role={memory.elementBytes === undefined ? undefined : "group"}
+                  aria-label={
+                    memory.elementBytes === undefined
+                      ? undefined
+                      : M.element(memory.firstElement + element)
+                  }
                 >
-                  <code className="al-memory-address">{hexAddress(address)}</code>
-                  <code className="al-memory-value">
-                    {value === undefined ? "?" : hexByte(value)}
-                  </code>
-                  <span className="al-memory-access">{M[access]}</span>
-                  {mapped && (
-                    <span className="al-memory-range">
-                      {M.sourceBits(mapped.index * 8, mapped.index * 8 + 7)}
-                    </span>
+                  {memory.elementBytes !== undefined && (
+                    <p className="al-memory-heading">{M.element(memory.firstElement + element)}</p>
                   )}
-                </li>
-              );
-            })}
-          </ol>
+                  <ol
+                    className="al-memory-cells"
+                    style={
+                      memory.elementBytes === undefined
+                        ? undefined
+                        : ({
+                            "--array-byte-columns": Math.min(memory.elementBytes, 4),
+                          } as CSSProperties)
+                    }
+                  >
+                    {Array.from(
+                      { length: memory.elementBytes ?? memory.length },
+                      (_, withinElement) => {
+                        const index =
+                          element * (memory.elementBytes ?? memory.length) + withinElement;
+                        const address = memory.address + index;
+                        const loaded =
+                          step?.loads.some(
+                            (a) => address >= a.address && address < a.address + a.size,
+                          ) ?? false;
+                        const stored =
+                          step?.stores.some(
+                            (a) => address >= a.address && address < a.address + a.after.length,
+                          ) ?? false;
+                        const value = bytes?.[index];
+                        const mapped = transfer?.bytes.find((b) => b.address === address);
+                        const access = loaded ? "loaded" : stored ? "stored" : "unchanged";
+                        return (
+                          <li
+                            key={address}
+                            data-address={hexAddress(address)}
+                            data-access={access}
+                            aria-label={M.byte(
+                              hexAddress(address),
+                              value === undefined ? "?" : hexByte(value),
+                            )}
+                          >
+                            <code className="al-memory-address">{hexAddress(address)}</code>
+                            <code className="al-memory-value">
+                              {value === undefined ? "?" : hexByte(value)}
+                            </code>
+                            <span className="al-memory-access">{M[access]}</span>
+                            {mapped && (
+                              <span className="al-memory-range">
+                                {M.sourceBits(mapped.index * 8, mapped.index * 8 + 7)}
+                              </span>
+                            )}
+                          </li>
+                        );
+                      },
+                    )}
+                  </ol>
+                </div>
+              ),
+            )}
+          </div>
         </div>
       )}
       {transfer && (

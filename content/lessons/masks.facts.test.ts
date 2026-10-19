@@ -424,6 +424,18 @@ describe("the rework's numbers", () => {
     expect(bitsSet((0xf ^ result) >>> 0)).toEqual([2]);
   });
 
+  it("shows the same input in the prediction and its low-eight-bit mask view", () => {
+    const figure = lesson.sections
+      .flatMap((section) => section.interactives)
+      .find((figure) => figure.id === "predict-minus-five")!;
+    const call = figure.props["call"] as { args: number[] };
+    const maskView = figure.props["maskView"] as { word: number };
+    expect(maskView.word).toBe(call.args[0]);
+    const result = w0(gcc, "clear_door", maskView.word);
+    expect([maskView.word, result].map(low8)).toEqual(["1111 1111", "1111 1011"]);
+    expect(bitsSet((maskView.word ^ result) >>> 0)).toEqual([2]);
+  });
+
   it("orr 1 changes only bit 0, and only when it was 0; eor 8 flips only bit 3", () => {
     for (const word of [0, 1, 0x2a, 0x35, 0xf, 0xffffffff, 0x80000000]) {
       const orr = w0(gcc, "warn_fuel", word);

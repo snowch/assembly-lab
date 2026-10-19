@@ -52,7 +52,8 @@ for (const route of routes) {
     const errors = watchErrors(page);
     await openLesson(page, route);
     await expect(page.locator(".interactive-problem,.interactive-missing")).toHaveCount(0);
-    await expect(page.locator(".al-locked")).toHaveCount(3);
+    const gatedSteppers = route === "calls-and-returns" ? 2 : 3;
+    await expect(page.locator(".al-locked")).toHaveCount(gatedSteppers);
     await unlock(page, route);
     await expect(page.locator(".al-locked")).toHaveCount(0);
     await expect(page.locator(".al-match")).toHaveCount(2);
@@ -60,7 +61,7 @@ for (const route of routes) {
     await expect(page.locator(".al-match")).toHaveCount(2);
     await page.evaluate((k) => localStorage.removeItem(k), storageKey(route));
     await page.reload();
-    await expect(page.locator(".al-locked")).toHaveCount(3);
+    await expect(page.locator(".al-locked")).toHaveCount(gatedSteppers);
     expect(errors).toEqual([]);
   });
   for (const theme of ["light", "dark"])

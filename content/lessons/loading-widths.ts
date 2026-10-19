@@ -77,6 +77,7 @@ export const loadingWidths: LessonInput = {
         {
           id: "read-fuel-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: STEPS,
           caption: LABELS.captions.listing,
           props: { program: READ_FUEL },
@@ -92,6 +93,7 @@ export const loadingWidths: LessonInput = {
         {
           id: "predict-signed-gradient",
           kind: "memory-prediction",
+          role: "prediction",
           timeModel: STEPS,
           caption: LABELS.captions.predict,
           props: {
@@ -182,6 +184,7 @@ export const loadingWidths: LessonInput = {
         {
           id: "write-adjust-gradient",
           kind: "challenge",
+          role: "exercise",
           timeModel: STEPS,
           caption: LABELS.captions.write,
           props: { challengeId: "write-adjust-gradient" },
@@ -196,6 +199,7 @@ export const loadingWidths: LessonInput = {
         {
           id: "predict-unsigned-gradient",
           kind: "memory-prediction",
+          role: "prediction",
           timeModel: STEPS,
           caption: LABELS.captions.predictFailure,
           props: {
@@ -232,6 +236,7 @@ export const loadingWidths: LessonInput = {
         {
           id: "unsigned-byte-compiler-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: STEPS,
           caption: LABELS.captions.compilerUnsigned,
           props: { program: UNSIGNED_BYTE },
@@ -305,6 +310,7 @@ export const loadingWidths: LessonInput = {
         {
           id: "write-read-sensors",
           kind: "challenge",
+          role: "exercise",
           timeModel: STEPS,
           caption: LABELS.captions.final,
           props: { challengeId: "write-read-sensors" },

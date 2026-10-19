@@ -1,0 +1,24 @@
+# Independent learner review: 09 Counting up
+
+Reviewed only `counting-up`, against the front page's Before you start and all nine earlier lesson prose files in `content/lessons/index.ts` order. Read CLAUDE.md, docs/style.md, docs/authoring.md; no prior review notes. Read all target prose, labels, options, explanatory feedback, both hint ladders, model note, recorded listings, lesson wiring, and relevant shared listing/stepper/count/loop strings. No repository changes.
+
+## Browser coverage
+
+Built URL: http://localhost:4290/assembly-lab/#/lesson/counting-up. Chromium at 375×900 and 1280×900, light and dark: inspected top, paired prediction listing and expanded Stepped note, checked first prediction, stepped four instructions, selected equal endpoints in the loop figure, opened first construction hint. Confirmed no page horizontal overflow in each configuration. Additional phone-light check ran the unmodified construction starting program and inspected its test feedback, then the model note. Read all remaining target content in source; did not solve either challenge, check the changed-loop prediction, open every hint in every configuration, or exhaust keyboard states.
+
+Screenshots: `/tmp/course-clarity-audit/09-{375,1280}-{light,dark}-{top,prediction,step,runs}.png`; model note at `09-model-note.png`. Source/text captures accompany these. Viewed representative screenshots across all four combinations, including both widths' paired layouts, current-step highlights, and loop history.
+
+## Findings
+
+1. **Low — Prediction still carries stepping instructions above its task.** Source `content/lessons/counting-up.ts:60–63` and `:140–144` declare prediction kinds with `timeModel: STEPS` but no role. Exact visible badge: “STEPPED”; expanded text: “Each step runs one instruction in the simulator. Between steps, the simulated processor stays as the last instruction left it.” (`packages/views/src/strings.ts:10–13`). Setup: fresh lesson, open the badge beside “Predict the number of instructions run by dim_up(128, 2, 5).” The same above-question guidance-placement pattern remains here: this card asks for a prediction and has no step controls; the real stepper is a separate gated card below. On a phone the expanded guidance precedes the complete source and paired listing, separating task introduction further from answer controls. Direction: give prediction figures their appropriate role consistently, retaining stepping guidance beside actual stepping controls. Browser confirmed the first prediction in all four configurations; source confirms the failure-experiment prediction has the same missing role. Do not remove guidance from the actual stepper.
+
+2. **Low — “one trace” is an unexplained noun in the simulator-limit note.** Exact quote: “The simulator limits how many instructions it runs in one trace. Reaching that limit means the trace stopped; it does not establish whether the program would eventually return.” (`content/lessons/counting-up.prose.ts:74`). Setup: end of lesson, “How the simulator differs from hardware”. The learner knows running and stepping; this introduces a new name for the run/history just where the distinction between simulator stopping and function returning matters. Earlier labels say “Trace the call” and “Trace three results”, but these use the verb and do not define a recorded trace. Direction: use the established run terminology here, or explain the record represented by trace if the distinction is needed. This is a small vocabulary clarification, not a defect in the stopping claim. Browser-visible at `09-model-note.png`.
+
+## Unsupported assumed knowledge
+
+- **Trace as a noun**: finding 2. No earlier prose definition found. Earlier occurrences are verbs in `meet-the-machine.labels.ts:43,62` and `masks.labels.ts:52`.
+- No other substantive unsupported requirement identified. Evidence: Before you start explicitly includes `for`/`while`; target question explains `>>=`; target motivation defines loop/body/iteration and `tick++`; shifts explains `lsr` halving and remainder; compare-and-choose explains `cs`/`ne` flag rules; branches defines labels, taken/not-taken, and GCC's `bgt` versus Arm's `b.gt`; Module 0 explains registers, argument order, `ret`, GCC and `-O1`; subtraction lesson defines tick/wrap.
+
+## What already works
+
+Prediction identifies the concrete call and says to include `ret`; construction/final tasks specify input values and terminal results. Investigation distinguishes body executions from instruction counts. Register reuse is explained (“w1 then holds the changing value of tick”), and paired C highlights make the increment's effect visible at the fourth executed instruction. Empty-interval history explicitly says the loop body did not run. No additional findings forced from minor stylistic preferences.

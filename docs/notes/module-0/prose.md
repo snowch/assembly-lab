@@ -95,17 +95,17 @@ Before the first instruction, `w0` holds `leg1`. The first instruction, `add w0,
 
 The simulator is a JavaScript program that loads with this page and runs in your browser. It imitates the processor, one instruction at a time. The instructions are GCC's real output. Only the running is imitated. The course calls the simulator its model of the processor.
 
-The figure runs `trip_distance(120, 85, 42, 15)`. Each register is shown as a decimal number. You can open a register to see its 32 bits. The `w` in `w0` names those 32 bits. Module 1 shows the rest of each register.
+The figure runs `trip_distance(120, 85, 42, 15)`. Each register is shown as a decimal number. Press Show the bits to see all four registers as 32-bit patterns. The `w` in `w0` names those 32 bits. Module 1 shows the rest of each register.
 
 The marker shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`.
 
 An instruction's parts after its name are its **operands**. In `add w0, w0, w1`, the first operand is where the result goes. The other two are the values it adds.
 
-Press Next to run one instruction. The figure then shows what that instruction read, what it wrote, and which registers did not change. Press Back to undo a step.
+Press Next to run one instruction. The figure then shows what that instruction read, what it wrote, and which registers it left alone. Press Back to undo a step.
 
-At each step, look for two things: which register changes, and which registers do not.
+At each step, look for two things: which register the instruction writes, and which registers it leaves alone.
 
-*`trip_distance(120, 85, 42, 15)`, one instruction at a time. A register with an outline has just changed. The highlighted C statement and instruction show what just ran; the arrow marks the next instruction.*
+*`trip_distance(120, 85, 42, 15)`, one instruction at a time. A register with an outline was written by the last instruction. The highlighted C statement and instruction show what just ran; the arrow marks the next instruction.*
 
 *Shown once the run has ended.*
 
@@ -186,7 +186,7 @@ Without running the call `km_to_service(30000, 28750, 140, 390)`, give two value
 - `w1` when the function returns
 
 1. Each `sub` writes only its first operand.
-2. A register no instruction writes keeps the value it arrived with.
+2. Do not change a register just because an instruction reads it. A register no instruction writes keeps its initial value.
 3. After `sub w0, w0, w1` alone, `w0` is 30000 minus 28750, which is 1250.
 4. `w1` arrives holding 28750, and no instruction writes `w1`.
 5. `w0` is 670 and `w1` is 28750.

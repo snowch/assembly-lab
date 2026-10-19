@@ -88,7 +88,7 @@ The three additions are:
 Check your answers. A wrong flag is named, and the answers you got right stay.
 
 1. C is the carry out of the top bit. V is 1 when the carry into the top bit and the carry out of it differ.
-2. C and V are not the same thing. One addition here sets both, and one sets only C.
+2. Do not give C and V the same value automatically. One addition here sets both, and one sets only C.
 3. 5 plus 3 is 8. No carry reaches the top bit, so N, Z, C and V are all 0.
 4. `0xffffffff` plus 1 is 0 with a carry out of the top bit, so Z is 1 and C is 1.
 5. `0xffffffff` plus 1 gives N 0, Z 1, C 1 and V 0. 5 plus 3 has all four at 0. `0x80000000` plus `0x80000000` gives N 0, Z 1, C 1 and V 1.
@@ -103,7 +103,7 @@ C and V are separate tests, one for each reading, so either can be 1 without the
 
 The figure runs `sum_flags` with `w0` = `0x7fffffff`, `w1` = 1 and `w2` = `0xffffffff`.
 
-It runs `adds w3, w2, w2` first, which adds `0xffffffff` to itself. Then it runs `add w0, w0, w1`, which adds `0x7fffffff` and 1. After each step, the figure shows which registers and which flags changed.
+It runs `adds w3, w2, w2` first, which adds `0xffffffff` to itself. Then it runs `add w0, w0, w1`, which adds `0x7fffffff` and 1. After each step, the figure marks the registers that were written and the flags whose values changed.
 
 **After `add`, what do the flags show?**
 
@@ -116,7 +116,7 @@ It runs `adds w3, w2, w2` first, which adds `0xffffffff` to itself. Then it runs
 
 N and C are still 1, as `adds` left them. `add` wrote `0x80000000` to `w0` and left the flags alone.
 
-Had `add` set the flags, they would be N 1, Z 0, C 0 and V 1. That is what `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had `add` cleared them, all four would be 0.
+Had `add` calculated new flag values, they would be N 1, Z 0, C 0 and V 1. That is what `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had `add` cleared them, all four would be 0.
 
 Of `add`, `adds` and `sub`, only `adds` writes the flags.
 
@@ -214,11 +214,15 @@ The answer is 2000. Counting forward from 4294966296, 1000 ticks reach the wrap 
 
 ## 4. Subtraction as addition, and borrows
 
+`subs` does the same subtraction as `sub` and also replaces all four flags, N, Z, C and V. `sub` leaves the flags unchanged.
+
+The subtraction `a - b` needs a **borrow** when `a` is less than `b` under the unsigned reading. After `adds`, C = 1 means a carry left the top bit. After `subs`, C = 1 means no borrow was needed, and C = 0 means one was.
+
 After 4294967295 comes 0, so the counter's values form a ring. The figure draws them that way. The counter counts forward, clockwise.
 
 Two readings close together sit at almost one spot on a ring of 4294967296 values. So the strip under the ring enlarges the stretch round the wrap. The strip shows `then`, the wrap from 4294967295 to 0, `now`, the ticks before the wrap, the ticks after it, and their total.
 
-`subs` does the same subtraction as `sub` and also replaces all four flags, N, Z, C and V. `sub` leaves the flags unchanged.
+*The counter as a ring: `then`, `now`, and the distance between them.*
 
 The processor subtracts by adding. To work out `a - b`, it changes every bit of `b`: each 1 becomes 0, and each 0 becomes 1. It adds the result to `a`, and adds 1 more as the carry into the first column.
 
@@ -234,17 +238,13 @@ The example uses four bits only, to show the method. The real instruction uses 3
   1         carry out of the top
 ```
 
-For 32 bits, changing every bit of `b` gives 4294967295 minus `b`. Adding 1 gives 4294967296 minus `b`, or 2³² minus `b`. This is the full sum, before keeping only the low 32 bits. When `b` is 0, the full sum is 4294967296: the low 32 bits are 0, with a carry out of the top bit.
+For 32 bits, changing every bit of `b` gives 4294967295 minus `b`. The adder adds that value to `a`, then adds 1. The full sum is `a + 4294967296 - b`, before keeping only the low 32 bits. When `b` is 0, the full sum is `a + 4294967296`: the low 32 bits hold `a`, and a carry leaves the top bit.
 
-The figures below show the same steps for the real 32-bit `subs`: the second operand, its bits changed, the carry in of 1, the result and the carry out.
+The figures below show the same steps for the real 32-bit `subs`: the input being subtracted, its bits changed, the carry in of 1, the result and the carry out.
 
-A subtraction needs a **borrow** when `a` is less than `b` under the unsigned reading. After `adds`, C = 1 means a carry left the top bit. After `subs`, C = 1 means no borrow was needed, and C = 0 means one was.
-
-The two agree: a carry leaves the top exactly when `a` is at least `b`.
+A carry leaves the top exactly when `a` is at least `b`, so C = 1 also means no borrow was needed.
 
 The two figures below show the final states of two subtractions, each of which can be stepped column by column. One needs a borrow: 1000 minus 4294966296 leaves C 0. The other does not: 9000 minus 2500 leaves C 1 and the result 6500.
-
-*The counter as a ring: `then`, `now`, and the distance between them.*
 
 ## 5. Writing elapsed yourself
 
@@ -259,7 +259,7 @@ Assume the counter advances normally and less than one full turn passes between 
 You may use `add`, `sub`, `adds`, `subs` and `ret`.
 
 1. The 32 bits of a 32-bit subtraction are `now - then` when `now` is at least `then`, and `now - then + 4294967296` when `now` is less than `then`. Either way they are the distance round the ring.
-2. No test for the wrap is needed.
+2. Do not reverse the subtraction when the counter wraps. The low 32 bits already give the forward distance.
 3. `elapsed(5000, 1000)` is 4000. `sub` takes 1000 from 5000.
 4. `now` arrives in `w0` and `then` in `w1`.
 5. The whole answer is `sub w0, w0, w1`, then `ret`.
@@ -320,14 +320,14 @@ Give `elapsed(0, 4294967295)`, and the C flag that `subs` would set for the same
 Enter the result in decimal, and C as 0 or 1.
 
 1. Subtracting keeps the low 32 bits. C is 1 only if no borrow was needed.
-2. 0 is smaller than 4294967295 under the unsigned reading.
+2. Do not use C = 1 to mean a borrow. After `subs`, a borrow makes C = 0.
 3. `elapsed(1000, 4294966296)` is 2000, with C 0.
 4. One step after 4294967295, the counter reads 0.
 5. The whole answer is 1, and C is 0.
 
 ## 10. What you now know
 
-- A subtraction is done as an addition of the second operand with every bit changed, plus 1.
+- To subtract `b` from `a`, add `a`, the bits of `b` turned over, and 1. Keep the low 32 bits.
 - C = 1 after `subs` means no borrow.
 - A 32-bit unsigned counter wraps from 4294967295 to 0.
 - For a counter advancing normally, one 32-bit subtraction gives the elapsed ticks if less than a full turn has passed.
@@ -371,4 +371,4 @@ V: Compare the carry into the top bit with the carry out of it.
 
 ## After add (lesson 1, section 6), the stepper's status
 
-`w0` changed. N, Z, C and V were not updated by `add`.
+`w0` was written. N, Z, C and V were not updated by `add`.

@@ -51,7 +51,7 @@ export const PROSE = {
     "Check your answers. A wrong flag is named, and the answers you got right stay.",
   flagsHints: [
     "C is the carry out of the top bit. V is 1 when the carry into the top bit and the carry out of it differ.",
-    "C and V are not the same thing. One addition here sets both, and one sets only C.",
+    "Do not give C and V the same value automatically. One addition here sets both, and one sets only C.",
     "5 plus 3 is 8. No carry reaches the top bit, so N, Z, C and V are all 0.",
     "`0xffffffff` plus 1 is 0 with a carry out of the top bit, so Z is 1 and C is 1.",
     "`0xffffffff` plus 1 gives N 0, Z 1, C 1 and V 0. 5 plus 3 has all four at 0. `0x80000000` plus `0x80000000` gives N 0, Z 1, C 1 and V 1.",
@@ -63,11 +63,11 @@ export const PROSE = {
 
   failureExperiment:
     "The figure runs `sum_flags` with `w0` = `0x7fffffff`, `w1` = 1 and `w2` = `0xffffffff`.\n\n" +
-    "It runs `adds w3, w2, w2` first, which adds `0xffffffff` to itself. Then it runs `add w0, w0, w1`, which adds `0x7fffffff` and 1. After each step, the figure shows which registers and which flags changed.",
+    "It runs `adds w3, w2, w2` first, which adds `0xffffffff` to itself. Then it runs `add w0, w0, w1`, which adds `0x7fffffff` and 1. After each step, the figure marks the registers that were written and the flags whose values changed.",
   failureQuestion: "**After `add`, what do the flags show?**",
   failureExplain:
     "N and C are still 1, as `adds` left them. `add` wrote `0x80000000` to `w0` and left the flags alone.\n\n" +
-    "Had `add` set the flags, they would be N 1, Z 0, C 0 and V 1. That is what `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had `add` cleared them, all four would be 0.\n\n" +
+    "Had `add` calculated new flag values, they would be N 1, Z 0, C 0 and V 1. That is what `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had `add` cleared them, all four would be 0.\n\n" +
     "Of `add`, `adds` and `sub`, only `adds` writes the flags.",
 
   explanation:

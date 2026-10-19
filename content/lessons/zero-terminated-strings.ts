@@ -21,6 +21,7 @@ const prediction = (
 ) => ({
   id,
   kind: "memory-prediction",
+  role: "prediction",
   timeModel: "steps",
   caption: failure ? L.captions.predictFailure : L.captions.predict,
   props: {
@@ -57,6 +58,7 @@ const step = (
 const mount = (id: string, caption: string) => ({
   id,
   kind: "challenge",
+  role: "exercise",
   timeModel: "steps",
   caption,
   props: { challengeId: id },
@@ -93,6 +95,7 @@ export const zeroTerminatedStrings: LessonInput = {
         {
           id: "label-length-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: "none",
           caption: L.captions.listing,
           props: { program: A.LABEL_LENGTH },

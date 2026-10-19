@@ -47,7 +47,7 @@ GCC 16.1 at `-O1` compiled this, as in Module 0.
 - −5 is bit 2 counted backwards;
 - −5 is `0xfffffffb`, every bit set except bit 2;
 - the compiler subtracts 5 from the word;
-- −5 is an error in the listing.
+- −5 is an error in the instruction.
 
 *Shown after the answer is checked.*
 
@@ -92,14 +92,14 @@ Write `set_gear(w, g)`. It puts the low 3 bits of `g` into bits 4 to 6 of `w`, a
 Use only `and`, `lsl`, `orr` and `ret`. Four calls test your code. In one of them, `g` is 13, which is larger than 7. Only its low 3 bits may land in the field. Every bit outside bits 4 to 6 must stay unchanged.
 
 1. Clear the field in the word, move the new gear into place, then join the two.
-2. Bits outside 4 to 6 must stay unchanged. Bits 4 to 6 must hold the low 3 bits of `g`.
+2. Moving all of `g` into place can change bits outside the field. Keep only its low 3 bits before moving them.
 3. `lsl w1, w1, 4` moves bits 0 to 2 of `w1` up to bits 4 to 6.
 4. `and w1, w1, 7` keeps only the low 3 bits of `g`. `and w0, w0, -113` clears bits 4 to 6 of `w`, because −113 is `0xffffff8f`.
 5. `and w1, w1, 7`, `lsl w1, w1, 4`, `and w0, w0, -113`, `orr w0, w0, w1`, `ret`.
 
 *Shown after the challenge has been run.*
 
-Step through your own instructions below: the figure shows the word after each one, and which bits it cleared, moved or combined.
+Step through your own instructions below. When an instruction writes a register, the figure shows its bits before and after. This may be the new gear in `w1` or the warning word in `w0`.
 
 *Shown after the challenge passes.*
 
@@ -132,7 +132,7 @@ No carry runs from one bit into the next. So, for `and`, `orr` and `eor`, each b
 
 ## 8. Fields in real code
 
-Status words, packed dates and colours keep several small numbers in one word in the same way.
+A colour can keep its red, green and blue amounts in separate fields of one word. As with the gear, `ubfx` can pick out one field and move it to the lowest bits so the program can use its value.
 
 ## 9. Three results from one word
 
@@ -151,7 +151,7 @@ Start with `0x2a` separately for each instruction. Do not use one instruction's 
 Field labels: "after `orr`"; "after `and`"; "the gear".
 
 1. OR sets the mask's bits; AND with −9 clears bit 3; `ubfx` takes bits 4 to 6.
-2. Each result starts from `0x2a`, not from the one before.
+2. Using the previous result as the next input changes the task. Start each instruction separately with `0x2a`.
 3. `0x2a` is `0010 1010`: bits 1, 3 and 5 are set.
 4. −9 is `0xfffffff7`, every bit except bit 3.
 5. `0x2b`; `0x22`; `0x2`.
@@ -173,7 +173,7 @@ Field labels: "after `orr`"; "after `and`"; "the gear".
 - Writing a field means clearing it, moving the new value into place and combining, so the bits around it are kept.
 - `ubfx` reads a field, and `bfi` writes one.
 
-The warning word is `0x47`. What does `ubfx x0, x0, 4, 3` give, and what does `eor w0, w0, 4` give?
+The warning word is `0x47`. Start with that value separately for each instruction. What does `ubfx x0, x0, 4, 3` give, and what does `eor w0, w0, 4` give?
 
 *Closed note: Answer*
 
@@ -201,7 +201,9 @@ What does each instruction do differently?
 
 *Closed note: What C says*
 
-For a negative `int`, the C standard leaves the result of `>>` to the implementation. GCC defines it as an arithmetic shift. For a signed `int`, C leaves some left shifts undefined, a negative value among them. GCC defines them, but this lesson's examples stay within what C defines. The compiler is GCC 16.1 with `-O1`, as in Module 0.
+For a negative `int`, the C standard lets the compiler choose and document the result of `>>`. GCC copies the old top bit into the gap, keeping the result negative. This is the arithmetic shift explained below. Another C compiler may make a different choice.
+
+For some signed left shifts, C gives no guarantee about the program's behaviour. This includes shifting a negative `int` left. GCC supports left shifts of negative signed values as an extension to C, but code that relies on that extension is not guaranteed to work the same way with another compiler. This lesson's C left-shift examples avoid those cases. The compiler is GCC 16.1 with `-O1`, as in Module 0.
 
 ## 2. Why moving bits matters
 
@@ -222,7 +224,7 @@ The figure takes −7, which is `0xfffffff9`, and moves its bits one place right
 
 The figure takes −7, which is `0xfffffff9`. For an `int`, the top bit is filled with a copy of the old top bit. The old top bit is 1, so `asr w0, w0, 1` fills the top with 1. The result is `0xfffffffc`, which is −4.
 
-`lsr w0, w0, 1` fills the top with 0 instead. The result is `0x7ffffffc`, which is 2147483644. The figure marks the filled top bit in each case.
+`lsr w0, w0, 1` fills the top with 0 instead. The result is `0x7ffffffc`, which is 2147483644. The prediction figure shows the `asr` result and marks the bits that changed. In the next section, you can choose either shift and see which bits fill the gap.
 
 ## 4. Left and right shifts
 
@@ -249,7 +251,7 @@ For two `int` values, C's `/` gives a whole number and rounds towards zero. For 
 Field labels: "`asr` of 21 by 2"; "`lsr` of 21 by 2"; "`21 / 4`"; "`asr` of −21 by 2"; "`lsr` of −21 by 2 (−21 taken as unsigned)"; "`-21 / 4`".
 
 1. For a positive value all three agree; for a negative value they do not.
-2. `asr` rounds down; C's `/` rounds towards zero; `lsr` fills with zeros, so a negative value becomes a large positive one.
+2. Do not round `asr` towards zero like C's `/`. `asr` rounds down. `lsr` fills with zeros, so a negative value becomes a large positive one.
 3. `asr` of −7 by 1 is −4; −7 / 2 in C is −3.
 4. 21 gives 5 all three ways.
 5. 5, 5, 5; −6, 1073741818, −5.
@@ -307,7 +309,7 @@ Say which instruction GCC uses for each: `x >> 3` with `int x`; `x >> 3` with `u
 Field labels: "`int x >> 3`"; "`unsigned x >> 3`"; "`x << 3`".
 
 1. On a right shift, the fill depends on the reading. A left shift fills with zeros either way.
-2. A left shift is the same for both types.
+2. Do not choose a different left shift for each type. Both use `lsl` for the C expressions here.
 3. `int g >> 1` became `asr w0, w0, 1`.
 4. `unsigned n >> 1` became `lsr w0, w0, 1`.
 5. `asr`; `lsr`; `lsl`.

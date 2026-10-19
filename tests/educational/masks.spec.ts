@@ -640,9 +640,9 @@ test.describe("the reworked figures (17 October 2026)", () => {
         .locator(`[data-row="${row}"] .al-cell-bit`)
         .evaluateAll((c) => c.map((x) => x.textContent).join(""));
     await expect(figure.locator(".al-maskline")).toHaveText("The mask is -5, which is 0xfffffffb.");
-    expect(await cells("view-word")).toBe("00001111");
+    expect(await cells("view-word")).toBe((await rowBits(figure, "ran-before")).slice(-8));
     expect(await cells("view-mask")).toBe("11111011");
-    expect(await cells("view-result")).toBe("00001011");
+    expect(await cells("view-result")).toBe((await rowBits(figure, "ran-after")).slice(-8));
     await expect(figure.locator(".al-maskview .al-cell[data-picked='true']")).toHaveCount(3);
   });
 

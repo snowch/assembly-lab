@@ -10,7 +10,7 @@ export const PROSE = {
   motivation:
     "You already know how an unsigned comparison selects a result and how a function returns. Use those ideas to read the new syntax. In these A32 functions, the first arguments arrive in `r0` and `r1`, and the result leaves in `r0`. These are 32-bit registers, not `w` views of wider A64 `x` registers.\n\nA32's `lr` names its link register, also called `r14`. In this leaf function, `bx lr` returns to the saved address. The A64 listing uses `ret` for its return. Similar purposes do not imply identical register names or instruction spellings.",
   prediction:
-    "Run the A64 version with distance 80 and limit 50. Use the C function and the comparison to decide which input becomes the result.",
+    "Predict the result for distance 80 and limit 50 from the C function and its comparison. After checking your prediction, run the A64 version in the stepper below.",
   predictionQuestion: "**What does `limit_trip(80, 50)` return?**",
   predictionExplain:
     "It returns 50. The distance is above the limit, so the function selects the limit. The A64 simulator computes this result. The paired A32 listing is recorded compiler output; this course does not execute A32.",

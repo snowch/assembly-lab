@@ -28,7 +28,7 @@ A32's `lr` names its link register, also called `r14`. In this leaf function, `b
 
 ## PROSE.prediction
 
-Run the A64 version with distance 80 and limit 50. Use the C function and the comparison to decide which input becomes the result.
+Predict the result for distance 80 and limit 50 from the C function and its comparison. After checking your prediction, run the A64 version in the stepper below.
 
 ## PROSE.predictionQuestion
 

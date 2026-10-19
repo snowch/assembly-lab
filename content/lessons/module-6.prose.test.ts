@@ -57,6 +57,8 @@ it("keeps figure, grader and shared course wording in the review copy", () => {
     if (typeof value === "string") return [value];
     const render = value as (...args: (string | number)[]) => string;
     switch (key) {
+      case "element":
+        return [render(0), render("{index}")];
       case "byte":
         return [render("0x00410000", "f9"), render("{address}", "{byte}")];
       case "sourceBits":

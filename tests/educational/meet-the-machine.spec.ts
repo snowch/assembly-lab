@@ -294,8 +294,8 @@ test.describe("the stepper's panel of what the last instruction read and wrote",
     await press(page, next);
     const text = await flowText(figure);
     expect(text).toContain("Reads w0 (120) + w1 (85) → Writes w0 = 205 (w0 was 120)");
-    expect(text).toContain("Changed: w0");
-    expect(text).toContain("Unchanged: w1, w2, w3");
+    expect(text).toContain("Written: w0");
+    expect(text).toContain("Not written: w1, w2, w3");
     // The shapes differ as well as the words: a dashed outline for what was read, a solid one for what was written.
     const [src, dst] = await Promise.all([
       figure
@@ -315,7 +315,7 @@ test.describe("the stepper's panel of what the last instruction read and wrote",
     const sub = await flowText(figure);
     expect(sub).toContain("Reads w0 (247) − w3 (15) → Writes w0 = 232 (w0 was 247)");
     expect(sub).toContain(M0.flow.subtracts);
-    expect(sub).toContain("Unchanged: w1, w2, w3");
+    expect(sub).toContain("Not written: w1, w2, w3");
     await press(page, next);
     expect(await flowText(figure)).toContain("does no arithmetic");
     // Back restores the previous panel and the value.
@@ -364,7 +364,7 @@ test.describe("the registers as decimal numbers", () => {
     await expect(figure.locator(".al-bit")).toHaveCount(0);
   });
 
-  test("mark the changed register by an outline and by the word Changed", async ({ page }) => {
+  test("mark the written register by an outline and by the word Written", async ({ page }) => {
     await openLesson(page);
     await commit(page, "predict-total", /^In w0/);
     const figure = page.locator("#ix-step-trip");

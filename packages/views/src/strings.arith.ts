@@ -101,10 +101,10 @@ export const ARITH_STRINGS = {
   /** The stepper, for a lesson that asks it to mark what changed. */
   stepper: {
     /** The word beside a register the last instruction wrote. */
-    registerChanged: "changed", // DRAFT
+    registerChanged: "written", // DRAFT
     /** The status after an `add` or `sub` that left the flags alone. */
     notUpdated: (register: string, mnemonic: string) =>
-      `\`${register}\` changed. N, Z, C and V were not updated by \`${mnemonic}\`.`,
+      `\`${register}\` was written. N, Z, C and V were not updated by \`${mnemonic}\`.`,
   },
 
   prediction: {

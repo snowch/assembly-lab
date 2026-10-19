@@ -77,6 +77,7 @@ export const branches: LessonInput = {
         {
           id: "describe-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: STEPS,
           caption: LABELS.captions.listing,
           props: { program: DESCRIBE },
@@ -92,6 +93,7 @@ export const branches: LessonInput = {
         {
           id: "predict-describe-count",
           kind: "count-prediction",
+          role: "prediction",
           timeModel: STEPS,
           caption: LABELS.captions.predictCount,
           props: {
@@ -129,6 +131,7 @@ export const branches: LessonInput = {
         {
           id: "describe-arrows",
           kind: "branch-listing",
+          role: "experiment",
           timeModel: STEPS,
           caption: LABELS.captions.arrows,
           props: {
@@ -153,6 +156,7 @@ export const branches: LessonInput = {
         {
           id: "write-fuel-warning",
           kind: "challenge",
+          role: "exercise",
           timeModel: STEPS,
           caption: LABELS.captions.fuelWarning,
           props: { challengeId: "write-fuel-warning" },
@@ -167,6 +171,7 @@ export const branches: LessonInput = {
         {
           id: "predict-describe-bge",
           kind: "run-prediction",
+          role: "prediction",
           timeModel: STEPS,
           caption: LABELS.captions.predictBge,
           props: {
@@ -213,6 +218,7 @@ export const branches: LessonInput = {
         {
           id: "count-describe-runs",
           kind: "challenge",
+          role: "exercise",
           timeModel: STEPS,
           caption: LABELS.captions.counts,
           props: { challengeId: "count-describe-runs" },

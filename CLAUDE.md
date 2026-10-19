@@ -58,6 +58,41 @@ gives away a prediction's or a challenge's answer before the learner has worked 
 over time, memory laid out by address, the stack at each call, the path a branch takes. A table
 beside a drawing can index it; a table in its place cannot.
 
+## Make each activity unambiguous
+
+Apply these checks to the question, nearby prose, caption, controls and feedback together.
+They come from the [whole-course clarity review](docs/notes/clarity-implementation/README.md).
+
+- **Name the moment and the inputs.** A question about a value or its location must say
+  whether it means before execution, after a named instruction or when the function returns.
+  Show starting inputs with a visible label. Keep them distinguishable from results after an
+  answer is checked. Identify any preset step; a fresh or reset figure must match its caption.
+- **Keep connected views consistent.** A prediction, its walkthrough and an enlarged detail
+  must use the same inputs and run, unless the change is explicitly introduced. State whether
+  several operations start from the same input or use each other's results.
+- **Teach what the next action needs.** Put definitions and essential guidance before their
+  first use, beside the relevant figure. Required knowledge must be visible without opening an
+  optional note. Put stepping instructions with the investigation that uses them. Consolidate
+  duplicate walkthroughs when one can carry the explanation and preserve the prediction gate.
+- **Describe the actual interaction.** Figure roles and notes must distinguish predicting,
+  executing an instruction, revealing arithmetic columns, experimenting and solving an exercise.
+  Revealing part of a calculation does not execute another instruction. Use the controls' visible
+  names in directions, and explain editor modes before asking the learner to switch modes.
+- **Say what a mark means.** Label a recorded register write as a write, including when its bits
+  stay the same. Use "changed" only for a comparison that found different values. Distinguish a
+  C variable, the register holding its current value and reuse of that register later in the run.
+- **Make hints and feedback specific.** A common-mistake hint explains a plausible mistake; a
+  smaller-example hint gives a concrete smaller case. Feedback must describe the submitted code
+  and observed result, including alternative valid solutions. Preserve the order in which hints
+  and answers become available.
+- **Make notation and diagrams usable.** Accept number notation taught by the course, or explain
+  a required input format beside the field. Render code formatting rather than its markup.
+  Show element boundaries and byte addresses when teaching arrays or stack storage. Keep those
+  groups, addresses and before/after labels readable on phones without losing their meaning.
+- **Keep technical qualifications local.** Name the operands and widths that an arithmetic
+  explanation depends on. Distinguish a calling convention's incoming-value guarantees from an
+  instruction's effect, and distinguish C guarantees from a particular compiler's choices.
+
 ## Pair C with its instructions
 
 Every recorded example and local-compiler result that shows C and assembly must make their
@@ -152,6 +187,21 @@ of it.
   a sceptic makes its own pass for unexplained assumed knowledge, and rejects such an item only by
   quoting where the course explains it before that point.
 - **Checkers** confirm each fix in the built site: judge the page, not the note.
+
+When a fault appears in a shared component or recurring lesson pattern, inspect its other uses
+and sibling components. A correction in the first lesson alone does not close a course-wide
+finding. Keep canonical prose records synchronised with the rendered lesson text.
+
+For each accepted finding, record the correction and its independent verification. Keep rejected
+findings with their reasons. Checks must cover the affected states: initial, committed, stepped,
+reset or restored, as applicable. Verify the actual rendered theme as well as the requested
+preference. Check the final build; if a later edit affects an earlier check, recheck that part.
+
+Report what was checked in the browser, what was read only in source and what remains untested.
+Record full-suite results separately from focused reruns, including skips and failures. A passing
+rerun does not change the original command's exit status. When a test expectation becomes stale,
+check the intended behaviour before updating it and preserve its meaningful assertions. A layout
+tolerance needs measured evidence and must still catch a visible layout regression.
 
 ## Voice
 

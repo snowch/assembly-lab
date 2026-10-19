@@ -59,7 +59,7 @@ export const PROSE = {
   fuelWarningHints: [
     "Two questions need two tests: is `litres` 0, and is it below `reserve`. Does a `litres` of 0 also pass the second test?",
     'When `reserve` is above 0, zero litres is also below the reserve. Checking "below `reserve`" first would then return 1 instead of 2.',
-    "`cbz w0, label` goes to the label when `w0` is 0. `cmp w0, w1` sets the flags of `litres` minus `reserve`.",
+    "For zero litres and a positive reserve, both tests would pass. A `cbz` before the comparison can select the empty-tank result first.",
     '`litres` and `reserve` are `unsigned`: a value with the top bit set is a large number, so use the unsigned condition for "below", `cc`. A signed condition gets one test wrong.',
     "`cbz w0, .Lempty`, `cmp w0, w1`, `b.cc .Llow`, `mov w0, 0`, `ret`, then `.Llow:` `mov w0, 1`, `ret`, then `.Lempty:` `mov w0, 2`, `ret`.",
   ] as const,
@@ -68,10 +68,10 @@ export const PROSE = {
   fuelWarningFeedback: {
     zeroFirst: "A `litres` of 0 returns 1. Does the check for 0 come first?",
     fellThrough:
-      "The run for a `litres` of 0 went on into the next block instead of returning. Does every block end in `ret` or `b`?",
+      "The run for zero litres continued into the next group of instructions instead of returning. Check whether it needs a `ret` or a branch after writing its result.",
     topBit: 'The call with the top bit set fails. Is "below" read as unsigned?',
     label:
-      "The wrong value comes back. Which label did the run reach, and which branch sent it there?",
+      "The returned value is wrong. Follow the instructions that ran and check where they last wrote `w0`. Do your tests select the required result for this input?",
     overwritten:
       "An input was overwritten. Does a `mov` into `w0` run before the last test? It would replace `litres`, which is in `w0`.",
   },
@@ -104,7 +104,7 @@ export const PROSE = {
     "`maybe_beep(5)` runs two instructions: `cbz` is not taken, and `ret` follows. `maybe_beep(0)` sends the run to `.L17`, because `cbz` is taken. GCC put the part that runs `beep` after the `ret`, so the straight-line path is the one where `litres` is not 0.",
 
   generalisation:
-    "GCC 16.1 at `-O1` made different choices for different `if`s. In `warning_light`, the `if` became `cmp` and `cset`, with no branch. In `describe`, one `if` became a branch, for `gradient > 10`, and the other became a `csel`, for `gradient < -10`. In `maybe_beep`, the `if` became a branch, `cbz`.\n\n" +
+    "GCC 16.1 at `-O1` made different choices for different `if`s. In `warning_light`, the `if` became `cmp` and `cset`, with no branch. In `describe`, one `if` became a branch, for `gradient > 10`, and the other became a `csel`, for `gradient < -10`. Another function, `maybe_beep`, runs `beep` only when `litres` is zero. Its `if` became a branch, `cbz`. The optional note above shows the start of that listing.\n\n" +
     "`csel` chooses between register values. `cset` writes 0 or 1. Neither can decide whether another function runs. In `maybe_beep`, the branch decides whether execution reaches the instructions that run `beep`.\n\n" +
     "These examples show what GCC produced at this setting. They do not tell us why GCC chose each instruction.",
 
@@ -114,7 +114,7 @@ export const PROSE = {
 
   countsHints: [
     "`bgt` is taken only when `gt` is yes after `cmp w0, 10`.",
-    "A run that takes `bgt` skips `cmn`, `mov w0, -2` and `csel`. A run that does not take it skips `mov w0, 2` and `b .L7`.",
+    "Do not count instructions on the path the run skips. A taken `bgt` skips `cmn`, `mov w0, -2` and `csel`; otherwise the run skips `mov w0, 2` and `b .L7`.",
     "After `cmn w0, #10`, `lt` is yes only when `w0` is below −10. −10 itself is not.",
     "11 is above 10. −11 is below −10. −10 is neither.",
     "2 in 5 instructions; 0 in 6; −2 in 6.",

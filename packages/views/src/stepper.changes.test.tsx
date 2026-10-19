@@ -63,6 +63,25 @@ const NOT_UPDATED = "N, Z, C and V were not updated by";
 vi.setConfig({ testTimeout: 30_000 });
 
 describe("the stepper that marks what changed", () => {
+  it("marks a write even when the destination retains the same bits", async () => {
+    const user = userEvent.setup();
+    const { container } = stepper({
+      program: { c: "", listing: "f:\n add w0, w0, 0\n ret" },
+      call: { entry: "f", args: [6] },
+      registers: [0],
+      flags: true,
+      showChanges: true,
+    });
+    const value = () => container.querySelector('[data-register="w0"] .al-reg-value')!;
+    expect(value()).toHaveTextContent("6");
+    await user.click(next());
+    expect(value()).toHaveTextContent("6");
+    expect(value()).toHaveAttribute("title", "Written by the last instruction");
+    expect(container.querySelector(".al-reg-tag")).toHaveTextContent("written");
+    expect(screen.getByRole("status")).toHaveTextContent("w0 was written.");
+    expect(changedFlags(container)).toEqual([]);
+  });
+
   const props = {
     program: SUM_FLAGS,
     call: CALL,
@@ -113,7 +132,7 @@ describe("the stepper that marks what changed", () => {
     expect(screen.getByRole("status").textContent).not.toContain(NOT_UPDATED);
     await user.click(next());
     expect(screen.getByRole("status")).toHaveTextContent(
-      "w0 changed. N, Z, C and V were not updated by add.",
+      "w0 was written. N, Z, C and V were not updated by add.",
     );
     expect(screen.getByRole("status")).toHaveTextContent(
       A.stepper.notUpdated("w0", "add").replace(/`/g, ""),
@@ -154,7 +173,7 @@ describe("the stepper that marks what changed", () => {
     });
     await user.click(next());
     expect(screen.getByRole("status")).toHaveTextContent(
-      "w0 changed. N, Z, C and V were not updated by sub.",
+      "w0 was written. N, Z, C and V were not updated by sub.",
     );
   });
 

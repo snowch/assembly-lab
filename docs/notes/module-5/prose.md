@@ -73,8 +73,8 @@ The tests include equal and descending endpoints, and an interval that ends at t
 *Hints, in order:*
 
 - Decide whether any work is needed before the first shift.
-- Use an unsigned comparison between `start` and `end`. Equal endpoints must skip the body too.
-- Each iteration shifts `w0` right by one place, then adds 1 to the tick in `w1`.
+- A signed comparison can put large unsigned endpoints in the wrong order. Forgetting equality also runs the body when no ticks were requested.
+- In the first iteration of `dim_up(128, 2, 5)`, the shift changes brightness from 128 to 64. The increment changes the tick from 2 to 3.
 - Put a label before the shift. After advancing the tick, test whether another iteration is needed and branch back to that label.
 - Use `cmp w1, w2` and `b.cs done` before `again:`. Under `again:`, put `lsr w0, w0, #1`, `add w1, w1, #1`, `cmp w1, w2` and `b.cc again`. Under `done:`, put `ret`.
 
@@ -117,8 +117,8 @@ Count every executed instruction, including `ret`. Do not count labels.
 *Hints, in order:*
 
 - Work out how many times the body runs for each pair of endpoints.
-- The initial `cmp` and `bcs` run even when the body is skipped.
-- Each iteration runs `lsr`, `add`, `cmp` and `bne`. The final branch still counts when it is not taken.
+- Skipping the body does not mean skipping every instruction. The initial `cmp` and `bcs` still run.
+- For the equal endpoints in `dim_up(128, 7, 7)`, follow the initial `cmp` and `bcs` straight to `ret`. There is no iteration to count.
 - Every call also runs `ret`. Add those instructions to the instructions from the iterations.
 - The results and instruction counts are 128 and 3; 64 and 7; 32 and 11.
 
@@ -145,7 +145,7 @@ The first test establishes that `tick` starts below `end`. Each iteration increa
 
 The diagram follows the instructions the simulator runs. Its counts describe this listing, not elapsed time on a processor. A real processor's timing also depends on work the simulator does not model.
 
-The simulator limits how many instructions it runs in one trace. Reaching that limit means the trace stopped; it does not establish whether the program would eventually return.
+A **trace** is the recorded sequence of instructions the simulator ran. The simulator limits the length of each trace. Reaching that limit stops the simulated run; it does not establish whether the program would eventually return.
 
 ## Figure captions and labels
 
@@ -286,8 +286,8 @@ Write `dim_down(brightness, ticks)`. Both arguments are unsigned. Halve the brig
 *Hints, in order:*
 
 - Handle a count of zero before running the first shift.
-- Put a label before the shift so a branch can repeat it.
-- After each shift, subtract 1 from `w1` with `subs`. Its Z flag tells you whether ticks remain.
+- A branch to the instruction after the shift would skip dimming on later iterations. The repeat label must include the shift.
+- In the first iteration of `dim_down(128, 3)`, the shift changes brightness to 64. Subtracting 1 changes the count from 3 to 2, so Z is 0 and ticks remain.
 - Use `b.ne` to repeat when the subtraction result is not zero. If no instruction changes the flags in between, the branch reads the flags from `subs`.
 - Start with `cbz w1, done`. Under `again:`, put `lsr w0, w0, #1`, `subs w1, w1, #1` and `b.ne again`. Under `done:`, put `ret`.
 
@@ -335,7 +335,7 @@ C distinguishes an always-true test from a constant expression. `ticks >= 0` rea
 
 C23 draft N3096, section 6.8.5 paragraph 4, lets a compiler assume termination for such a loop if it performs none of the specified observable operations. These include input and output: effects beyond ordinary changes to local variables.
 
-`dim_wrong` changes only local variables, so it meets these conditions. Another compiler need not preserve a never-ending run of this C loop.
+`dim_wrong` changes only local variables, so it meets these conditions. For example, a compiler may remove this loop instead of emitting instructions that repeat forever. The recorded GCC listing shows one compiler's choice; the C source does not guarantee that choice.
 
 *End of closed note.*
 
@@ -354,8 +354,8 @@ A 32-bit value becomes zero after at most 32 logical right shifts by one place. 
 *Hints, in order:*
 
 - There are two reasons to stop: no ticks remain, or the brightness is already zero.
-- Check the tick count before the first shift. A zero count must return the original brightness.
-- Use another `cbz` to check `w0` before shifting it. A branch to the common return is enough when the brightness is zero.
+- Shifting before checking a zero tick count would dim the display when no dimming was requested. Check the count first.
+- With zero brightness and a nonzero tick count, another shift would still leave zero. A `cbz` on `w0` can return immediately in this case.
 - After a shift, use `subs` to reduce the count and `b.ne` to repeat. Make the repeat label include the brightness check.
 - Start with `cbz w1, done`. Under `again:`, put `cbz w0, done`, `lsr w0, w0, #1`, `subs w1, w1, #1` and `b.ne again`. Under `done:`, put `ret`.
 

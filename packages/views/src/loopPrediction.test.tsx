@@ -7,6 +7,7 @@ import { LessonStore, memoryStorage } from "@platform/lesson-runtime";
 import { Interactive, type Lesson } from "@platform/lesson-schema";
 import { LoopPrediction } from "./interactives/LoopPrediction";
 import { LOOP_STRINGS as L } from "./strings.loop";
+import { ARITH_STRINGS as A } from "./strings.arith";
 import { VIEW_STRINGS as S } from "./strings";
 
 const program = {
@@ -51,6 +52,8 @@ describe("loop prediction", () => {
     commit("Three");
     expect(screen.getByRole("status")).toHaveTextContent(L.iterations(3));
     expect(screen.getByRole("status")).toHaveClass("al-match");
+    expect(screen.getByText(A.prediction.registers)).toBeVisible();
+    expect(container.querySelector('[data-register="w0"] .al-reg-value')).toHaveTextContent("128");
   });
 
   it("reports a limited trace as a limit, without grading its partial body count as a completed run", () => {

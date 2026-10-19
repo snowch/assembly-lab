@@ -14,12 +14,20 @@ export const VIEW_STRINGS = {
   modelHeading: "How the simulator steps",
   figureRoles: {
     prediction: "Prediction",
+    calculation: "Calculation",
+    exercise: "Exercise",
+    experiment: "Experiment",
+    diagram: "Diagram",
+  },
+  figureRoleNotes: {
+    calculation:
+      "The controls reveal the arithmetic one column at a time. These columns are parts of one instruction's calculation. They are not separate instructions.",
   },
 
   register: {
     /** What a screen reader hears for a register: its name and its value as a number. */
     group: (name: string) => `Register ${name}`,
-    changed: "Changed by the last instruction",
+    changed: "Written by the last instruction",
   },
 
   listing: {
@@ -170,8 +178,7 @@ export const VIEW_STRINGS = {
     numberShown: (n: string) => `Number: ${n === "" ? "none yet" : n}`,
     deleteDigit: "Delete last digit",
     clearNumber: "Clear number",
-    notEditable:
-      "This line is not an instruction the chips can build. Pick an instruction to replace it.",
+    notEditable: "This line cannot be edited in Tap mode. Pick an instruction to replace it.",
   },
 
   grader: {

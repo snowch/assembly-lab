@@ -33,10 +33,10 @@ export const MODULE0_STRINGS = {
     wrote: (name: string, value: string) => `${name} = ${value}`,
     // DRAFT
     was: (name: string, value: string) => `${name} was ${value}`,
-    // DRAFT: `list` is the registers written, joined with commas: `Changed: w0`.
-    changed: (list: string) => `Changed: ${list}`,
-    // DRAFT: `list` is the registers the figure draws that the instruction did not write: `Unchanged: w1, w2, w3`.
-    unchanged: (list: string) => `Unchanged: ${list}`,
+    // DRAFT: `list` is the registers written, joined with commas: `Written: w0`.
+    changed: (list: string) => `Written: ${list}`,
+    // DRAFT: `list` is the registers the figure draws that the instruction did not write: `Not written: w1, w2, w3`.
+    unchanged: (list: string) => `Not written: ${list}`,
     // DRAFT
     none: "none",
     // DRAFT
@@ -51,7 +51,7 @@ export const MODULE0_STRINGS = {
     // DRAFT
     hideBits: "Hide the bits",
     // DRAFT
-    changed: "Changed",
+    changed: "Written",
   },
   listing: {
     // DRAFT

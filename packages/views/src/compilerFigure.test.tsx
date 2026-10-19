@@ -6,6 +6,7 @@ import { LessonStore, memoryStorage } from "@platform/lesson-runtime";
 import { Interactive, type Lesson } from "@platform/lesson-schema";
 import { CompilerPlayground } from "./interactives/CompilerPlayground";
 import { COMPILER_STRINGS as C } from "./strings.compiler";
+import { VIEW_STRINGS as S } from "./strings";
 it("shows registers used by instructions without treating a C function name as a register", () => {
   const source =
     "unsigned w999(unsigned value) { unsigned a=value; unsigned b=a; unsigned c=b; unsigned d=c; return d+7; }";
@@ -31,6 +32,11 @@ it("shows registers used by instructions without treating a C function name as a
   expect(container.querySelector('[data-compiler-step="0"]')).not.toBeNull();
   expect(container.querySelector('[data-register="w4"]')).not.toBeNull();
   expect(container.querySelector('[data-register="w999"]')).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: S.stepper.next }));
+  const status = screen.getByRole("status");
+  expect(status.textContent).toMatch(/^Ran /);
+  expect(status.textContent).not.toContain("`");
+  expect(status.querySelector("code")).not.toBeNull();
 });
 
 it("reports the machine instruction limit rather than a returned-value disagreement", () => {

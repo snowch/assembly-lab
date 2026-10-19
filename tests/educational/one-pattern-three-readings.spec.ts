@@ -675,7 +675,13 @@ test.describe("Make −1, with the bits typed in hexadecimal", () => {
     await press(page, bit(c, 4));
     const before = (await stored(page, LESSON_ID)).challenges[MAKE].artifact.answers.bits;
     const actions = c.locator(".challenge-actions");
-    const y = (await actions.boundingBox())!.y;
+    const position = () =>
+      actions.evaluate((el) => {
+        const rect = el.getBoundingClientRect();
+        const parent = el.closest(".challenge")!.getBoundingClientRect();
+        return { y: rect.y, relativeY: rect.y - parent.y, width: rect.width, height: rect.height };
+      });
+    const original = await position();
     for (const text of ["xyz", "fffffffff", "0xg1"]) {
       await box(page).fill(text);
       await expect(c.locator(".answer-hex-problem"), text).toHaveText(M1.hexEntry.invalid);
@@ -683,7 +689,12 @@ test.describe("Make −1, with the bits typed in hexadecimal", () => {
       expect((await stored(page, LESSON_ID)).challenges[MAKE].artifact.answers.bits, text).toBe(
         before,
       );
-      expect((await actions.boundingBox())!.y, text).toBe(y);
+      const current = await position();
+      expect(current.relativeY, text).toBe(original.relativeY);
+      expect(current.width, text).toBe(original.width);
+      expect(current.height, text).toBe(original.height);
+      // Allow subpixel rounding, but still reject movement of half a CSS pixel or more.
+      expect(Math.abs(current.y - original.y), text).toBeLessThan(0.5);
     }
     await box(page).fill("10");
     await expect(c.locator(".answer-hex-problem")).toHaveText("");

@@ -59,6 +59,7 @@ export const countingDown: LessonInput = {
         {
           id: "dim-down-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: STEPS,
           caption: LABELS.captions.listing,
           props: { program: DIM_DOWN },
@@ -74,6 +75,7 @@ export const countingDown: LessonInput = {
         {
           id: "predict-dim-down-body",
           kind: "loop-prediction",
+          role: "prediction",
           timeModel: STEPS,
           caption: LABELS.captions.predict,
           props: {
@@ -112,6 +114,7 @@ export const countingDown: LessonInput = {
         {
           id: "dim-down-runs",
           kind: "loop-runs",
+          role: "experiment",
           timeModel: STEPS,
           caption: LABELS.captions.runs,
           props: {
@@ -141,6 +144,7 @@ export const countingDown: LessonInput = {
         {
           id: "write-dim-down",
           kind: "challenge",
+          role: "exercise",
           timeModel: STEPS,
           caption: LABELS.captions.write,
           props: { challengeId: "write-dim-down" },
@@ -155,6 +159,7 @@ export const countingDown: LessonInput = {
         {
           id: "predict-dim-do-zero",
           kind: "loop-prediction",
+          role: "prediction",
           timeModel: STEPS,
           caption: LABELS.captions.predictFailure,
           props: {
@@ -185,6 +190,7 @@ export const countingDown: LessonInput = {
         {
           id: "dim-do-runs",
           kind: "loop-runs",
+          role: "experiment",
           timeModel: STEPS,
           caption: LABELS.captions.failureRuns,
           props: {
@@ -206,6 +212,7 @@ export const countingDown: LessonInput = {
         {
           id: "dim-wrong-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: STEPS,
           caption: LABELS.captions.wrongCompiler,
           props: { program: DIM_WRONG_GCC },
@@ -228,6 +235,7 @@ export const countingDown: LessonInput = {
         {
           id: "dim-down-wrong-runs",
           kind: "loop-runs",
+          role: "experiment",
           timeModel: STEPS,
           caption: LABELS.captions.wrong,
           props: {
@@ -252,6 +260,7 @@ export const countingDown: LessonInput = {
         {
           id: "write-dim-until-dark",
           kind: "challenge",
+          role: "exercise",
           timeModel: STEPS,
           caption: LABELS.captions.final,
           props: { challengeId: "write-dim-until-dark" },

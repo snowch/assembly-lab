@@ -67,6 +67,7 @@ export const addingAndTheFlags: LessonInput = {
           id: "predict-readings",
           kind: "run-prediction",
           timeModel: STEPS,
+          role: "prediction",
           caption: LABELS.captions.predictReadings,
           props: {
             question: PROSE.predictionQuestion,
@@ -93,6 +94,7 @@ export const addingAndTheFlags: LessonInput = {
           id: "add-columns",
           kind: "adder",
           timeModel: STEPS,
+          role: "calculation",
           caption: LABELS.captions.adder,
           props: { program: PLUS, call: PLUS_CALL, after: "predict-readings", detail: true },
         },
@@ -107,6 +109,7 @@ export const addingAndTheFlags: LessonInput = {
           id: "predict-the-flags",
           kind: "challenge",
           timeModel: STEPS,
+          role: "exercise",
           caption: LABELS.captions.flags,
           props: { challengeId: "predict-flags" },
         },
@@ -114,6 +117,7 @@ export const addingAndTheFlags: LessonInput = {
           id: "add-carry-out",
           kind: "adder",
           timeModel: STEPS,
+          role: "calculation",
           caption: LABELS.captions.adderCarryOut,
           props: {
             program: PLUS,
@@ -134,6 +138,7 @@ export const addingAndTheFlags: LessonInput = {
           id: "predict-add-flags",
           kind: "run-prediction",
           timeModel: STEPS,
+          role: "prediction",
           caption: LABELS.captions.predictAdd,
           props: {
             question: PROSE.failureQuestion,
@@ -173,6 +178,7 @@ export const addingAndTheFlags: LessonInput = {
           id: "smallest-overflow",
           kind: "challenge",
           timeModel: STEPS,
+          role: "exercise",
           caption: LABELS.captions.overflow,
           props: { challengeId: "smallest-overflow" },
         },

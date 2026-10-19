@@ -41,6 +41,41 @@ function draw(props: Record<string, unknown>) {
 }
 
 describe("memory stepper", () => {
+  it("keeps declared array elements grouped while byte values and access highlights follow the trace", () => {
+    const { container } = draw({
+      program: { c: "", listing: "f:\n str w1, [x0, 4]\n ret" },
+      call: { ...call, memory: [1, 2, 3, 4, 5, 6, 7, 8] },
+      memory: { address: 0x410000, length: 8, elementBytes: 4, firstElement: 2 },
+    });
+    const groups = [...container.querySelectorAll("[data-element]")];
+    expect(groups.map((g) => g.getAttribute("aria-label"))).toEqual(["Element 2", "Element 3"]);
+    expect(
+      groups.map((g) =>
+        [...g.querySelectorAll("[data-address]")].map((c) => c.getAttribute("data-address")),
+      ),
+    ).toEqual([
+      ["0x410000", "0x410001", "0x410002", "0x410003"],
+      ["0x410004", "0x410005", "0x410006", "0x410007"],
+    ]);
+    fireEvent.click(screen.getByRole("button", { name: S.stepper.next }));
+    expect(groups[0]!.querySelectorAll('[data-access="stored"]')).toHaveLength(0);
+    expect(groups[1]!.querySelectorAll('[data-access="stored"]')).toHaveLength(4);
+    expect([...groups[1]!.querySelectorAll(".al-memory-value")].map((e) => e.textContent)).toEqual([
+      "78",
+      "56",
+      "34",
+      "12",
+    ]);
+    fireEvent.click(screen.getByRole("button", { name: S.stepper.back }));
+    expect(groups[1]!.querySelectorAll('[data-access="stored"]')).toHaveLength(0);
+    expect([...groups[1]!.querySelectorAll(".al-memory-value")].map((e) => e.textContent)).toEqual([
+      "05",
+      "06",
+      "07",
+      "08",
+    ]);
+  });
+
   it("optionally shows arithmetic flags across a store and rewinds them", () => {
     const { container } = draw({
       program: { c: "", listing: "f:\nadds w0, w0, w1\nstr w0, [x2]\ncset w0, vs\nret" },

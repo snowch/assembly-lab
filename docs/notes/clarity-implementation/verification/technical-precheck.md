@@ -1,0 +1,13 @@
+# Independent technical precheck
+
+Coordinator read-only source pass, before final build. This supports the changed claims but is not a built-page verdict. Model/effort inherited; coordinator did not draft or edit learner prose.
+
+- **M1/M2 subtraction:** current text includes both inputs in the complete unsigned addition, a + 2^32 - b, and treats b as the subtracted input rather than an ambiguous assembly operand position. The simulator's addition record and existing subtraction facts verify complement-plus-carry and result/carry behaviour. For b=0, retaining low32 yields a and carry1 for all unsigned32 a. Recommended extending the old a=0-only intermediate test to nonzero a; sent root.
+- **M3 paired stores:** revised text names two adjacent eight-byte regions and second start sp+8. The recorded stp of x29/x30, machine pair-store semantics, stack trace and call facts agree. No compiler instructions or source association altered by this prose.
+- **M5 incoming narrow argument:** AAPCS64 2025Q4 C.9 puts an integral argument in least significant register bits. Its following observations explicitly say unused register bits are unspecified at callee entry and narrow arguments need not be widened. The new explanation correctly separates this incoming contract from executing a write through w1. Machine w-write semantics clear upper32; the exercise deliberately seeds nonzero upper bits.
+- **M7 shifts:** cached official N3096 6.5.7p4 says negative signed left shift is undefined; p5 says negative signed right shift is implementation-defined. The revision distinguishes compiler choice/documentation from no C guarantee and identifies GCC's extension separately. docs/sources.md records the GCC implement-c.texi evidence for sign extension and GCC left-shift extension. The note does not claim all compilers match GCC.
+- **L11 loop permission:** N3096 6.8.5p4 and footnote201 permit assuming termination for the specified nonconstant loops without listed observable operations; the footnote explicitly gives loop removal as an intended transformation. Revised prose gives removal as an allowed example and preserves that recorded GCC is one choice, not guaranteed output.
+
+Evidence read: /tmp/course-n3096.txt (official draft extracted text), /tmp/course-aapcs64.rst (official ABI source), docs/sources.md, recorded lesson listings and machine/facts source. Final browser readers will check presentation, state, ordering and prerequisites.
+
+Followup checked: root added a simulator-backed subtraction fact test for a = 0, 1, 1000 and maximum unsigned32 with b = 0. It asserts full a+2^32 sum, retained a and carry1. Coordinator independently inspected the added test; this addresses the earlier a=0-only coverage concern. Root owns its execution result.

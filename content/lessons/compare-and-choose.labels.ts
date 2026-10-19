@@ -35,7 +35,7 @@ export const LABELS = {
       "Your less_fuel, stepped on the test you choose, with the stages of its compare and select.",
     predictGe: "A prediction about what steeper_u returns once its last operand is ge.",
     stepGe:
-      "steeper_u with ge in place of cs, on 0x80000000 and 1, with the flags under the registers. A register or flag with an outline has just changed.",
+      "steeper_u with ge in place of cs, on 0x80000000 and 1, with the flags under the registers. An outline marks a register that the instruction wrote, or a flag whose value changed.",
     conditions:
       "Two values you choose, the flags cmp leaves, and each condition beside whether it holds.",
     holds: "The compare, and four conditions to read from the flags it leaves.",

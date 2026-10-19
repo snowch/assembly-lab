@@ -89,7 +89,7 @@ export const LABELS = {
       compareShifts: "Work out six results for 21 and −21, then give them.",
       predictFirstAdd: "A prediction about the first instruction GCC uses for g / 2.",
       stepDiv2:
-        "div2 for -7 or for 7, one instruction at a time. A register with an outline has just changed.", // DRAFT
+        "div2 for -7 or for 7, one instruction at a time. A register with an outline was written by the last instruction.", // DRAFT
       pickInstruction: "Say which instruction GCC uses for each shift, then give your answers.",
     },
     /** The C type over each of the two listings. */

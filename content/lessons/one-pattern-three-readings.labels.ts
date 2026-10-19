@@ -25,7 +25,8 @@ export const LABELS = {
     reflection: "What you now know",
   },
   captions: {
-    fuelRun: "fuel_used_wrong(50, 38) as first written; w0 after its subtraction.",
+    fuelRun:
+      "fuel_used_wrong(50, 38) as first written. Press Next to see what its subtraction writes to w0.",
     reader:
       "One register, with each hexadecimal digit under its four bits. Each reading shows the top bit's value and the total from the other bits.",
     compare: "The two functions side by side, with GCC's listing for each.",
@@ -33,7 +34,7 @@ export const LABELS = {
     predictAdd12:
       "A prediction about what w0 holds after the new instruction runs. The new instruction, add w0, w0, 12, sits before ret in fuel_used_wrong.",
     stepAdd12:
-      "fuel_used_wrong(50, 38) again, with add w0, w0, 12 before ret. A register with an outline has just changed.",
+      "fuel_used_wrong(50, 38) again, with add w0, w0, 12 before ret. A register with an outline was written by the last instruction.",
     make: "Set each of the 32 bits of w0 with its button, then type one number in the box.",
     read: "Several bit patterns are shown. Type the unsigned reading and the signed reading of each.",
   },

@@ -23,7 +23,7 @@ const Props = z.object({
 });
 
 /** What the typed text is, before the assembler is asked: a whole number in decimal or hexadecimal. */
-const NUMBER = /^[+-]?(0x[0-9a-f]+|\d+)$/i;
+const NUMBER = /^[+-]?(0x[0-9a-f]+(?:\s+[0-9a-f]+)*|\d+)$/i;
 
 type Result =
   | { readonly kind: "empty" }
@@ -36,7 +36,7 @@ export function tryMov(text: string): Result {
   const typed = text.trim();
   if (typed === "") return { kind: "empty" };
   if (!NUMBER.test(typed)) return { kind: "not-a-number" };
-  const { program, errors } = assemble(`mov w0, ${typed}\nret\n`);
+  const { program, errors } = assemble(`mov w0, ${typed.replace(/\s+/g, "")}\nret\n`);
   if (program === null) {
     const first = errors[0];
     return { kind: "refused", sentence: first ? errorSentence(first) : "" };
@@ -77,7 +77,7 @@ export const ConstantTester = withProps(Props, function ConstantTester({ data, s
         {result.kind === "not-a-number" && <p>{withCode(S.tester.notNumber)}</p>}
         {result.kind === "refused" && <p className="al-nomatch">{withCode(result.sentence)}</p>}
         {result.kind === "one" && (
-          <p className="al-match">{withCode(S.tester.fits(text.trim()))}</p>
+          <p className="al-match">{withCode(S.tester.fits(text.replace(/\s+/g, "")))}</p>
         )}
       </div>
       {result.kind === "one" && <RegisterRow name="w0" value={result.w0} changed halves />}

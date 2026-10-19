@@ -24,9 +24,12 @@ export const PROSE = {
     "The answer is 2000. Counting forward from 4294966296, 1000 ticks reach the wrap to 0, and 1000 more reach 1000.",
 
   investigation:
-    "After 4294967295 comes 0, so the counter's values form a ring. The figure draws them that way. The counter counts forward, clockwise.\n\n" +
-    "Two readings close together sit at almost one spot on a ring of 4294967296 values. So the strip under the ring enlarges the stretch round the wrap. The strip shows `then`, the wrap from 4294967295 to 0, `now`, the ticks before the wrap, the ticks after it, and their total.\n\n" +
     "`subs` does the same subtraction as `sub` and also replaces all four flags, N, Z, C and V. `sub` leaves the flags unchanged.\n\n" +
+    "The subtraction `a - b` needs a **borrow** when `a` is less than `b` under the unsigned reading. After `adds`, C = 1 means a carry left the top bit. After `subs`, C = 1 means no borrow was needed, and C = 0 means one was.\n\n" +
+    "After 4294967295 comes 0, so the counter's values form a ring. The figure draws them that way. The counter counts forward, clockwise.\n\n" +
+    "Two readings close together sit at almost one spot on a ring of 4294967296 values. So the strip under the ring enlarges the stretch round the wrap. The strip shows `then`, the wrap from 4294967295 to 0, `now`, the ticks before the wrap, the ticks after it, and their total.",
+
+  subtractionInvestigation:
     "The processor subtracts by adding. To work out `a - b`, it changes every bit of `b`: each 1 becomes 0, and each 0 becomes 1. It adds the result to `a`, and adds 1 more as the carry into the first column.\n\n" +
     "The example uses four bits only, to show the method. The real instruction uses 32. 5 is `0101`. 3 is `0011`, and with every bit changed it is `1100`.\n\n" +
     "```\n" +
@@ -38,10 +41,9 @@ export const PROSE = {
     "   0010     kept: 2\n" +
     "  1         carry out of the top\n" +
     "```\n\n" +
-    "For 32 bits, changing every bit of `b` gives 4294967295 minus `b`. Adding 1 gives 4294967296 minus `b`, or 2³² minus `b`. This is the full sum, before keeping only the low 32 bits. When `b` is 0, the full sum is 4294967296: the low 32 bits are 0, with a carry out of the top bit.\n\n" +
-    "The figures below show the same steps for the real 32-bit `subs`: the second operand, its bits changed, the carry in of 1, the result and the carry out.\n\n" +
-    "A subtraction needs a **borrow** when `a` is less than `b` under the unsigned reading. After `adds`, C = 1 means a carry left the top bit. After `subs`, C = 1 means no borrow was needed, and C = 0 means one was.\n\n" +
-    "The two agree: a carry leaves the top exactly when `a` is at least `b`.\n\n" +
+    "For 32 bits, changing every bit of `b` gives 4294967295 minus `b`. The adder adds that value to `a`, then adds 1. The full sum is `a + 4294967296 - b`, before keeping only the low 32 bits. When `b` is 0, the full sum is `a + 4294967296`: the low 32 bits hold `a`, and a carry leaves the top bit.\n\n" +
+    "The figures below show the same steps for the real 32-bit `subs`: the input being subtracted, its bits changed, the carry in of 1, the result and the carry out.\n\n" +
+    "A carry leaves the top exactly when `a` is at least `b`, so C = 1 also means no borrow was needed.\n\n" +
     "The two figures below show the final states of two subtractions, each of which can be stepped column by column. One needs a borrow: 1000 minus 4294966296 leaves C 0. The other does not: 9000 minus 2500 leaves C 1 and the result 6500.",
 
   construction: "Earlier, GCC wrote `elapsed` for you. Here you write it yourself.",
@@ -51,7 +53,7 @@ export const PROSE = {
     "You may use `add`, `sub`, `adds`, `subs` and `ret`.",
   elapsedHints: [
     "The 32 bits of a 32-bit subtraction are `now - then` when `now` is at least `then`, and `now - then + 4294967296` when `now` is less than `then`. Either way they are the distance round the ring.",
-    "No test for the wrap is needed.",
+    "Do not reverse the subtraction when the counter wraps. The low 32 bits already give the forward distance.",
     "`elapsed(5000, 1000)` is 4000. `sub` takes 1000 from 5000.",
     "`now` arrives in `w0` and `then` in `w1`.",
     "The whole answer is `sub w0, w0, w1`, then `ret`.",
@@ -90,14 +92,14 @@ export const PROSE = {
     "Enter the result in decimal, and C as 0 or 1.",
   stepHints: [
     "Subtracting keeps the low 32 bits. C is 1 only if no borrow was needed.",
-    "0 is smaller than 4294967295 under the unsigned reading.",
+    "Do not use C = 1 to mean a borrow. After `subs`, a borrow makes C = 0.",
     "`elapsed(1000, 4294966296)` is 2000, with C 0.",
     "One step after 4294967295, the counter reads 0.",
     "The whole answer is 1, and C is 0.",
   ] as const,
 
   reflection:
-    "- A subtraction is done as an addition of the second operand with every bit changed, plus 1.\n" +
+    "- To subtract `b` from `a`, add `a`, the bits of `b` turned over, and 1. Keep the low 32 bits.\n" +
     "- C = 1 after `subs` means no borrow.\n" +
     "- A 32-bit unsigned counter wraps from 4294967295 to 0.\n" +
     "- For a counter advancing normally, one 32-bit subtraction gives the elapsed ticks if less than a full turn has passed.\n" +

@@ -32,8 +32,8 @@ export const PROSE = {
     "The tests include equal and descending endpoints, and an interval that ends at the largest unsigned value.",
   writeHints: [
     "Decide whether any work is needed before the first shift.",
-    "Use an unsigned comparison between `start` and `end`. Equal endpoints must skip the body too.",
-    "Each iteration shifts `w0` right by one place, then adds 1 to the tick in `w1`.",
+    "A signed comparison can put large unsigned endpoints in the wrong order. Forgetting equality also runs the body when no ticks were requested.",
+    "In the first iteration of `dim_up(128, 2, 5)`, the shift changes brightness from 128 to 64. The increment changes the tick from 2 to 3.",
     "Put a label before the shift. After advancing the tick, test whether another iteration is needed and branch back to that label.",
     "Use `cmp w1, w2` and `b.cs done` before `again:`. Under `again:`, put `lsr w0, w0, #1`, `add w1, w1, #1`, `cmp w1, w2` and `b.cc again`. Under `done:`, put `ret`.",
   ] as const,
@@ -56,8 +56,8 @@ export const PROSE = {
     "Count every executed instruction, including `ret`. Do not count labels.",
   finalHints: [
     "Work out how many times the body runs for each pair of endpoints.",
-    "The initial `cmp` and `bcs` run even when the body is skipped.",
-    "Each iteration runs `lsr`, `add`, `cmp` and `bne`. The final branch still counts when it is not taken.",
+    "Skipping the body does not mean skipping every instruction. The initial `cmp` and `bcs` still run.",
+    "For the equal endpoints in `dim_up(128, 7, 7)`, follow the initial `cmp` and `bcs` straight to `ret`. There is no iteration to count.",
     "Every call also runs `ret`. Add those instructions to the instructions from the iterations.",
     "The results and instruction counts are 128 and 3; 64 and 7; 32 and 11.",
   ] as const,
@@ -71,7 +71,7 @@ export const PROSE = {
     "The first test establishes that `tick` starts below `end`. Each iteration increases it by 1, so it reaches `end` without passing it. Repeating until the values are equal gives the same stopping point.",
   modelVsReality:
     "The diagram follows the instructions the simulator runs. Its counts describe this listing, not elapsed time on a processor. A real processor's timing also depends on work the simulator does not model.\n\n" +
-    "The simulator limits how many instructions it runs in one trace. Reaching that limit means the trace stopped; it does not establish whether the program would eventually return.",
+    "A **trace** is the recorded sequence of instructions the simulator ran. The simulator limits the length of each trace. Reaching that limit stops the simulated run; it does not establish whether the program would eventually return.",
   originalityNote: {
     textbookExample: "Adding consecutive integers or computing a factorial with a counting loop.",
     howThisDiffers:

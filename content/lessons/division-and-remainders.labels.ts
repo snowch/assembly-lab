@@ -16,7 +16,7 @@ export const LABELS = {
     construction: "Write a signed remainder",
     failureExperiment: "Using unsigned division for signed inputs",
     explanation: "Separate C rules from instruction results",
-    generalisation: "Widen the calculation before dividing",
+    generalisation: "Division by a constant",
     challenge: "Calculate fuel consumption",
     reflection: "What you now know",
   },

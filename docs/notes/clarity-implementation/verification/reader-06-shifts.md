@@ -1,0 +1,23 @@
+# Independent reader/checker: 06 Shifts
+
+Verdict: **accepted fixes verified; no new finding requiring correction** in the inspected scope. Read-only review; no application or lesson edits. Read actual lesson source and relevant prerequisite passages before the accepted audit and coverage plan. Did not use the author's implementation explanation.
+
+## Accepted issue reconciliation
+
+- **M7, C versus GCC guarantees: fixed.** `content/lessons/shifts.prose.ts:19–20` now says the standard “lets the compiler choose and document the result” of negative signed right shift, whereas for some signed left shifts “C gives no guarantee about the program's behaviour”. The GCC extension is explicitly named and qualified for portability. Opened “What C says” in all four browser configurations. These describe the two different guarantees in plain language without requiring the learner to already know the formal standard categories. The repository's GCC manual citation in `docs/sources.md:31` supports the GCC distinction; this review did not re-fetch the external manual.
+- **old06-N1, figure reference: fixed.** `shifts.prose.ts:31` says “The prediction figure shows the `asr` result and marks the bits that changed. In the next section, you can choose either shift and see which bits fill the gap.” Browser evidence confirms changed-bit highlighting in the prediction and lost/filled-bit marks in the separate experiment. It no longer claims that the current prediction shows both operations' fill marks.
+- **N6, unreadable temporal labels on phones: fixed.** At 375 pixels, “w0 when the call starts”, “w0 before” and “w0 after” occupy readable lines above their values; the words are no longer split into tiny fragments. Both themes checked visually. At 1280 pixels the initial label wraps at word boundaries and remains readable. Evidence: `06-{375,1280}-{light,dark}-before.png` and `...-after.png`.
+- **Shared role correction and write language: verified locally.** Both prediction figures display Prediction, the shift control displays Experiment and the two answer exercises display Exercise. The genuine instruction stepper retains Stepped. Its caption says the outline marks a register “written by the last instruction”; after the first instruction the highlighted source/instruction and outlined register agree. This lesson is not an independent unchanged-value-write reproduction.
+- **Hint headings:** source-reviewed both ladders. The Common mistake rungs now warn against specific mistakes; the Smaller example rungs supply actual examples. No challenge answers are reproduced here.
+
+## Prerequisites and independent reading
+
+Read the front-page Before you start panel and checked relevant earlier lessons 00–05 for signed/unsigned readings, hexadecimal, register widths, instruction operands, GCC and `-O1`, masks and `movk`'s shifted constant. The page introduces shift notation, logical/arithmetic shifts and rounding behaviour locally. The revised C note explains its guarantees without assuming the formal terms implementation-defined or undefined. No remaining unexplained prerequisite needed to attempt this lesson was identified. Later lessons were not used to excuse gaps.
+
+The initial prediction still shows an unsigned decimal reading beside hexadecimal while the prose uses the signed reading. Earlier lesson 01 explicitly teaches that these are readings of identical bits; this is not a new or blocking assumption and was not promoted to a finding.
+
+## Actual browser coverage and limits
+
+Used real headless Chromium against `http://localhost:4291/assembly-lab/#/lesson/shifts`, fresh contexts at 375×1000 and 1280×1000 in light and dark themes. Set `assembly-lab:v1:theme` to the raw string and asserted `html[data-theme]`. Captured initial rendered text, both prediction states, the unlocked shift figure and the first real step. Opened the C-standard note, submitted one wrong choice to each prediction, verified the first experiment's initial gate and subsequent unlock, and advanced the division stepper once in every configuration. No page errors or whole-page horizontal overflow were observed. `06-evidence.json` records these checks and `check06.mjs` is the reproducible probe.
+
+Read all lesson prose, labels, tasks, hints and feedback in source, and the full initial rendered main text. Inspected screenshots for prediction results in all four configurations, plus representative phone experiment and stepper views. Did not enumerate all shift inputs/distances, all exercise submissions, every hint disclosure or every stored-state transition. No full automated suite, build, hardware differential test or network compiler request was run by this reader.

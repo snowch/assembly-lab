@@ -22,7 +22,7 @@ After `sub w0, w1, w0`, the register `w0` holds a pattern of 32 bits. Read as an
 
 How can the same bits be −12?
 
-*`fuel_used_wrong(50, 38)` as first written; `w0` after its subtraction.*
+*fuel_used_wrong(50, 38) as first written. Press Next to see what its subtraction writes to w0.*
 
 ## 2. Why the readings matter
 

@@ -80,6 +80,7 @@ export const compareAndChoose: LessonInput = {
         {
           id: "steeper-runs",
           kind: "listing-runs",
+          role: "diagram",
           timeModel: STEPS,
           caption: LABELS.captions.runs,
           props: { program: STEEPER_BOTH, runs: RUNS },
@@ -100,6 +101,7 @@ export const compareAndChoose: LessonInput = {
         {
           id: "predict-steeper-change",
           kind: "listing-change",
+          role: "prediction",
           timeModel: STEPS,
           caption: LABELS.captions.predictChange,
           props: {
@@ -121,6 +123,7 @@ export const compareAndChoose: LessonInput = {
         {
           id: "compare-steeper",
           kind: "listing-diff",
+          role: "experiment",
           timeModel: STEPS,
           caption: LABELS.captions.diff,
           props: {
@@ -142,6 +145,7 @@ export const compareAndChoose: LessonInput = {
         {
           id: "write-less-fuel",
           kind: "challenge",
+          role: "exercise",
           timeModel: STEPS,
           caption: LABELS.captions.lessFuel,
           props: { challengeId: "write-less-fuel" },
@@ -170,6 +174,7 @@ export const compareAndChoose: LessonInput = {
         {
           id: "predict-steeper-ge",
           kind: "run-prediction",
+          role: "prediction",
           timeModel: STEPS,
           caption: LABELS.captions.predictGe,
           props: {
@@ -208,6 +213,7 @@ export const compareAndChoose: LessonInput = {
         {
           id: "every-condition",
           kind: "condition-table",
+          role: "experiment",
           timeModel: STEPS,
           caption: LABELS.captions.conditions,
           // The figure starts at 8 and 8 and takes only the buttons, so it never shows the last
@@ -242,6 +248,7 @@ export const compareAndChoose: LessonInput = {
         {
           id: "read-four-conditions",
           kind: "challenge",
+          role: "exercise",
           timeModel: STEPS,
           caption: LABELS.captions.holds,
           props: { challengeId: "read-four-conditions" },

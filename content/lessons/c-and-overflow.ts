@@ -35,6 +35,7 @@ export const cAndOverflow: LessonInput = {
         {
           id: "c-increment-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: "none",
           caption: LABELS.captions.listing,
           props: { program: CAN_INCREMENT },
@@ -50,6 +51,7 @@ export const cAndOverflow: LessonInput = {
         {
           id: "predict-machine-increment",
           kind: "run-prediction",
+          role: "prediction",
           timeModel: "steps",
           caption: LABELS.captions.predict,
           props: {
@@ -85,6 +87,7 @@ export const cAndOverflow: LessonInput = {
         {
           id: "compare-increment-options",
           kind: "listing-pair",
+          role: "diagram",
           timeModel: "none",
           caption: LABELS.captions.compare,
           props: {
@@ -105,6 +108,7 @@ export const cAndOverflow: LessonInput = {
         {
           id: "write-increment-limit",
           kind: "challenge",
+          role: "exercise",
           timeModel: "steps",
           caption: LABELS.captions.write,
           props: { challengeId: "write-increment-limit" },
@@ -119,6 +123,7 @@ export const cAndOverflow: LessonInput = {
         {
           id: "predict-wrap-increment",
           kind: "run-prediction",
+          role: "prediction",
           timeModel: "steps",
           caption: LABELS.captions.predictFailure,
           props: {
@@ -162,6 +167,7 @@ export const cAndOverflow: LessonInput = {
         {
           id: "write-safe-increment",
           kind: "challenge",
+          role: "exercise",
           timeModel: "steps",
           caption: LABELS.captions.final,
           props: { challengeId: "write-safe-increment" },
@@ -169,6 +175,7 @@ export const cAndOverflow: LessonInput = {
         {
           id: "safe-increment-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: "none",
           caption: LABELS.captions.extra,
           props: { program: SAFE_INCREMENT_BRANCH, afterChallenge: "write-safe-increment" },

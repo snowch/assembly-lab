@@ -60,6 +60,7 @@ export const subtractingAndTheTickCounter: LessonInput = {
           id: "predict-elapsed",
           kind: "run-prediction",
           timeModel: STEPS,
+          role: "prediction",
           caption: LABELS.captions.predictElapsed,
           props: {
             question: PROSE.predictionQuestion,
@@ -82,6 +83,7 @@ export const subtractingAndTheTickCounter: LessonInput = {
           id: "counter-ring",
           kind: "counter-ring",
           timeModel: STEPS,
+          role: "diagram",
           caption: LABELS.captions.ring,
           props: {
             program: ELAPSED,
@@ -93,8 +95,10 @@ export const subtractingAndTheTickCounter: LessonInput = {
         },
         {
           id: "subtract-wrapped",
+          lead: PROSE.subtractionInvestigation,
           kind: "adder",
           timeModel: STEPS,
+          role: "calculation",
           caption: LABELS.captions.subtractWrapped,
           props: {
             program: ELAPSED_SUBS,
@@ -109,6 +113,7 @@ export const subtractingAndTheTickCounter: LessonInput = {
           id: "subtract-no-wrap",
           kind: "adder",
           timeModel: STEPS,
+          role: "calculation",
           caption: LABELS.captions.subtractNoWrap,
           props: {
             program: ELAPSED_SUBS,
@@ -130,6 +135,7 @@ export const subtractingAndTheTickCounter: LessonInput = {
           id: "write-elapsed",
           kind: "challenge",
           timeModel: STEPS,
+          role: "exercise",
           caption: LABELS.captions.elapsed,
           props: { challengeId: "write-elapsed" },
         },
@@ -137,6 +143,7 @@ export const subtractingAndTheTickCounter: LessonInput = {
           id: "subtract-own",
           kind: "adder",
           timeModel: STEPS,
+          role: "calculation",
           caption: LABELS.captions.subtractOwn,
           props: {
             program: ELAPSED_SUBS,
@@ -159,6 +166,7 @@ export const subtractingAndTheTickCounter: LessonInput = {
           id: "predict-negs",
           kind: "run-prediction",
           timeModel: STEPS,
+          role: "prediction",
           caption: LABELS.captions.predictNegs,
           props: {
             question: PROSE.failureQuestion,
@@ -196,6 +204,7 @@ export const subtractingAndTheTickCounter: LessonInput = {
           id: "one-step-past",
           kind: "challenge",
           timeModel: STEPS,
+          role: "exercise",
           caption: LABELS.captions.step,
           props: { challengeId: "one-step-past" },
         },

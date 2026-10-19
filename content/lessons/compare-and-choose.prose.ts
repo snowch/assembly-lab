@@ -58,7 +58,7 @@ export const PROSE = {
 
   lessFuelHints: [
     "Compare the two, then let one `csel` choose between them.",
-    "The values are `unsigned`, so use the unsigned pair of conditions.",
+    "A signed condition can misread an unsigned value whose top bit is set. Choose a condition for unsigned ordering.",
     "`csel w0, w0, w1, cc` would give `w0` when `cc` is yes and `w1` when it is no.",
     "`cc` is yes when C is 0, that is, when `w0` is lower than `w1`. Compare `w0` with `w1`, in that order.",
     "`cmp w0, w1`, `csel w0, w0, w1, cc`, `ret`.",
@@ -71,7 +71,7 @@ export const PROSE = {
     larger:
       "The larger value comes back. Check the order of `cmp`'s operands, and the order of `csel`'s two sources.",
     equal:
-      "Equal values give the wrong one. Which source does `csel` take when the condition is yes, and which when it is no?",
+      "The returned value is wrong even though the inputs were equal. Check what each source register holds when `csel` runs. Has an earlier instruction overwritten an input?",
   },
 
   /** Said inside the figure that steps the learner's own solution, once the challenge has passed. */
@@ -85,8 +85,8 @@ export const PROSE = {
 
   failureExplain:
     "The run has the same operands as GCC's `steeper_u`: `0x80000000` and 1. It uses the same `cmp`, `cmp w1, w0`. That `cmp` leaves NZCV 1001: N is 1, Z is 0, C is 0 and V is 1.\n\n" +
-    "`ge` is yes, because N equals V. So `w0` gets `w1`, which is 1.\n\n" +
-    "`cs` is no, because C is 0. So `w0` keeps `0x80000000`, which is 2147483648.\n\n" +
+    "In the changed function, `ge` is yes because N equals V. Its `csel` copies 1 from `w1` into `w0`.\n\n" +
+    "In a separate run of GCC's original `steeper_u` with the same inputs, `cs` is no because C is 0. Its `csel` leaves `0x80000000` in `w0`, which is 2147483648.\n\n" +
     "With `ge`, the function reads the bits as signed. `0x80000000` is the smallest `int`, so the function returns 1. GCC's `steeper_u`, with `cs`, returns 2147483648.",
 
   explanation:
@@ -122,7 +122,7 @@ export const PROSE = {
     "```\nwarning_light:\n        cmp     w0, w1\n        cset    w0, cc\n        ret\n```\n\n" +
     "`warning_light(5, 8)` is 1, and `warning_light(8, 8)` is 0.\n\n" +
     "**`tst` and `ands`**\n\n" +
-    "Two more instructions exist in the architecture: `tst` and `ands`. GCC 16.1 at `-O1` did not use either in any listing here. This is not a claim about GCC's output.\n\n" +
+    "Two more instructions exist in the architecture: `tst` and `ands`. GCC 16.1 at `-O1` did not use either in any listing here. The `tst` and `ands` examples below are course-written assembly.\n\n" +
     "`tst w0, 2` sets the flags from `w0` AND 2, and writes no register. N is the top bit of the AND result. Z is 1 when the AND result is 0. C and V are set to 0. With the warning word `0x2a`, `tst w0, 2` leaves NZCV 0000. With `0x28`, it leaves NZCV 0100, so Z is 1 when the service-due bit (bit 1) is clear.\n\n" +
     "`ands w1, w0, 2` writes the AND result to `w1` as well. With `0x2a`, `w1` is 2 and NZCV is 0000. `and` alone leaves the flags as they were.",
 
@@ -131,8 +131,8 @@ export const PROSE = {
 
   holdsHints: [
     "`cmp w0, w1` sets the flags of `w0` minus `w1`.",
-    "`0xfffffffb` is −5 signed and 4294967291 unsigned. 2 is 2 either way.",
-    "`ge` and `lt` use the signed reading; `cs` and `cc` use the unsigned reading.",
+    "Do not give `0xfffffffb` the same meaning in both comparisons: it is −5 signed and 4294967291 unsigned. 2 is 2 either way.",
+    "For the simpler comparison of 8 with 8, equality makes `ge` and `cs` yes, and `lt` and `cc` no. Now apply the signed and unsigned readings to the task's unequal inputs.",
     "The flags are NZCV 1010. `ge` needs N equal to V; `cs` needs C to be 1.",
     "`ge` 0; `cs` 1; `lt` 1; `cc` 0.",
   ] as const,

@@ -63,7 +63,7 @@ Write `scaled_total`. `w0` holds an unsigned pulse count, `w1` its unsigned scal
 - Multiply the pulse count by its scale, then add the existing total.
 - The total is in `w2`; it is not a third factor in the multiplication.
 - With pulse count 0, scale 3 and existing total 7, the product is zero. The result must still include the total, so it is 7.
-- Its operands are destination, first factor, second factor and value to add.
+- The operands of `madd` are destination, first factor, second factor and value to add.
 - Write `madd w0, w0, w1, w2`, then `ret`.
 
 ## 6. Widening after the bits are lost
@@ -189,7 +189,7 @@ Keep the bit above the low 32
 
 Multiply by zero
 
-Multiply inputs that also fit in 32 bits
+Keep a product that fits in 32 bits
 
 ## Originality record
 
@@ -258,7 +258,7 @@ The divisor is nonzero. The tests exclude the unrepresentable quotient from divi
 *Hints, in order:*
 
 - Calculate the signed quotient first.
-- Keep the original dividend available for the final subtraction.
+- Overwriting the dividend with the quotient loses an input needed for the final subtraction.
 - For 17 divided by 5, the quotient is 3. Subtract `3 × 5` from 17 to get the remainder, 2.
 - Subtract the quotient times the divisor from the dividend. `msub` can do both operations.
 - Write `sdiv w2, w0, w1`, then `msub w0, w2, w1, w0`, then `ret`.
@@ -281,19 +281,21 @@ A64 gives its division instructions results even in cases where C division is un
 
 Inspect the two assembly-only experiments. Their hardware results are observable, but a C compiler is not required to preserve the behaviour of an undefined C expression. Check a divisor or an overflow case before performing the C operation.
 
+## 8. Division by a constant
+
 GCC can also replace division by a constant with other arithmetic. For unsigned division by ten, this recorded GCC version uses multiplication by `0xcccccccd` and a right shift by 35. It uses the full widened product, so the relevant higher bits survive. The example returns the same quotient as division; the instruction sequence is this compiler's choice, not a timing claim.
 
-## 8. Widen the calculation before dividing
+## 9. Calculate fuel consumption
+
+### Write consumption
 
 An average can overflow before its division, even if the final quotient fits. Choose a wide enough product first, then divide. A wide result type alone does not widen an earlier narrow multiplication.
 
 The final calculation uses fuel in millilitres and distance in metres. Multiplying the fuel by 100 before dividing by distance gives whole millilitres per 100 metres. Both inputs are unsigned 32-bit values, and their scaled product fits in 64 bits.
 
-The exercise defines a zero-distance result as zero. That is a rule of this function. A branch can handle that case before division. In assembly, a correctly widened `udiv` also produces the required zero directly. For a 64-bit division, also ensure the divisor is a 64-bit unsigned value: writing `w1` clears the upper half of `x1`.
+The exercise defines a zero-distance result as zero. That is a rule of this function. A branch can handle that case before division. In assembly, a correctly widened `udiv` also produces the required zero directly.
 
-## 9. Calculate fuel consumption
-
-### Write consumption
+The input contract guarantees only the distance in the low 32 bits, `w1`. It makes no promise about the incoming upper half of `x1`. Naming `w1` as the input does not mean an instruction has written it. Before dividing with `x` registers, clear that upper half: a write to `w1`, even one that copies `w1` to itself, does this.
 
 Write `consumption`. `w0` holds unsigned fuel in millilitres and `w1` holds unsigned distance in metres. Return whole millilitres per 100 metres in `x0`: `fuel * 100 / distance`, rounded down. Preserve the full product before dividing.
 
@@ -302,7 +304,7 @@ If the distance is zero, return zero. The tests include fuel values whose produc
 *Hints, in order:*
 
 - Handle zero distance before the calculation.
-- Multiplying in a 32-bit destination can lose product bits before division. Use an unsigned widening multiplication.
+- Multiplying in a 32-bit destination loses any higher product bits before division.
 - With fuel 1 and distance 3, first calculate `1 × 100`. Whole-number division by 3 gives 33. Multiplication must come before division.
 - Divide the 64-bit product by the zero-extended distance using `udiv` with `x` registers.
 - One complete approach is: `cbz w1, zero`; `mov w2, #100`; `umull x0, w0, w2`; `mov w1, w1`; `udiv x0, x0, x1`; `ret`. Under `zero:`, write `mov x0, #0` and `ret`.

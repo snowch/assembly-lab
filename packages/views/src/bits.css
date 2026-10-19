@@ -474,19 +474,26 @@
   font-family: var(--font-mono);
 }
 
-/* Review fixes: a long row name wraps instead of running under its value on a phone, a closed part
-   shows that it opens, and the warning labels fit seven to a row at 360 px. */
+/* Keep the execution-time label on its own line on a phone. */
 .al-reg.al-bitrow {
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "name" "value" "bits";
+}
+.al-bitrow .al-reg-name {
+  min-width: 0;
+  overflow-wrap: normal;
+}
+.al-bitrow .al-reg-value {
+  justify-self: start;
 }
 @media (min-width: 48rem) {
   .al-reg.al-bitrow {
     grid-template-columns: 8rem minmax(0, 1fr) 13rem;
+    grid-template-areas: "name bits value";
   }
-}
-.al-bitrow .al-reg-name {
-  min-width: 0;
-  overflow-wrap: anywhere;
+  .al-bitrow .al-reg-value {
+    justify-self: end;
+  }
 }
 .al-all32 > summary::before {
   content: "▸";

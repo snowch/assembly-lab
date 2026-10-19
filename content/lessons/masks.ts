@@ -64,6 +64,7 @@ export const masks: LessonInput = {
           id: "warning-word",
           kind: "warning-word",
           timeModel: STEPS,
+          role: "diagram",
           caption: LABELS.captions.warningWord,
           props: {
             program: GEAR_OF,
@@ -84,6 +85,7 @@ export const masks: LessonInput = {
           id: "predict-minus-five",
           kind: "probe-prediction",
           timeModel: STEPS,
+          role: "prediction",
           caption: LABELS.drafts.captions.predictMinusFive,
           props: {
             question: PROSE.predictionQuestion,
@@ -93,7 +95,7 @@ export const masks: LessonInput = {
             call: { entry: "clear_door", args: [0xffffffff] },
             measure: { kind: "cleared-bits" },
             // After the commit the figure shows the mask and the low eight bits of this run.
-            maskView: { word: 0xf },
+            maskView: { word: 0xffffffff },
           },
         },
       ],
@@ -107,6 +109,7 @@ export const masks: LessonInput = {
           id: "mask-bits",
           kind: "bit-ops",
           timeModel: STEPS,
+          role: "experiment",
           caption: LABELS.captions.maskBits,
           props: {
             functions: [
@@ -125,6 +128,7 @@ export const masks: LessonInput = {
           id: "read-gear",
           kind: "field-reading",
           timeModel: STEPS,
+          role: "diagram",
           caption: LABELS.drafts.captions.readGear,
           props: { program: GEAR_OF, call: { entry: "gear_of", args: [0x35] } },
         },
@@ -139,6 +143,7 @@ export const masks: LessonInput = {
           id: "write-set-gear-here",
           kind: "challenge",
           timeModel: STEPS,
+          role: "exercise",
           caption: LABELS.drafts.captions.setGear,
           props: { challengeId: "write-set-gear" },
         },
@@ -158,6 +163,7 @@ export const masks: LessonInput = {
           id: "compare-bfi",
           kind: "bfi-compare",
           timeModel: STEPS,
+          role: "diagram",
           caption: LABELS.drafts.captions.compareBfi,
           props: {
             // Shut until the challenge passes; then the learner's code beside GCC's `bfi`.
@@ -179,6 +185,7 @@ export const masks: LessonInput = {
           id: "predict-no-clear",
           kind: "probe-prediction",
           timeModel: STEPS,
+          role: "prediction",
           caption: LABELS.drafts.captions.predictNoClear,
           props: {
             question: PROSE.failureQuestion,
@@ -207,6 +214,7 @@ export const masks: LessonInput = {
           id: "compare-no-clear",
           kind: "clear-compare",
           timeModel: STEPS,
+          role: "diagram",
           caption: LABELS.drafts.captions.compareClear,
           props: {
             without: SET_GEAR_WITHOUT_CLEAR,
@@ -229,6 +237,7 @@ export const masks: LessonInput = {
           id: "trace-three-here",
           kind: "challenge",
           timeModel: STEPS,
+          role: "exercise",
           caption: LABELS.drafts.captions.traceThree,
           props: { challengeId: "trace-three-results" },
         },

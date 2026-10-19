@@ -24,7 +24,7 @@ export const PROSE = {
     "Multiply the pulse count by its scale, then add the existing total.",
     "The total is in `w2`; it is not a third factor in the multiplication.",
     "With pulse count 0, scale 3 and existing total 7, the product is zero. The result must still include the total, so it is 7.",
-    "Its operands are destination, first factor, second factor and value to add.",
+    "The operands of `madd` are destination, first factor, second factor and value to add.",
     "Write `madd w0, w0, w1, w2`, then `ret`.",
   ],
   failureExperiment:

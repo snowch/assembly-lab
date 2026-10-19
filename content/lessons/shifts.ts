@@ -74,6 +74,7 @@ export const shifts: LessonInput = {
           id: "predict-fill",
           kind: "probe-prediction",
           timeModel: STEPS,
+          role: "prediction",
           caption: LABELS.drafts.captions.predictFill,
           props: {
             question: PROSE.predictionQuestion,
@@ -96,6 +97,7 @@ export const shifts: LessonInput = {
           id: "shift-word",
           kind: "shift",
           timeModel: STEPS,
+          role: "experiment",
           caption: LABELS.captions.shiftWord,
           props: {
             ops: [...SHIFT_OPS],
@@ -115,6 +117,7 @@ export const shifts: LessonInput = {
           id: "compare-shifts-here",
           kind: "challenge",
           timeModel: STEPS,
+          role: "exercise",
           caption: LABELS.drafts.captions.compareShifts,
           props: { challengeId: "compare-shifts" },
         },
@@ -129,6 +132,7 @@ export const shifts: LessonInput = {
           id: "predict-first-add",
           kind: "probe-prediction",
           timeModel: STEPS,
+          role: "prediction",
           caption: LABELS.drafts.captions.predictFirstAdd,
           props: {
             question: PROSE.failureQuestion,
@@ -173,6 +177,7 @@ export const shifts: LessonInput = {
           id: "pick-instruction-here",
           kind: "challenge",
           timeModel: STEPS,
+          role: "exercise",
           caption: LABELS.drafts.captions.pickInstruction,
           props: { challengeId: "pick-instruction" },
         },

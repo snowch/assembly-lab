@@ -53,6 +53,7 @@ export const checkedArithmetic: LessonInput = {
         {
           id: "narrowing-listings",
           kind: "listing-pair",
+          role: "diagram",
           timeModel: "none",
           caption: LABELS.captions.listing,
           props: {
@@ -73,6 +74,7 @@ export const checkedArithmetic: LessonInput = {
         {
           id: "predict-narrow-gradient",
           kind: "run-prediction",
+          role: "prediction",
           timeModel: "steps",
           caption: LABELS.captions.predict,
           props: {
@@ -139,6 +141,7 @@ export const checkedArithmetic: LessonInput = {
         {
           id: "write-fuel-fits",
           kind: "challenge",
+          role: "exercise",
           timeModel: "steps",
           caption: LABELS.captions.write,
           props: { challengeId: "write-fuel-fits" },
@@ -153,6 +156,7 @@ export const checkedArithmetic: LessonInput = {
         {
           id: "predict-wrong-overflow",
           kind: "memory-prediction",
+          role: "prediction",
           timeModel: "steps",
           caption: LABELS.captions.predictFailure,
           props: {
@@ -195,6 +199,7 @@ export const checkedArithmetic: LessonInput = {
         {
           id: "write-checked-trip",
           kind: "challenge",
+          role: "exercise",
           timeModel: "steps",
           caption: LABELS.captions.final,
           props: { challengeId: "write-checked-trip" },

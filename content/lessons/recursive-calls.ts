@@ -80,6 +80,7 @@ export const recursiveCalls: LessonInput = {
         {
           id: "recursive-calls-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: "none",
           caption: LABELS.captions.listing,
           props: { program: FADE_SUM },
@@ -95,6 +96,7 @@ export const recursiveCalls: LessonInput = {
         {
           id: "predict-recursive-calls",
           kind: "memory-prediction",
+          role: "prediction",
           timeModel: "steps",
           caption: LABELS.captions.predict,
           props: {
@@ -143,6 +145,7 @@ export const recursiveCalls: LessonInput = {
         {
           id: "write-fade-sum",
           kind: "challenge",
+          role: "exercise",
           timeModel: "steps",
           caption: LABELS.captions.write,
           props: { challengeId: "write-fade-sum" },
@@ -157,6 +160,7 @@ export const recursiveCalls: LessonInput = {
         {
           id: "predict-recursive-calls-failure",
           kind: "loop-prediction",
+          role: "prediction",
           timeModel: "steps",
           caption: LABELS.captions.predictFailure,
           props: {
@@ -193,6 +197,7 @@ export const recursiveCalls: LessonInput = {
         {
           id: "write-lit-count",
           kind: "challenge",
+          role: "exercise",
           timeModel: "steps",
           caption: LABELS.captions.final,
           props: { challengeId: "write-lit-count" },

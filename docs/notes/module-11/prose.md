@@ -314,7 +314,7 @@ Compiler warnings can identify mistakes such as a mismatch between a format and 
 
 GCC's `-fsanitize=undefined` adds run-time checks for supported undefined operations. A tool that inserts these checks is called a **sanitizer**. The [signed-add source](https://github.com/snowch/assembly-lab/blob/main/docs/notes/module-11/compiler/sanitize_trip.c) and its [recorded compiler output](https://github.com/snowch/assembly-lab/blob/main/docs/notes/module-11/compiler/sanitize_trip.response.json) show the added overflow check and a call to the sanitizer’s reporting function. The course simulator does not run that external function.
 
-A sanitizer checks only paths that execute. Ordinary unsigned wrapping is defined C, so this option does not report it as signed overflow. GCC normally allows recovery after many reports; `-fno-sanitize-recover=undefined` makes a detected problem terminate the run. Warnings, tests and run-time checks provide different evidence, and none proves every possible input safe.
+A sanitizer checks only paths that execute. Ordinary unsigned wrapping is defined C, so this option does not report it as signed overflow. GCC normally lets execution continue after many reports. This is called recovery; it does not repair the invalid operation or make its result valid. `-fno-sanitize-recover=undefined` makes a detected problem terminate the run. Warnings, tests and run-time checks provide different evidence, and none proves every possible input safe.
 
 *End of closed note.*
 

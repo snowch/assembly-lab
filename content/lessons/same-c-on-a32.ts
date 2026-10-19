@@ -49,6 +49,7 @@ export const sameCOnA32: LessonInput = {
         {
           id: "a32-limit-pair",
           kind: "listing-pair",
+          role: "diagram",
           timeModel: "none",
           caption: LABELS.captions.limitPair,
           props: pair(LIMIT_TRIP_A32, LIMIT_TRIP_A64),
@@ -64,6 +65,7 @@ export const sameCOnA32: LessonInput = {
         {
           id: "predict-a32-limit",
           kind: "run-prediction",
+          role: "prediction",
           timeModel: "steps",
           caption: LABELS.captions.predict,
           props: {
@@ -106,6 +108,7 @@ export const sameCOnA32: LessonInput = {
         {
           id: "read-a32-conditional",
           kind: "challenge",
+          role: "exercise",
           timeModel: "none",
           caption: LABELS.captions.read,
           props: { challengeId: "read-a32-conditional" },
@@ -120,6 +123,7 @@ export const sameCOnA32: LessonInput = {
         {
           id: "predict-a32-syntax",
           kind: "recorded-prediction",
+          role: "prediction",
           timeModel: "none",
           caption: LABELS.captions.syntax,
           props: {
@@ -139,6 +143,7 @@ export const sameCOnA32: LessonInput = {
         {
           id: "a32-marker-pair",
           kind: "listing-pair",
+          role: "diagram",
           timeModel: "none",
           caption: LABELS.captions.markerPair,
           props: pair(SERVICE_MARKER_A32, SERVICE_MARKER_A64),
@@ -154,6 +159,7 @@ export const sameCOnA32: LessonInput = {
         {
           id: "a32-divide-pair",
           kind: "listing-pair",
+          role: "diagram",
           timeModel: "none",
           caption: LABELS.captions.divisionPair,
           props: pair(AVERAGE_TRIP_A32, AVERAGE_TRIP_A64),
@@ -179,6 +185,7 @@ export const sameCOnA32: LessonInput = {
         {
           id: "read-a32-target",
           kind: "challenge",
+          role: "exercise",
           timeModel: "steps",
           caption: LABELS.captions.final,
           props: { challengeId: "read-a32-target" },

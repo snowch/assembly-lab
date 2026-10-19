@@ -15,7 +15,7 @@ export const PROSE = {
   predictionExplain:
     "It returns `0x0000000b`, or 11. The calls receive 7, 3, 1 and 0. They return in the opposite order: the zero case returns first, then each earlier call adds its own brightness.",
   investigation:
-    "Step until all the calls are active, then follow the returns. Each invocation of this GCC function reserves 32 bytes. For brightness 7, the four active frames use 128 bytes at the deepest point.\n\nThe repeated function name does not mean there is only one saved brightness or return address. Each frame holds the values for a different invocation. As calls return, those values become current again.\n\nRestoring `sp` releases a frame's space. It does not erase the bytes that were stored there. The diagram shows the space still belonging to active calls.",
+    "This figure starts at the deepest point, with all four calls active. Use Back to inspect how the calls built the stack, or Next to follow the remaining instructions and returns. Each invocation of this GCC function reserves 32 bytes. For brightness 7, the four active frames use 128 bytes at the deepest point.\n\nThe repeated function name does not mean there is only one saved brightness or return address. Each frame holds the values for a different invocation. As calls return, those values become current again.\n\nRestoring `sp` releases a frame's space. It does not erase the bytes that were stored there. The diagram shows the space still belonging to active calls.",
   construction:
     "Repair the condition that chooses between the recursive path and the base case. Every call must still restore the state it saved.",
   writeTask:
@@ -40,7 +40,7 @@ export const PROSE = {
     "Complete `lit_count`. Return the number of nonzero brightness levels reached by repeatedly halving the unsigned input in `w0`. A zero input returns zero.\n\nUse the supplied recursive structure: for a nonzero input, call `lit_count` with half the brightness, then count the current level as well. Preserve `x19`, `x29` and `sp`. The starter already saves and restores the return address, but it omits the current level from the count.",
   finalHints: [
     "The zero path is the base case and should return zero.",
-    "The recursive call counts only the levels after the current one.",
+    "Returning the recursive result unchanged would leave the current nonzero level out of the count.",
     "For brightness 1, the next brightness is zero. The recursive call counts no further lit levels, so the current level must make the result 1.",
     "Put the addition after `bl lit_count`, so it uses the returned value in `w0`.",
     "One complete solution is:\n\n```asm\nlit_count:\n cbz w0, .Ldone\n stp x29, x30, [sp, #-16]!\n mov x29, sp\n lsr w0, w0, #1\n bl lit_count\n add w0, w0, #1\n ldp x29, x30, [sp], #16\n.Ldone:\n ret\n```",

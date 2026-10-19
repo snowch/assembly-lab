@@ -78,8 +78,8 @@ describe("the data-flow panel", () => {
     expect(text).toContain("What add w0, w0, w1 did");
     expect(text).toContain("Reads w0 (120) + w1 (85) → Writes w0 = 205 (w0 was 120)");
     expect(text).toContain(M0.flow.adds);
-    expect(text).toContain("Changed: w0");
-    expect(text).toContain("Unchanged: w1, w2, w3");
+    expect(text).toContain("Written: w0");
+    expect(text).toContain("Not written: w1, w2, w3");
     // The same numbers as the model's own trace.
     const model = traceOf(TRIP, TRIP_CALL);
     expect([wValue(viewAt(model, 0).state, 0), wValue(viewAt(model, 0).state, 1)]).toEqual([
@@ -110,13 +110,13 @@ describe("the data-flow panel", () => {
     expect(flat(panel(container))).toContain(
       "Reads w0 (205) + w2 (42) → Writes w0 = 247 (w0 was 205)",
     );
-    expect(flat(panel(container))).toContain("Unchanged: w1, w2, w3");
+    expect(flat(panel(container))).toContain("Not written: w1, w2, w3");
     await user.click(next());
     const text = flat(panel(container));
     expect(text).toContain("Reads w0 (247) − w3 (15) → Writes w0 = 232 (w0 was 247)");
     expect(text).toContain(M0.flow.subtracts);
-    expect(text).toContain("Changed: w0");
-    expect(text).toContain("Unchanged: w1, w2, w3");
+    expect(text).toContain("Written: w0");
+    expect(text).toContain("Not written: w1, w2, w3");
   });
 
   it("lists every drawn register the step did not write as unchanged, each at the value it arrived with", async () => {
@@ -126,7 +126,7 @@ describe("the data-flow panel", () => {
     for (let k = 0; k < 3; k++) {
       await user.click(next());
       const unchanged = container.querySelector('[data-set="unchanged"]')!.textContent!;
-      const names = /Unchanged: (.*)$/.exec(unchanged)![1]!.split(", ");
+      const names = /Not written: (.*)$/.exec(unchanged)![1]!.split(", ");
       // Every register the figure draws is either changed (w0, here) or listed as unchanged.
       expect(names).toEqual(["w1", "w2", "w3"]);
       let sourcesSeen = 0;

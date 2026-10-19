@@ -16,7 +16,8 @@ export const PROSE = {
   questionNote: {
     summary: "What C says",
     prose:
-      "For a negative `int`, the C standard leaves the result of `>>` to the implementation. GCC defines it as an arithmetic shift. For a signed `int`, C leaves some left shifts undefined, a negative value among them. GCC defines them, but this lesson's examples stay within what C defines. The compiler is GCC 16.1 with `-O1`, as in Module 0.",
+      "For a negative `int`, the C standard lets the compiler choose and document the result of `>>`. GCC copies the old top bit into the gap, keeping the result negative. This is the arithmetic shift explained below. Another C compiler may make a different choice.\n\n" +
+      "For some signed left shifts, C gives no guarantee about the program's behaviour. This includes shifting a negative `int` left. GCC supports left shifts of negative signed values as an extension to C, but code that relies on that extension is not guaranteed to work the same way with another compiler. This lesson's C left-shift examples avoid those cases. The compiler is GCC 16.1 with `-O1`, as in Module 0.",
   },
 
   motivation:
@@ -27,7 +28,7 @@ export const PROSE = {
     "**Which general rule does GCC use for the top bit when shifting an `int` right?**",
   predictionExplain:
     "The figure takes −7, which is `0xfffffff9`. For an `int`, the top bit is filled with a copy of the old top bit. The old top bit is 1, so `asr w0, w0, 1` fills the top with 1. The result is `0xfffffffc`, which is −4.\n\n" +
-    "`lsr w0, w0, 1` fills the top with 0 instead. The result is `0x7ffffffc`, which is 2147483644. The figure marks the filled top bit in each case.",
+    "`lsr w0, w0, 1` fills the top with 0 instead. The result is `0x7ffffffc`, which is 2147483644. The prediction figure shows the `asr` result and marks the bits that changed. In the next section, you can choose either shift and see which bits fill the gap.",
 
   investigation:
     "Moving every bit along by a number of places is a **shift**. Bits that move past the end are lost.\n\n" +
@@ -43,7 +44,7 @@ export const PROSE = {
     "For two `int` values, C's `/` gives a whole number and rounds towards zero. For example, `7 / 2` is 3, and `-7 / 2` is −3.",
   compareHints: [
     "For a positive value all three agree; for a negative value they do not.",
-    "`asr` rounds down; C's `/` rounds towards zero; `lsr` fills with zeros, so a negative value becomes a large positive one.",
+    "Do not round `asr` towards zero like C's `/`. `asr` rounds down. `lsr` fills with zeros, so a negative value becomes a large positive one.",
     "`asr` of −7 by 1 is −4; −7 / 2 in C is −3.",
     "21 gives 5 all three ways.",
     "5, 5, 5; −6, 1073741818, −5.",
@@ -80,7 +81,7 @@ export const PROSE = {
     "Say which instruction GCC uses for each: `x >> 3` with `int x`; `x >> 3` with `unsigned x`; `x << 3` with either.",
   pickHints: [
     "On a right shift, the fill depends on the reading. A left shift fills with zeros either way.",
-    "A left shift is the same for both types.",
+    "Do not choose a different left shift for each type. Both use `lsl` for the C expressions here.",
     "`int g >> 1` became `asr w0, w0, 1`.",
     "`unsigned n >> 1` became `lsr w0, w0, 1`.",
     "`asr`; `lsr`; `lsl`.",

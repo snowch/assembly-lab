@@ -19,9 +19,8 @@ export const PROSE = {
   predictionQuestion: "**What hexadecimal value does `ldr w0, [x0]` put in `w0`?**",
   predictionExplain:
     "`w0` becomes `0x12345678`. The byte `78` supplies the lowest 8 bits, followed by `56`, `34` and `12`. The load reads memory without changing those bytes.\n\n" +
-    "Writing `w0` replaces the low half of `x0` and clears its upper half. After the load, register 0 holds the distance reading. It no longer holds the pointer.",
+    "Writing `w0` replaces the low half of `x0` and clears its upper half. After the load, register 0 holds the distance reading. It no longer holds the pointer.\n\nStep through the load. The figure marks the bytes it reads and shows where their bits go in the register. The address identifies the first byte; the destination `w0` makes this `ldr` read four bytes.",
   investigation:
-    "Step through the load. The figure marks the bytes it reads and shows where their bits go in the register. The address identifies the first byte; the destination `w0` makes this `ldr` read four bytes.\n\n" +
     "A **load** copies bits from memory into a register. A **store** copies bits from a register into memory. `str w1, [x0]` writes the four bytes from `w1`, starting at the address in `x0`. It leaves the source register unchanged.\n\n" +
     "In `save_distance`, `distance` arrives in `x0` and `value` in `w1`. The C assignment `*distance = value` changes the value at the pointer's address. `void` means this function returns no value.",
   construction:
@@ -31,8 +30,8 @@ export const PROSE = {
     "The exercise supplies the memory bytes. Write instructions only; you do not need to declare memory. The function has no return value.",
   writeHints: [
     "You need to change memory, so choose a store.",
-    "Use the value in `w1` as the source and the address in `x0` as the destination.",
-    "Put the address register inside square brackets.",
+    "A load would read memory instead of updating it. A store needs `w1` as its value source and `[x0]` as its memory destination.",
+    "For the value `0x12345678`, a four-byte store writes `78 56 34 12` in increasing address order. The address register belongs inside square brackets.",
     "A store from a `w` register writes four bytes. Follow the store with `ret`.",
     "Under `save_distance:`, write `str w1, [x0]` and then `ret`.",
   ] as const,
@@ -56,8 +55,8 @@ export const PROSE = {
     "Leave the source bytes unchanged. Write the copied value into the destination's four bytes, and return that value in `w0`. The exercise supplies both locations.",
   finalHints: [
     "A copy needs a load followed by a store.",
-    "Load four bytes from the address in `x0`.",
-    "You can load into `w0`: this task does not need the source address again.",
+    "Copying `x0` would copy the address, not the distance stored there. Read the four bytes at that address.",
+    "The bytes `78 56 34 12` load as `0x12345678`. Storing that register value at the destination reproduces the same four bytes.",
     "Store the loaded value through `x1`. The value must remain in `w0` for the return.",
     "Under `copy_distance:`, write `ldr w0, [x0]`, `str w0, [x1]` and `ret`.",
   ] as const,
@@ -68,7 +67,7 @@ export const PROSE = {
   reflectionNote:
     "`x0` holds the address, which uses 64 bits on this target. The `b` in `strb` chooses the transfer width: one byte from the low end of `w1`.",
   modelVsReality:
-    "The figures use prepared memory bytes at valid addresses. Only the prepared memory regions are available to these examples. They show ordinary memory, not a sensor's hardware interface. Real programs must also have permission to access memory, and C requires a valid object of a suitable type.\n\n" +
+    "The figures use prepared memory bytes at valid addresses. Only the prepared memory regions are available to these examples. They show ordinary memory, not a sensor's hardware interface. Real programs must also have permission to access memory. For these C functions, the pointer must refer to storage for a value of the declared type, such as an `unsigned` distance. A readable address alone is not enough.\n\n" +
     "The simulator shows little-endian memory and the completed effect of each instruction. It does not model memory access timing or all faults a real processor can report.",
   originalityNote: {
     textbookExample: "Copying an integer between anonymous memory locations.",

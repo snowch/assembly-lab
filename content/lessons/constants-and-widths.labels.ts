@@ -31,7 +31,7 @@ export const LABELS = {
     // The prose file gives no caption for these three figures: each is marked DRAFT until it has
     // been through the prose process.
     // DRAFT
-    serviceHalves: "w0 after mov w0, 30000, in two halves of 16 bits.",
+    serviceHalves: "Step through mov w0, 30000 and inspect w0 in two halves of 16 bits.",
     // DRAFT
     workedHalves:
       "w0 in two halves of 16 bits, through mov w0, 3 and movk w0, 2, lsl 16. A half is new or kept after each step.",

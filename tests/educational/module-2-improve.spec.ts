@@ -326,7 +326,7 @@ test.describe("lesson 1, add against adds", () => {
     expect(await taggedRegisters()).toEqual(["w0"]);
     expect(await taggedFlags()).toEqual([]);
     await expect(stepper.locator(".al-flag[data-changed='true']")).toHaveCount(0);
-    await expect(status).toContainText("w0 changed. N, Z, C and V were not updated by add.");
+    await expect(status).toContainText("w0 was written. N, Z, C and V were not updated by add.");
     await press(page, next);
     await expect(status).not.toContainText("were not updated");
     // The flags say what they record.

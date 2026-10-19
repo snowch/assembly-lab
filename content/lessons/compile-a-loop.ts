@@ -12,6 +12,7 @@ const prediction = (
 ) => ({
   id,
   kind: "trace-prediction",
+  role: "prediction",
   timeModel: "steps",
   caption: failure ? L.captions.predictFailure : L.captions.predict,
   props: {
@@ -39,6 +40,7 @@ const playground = (
 const mount = (id: string, caption: string) => ({
   id,
   kind: "challenge",
+  role: "exercise",
   timeModel: "steps",
   caption,
   props: { challengeId: id },
@@ -90,6 +92,7 @@ export const compileALoop: LessonInput = {
         {
           id: "compile-a-loop-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: "none",
           caption: L.captions.listing,
           props: { program: C.ACCUMULATED },

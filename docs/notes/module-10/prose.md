@@ -24,9 +24,9 @@ The lesson also retains GCC 16.1 output at `-O1` for comparison. The optional li
 
 The course compiler assigns registers to the parameters and local variables. In this function, distance uses `w0`, rate uses `w1`, and charge uses `w2`. Extra registers such as `w8` and `w9` hold intermediate working values. These are temporary values needed while evaluating an expression.
 
-The generated instructions load inputs into working registers, perform the multiplication, and copy the product into the local variable's register. The return calculation adds the fixed charge and puts the answer in `w0`. Register 0 then holds the return value, not the original distance.
+The generated instructions copy inputs into working registers, perform the multiplication, and copy the product into the local variable's register. The return calculation adds the fixed charge and puts the answer in `w0`. Register 0 then holds the return value, not the original distance.
 
-The compiler builds constants with `movz` and, when needed, `movk`. `movz` places a 16-bit immediate in a selected part of the destination and clears the other bits. `movk`, introduced in Module 1, replaces a selected part while keeping the other bits. For some constants, `mov` is a shorter way to write `movz`. Both forms produce the same instruction bit pattern for the processor. This compiler writes `movz` explicitly.
+The compiler builds constants with `movz` and, when needed, `movk`. An **immediate** is a constant written in an instruction. `movz` places a 16-bit immediate in a selected part of the destination and clears the other bits. `movk`, introduced in Module 1, replaces a selected part while keeping the other bits. For some constants, `mov` is a shorter way to write `movz`. Both forms produce the same instruction bit pattern for the processor. This compiler writes `movz` explicitly.
 
 ## prediction
 
@@ -60,7 +60,7 @@ Write `trip_charge` in assembly. The unsigned distance arrives in `w0` and rate 
 
 Multiply the distance by the rate before adding the fixed charge.
 
-The multiplication and addition both have unsigned 32-bit wrapping results.
+Do not expect either operation to preserve bits above bit 31. Both results use unsigned 32-bit wrapping.
 
 With distance 1 and rate 1, the product is 1. Adding the fixed charge of 7 gives 8.
 
@@ -284,7 +284,7 @@ A zero count must return zero. The tests include a total that wraps.
 
 Keep the count somewhere safe before making `w0` the total.
 
-Start the total at zero and check the zero-count case before the body.
+Entering the body before checking a zero count would add a rate when no iteration should run.
 
 With count 1 and rate 9, the loop adds 9 to the zero total once, then returns 9.
 

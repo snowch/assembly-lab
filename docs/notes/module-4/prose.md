@@ -136,7 +136,7 @@ Write `less_fuel(a, b)`. It returns the smaller of two `unsigned` litres values.
 Five calls test it. In two of them, one value has the top bit set.
 
 1. Compare the two, then let one `csel` choose between them.
-2. The values are `unsigned`, so use the unsigned pair of conditions.
+2. A signed condition can misread an unsigned value whose top bit is set. Choose a condition for unsigned ordering.
 3. `csel w0, w0, w1, cc` would give `w0` when `cc` is yes and `w1` when it is no.
 4. `cc` is yes when C is 0, that is, when `w0` is lower than `w1`. Compare `w0` with `w1`, in that order.
 5. `cmp w0, w1`, `csel w0, w0, w1, cc`, `ret`.
@@ -147,7 +147,7 @@ Five calls test it. In two of them, one value has the top bit set.
 
 > The larger value comes back. Check the order of `cmp`'s operands, and the order of `csel`'s two sources.
 
-> Equal values give the wrong one. Which source does `csel` take when the condition is yes, and which when it is no?
+> The returned value is wrong even though the inputs were equal. Check what each source register holds when `csel` runs. Has an earlier instruction overwritten an input?
 
 *Shown after the challenge passes.*
 
@@ -168,9 +168,9 @@ The figure runs `steeper_u` with its last operand changed from `cs` to `ge`. The
 
 The run has the same operands as GCC's `steeper_u`: `0x80000000` and 1. It uses the same `cmp`, `cmp w1, w0`. That `cmp` leaves NZCV 1001: N is 1, Z is 0, C is 0 and V is 1.
 
-`ge` is yes, because N equals V. So `w0` gets `w1`, which is 1.
+In the changed function, `ge` is yes because N equals V. Its `csel` copies 1 from `w1` into `w0`.
 
-`cs` is no, because C is 0. So `w0` keeps `0x80000000`, which is 2147483648.
+In a separate run of GCC's original `steeper_u` with the same inputs, `cs` is no because C is 0. Its `csel` leaves `0x80000000` in `w0`, which is 2147483648.
 
 With `ge`, the function reads the bits as signed. `0x80000000` is the smallest `int`, so the function returns 1. GCC's `steeper_u`, with `cs`, returns 2147483648.
 
@@ -263,7 +263,7 @@ warning_light:
 
 **`tst` and `ands`**
 
-Two more instructions exist in the architecture: `tst` and `ands`. GCC 16.1 at `-O1` did not use either in any listing here. This is not a claim about GCC's output.
+Two more instructions exist in the architecture: `tst` and `ands`. GCC 16.1 at `-O1` did not use either in any listing here. The `tst` and `ands` examples below are course-written assembly.
 
 `tst w0, 2` sets the flags from `w0` AND 2, and writes no register. N is the top bit of the AND result. Z is 1 when the AND result is 0. C and V are set to 0. With the warning word `0x2a`, `tst w0, 2` leaves NZCV 0000. With `0x28`, it leaves NZCV 0100, so Z is 1 when the service-due bit (bit 1) is clear.
 
@@ -290,8 +290,8 @@ There is no compare. The signed reading of a number is negative exactly when its
 Field labels: "`ge`"; "`cs`"; "`lt`"; "`cc`".
 
 1. `cmp w0, w1` sets the flags of `w0` minus `w1`.
-2. `0xfffffffb` is −5 signed and 4294967291 unsigned. 2 is 2 either way.
-3. `ge` and `lt` use the signed reading; `cs` and `cc` use the unsigned reading.
+2. Do not give `0xfffffffb` the same meaning in both comparisons: it is −5 signed and 4294967291 unsigned. 2 is 2 either way.
+3. For the simpler comparison of 8 with 8, equality makes `ge` and `cs` yes, and `lt` and `cc` no. Now apply the signed and unsigned readings to the task's unequal inputs.
 4. The flags are NZCV 1010. `ge` needs N equal to V; `cs` needs C to be 1.
 5. `ge` 0; `cs` 1; `lt` 1; `cc` 0.
 
@@ -453,7 +453,7 @@ A label goes on its own line, followed by a colon, before the instruction it nam
 
 1. Two questions need two tests: is `litres` 0, and is it below `reserve`. Does a `litres` of 0 also pass the second test?
 2. When `reserve` is above 0, zero litres is also below the reserve. Checking "below `reserve`" first would then return 1 instead of 2.
-3. `cbz w0, label` goes to the label when `w0` is 0. `cmp w0, w1` sets the flags of `litres` minus `reserve`.
+3. For zero litres and a positive reserve, both tests would pass. A `cbz` before the comparison can select the empty-tank result first.
 4. `litres` and `reserve` are `unsigned`: a value with the top bit set is a large number, so use the unsigned condition for "below", `cc`. A signed condition gets one test wrong.
 5. `cbz w0, .Lempty`, `cmp w0, w1`, `b.cc .Llow`, `mov w0, 0`, `ret`, then `.Llow:` `mov w0, 1`, `ret`, then `.Lempty:` `mov w0, 2`, `ret`.
 
@@ -461,11 +461,11 @@ A label goes on its own line, followed by a colon, before the instruction it nam
 
 > A `litres` of 0 returns 1. Does the check for 0 come first?
 
-> The run for a `litres` of 0 went on into the next block instead of returning. Does every block end in `ret` or `b`?
+> The run for zero litres continued into the next group of instructions instead of returning. Check whether it needs a `ret` or a branch after writing its result.
 
 > The call with the top bit set fails. Is "below" read as unsigned?
 
-> The wrong value comes back. Which label did the run reach, and which branch sent it there?
+> The returned value is wrong. Follow the instructions that ran and check where they last wrote `w0`. Do your tests select the required result for this input?
 
 > An input was overwritten. Does a `mov` into `w0` run before the last test? It would replace `litres`, which is in `w0`.
 
@@ -537,7 +537,7 @@ The instructions from `.L17` run `beep`. They belong to a later module, so they 
 
 ## 8. When GCC uses a branch
 
-GCC 16.1 at `-O1` made different choices for different `if`s. In `warning_light`, the `if` became `cmp` and `cset`, with no branch. In `describe`, one `if` became a branch, for `gradient > 10`, and the other became a `csel`, for `gradient < -10`. In `maybe_beep`, the `if` became a branch, `cbz`.
+GCC 16.1 at `-O1` made different choices for different `if`s. In `warning_light`, the `if` became `cmp` and `cset`, with no branch. In `describe`, one `if` became a branch, for `gradient > 10`, and the other became a `csel`, for `gradient < -10`. Another function, `maybe_beep`, runs `beep` only when `litres` is zero. Its `if` became a branch, `cbz`. The optional note above shows the start of that listing.
 
 `csel` chooses between register values. `cset` writes 0 or 1. Neither can decide whether another function runs. In `maybe_beep`, the branch decides whether execution reaches the instructions that run `beep`.
 
@@ -554,7 +554,7 @@ Count only instructions that run. Labels are not instructions. Include `ret`.
 Field labels: "`describe(11)` returns"; "instructions run for `describe(11)`"; "`describe(-10)` returns"; "instructions run for `describe(-10)`"; "`describe(-11)` returns"; "instructions run for `describe(-11)`".
 
 1. `bgt` is taken only when `gt` is yes after `cmp w0, 10`.
-2. A run that takes `bgt` skips `cmn`, `mov w0, -2` and `csel`. A run that does not take it skips `mov w0, 2` and `b .L7`.
+2. Do not count instructions on the path the run skips. A taken `bgt` skips `cmn`, `mov w0, -2` and `csel`; otherwise the run skips `mov w0, 2` and `b .L7`.
 3. After `cmn w0, #10`, `lt` is yes only when `w0` is below −10. −10 itself is not.
 4. 11 is above 10. −11 is below −10. −10 is neither.
 5. 2 in 5 instructions; 0 in 6; −2 in 6.

@@ -90,6 +90,7 @@ export const callsAndReturns: LessonInput = {
         {
           id: "calls-and-returns-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: "none",
           caption: LABELS.captions.listing,
           props: { program: REPORT },
@@ -105,6 +106,7 @@ export const callsAndReturns: LessonInput = {
         {
           id: "predict-calls-and-returns",
           kind: "memory-prediction",
+          role: "prediction",
           timeModel: "steps",
           caption: LABELS.captions.predict,
           props: {
@@ -116,13 +118,6 @@ export const callsAndReturns: LessonInput = {
             measure: { kind: "register-at-end", register: "w0" },
           },
         },
-        {
-          id: "step-calls-and-returns",
-          kind: "stack-stepper",
-          timeModel: "steps",
-          caption: LABELS.captions.step,
-          props: { program: REPORT, call: CALL, registers, after: "predict-calls-and-returns" },
-        },
       ],
     },
     {
@@ -131,15 +126,14 @@ export const callsAndReturns: LessonInput = {
       prose: PROSE.investigation,
       interactives: [
         {
-          id: "inspect-calls-and-returns-stack",
+          id: "step-calls-and-returns",
           kind: "stack-stepper",
           timeModel: "steps",
-          caption: LABELS.captions.investigate,
+          caption: LABELS.captions.step,
           props: {
             program: REPORT,
             call: CALL,
             registers,
-            initialStep: 1,
             after: "predict-calls-and-returns",
           },
         },
@@ -153,6 +147,7 @@ export const callsAndReturns: LessonInput = {
         {
           id: "write-call-report",
           kind: "challenge",
+          role: "exercise",
           timeModel: "steps",
           caption: LABELS.captions.write,
           props: { challengeId: "write-call-report" },
@@ -167,6 +162,7 @@ export const callsAndReturns: LessonInput = {
         {
           id: "predict-calls-and-returns-failure",
           kind: "loop-prediction",
+          role: "prediction",
           timeModel: "steps",
           caption: LABELS.captions.predictFailure,
           props: {
@@ -203,6 +199,7 @@ export const callsAndReturns: LessonInput = {
         {
           id: "write-preserve-reserve",
           kind: "challenge",
+          role: "exercise",
           timeModel: "steps",
           caption: LABELS.captions.final,
           props: { challengeId: "write-preserve-reserve" },

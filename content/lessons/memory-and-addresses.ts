@@ -65,6 +65,7 @@ export const memoryAndAddresses: LessonInput = {
         {
           id: "read-distance-listing",
           kind: "listing",
+          role: "diagram",
           timeModel: STEPS,
           caption: LABELS.captions.listing,
           props: { program: READ_DISTANCE },
@@ -80,6 +81,7 @@ export const memoryAndAddresses: LessonInput = {
         {
           id: "predict-read-distance",
           kind: "memory-prediction",
+          role: "prediction",
           timeModel: STEPS,
           caption: LABELS.captions.predict,
           props: {
@@ -138,6 +140,7 @@ export const memoryAndAddresses: LessonInput = {
         {
           id: "write-save-distance",
           kind: "challenge",
+          role: "exercise",
           timeModel: STEPS,
           caption: LABELS.captions.write,
           props: { challengeId: "write-save-distance" },
@@ -152,6 +155,7 @@ export const memoryAndAddresses: LessonInput = {
         {
           id: "predict-wide-fuel-store",
           kind: "memory-prediction",
+          role: "prediction",
           timeModel: STEPS,
           caption: LABELS.captions.predictFailure,
           props: {
@@ -243,6 +247,7 @@ export const memoryAndAddresses: LessonInput = {
         {
           id: "write-copy-distance",
           kind: "challenge",
+          role: "exercise",
           timeModel: STEPS,
           caption: LABELS.captions.final,
           props: { challengeId: "write-copy-distance" },

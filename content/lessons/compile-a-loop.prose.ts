@@ -22,7 +22,7 @@ export const PROSE = {
     "Write `accumulated_charge` in assembly. `w0` holds an unsigned count and `w1` an unsigned rate. Add the rate to an initially zero total once for each counted iteration. Return the unsigned 32-bit total in `w0`.\n\nA zero count must return zero. The tests include a total that wraps.",
   writeHints: [
     "Keep the count somewhere safe before making `w0` the total.",
-    "Start the total at zero and check the zero-count case before the body.",
+    "Entering the body before checking a zero count would add a rate when no iteration should run.",
     "With count 1 and rate 9, the loop adds 9 to the zero total once, then returns 9.",
     "Decrease the remaining count after the addition, and branch back while it is nonzero.",
     "One complete solution is:\n\n```asm\nmov w2, w0\nmov w0, #0\ncbz w2, done\nloop:\nadd w0, w0, w1\nsubs w2, w2, #1\nb.ne loop\ndone:\nret\n```",

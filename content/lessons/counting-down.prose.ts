@@ -28,8 +28,8 @@ export const PROSE = {
     "`brightness` arrives in `w0`, and `ticks` in `w1`. Return the result in `w0`. Use `cbz`, `lsr`, `subs`, branches and `ret`. A separate `cmp` is not available: use the flags from `subs`.",
   writeHints: [
     "Handle a count of zero before running the first shift.",
-    "Put a label before the shift so a branch can repeat it.",
-    "After each shift, subtract 1 from `w1` with `subs`. Its Z flag tells you whether ticks remain.",
+    "A branch to the instruction after the shift would skip dimming on later iterations. The repeat label must include the shift.",
+    "In the first iteration of `dim_down(128, 3)`, the shift changes brightness to 64. Subtracting 1 changes the count from 3 to 2, so Z is 0 and ticks remain.",
     "Use `b.ne` to repeat when the subtraction result is not zero. If no instruction changes the flags in between, the branch reads the flags from `subs`.",
     "Start with `cbz w1, done`. Under `again:`, put `lsr w0, w0, #1`, `subs w1, w1, #1` and `b.ne again`. Under `done:`, put `ret`.",
   ] as const,
@@ -58,7 +58,7 @@ export const PROSE = {
   generalisationNote:
     "C distinguishes an always-true test from a constant expression. `ticks >= 0` reads a variable, so it is not a constant expression, even though unsigned `ticks` makes it always true.\n\n" +
     "C23 draft N3096, section 6.8.5 paragraph 4, lets a compiler assume termination for such a loop if it performs none of the specified observable operations. These include input and output: effects beyond ordinary changes to local variables.\n\n" +
-    "`dim_wrong` changes only local variables, so it meets these conditions. Another compiler need not preserve a never-ending run of this C loop.",
+    "`dim_wrong` changes only local variables, so it meets these conditions. For example, a compiler may remove this loop instead of emitting instructions that repeat forever. The recorded GCC listing shows one compiler's choice; the C source does not guarantee that choice.",
   finalTask:
     "Write `dim_until_dark(brightness, ticks)`. Return the same brightness as `dim_down`, but stop as soon as either the count or the brightness is zero. Shifting zero again cannot change the result.\n\n" +
     "Both arguments are unsigned. They arrive in `w0` and `w1`; return the brightness in `w0`. Use `cbz`, `lsr`, `subs`, branches and `ret`.\n\n" +
@@ -66,8 +66,8 @@ export const PROSE = {
     "A 32-bit value becomes zero after at most 32 logical right shifts by one place. Each shift moves every remaining bit towards the bottom, and bits that pass the bottom are lost.",
   finalHints: [
     "There are two reasons to stop: no ticks remain, or the brightness is already zero.",
-    "Check the tick count before the first shift. A zero count must return the original brightness.",
-    "Use another `cbz` to check `w0` before shifting it. A branch to the common return is enough when the brightness is zero.",
+    "Shifting before checking a zero tick count would dim the display when no dimming was requested. Check the count first.",
+    "With zero brightness and a nonzero tick count, another shift would still leave zero. A `cbz` on `w0` can return immediately in this case.",
     "After a shift, use `subs` to reduce the count and `b.ne` to repeat. Make the repeat label include the brightness check.",
     "Start with `cbz w1, done`. Under `again:`, put `cbz w0, done`, `lsr w0, w0, #1`, `subs w1, w1, #1` and `b.ne again`. Under `done:`, put `ret`.",
   ] as const,

@@ -36,5 +36,6 @@ export function createBook(options: { title: string; lessons: readonly Lesson[] 
     ChallengeEditor,
     grade,
     timeModelNotes: { [STEPS]: S.modelNote },
+    roleNotes: S.figureRoleNotes,
   };
 }
