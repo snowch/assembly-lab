@@ -26,7 +26,7 @@
    the C it came from and the page never scrolls sideways. */
 .al-listing {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  grid-template-columns: minmax(20rem, 1.25fr) minmax(16rem, 1fr);
   gap: var(--space-3);
   align-items: start;
   max-width: 100%;
@@ -132,10 +132,6 @@
 .al-listing[data-stepping="true"]:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-}
-/* The panes keep a readable width however narrow the screen; the listing's own scroll carries the rest. */
-.al-listing .al-pane {
-  min-width: min(20rem, 80vw);
 }
 .al-compiler-line {
   display: grid;

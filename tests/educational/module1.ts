@@ -88,7 +88,9 @@ export async function figureOverflow(page: Page): Promise<string[]> {
     }
     const width = document.documentElement.clientWidth;
     for (const el of document.querySelectorAll("figure.interactive *")) {
-      if (!visible(el) || el.closest(".visually-hidden")) continue;
+      // A listing scrolls sideways as one contained piece, so its children can sit past the
+      // page's width inside it; the listing itself, not the page, carries that scroll.
+      if (!visible(el) || el.closest(".visually-hidden") || el.closest(".al-listing")) continue;
       const r = el.getBoundingClientRect();
       if (r.right > width + 1)
         out.push(`${el.className || el.tagName} reaches ${Math.round(r.right)}px`);
