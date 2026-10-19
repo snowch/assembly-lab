@@ -96,9 +96,13 @@ They come from the [whole-course clarity review](docs/notes/clarity-implementati
 ## Pair C with its instructions
 
 Every recorded example and local-compiler result that shows C and assembly must make their
-relationship visible. Where the listing has enough width, place related C statements and
-instructions side by side; otherwise, place each C statement or group directly above its
-instructions. An explanation of mismatched line numbers does not replace this pairing.
+relationship visible. The complete, numbered C sits beside the instructions at every width; on a narrow
+screen the listing scrolls sideways as one contained piece rather than the instructions
+dropping below the C, and the page itself never scrolls sideways. Each instruction is
+tagged with the C line numbers the lesson checked for it, in the numbering the C pane
+shows; the compiler's own recorded references stay in optional details, because they can
+name a line the pane does not show. An explanation of mismatched line numbers does not
+replace this pairing.
 
 Use checked source associations for the teaching view. Do not alter the compiler's output,
 instruction order or original debug line references to arrange the pairs; show those references

@@ -48,13 +48,21 @@ export async function designProblems(page: Page, phone: boolean): Promise<string
           `line of ${Math.round(chars)} characters: "${(p.textContent ?? "").trim().slice(0, 30)}"`,
         );
     }
-    // A register's 32 cells, and every figure, stay inside the box that holds them.
-    for (const el of document.querySelectorAll(
-      ".al-reg, .al-listing, .asm-editor, .answer-editor",
-    )) {
+    // A register's 32 cells, and every figure, stay inside the box that holds them. A listing is
+    // the one exception: it keeps the C beside its instructions at every width, and on a narrow
+    // screen it scrolls sideways itself, as one contained piece, rather than the page scrolling.
+    for (const el of document.querySelectorAll(".al-reg, .asm-editor, .answer-editor")) {
       if (!visible(el)) continue;
       if (el.scrollWidth > el.clientWidth + 1)
         out.push(`${el.className} is ${el.scrollWidth - el.clientWidth}px wider than its box`);
+    }
+    for (const el of document.querySelectorAll(".al-listing")) {
+      if (!visible(el)) continue;
+      if (getComputedStyle(el).overflowX !== "auto")
+        out.push(`al-listing does not contain its own sideways scroll`);
+      const r = el.getBoundingClientRect();
+      if (r.right > document.documentElement.clientWidth + 1)
+        out.push(`al-listing reaches ${Math.round(r.right)}px, outside the page`);
     }
     return out;
   }, phone);
