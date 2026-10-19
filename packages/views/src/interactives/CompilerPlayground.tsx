@@ -159,7 +159,6 @@ export const CompilerPlayground = withProps(
               cLines={cLinesOf(program.c)}
               lines={result?.ok ? result.trace.lines : programLines(program)}
               next={view?.next ?? null}
-              litC={view?.litC ?? null}
               ran={view?.ran ?? null}
             />
           </>

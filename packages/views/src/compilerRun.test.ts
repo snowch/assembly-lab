@@ -13,7 +13,7 @@ describe("C preflight and emitted A64", () => {
     expect(r.program.c).toBe(source);
     const lines = parseListing(r.program.listing).filter((l) => l.kind === "instruction");
     expect(lines.every((l) => l.kind === "instruction" && l.cLine === 5)).toBe(true);
-    expect(viewAt(r.trace, 1).litC).toBe(5);
+    expect(viewAt(r.trace, 1).litC).toEqual([5]);
   });
   it.each([
     ["unsigned f(unsigned x) { return 7 / x; }", [0], "division-zero"],

@@ -48,17 +48,17 @@ const marker = (container: HTMLElement) =>
   );
 
 describe("the listing figure", () => {
-  it("draws the C with its line numbers and each instruction with the C line recorded for it", () => {
+  it("draws the C with its line numbers and each instruction with its checked C line", () => {
     const { container } = figure(ListingFigure, "l", "listing", { program: TRIP });
     expect(container.querySelectorAll(".al-cline")).toHaveLength(7);
     expect(container.querySelector('.al-cline[data-line="3"] .al-src')).toHaveTextContent(
       "int total = leg1 + leg2;",
     );
-    expect([...container.querySelectorAll(".al-ctag")].map((t) => t.textContent)).toEqual([
+    expect([...container.querySelectorAll(".al-insn .al-ctag")].map((t) => t.textContent)).toEqual([
       "3",
       "4",
-      "7",
-      "7",
+      "5",
+      "6",
     ]);
     expect(container.querySelector(".al-label")).toHaveTextContent("trip_distance:");
     // Static: no controls, no marker, nothing lit.
@@ -108,7 +108,7 @@ describe("the stepper", () => {
     ]);
   });
 
-  it("moves the marker, outlines the register just written and lights the C line recorded for the instruction that ran", async () => {
+  it("moves the marker, outlines the register just written and lights the C line checked for the instruction that ran", async () => {
     const user = userEvent.setup();
     const { container } = figure(StepperFigure, "s", "stepper", props);
     await user.click(next());
@@ -120,9 +120,11 @@ describe("the stepper", () => {
     await user.click(next());
     expect(litC(container)).toEqual(["4"]);
     await user.click(next());
-    // The last subtraction is recorded against the closing brace.
-    expect(litC(container)).toEqual(["7"]);
-    expect(container.querySelector('.al-cline[data-line="7"] .al-src')).toHaveTextContent("}");
+    // The last subtraction lights the C statement it carries out, not the brace the compiler named.
+    expect(litC(container)).toEqual(["5"]);
+    expect(container.querySelector('.al-cline[data-line="5"] .al-src')).toHaveTextContent(
+      "total = total - detour;",
+    );
     expect(screen.getByRole("status")).toHaveTextContent("Ran sub w0, w0, w3. Next: ret.");
   });
 

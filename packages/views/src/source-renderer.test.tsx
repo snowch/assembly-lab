@@ -1,12 +1,11 @@
 // @vitest-environment jsdom
 // Copyright © 2026 Christopher Snow
-
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { LessonStore, memoryStorage } from "@platform/lesson-runtime";
 import { Interactive, type Lesson } from "@platform/lesson-schema";
 import { ListingView } from "./parts";
-import { cLinesOf, deleteLine, programLines } from "./listing";
+import { cLinesOf, programLines } from "./listing";
 import { TRIP_DISTANCE_AND_FUEL_USED } from "../../../content/lessons/meet-the-machine.listings";
 import { RecordedSchema } from "./interactives/props";
 import { ListingCompare } from "./interactives/ListingCompare";
@@ -21,81 +20,76 @@ const recorded = {
 const texts = (container: HTMLElement, selector: string) =>
   [...container.querySelectorAll(selector)].map((element) => element.textContent);
 
-describe("paired source presentation", () => {
-  it("carries associations through the figure schema and highlights the operation, preserving raw references", () => {
+describe("the C beside its instructions", () => {
+  it("tags each instruction with its checked C line, in the numbering the C pane shows", () => {
     const program = RecordedSchema.parse(recorded);
     const { container } = render(
-      <ListingView cLines={cLinesOf(program.c)} lines={programLines(program)} ran={2} litC={5} />,
+      <ListingView cLines={cLinesOf(program.c)} lines={programLines(program)} ran={1} />,
     );
-    expect(container.querySelector(".al-listing")).toHaveAttribute("data-source-layout", "inline");
-    expect(container).not.toHaveTextContent(S.listing.multiSourceNote);
+    expect(container.querySelector(".al-listing")).toHaveAttribute("data-c", "shown");
     expect(texts(container, ".al-cline .al-src")).toEqual(cLinesOf(recorded.c));
-    expect(container.querySelector('.al-cline[data-lit="true"]')).toHaveAttribute("data-line", "4");
+    // The instruction that ran lights its checked C line in both panes.
+    expect(container.querySelector('.al-cline[data-lit="true"]')).toHaveAttribute("data-line", "3");
     expect(texts(container, ".al-insn .al-text")).toEqual(["add w0, w0, w1", "ret"]);
-    const compiler = container.querySelector(".al-compiler-lines");
-    expect(compiler).not.toHaveAttribute("open");
-    expect(texts(container, ".al-compiler-line .al-ctag")).toEqual(["3", "5"]);
-    expect(container.querySelector('.al-insn[data-ran="true"]')).toHaveTextContent("ret");
+    expect(texts(container, ".al-insn .al-ctag")).toEqual(["3", "4"]);
+    expect(container.querySelector('.al-insn[data-ran="true"]')).toHaveTextContent(
+      "add w0, w0, w1",
+    );
+    expect(container.querySelector('.al-insn[data-ran="true"] .al-ctag')).toHaveAttribute(
+      "data-lit",
+      "true",
+    );
   });
 
-  it("retains complete source and original order for reordered, combined and unlinked operations", () => {
+  it("shows several checked C lines as one tag, and no tag where none is checked", () => {
     const lines = programLines({
       ...recorded,
-      listing: "total:\nmov w2, w0 C1\n.Lagain:\nadd w0, w0, w1 C5\nret C5",
+      listing: "total:\nmov w2, w0 C1\nadd w0, w0, w1 C5\nret C5",
       sourceLines: [[], [3, 4], [4]],
     });
     const { container } = render(
-      <ListingView
-        cLines={cLinesOf(recorded.c)}
-        lines={lines}
-        ran={3}
-        differences={new Set([3])}
-      />,
+      <ListingView cLines={cLinesOf(recorded.c)} lines={lines} ran={2} />,
     );
-    expect(container.querySelector(".al-listing")).toHaveAttribute(
-      "data-source-layout",
-      "excerpts",
-    );
-    expect(container.querySelector(".al-full-source")).toHaveAttribute("open");
-    expect(texts(container, ".al-full-source .al-src")).toEqual(cLinesOf(recorded.c));
+    expect(texts(container, ".al-insn .al-ctag")).toEqual(["3, 4", "4"]);
+    // The combined operation lights both C lines; the unlinked instruction lights none.
+    expect(texts(container, '.al-cline[data-lit="true"] .al-ln')).toEqual(["3", "4"]);
     expect(
-      texts(container, ".al-paired-source .al-label, .al-paired-source .al-insn .al-text"),
-    ).toEqual(["total:", "mov w2, w0", ".Lagain:", "add w0, w0, w1", "ret"]);
-    expect(container).toHaveTextContent(S.listing.noDirectSource);
-    expect(container).toHaveTextContent(S.listing.multiSourceNote);
-    expect(texts(container, ".al-full-source .al-cline[data-lit=true] .al-ln")).toEqual(["3", "4"]);
-    expect(container.querySelector('.al-insn[data-differs="true"]')).toHaveTextContent(
-      S.pair.differs,
-    );
+      [...container.querySelectorAll(".al-ctag")].find((tag) => tag.textContent === "3, 4"),
+    ).toHaveAttribute("title", S.listing.sourceLines([3, 4]));
   });
 
-  it("keeps the deleted return's source outside the following function box", () => {
-    const lines = deleteLine(programLines(TRIP_DISTANCE_AND_FUEL_USED), {
-      label: "trip_distance",
-      text: "ret",
-    });
+  it("keeps the compiler's own references in a closed details, apart from the checked tags", () => {
+    const program = RecordedSchema.parse(recorded);
+    const { container } = render(
+      <ListingView cLines={cLinesOf(program.c)} lines={programLines(program)} />,
+    );
+    const details = container.querySelector(".al-compiler-lines");
+    expect(details).not.toHaveAttribute("open");
+    expect(texts(container, ".al-compiler-line .al-ctag")).toEqual(["3", "5"]);
+  });
+
+  it("keeps function groups and crossing markers while showing the complete C once", () => {
+    const lines = programLines(TRIP_DISTANCE_AND_FUEL_USED);
     const { container } = render(
       <ListingView
         cLines={cLinesOf(TRIP_DISTANCE_AND_FUEL_USED.c)}
         lines={lines}
         grouped
         ran={3}
-        next={5}
+        next={6}
         crossedAfter={3}
       />,
     );
-    expect(texts(container, ".al-full-source .al-src")).toEqual(
+    expect(texts(container, ".al-cline .al-src")).toEqual(
       cLinesOf(TRIP_DISTANCE_AND_FUEL_USED.c).map((line) => line || " "),
     );
     const fuel = container.querySelector('[data-function="fuel_used"]')!;
-    expect(
-      [...fuel.querySelectorAll(".al-cline")].map((row) => row.getAttribute("data-line")),
-    ).toEqual(["11"]);
-    expect(fuel.querySelector('[data-line="6"], [data-line="7"]')).toBeNull();
-    expect(texts(container, ".al-paired-source .al-insn .al-text")).toEqual([
+    expect(fuel).not.toBeNull();
+    expect(texts(container, ".al-insn .al-text")).toEqual([
       "add w0, w0, w1",
       "add w0, w0, w2",
       "sub w0, w0, w3",
+      "ret",
       "sub w0, w0, w1",
       "ret",
     ]);
@@ -106,7 +100,7 @@ describe("paired source presentation", () => {
   });
 
   it.each([false, true])(
-    "scrolls only the stepping region and preserves focus (oversized group: %s)",
+    "scrolls only the stepping region and preserves focus (oversized row: %s)",
     (oversized) => {
       const bounds = (top: number, height: number) => ({
         x: 0,
@@ -124,13 +118,13 @@ describe("paired source presentation", () => {
         this: HTMLElement,
       ) {
         if (this.classList.contains("al-listing")) return bounds(100, 200);
-        if (this.classList.contains("al-source-row")) return bounds(400, oversized ? 600 : 120);
+        if (this.classList.contains("al-insn")) return bounds(400, oversized ? 600 : 120);
         return bounds(450, 32);
       });
       vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockImplementation(function (
         this: HTMLElement,
       ) {
-        return this.classList.contains("al-source-row") ? (oversized ? 600 : 120) : 32;
+        return this.classList.contains("al-insn") ? (oversized ? 600 : 120) : 32;
       });
       vi.spyOn(Element.prototype, "clientHeight", "get").mockReturnValue(200);
       try {
@@ -148,8 +142,7 @@ describe("paired source presentation", () => {
         rerender(view(1));
         const listing = screen.getByRole("region", { name: S.listing.sourceConnections });
         expect(listing).toHaveAttribute("tabindex", "0");
-        // Fit the complete 120px pair, or only the instruction when its pair cannot fit.
-        expect(listing.scrollTop).toBe(oversized ? 182 : 220);
+        expect(listing.scrollTop).toBe(oversized ? 700 : 220);
         expect(button).toHaveFocus();
         expect(scrollPage).not.toHaveBeenCalled();
       } finally {
@@ -160,29 +153,16 @@ describe("paired source presentation", () => {
 
   it.each([
     {
-      label: "clipped top, fitting pair",
+      label: "clipped top",
       listingTop: -100,
       listingHeight: 300,
-      pairTop: -60,
-      pairHeight: 120,
       activeTop: -20,
-      expected: 190,
-    },
-    {
-      label: "clipped top, oversized pair",
-      listingTop: -100,
-      listingHeight: 200,
-      pairTop: -70,
-      pairHeight: 120,
-      activeTop: -10,
-      expected: 240,
+      expected: 230,
     },
     {
       label: "clipped bottom",
       listingTop: window.innerHeight - 100,
       listingHeight: 200,
-      pairTop: window.innerHeight - 20,
-      pairHeight: 120,
       activeTop: window.innerHeight + 20,
       expected: 302,
     },
@@ -190,14 +170,12 @@ describe("paired source presentation", () => {
       label: "fully offscreen",
       listingTop: window.innerHeight + 10,
       listingHeight: 200,
-      pairTop: window.innerHeight + 20,
-      pairHeight: 120,
       activeTop: window.innerHeight + 30,
       expected: 250,
     },
   ])(
     "uses the visible browser intersection: $label",
-    ({ listingTop, listingHeight, pairTop, pairHeight, activeTop, expected }) => {
+    ({ listingTop, listingHeight, activeTop, expected }) => {
       const bounds = (top: number, height: number) => ({
         x: 0,
         y: top,
@@ -214,13 +192,7 @@ describe("paired source presentation", () => {
         this: HTMLElement,
       ) {
         if (this.classList.contains("al-listing")) return bounds(listingTop, listingHeight);
-        if (this.classList.contains("al-source-row")) return bounds(pairTop, pairHeight);
         return bounds(activeTop, 32);
-      });
-      vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockImplementation(function (
-        this: HTMLElement,
-      ) {
-        return this.classList.contains("al-source-row") ? pairHeight : 32;
       });
       vi.spyOn(Element.prototype, "clientHeight", "get").mockReturnValue(listingHeight);
       try {
@@ -252,11 +224,10 @@ describe("paired source presentation", () => {
     );
     expect(container.querySelector(".al-listing")).toHaveAttribute("data-c", "none");
     expect(container.querySelector(".al-cline")).toBeNull();
-    expect(container.querySelector(".al-full-source")).toBeNull();
     expect(texts(container, ".al-insn .al-text")).toEqual(["add w0, w0, w1", "ret"]);
   });
 
-  it("reveals aligned comparisons only after the prediction is committed", () => {
+  it("reveals the listings only after the prediction is committed", () => {
     const interactive = Interactive.parse({
       id: "comparison",
       kind: "listing-compare",
@@ -285,9 +256,7 @@ describe("paired source presentation", () => {
     expect(container.querySelector(".al-source-connections")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: S.prediction.commit }));
     expect(container.querySelector(".al-source-connections")).not.toHaveAttribute("open");
-    expect(container.querySelectorAll(".al-source-connections .al-listing-aligned")).toHaveLength(
-      2,
-    );
+    expect(container.querySelectorAll(".al-source-connections .al-listing")).toHaveLength(2);
     expect(texts(container, ".al-compare-row .al-cmp-mark")).toEqual([
       S.compare.same,
       S.compare.same,

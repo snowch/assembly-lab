@@ -32,20 +32,12 @@ export const VIEW_STRINGS = {
 
   listing: {
     cHeading: "C",
-    sourceHeading: "C operations",
     sourceConnections: "How the instructions relate to C",
-    fullSource: "Complete C source",
-    repeatedSourceNote:
-      "The instructions stay in their original order. A C line appears again when later instructions also relate to it.",
-    multiSourceNote:
-      "Several C statements can relate to one instruction. The instruction may combine their operations or serve different paths through the function. Highlighting these statements does not mean they all run at that step.",
-    noDirectSource: "No C statement is linked to this instruction.",
     compilerLinesSummary: "Compiler's C line references",
     compilerLinesExplanation:
       "These are the compiler's original line references. They may point to a brace instead of the C operation an instruction carries out.",
     sourceLines: (numbers: readonly number[]) =>
       numbers.length === 1 ? `C line ${numbers[0]}` : `C lines ${numbers.join(", ")}`,
-    returnControl: "Returns to the code that called this function.",
     instructionsHeading: "Instructions",
     cLineHeading: "C line",
     /** The C line number beside an instruction, for a screen reader. */

@@ -111,8 +111,10 @@ export interface StepView {
   readonly next: number | null;
   /** The index into `lines` of the instruction that ran last; null before the first. */
   readonly ran: number | null;
-  /** The C line GCC recorded for the instruction that ran last. */
-  readonly litC: number | null;
+  /** The C lines the lesson checked for the instruction that ran last, in the pane's numbering. */
+  readonly litC: readonly number[];
+  /** The C line GCC recorded for the instruction that ran last, kept for the compiler's details. */
+  readonly recordedC: number | null;
   /** The numbers of the registers (`w0` is 0) that the last instruction wrote. */
   readonly written: ReadonlySet<number>;
   /** How the run ended, once every instruction has run. */
@@ -135,7 +137,8 @@ export function viewAt(trace: Trace, k: number): StepView {
     // After the run's last instruction the pc is where the run ended, which is no instruction.
     next: trace.lineAt.get(state.pc) ?? null,
     ran,
-    litC: ranLine?.kind === "instruction" ? ranLine.cLine : null,
+    litC: ranLine?.kind === "instruction" ? (ranLine.sourceLines ?? []) : [],
+    recordedC: ranLine?.kind === "instruction" ? ranLine.cLine : null,
     written,
     stop: at === steps.length ? stop : null,
   };

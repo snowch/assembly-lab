@@ -70,22 +70,24 @@ describe("a run, as the figures see it", () => {
 
   it("starts with the marker on the first instruction and nothing run", () => {
     const v = viewAt(trace, 0);
-    expect([v.k, v.total, v.next, v.ran, v.litC, v.stop]).toEqual([0, 4, 1, null, null, null]);
+    expect([v.k, v.total, v.next, v.ran, v.litC, v.stop]).toEqual([0, 4, 1, null, [], null]);
     expect([0, 1, 2, 3].map((n) => wValue(v.state, n))).toEqual([120, 85, 42, 15]);
     expect(v.written.size).toBe(0);
   });
 
   it("moves the marker, lights the C line of the instruction that ran, and says which register it wrote", () => {
     const v = viewAt(trace, 1);
-    expect([v.next, v.ran, v.litC]).toEqual([2, 1, 3]);
+    expect([v.next, v.ran, v.litC]).toEqual([2, 1, [3]]);
     expect([...v.written]).toEqual([0]);
     expect(wValue(v.state, 0)).toBe(205);
     expect(wValue(v.state, 1)).toBe(85);
   });
 
-  it("records the last subtraction and ret against the closing brace, as the compiler did", () => {
-    expect(viewAt(trace, 3).litC).toBe(7);
-    expect(viewAt(trace, 4).litC).toBe(7);
+  it("lights the checked C lines of the last subtraction and ret, and keeps the compiler's record apart", () => {
+    expect(viewAt(trace, 3).litC).toEqual([5]);
+    expect(viewAt(trace, 4).litC).toEqual([6]);
+    expect(viewAt(trace, 3).recordedC).toBe(7);
+    expect(viewAt(trace, 4).recordedC).toBe(7);
   });
 
   it("ends with no marker and the way the run ended", () => {

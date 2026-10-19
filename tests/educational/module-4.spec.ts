@@ -632,7 +632,7 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
     await openLesson(page, TWO);
     const figure = page.locator("#ix-describe-listing");
     await figure.scrollIntoViewIfNeeded();
-    await expect(figure.locator(".al-full-source .al-cline")).toHaveCount(8);
+    await expect(figure.locator(".al-cline")).toHaveCount(8);
     await expect(figure.locator(".al-insn .al-text")).toHaveText([
       "cmp w0, 10",
       "bgt .L9",
@@ -643,14 +643,10 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
       "mov w0, 2",
       "b .L7",
     ]);
-    await expect(figure.locator(".al-paired-source .al-label")).toHaveText([
-      /describe:/,
-      /\.L7:/,
-      /\.L9:/,
-    ]);
-    // The line tags: no instruction is recorded against the second if or against return -2.
-    const tags = await figure.locator(".al-ctag").allTextContents();
-    expect(tags).toEqual(["3", "3", "7", "7", "7", "8", "4", "4"]);
+    await expect(figure.locator(".al-asm .al-label")).toHaveText([/describe:/, /\.L7:/, /\.L9:/]);
+    // The checked line tags: each instruction names the C lines it serves, in the pane's numbering.
+    const tags = await figure.locator(".al-insn .al-ctag").allTextContents();
+    expect(tags).toEqual(["3", "3", "5", "6", "5, 6, 7", "4, 6, 7", "4", "4"]);
   });
 
   test("the prediction about the count commits before it reveals, and the model says five", async ({

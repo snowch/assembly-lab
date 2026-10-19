@@ -148,13 +148,7 @@ export const SelectStepper = withProps(Props, function SelectStepper({ data, sto
           </button>
         ))}
       </div>
-      <ListingView
-        cLines={cLinesOf("")}
-        lines={trace.lines}
-        next={view.next}
-        litC={view.litC}
-        ran={view.ran}
-      />
+      <ListingView cLines={cLinesOf("")} lines={trace.lines} next={view.next} ran={view.ran} />
       <div className="al-controls" role="group" aria-label={B.solution.figure}>
         <button
           type="button"

@@ -220,7 +220,6 @@ export const WordStepperFigure = withProps(Props, function WordStepperFigure({ d
         cLines={cLinesOf(data.program.c)}
         lines={trace.lines}
         next={view.next}
-        litC={view.litC}
         ran={view.ran}
         showC={data.showC}
       />

@@ -98,7 +98,7 @@ test("the way back leads to the front page", async ({ page }) => {
 });
 
 test.describe("the listing figure", () => {
-  test("pairs each C operation with its instructions and keeps compiler references in details", async ({
+  test("keeps the C beside its instructions at every width, tags checked lines, and keeps compiler references in details", async ({
     page,
   }) => {
     await openLesson(page);
@@ -110,33 +110,27 @@ test.describe("the listing figure", () => {
       "sub w0, w0, w3",
       "ret",
     ]);
+    // The tag beside each instruction names the C line the pane shows, not the compiler's record.
+    await expect(figure.locator(".al-insn .al-ctag")).toHaveText(["3", "4", "5", "6"]);
     const details = figure.locator(".al-compiler-lines");
     await expect(details).not.toHaveAttribute("open");
-    for (const [index, sourceLine] of [3, 4, 5, 6].entries()) {
-      const pair = figure
-        .locator(".al-source-row")
-        .filter({ has: page.locator(`.al-cline[data-line="${sourceLine}"]`) });
-      await expect(pair.locator(".al-insn .al-text")).toHaveText(
-        TRIP_DISTANCE.listing
-          .split("\n")
-          .filter((line) => / C\d+$/.test(line))
-          [index]!.replace(/ C\d+$/, "")
-          .trim(),
-      );
-      // Read both cells in one layout snapshot; offline status can change page height on load.
-      const [c, asm] = await pair.evaluate((row) =>
-        [".al-c", ".al-asm"].map((selector) => {
-          const box = row.querySelector(selector)!.getBoundingClientRect();
-          return { x: box.x, y: box.y, width: box.width, height: box.height };
-        }),
-      );
-      if (page.viewportSize()!.width >= 800) {
-        expect(asm!.x).toBeGreaterThanOrEqual(c!.x + c!.width - 1);
-        expect(Math.abs(asm!.y - c!.y)).toBeLessThan(1);
-      } else {
-        expect(asm!.y).toBeGreaterThanOrEqual(c!.y + c!.height - 1);
-      }
-    }
+    // The two panes sit side by side whatever the width: the listing scrolls as one piece, so
+    // the instructions stay to the right of the C and the page does not overflow.
+    const [c, asm, overflow] = await figure.locator(".al-listing").evaluate((listing) => {
+      const cb = listing.querySelector(".al-c")!.getBoundingClientRect();
+      const ab = listing.querySelector(".al-asm")!.getBoundingClientRect();
+      return [
+        { x: cb.x, y: cb.y, width: cb.width, height: cb.height },
+        { x: ab.x, y: ab.y, width: ab.width, height: ab.height },
+        {
+          left: listing.scrollWidth > listing.clientWidth,
+          page: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        },
+      ] as const;
+    });
+    expect(asm.x).toBeGreaterThanOrEqual(c.x + c.width - 1);
+    expect(Math.abs(asm.y - c.y)).toBeLessThan(1);
+    expect(overflow.page).toBe(false);
     await press(page, details.locator("summary"));
     await expect(details.locator(".al-ctag")).toHaveText(["3", "4", "7", "7"]);
   });

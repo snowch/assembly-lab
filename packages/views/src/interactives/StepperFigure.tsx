@@ -240,7 +240,6 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
         cLines={cLinesOf(data.program.c)}
         lines={trace.lines}
         next={view.next}
-        litC={view.litC}
         ran={view.ran}
         grouped={data.grouped}
         stopAfter={data.grouped && view.stop?.kind === "returned" ? view.ran : null}

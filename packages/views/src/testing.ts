@@ -24,6 +24,7 @@ export const TRIP: RecordedProgram = {
     "  sub w0, w0, w3 C7",
     "  ret C7",
   ].join("\n"),
+  sourceLines: [[3], [4], [5], [6]],
 };
 
 export const TRIP_AND_FUEL: RecordedProgram = {

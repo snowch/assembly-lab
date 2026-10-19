@@ -149,7 +149,7 @@ test.describe("the prediction about adding 12", () => {
       "ret",
     ]);
     // The added line has no C line beside it.
-    await expect(figure.locator(".al-ctag")).toHaveText(["1", "1"]);
+    await expect(figure.locator(".al-insn .al-ctag")).toHaveText(["1", "1"]);
     const model = traceOf(FUEL_USED_WRONG_PLUS_12, FUEL_CALL);
     const next = figure.getByRole("button", { name: V.stepper.next });
     for (const k of [1, 2, 3]) {

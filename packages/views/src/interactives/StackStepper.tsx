@@ -88,7 +88,6 @@ export const StackStepper = withProps(Props, function StackStepper({ data, store
         cLines={cLinesOf(data.program.c)}
         lines={trace.lines}
         next={view.next}
-        litC={view.litC}
         ran={view.ran}
       />
       <div className="al-controls" role="group" aria-label={S.stepper.controls}>

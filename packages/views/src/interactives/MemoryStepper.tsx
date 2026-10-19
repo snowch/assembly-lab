@@ -83,7 +83,6 @@ export const MemoryStepper = withProps(Props, function MemoryStepper({ data, sto
         cLines={cLinesOf(data.program.c)}
         lines={trace.lines}
         next={view.next}
-        litC={view.litC}
         ran={view.ran}
       />
       <div className="al-controls" role="group" aria-label={S.stepper.controls}>

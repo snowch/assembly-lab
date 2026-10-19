@@ -365,29 +365,35 @@ describe("the closed notes under a listing", () => {
   it("are two closed details, reached with Tab and opened by their summaries", async () => {
     const user = userEvent.setup();
     const { container } = figure(ListingFigure, "l", "listing", { program: TRIP, notes });
-    const details = [...container.querySelectorAll("details")];
-    expect(details.map((d) => d.querySelector("summary")!.textContent)).toEqual(
-      notes.map((n) => n.summary),
-    );
-    expect(details.map((d) => d.open)).toEqual([false, false]);
+    const details = [
+      ...container.querySelectorAll<HTMLDetailsElement>(".al-notes details, .al-compiler-lines"),
+    ];
+    expect(details.map((d) => d.querySelector("summary")!.textContent)).toEqual([
+      S.listing.compilerLinesSummary,
+      ...notes.map((n) => n.summary),
+    ]);
+    expect(details.map((d) => d.open)).toEqual([false, false, false]);
     // Under the listing, not above it.
     const listing = container.querySelector(".al-listing")!;
     expect(
       listing.compareDocumentPosition(details[0]!) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
+    // The compiler's own references are a third closed details, beside the notes.
     // The summary is a control the keyboard reaches.
     await user.tab();
-    expect(document.activeElement).toBe(details[0]!.querySelector("summary"));
+    await user.tab();
+    expect(document.activeElement).toBe(details[1]!.querySelector("summary"));
     await user.click(document.activeElement as HTMLElement);
-    expect(details[0]!.open).toBe(true);
-    expect(details[1]!.open).toBe(false);
-    expect(within(details[0]!).getByText("A second paragraph.")).toBeTruthy();
-    expect(details[0]!.querySelector("code")?.textContent).toBe("-O1");
+    expect(details[1]!.open).toBe(true);
+    expect(details[2]!.open).toBe(false);
+    expect(within(details[1]!).getByText("A second paragraph.")).toBeTruthy();
+    expect(details[1]!.querySelector("code")?.textContent).toBe("-O1");
   });
 
   it("are not drawn without notes", () => {
     const { container } = figure(ListingFigure, "l", "listing", { program: TRIP });
-    expect(container.querySelector("details, .al-notes")).toBeNull();
+    expect(container.querySelector(".al-notes")).toBeNull();
+    expect(container.querySelector(".al-notes details")).toBeNull();
   });
 });
 

@@ -197,7 +197,6 @@ function Stepping({ data, trace }: { data: Data; trace: Trace }) {
       cLines={showC ? cLinesOf(data.program?.c ?? "") : []}
       lines={trace.lines}
       next={view.next}
-      litC={view.litC}
       ran={view.ran}
     />
   );
