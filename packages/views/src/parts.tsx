@@ -233,61 +233,63 @@ export function ListingView({
       role={stepping ? "region" : undefined}
       aria-label={stepping ? S.listing.sourceConnections : undefined}
     >
-      {hasC && (
-        <div className="al-pane al-c" role="group" aria-label={S.listing.cPane}>
-          <div className="al-pane-head">{S.listing.cHeading}</div>
-          {cLines.map((text, i) => (
-            <div className="al-cline" key={i} data-line={i + 1} data-lit={litLines.has(i + 1)}>
-              <span className="al-ln">{i + 1}</span>
-              <code className="al-src">{text === "" ? " " : text}</code>
-            </div>
-          ))}
-        </div>
-      )}
-      <div className="al-pane al-asm" role="group" aria-label={S.listing.instructionsPane}>
-        <div className="al-pane-head">
-          <span>{S.listing.instructionsHeading}</span>
-          {hasC && <span>{S.listing.cLineHeading}</span>}
-        </div>
-        {grouped
-          ? groupsOf(lines).map((group, g, all) => {
-              const following = all[g + 1];
-              return (
-                <Fragment key={g}>
-                  <div className="al-group" data-function={group.label ?? undefined}>
-                    {group.label !== null && <div className="al-label">{group.label}:</div>}
-                    {group.rows.map((i) => (
-                      <Fragment key={i}>
-                        {row(i)}
-                        {stopAfter === i && (
-                          <div className="al-stop" role="note" data-mark="stop">
-                            {withCode(M0.listing.stop)}
-                          </div>
-                        )}
-                      </Fragment>
-                    ))}
+      <div className="al-listing-scroll">
+        {hasC && (
+          <div className="al-pane al-c" role="group" aria-label={S.listing.cPane}>
+            <div className="al-pane-head">{S.listing.cHeading}</div>
+            {cLines.map((text, i) => (
+              <div className="al-cline" key={i} data-line={i + 1} data-lit={litLines.has(i + 1)}>
+                <span className="al-ln">{i + 1}</span>
+                <code className="al-src">{text === "" ? " " : text}</code>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="al-pane al-asm" role="group" aria-label={S.listing.instructionsPane}>
+          <div className="al-pane-head">
+            <span>{S.listing.instructionsHeading}</span>
+            {hasC && <span>{S.listing.cLineHeading}</span>}
+          </div>
+          {grouped
+            ? groupsOf(lines).map((group, g, all) => {
+                const following = all[g + 1];
+                return (
+                  <Fragment key={g}>
+                    <div className="al-group" data-function={group.label ?? undefined}>
+                      {group.label !== null && <div className="al-label">{group.label}:</div>}
+                      {group.rows.map((i) => (
+                        <Fragment key={i}>
+                          {row(i)}
+                          {stopAfter === i && (
+                            <div className="al-stop" role="note" data-mark="stop">
+                              {withCode(M0.listing.stop)}
+                            </div>
+                          )}
+                        </Fragment>
+                      ))}
+                    </div>
+                    {crossedAfter !== null &&
+                      group.rows.includes(crossedAfter) &&
+                      following?.label != null &&
+                      group.label !== null && (
+                        <div className="al-link" role="note" data-mark="crossing">
+                          <span className="al-link-line" aria-hidden="true" />
+                          <span>{withCode(M0.listing.crossing(group.label, following.label))}</span>
+                        </div>
+                      )}
+                  </Fragment>
+                );
+              })
+            : lines.map((line, i) =>
+                line.kind === "label" ? (
+                  <div className="al-label" key={i}>
+                    {line.text}:
                   </div>
-                  {crossedAfter !== null &&
-                    group.rows.includes(crossedAfter) &&
-                    following?.label != null &&
-                    group.label !== null && (
-                      <div className="al-link" role="note" data-mark="crossing">
-                        <span className="al-link-line" aria-hidden="true" />
-                        <span>{withCode(M0.listing.crossing(group.label, following.label))}</span>
-                      </div>
-                    )}
-                </Fragment>
-              );
-            })
-          : lines.map((line, i) =>
-              line.kind === "label" ? (
-                <div className="al-label" key={i}>
-                  {line.text}:
-                </div>
-              ) : (
-                row(i)
-              ),
-            )}
+                ) : (
+                  row(i)
+                ),
+              )}
+        </div>
       </div>
       {hasC && lines.some((line) => line.kind === "instruction" && line.cLine !== null) && (
         <details className="al-compiler-lines">

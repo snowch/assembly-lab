@@ -22,16 +22,26 @@
 }
 
 /* The C beside the instructions: two panes side by side at every width. On a narrow screen the
-   listing itself scrolls sideways as one contained piece, so an instruction stays to the right of
-   the C it came from and the page never scrolls sideways. */
+   listing scrolls sideways as one contained piece, so an instruction stays to the right of the C
+   it came from and the page never scrolls sideways. The outer element only clips and scrolls; an
+   inner grid carries the panes, and each instruction anchors its own hidden "Runs next" text, so
+   neither can widen the page. */
 .al-listing {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.al-listing-scroll {
   display: grid;
   grid-template-columns: minmax(20rem, 1.25fr) minmax(16rem, 1fr);
   gap: var(--space-3);
   align-items: start;
-  max-width: 100%;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
+}
+.al-listing[data-c="none"] .al-listing-scroll {
+  grid-template-columns: minmax(0, 1fr);
+}
+.al-listing-scroll > * {
+  min-width: 0;
 }
 .al-pane {
   padding: var(--space-2) 0;
@@ -90,6 +100,9 @@
   gap: var(--space-2);
   min-height: 2rem;
   padding: 0 var(--space-3) 0 var(--space-1);
+  /* The row anchors its hidden "Runs next", which is absolutely positioned: without this, a
+     narrow listing lets it escape the listing's clip and widen the page. */
+  position: relative;
 }
 .al-insn[data-next="true"] {
   background: var(--accent-soft);

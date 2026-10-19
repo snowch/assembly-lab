@@ -675,11 +675,20 @@ test.describe("Make −1, with the bits typed in hexadecimal", () => {
     await press(page, bit(c, 4));
     const before = (await stored(page, LESSON_ID)).challenges[MAKE].artifact.answers.bits;
     const actions = c.locator(".challenge-actions");
+    // Measured inside the challenge: a stored-state update re-renders figures elsewhere on the
+    // page, and a fractional scroll offset or scroll anchoring can shift every page coordinate
+    // without anything in this challenge having moved. The page's own width is held by the
+    // design checks; this test holds the challenge still.
     const position = () =>
       actions.evaluate((el) => {
         const rect = el.getBoundingClientRect();
-        const parent = el.closest(".challenge")!.getBoundingClientRect();
-        return { y: rect.y, relativeY: rect.y - parent.y, width: rect.width, height: rect.height };
+        const challenge = el.closest(".challenge")!.getBoundingClientRect();
+        return {
+          relativeY: rect.y - challenge.y,
+          challengeH: challenge.height,
+          width: rect.width,
+          height: rect.height,
+        };
       });
     const original = await position();
     for (const text of ["xyz", "fffffffff", "0xg1"]) {
@@ -691,10 +700,9 @@ test.describe("Make −1, with the bits typed in hexadecimal", () => {
       );
       const current = await position();
       expect(current.relativeY, text).toBe(original.relativeY);
+      expect(current.challengeH, text).toBe(original.challengeH);
       expect(current.width, text).toBe(original.width);
       expect(current.height, text).toBe(original.height);
-      // Allow subpixel rounding, but still reject movement of half a CSS pixel or more.
-      expect(Math.abs(current.y - original.y), text).toBeLessThan(0.5);
     }
     await box(page).fill("10");
     await expect(c.locator(".answer-hex-problem")).toHaveText("");
