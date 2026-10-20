@@ -320,3 +320,78 @@
   margin: 0;
   font-size: var(--text-sm);
 }
+
+/* One instruction's operands, each chip with its role. The marks are characters, so the roles
+   never rest on colour, and the row wraps on a narrow screen. */
+.al-operands-instruction {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-1);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+}
+.al-operands-name {
+  margin-right: var(--space-2);
+}
+.al-operands-operand {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+}
+.al-operands-operand[data-role="destination"] {
+  border-color: var(--accent);
+}
+.al-operands-mark {
+  font-family: var(--font-text);
+  font-size: var(--text-xs);
+  line-height: 1;
+  color: var(--fg-muted);
+}
+.al-operands-legend {
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+  list-style: none;
+  font-size: var(--text-sm);
+}
+.al-operands-legend li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+.al-operands-legend .al-operands-mark {
+  font-size: var(--text-sm);
+}
+.al-operands-explain {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-sm);
+}
+
+/* The ask before a step: which register will the next instruction write. The picks are buttons,
+   so the answer is a visible choice, and the row keeps its height when the ask is not drawn. */
+.al-expect {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+}
+.al-expect-ask {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+.al-expect-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.al-expect-pick[data-picked="true"] {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}

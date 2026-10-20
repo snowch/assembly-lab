@@ -8,6 +8,7 @@ import type { InteractiveProps } from "@platform/lesson-runtime";
 
 import { AdderFigure } from "./AdderFigure";
 import { ArgsFigure } from "./ArgsFigure";
+import { OperandRoles } from "./OperandRoles";
 import { ChallengeNote } from "./ChallengeNote";
 import { CounterRing } from "./CounterRing";
 import { ListingFigure } from "./ListingFigure";
@@ -56,6 +57,7 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   "trace-prediction": TracePrediction,
   adder: AdderFigure,
   "arg-registers": ArgsFigure,
+  "operand-roles": OperandRoles,
   "counter-ring": CounterRing,
   "run-prediction": RunPrediction,
   "wide-stepper": WideStepper,

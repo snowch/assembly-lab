@@ -149,18 +149,19 @@ describe("the lesson's words", () => {
     expect(fileFlat).toContain(flat(LABELS.captions.stepper));
     expect(fileFlat).toContain(flat(LABELS.captions.predictTotal));
     expect(fileFlat).toContain(flat(LABELS.captions.argRegisters));
+    expect(fileFlat).toContain(flat(LABELS.captions.operandRoles));
     const own = [
       LABELS.captions.predictNoRet,
       LABELS.captions.noRet,
       LABELS.captions.fix,
       LABELS.captions.trace,
     ];
-    expect(Object.keys(LABELS.captions)).toHaveLength(4 + own.length);
+    expect(Object.keys(LABELS.captions)).toHaveLength(5 + own.length);
     for (const caption of own) expect(fileFlat, caption).not.toContain(flat(caption));
     const source = readFileSync(new URL("./meet-the-machine.labels.ts", import.meta.url), "utf8");
     // Each of the four went through the prose process (16 October 2026); a new caption arrives
     // marked DRAFT, and this count fails until it has been through it too.
-    expect(source.match(/\/\/ DRAFT/g) ?? []).toHaveLength(1);
+    expect(source.match(/\/\/ DRAFT/g) ?? []).toHaveLength(2);
   });
 
   it("keep the figures' captions as plain text, and the objectives as the file has them", () => {

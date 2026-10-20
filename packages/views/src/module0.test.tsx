@@ -16,6 +16,7 @@ import { Interactive, type Lesson } from "@platform/lesson-schema";
 
 import { crossedFrom, flowAt } from "./flow";
 import { ArgsFigure } from "./interactives/ArgsFigure";
+import { OperandRoles } from "./interactives/OperandRoles";
 import { ListingFigure } from "./interactives/ListingFigure";
 import { StepperFigure } from "./interactives/StepperFigure";
 import { TracePrediction } from "./interactives/TracePrediction";
@@ -515,5 +516,60 @@ describe("the arguments figure", () => {
     expect(rows[0]).toContain("(120)");
     expect(rows[1]).toContain("w0 = leg1 + leg2");
     expect(rows[1]).toContain("(205)");
+  });
+});
+
+describe("the operands figure", () => {
+  const props = {
+    name: "add",
+    operands: ["w0", "w0", "w1"],
+    explain: "`add` reads the two inputs and writes their sum to the destination.",
+  };
+  it("draws each operand with its role, the destination told apart from the inputs", () => {
+    const { container } = figure(OperandRoles, "o", "operand-roles", props);
+    const chips = [...container.querySelectorAll(".al-operands-operand")];
+    expect(chips.map((c) => c.querySelector("code")?.textContent)).toEqual(["w0", "w0", "w1"]);
+    expect(chips[0]).toHaveAttribute("data-role", "destination");
+    expect(chips.slice(1).every((c) => c.getAttribute("data-role") === "input")).toBe(true);
+    // The legend names the roles in text, so nothing rests on the mark alone.
+    const legend = chipsLegend(container);
+    expect(legend[0]).toContain("destination: the result is written here");
+    expect(legend[1]).toContain("input 1");
+    expect(legend[2]).toContain("input 2");
+    expect(flat(container.querySelector(".al-operands-explain"))).toContain(
+      "reads the two inputs and writes their sum",
+    );
+  });
+});
+
+function chipsLegend(container: HTMLElement) {
+  return [...container.querySelectorAll(".al-operands-legend li")].map((li) =>
+    flat(li as HTMLElement),
+  );
+}
+
+describe("the stepper's ask before a step", () => {
+  const props = { ...stepper, expect: true };
+  it("asks which register the next instruction will write, and says whether the pick was right", async () => {
+    const user = userEvent.setup();
+    const { container } = figure(StepperFigure, "s", "stepper", props);
+    expect(screen.getByRole("group", { name: S.stepper.expectGroup })).not.toBeNull();
+    // The ask names the instruction that runs next.
+    expect(flat(container.querySelector(".al-expect-ask"))).toContain("add w0, w0, w1");
+    await user.click(screen.getByRole("button", { name: "w1" }));
+    await user.click(next());
+    // The pick was wrong: the status says so, then what ran.
+    expect(flat(container.querySelector(".al-status"))).toContain("It wrote w0");
+    expect(flat(container.querySelector(".al-status"))).toContain("Ran add w0, w0, w1");
+    await user.click(screen.getByRole("button", { name: "w0" }));
+    await user.click(next());
+    expect(flat(container.querySelector(".al-status"))).toContain("You were right: it wrote w0");
+    // Moving back clears the verdict: the ask is for the instruction that runs next again.
+    await user.click(back());
+    expect(flat(container.querySelector(".al-status"))).not.toContain("You were right");
+  });
+  it("draws no ask when the lesson does not ask for one", () => {
+    const { container } = figure(StepperFigure, "s", "stepper", stepper);
+    expect(container.querySelector(".al-expect")).toBeNull();
   });
 });

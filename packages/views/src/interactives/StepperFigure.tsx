@@ -66,6 +66,11 @@ const Props = z.object({
   showChanges: z.boolean().default(false),
   /** Say under each flag what it records. */
   explainFlags: z.boolean().default(false),
+  /**
+   * Before each step, ask which register the next instruction will write. The learner picks from
+   * the drawn registers; the step then says whether the pick was right before it shows the run.
+   */
+  expect: z.boolean().default(false),
 });
 
 /**
@@ -200,6 +205,10 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
   const [removed, setRemoved] = useState(false);
   const [k, setK] = useState(0);
   const [bitsShown, setBitsShown] = useState(false);
+  // The register the learner picked for the instruction about to run, and the verdict on the
+  // pick once that instruction has run: the register it actually wrote.
+  const [picked, setPicked] = useState<number | null>(null);
+  const [verdict, setVerdict] = useState<{ right: boolean; register: number } | null>(null);
   const bitsId = useId();
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const trace = useMemo(
@@ -215,6 +224,23 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
   }
   const view = viewAt(trace, k);
   const atEnd = view.k >= view.total;
+  // With `expect`, the learner answers for the instruction they are about to run: they pick the
+  // register it will write, and the step that follows says whether the pick was right before it
+  // shows what the instruction did. A pick or a verdict belongs to one instruction only: any
+  // movement clears both.
+  const nextWritten = (() => {
+    if (view.next === null) return null;
+    const reg = trace.result.steps[view.k]?.writes.find((w) => w.reg !== "sp")?.reg;
+    return typeof reg === "number" ? reg : null;
+  })();
+  const step = (to: number) => {
+    // The verdict names the pick against the register the instruction being run writes.
+    if (picked !== null && view.next !== null && nextWritten !== null && to === view.k + 1)
+      setVerdict({ right: picked === nextWritten, register: nextWritten });
+    else setVerdict(null);
+    setPicked(null);
+    setK(to);
+  };
   const decimalOnly = data.decimal && !bitsShown;
   return (
     <div
@@ -250,7 +276,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           type="button"
           className="button secondary"
           disabled={view.k === 0}
-          onClick={() => setK(Math.max(0, view.k - 1))}
+          onClick={() => step(Math.max(0, view.k - 1))}
         >
           {S.stepper.back}
         </button>
@@ -258,7 +284,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           type="button"
           className="button primary"
           disabled={atEnd}
-          onClick={() => setK(view.k + 1)}
+          onClick={() => step(view.k + 1)}
         >
           {S.stepper.next}
         </button>
@@ -266,19 +292,53 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           type="button"
           className="button secondary"
           disabled={view.k === 0}
-          onClick={() => setK(0)}
+          onClick={() => step(0)}
         >
           {S.stepper.reset}
         </button>
       </div>
+      {data.expect && view.next !== null && (
+        <div className="al-expect" role="group" aria-label={S.stepper.expectGroup}>
+          <p className="al-expect-ask">
+            {withCode(
+              S.stepper.expectAsk(
+                trace.lines[view.next]!.kind === "instruction" ? trace.lines[view.next]!.text : "",
+              ),
+            )}
+          </p>
+          <div className="al-expect-picks" role="group" aria-label={S.stepper.expectChoices}>
+            {data.registers.map((n) => (
+              <button
+                type="button"
+                className="button secondary al-expect-pick"
+                key={n}
+                data-picked={picked === n}
+                aria-pressed={picked === n}
+                onClick={() => setPicked(n)}
+              >
+                {`w${n}`}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <p className="al-status" role="status">
         {withCode(
-          statusOf(
-            trace,
-            view,
-            data.branchStatus,
-            data.showChanges ? leftFlagsAlone(trace, view.k) : null,
-          ),
+          [
+            data.expect && verdict !== null
+              ? verdict.right
+                ? S.stepper.expectRight(`w${verdict.register}`)
+                : S.stepper.expectWrong(`w${verdict.register}`)
+              : null,
+            statusOf(
+              trace,
+              view,
+              data.branchStatus,
+              data.showChanges ? leftFlagsAlone(trace, view.k) : null,
+            ),
+          ]
+            .filter((part) => part !== null)
+            .join(" "),
         )}
       </p>
       {data.endNote !== undefined && atEnd && (

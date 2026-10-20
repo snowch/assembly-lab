@@ -63,8 +63,33 @@ export const VIEW_STRINGS = {
     deleteLine: (text: string) => `Delete the \`${text}\` line`,
     /** In place of a stepper that waits for a prediction. */
     locked: "Check your prediction above first. The figure opens once you have checked it.",
+    /** The ask before a step, when the lesson turns the stepper into a prediction each time. */
+    // DRAFT
+    expectGroup: "Which register will the next instruction write?",
+    // DRAFT
+    expectChoices: "Your answer",
+    // DRAFT: `instruction` is the instruction about to run.
+    expectAsk: (instruction: string) =>
+      `Before you press Next: which register will \`${instruction}\` write?`,
+    // DRAFT
+    expectRight: (register: string) => `You were right: it wrote \`${register}\`.`,
+    // DRAFT: `register` is the register the instruction wrote.
+    expectWrong: (register: string) =>
+      `It wrote \`${register}\`. Look at the first operand of the instruction you just ran.`,
   },
 
+  operands: {
+    // DRAFT
+    instruction: (name: string) => `The operands of ${name}`,
+    // DRAFT
+    destinationMark: "\u2460",
+    // DRAFT
+    inputMark: (n: number) => (n === 0 ? "\u2461" : "\u2462"),
+    // DRAFT
+    destination: "destination: the result is written here",
+    // DRAFT: `n` is 1 or 2.
+    input: (n: number) => `input ${n}: a value the instruction reads`,
+  },
   prediction: {
     commit: "Check your prediction",
     legend: "Your prediction",

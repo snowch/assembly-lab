@@ -101,13 +101,17 @@ Before the first instruction, `w0` holds `leg1`. The first instruction, `add w0,
 
 The simulator is a JavaScript program that loads with this page and runs in your browser. It imitates the processor, one instruction at a time. The instructions are GCC's real output. Only the running is imitated. The course calls the simulator its model of the processor.
 
-The figure runs `trip_distance(120, 85, 42, 15)`. Each register is shown as a decimal number. Press Show the bits to see all four registers as 32-bit patterns. The `w` in `w0` names those 32 bits. Module 1 shows the rest of each register.
+The stepper figure runs `trip_distance(120, 85, 42, 15)`. Each register is shown as a decimal number. Press Show the bits to see all four registers as 32-bit patterns. The `w` in `w0` says this instruction works on those 32 bits. A register is wider than that. Module 1 shows the rest of each register.
 
 The marker shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`.
 
 An instruction's parts after its name are its **operands**. In `add w0, w0, w1`, the first operand is where the result goes. The other two are the values it adds.
 
-Press Next to run one instruction. The figure then shows what that instruction read, what it wrote, and which registers it left alone. Press Back to undo a step.
+*The operands of add w0, w0, w1, and the role each one plays.*
+
+`add` reads the two inputs and writes their sum to the destination.
+
+Before you press Next, say which register the next instruction will write. Press Next and the figure says whether you were right, then runs the instruction and shows what it read, what it wrote, and which registers it left alone. Press Back to undo a step.
 
 At each step, look for two things: which register the instruction writes, and which registers it leaves alone.
 
@@ -121,7 +125,10 @@ At each step, look for two things: which register the instruction writes, and wh
 
 A second function, `fuel_used`, should return the litres used on a trip. That is the fuel at the start minus the fuel at the end. Its C was written the wrong way round: `return at_end - at_start;`. GCC turned it into `sub w0, w1, w0` and `ret`.
 
-`at_start` arrives in `w0`, and `at_end` in `w1`.
+The two arguments arrive in registers:
+
+- `at_start` arrives in `w0`.
+- `at_end` arrives in `w1`.
 
 In a real project you would correct the C and compile it again; here you fix the instructions directly, to practise reading and changing assembly.
 
