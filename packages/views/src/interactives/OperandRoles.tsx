@@ -50,8 +50,25 @@ export const OperandRoles = withProps(Props, function OperandRoles({ data, store
             </span>
           ))}
         </li>
-        <li className="al-op al-op-do" aria-hidden="false">
+        {/* Both reads feed one operation: a connector drawn from each read into a single
+            arrowhead on the Add node, so the two reads are one step's inputs, not two steps. */}
+        <li className="al-op-join" aria-hidden="true">
+          <svg className="al-op-join-svg" viewBox="0 0 100 24" preserveAspectRatio="none">
+            {inputs.map((_, i) => {
+              const x = inputs.length === 1 ? 50 : 25 + (50 * i) / (inputs.length - 1);
+              return <path key={i} className="al-op-line" d={`M ${x} 0 V 8 H 50 V 16`} />;
+            })}
+            <path className="al-op-head" d="M 50 24 L 45 16 H 55 Z" />
+          </svg>
+        </li>
+        <li className="al-op al-op-do">
           <span className="al-op-role">{data.operation}</span>
+        </li>
+        <li className="al-op-step" aria-hidden="true">
+          <svg className="al-op-join-svg" viewBox="0 0 100 24" preserveAspectRatio="none">
+            <path className="al-op-line" d="M 50 0 V 16" />
+            <path className="al-op-head" d="M 50 24 L 45 16 H 55 Z" />
+          </svg>
         </li>
         <li className="al-op al-op-write">
           <span className="al-op-role">{S.operands.write}</span> <code>{destination}</code>

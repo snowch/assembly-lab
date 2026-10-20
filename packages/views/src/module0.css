@@ -325,11 +325,14 @@
   font-size: var(--text-sm);
 }
 
-/* One instruction's operands as a flow: the registers it reads, the operation, the register it
-   writes. The roles are written on the elements, so there is no legend to decode, and the read
-   and write chips reuse the flow panel's shapes: a dashed outline for a value that was read, a
-   solid accent-filled chip for a value that was written. On a narrow screen the flow stacks, and
-   the arrows are characters, so nothing rests on colour. */
+/* One instruction's operands as a flow, drawn as a topology: the registers it reads feed the
+   operation, and the operation writes the destination. The connectors are drawn between the
+   stages (an inline SVG whose lines end in one arrowhead on the next node), never a glyph
+   attached to a node, so the reads read as one step's inputs. The roles are written on the
+   chips, the read chips reuse the flow panel's dashed source shape, and the write chip its
+   solid accent-filled destination shape. The flow is vertical at every width, so a phone and a
+   desk see the same topology, and the connectors are elements with real geometry the tests
+   can measure. */
 .al-operands-syntax {
   margin: 0 0 var(--space-2);
   font-family: var(--font-mono);
@@ -339,11 +342,12 @@
   margin: 0;
   padding: 0;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-3);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
   list-style: none;
 }
+/* The reads sit side by side as one group; the connector below them starts under each. */
 .al-op-reads {
   display: flex;
   flex-wrap: wrap;
@@ -363,7 +367,7 @@
   font-size: var(--text-xs);
   color: var(--fg-muted);
 }
-/* The operation the instruction performs, between the reads and the write. */
+/* The operation the instruction performs: fed by both reads, feeding the write. */
 .al-op-do {
   border-style: solid;
   border-color: var(--border-strong);
@@ -375,22 +379,27 @@
   background: var(--accent-soft);
   font-weight: 650;
 }
-/* The flow's direction, drawn as characters between the parts. */
-.al-op-reads::after,
-.al-op-do::after {
-  content: "\2192";
-  margin-left: var(--space-1);
-  color: var(--fg-muted);
+/* The connectors between the stages: as wide as the flow, so every line starts under the
+   group above it and ends in one arrowhead on the node below. */
+.al-op-join,
+.al-op-step {
+  align-self: stretch;
+  width: 100%;
+  height: 1.5rem;
 }
-@media (max-width: 30rem) {
-  .al-operands-flow {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .al-op-reads::after,
-  .al-op-do::after {
-    content: "\2193";
-  }
+.al-op-join-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.al-op-line {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: 1.5;
+}
+.al-op-head {
+  fill: var(--border-strong);
 }
 
 /* The tie that says a read chip and the write chip name one register. */

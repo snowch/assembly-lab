@@ -97,6 +97,50 @@ test("the way back leads to the front page", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Assembly Lab");
 });
 
+test.describe("the operands flow", () => {
+  test("draws the reads feeding one operation, and the operation writing the destination, at every width", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    await commit(page, "predict-total", /^In w0/);
+    const fig = page.locator("#ix-operand-roles");
+    await fig.scrollIntoViewIfNeeded();
+    // The flow's geometry, measured in the rendered page: the connector under the reads starts
+    // beneath each read chip and ends in one arrowhead on the Add node; the second connector
+    // runs from Add to Write. A phone and a desk must both show the joined topology.
+    const ok = await fig.evaluate((el) => {
+      const box = (e: Element) => e.getBoundingClientRect();
+      const reads = [...el.querySelectorAll(".al-op-read")].map(box);
+      const joins = el.querySelectorAll(".al-op-join, .al-op-step");
+      const doBox = box(el.querySelector(".al-op-do")!);
+      const writeBox = box(el.querySelector(".al-op-write")!);
+      if (joins.length !== 2) return { ok: false, why: "joins", joins: joins.length };
+      const joinBox = box(joins[0]!);
+      const stepBox = box(joins[1]!);
+      const headPaths = joins[0]!.querySelectorAll(".al-op-head");
+      return {
+        ok:
+          reads.every((r) => r.bottom <= joinBox.top + 1) &&
+          headPaths.length === 1 &&
+          joinBox.bottom <= doBox.top + 1 &&
+          stepBox.top >= doBox.bottom - 1 &&
+          stepBox.bottom <= writeBox.top + 1 &&
+          reads.length === 2 &&
+          // No stray arrows attached to the nodes themselves.
+          el.querySelectorAll(".al-op::after").length === 0,
+        why: "geometry",
+        reads: reads.length,
+        heads: headPaths.length,
+      };
+    });
+    expect(ok.ok, JSON.stringify(ok)).toBe(true);
+    // The stages read in order, and the page does not overflow sideways.
+    await expect(fig.locator(".al-op-read")).toHaveCount(2);
+    await expect(fig.locator(".al-op-write code")).toHaveText("w0");
+    expect(await designProblems(page, false)).toEqual([]);
+  });
+});
+
 test.describe("the listing figure", () => {
   test("keeps the C beside its instructions at every width, tags checked lines, and keeps compiler references in details", async ({
     page,
