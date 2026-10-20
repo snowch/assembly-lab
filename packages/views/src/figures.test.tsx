@@ -306,7 +306,7 @@ describe("the prediction about the first instruction", () => {
     await user.click(screen.getByRole("button", { name: S.prediction.commit }));
     const outcome = container.querySelector(".al-outcome")!;
     expect(outcome.querySelector(".al-match")).toHaveTextContent(
-      "The simulator ran the first instruction. It wrote w0. That matches your prediction.",
+      "The first instruction wrote w0. That matches your prediction.",
     );
     expect(outcome).toHaveTextContent("The first instruction writes w0.");
   });
@@ -362,7 +362,7 @@ describe("the prediction about a register at the end of a run", () => {
     await user.click(screen.getByRole("radio", { name: "147" }));
     await user.click(screen.getByRole("button", { name: S.prediction.commit }));
     expect(container.querySelector(".al-match")).toHaveTextContent(
-      "The simulator ran the program. w0 held 147 when the run ended.",
+      "The run ended with w0 holding 147.",
     );
   });
 
@@ -371,7 +371,9 @@ describe("the prediction about a register at the end of a run", () => {
     const { container } = figure(TracePrediction, "p", "trace-prediction", props);
     await user.click(screen.getByRole("radio", { name: "232" }));
     await user.click(screen.getByRole("button", { name: S.prediction.commit }));
-    expect(container.querySelector(".al-nomatch")).toHaveTextContent("w0 held 147");
+    expect(container.querySelector(".al-nomatch")).toHaveTextContent(
+      "The run ended with w0 holding 147.",
+    );
   });
 
   it("calls a run that does not return an error: here a listing that falls off its end", async () => {

@@ -71,14 +71,15 @@ export const VIEW_STRINGS = {
     youChose: (choice: string) => `You chose: ${choice}`,
     match: "That matches your prediction.",
     noMatch: "That does not match your prediction.",
-    /** The simulator's result for a question about the first instruction's register. */
-    firstWrote: (register: string) =>
-      `The simulator ran the first instruction. It wrote \`${register}\`.`,
-    firstWroteNothing: "The simulator ran the first instruction. It wrote no register.",
+    /** The simulator's result for a question about the first instruction's register. The run is
+     * named by what it did: the badge on the figure names the model, and a lighter sentence lets
+     * the verdict land where the word simulator has not yet been met. */
+    firstWrote: (register: string) => `The first instruction wrote \`${register}\`.`,
+    firstWroteNothing: "The first instruction wrote no register.",
     /** The simulator's result for a question about a register at the end of a run. */
     endedWith: (register: string, value: number) =>
-      `The simulator ran the program. \`${register}\` held ${value} when the run ended.`,
-    endedWithError: "The simulator ran the program. The run stopped with an error.",
+      `The run ended with \`${register}\` holding ${value}.`,
+    endedWithError: "The run stopped with an error.",
   },
 
   // Module 1's figures (drafted by Haiku and checked, 16 October 2026).

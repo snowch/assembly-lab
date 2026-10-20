@@ -439,7 +439,9 @@ describe("the prediction about a run", () => {
     });
     expect(container.querySelector(".al-c")).not.toBeNull();
     await choose("4294965296");
-    expect(container.querySelector(".al-nomatch")).toHaveTextContent("w0 held 2000");
+    expect(container.querySelector(".al-nomatch")).toHaveTextContent(
+      "The run ended with w0 holding 2000.",
+    );
     await choose("2000");
     expect(container.querySelector(".al-match")).not.toBeNull();
   });
