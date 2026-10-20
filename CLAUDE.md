@@ -58,6 +58,11 @@ gives away a prediction's or a challenge's answer before the learner has worked 
 over time, memory laid out by address, the stack at each call, the path a branch takes. A table
 beside a drawing can index it; a table in its place cannot.
 
+For the shared appearance and meaning of diagrams, follow [the visual language](docs/visual-language.md);
+for the section-by-section review and recent-figure harmonisation, use
+[the visual audit](docs/visual-audit.md). These extend the model, term-gate, accessibility and
+independent-review requirements above; they do not replace them.
+
 ## Make each activity unambiguous
 
 Apply these checks to the question, nearby prose, caption, controls and feedback together.
