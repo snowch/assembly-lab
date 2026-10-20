@@ -539,6 +539,20 @@ describe("the operands figure", () => {
     expect(flat(container.querySelector(".al-operands-explain"))).toContain(
       "reads the two inputs and writes their sum",
     );
+    // `w0` is both an input and the destination: the figure says the two chips name one
+    // register at two moments, rather than implying two registers.
+    const tie = flat(container.querySelector(".al-operands-tie"));
+    expect(tie).toContain("The two w0 chips name one register at two moments");
+    const tied = [...container.querySelectorAll('.al-operands-operand[data-tied="true"]')];
+    expect(tied).toHaveLength(2);
+  });
+  it("draws no tie when no input is also the destination", () => {
+    const { container } = figure(OperandRoles, "o2", "operand-roles", {
+      ...props,
+      operands: ["w2", "w0", "w1"],
+    });
+    expect(container.querySelector(".al-operands-tie")).toBeNull();
+    expect(container.querySelectorAll('.al-operands-operand[data-tied="true"]')).toHaveLength(0);
   });
 });
 

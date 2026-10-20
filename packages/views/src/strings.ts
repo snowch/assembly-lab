@@ -89,6 +89,9 @@ export const VIEW_STRINGS = {
     destination: "destination: the result is written here",
     // DRAFT: `n` is 1 or 2.
     input: (n: number) => `input ${n}: a value the instruction reads`,
+    // DRAFT: `register` appears as both an input and the destination.
+    sameRegister: (register: string) =>
+      `The two \`${register}\` chips name one register at two moments: the instruction reads it, then writes it.`,
   },
   prediction: {
     commit: "Check your prediction",

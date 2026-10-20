@@ -18,7 +18,13 @@ const Props = z.object({
 });
 
 export const OperandRoles = withProps(Props, function OperandRoles({ data }) {
-  const [destination, ...inputs] = data.operands;
+  const [first, ...rest] = data.operands;
+  if (first === undefined || rest.length === 0) return null;
+  const destination = first;
+  const inputs = rest;
+  // A register can be both an input and the destination, as `w0` is here: the two chips name
+  // one register at two moments, so the legend says so and the marks tie them together.
+  const tied = inputs.includes(destination);
   return (
     <div className="al-figure al-operands" data-figure="operand-roles">
       <p className="al-operands-instruction" aria-label={S.operands.instruction(data.name)}>
@@ -28,6 +34,7 @@ export const OperandRoles = withProps(Props, function OperandRoles({ data }) {
             className="al-operands-operand"
             key={i}
             data-role={i === 0 ? "destination" : "input"}
+            data-tied={tied && operand === destination ? "true" : undefined}
           >
             <code>{operand}</code>
             <span className="al-operands-mark" aria-hidden="true">
@@ -55,6 +62,7 @@ export const OperandRoles = withProps(Props, function OperandRoles({ data }) {
           </li>
         ))}
       </ul>
+      {tied && <p className="al-operands-tie">{withCode(S.operands.sameRegister(destination))}</p>}
       <p className="al-operands-explain">{withCode(data.explain)}</p>
     </div>
   );

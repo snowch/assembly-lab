@@ -264,9 +264,13 @@
   padding: 0;
   font-size: inherit;
 }
+/* The register a parameter arrives in: the same shape the flow panel gives a value that was
+   written (accent outline, soft fill), so "this is a register" reads the same in both figures. */
 .al-arg-register {
-  border-color: var(--accent);
+  border: 2px solid var(--accent);
+  background: var(--accent-soft);
   color: var(--accent-strong);
+  font-weight: 650;
 }
 .al-arg-arrow {
   width: 0;
@@ -345,8 +349,15 @@
   border-radius: var(--radius-sm);
   background: var(--bg-raised);
 }
+/* The destination is the shape the flow panel gives a written value; the inputs are the shape
+   it gives a read value, so the roles mean the same thing in both figures. */
 .al-operands-operand[data-role="destination"] {
-  border-color: var(--accent);
+  border: 2px solid var(--accent);
+  background: var(--accent-soft);
+  font-weight: 650;
+}
+.al-operands-operand[data-role="input"] {
+  border-style: dashed;
 }
 .al-operands-mark {
   font-family: var(--font-text);
@@ -394,4 +405,10 @@
 .al-expect-pick[data-picked="true"] {
   border-color: var(--accent);
   color: var(--accent-strong);
+}
+
+/* The tie that says an input chip and the destination chip name one register. */
+.al-operands-tie {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-sm);
 }
