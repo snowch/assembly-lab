@@ -167,8 +167,9 @@ describe("the page", () => {
     expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
-    // The two steppers wait for their predictions; nothing of either run is on the page yet.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
+    // The two steppers and the operands flow wait for their predictions; nothing of any run
+    // is on the page yet, and the flow's "Write w0" cannot spoil the prediction it waits on.
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(3);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
   });

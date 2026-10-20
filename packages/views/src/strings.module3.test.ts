@@ -23,7 +23,7 @@ describe("the strings of Module 3's rework", () => {
     // ... and the 26 in the bit operations' and the shift's objects, which are older strings
     // reworded or added beside them. The 10 of Module 0's operands diagram and its expect ask
     // (the roles of the operands, and the ask before a step) join the count as their own group.
-    expect(source.match(/\/\/ DRAFT/g) ?? []).toHaveLength(38 + 26 + 11);
+    expect(source.match(/\/\/ DRAFT/g) ?? []).toHaveLength(38 + 26 + 10);
   });
 
   it("say the rule of each logic operation in one line, as the lesson's list does", () => {

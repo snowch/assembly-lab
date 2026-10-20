@@ -1,69 +1,63 @@
 // Copyright © 2026 Christopher Snow
-// One instruction's operands, each with its role: the destination the result is written to and
-// the two inputs the instruction reads. The instruction is drawn, not described: each operand is
-// a chip in its own place, the role names are text, and the order is the instruction's own order.
-// Nothing runs here; the Investigation's simulator below is where the same instruction executes.
+// One instruction's operands as a flow the learner can read without a legend: the registers it
+// reads, the operation it performs, and the register it writes, each labelled in place. The
+// instruction's own order stays at the top, so the destination-first convention is still
+// explicit. When a register is both read and written, one sentence says the two appearances name
+// one register at two moments. Nothing runs here; the Investigation's simulator below is where
+// the same instruction executes, and the figure stays shut until the lesson's prediction has
+// been checked, so it cannot spoil the answer the prediction asks for.
 import { z } from "zod";
+import { useSlot } from "@platform/lesson-runtime";
 import { withCode } from "../parts";
 import { VIEW_STRINGS as S } from "../strings";
 import { withProps } from "./props";
 
 const Props = z.object({
-  /** The instruction's name, such as `add`. */
+  /** The instruction's name, such as `add`, and its operands: the destination first, then the values it reads. */
   name: z.string().min(1),
-  /** The operands after the name, in order: the destination first, then the inputs. */
   operands: z.array(z.string().min(1)).min(2).max(5),
-  /** Markdown: the one-line explanation under the legend. */
-  explain: z.string(),
+  /** The word for the operation itself, drawn on the flow: `Add` for `add`, `Subtract` for `sub`. */
+  operation: z.string().min(1),
+  /** The id of a prediction in this lesson. The figure stays shut until it has been checked. */
+  after: z.string().optional(),
 });
 
-export const OperandRoles = withProps(Props, function OperandRoles({ data }) {
+export const OperandRoles = withProps(Props, function OperandRoles({ data, store }) {
   const [first, ...rest] = data.operands;
+  const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   if (first === undefined || rest.length === 0) return null;
+  if (data.after !== undefined && prediction === undefined)
+    return (
+      <p role="note" className="al-locked">
+        {S.stepper.locked}
+      </p>
+    );
   const destination = first;
   const inputs = rest;
-  // A register can be both an input and the destination, as `w0` is here: the two chips name
-  // one register at two moments, so the legend says so and the marks tie them together.
+  // A register can be both read and written, as `w0` is here: the flow says so, rather than
+  // implying two registers.
   const tied = inputs.includes(destination);
   return (
     <div className="al-figure al-operands" data-figure="operand-roles">
-      <p className="al-operands-instruction" aria-label={S.operands.instruction(data.name)}>
-        <code className="al-operands-name">{data.name}</code>
-        {[destination, ...inputs].map((operand, i) => (
-          <span
-            className="al-operands-operand"
-            key={i}
-            data-role={i === 0 ? "destination" : "input"}
-            data-tied={tied && operand === destination ? "true" : undefined}
-          >
-            <code>{operand}</code>
-            <span className="al-operands-mark" aria-hidden="true">
-              {i === 0 ? S.operands.destinationMark : S.operands.inputMark(i)}
-            </span>
-            <span className="visually-hidden">
-              {i === 0 ? S.operands.destination : S.operands.input(i)}
-            </span>
-          </span>
-        ))}
+      <p className="al-operands-syntax" aria-label={S.operands.instruction(data.name)}>
+        <code>{[data.name, data.operands.join(", ")].join(" ")}</code>
       </p>
-      <ul className="al-operands-legend">
-        <li>
-          <span className="al-operands-mark" aria-hidden="true">
-            {S.operands.destinationMark}
-          </span>
-          {withCode(S.operands.destination)}
-        </li>
-        {inputs.map((_, i) => (
-          <li key={i}>
-            <span className="al-operands-mark" aria-hidden="true">
-              {S.operands.inputMark(i)}
+      <ol className="al-operands-flow" aria-label={S.operands.flow}>
+        <li className="al-op-reads">
+          {inputs.map((operand, i) => (
+            <span className="al-op al-op-read" key={i}>
+              <span className="al-op-role">{S.operands.read}</span> <code>{operand}</code>
             </span>
-            {withCode(S.operands.input(i + 1))}
-          </li>
-        ))}
-      </ul>
+          ))}
+        </li>
+        <li className="al-op al-op-do" aria-hidden="false">
+          <span className="al-op-role">{data.operation}</span>
+        </li>
+        <li className="al-op al-op-write">
+          <span className="al-op-role">{S.operands.write}</span> <code>{destination}</code>
+        </li>
+      </ol>
       {tied && <p className="al-operands-tie">{withCode(S.operands.sameRegister(destination))}</p>}
-      <p className="al-operands-explain">{withCode(data.explain)}</p>
     </div>
   );
 });

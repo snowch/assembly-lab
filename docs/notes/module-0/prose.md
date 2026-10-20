@@ -107,9 +107,11 @@ The marker shows which instruction runs next. The processor tracks that position
 
 An instruction's parts after its name are its **operands**. In `add w0, w0, w1`, the first operand is where the result goes. The other two are the values it adds.
 
-*The operands of add w0, w0, w1, and the role each one plays.*
+*How add uses its operands.*
 
-`add` reads the two inputs and writes their sum to the destination.
+*Shown once the prediction has been checked: the operands flow.*
+
+Add
 
 Before you press Next, say which register the next instruction will write. Press Next and the figure says whether you were right, then runs the instruction and shows what it read, what it wrote, and which registers it left alone. Press Back to undo a step.
 

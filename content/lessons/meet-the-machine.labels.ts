@@ -35,7 +35,7 @@ export const LABELS = {
     stepper:
       "trip_distance(120, 85, 42, 15), one instruction at a time. A register with an outline was written by the last instruction. The highlighted C statement and instruction show what just ran; the arrow marks the next instruction.",
     // DRAFT
-    operandRoles: "The operands of add w0, w0, w1, and the role each one plays.",
+    operandRoles: "How add uses its operands.",
     // DRAFT
     argRegisters:
       "The four C parameters and the registers they arrive in; the first instruction follows.",

@@ -523,44 +523,93 @@ describe("the operands figure", () => {
   const props = {
     name: "add",
     operands: ["w0", "w0", "w1"],
-    explain: "`add` reads the two inputs and writes their sum to the destination.",
+    operation: "Add",
+    after: "p",
   };
-  it("draws each operand with its role, the destination told apart from the inputs", () => {
+  it("stays shut until the prediction it waits on has been checked", () => {
     const { container } = figure(OperandRoles, "o", "operand-roles", props);
-    const chips = [...container.querySelectorAll(".al-operands-operand")];
-    expect(chips.map((c) => c.querySelector("code")?.textContent)).toEqual(["w0", "w0", "w1"]);
-    expect(chips[0]).toHaveAttribute("data-role", "destination");
-    expect(chips.slice(1).every((c) => c.getAttribute("data-role") === "input")).toBe(true);
-    // The legend names the roles in text, so nothing rests on the mark alone.
-    const legend = chipsLegend(container);
-    expect(legend[0]).toContain("destination: the result is written here");
-    expect(legend[1]).toContain("input 1");
-    expect(legend[2]).toContain("input 2");
-    expect(flat(container.querySelector(".al-operands-explain"))).toContain(
-      "reads the two inputs and writes their sum",
-    );
-    // `w0` is both an input and the destination: the figure says the two chips name one
-    // register at two moments, rather than implying two registers.
-    const tie = flat(container.querySelector(".al-operands-tie"));
-    expect(tie).toContain("The two w0 chips name one register at two moments");
-    const tied = [...container.querySelectorAll('.al-operands-operand[data-tied="true"]')];
-    expect(tied).toHaveLength(2);
+    expect(container.querySelector(".al-locked")).toHaveTextContent(S.stepper.locked);
+    expect(container.querySelector(".al-operands-flow")).toBeNull();
   });
-  it("draws no tie when no input is also the destination", () => {
-    const { container } = figure(OperandRoles, "o2", "operand-roles", {
-      ...props,
-      operands: ["w2", "w0", "w1"],
-    });
+  it("draws the instruction, then its flow: what it reads, what it does, what it writes", async () => {
+    const user = userEvent.setup();
+    const store = new LessonStore(memoryStorage(), "assembly-lab", "operands-test");
+    const { container } = figure(OperandRoles, "o", "operand-roles", props, store);
+    const prediction = render(
+      <TracePrediction
+        lesson={{} as Lesson}
+        interactive={Interactive.parse({
+          id: "p",
+          kind: "trace-prediction",
+          timeModel: "steps",
+          caption: "c",
+          props: {
+            question: "**Where?**",
+            options: [
+              { value: "w0", label: "In `w0`." },
+              { value: "new", label: "In a new place of its own." },
+            ],
+            program: TRIP,
+            call: TRIP_CALL,
+            measure: { kind: "first-write" },
+          },
+        })}
+        store={store}
+      />,
+    );
+    await user.click(prediction.getByRole("radio", { name: /In w0/ }));
+    await user.click(prediction.getByRole("button", { name: S.prediction.commit }));
+    // The syntax keeps the instruction's own order: destination first.
+    expect(flat(container.querySelector(".al-operands-syntax"))).toContain("add w0, w0, w1");
+    const reads = [...container.querySelectorAll(".al-op-read code")].map((c) => c.textContent);
+    expect(reads).toEqual(["w0", "w1"]);
+    expect(flat(container.querySelector(".al-op-do"))).toContain("Add");
+    expect(flat(container.querySelector(".al-op-write"))).toContain("Write w0");
+    // `w0` is both read and written: one sentence says the two appearances name one register.
+    expect(flat(container.querySelector(".al-operands-tie"))).toContain(
+      "The two w0 appearances name one register",
+    );
+    // There is no legend to decode: the roles are on the elements themselves.
+    expect(container.querySelector(".al-operands-legend")).toBeNull();
+  });
+  it("draws no tie when no read register is also the destination", async () => {
+    const user = userEvent.setup();
+    const store = new LessonStore(memoryStorage(), "assembly-lab", "operands-test-2");
+    const { container } = figure(
+      OperandRoles,
+      "o2",
+      "operand-roles",
+      { ...props, operands: ["w2", "w0", "w1"] },
+      store,
+    );
+    const prediction = render(
+      <TracePrediction
+        lesson={{} as Lesson}
+        interactive={Interactive.parse({
+          id: "p",
+          kind: "trace-prediction",
+          timeModel: "steps",
+          caption: "c",
+          props: {
+            question: "**Where?**",
+            options: [
+              { value: "w2", label: "In `w2`." },
+              { value: "new", label: "In a new place of its own." },
+            ],
+            program: TRIP,
+            call: TRIP_CALL,
+            measure: { kind: "first-write" },
+          },
+        })}
+        store={store}
+      />,
+    );
+    await user.click(prediction.getByRole("radio", { name: /In w2/ }));
+    await user.click(prediction.getByRole("button", { name: S.prediction.commit }));
+    expect(flat(container.querySelector(".al-op-write"))).toContain("Write w2");
     expect(container.querySelector(".al-operands-tie")).toBeNull();
-    expect(container.querySelectorAll('.al-operands-operand[data-tied="true"]')).toHaveLength(0);
   });
 });
-
-function chipsLegend(container: HTMLElement) {
-  return [...container.querySelectorAll(".al-operands-legend li")].map((li) =>
-    flat(li as HTMLElement),
-  );
-}
 
 describe("the stepper's ask before a step", () => {
   const props = { ...stepper, expect: true };

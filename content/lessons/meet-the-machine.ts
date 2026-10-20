@@ -161,7 +161,8 @@ export const meetTheMachine: LessonInput = {
           props: {
             name: "add",
             operands: ["w0", "w0", "w1"],
-            explain: PROSE.operandExplain,
+            operation: PROSE.operandOperation,
+            after: "predict-total",
           },
         },
         {

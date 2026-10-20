@@ -325,64 +325,77 @@
   font-size: var(--text-sm);
 }
 
-/* One instruction's operands, each chip with its role. The marks are characters, so the roles
-   never rest on colour, and the row wraps on a narrow screen. */
-.al-operands-instruction {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-1);
-  margin: 0;
+/* One instruction's operands as a flow: the registers it reads, the operation, the register it
+   writes. The roles are written on the elements, so there is no legend to decode, and the read
+   and write chips reuse the flow panel's shapes: a dashed outline for a value that was read, a
+   solid accent-filled chip for a value that was written. On a narrow screen the flow stacks, and
+   the arrows are characters, so nothing rests on colour. */
+.al-operands-syntax {
+  margin: 0 0 var(--space-2);
   font-family: var(--font-mono);
   font-size: var(--text-md);
 }
-.al-operands-name {
-  margin-right: var(--space-2);
-}
-.al-operands-operand {
-  display: inline-flex;
-  flex-direction: column;
+.al-operands-flow {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2) var(--space-3);
+  list-style: none;
+}
+.al-op-reads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.al-op {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--border-strong);
+  border: 1px dashed var(--border-strong);
   border-radius: var(--radius-sm);
   background: var(--bg-raised);
 }
-/* The destination is the shape the flow panel gives a written value; the inputs are the shape
-   it gives a read value, so the roles mean the same thing in both figures. */
-.al-operands-operand[data-role="destination"] {
+.al-op-role {
+  font-family: var(--font-text);
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+}
+/* The operation the instruction performs, between the reads and the write. */
+.al-op-do {
+  border-style: solid;
+  border-color: var(--border-strong);
+  font-weight: 650;
+}
+/* The register the result is written to: the flow panel's destination treatment. */
+.al-op-write {
   border: 2px solid var(--accent);
   background: var(--accent-soft);
   font-weight: 650;
 }
-.al-operands-operand[data-role="input"] {
-  border-style: dashed;
-}
-.al-operands-mark {
-  font-family: var(--font-text);
-  font-size: var(--text-xs);
-  line-height: 1;
+/* The flow's direction, drawn as characters between the parts. */
+.al-op-reads::after,
+.al-op-do::after {
+  content: "\2192";
+  margin-left: var(--space-1);
   color: var(--fg-muted);
 }
-.al-operands-legend {
-  margin: var(--space-3) 0 0;
-  padding: 0;
-  display: grid;
-  gap: var(--space-1);
-  list-style: none;
-  font-size: var(--text-sm);
+@media (max-width: 30rem) {
+  .al-operands-flow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .al-op-reads::after,
+  .al-op-do::after {
+    content: "\2193";
+  }
 }
-.al-operands-legend li {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-}
-.al-operands-legend .al-operands-mark {
-  font-size: var(--text-sm);
-}
-.al-operands-explain {
-  margin: var(--space-3) 0 0;
+
+/* The tie that says a read chip and the write chip name one register. */
+.al-operands-tie {
+  margin: var(--space-2) 0 0;
   font-size: var(--text-sm);
 }
 

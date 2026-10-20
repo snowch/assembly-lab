@@ -82,16 +82,14 @@ export const VIEW_STRINGS = {
     // DRAFT
     instruction: (name: string) => `The operands of ${name}`,
     // DRAFT
-    destinationMark: "\u2460",
+    flow: "The instruction as a flow: what it reads, what it does, what it writes",
     // DRAFT
-    inputMark: (n: number) => (n === 0 ? "\u2461" : "\u2462"),
+    read: "Read",
     // DRAFT
-    destination: "destination: the result is written here",
-    // DRAFT: `n` is 1 or 2.
-    input: (n: number) => `input ${n}: a value the instruction reads`,
-    // DRAFT: `register` appears as both an input and the destination.
+    write: "Write",
+    // DRAFT: `register` appears both as an input and as the destination.
     sameRegister: (register: string) =>
-      `The two \`${register}\` chips name one register at two moments: the instruction reads it, then writes it.`,
+      `The two \`${register}\` appearances name one register: the instruction reads it, then writes it.`,
   },
   prediction: {
     commit: "Check your prediction",
