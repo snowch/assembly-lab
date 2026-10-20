@@ -637,7 +637,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     expect(wValue(model.result.final, 0)).toBe(2000);
     await figure.getByRole("radio", { name: /^2000$/ }).check();
     await press(page, figure.getByRole("button", { name: V.prediction.commit }));
-    await expect(figure.locator(".al-match")).toContainText("w0 held 2000");
+    await expect(figure.locator(".al-match")).toContainText("The run ended with w0 holding 2000.");
   });
 
   test("the ring stays shut until the prediction is checked, then shows the model's distance and C", async ({

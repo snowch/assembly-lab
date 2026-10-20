@@ -129,7 +129,7 @@ test.describe("the prediction about adding 12", () => {
       await expect(figure.locator(match ? ".al-match" : ".al-nomatch")).toContainText(
         match ? V.prediction.match : V.prediction.noMatch,
       );
-      await expect(figure.locator(".al-outcome")).toContainText("held 0 when the run ended");
+      await expect(figure.locator(".al-outcome")).toContainText("The run ended with w0 holding 0");
       await expect(figure.locator(".al-outcome .prose")).toContainText(
         PROSE.predictionExplain.split("\n")[0]!.replaceAll("`", "").slice(0, 40),
       );

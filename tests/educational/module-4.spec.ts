@@ -363,7 +363,7 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
     await predictionCommitsBeforeItReveals(page, "predict-steeper-ge", /^1$/, /^2147483648$/);
     const model = traceOf(STEEPER_U_GE, { entry: "steeper_u", args: [0x80000000, 1] });
     expect(wValue(model.result.final, 0)).toBe(1);
-    await expect(figure.locator(".al-outcome")).toContainText("w0 held 1");
+    await expect(figure.locator(".al-outcome")).toContainText("The run ended with w0 holding 1.");
     await expect(stepper.locator(".al-locked")).toHaveCount(0);
     await stepper.scrollIntoViewIfNeeded();
     const flags = () =>
@@ -1135,7 +1135,7 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
     const model = traceOf(DESCRIBE_BGE, { entry: "describe", args: [10] });
     expect(wValue(model.result.final, 0)).toBe(2);
     expect(model.result.steps).toHaveLength(5);
-    await expect(figure.locator(".al-nomatch")).toContainText("w0 held 2");
+    await expect(figure.locator(".al-nomatch")).toContainText("The run ended with w0 holding 2.");
   });
 
   test("the failure experiment's stepper stays shut until the prediction is checked, then runs bge on describe(10) with the flags and the count", async ({
