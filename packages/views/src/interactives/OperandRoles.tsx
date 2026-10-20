@@ -42,36 +42,66 @@ export const OperandRoles = withProps(Props, function OperandRoles({ data, store
       <p className="al-operands-syntax" aria-label={S.operands.instruction(data.name)}>
         <code>{[data.name, data.operands.join(", ")].join(" ")}</code>
       </p>
-      <ol className="al-operands-flow" aria-label={S.operands.flow}>
-        <li className="al-op-reads">
-          {inputs.map((operand, i) => (
-            <span className="al-op al-op-read" key={i}>
+      {/*
+        One shared coordinate system for the nodes and the connectors: the flow is a grid with
+        a column per input, every chip centred in its column, and the connector drawn on the
+        same columns. The join's viewBox has one unit per column, so its leg x positions are the
+        column centres in the same grid the chips live in, and the whole flow is bounded so the
+        connectors cannot span the card away from the nodes. Both reads feed one operation: the
+        legs merge into a single arrowhead on the operation, then one connector runs from the
+        operation to the register it writes.
+      */}
+      <ol
+        className="al-operands-flow"
+        aria-label={S.operands.flow}
+        style={{ gridTemplateColumns: `repeat(${inputs.length}, minmax(0, 1fr))` }}
+      >
+        {inputs.map((operand, i) => (
+          <li className="al-op-cell" key={i}>
+            <span className="al-op al-op-read">
               <span className="al-op-role">{S.operands.read}</span> <code>{operand}</code>
             </span>
-          ))}
-        </li>
-        {/* Both reads feed one operation: a connector drawn from each read into a single
-            arrowhead on the Add node, so the two reads are one step's inputs, not two steps. */}
+          </li>
+        ))}
         <li className="al-op-join" aria-hidden="true">
-          <svg className="al-op-join-svg" viewBox="0 0 100 24" preserveAspectRatio="none">
+          <svg
+            className="al-op-join-svg"
+            viewBox={`0 0 ${inputs.length * 24} 24`}
+            preserveAspectRatio="none"
+          >
             {inputs.map((_, i) => {
-              const x = inputs.length === 1 ? 50 : 25 + (50 * i) / (inputs.length - 1);
-              return <path key={i} className="al-op-line" d={`M ${x} 0 V 8 H 50 V 16`} />;
+              const x = i * 24 + 12;
+              const mid = (inputs.length * 24) / 2;
+              return <path key={i} className="al-op-line" d={`M ${x} 0 V 8 H ${mid} V 19`} />;
             })}
-            <path className="al-op-head" d="M 50 24 L 45 16 H 55 Z" />
+            <path
+              className="al-op-head"
+              d={`M ${(inputs.length * 24) / 2} 24 L ${(inputs.length * 24) / 2 - 3} 19 H ${(inputs.length * 24) / 2 + 3} Z`}
+            />
           </svg>
         </li>
-        <li className="al-op al-op-do">
-          <span className="al-op-role">{data.operation}</span>
+        <li className="al-op-cell al-op-cell-span">
+          <span className="al-op al-op-do">
+            <span className="al-op-role">{data.operation}</span>
+          </span>
         </li>
         <li className="al-op-step" aria-hidden="true">
-          <svg className="al-op-join-svg" viewBox="0 0 100 24" preserveAspectRatio="none">
-            <path className="al-op-line" d="M 50 0 V 16" />
-            <path className="al-op-head" d="M 50 24 L 45 16 H 55 Z" />
+          <svg
+            className="al-op-join-svg"
+            viewBox={`0 0 ${inputs.length * 24} 24`}
+            preserveAspectRatio="none"
+          >
+            <path className="al-op-line" d={`M ${(inputs.length * 24) / 2} 0 V 19`} />
+            <path
+              className="al-op-head"
+              d={`M ${(inputs.length * 24) / 2} 24 L ${(inputs.length * 24) / 2 - 3} 19 H ${(inputs.length * 24) / 2 + 3} Z`}
+            />
           </svg>
         </li>
-        <li className="al-op al-op-write">
-          <span className="al-op-role">{S.operands.write}</span> <code>{destination}</code>
+        <li className="al-op-cell al-op-cell-span">
+          <span className="al-op al-op-write">
+            <span className="al-op-role">{S.operands.write}</span> <code>{destination}</code>
+          </span>
         </li>
       </ol>
       {tied && <p className="al-operands-tie">{withCode(S.operands.sameRegister(destination))}</p>}

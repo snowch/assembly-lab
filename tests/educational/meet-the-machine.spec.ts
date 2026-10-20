@@ -98,39 +98,59 @@ test("the way back leads to the front page", async ({ page }) => {
 });
 
 test.describe("the operands flow", () => {
-  test("draws the reads feeding one operation, and the operation writing the destination, at every width", async ({
+  test("draws the reads feeding one operation, and the operation writing the destination, with the connectors on the chips they join", async ({
     page,
   }) => {
     await openLesson(page);
     await commit(page, "predict-total", /^In w0/);
     const fig = page.locator("#ix-operand-roles");
     await fig.scrollIntoViewIfNeeded();
-    // The flow's geometry, measured in the rendered page: the connector under the reads starts
-    // beneath each read chip and ends in one arrowhead on the Add node; the second connector
-    // runs from Add to Write. A phone and a desk must both show the joined topology.
+    // The flow's geometry, measured in the rendered page: each join leg starts under its read
+    // chip's centre, the legs meet one arrowhead aligned with the Add chip's centre, and the
+    // second connector runs the Add chip's centre to the Write chip's centre. The connectors
+    // and the chips share the flow's bounded grid, so their positions agree at any width.
     const ok = await fig.evaluate((el) => {
       const box = (e: Element) => e.getBoundingClientRect();
-      const reads = [...el.querySelectorAll(".al-op-read")].map(box);
+      const cx = (e: Element) => box(e).left + box(e).width / 2;
+      const reads = [...el.querySelectorAll(".al-op-read")];
       const joins = el.querySelectorAll(".al-op-join, .al-op-step");
-      const doBox = box(el.querySelector(".al-op-do")!);
-      const writeBox = box(el.querySelector(".al-op-write")!);
       if (joins.length !== 2) return { ok: false, why: "joins", joins: joins.length };
-      const joinBox = box(joins[0]!);
-      const stepBox = box(joins[1]!);
-      const headPaths = joins[0]!.querySelectorAll(".al-op-head");
+      const join = joins[0]!;
+      const step = joins[1]!;
+      const legs = [...join.querySelectorAll(".al-op-line")];
+      const doChip = el.querySelector(".al-op-do")!;
+      const writeChip = el.querySelector(".al-op-write")!;
+      const head = join.querySelector(".al-op-head");
+      if (head === null) return { ok: false, why: "no head" };
+      // An SVG path's start x, turned into the page's pixels through its own viewBox.
+      const startX = (svg: Element, path: Element) => {
+        const units = Number(svg.getAttribute("viewBox")!.split(" ")[2]);
+        const x = Number(path.getAttribute("d")!.split(" ")[1]);
+        return box(svg).left + (x / units) * box(svg).width;
+      };
+      const joinSvg = join.querySelector("svg")!;
+      const stepSvg = step.querySelector("svg")!;
+      const stepLine = step.querySelector(".al-op-line")!;
+      const headX = cx(head);
+      const legXs = legs.map((l) => startX(joinSvg, l));
       return {
         ok:
-          reads.every((r) => r.bottom <= joinBox.top + 1) &&
-          headPaths.length === 1 &&
-          joinBox.bottom <= doBox.top + 1 &&
-          stepBox.top >= doBox.bottom - 1 &&
-          stepBox.bottom <= writeBox.top + 1 &&
-          reads.length === 2 &&
+          reads.length === legs.length &&
+          reads.every((r, i) => Math.abs(legXs[i]! - cx(r)) < 4) &&
+          Math.abs(headX - cx(doChip)) < 4 &&
+          Math.abs(startX(stepSvg, stepLine) - cx(doChip)) < 4 &&
+          Math.abs(cx(stepSvg) - cx(writeChip)) < 4 &&
+          box(step).top >= box(doChip).bottom - 1 &&
+          box(step).bottom <= box(writeChip).top + 1 &&
+          join.querySelectorAll(".al-op-head").length === 1 &&
           // No stray arrows attached to the nodes themselves.
           el.querySelectorAll(".al-op::after").length === 0,
-        why: "geometry",
-        reads: reads.length,
-        heads: headPaths.length,
+        why: "alignment",
+        readCentres: reads.map((r) => Math.round(cx(r))),
+        legStartXs: legXs.map((x) => Math.round(x)),
+        headX: Math.round(headX),
+        doCentre: Math.round(cx(doChip)),
+        writeCentre: Math.round(cx(writeChip)),
       };
     });
     expect(ok.ok, JSON.stringify(ok)).toBe(true);

@@ -325,33 +325,33 @@
   font-size: var(--text-sm);
 }
 
-/* One instruction's operands as a flow, drawn as a topology: the registers it reads feed the
-   operation, and the operation writes the destination. The connectors are drawn between the
-   stages (an inline SVG whose lines end in one arrowhead on the next node), never a glyph
-   attached to a node, so the reads read as one step's inputs. The roles are written on the
-   chips, the read chips reuse the flow panel's dashed source shape, and the write chip its
-   solid accent-filled destination shape. The flow is vertical at every width, so a phone and a
-   desk see the same topology, and the connectors are elements with real geometry the tests
-   can measure. */
+/* One instruction's operands as a flow, on one shared coordinate system: a bounded grid with a
+   column per input, every chip centred in its column, and the connectors drawn on the same
+   columns, so a connector's ends land on the nodes they join wherever the card is wide. The
+   roles are written on the chips, the reads reuse the flow panel's dashed source shape and the
+   write its solid accent-filled destination shape, and the flow is one compact group. */
 .al-operands-syntax {
   margin: 0 0 var(--space-2);
   font-family: var(--font-mono);
   font-size: var(--text-md);
 }
+/* The whole flow is bounded, so the grid's columns stay under the chips and the connectors
+   cannot stretch to the card's edge away from them. */
 .al-operands-flow {
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0;
+  display: grid;
+  width: min(100%, 22rem);
   list-style: none;
 }
-/* The reads sit side by side as one group; the connector below them starts under each. */
-.al-op-reads {
+/* A cell holds one chip, centred in its grid column. The operation and the write span every
+   column, so they sit centred under the merge, where the connector's arrowhead meets them. */
+.al-op-cell {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
+  justify-content: center;
+}
+.al-op-cell-span {
+  grid-column: 1 / -1;
 }
 .al-op {
   display: inline-flex;
@@ -379,12 +379,13 @@
   background: var(--accent-soft);
   font-weight: 650;
 }
-/* The connectors between the stages: as wide as the flow, so every line starts under the
-   group above it and ends in one arrowhead on the node below. */
+/* The connectors, on the same grid: each spans every column, so its SVG's percentage positions
+   are the columns' centres. The legs start under each read's column centre and meet one
+   arrowhead above the operation's centre; the second connector runs the operation's centre to
+   the write's centre. */
 .al-op-join,
 .al-op-step {
-  align-self: stretch;
-  width: 100%;
+  grid-column: 1 / -1;
   height: 1.5rem;
 }
 .al-op-join-svg {
@@ -396,7 +397,8 @@
 .al-op-line {
   fill: none;
   stroke: var(--border-strong);
-  stroke-width: 1.5;
+  stroke-width: 0.12;
+  vector-effect: non-scaling-stroke;
 }
 .al-op-head {
   fill: var(--border-strong);
