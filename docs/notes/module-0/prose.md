@@ -70,9 +70,15 @@ The compiler translates C into instructions that the processor runs. Following t
 
 A **register** is a small store inside the processor that holds one value. `w0`, `w1`, `w2` and `w3` are four of them.
 
-The C names a variable, `total`. The instructions name no variable at all. They name `w0`, `w1`, `w2` and `w3`. The four arguments arrive in order: `leg1` in `w0`, `leg2` in `w1`, `leg3` in `w2` and `detour` in `w3`. The first instruction performs the addition in `int total = leg1 + leg2;`. Predict where the processor keeps that result.
+The C names a variable, `total`. The instructions name no variable at all. They name `w0`, `w1`, `w2` and `w3`. The function receives four arguments. The processor places these values in registers before the first instruction runs.
+
+*The four C parameters and the registers they arrive in; the first instruction follows.*
+
+The first instruction is `add w0, w0, w1`. It adds two register values and stores the result. Where will the C variable `total` be kept?
 
 *A prediction about where total is kept after the first instruction runs.*
+
+*Shown once the prediction has been checked:* The `add` instruction overwrites `w0` with the sum. The C variable `total` does not need a separate register.
 
 **After the first instruction runs, where is the value of `total` kept?**
 

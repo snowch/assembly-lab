@@ -7,6 +7,7 @@ import type { ComponentType } from "react";
 import type { InteractiveProps } from "@platform/lesson-runtime";
 
 import { AdderFigure } from "./AdderFigure";
+import { ArgsFigure } from "./ArgsFigure";
 import { ChallengeNote } from "./ChallengeNote";
 import { CounterRing } from "./CounterRing";
 import { ListingFigure } from "./ListingFigure";
@@ -54,6 +55,7 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   "constant-tester": ConstantTester,
   "trace-prediction": TracePrediction,
   adder: AdderFigure,
+  "arg-registers": ArgsFigure,
   "counter-ring": CounterRing,
   "run-prediction": RunPrediction,
   "wide-stepper": WideStepper,

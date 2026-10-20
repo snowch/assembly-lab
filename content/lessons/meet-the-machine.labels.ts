@@ -34,6 +34,9 @@ export const LABELS = {
       "The four instructions GCC made from trip_distance, paired with their related C statements. The line ending in a colon, trip_distance:, is the function's name.",
     stepper:
       "trip_distance(120, 85, 42, 15), one instruction at a time. A register with an outline was written by the last instruction. The highlighted C statement and instruction show what just ran; the arrow marks the next instruction.",
+    // DRAFT
+    argRegisters:
+      "The four C parameters and the registers they arrive in; the first instruction follows.",
     predictTotal: "A prediction about where total is kept after the first instruction runs.",
     // The prose file gives no caption for these figures; these were drafted by Haiku.
     predictNoRet: "A prediction about what w0 holds when the run ends without ret.",

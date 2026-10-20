@@ -34,7 +34,12 @@ export const PROSE = {
 
   prediction:
     "A **register** is a small store inside the processor that holds one value. `w0`, `w1`, `w2` and `w3` are four of them.\n\n" +
-    "The C names a variable, `total`. The instructions name no variable at all. They name `w0`, `w1`, `w2` and `w3`. The four arguments arrive in order: `leg1` in `w0`, `leg2` in `w1`, `leg3` in `w2` and `detour` in `w3`. The first instruction performs the addition in `int total = leg1 + leg2;`. Predict where the processor keeps that result.",
+    "The C names a variable, `total`. The instructions name no variable at all. They name `w0`, `w1`, `w2` and `w3`. The function receives four arguments. The processor places these values in registers before the first instruction runs.",
+  argsSay: "The first instruction is `add w0, w0, w1`.",
+  argsQuestion:
+    "It adds two register values and stores the result. Where will the C variable `total` be kept?",
+  argsExplain:
+    "The `add` instruction overwrites `w0` with the sum. The C variable `total` does not need a separate register.",
   predictionQuestion: "**After the first instruction runs, where is the value of `total` kept?**",
   predictionExplain:
     "Before the first instruction, `w0` holds `leg1`. The first instruction, `add w0, w0, w1`, replaces that value with `leg1 + leg2`, the first value of `total`. In this function, the next two arithmetic instructions update `w0` again as `total` changes.",

@@ -15,6 +15,7 @@ import { LessonStore, memoryStorage } from "@platform/lesson-runtime";
 import { Interactive, type Lesson } from "@platform/lesson-schema";
 
 import { crossedFrom, flowAt } from "./flow";
+import { ArgsFigure } from "./interactives/ArgsFigure";
 import { ListingFigure } from "./interactives/ListingFigure";
 import { StepperFigure } from "./interactives/StepperFigure";
 import { TracePrediction } from "./interactives/TracePrediction";
@@ -443,5 +444,76 @@ describe("the sentence for a wrong choice", () => {
     await choose(/In w0/);
     expect(right.container.querySelector(".al-match")).not.toBeNull();
     expect(right.container.querySelector(".al-feedback")).toBeNull();
+  });
+});
+
+describe("the arguments figure", () => {
+  const props = {
+    params: ["leg1", "leg2", "leg3", "detour"],
+    program: TRIP,
+    call: TRIP_CALL,
+    after: "p",
+    says: "The first instruction is `add w0, w0, w1`.",
+    question:
+      "It adds two register values and stores the result. Where will the C variable `total` be kept?",
+    reveal: {
+      register: 0,
+      before: "leg1",
+      after: "leg1 + leg2",
+      explain:
+        "The `add` instruction overwrites ${register} with the sum. The C variable `total` does not need a separate register.",
+    },
+  };
+  it("draws each parameter above the register it arrives in, and says nothing of the result", () => {
+    const { container } = figure(ArgsFigure, "a", "arg-registers", props);
+    const chips = (side: string) =>
+      [...container.querySelectorAll(`.al-arg-${side} code`)].map((c) => c.textContent);
+    expect(chips("param")).toEqual(["leg1", "leg2", "leg3", "detour"]);
+    expect(chips("register")).toEqual(["w0", "w1", "w2", "w3"]);
+    expect(container.querySelectorAll(".al-arg-arrow")).toHaveLength(4);
+    expect(container.querySelector(".al-args-map")).toHaveAttribute("aria-label", M0.args.map);
+    // The mapping is drawn with the first instruction named, and no result anywhere.
+    expect(container.querySelector(".al-args-reveal")).toBeNull();
+    expect(flat(container.querySelector(".al-args-says"))).toContain("add w0, w0, w1");
+    // No number of the run is on the page either: neither the arguments nor the result.
+    expect(container.textContent).not.toContain("120");
+    expect(container.textContent).not.toContain("205");
+  });
+  it("shows the register before and after only once the prediction has been checked", async () => {
+    const user = userEvent.setup();
+    // One store holds both figures, so the reveal waits on the prediction's own commitment.
+    const store = new LessonStore(memoryStorage(), "assembly-lab", "args-test");
+    const { container } = figure(ArgsFigure, "a", "arg-registers", props, store);
+    expect(container.querySelector(".al-args-reveal")).toBeNull();
+    const prediction = render(
+      <TracePrediction
+        lesson={{} as Lesson}
+        interactive={Interactive.parse({
+          id: "p",
+          kind: "trace-prediction",
+          timeModel: "steps",
+          caption: "c",
+          props: {
+            question: "**Where?**",
+            options: [
+              { value: "w0", label: "In `w0`." },
+              { value: "new", label: "In a new place of its own." },
+            ],
+            program: TRIP,
+            call: TRIP_CALL,
+            measure: { kind: "first-write" },
+          },
+        })}
+        store={store}
+      />,
+    );
+    await user.click(prediction.getByRole("radio", { name: /In w0/ }));
+    await user.click(prediction.getByRole("button", { name: S.prediction.commit }));
+    expect(container.querySelector(".al-args-reveal")).not.toBeNull();
+    const rows = [...container.querySelectorAll(".al-args-reveal dd")].map((d) => d.textContent);
+    expect(rows[0]).toContain("w0 = leg1");
+    expect(rows[0]).toContain("(120)");
+    expect(rows[1]).toContain("w0 = leg1 + leg2");
+    expect(rows[1]).toContain("(205)");
   });
 });

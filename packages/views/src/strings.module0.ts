@@ -59,4 +59,23 @@ export const MODULE0_STRINGS = {
     // DRAFT
     crossing: (from: string, into: string) => `The run crosses from \`${from}\` into \`${into}\`.`,
   },
+  args: {
+    // DRAFT
+    map: "The C parameters and the registers they arrive in",
+    // DRAFT: `count` is how many arguments the function takes.
+    caption: (count: number) =>
+      `Each \`int\` is 32 bits. The ${count} arguments are placed in registers in order.`,
+    // DRAFT: `instruction` is the first instruction, already in backticks.
+    says: (instruction: string) => `The first instruction is ${instruction}.`,
+    // DRAFT
+    question:
+      "It adds two register values and stores the result. Where will the C variable `total` be kept?",
+    // DRAFT
+    before: "Before",
+    // DRAFT
+    after: "After",
+    // DRAFT: `register` is the register the first instruction writes, such as `w0`.
+    explain: (register: string) =>
+      `The \`add\` instruction overwrites \`${register}\` with the sum. The C variable \`total\` does not need a separate register.`,
+  },
 } as const;

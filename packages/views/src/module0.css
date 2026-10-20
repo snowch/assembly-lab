@@ -230,3 +230,93 @@
     opacity: 1;
   }
 }
+
+/* The arguments figure: each C parameter above the register it arrives in, one column each.
+   Pairs are told apart by position, and the arrow is a border, so nothing rests on colour. */
+.al-args-map {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: var(--space-2) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+.al-arg {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+  list-style: none;
+}
+.al-arg-chip {
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+}
+.al-arg-chip code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+.al-arg-register {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+.al-arg-arrow {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 7px solid var(--border-strong);
+}
+.al-args-caption {
+  margin: var(--space-2) 0 0;
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+}
+.al-args-instruction {
+  margin-top: var(--space-3);
+}
+.al-args-instruction p {
+  margin: 0 0 var(--space-1);
+}
+.al-args-reveal {
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--note-bg);
+}
+.al-args-reveal dl {
+  margin: 0 0 var(--space-2);
+  display: grid;
+  gap: var(--space-2);
+}
+.al-args-reveal dl div {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--space-3);
+}
+.al-args-reveal dt {
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+}
+.al-args-reveal dd {
+  margin: 0;
+}
+.al-arg-number {
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+.al-args-reveal > p {
+  margin: 0;
+  font-size: var(--text-sm);
+}

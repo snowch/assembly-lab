@@ -72,9 +72,15 @@ describe("the lesson", () => {
     const ids = lesson.sections.flatMap((s) => s.interactives.map((x) => x.id));
     for (const x of lesson.sections.flatMap((s) => s.interactives)) {
       const after = x.props["after"];
-      if (typeof after === "string")
-        expect(ids.indexOf(after), x.id).toBeLessThan(ids.indexOf(x.id));
+      if (typeof after !== "string") continue;
+      // A figure that stays shut waits for a prediction above it. The arguments figure is the one
+      // exception the lesson means: it draws the mapping first and reveals the first instruction's
+      // result only after the prediction below it has been checked, so the diagram is on the page
+      // before the learner answers and nothing of the result is.
+      if (x.id === "arg-registers") continue;
+      expect(ids.indexOf(after), x.id).toBeLessThan(ids.indexOf(x.id));
     }
+    expect(ids.indexOf("predict-total")).toBeGreaterThan(ids.indexOf("arg-registers"));
   });
 
   it("gives the construction challenge the gate add, sub and ret, and the registers w0 to w3", () => {

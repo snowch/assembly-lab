@@ -111,6 +111,26 @@ export const meetTheMachine: LessonInput = {
       prose: PROSE.prediction,
       interactives: [
         {
+          id: "arg-registers",
+          kind: "arg-registers",
+          timeModel: "none",
+          caption: LABELS.captions.argRegisters,
+          props: {
+            params: ["leg1", "leg2", "leg3", "detour"],
+            program: TRIP_DISTANCE,
+            call: TRIP_CALL,
+            after: "predict-total",
+            says: PROSE.argsSay,
+            question: PROSE.argsQuestion,
+            reveal: {
+              register: 0,
+              before: "leg1",
+              after: "leg1 + leg2",
+              explain: PROSE.argsExplain,
+            },
+          },
+        },
+        {
           id: "predict-total",
           kind: "trace-prediction",
           timeModel: STEPS,
