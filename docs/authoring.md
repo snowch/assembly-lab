@@ -35,6 +35,9 @@ Before drafting, give the writer:
 - A list of facts, with their sources, recorded compiler listings or simulator results.
 - The example program and what each interactive figure actually shows.
 - The relevant parts of `docs/style.md` and any limits on scope.
+- The applicable visual roles and figure semantics in `docs/visual-language.md`; check
+  `docs/visual-audit.md` for open items affecting this lesson.
+- Which explanation will become clearer or shorter because of a visual, if one is proposed.
 
 Draft one section at a time, then edit and read the whole lesson. Check both the sentences and
 the explanation: a paragraph can use short, ordinary words and still omit a necessary step.
