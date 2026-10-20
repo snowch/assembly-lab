@@ -45,6 +45,11 @@ export function App() {
   if (route.kind === "front") page = <FrontPage />;
   else if (route.kind === "lesson") {
     const lesson = book.lessons.find((l) => l.id === route.id);
+    // The lessons in course order: module first, then the module's own order.
+    const ordered = [...book.lessons].sort((a, b) => a.module - b.module || a.order - b.order);
+    const at = lesson ? ordered.findIndex((l) => l.id === lesson.id) : -1;
+    const previous = ordered[at - 1];
+    const next = ordered[at + 1];
     page = lesson ? (
       <>
         <p className="lesson-back">
@@ -60,6 +65,22 @@ export function App() {
           lessonHref={lessonHref}
           strings={RUNTIME_STRINGS}
         />
+        <nav className="lesson-nav" aria-label={STRINGS.lessonNav}>
+          {previous ? (
+            <a className="lesson-nav-link" data-direction="previous" href={lessonHref(previous.id)}>
+              <span className="lesson-nav-direction">{STRINGS.previousLesson}</span>
+              <span className="lesson-nav-title">{previous.title}</span>
+            </a>
+          ) : (
+            <span />
+          )}
+          {next ? (
+            <a className="lesson-nav-link" data-direction="next" href={lessonHref(next.id)}>
+              <span className="lesson-nav-direction">{STRINGS.nextLesson}</span>
+              <span className="lesson-nav-title">{next.title}</span>
+            </a>
+          ) : null}
+        </nav>
       </>
     ) : (
       <>

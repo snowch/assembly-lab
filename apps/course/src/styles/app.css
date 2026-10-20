@@ -591,3 +591,48 @@ ol {
     overflow-wrap: anywhere;
   }
 }
+
+/* The way between lessons, at the foot of each one. The two links sit one at each edge, so
+   "previous" and "next" is the page's own order; a missing link keeps the other in place. */
+.lesson-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 var(--space-3);
+}
+.lesson-nav-link {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  text-decoration: none;
+  color: inherit;
+  max-width: 24rem;
+}
+.lesson-nav-link:hover {
+  border-color: var(--accent);
+}
+.lesson-nav-link[data-direction="next"] {
+  justify-items: end;
+  margin-left: auto;
+  text-align: right;
+}
+.lesson-nav-direction {
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+}
+.lesson-nav-title {
+  font-weight: 600;
+}
+@media (max-width: 30rem) {
+  .lesson-nav {
+    flex-direction: column;
+  }
+  .lesson-nav-link[data-direction="next"] {
+    justify-items: start;
+    text-align: left;
+  }
+}

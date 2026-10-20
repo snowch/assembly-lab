@@ -86,6 +86,14 @@ export const STRINGS = {
   noLesson: (id: string) => `The course has no lesson named ${id}.`,
   backToPlan: "Back to the course plan",
 
+  // The way between lessons, at the foot of each one: the lessons in course order.
+  // DRAFT
+  lessonNav: "Between the lessons",
+  // DRAFT
+  previousLesson: "Previous lesson",
+  // DRAFT
+  nextLesson: "Next lesson",
+
   // Separate prose passes: docs/notes/offline/brief.md and offline-clarity/brief.md.
   offline: {
     preparing:

@@ -149,6 +149,35 @@ test("the tab is named for the page, and the course has an address for a lesson"
   expect(errors).toEqual([]);
 });
 
+test("each lesson foot names the lesson before it and the one after, in course order", async ({
+  page,
+}) => {
+  const errors = watchErrors(page);
+  // The first lesson has no previous, and the last has no next: the missing side keeps its place.
+  await page.goto("#/lesson/meet-the-machine");
+  const nav = page.getByRole("navigation", { name: STRINGS.lessonNav });
+  await expect(nav.locator('[data-direction="previous"]')).toHaveCount(0);
+  await expect(nav.locator('[data-direction="next"] .lesson-nav-title')).toHaveText(
+    "Same bits, two readings",
+  );
+  await page.getByRole("link", { name: new RegExp(STRINGS.nextLesson) }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Same bits, two readings");
+  await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
+    "Meet the machine",
+  );
+  // The last lesson in course order has a previous and no next.
+  await page.goto("#/lesson/same-c-on-a32");
+  await expect(nav.locator('[data-direction="next"]')).toHaveCount(0);
+  await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
+    "Conversions and checked arithmetic",
+  );
+  await page.getByRole("link", { name: new RegExp(STRINGS.previousLesson) }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Conversions and checked arithmetic",
+  );
+  expect(errors).toEqual([]);
+});
+
 test("the theme control cycles through its choices, and the choice survives a reload", async ({
   page,
 }) => {
