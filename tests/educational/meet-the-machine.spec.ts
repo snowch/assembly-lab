@@ -576,10 +576,14 @@ test.describe("the two predictions commit before they reveal", () => {
     await expect(figure.locator(".al-outcome")).toHaveCount(0);
     await expect(figure.getByRole("button", { name: LABELS.commit.noRet })).toBeDisabled();
     await expect(figure.getByRole("button", { name: V.prediction.commit })).toHaveCount(0);
-    // The other prediction keeps the ordinary button, with no invitation of its own.
+    // The other prediction keeps the ordinary button, with no invitation of its own, and its
+    // own question, reworded when the prose was clarified (the old "Where will the C variable"
+    // wording no longer matches the lesson's words).
     const total = page.locator("#ix-predict-total");
     await expect(total.getByRole("button", { name: V.prediction.commit })).toBeDisabled();
-    await expect(total.locator(".prose").first()).toContainText("Where will the C variable");
+    await expect(total.locator(".prose").first()).toContainText(
+      "After the first instruction runs, where is the value of total kept?",
+    );
   });
 
   for (const [id, right, wrong] of [
