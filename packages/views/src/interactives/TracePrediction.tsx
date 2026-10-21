@@ -30,6 +30,9 @@ const Measure = z.discriminatedUnion("kind", [
 ]);
 
 const Props = z.object({
+  /** Markdown, shown directly above the question: an invitation to guess, for a discovery
+   * experiment the learner has not yet seen the behaviour of. */
+  intro: z.string().optional(),
   /** Markdown: the question. */
   question: z.string(),
   options: z
@@ -42,6 +45,8 @@ const Props = z.object({
       }),
     )
     .min(2),
+  /** The button that commits the prediction, when this prediction asks for its own. */
+  commitLabel: z.string().optional(),
   /** Markdown, shown once the prediction is checked. */
   explain: z.string().default(""),
   program: RecordedSchema,
@@ -94,6 +99,7 @@ export const TracePrediction = withProps(
         data-figure="trace-prediction"
         data-committed={stored !== undefined}
       >
+        {data.intro && <Prose markdown={data.intro} />}
         <Prose markdown={data.question} />
         <PredictionChallenge
           name={`${interactive.id}-choice`}
@@ -101,7 +107,7 @@ export const TracePrediction = withProps(
           committed={stored?.choice}
           onCommit={(choice) => setStored({ choice })}
           legend={S.prediction.legend}
-          commitLabel={S.prediction.commit}
+          commitLabel={data.commitLabel ?? S.prediction.commit}
           renderLabel={withCode}
         />
         {stored && outcome && (

@@ -19,6 +19,7 @@ import { DEFAULT_STRINGS as S, format } from "../../platform/lesson-runtime/src/
 
 import { MODULE0_STRINGS as M0 } from "../../packages/views/src/strings.module0";
 import { PROSE } from "../../content/lessons/meet-the-machine.prose";
+import { LABELS } from "../../content/lessons/meet-the-machine.labels";
 import { TRIP_DISTANCE } from "../../content/lessons/meet-the-machine.listings";
 import { designProblems } from "./design";
 
@@ -58,12 +59,16 @@ async function press(page: Page, target: Locator): Promise<void> {
   else await target.click();
 }
 
-/** Chooses an option and checks the prediction. */
+/** Chooses an option and checks the prediction. The ret experiment's button is its own. */
 async function commit(page: Page, id: string, option: string | RegExp): Promise<Locator> {
   const figure = page.locator(`#ix-${id}`);
   await figure.scrollIntoViewIfNeeded();
   await figure.getByRole("radio", { name: option }).check();
-  await figure.getByRole("button", { name: V.prediction.commit }).click();
+  await figure
+    .getByRole("button", {
+      name: id === "predict-no-ret" ? LABELS.commit.noRet : V.prediction.commit,
+    })
+    .click();
   return figure;
 }
 
@@ -556,6 +561,27 @@ test.describe("the ret experiment, as two connected groups", () => {
 });
 
 test.describe("the two predictions commit before they reveal", () => {
+  test("the ret prediction invites a best guess beside the question, and its button says what it does", async ({
+    page,
+  }) => {
+    await openLesson(page);
+    const figure = page.locator("#ix-predict-no-ret");
+    await figure.scrollIntoViewIfNeeded();
+    const invitation = figure.locator(".prose").first();
+    await expect(invitation).toContainText("This is a new situation.");
+    await expect(invitation).toContainText("Make your best prediction");
+    // The invitation sits directly above the question, and gives away neither answer nor value.
+    const question = figure.locator(".prose").nth(1);
+    await expect(question).toContainText("With ret deleted");
+    await expect(figure.locator(".al-outcome")).toHaveCount(0);
+    await expect(figure.getByRole("button", { name: LABELS.commit.noRet })).toBeDisabled();
+    await expect(figure.getByRole("button", { name: V.prediction.commit })).toHaveCount(0);
+    // The other prediction keeps the ordinary button, with no invitation of its own.
+    const total = page.locator("#ix-predict-total");
+    await expect(total.getByRole("button", { name: V.prediction.commit })).toBeDisabled();
+    await expect(total.locator(".prose").first()).toContainText("Where will the C variable");
+  });
+
   for (const [id, right, wrong] of [
     ["predict-total", /^In w0/, /^In w3/],
     ["predict-no-ret", "147", "232"],
@@ -565,16 +591,19 @@ test.describe("the two predictions commit before they reveal", () => {
       const figure = page.locator(`#ix-${id}`);
       await figure.scrollIntoViewIfNeeded();
       await expect(figure.locator(".al-outcome")).toHaveCount(0);
-      await expect(figure.getByRole("button", { name: V.prediction.commit })).toBeDisabled();
+      const commit = figure.getByRole("button", {
+        name: id === "predict-no-ret" ? LABELS.commit.noRet : V.prediction.commit,
+      });
+      await expect(commit).toBeDisabled();
       await figure.getByRole("radio", { name: right }).check();
       // A choice is not a commitment: nothing is shown until it is checked.
       await expect(figure.locator(".al-outcome")).toHaveCount(0);
-      await press(page, figure.getByRole("button", { name: V.prediction.commit }));
+      await press(page, commit);
       await expect(figure.locator(".al-match")).toContainText(V.prediction.match);
       await expect(figure.locator(".al-outcome .prose")).toBeVisible();
       // The learner may choose again; the model, not the lesson, says what matches.
       await figure.getByRole("radio", { name: wrong }).check();
-      await press(page, figure.getByRole("button", { name: V.prediction.commit }));
+      await press(page, commit);
       await expect(figure.locator(".al-nomatch")).toContainText(V.prediction.noMatch);
     });
   }
@@ -596,7 +625,12 @@ test.describe("the two predictions commit before they reveal", () => {
       await expect(figure.locator(".al-feedback")).toHaveText(sentence.replace(/`/g, ""));
       const right = id === "predict-total" ? /^In w0/ : "147";
       await figure.getByRole("radio", { name: right }).check();
-      await press(page, figure.getByRole("button", { name: V.prediction.commit }));
+      await press(
+        page,
+        figure.getByRole("button", {
+          name: id === "predict-no-ret" ? LABELS.commit.noRet : V.prediction.commit,
+        }),
+      );
       await expect(figure.locator(".al-match")).toBeVisible();
       await expect(figure.locator(".al-feedback")).toHaveCount(0);
     });

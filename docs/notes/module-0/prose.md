@@ -152,6 +152,8 @@ The processor keeps a program's instructions and values outside its registers, i
 
 The experiment's figure uses GCC's output from correct C, so `fuel_used` is `sub w0, w0, w1`, then `ret`. Its switch deletes `ret` from `trip_distance`, then runs `trip_distance(120, 85, 42, 15)` again.
 
+**This is a new situation.** Make your best prediction, even if you're unsure. You'll see what the processor does after you choose.
+
 **With `ret` deleted, what does `w0` hold when the run ends?**
 
 - 232
@@ -160,6 +162,8 @@ The experiment's figure uses GCC's output from correct C, so `fuel_used` is `sub
 - 0
 
 *Shown after the answer is checked.*
+
+*Shown as the button that commits this prediction.* See what happens
 
 The processor does not stop just because it reaches the next function. Without `ret`, it carries on with the instructions that follow. In this example, the two functions sit one after the other in memory. So the next instruction is `fuel_used`'s `sub w0, w0, w1`. The `sub` makes `w0` 232 minus 85, which is 147. Then `fuel_used`'s `ret` returns.
 

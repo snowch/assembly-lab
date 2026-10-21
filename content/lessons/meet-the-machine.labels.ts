@@ -61,6 +61,12 @@ export const LABELS = {
       { value: "0", label: "0" },
     ],
   },
+  // The button that commits the ret experiment's prediction: a discovery experiment, not a recall
+  // question, so its action promises the run's result rather than a verdict (docs/notes/module-0/
+  // prose.md, section 6: "See what happens").
+  commit: {
+    noRet: "See what happens",
+  },
   challenges: {
     fix: { title: "Fix the subtraction" },
     trace: {
