@@ -559,12 +559,13 @@
   margin: 0;
 }
 
-/* A step that took a branch: the instruction it went to is marked, and pulses once unless motion
-   is reduced; the words under the listing say the same. */
+/* A step that took a branch: the instruction it went to keeps its next-instruction treatment —
+   arrow plus dotted edge — and pulses once unless motion is reduced; the words under the listing
+   say the same. The pulse is the only addition, so the branch target never reads as the
+   instruction that just ran. */
 .al-stepper[data-jump="true"] .al-insn[data-next="true"] {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
-  background: var(--accent-soft);
 }
 @media (prefers-reduced-motion: no-preference) {
   .al-stepper[data-jump="true"] .al-insn[data-next="true"] {

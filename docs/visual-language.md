@@ -19,8 +19,8 @@ The visual system must work across lessons, from the first `w0` example to calls
 | **Value changed** | Before → after comparison plus `Changed` label/mark | Bits or value differ from before |
 | **Written, unchanged value** | `Written; same value` mark, distinct from untouched | Instruction wrote a destination but produced identical bits |
 | **Untouched** | Neutral style plus `Not written` only where needed | State not written at this step |
-| **Next instruction** | Single, labelled execution marker | Program-counter position before the next step |
-| **Instruction just executed** | Separate highlight from the next marker | The operation whose effects are visible |
+| **Next instruction** | Arrow in the marker column plus a thin dotted edge; no executed fill | Program-counter position before the next step |
+| **Instruction just executed** | The same primary treatment as its checked C line(s): accent-soft fill with a solid accent stripe on the left edge | The operation whose effects are visible |
 | **Predicted / unknown** | Question/hidden state without result styling | Learner has not committed an answer |
 | **Revealed result** | Normal destination/comparison treatment after gate | Computed result, not a guess |
 
@@ -36,6 +36,7 @@ The existing `.al-flow-source` dashed outline and `.al-flow-destination` solid a
 - **Movement:** solid arrowheads for data movement. Use a visually distinct, labelled treatment for branches/control flow; distinguish possible path from path actually taken.
 - **Time:** before/after or step index must be visible whenever comparing state. If the reader clicks `Next`, the figure must make it clear what just ran and what runs next.
 - **C-to-assembly mapping:** keep complete numbered C and checked instruction associations in the shared paired listing; never imply one C statement always equals one instruction. Preserve the project's horizontally contained layout on phones.
+- **Execution highlighting (agreed 2026, issue #14):** one execution event gets one primary treatment in both panes. The C line(s) checked for the instruction that ran (`data-lit` on the C row) and that instruction's row (`data-ran`) both carry an accent-soft fill with a solid accent stripe on the left edge. The instruction that runs next (`data-next`) is marked differently and never with that fill: an arrow in the marker column plus a thin dotted edge, with the row's text on the plain pane background. When the row that just ran is also the one that runs next (a branch to itself), the executed treatment stays primary and the dotted edge is additional. Every marked row also says what it is to a screen reader ("Just executed", "Runs next"), so the states never rest on colour or fill alone. A static listing, a comparison or diff view, an editor's open line and a branch-path view keep their own meanings and never reuse the executed fill for a state that is not "just executed".
 - **Typography:** code/values monospace; explanatory labels in normal text; short captions. Avoid all-caps label proliferation and tiny text in diagrams.
 - **Shape/spacing:** use existing theme spacing and border-radius tokens. Prefer simple containers and whitespace over nested cards, repeated legends and elaborate illustrations.
 

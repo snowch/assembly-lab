@@ -43,6 +43,7 @@ export const VIEW_STRINGS = {
     /** The C line number beside an instruction, for a screen reader. */
     recordedAgainst: (n: number) => `Recorded against C line ${n}`,
     next: "Runs next",
+    ran: "Just executed",
     cPane: "The C",
     instructionsPane: "The instructions",
   },

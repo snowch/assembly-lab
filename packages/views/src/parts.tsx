@@ -205,6 +205,7 @@ export function ListingView({
       >
         <span className="al-mark" aria-hidden="true" />
         {next === i && <span className="visually-hidden">{S.listing.next}</span>}
+        {ran === i && <span className="visually-hidden">{S.listing.ran}</span>}
         <code className="al-text">{line.text}</code>
         {differences?.has(i) && <span className="visually-hidden">{S.pair.differs}</span>}
         {tag !== null && (
