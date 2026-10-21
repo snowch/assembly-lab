@@ -107,6 +107,21 @@ describe("the closed notes and the wrong-answer sentences", () => {
     expect(figure("step-no-ret").props["endNote"]).toBeUndefined();
   });
 
+  it("invite a best guess before the ret prediction, and give that prediction its own button", () => {
+    const props = figure("predict-no-ret").props;
+    expect(props["intro"]).toBe(PROSE.failureInvitation);
+    expect(props["commitLabel"]).toBe(LABELS.commit.noRet);
+    // The invitation is a discovery lead-in, not knowledge the file gives: it neither names where
+    // the run goes nor says the value.
+    const flatInvitation = flat(PROSE.failureInvitation);
+    expect(flatInvitation).not.toContain("fuel_used");
+    expect(flatInvitation).not.toContain("147");
+    // The ordinary prediction keeps the shared workflow.
+    const total = figure("predict-total").props;
+    expect(total["intro"]).toBeUndefined();
+    expect(total["commitLabel"]).toBeUndefined();
+  });
+
   it("give the construction challenge's three cases the sentence for the reversed subtraction", () => {
     const c = lesson.challenges.find((x) => x.id === "fix-fuel-used")!;
     if (c.tests.kind !== "answers") throw new Error("answer tests");

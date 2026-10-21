@@ -212,9 +212,11 @@ export const meetTheMachine: LessonInput = {
           role: "prediction",
           caption: LABELS.captions.predictNoRet,
           props: {
+            intro: PROSE.failureInvitation,
             question: PROSE.failureQuestion,
             options: LABELS.options.noRet.map((o) => withFeedback(o, PROSE.failureFeedback)),
             explain: PROSE.failureExplain,
+            commitLabel: LABELS.commit.noRet,
             program: TRIP_DISTANCE_AND_FUEL_USED,
             call: TRIP_CALL,
             measure: {

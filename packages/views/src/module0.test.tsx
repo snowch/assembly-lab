@@ -424,6 +424,28 @@ describe("the sentence for a wrong choice", () => {
     expect(container.querySelector(".al-feedback, .al-outcome")).toBeNull();
   });
 
+  it("draws an invitation directly above the question, and its own button label, when given them", () => {
+    const { container } = figure(TracePrediction, "p", "trace-prediction", {
+      ...props,
+      intro: "**This is a new situation.** Make your best prediction.",
+      commitLabel: "See what happens",
+    });
+    const intro = container.querySelector(".al-prediction > .prose");
+    const question = container.querySelectorAll(".al-prediction > .prose")[1];
+    expect(flat(intro)).toBe("This is a new situation. Make your best prediction.");
+    expect(question!.textContent).toContain("Where?");
+    expect(
+      intro!.compareDocumentPosition(question!) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(screen.getByRole("button", { name: "See what happens" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: S.prediction.commit })).toBeNull();
+  });
+
+  it("keeps the shared button label when the prediction asks for no label of its own", () => {
+    figure(TracePrediction, "p", "trace-prediction", props);
+    expect(screen.getByRole("button", { name: S.prediction.commit })).toBeDisabled();
+  });
+
   it("shows the sentence beside the result for a wrong option that has one", async () => {
     const { container } = figure(TracePrediction, "p", "trace-prediction", props);
     await choose(/new place/);
