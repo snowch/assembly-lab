@@ -74,6 +74,9 @@
   padding: 0.1rem var(--space-3) 0.1rem 0;
   border-left: 3px solid transparent;
 }
+/* Just executed: the same primary treatment in both panes — an accent-soft fill with a solid
+   accent stripe on the left edge. The C statement(s) checked for the instruction that ran and
+   that instruction's row carry the same mark, so one execution event reads as one event. */
 .al-cline[data-lit="true"] {
   background: var(--accent-soft);
   border-left-color: var(--accent);
@@ -100,17 +103,26 @@
   gap: var(--space-2);
   min-height: 2rem;
   padding: 0 var(--space-3) 0 var(--space-1);
+  /* Every row keeps a transparent left edge, so the executed stripe and the next dotted edge
+     take the place of it and no row's text shifts when its state changes. */
+  border-left: 3px solid transparent;
   /* The row anchors its hidden "Runs next", which is absolutely positioned: without this, a
      narrow listing lets it escape the listing's clip and widen the page. */
   position: relative;
 }
-/* The instruction that just ran: outlined, so it is told apart from the arrow on the one that
-   runs next. The outline is the mark; the flow panel below names what it did. */
+/* The instruction that just ran carries the same primary treatment as the C line(s) it carries
+   out: accent-soft fill, solid accent stripe on the left edge. The flow panel below names what it
+   did. */
 .al-insn[data-ran="true"] {
-  box-shadow: inset 0 0 0 2px var(--accent);
-}
-.al-insn[data-next="true"] {
   background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+}
+/* The instruction that runs next is marked differently, so it never reads as the one that just
+   ran: an arrow in the marker column plus a thin dotted edge, with no accent fill. The dotted
+   edge keeps the state visible when the row is also the one that just ran (a branch to itself),
+   where the executed treatment stays primary. */
+.al-insn[data-next="true"] {
+  border-left: 3px dotted var(--border-strong);
 }
 .al-mark {
   justify-self: center;
