@@ -55,11 +55,18 @@ interface RowStyle {
 async function rowStyle(row: Locator): Promise<RowStyle> {
   return row.evaluate((e) => {
     const cs = getComputedStyle(e);
+    const mark = e.querySelector(".al-mark");
+    // The arrow is a CSS triangle on the marker's ::before: no triangle, no border to read.
+    const arrow =
+      mark === null
+        ? false
+        : getComputedStyle(mark, "::before").borderLeftWidth !== "0px" &&
+          getComputedStyle(mark, "::before").content !== "none";
     return {
       background: cs.backgroundColor,
       borderLeftStyle: cs.borderLeftStyle,
       borderLeftColor: cs.borderLeftColor,
-      arrow: getComputedStyle(e.querySelector(".al-mark")!, "::before").borderLeftWidth !== "0px",
+      arrow,
     };
   });
 }
@@ -98,17 +105,25 @@ for (const theme of themes) {
       const ranStyle = await rowStyle(ran);
       const nextStyle = await rowStyle(next);
 
-      // One execution event, one primary treatment: the C row and the instruction row match.
-      expect(ranStyle.background).toBe(cStyle.background);
-      expect(ranStyle.borderLeftStyle).toBe("solid");
-      expect(ranStyle.borderLeftColor).toBe(cStyle.borderLeftColor);
-      expect(cStyle.borderLeftStyle).toBe("solid");
-      // The executed fill is the accent's soft fill, not a plain or error background.
+      // One execution event, one primary treatment: the C row and the instruction row match,
+      // and both carry the theme's accent-soft fill resolved to a real colour.
       const accentSoft = await page.evaluate(() =>
         getComputedStyle(document.body).getPropertyValue("--accent-soft").trim(),
       );
-      expect(ranStyle.background).not.toBe("rgba(0, 0, 0, 0)");
       expect(accentSoft.length).toBeGreaterThan(0);
+      const softFill = await page.evaluate((token) => {
+        const probe = document.createElement("div");
+        probe.style.background = `var(${token})`;
+        document.body.appendChild(probe);
+        const resolved = getComputedStyle(probe).backgroundColor;
+        probe.remove();
+        return resolved;
+      }, "--accent-soft");
+      expect(ranStyle.background).toBe(cStyle.background);
+      expect(ranStyle.background).toBe(softFill);
+      expect(ranStyle.borderLeftStyle).toBe("solid");
+      expect(ranStyle.borderLeftColor).toBe(cStyle.borderLeftColor);
+      expect(cStyle.borderLeftStyle).toBe("solid");
 
       // Next is marked, and differently: the arrow is there, the fill is not the executed one,
       // and the edge is not the executed solid stripe.
@@ -118,7 +133,8 @@ for (const theme of themes) {
       expect(nextStyle.borderLeftStyle).toBe("dotted");
       expect(nextStyle.borderLeftColor).not.toBe(ranStyle.borderLeftColor);
 
-      // The marks are legible: the executed text stays readable on its fill.
+      // The marks are legible: the executed text's colour differs from its fill, so the row
+      // reads in both themes.
       const contrast = await figure.evaluate((el) => {
         const row = el.querySelector<HTMLElement>('.al-insn[data-ran="true"] .al-text')!;
         const cs = getComputedStyle(row);
@@ -126,6 +142,7 @@ for (const theme of themes) {
         return { color: cs.color, background: bg };
       });
       expect(contrast.color).not.toBe(contrast.background);
+      expect(contrast.color).not.toBe("rgba(0, 0, 0, 0)");
     });
 
     test("before the first step only next is marked, and at the end only the last row is", async ({
@@ -133,6 +150,15 @@ for (const theme of themes) {
     }) => {
       const figure = page.locator("#ix-step-trip");
       await figure.scrollIntoViewIfNeeded();
+      // The theme's accent-soft fill, resolved: what an executed row must carry.
+      const softFill = await page.evaluate(() => {
+        const probe = document.createElement("div");
+        probe.style.background = "var(--accent-soft)";
+        document.body.appendChild(probe);
+        const resolved = getComputedStyle(probe).backgroundColor;
+        probe.remove();
+        return resolved;
+      });
       // Fresh: the arrow, no executed row, no lit C line.
       await expect(figure.locator('.al-insn[data-ran="true"]')).toHaveCount(0);
       await expect(figure.locator('.al-cline[data-lit="true"]')).toHaveCount(0);
@@ -140,7 +166,12 @@ for (const theme of themes) {
       await expect(firstNext.locator(".al-text")).toHaveText("add w0, w0, w1");
       const freshStyle = await rowStyle(firstNext);
       expect(freshStyle.arrow).toBe(true);
+      // No executed fill: the row's own background is transparent; the pane's fill shows through.
+      const paneFill = await figure.evaluate(
+        (el) => getComputedStyle(el.querySelector<HTMLElement>(".al-pane.al-asm")!).backgroundColor,
+      );
       expect(freshStyle.background).toBe("rgba(0, 0, 0, 0)");
+      expect(paneFill).not.toBe("rgba(0, 0, 0, 0)");
 
       // Run to the end: the last instruction keeps the executed treatment, and nothing is next.
       for (let k = 0; k < 4; k++)
@@ -150,7 +181,7 @@ for (const theme of themes) {
       await expect(last.locator(".al-text")).toHaveText("ret");
       const lastStyle = await rowStyle(last);
       expect(lastStyle.borderLeftStyle).toBe("solid");
-      expect(lastStyle.background).not.toBe("rgba(0, 0, 0, 0)");
+      expect(lastStyle.background).toBe(softFill);
     });
 
     test("back and reset return the marks to the earlier and the initial state", async ({
