@@ -57,11 +57,15 @@ describe("final core native module", () => {
       );
       expect(viewAt(trace, 4).written.has(0)).toBe(false);
       expect(record.pcOffsets).toEqual([0, 4, 8, 12]);
-      expect(record.returnTo).toBe("main");
+      expect(record.returnTo).toBe("after_trip");
     }
-    expect(EVIDENCE.stdout).toBe("trip_distance(120, 85, 42, 15) = 232");
-    expect(EVIDENCE.exitCode).toBe(0);
-    expect(EVIDENCE.brokenExitCode).toBe(1);
+    expect(EVIDENCE.stdout).toBe("Assembly Lab: trip check passed");
+    expect(EVIDENCE.brokenStdout).toBe("Assembly Lab: trip check failed");
+    const boot = EVIDENCE.boot;
+    expect(boot.resetPc).toBe(boot.entry);
+    expect(boot.stackTop % 16).toBe(0);
+    expect(boot.startupStops.map((s) => s.result)).toEqual([0xa5a5a5a5, 0, 232]);
+    expect(boot.startupStops.slice(1).map((s) => s.sp)).toEqual([boot.stackTop, boot.stackTop]);
   });
   it("checks behaviour instead of exact reference text and shares native cases", () => {
     const challenge = lessons[1]!.challenges[0]!;
@@ -71,10 +75,10 @@ describe("final core native module", () => {
     );
     expect(gradeWritten(challenge, { text: alternative }).passed).toBe(true);
     const harness = readFileSync(
-      new NodeURL("../../apps/course/public/native/verify-challenge.c", import.meta.url),
+      new NodeURL("../../apps/course/public/native/verify-boot.s", import.meta.url),
       "utf8",
     );
     for (const [a, b, c, d] of NATIVE_CASES)
-      expect(harness.replace(/\s/g, "")).toContain(`{${a},${b},${c},${d},${a + b + c - 2 * d}}`);
+      expect(harness.replace(/\s/g, "")).toContain(`.word${a},${b},${c},${d},${a + b + c - 2 * d}`);
   });
 });

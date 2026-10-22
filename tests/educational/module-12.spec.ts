@@ -2,6 +2,8 @@
 import { expect, test } from "@playwright/test";
 import { LESSONS } from "@al/content";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
+import { LABELS as NATIVE_LABELS } from "../../content/lessons/debug-native-instructions.labels";
+import EVIDENCE from "../../content/lessons/module-12.evidence.json" with { type: "json" };
 import { openLesson, commit, challenge, run, status, passing, watchErrors } from "./module1";
 
 for (const theme of ["light", "dark"] as const) {
@@ -37,8 +39,27 @@ for (const theme of ["light", "dark"] as const) {
         await commit(page, "predict-native-divergence", "After the third arithmetic instruction");
       } else {
         await expect(page.locator("#ix-native-run-output pre")).toHaveCount(0);
+        await expect(page.locator("#ix-native-boot-startup [data-native-boot]")).toHaveCount(0);
         await commit(page, "predict-native-result", "232");
         await expect(page.locator("#ix-native-run-output pre")).toHaveCount(2);
+        const boot = page.locator("#ix-native-boot-startup");
+        for (const [index, stop] of EVIDENCE.boot.startupStops.entries()) {
+          await boot
+            .getByRole("button", { name: NATIVE_LABELS.native.boot.stops[index], exact: true })
+            .click();
+          for (const key of ["pc", "sp", "result"] as const)
+            await expect(
+              boot.locator(
+                `[data-${key === "result" ? "memory" : "register"}="${key}"] .al-dreg-value`,
+              ),
+            ).toHaveText(`0x${stop[key].toString(16)}`);
+        }
+        await boot
+          .getByRole("button", { name: NATIVE_LABELS.native.boot.stops[0], exact: true })
+          .click();
+        await expect(boot.locator('[data-memory="result"] .al-dreg-value')).toHaveText(
+          `0x${EVIDENCE.boot.startupStops[0]!.result.toString(16)}`,
+        );
         const response = await page.request.get("native/assembly-lab-native.zip");
         expect(response.ok()).toBe(true);
         expect((await response.body()).subarray(0, 2).toString()).toBe("PK");

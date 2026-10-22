@@ -48,7 +48,8 @@ could compute. If a lesson needs a figure the model cannot compute, the model is
 goes first.
 
 Module 12 may compare model states with explicitly labelled, recorded GNU/QEMU/GDB output.
-Its native-only Linux syscall and UART experiments run outside the browser model and must pass
+Its assembly-only startup and UART capstone, and optional Linux syscall comparison, run outside
+the browser model and must pass
 `scripts/native/check.py`; they do not extend the browser ISA. Supported arithmetic functions
 retain the ordinary GNU/QEMU simulator differential check. Never present a recording as a live
 native process running in the page.

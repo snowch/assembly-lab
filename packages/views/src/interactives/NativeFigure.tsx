@@ -21,6 +21,25 @@ const Props = z.object({
   environment: z.string().optional(),
   versions: z.record(z.string(), z.string()).optional(),
   referenceSummary: z.string().optional(),
+  boot: z
+    .object({
+      startupStops: z.array(z.object({ pc: z.number(), sp: z.number(), result: z.number() })),
+      regions: z.array(z.object({ kind: z.string(), start: z.number(), end: z.number() })),
+    })
+    .optional(),
+  bootLabels: z
+    .object({
+      title: z.string(),
+      recordedNote: z.string(),
+      pc: z.string(),
+      sp: z.string(),
+      result: z.string(),
+      memory: z.string(),
+      rangeNote: z.string(),
+      stops: z.array(z.string()),
+      regions: z.record(z.string(), z.string()),
+    })
+    .optional(),
   labels: z
     .object({
       next: z.string(),
@@ -37,6 +56,7 @@ const Props = z.object({
 
 export const NativeFigure = withProps(Props, function NativeFigure({ data, store }) {
   const [k, setK] = useState(0);
+  const [bootStop, setBootStop] = useState(0);
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const trace = useMemo(
     () => (data.program && data.call ? traceOf(data.program, data.call) : null),
@@ -70,6 +90,71 @@ export const NativeFigure = withProps(Props, function NativeFigure({ data, store
             </li>
           ))}
         </ol>
+      )}
+      {data.boot && data.bootLabels && (
+        <div className="al-native-boot" data-native-boot>
+          <h3>{data.bootLabels.title}</h3>
+          <p>{data.bootLabels.recordedNote}</p>
+          <div className="al-controls">
+            {data.boot.startupStops.map((_, index) => (
+              <button
+                key={index}
+                className="button secondary"
+                type="button"
+                aria-pressed={bootStop === index}
+                onClick={() => setBootStop(index)}
+              >
+                {data.bootLabels?.stops[index]}
+              </button>
+            ))}
+          </div>
+          <p role="status">{data.bootLabels.stops[bootStop]}</p>
+          <div className="al-memory-registers" aria-live="polite">
+            {(
+              [
+                ["pc", data.bootLabels.pc],
+                ["sp", data.bootLabels.sp],
+                ["result", data.bootLabels.result],
+              ] as const
+            ).map(([key, label]) =>
+              key === "result" ? (
+                <div
+                  key={key}
+                  className="al-register-summary"
+                  role="group"
+                  aria-label={label}
+                  data-memory="result"
+                >
+                  <code className="al-dreg-name">{label}</code>
+                  <code className="al-dreg-value">
+                    0x{data.boot?.startupStops[bootStop]?.result.toString(16)}
+                  </code>
+                </div>
+              ) : (
+                <RegisterSummary
+                  key={key}
+                  name={key}
+                  written={false}
+                  label={label}
+                  value={`0x${data.boot?.startupStops[bootStop]?.[key].toString(16)}`}
+                />
+              ),
+            )}
+          </div>
+          <h4>{data.bootLabels.memory}</h4>
+          <p>{data.bootLabels.rangeNote}</p>
+          <ol className="al-native-map">
+            {[...data.boot.regions]
+              .sort((a, b) => a.start - b.start)
+              .map((region) => (
+                <li key={region.kind}>
+                  <code>0x{region.start.toString(16)}</code>
+                  <strong>{data.bootLabels?.regions[region.kind]}</strong>
+                  <code>0x{region.end.toString(16)}</code>
+                </li>
+              ))}
+          </ol>
+        </div>
       )}
       {view && labels && (
         <>

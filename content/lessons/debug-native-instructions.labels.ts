@@ -2,21 +2,21 @@
 
 // Kept word for word in docs/notes/module-12/prose.md.
 export const LABELS = {
-  title: "Debug instructions and choose an execution environment",
+  title: "Follow startup and debug the boot image",
   objectives: [
-    "compare native instruction stops with the browser model;",
-    "find the first differing result in a controlled bug;",
-    "run a standalone Linux assembly program.",
+    "inspect the entry point, prepared stack and zeroed storage in GDB;",
+    "compare booted instruction stops with the browser model;",
+    "locate a wrong result and check a revised assembly function.",
   ],
   titles: {
-    question: "Where does the native calculation first go wrong?",
-    motivation: "Stop the live process with GDB",
+    question: "Where does the booted calculation first go wrong?",
+    motivation: "Stop startup with GDB",
     prediction: "Execute one instruction",
     investigation: "Compare registers and the next instruction",
-    construction: "Finish and close the debugging session",
+    construction: "Inspect the saved result and close the session",
     failureExperiment: "Locate the first differing stop",
-    explanation: "Request a Linux service",
-    generalisation: "Start without the C runtime",
+    explanation: "Separate loading, startup and calculation",
+    generalisation: "Check the environment’s entry conditions",
     challenge: "Apply the correction twice",
     reflection: "What you now know",
   },
@@ -27,7 +27,7 @@ export const LABELS = {
     predictFailure: "Identify the first differing arithmetic result.",
     stepFailure:
       "Compare recorded and modelled stops for the modified function. Use the original figure above to find where their results diverge from the original function.",
-    final: "Check the revised function with the same contract in both environments.",
+    final: "Check the revised function in the browser and a bootable assembly test image.",
   },
   options: {
     prediction: [
@@ -77,42 +77,44 @@ export const LABELS = {
     ran: "Instruction just executed",
     before: "At the function breakpoint",
     after: "After the instruction",
-    notLive: "This page steps a recording. Use GDB in your terminal to inspect a live process.",
+    notLive:
+      "This page steps a recording. Use GDB in your terminal to inspect the machine you boot.",
     pcOffset: "PC relative to the function entry",
-    returned: "Returned to the C caller",
+    returned: "Returned to the assembly caller",
     good: "Original function",
     broken: "Modified third instruction",
     sources: "Source files",
     objects: "Object files",
     link: "Linked ELF executable",
-    execute: "QEMU user mode",
-    process: "Running Linux process",
+    execute: "QEMU system mode",
+    process: "Booted bare-metal program",
     copy: "Copy commands",
     copied: "Commands copied",
     pipeline: [
       {
-        name: "Source",
-        detail: "main.c and trip_distance.s",
+        name: "Assembly sources",
+        detail: "boot.s supplies startup and output; trip_distance.s supplies the calculation",
       },
       {
         name: "Object files",
-        detail: "GCC compiles C; GNU as assembles instructions",
+        detail: "GNU as translates each source file into machine code and references",
       },
       {
-        name: "Link",
-        detail: "GNU tools join the function with startup code and the C library",
+        name: "Linker and memory layout",
+        detail: "GNU ld joins the objects using boot.ld and chooses _start as the entry",
       },
       {
-        name: "Executable file",
-        detail: "The trip file contains machine code and loading information",
+        name: "ELF boot image",
+        detail: "boot.elf contains code, data and segment loading information",
       },
       {
-        name: "QEMU user mode",
-        detail: "Emulates AArch64 instructions and forwards Linux requests",
+        name: "QEMU direct ELF load",
+        detail: "QEMU loads the segments into RAM and starts at the recorded ELF entry",
       },
       {
-        name: "Running program",
-        detail: "Instructions execute using registers and memory",
+        name: "Startup and the program",
+        detail:
+          "Startup prepares the stack and storage; the caller checks the trip and writes UART bytes",
       },
     ],
     model: "Browser model",
@@ -121,14 +123,14 @@ export const LABELS = {
       "After the first addition",
       "After the second addition",
       "After the third arithmetic instruction",
-      "After returning to the C caller",
+      "After returning to the assembly caller",
     ],
     previous: "Previous stop",
     nextStop: "Next stop",
     reset: "Reset comparison",
     correct: "Original function",
     registers: "Register values at this stop",
-    returnToMain: "Returned to the C caller",
+    returnToMain: "Returned to the assembly caller",
     recordedNote:
       "The native values are the low 32 bits of the recorded x registers. The browser values come from its instruction model.",
     stops: [
@@ -136,11 +138,33 @@ export const LABELS = {
       "After the first addition",
       "After the second addition",
       "After the third arithmetic instruction",
-      "After returning to the C caller",
+      "After returning to the assembly caller",
     ],
     pc: "Program counter relative to trip_distance",
     referenceRun: "Reference run",
     referenceEnvironment: "Reference environment",
     versions: "Tool versions",
+    boot: {
+      title: "Recorded loading and startup",
+      recordedNote:
+        "These states were recorded with GNU tools, QEMU and GDB, a debugger that inspects a running machine and controls when it stops. At the entry stop, the verifier deliberately wrote 0xa5a5a5a5 to result with GDB. Startup then cleared it. The marker demonstrates the zeroing loop; it is not a claim that QEMU left uninitialised garbage. The diagram is a recording, not a machine running in this page.",
+      pc: "Next instruction address (PC)",
+      sp: "Stack pointer (SP)",
+      result: "Stored result (32-bit word)",
+      memory: "Selected address ranges on QEMU virt",
+      rangeNote:
+        "Ranges are ordered by address and are not drawn to scale. Each end address is exclusive. The code range contains instructions; the image also includes message bytes and initialised data.",
+      stops: [
+        "At _start, after GDB writes the test marker",
+        "At boot_ready, after stack setup and storage clearing",
+        "At halt, after saving the trip result and sending its report",
+      ],
+      regions: {
+        code: "Program instructions in RAM",
+        bss: "Zero-initialised result storage",
+        stack: "Reserved stack space",
+        uart: "PL011 UART device registers",
+      },
+    },
   },
 } as const;

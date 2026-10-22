@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # Copyright © 2026 Christopher Snow
-"""Execute the native lesson assets; --record refreshes checked evidence and the download."""
+"""Check the actual assembly-only boot images; --record refreshes their evidence and bundle."""
 import argparse
 import json
 import os
 from pathlib import Path
 import re
+import select
 import shutil
 import socket
 import subprocess
@@ -15,52 +16,118 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCES = ROOT / 'apps/course/public/native'
-TOOLS = ['aarch64-linux-gnu-gcc', 'aarch64-linux-gnu-as', 'aarch64-linux-gnu-ld',
+TOOLS = ['aarch64-linux-gnu-as', 'aarch64-linux-gnu-ld', 'aarch64-linux-gnu-nm',
          'aarch64-linux-gnu-readelf', 'aarch64-linux-gnu-objdump', 'qemu-aarch64',
          'gdb-multiarch', 'qemu-system-aarch64', 'file']
+QEMU = ['qemu-system-aarch64', '-M', 'virt', '-cpu', 'cortex-a53', '-m', '128M', '-nographic']
+PASSED = 'Assembly Lab: trip check passed'
+FAILED = 'Assembly Lab: trip check failed'
+
 
 def run(*args, expected=0, **kwargs):
     result = subprocess.run(args, text=True, capture_output=True, timeout=40, **kwargs)
     assert result.returncode == expected, (args, result.returncode, result.stdout, result.stderr)
     return result.stdout.strip()
 
-def compile_trip(directory, source, name, harness='main.c'):
-    path = directory / (name + '.s')
-    path.write_text(source)
-    exe = directory / name
-    main_obj = directory / (name + '-main.o')
-    asm_obj = directory / (name + '-asm.o')
-    run('aarch64-linux-gnu-gcc', '-g', '-O0', '-c', str(SOURCES / harness), '-o', str(main_obj))
-    run('aarch64-linux-gnu-as', '-g', str(path), '-o', str(asm_obj))
-    run('aarch64-linux-gnu-gcc', '-static', '-g', '-no-pie', str(main_obj), str(asm_obj), '-o', str(exe))
+
+def build(directory, source, name, harness='boot.s'):
+    asm = directory / (name + '-trip.s')
+    asm.write_text(source)
+    obj = directory / (name + '-trip.o')
+    boot_obj = directory / (name + '-boot.o')
+    run('aarch64-linux-gnu-as', '-g', str(asm), '-o', str(obj))
+    run('aarch64-linux-gnu-as', '-g', '-I', str(SOURCES), str(SOURCES / harness), '-o', str(boot_obj))
+    exe = directory / (name + '.elf')
+    run('aarch64-linux-gnu-ld', '-T', str(SOURCES / 'boot.ld'), str(boot_obj), str(obj), '-o', str(exe))
     return exe
 
-def debug(exe):
+
+def symbols(exe):
+    output = run('aarch64-linux-gnu-nm', '-n', str(exe))
+    return {name: int(address, 16) for address, name in re.findall(r'^([0-9a-f]+) \w (\w+)$', output, re.M)}
+
+
+def read_serial(process, expected):
+    data = b''
+    deadline = time.monotonic() + 15
+    while (expected + '\n').encode() not in data and time.monotonic() < deadline:
+        ready, _, _ = select.select([process.stdout], [], [], 0.25)
+        if ready:
+            chunk = os.read(process.stdout.fileno(), 4096)
+            if not chunk:
+                break
+            data += chunk
+    assert (expected + '\n').encode() in data, (expected, data)
+    # Exiting the emulator is a host command, not a guest process exit.
+    _, errors = process.communicate(b'\x01x', timeout=10)
+    assert process.returncode == 0, errors
+    return expected
+
+
+def stop(process):
+    if process.poll() is None:
+        process.kill()
+        process.wait()
+
+
+def uart_run(exe, expected):
+    process = subprocess.Popen([*QEMU, '-kernel', str(exe)], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        return read_serial(process, expected)
+    finally:
+        stop(process)
+
+
+def debug(exe, expected):
     with socket.socket() as sock:
         sock.bind(('127.0.0.1', 0))
         port = sock.getsockname()[1]
-    process = subprocess.Popen(['qemu-aarch64', '-g', str(port), str(exe)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    process = subprocess.Popen([*QEMU, '-kernel', str(exe), '-S', '-gdb', f'tcp:127.0.0.1:{port}'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     try:
+        boot_row = 'printf "ALBOOT %lu %lu %lu\\n", $pc, $sp, *(unsigned int*)&result'
         commands = ['set pagination off', 'set confirm off', 'set tcp auto-retry on',
                     'set remotetimeout 10', f'target remote localhost:{port}',
+                    'printf "ALRESET %lu %lu\\n", $pc, $cpsr', 'x/6i $pc',
+                    'set {unsigned int}&result = 0xa5a5a5a5', boot_row,
+                    'tbreak boot_ready', 'continue', boot_row,
+                    'printf "ALDATA %u\\n", *(unsigned int*)&initialized_marker',
                     'break trip_distance', 'continue']
         for index in range(5):
             if index:
                 commands.append('stepi')
             commands.append('printf "ALSTATE %lu %lu %lu %lu %ld\\n", $x0 & 0xffffffff, $x1 & 0xffffffff, $x2 & 0xffffffff, $x3 & 0xffffffff, $pc - (long)&trip_distance')
-        commands += ['info symbol $pc', 'continue']
+        commands += ['info symbol $pc', 'tbreak halt', 'continue', boot_row, 'detach']
         output = run('gdb-multiarch', '-q', '-batch', str(exe), *[v for c in commands for v in ['-ex', c]])
         rows = [[int(n) for n in match] for match in re.findall(r'ALSTATE (\d+) (\d+) (\d+) (\d+) (-?\d+)', output)]
-        assert len(rows) == 5, output
+        boots = [[int(n) for n in match] for match in re.findall(r'ALBOOT (\d+) (\d+) (\d+)', output)]
+        reset = re.search(r'ALRESET (\d+) (\d+)', output)
+        assert reset and len(rows) == 5 and len(boots) == 3, output
         assert [row[4] for row in rows[:4]] == [0, 4, 8, 12], output
-        assert re.search(r'main \+ \d+', output), output
-        stdout, stderr = process.communicate(timeout=10)
-        assert not stderr, stderr
-        return {'registers': [r[:4] for r in rows], 'pcOffsets': [r[4] for r in rows[:4]], 'returnTo': 'main'}, stdout.strip(), process.returncode
+        sym = symbols(exe)
+        assert rows[-1][4] == sym['after_trip'] - sym['trip_distance'], output
+        assert int(reset[1]) == sym['_start'], output
+        assert int(reset[2]) & 0xf == 5, output  # this configured machine starts at EL1h
+        assert boots[0] == [sym['_start'], 0, 0xa5a5a5a5], output
+        assert boots[1] == [sym['boot_ready'], sym['stack_top'], 0], output
+        assert boots[2] == [sym['halt'], sym['stack_top'], rows[-1][0]], output
+        assert sym['stack_top'] % 16 == 0 and sym['stack_top'] - sym['stack_bottom'] == 4096
+        assert 'ALDATA 305419896' in output, output
+        stdout = read_serial(process, expected)
+        trace = {'registers': [r[:4] for r in rows], 'pcOffsets': [r[4] for r in rows[:4]], 'returnTo': 'after_trip'}
+        boot = {'entry': sym['_start'], 'resetPc': int(reset[1]), 'resetCpsr': int(reset[2]),
+                'ramStart': 0x40000000, 'ramEnd': 0x48000000,
+                'bssStart': sym['bss_start'], 'bssEnd': sym['bss_end'],
+                'stackBottom': sym['stack_bottom'], 'stackTop': sym['stack_top'],
+                'initializedMarker': 0x12345678,
+                'startupStops': [{'pc': pc, 'sp': sp, 'result': result} for pc, sp, result in boots],
+                'regions': [{'kind': 'code', 'start': sym['text_start'], 'end': sym['text_end']},
+                            {'kind': 'bss', 'start': sym['bss_start'], 'end': sym['bss_end']},
+                            {'kind': 'stack', 'start': sym['stack_bottom'], 'end': sym['stack_top']},
+                            {'kind': 'uart', 'start': 0x09000000, 'end': 0x09001000}]}
+        return trace, boot, stdout
     finally:
-        if process.poll() is None:
-            process.kill()
-            process.wait()
+        stop(process)
+
 
 def check(record=False):
     missing = [tool for tool in TOOLS if not shutil.which(tool)]
@@ -72,68 +139,42 @@ def check(record=False):
     alternative = original.replace('    sub w0, w0, w3', '    add w3, w3, w3\n    sub w0, w0, w3')
     with tempfile.TemporaryDirectory(prefix='al-native-') as tmp:
         directory = Path(tmp)
-        trip = compile_trip(directory, original, 'trip')
-        bad = compile_trip(directory, broken, 'broken')
-        good_trace, stdout, code = debug(trip)
-        bad_trace, bad_stdout, bad_code = debug(bad)
-        assert stdout == 'trip_distance(120, 85, 42, 15) = 232' and code == 0
-        assert bad_stdout == 'trip_distance(120, 85, 42, 15) = 262' and bad_code == 1
+        trip = build(directory, original, 'boot')
+        bad = build(directory, broken, 'broken')
+        good_trace, boot, stdout = debug(trip, PASSED)
+        bad_trace, bad_boot, bad_stdout = debug(bad, FAILED)
         assert good_trace['registers'] == [[120,85,42,15],[205,85,42,15],[247,85,42,15],[232,85,42,15],[232,85,42,15]]
         assert bad_trace['registers'][:3] == good_trace['registers'][:3]
         assert bad_trace['registers'][3:] == [[262,85,42,15],[262,85,42,15]]
-        elf = run('aarch64-linux-gnu-readelf', '-h', str(trip))
-        assert 'AArch64' in elf and 'EXEC' in elf
+        assert boot['startupStops'][-1]['result'] == 232 and bad_boot['startupStops'][-1]['result'] == 262
+        header = run('aarch64-linux-gnu-readelf', '-h', '-l', str(trip))
+        assert 'AArch64' in header and 'little endian' in header and 'EXEC' in header and 'INTERP' not in header, header
+        assert 'Entry point address:               0x40080000' in header, header
+        segments = re.findall(r'LOAD\s+0x[0-9a-f]+\s+0x([0-9a-f]+)\s+0x([0-9a-f]+)\s+0x([0-9a-f]+)\s+0x([0-9a-f]+)', header)
+        assert len(segments) == 2, header
+        for _, physical, _, memory_size in segments:
+            assert 0x40000000 <= int(physical, 16) < 0x48000000
+            assert int(physical, 16) + int(memory_size, 16) <= 0x48000000
+        assert int(segments[1][3], 16) > int(segments[1][2], 16), header
         description = run('file', str(trip)).split(': ', 1)[1]
-        assert 'statically linked' in description
         disassembly = run('aarch64-linux-gnu-objdump', '-d', '--disassemble=trip_distance', str(trip))
         assert 'sub\tw0, w0, w3' in disassembly and 'ret' in disassembly
         for name, source in [('twice', twice), ('alternative', alternative)]:
-            challenge = compile_trip(directory, source, name, 'verify-challenge.c')
-            assert run('qemu-aarch64', str(challenge)) == '4 cases passed'
-        failing = compile_trip(directory, original, 'unchanged', 'verify-challenge.c')
-        run('qemu-aarch64', str(failing), expected=1)
-        for name in ['standalone', 'boot']:
-            obj = directory / (name + '.o')
-            run('aarch64-linux-gnu-as', '-g', str(SOURCES / (name + '.s')), '-o', str(obj))
-            args = ['-T', str(SOURCES / 'boot.ld')] if name == 'boot' else ['-e', '_start']
-            exe = directory / name
-            run('aarch64-linux-gnu-ld', *args, str(obj), '-o', str(exe))
-            header = run('aarch64-linux-gnu-readelf', '-h', '-l', str(exe))
-            assert 'AArch64' in header and 'little endian' in header and 'EXEC' in header, header
-            assert 'INTERP' not in header, header
-            if name == 'boot':
-                assert 'Entry point address:               0x40080000' in header, header
-                segments = re.findall(r'LOAD\s+0x[0-9a-f]+\s+0x([0-9a-f]+)\s+0x([0-9a-f]+)\s+0x([0-9a-f]+)\s+0x([0-9a-f]+)', header)
-                assert segments, header
-                for virtual, physical, size, memory_size in segments:
-                    assert 0x40000000 <= int(physical, 16) < 0x48000000
-                    assert int(physical, 16) + int(memory_size, 16) <= 0x48000000
-        standalone = run('qemu-aarch64', str(directory / 'standalone'))
+            challenge = build(directory, source, name, 'verify-boot.s')
+            assert uart_run(challenge, '4 cases passed') == '4 cases passed'
+        failing = build(directory, original, 'unchanged', 'verify-boot.s')
+        uart_run(failing, FAILED)
+        standalone_obj = directory / 'standalone.o'
+        standalone_exe = directory / 'standalone'
+        run('aarch64-linux-gnu-as', '-g', str(SOURCES / 'standalone.s'), '-o', str(standalone_obj))
+        run('aarch64-linux-gnu-ld', '-e', '_start', str(standalone_obj), '-o', str(standalone_exe))
+        standalone = run('qemu-aarch64', str(standalone_exe))
         assert standalone == 'Assembly Lab: native ARM64'
-        process = subprocess.Popen(['qemu-system-aarch64', '-M', 'virt', '-cpu', 'cortex-a53', '-m', '128M', '-nographic', '-kernel', str(directory / 'boot')], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        try:
-            # UART output is asynchronous. Read with a deadline, then exercise the documented console escape.
-            import select
-            data = b''
-            deadline = time.monotonic() + 20
-            while b'Assembly Lab: bare metal\n' not in data and time.monotonic() < deadline:
-                ready, _, _ = select.select([process.stdout], [], [], 0.5)
-                if ready:
-                    data += os.read(process.stdout.fileno(), 4096)
-            assert b'Assembly Lab: bare metal\n' in data, (data, process.stderr.read() if process.poll() is not None else b'UART deadline')
-            tail, errors = process.communicate(b'\x01x', timeout=10)
-            assert process.returncode == 0, errors
-        finally:
-            if process.poll() is None:
-                process.kill()
-                process.wait()
         evidence = {'environment': 'Ubuntu 24.04, x86_64 host',
                     'versions': {tool: run(tool, '--version').splitlines()[0] for tool in TOOLS if tool != 'file'},
-                    'file': description, 'stdout': stdout, 'exitCode': code,
-                    'brokenStdout': bad_stdout, 'brokenExitCode': bad_code,
-                    'good': good_trace, 'broken': bad_trace,
-                    'standalone': standalone, 'bareMetal': 'Assembly Lab: bare metal',
-                    'challenge': '4 cases passed'}
+                    'file': description, 'stdout': stdout, 'brokenStdout': bad_stdout,
+                    'good': good_trace, 'broken': bad_trace, 'boot': boot,
+                    'standalone': standalone, 'bareMetal': stdout, 'challenge': '4 cases passed'}
         if record:
             (ROOT / 'content/lessons/module-12.evidence.json').write_text(json.dumps(evidence, indent=2) + '\n')
             with zipfile.ZipFile(SOURCES / 'assembly-lab-native.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
@@ -145,7 +186,7 @@ def check(record=False):
                     archive.writestr(info, source.read_bytes(), compress_type=zipfile.ZIP_DEFLATED)
         else:
             saved = json.loads((ROOT / 'content/lessons/module-12.evidence.json').read_text())
-            for key in ['stdout', 'exitCode', 'brokenStdout', 'brokenExitCode', 'good', 'broken', 'standalone', 'bareMetal', 'challenge']:
+            for key in ['stdout', 'brokenStdout', 'good', 'broken', 'boot', 'standalone', 'bareMetal', 'challenge']:
                 assert evidence[key] == saved[key], ('Stale native evidence', key)
             with zipfile.ZipFile(SOURCES / 'assembly-lab-native.zip') as archive:
                 expected = {source.name: source.read_bytes() for source in SOURCES.iterdir()
@@ -153,7 +194,7 @@ def check(record=False):
                 assert set(archive.namelist()) == set(expected), 'Stale source bundle members'
                 for name, contents in expected.items():
                     assert archive.read(name) == contents, ('Stale source bundle', name)
-        print('Native checks passed: ELF, good/broken GDB traces, two challenge solutions, standalone Linux, optional UART and console exit.')
+        print('Native checks passed: assembly-only ELF boot, startup/BSS/stack, good/broken system GDB traces, two native challenge solutions, rejection of original, UART/console exit and optional Linux assembly.')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

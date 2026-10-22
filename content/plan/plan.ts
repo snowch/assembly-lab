@@ -131,7 +131,7 @@ export const PARTS: readonly PlanPart[] = [
         "12",
         "running-arm64-outside-assembly-lab",
         "Running ARM64 outside Assembly Lab",
-        "Build, run and debug the course’s instructions with GNU tools and QEMU on Linux.",
+        "Assemble a bootable ARM64 program, trace its startup and debug it with GNU tools and QEMU.",
       ),
     ],
   },

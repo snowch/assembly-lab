@@ -2,32 +2,32 @@
 
 // Kept word for word in docs/notes/module-12/prose.md.
 export const LABELS = {
-  title: "From a function to an executable",
+  title: "Build and boot an assembly program",
   objectives: [
-    "assemble and link the familiar trip function;",
-    "run an AArch64 Linux executable with QEMU;",
-    "check its result and inspect its machine code.",
+    "assemble and link an ARM64 boot image without C;",
+    "explain loading, the entry point, stack setup and storage initialisation;",
+    "run a bare-metal trip check through the serial device.",
   ],
   titles: {
-    question: "What surrounds the four instructions?",
-    motivation: "Build a program around the function",
+    question: "What runs before the trip function?",
+    motivation: "Source, tools and the emulated machine",
     prediction: "Predict the function result",
-    investigation: "Create objects and link the executable",
-    construction: "Run the trip program",
+    investigation: "Assemble and place the boot image",
+    construction: "Boot the assembly program",
     failureExperiment: "Buildable code with a wrong calculation",
-    explanation: "Test behaviour after rebuilding",
-    generalisation: "Inspect the executable",
-    challenge: "Repair the native trip function",
+    explanation: "Prepare the machine and send bytes",
+    generalisation: "Loading, entry and firmware",
+    challenge: "Repair the boot image’s trip function",
     reflection: "What you now know",
   },
   captions: {
-    listing: "The familiar trip function, paired with its C calculation.",
-    pipeline: "Follow the recorded build from source files to a running process.",
+    listing: "The handwritten trip function used by the boot image.",
+    pipeline: "Follow the files from assembly source through linking to the emulated machine.",
     predict: "Predict the result for the four labelled inputs.",
-    step: "Follow the same function in the browser model.",
+    step: "Follow the assembly function in the browser model.",
     predictFailure: "Predict the modified function before inspecting its output.",
     stepFailure: "Find the arithmetic effect of the changed instruction.",
-    final: "Return the required result for each test case.",
+    final: "Repair the function, then rebuild the boot image.",
   },
   options: {
     prediction: [

@@ -2,8 +2,14 @@
 import type { LessonInput } from "@platform/lesson-schema";
 import { LABELS } from "./from-function-to-executable.labels";
 import { PROSE } from "./from-function-to-executable.prose";
-import { TRIP_DISTANCE } from "./meet-the-machine.listings";
-import { NATIVE_CALL, BROKEN_TRIP, BROKEN_TEXT, TRIP_TEXT, NATIVE_CASES } from "./native.listings";
+import {
+  NATIVE_TRIP,
+  NATIVE_CALL,
+  BROKEN_TRIP,
+  BROKEN_TEXT,
+  TRIP_TEXT,
+  NATIVE_CASES,
+} from "./native.listings";
 import EVIDENCE from "./module-12.evidence.json" with { type: "json" };
 import { LABELS as NATIVE_LABELS } from "./debug-native-instructions.labels";
 export const fromFunctionToExecutable: LessonInput = {
@@ -47,7 +53,7 @@ export const fromFunctionToExecutable: LessonInput = {
           timeModel: "steps",
           caption: LABELS.captions.predict,
           props: {
-            program: TRIP_DISTANCE,
+            program: NATIVE_TRIP,
             call: NATIVE_CALL,
             inputs: [0, 1, 2, 3],
             question: PROSE.predictionQuestion,
@@ -69,7 +75,7 @@ export const fromFunctionToExecutable: LessonInput = {
           timeModel: "steps",
           caption: LABELS.captions.step,
           props: {
-            program: TRIP_DISTANCE,
+            program: NATIVE_TRIP,
             call: NATIVE_CALL,
             registers: [0, 1, 2, 3],
             decimal: true,
@@ -130,7 +136,26 @@ export const fromFunctionToExecutable: LessonInput = {
       ],
     },
     { kind: "explanation", title: LABELS.titles.explanation, prose: PROSE.explanation },
-    { kind: "generalisation", title: LABELS.titles.generalisation, prose: PROSE.generalisation },
+    {
+      kind: "generalisation",
+      title: LABELS.titles.generalisation,
+      prose: PROSE.generalisation,
+      interactives: [
+        {
+          id: "native-boot-startup",
+          kind: "native-tools",
+          role: "diagram",
+          timeModel: "steps",
+          caption: NATIVE_LABELS.native.boot.title,
+          props: {
+            stages: [],
+            boot: EVIDENCE.boot,
+            bootLabels: NATIVE_LABELS.native.boot,
+            after: "predict-native-result",
+          },
+        },
+      ],
+    },
     {
       kind: "challenge",
       title: LABELS.titles.challenge,

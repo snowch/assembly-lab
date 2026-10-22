@@ -2,8 +2,14 @@
 import type { LessonInput } from "@platform/lesson-schema";
 import { LABELS } from "./debug-native-instructions.labels";
 import { PROSE } from "./debug-native-instructions.prose";
-import { TRIP_DISTANCE } from "./meet-the-machine.listings";
-import { NATIVE_CALL, BROKEN_TRIP, TRIP_TEXT, TWICE_TEXT, NATIVE_CASES } from "./native.listings";
+import {
+  NATIVE_TRIP,
+  NATIVE_CALL,
+  BROKEN_TRIP,
+  TRIP_TEXT,
+  TWICE_TEXT,
+  NATIVE_CASES,
+} from "./native.listings";
 import EVIDENCE from "./module-12.evidence.json" with { type: "json" };
 export const debugNativeInstructions: LessonInput = {
   id: "debug-native-instructions",
@@ -36,7 +42,7 @@ export const debugNativeInstructions: LessonInput = {
             options: LABELS.options.prediction,
             measure: {
               kind: "register-at-step",
-              program: TRIP_DISTANCE,
+              program: NATIVE_TRIP,
               call: NATIVE_CALL,
               step: 1,
               register: 0,
@@ -57,7 +63,7 @@ export const debugNativeInstructions: LessonInput = {
           caption: LABELS.captions.trace,
           props: {
             stages: [],
-            program: TRIP_DISTANCE,
+            program: NATIVE_TRIP,
             call: NATIVE_CALL,
             recorded: EVIDENCE.good.registers,
             pcOffsets: EVIDENCE.good.pcOffsets,
@@ -85,7 +91,7 @@ export const debugNativeInstructions: LessonInput = {
             options: LABELS.options.failure,
             measure: {
               kind: "first-divergence",
-              program: TRIP_DISTANCE,
+              program: NATIVE_TRIP,
               other: BROKEN_TRIP,
               call: NATIVE_CALL,
               register: 0,

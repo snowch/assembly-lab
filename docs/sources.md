@@ -59,10 +59,10 @@ The scaffold's build records the exact packages; a licence check like metadata-s
 
 ## Native execution and debugging (Module 12)
 
-The checked GNU/QEMU/GDB workflow and native-only Linux and QEMU virt experiments use
-[the Module 12 source brief](notes/module-12/sources-brief.md). It records the GNU manuals,
-AAPCS64, Linux AArch64 syscall convention, QEMU user/system documentation and PL011 register
-references. [Native verification](../scripts/native/README.md) distinguishes executable
+The assembly-only boot path uses [the checked boot brief](notes/module-12/boot-facts.md),
+including executed startup facts, QEMU direct ELF loading and qualified firmware/BIOS/UEFI
+comparisons. The [earlier source brief](notes/module-12/sources-brief.md) retains GNU manuals,
+AAPCS64, PL011 references and sources for the optional Linux comparison. [Native verification](../scripts/native/README.md) distinguishes executable
 checks from source claims. The reference output and exact observed tool versions are in
 `content/lessons/module-12.evidence.json`; this is emulation evidence, not physical hardware
 measurement. The ordinary arithmetic examples retain the simulator differential checks.
