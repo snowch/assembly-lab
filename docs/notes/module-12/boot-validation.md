@@ -54,7 +54,16 @@ notes record original measurements and final checks separately.
   first-lesson boot source, but its explicit exception still named the old lesson. The exception
   now names the actual first lesson; the browser instruction gate and challenge permissions did
   not change. The focused instruction-order rerun passed all 8 tests, exit 0.
-- Final `npm run check`: running; final totals will be recorded after completion.
+- Second local `npm run check`: formatting, copyright, platform integrity, types,
+  all 138 unit files / 2771 tests and production build passed. After the complete CI run
+  passed on the same implementation, the duplicate local browser run was stopped with
+  Ctrl-C: 721 passed, 18 skipped, 350 did not run and one interrupted; command exit 130.
+  No browser assertion failed. This local command is not recorded as a full passing run.
+- [Full CI run 39849622595](https://github.com/snowch/assembly-lab/actions/runs/39849622595)
+  passed on implementation commit `68b29b2b87579603f9e157e6fd11624ace933a18`. The check-job
+  log (job `120071982677`) confirms that checkout, 138 unit files / 2771 tests passed,
+  1067 browser tests passed, 23 skipped, and “All checks passed”. The separate `native-lessons`
+  and `real-tools` jobs also passed. The final record update changes documentation only.
 - Production builds passed. Final focused browser verification is recorded by the independent reviewers: both lessons at 375px and 1280px in light and dark themes, with prediction gates, stepping, reset, challenge rejection/success and restored work. The corrected phone page measures 375/375, and startup states match the evidence.
 
 Exploratory browser probes included navigation and selector timeouts. The review notes record

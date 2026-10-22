@@ -132,3 +132,34 @@ width after opening the formerly overflowing construction content: 375/375 and
 definitions of GDB and baud rate and the earlier `stepi` explanation are present in
 the final source; no remaining technical blocker was found. The learner reviewers'
 separate final checks cover their other size/theme combinations and reading findings.
+
+## Independent confirmation of final CI and validation record
+
+Independently fetched the raw GitHub log for check job `120071982677` in
+[run 39849622595](https://github.com/snowch/assembly-lab/actions/runs/39849622595).
+The checkout log names implementation SHA `68b29b2b87579603f9e157e6fd11624ace933a18`.
+The same job records 138 unit/integration files and 2771 tests passing, then 1067
+browser tests passing with 23 skipped and the final line “All checks passed”.
+Independently fetched run/job status with `gh run view`: the run is completed with
+success on that SHA, and `check`, `native-lessons` and `real-tools` are each completed
+with success. These are directly checked remote results, not an inference from an
+aggregate green badge or a focused rerun.
+
+Read the final `boot-validation.md` and the managing session's local log files.
+`/tmp/assembly-boot-check.log` directly records the earlier unit failure: 137 files
+passed, one failed, 2769 tests passed and two failed in the stale ADR exception checks.
+`/tmp/assembly-boot-gate.log` records the corrected focused run, eight tests passing.
+`/tmp/assembly-boot-check-final.log` directly records all 138 unit files / 2771 tests
+passing and the production build passing; its browser tail records 721 passed,
+18 skipped, 350 not run and one interrupted test. It does not record that local
+command as a complete passing run. The managing session separately reported the
+shell command's interrupted exit status as 130; that status is session-reported,
+while the interrupted browser totals were directly read from the log. The first
+local command's exit status 1 is likewise reported by the managing session and is
+consistent with its directly observed failed-test log.
+
+The distinction in `boot-validation.md` between the failed first local command,
+focused correction, interrupted duplicate local command and complete successful
+CI run is accurate. At this final review, local HEAD was the verified SHA and the
+only pending changes were documentation recording these results. No additional
+test run was requested or performed for this documentation-only confirmation.
