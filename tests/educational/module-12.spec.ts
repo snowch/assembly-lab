@@ -1,10 +1,24 @@
 // Copyright © 2026 Christopher Snow
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 import { LESSONS } from "@al/content";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { LABELS as NATIVE_LABELS } from "../../content/lessons/debug-native-instructions.labels";
 import EVIDENCE from "../../content/lessons/module-12.evidence.json" with { type: "json" };
+import { LABELS as DIAGRAM_LABELS } from "../../content/lessons/native-diagrams.labels";
 import { openLesson, commit, challenge, run, status, passing, watchErrors } from "./module1";
+
+async function expectInlineExplanation(control: Locator) {
+  await expect(control).toBeFocused();
+  await expect(control).toHaveAttribute("aria-expanded", "true");
+  const regionId = await control.getAttribute("aria-controls");
+  const detail = control.page().locator(`[id="${regionId}"]`);
+  await expect(detail).toBeVisible();
+  const buttonBox = (await control.boundingBox())!;
+  const detailBox = (await detail.boundingBox())!;
+  // Independent phone/desktop review measured zero gap. Catch the former distant
+  // description while allowing subpixel rounding at the shared boundary.
+  expect(Math.abs(detailBox.y - buttonBox.y - buttonBox.height)).toBeLessThanOrEqual(4);
+}
 
 for (const theme of ["light", "dark"] as const) {
   for (const id of ["from-function-to-executable", "debug-native-instructions"]) {
@@ -40,8 +54,34 @@ for (const theme of ["light", "dark"] as const) {
       } else {
         await expect(page.locator("#ix-native-run-output pre")).toHaveCount(0);
         await expect(page.locator("#ix-native-boot-startup [data-native-boot]")).toHaveCount(0);
+        await expect(page.locator("[data-native-diagram]")).toHaveCount(0);
         await commit(page, "predict-native-result", "232");
         await expect(page.locator("#ix-native-run-output pre")).toHaveCount(2);
+        const flow = page.locator('[data-native-diagram="flow"]');
+        await flow.locator('[data-flow-stage="trip"]').focus();
+        await page.keyboard.press("Enter");
+        await expectInlineExplanation(flow.locator('[data-flow-stage="trip"]'));
+        await expect(flow.getByRole("status")).toContainText("trip_distance");
+        await expect(flow.locator('[data-flow-stage="trip"]')).toHaveAttribute(
+          "aria-pressed",
+          "true",
+        );
+        const memory = page.locator('[data-native-diagram="memory"]');
+        for (const section of EVIDENCE.boot.image.sections) {
+          const row = memory.locator(`[data-elf-section="${section.name}"]`);
+          await row.focus();
+          await page.keyboard.press("Space");
+          await expectInlineExplanation(row);
+          await expect(row).toHaveAttribute("aria-pressed", "true");
+          await expect(memory.getByRole("status")).toContainText(section.name);
+          if (section.fileSize === 0) {
+            await expect(row.locator(".al-elf-source code")).toHaveCount(0);
+            await expect(row).toHaveAccessibleName(new RegExp(DIAGRAM_LABELS.memory.notStored));
+          }
+        }
+        await expect(memory.locator("[data-native-stack]")).toContainText(
+          `0x${EVIDENCE.boot.stackFrame.frameSp.toString(16)}`,
+        );
         const boot = page.locator("#ix-native-boot-startup");
         for (const [index, stop] of EVIDENCE.boot.startupStops.entries()) {
           await boot

@@ -6,12 +6,14 @@ import { useMemo, useState } from "react";
 import { z } from "zod";
 import { Prose, useSlot } from "@platform/lesson-runtime";
 import { RegisterSummary } from "../parts";
+import { NativeBootDiagrams, NativeDiagramProps } from "./NativeBootDiagrams";
 import { VIEW_STRINGS as S } from "../strings";
 import { traceOf, viewAt, wValue } from "../trace";
 import { CallSchema, RecordedSchema, withProps } from "./props";
 
 const Props = z.object({
   stages: z.array(z.object({ name: z.string(), detail: z.string() })),
+  diagram: NativeDiagramProps.optional(),
   program: RecordedSchema.optional(),
   call: CallSchema.optional(),
   recorded: z.array(z.array(z.number())).optional(),
@@ -91,6 +93,7 @@ export const NativeFigure = withProps(Props, function NativeFigure({ data, store
           ))}
         </ol>
       )}
+      {data.diagram && <NativeBootDiagrams {...data.diagram} />}
       {data.boot && data.bootLabels && (
         <div className="al-native-boot" data-native-boot>
           <h3>{data.bootLabels.title}</h3>
@@ -141,19 +144,6 @@ export const NativeFigure = withProps(Props, function NativeFigure({ data, store
               ),
             )}
           </div>
-          <h4>{data.bootLabels.memory}</h4>
-          <p>{data.bootLabels.rangeNote}</p>
-          <ol className="al-native-map">
-            {[...data.boot.regions]
-              .sort((a, b) => a.start - b.start)
-              .map((region) => (
-                <li key={region.kind}>
-                  <code>0x{region.start.toString(16)}</code>
-                  <strong>{data.bootLabels?.regions[region.kind]}</strong>
-                  <code>0x{region.end.toString(16)}</code>
-                </li>
-              ))}
-          </ol>
         </div>
       )}
       {view && labels && (

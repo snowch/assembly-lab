@@ -1,0 +1,209 @@
+/* Copyright © 2026 Christopher Snow */
+.al-boot-diagram {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-3);
+}
+.al-boot-diagram > * {
+  min-width: 0;
+  margin: 0;
+}
+.al-boot-paths {
+  display: grid;
+  gap: var(--space-4);
+}
+.al-boot-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+.al-boot-paths > div {
+  min-width: 0;
+}
+.al-boot-path {
+  list-style: none;
+  margin: var(--space-3) 0;
+  padding: 0;
+}
+.al-boot-node {
+  display: grid;
+  width: 100%;
+  min-height: 3rem;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  color: var(--fg);
+  background: var(--bg-raised);
+  text-align: start;
+  font: inherit;
+}
+.al-boot-node span {
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+button.al-boot-node {
+  cursor: pointer;
+}
+.al-boot-node[aria-pressed="true"],
+.al-elf-row[aria-pressed="true"] {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  box-shadow: inset 4px 0 0 var(--accent);
+}
+.al-boot-node:focus-visible,
+.al-elf-row:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.al-board-example .al-boot-node {
+  border-style: dashed;
+}
+.al-board-example .al-boot-node p {
+  margin: 0;
+}
+.al-boot-control {
+  display: block;
+  text-align: center;
+  line-height: 1.4;
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+.al-boot-load {
+  display: grid;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+  padding: var(--space-2);
+  border-inline-start: 3px solid var(--accent);
+  font-size: var(--text-sm);
+}
+.al-boot-detail {
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-inline-start: 4px solid var(--accent);
+  background: var(--bg-raised);
+}
+.al-boot-detail .prose p {
+  margin-bottom: 0;
+}
+.al-elf-heading,
+.al-elf-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2.75rem minmax(0, 1fr);
+  gap: var(--space-1);
+}
+.al-elf-heading {
+  align-items: end;
+}
+.al-elf-rows {
+  display: grid;
+  gap: var(--space-3);
+}
+.al-elf-row {
+  width: 100%;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.al-elf-source,
+.al-elf-target {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+  gap: var(--space-2);
+  padding: var(--space-1);
+  border-block: 1px solid var(--border);
+}
+.al-elf-row span,
+.al-elf-row code {
+  overflow-wrap: anywhere;
+}
+.al-elf-row code {
+  font-size: var(--text-sm);
+  padding: 0;
+  background: none;
+}
+.al-elf-transfer {
+  display: grid;
+  align-content: center;
+  text-align: center;
+  font-size: var(--text-sm);
+}
+.al-elf-transfer > span:first-child {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+.al-elf-transfer > span:last-child {
+  /* The adjacent source/target remain readable on a phone; the full transfer meaning
+     is in the selected section description and in the row's accessible text. */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.al-elf-row[data-file-backed="false"] .al-elf-source {
+  border-style: dashed;
+  color: var(--fg-muted);
+}
+.al-elf-segments {
+  display: grid;
+  gap: var(--space-2);
+}
+.al-elf-segments > div {
+  min-width: 0;
+  padding: var(--space-2);
+  border-inline-start: 3px solid var(--border-strong);
+}
+.al-elf-segments p {
+  margin: var(--space-1) 0;
+  overflow-wrap: anywhere;
+}
+.al-boot-stack {
+  border-inline-start: 2px solid var(--border-strong);
+  padding-inline-start: var(--space-3);
+}
+.al-boot-stack > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.al-boot-stack .al-boot-frame {
+  min-height: 5rem;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  border: 2px solid var(--accent);
+  margin-block: var(--space-2);
+}
+.al-boot-frame > span {
+  font-size: var(--text-xl);
+}
+.al-boot-device {
+  padding: var(--space-3);
+  border: 2px dashed var(--border-strong);
+  overflow-wrap: anywhere;
+}
+@media (min-width: 48rem) {
+  .al-boot-paths {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .al-elf-heading,
+  .al-elf-row {
+    grid-template-columns: minmax(0, 1fr) 8rem minmax(0, 1fr);
+  }
+  .al-elf-transfer > span:last-child {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+  }
+}

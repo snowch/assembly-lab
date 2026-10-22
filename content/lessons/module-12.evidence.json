@@ -46,6 +46,72 @@
     "stackBottom": 1074270224,
     "stackTop": 1074274320,
     "initializedMarker": 305419896,
+    "image": {
+      "sections": [
+        {
+          "name": ".text",
+          "address": 1074266112,
+          "size": 216,
+          "fileOffset": 65536,
+          "fileSize": 216
+        },
+        {
+          "name": ".rodata",
+          "address": 1074266328,
+          "size": 82,
+          "fileOffset": 65752,
+          "fileSize": 82
+        },
+        {
+          "name": ".data",
+          "address": 1074270208,
+          "size": 4,
+          "fileOffset": 69632,
+          "fileSize": 4
+        },
+        {
+          "name": ".bss",
+          "address": 1074270216,
+          "size": 8,
+          "fileOffset": 69636,
+          "fileSize": 0
+        },
+        {
+          "name": ".stack",
+          "address": 1074270224,
+          "size": 4096,
+          "fileOffset": 69636,
+          "fileSize": 0
+        }
+      ],
+      "segments": [
+        {
+          "offset": 65536,
+          "address": 1074266112,
+          "fileSize": 298,
+          "memorySize": 298
+        },
+        {
+          "offset": 69632,
+          "address": 1074270208,
+          "fileSize": 4,
+          "memorySize": 4112
+        }
+      ]
+    },
+    "flow": {
+      "entry": 1074266112,
+      "ready": 1074266148,
+      "trip": 1074266312,
+      "returned": 1074266168,
+      "output": 1074266204,
+      "halted": 1074266196
+    },
+    "stackFrame": {
+      "beforeSp": 1074274320,
+      "frameSp": 1074274304,
+      "frameSize": 16
+    },
     "startupStops": [
       {
         "pc": 1074266112,

@@ -14,6 +14,13 @@ result before startup, and confirms startup clears it and sets an aligned stack.
 broken functions agree with the browser arithmetic; `ret` returns to assembly label `after_trip`.
 The stored232/262 values and different serial reports are both checked.
 
+Figure evidence also records the actual ELF section and PT_LOAD segment metadata. A standard-library
+ELF64 parser checks allocated section types, file bounds, segment coverage and byte-offset mappings;
+NOBITS sections record zero stored bytes. Selected GDB PCs establish entry, startup-ready, call,
+return, UART-helper entry and final wait order. A single step of the helper's first `stp` records
+its actual downward stack movement; the final stop checks restoration. These data support labelled
+schematics, not a complete instruction trace. See `docs/notes/module-12/figure-facts.md`.
+
 The assembly-only `verify-boot.s` harness checks the same four revised-contract tuples as the
 browser. Two different correct instruction sequences pass; the unchanged original fails.
 The verifier also builds/runs the optional standalone Linux assembly source. The old C files

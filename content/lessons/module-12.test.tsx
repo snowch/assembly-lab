@@ -2,7 +2,7 @@
 // Copyright © 2026 Christopher Snow
 import { readFileSync } from "node:fs";
 import { URL as NodeURL } from "node:url";
-import { render, cleanup } from "@testing-library/react";
+import { render, cleanup, fireEvent, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { SECTION_KINDS, checkLesson, termProblems } from "@platform/lesson-schema";
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
@@ -12,10 +12,63 @@ import { TRIP_DISTANCE } from "./meet-the-machine.listings";
 import { NATIVE_CALL, BROKEN_TRIP, TWICE_TEXT, NATIVE_CASES } from "./native.listings";
 import { traceOf, viewAt, wValue } from "../../packages/views/src/trace";
 import EVIDENCE from "./module-12.evidence.json" with { type: "json" };
+import { LABELS as DIAGRAM_LABELS } from "./native-diagrams.labels";
+import { NativeBootDiagrams } from "../../packages/views/src/interactives/NativeBootDiagrams";
 
 const lessons = LESSONS.filter((lesson) => lesson.module === 12);
 afterEach(cleanup);
 describe("final core native module", () => {
+  it("maps stored ELF contents and memory-only sections without inventing file bytes", () => {
+    const { container, getByRole } = render(
+      <NativeBootDiagrams kind="memory" evidence={EVIDENCE.boot} labels={DIAGRAM_LABELS} />,
+    );
+    for (const section of EVIDENCE.boot.image.sections) {
+      const row = container.querySelector(`[data-elf-section="${section.name}"]`)!;
+      expect(row.getAttribute("data-file-backed")).toBe(String(section.fileSize > 0));
+      const source = row.querySelector(".al-elf-source")!;
+      expect(source.querySelector("code") !== null).toBe(section.fileSize > 0);
+      expect(row.querySelector(".al-elf-target")?.textContent).toContain(
+        `0x${section.address.toString(16)}–0x${(section.address + section.size).toString(16)}`,
+      );
+      fireEvent.click(row);
+      expect(row.getAttribute("aria-pressed")).toBe("true");
+      expect(getByRole("status").textContent).toContain(
+        DIAGRAM_LABELS.memory.sectionDetails[
+          section.name as keyof typeof DIAGRAM_LABELS.memory.sectionDetails
+        ],
+      );
+    }
+    expect(container.querySelector("[data-native-device]")?.closest(".al-elf-rows")).toBeNull();
+  });
+  it("draws the recorded stack frame towards lower addresses within the reservation", () => {
+    const { container } = render(
+      <NativeBootDiagrams kind="memory" evidence={EVIDENCE.boot} labels={DIAGRAM_LABELS} />,
+    );
+    const frame = EVIDENCE.boot.stackFrame;
+    expect(frame.beforeSp - frame.frameSp).toBe(frame.frameSize);
+    expect(frame.beforeSp).toBe(EVIDENCE.boot.stackTop);
+    expect(frame.frameSp).toBeGreaterThanOrEqual(EVIDENCE.boot.stackBottom);
+    const stack = container.querySelector("[data-native-stack]")!;
+    expect(stack.textContent).toContain(`0x${frame.beforeSp.toString(16)}`);
+    expect(stack.textContent).toContain(`−${frame.frameSize}`);
+    expect(stack.textContent).toContain(`0x${frame.frameSp.toString(16)}`);
+  });
+  it("keeps observed control order distinct from address order and the board example", () => {
+    const { container, getByRole } = render(
+      <NativeBootDiagrams kind="flow" evidence={EVIDENCE.boot} labels={DIAGRAM_LABELS} />,
+    );
+    const path = getByRole("list", { name: DIAGRAM_LABELS.flow.qemuTitle });
+    expect(
+      [...path.querySelectorAll("[data-flow-stage]")].map((n) => n.getAttribute("data-flow-stage")),
+    ).toEqual(["loader", "entry", "startup", "trip", "result", "uart", "halt"]);
+    expect(EVIDENCE.boot.flow.returned).toBeLessThan(EVIDENCE.boot.flow.trip);
+    const trip = within(path).getByRole("button", { name: /trip_distance/ });
+    fireEvent.click(trip);
+    expect(getByRole("status").textContent).toContain(
+      DIAGRAM_LABELS.flow.nodes.find((n) => n.id === "trip")!.detail,
+    );
+    expect(container.querySelector(".al-board-example [data-flow-stage]")).toBeNull();
+  });
   it("precedes optional A without changing its stored-work ID", () => {
     expect(lessons.map((l) => l.id)).toEqual([
       "from-function-to-executable",
