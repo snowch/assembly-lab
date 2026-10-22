@@ -104,6 +104,9 @@ Keep the words out of the structure file: `<lesson>.prose.ts` holds every paragr
   attached to their instructions. The local compiler supplies its own emitted source map.
   `content/source-links.test.ts` checks coverage; independent technical review checks meaning.
   In the browser, check paired rows and highlights at both widths, including repeated excerpts
-  and the complete C source. Compiler references belong in the optional details.
+  and the complete C source. Compiler references are opt-in details: show them on the introductory
+  example and where a lesson explicitly discusses a mismatch, rather than on every listing. Set
+  `showCompilerLines: true` on that listing figure. Preserve original references in recorded data
+  whether or not the figure displays them.
 - **Every compiler listing a lesson shows is recorded** with the compiler, its version and its
   flags, and a facts test pins what the prose says about it.

@@ -87,11 +87,35 @@ export function RegisterRow({
   );
 }
 
-/**
- * A `w` register drawn as its name and its value as a large decimal number, with no bits (the
- * stepper's switch shows the bits as `RegisterRow`s instead). A register that the last step wrote
- * is outlined and says so in words, so the mark does not rest on the outline alone.
- */
+/** A compact summary. Values arrive already formatted, including complete 64-bit hexadecimal. */
+export function RegisterSummary({
+  name,
+  label = name,
+  value,
+  written,
+  className = "",
+}: {
+  name: string;
+  label?: string;
+  value: string | number;
+  written: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`al-register-summary ${className}`}
+      role="group"
+      aria-label={S.register.group(label)}
+      data-register={name}
+      data-changed={written}
+    >
+      <code className="al-dreg-name">{label}</code>
+      <code className="al-dreg-value">{value}</code>
+      {written && <span className="al-dreg-flag">{M0.registers.changed}</span>}
+    </div>
+  );
+}
+
 export function DecimalRegister({
   name,
   value,
@@ -101,19 +125,7 @@ export function DecimalRegister({
   value: number;
   changed: boolean;
 }) {
-  return (
-    <div
-      className="al-dreg"
-      role="group"
-      aria-label={S.register.group(name)}
-      data-register={name}
-      data-changed={changed}
-    >
-      <span className="al-dreg-name">{name}</span>
-      <span className="al-dreg-value">{value}</span>
-      <span className="al-dreg-flag">{changed ? M0.registers.changed : null}</span>
-    </div>
-  );
+  return <RegisterSummary name={name} value={value} written={changed} className="al-dreg" />;
 }
 
 /**
@@ -129,6 +141,7 @@ export function ListingView({
   next = null,
   ran = null,
   showC = true,
+  showCompilerLines = false,
   grouped = false,
   stopAfter = null,
   crossedAfter = null,
@@ -142,6 +155,8 @@ export function ListingView({
   ran?: number | null;
   /** False for instructions that no compiler made from any C: only the instructions are drawn. */
   showC?: boolean;
+  /** Original compiler references, only where the lesson introduces or discusses them. */
+  showCompilerLines?: boolean;
   /**
    * Draw the instructions as one group for each label, so that a run which goes on from one
    * function into the next is seen to cross from one box into the other. Off, the labels are
@@ -292,34 +307,36 @@ export function ListingView({
               )}
         </div>
       </div>
-      {hasC && lines.some((line) => line.kind === "instruction" && line.cLine !== null) && (
-        <details className="al-compiler-lines">
-          <summary>{S.listing.compilerLinesSummary}</summary>
-          <p>{S.listing.compilerLinesExplanation}</p>
-          <div className="al-pane">
-            <div className="al-pane-head">
-              <span>{S.listing.instructionsHeading}</span>
-              <span>{S.listing.cLineHeading}</span>
+      {showCompilerLines &&
+        hasC &&
+        lines.some((line) => line.kind === "instruction" && line.cLine !== null) && (
+          <details className="al-compiler-lines">
+            <summary>{S.listing.compilerLinesSummary}</summary>
+            <p>{S.listing.compilerLinesExplanation}</p>
+            <div className="al-pane">
+              <div className="al-pane-head">
+                <span>{S.listing.instructionsHeading}</span>
+                <span>{S.listing.cLineHeading}</span>
+              </div>
+              {lines.map((line, i) =>
+                line.kind === "label" ? (
+                  <div className="al-label" key={i}>
+                    {line.text}:
+                  </div>
+                ) : (
+                  <div className="al-compiler-line" key={i}>
+                    <code className="al-text">{line.text}</code>
+                    {line.cLine !== null && (
+                      <span className="al-ctag" title={S.listing.recordedAgainst(line.cLine)}>
+                        {line.cLine}
+                      </span>
+                    )}
+                  </div>
+                ),
+              )}
             </div>
-            {lines.map((line, i) =>
-              line.kind === "label" ? (
-                <div className="al-label" key={i}>
-                  {line.text}:
-                </div>
-              ) : (
-                <div className="al-compiler-line" key={i}>
-                  <code className="al-text">{line.text}</code>
-                  {line.cLine !== null && (
-                    <span className="al-ctag" title={S.listing.recordedAgainst(line.cLine)}>
-                      {line.cLine}
-                    </span>
-                  )}
-                </div>
-              ),
-            )}
-          </div>
-        </details>
-      )}
+          </details>
+        )}
     </div>
   );
 }

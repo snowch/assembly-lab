@@ -11,7 +11,7 @@ import { VIEW_STRINGS as S } from "./strings";
 import { FADE_SUM, REPORT, WRONG_FADE } from "../../../content/lessons/calls.listings";
 import { traceOf, memoryAt, viewAt } from "./trace";
 import { STACK_TOP } from "@al/machine";
-import { hexByte } from "./memoryFigure";
+import { hexAddress, hexByte } from "./memoryFigure";
 import { stopSentence } from "./messages";
 
 function figure(props: Record<string, unknown> = {}) {
@@ -48,6 +48,9 @@ describe("computed stack diagram", () => {
     expect(container.querySelectorAll(".al-stack-frame")).toHaveLength(4);
     expect(screen.getByText(T.depth(128))).toBeVisible();
     const trace = traceOf(FADE_SUM, { entry: "fade_sum", args: [7] });
+    expect(container.querySelector('[data-register="sp"] .al-dreg-value')).toHaveTextContent(
+      hexAddress(Number(viewAt(trace, 22).state.sp)),
+    );
     const oldest = container.querySelector(".al-stack-frame")!;
     expect([...oldest.querySelectorAll("[data-access] code")].map((e) => e.textContent)).toEqual(
       memoryAt(trace, 22, STACK_TOP - 32, 32)!.map(hexByte),

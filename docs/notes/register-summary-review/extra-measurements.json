@@ -1,0 +1,58 @@
+[
+  {
+    "theme": "light",
+    "state": "compiler",
+    "values": ["w06", "w14", "w20", "w80", "w90"]
+  },
+  {
+    "theme": "light",
+    "state": "many",
+    "count": 5,
+    "values": ["w06", "w14", "w80", "w90", "w100"]
+  },
+  {
+    "theme": "light",
+    "state": "zero-write",
+    "values": ["w00", "w80Written"],
+    "written": ["w80Written"]
+  },
+  {
+    "theme": "light",
+    "state": "removal-before",
+    "bits": 128,
+    "buttons": ["Stepped", "Back", "Next", "Reset", "Hide the bits"]
+  },
+  {
+    "theme": "light",
+    "state": "removal-after",
+    "bits": 128
+  },
+  {
+    "theme": "dark",
+    "state": "compiler",
+    "values": ["w06", "w14", "w20", "w80", "w90"]
+  },
+  {
+    "theme": "dark",
+    "state": "many",
+    "count": 5,
+    "values": ["w06", "w14", "w80", "w90", "w100"]
+  },
+  {
+    "theme": "dark",
+    "state": "zero-write",
+    "values": ["w00", "w80Written"],
+    "written": ["w80Written"]
+  },
+  {
+    "theme": "dark",
+    "state": "removal-before",
+    "bits": 128,
+    "buttons": ["Stepped", "Back", "Next", "Reset", "Hide the bits"]
+  },
+  {
+    "theme": "dark",
+    "state": "removal-after",
+    "bits": 128
+  }
+]

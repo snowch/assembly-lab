@@ -229,7 +229,7 @@ describe("the registers as decimal numbers", () => {
     const user = userEvent.setup();
     const { container } = figure(StepperFigure, "s", "stepper", stepper);
     expect(container.querySelector('[data-changed="true"]')).toBeNull();
-    expect(container.querySelector(".al-dreg-flag")?.textContent).toBe("");
+    expect(container.querySelector(".al-dreg-flag")).toBeNull();
     await user.click(next());
     const changed = [...container.querySelectorAll('[data-changed="true"]')];
     expect(changed.map((e) => e.getAttribute("data-register"))).toEqual(["w0"]);
@@ -366,7 +366,11 @@ describe("the closed notes under a listing", () => {
 
   it("are two closed details, reached with Tab and opened by their summaries", async () => {
     const user = userEvent.setup();
-    const { container } = figure(ListingFigure, "l", "listing", { program: TRIP, notes });
+    const { container } = figure(ListingFigure, "l", "listing", {
+      program: TRIP,
+      notes,
+      showCompilerLines: true,
+    });
     const details = [
       ...container.querySelectorAll<HTMLDetailsElement>(".al-notes details, .al-compiler-lines"),
     ];

@@ -80,7 +80,7 @@ export const branches: LessonInput = {
           role: "diagram",
           timeModel: STEPS,
           caption: LABELS.captions.listing,
-          props: { program: DESCRIBE },
+          props: { program: DESCRIBE, showCompilerLines: true },
         },
       ],
     },

@@ -41,6 +41,19 @@ describe("the C beside its instructions", () => {
     );
   });
 
+  it("omits routine compiler details while preserving the original references and checked links", () => {
+    const lines = programLines(recorded);
+    const { container } = render(
+      <ListingView cLines={cLinesOf(recorded.c)} lines={lines} ran={1} />,
+    );
+    expect(container.querySelector(".al-compiler-lines")).toBeNull();
+    expect(texts(container, ".al-insn .al-ctag")).toEqual(["3", "4"]);
+    expect(container.querySelector('.al-cline[data-lit="true"]')).toHaveAttribute("data-line", "3");
+    expect(lines.filter((line) => line.kind === "instruction").map((line) => line.cLine)).toEqual([
+      3, 5,
+    ]);
+  });
+
   it("shows several checked C lines as one tag, and no tag where none is checked", () => {
     const lines = programLines({
       ...recorded,
@@ -58,10 +71,10 @@ describe("the C beside its instructions", () => {
     ).toHaveAttribute("title", S.listing.sourceLines([3, 4]));
   });
 
-  it("keeps the compiler's own references in a closed details, apart from the checked tags", () => {
+  it("shows original compiler references only when the caller opts in", () => {
     const program = RecordedSchema.parse(recorded);
     const { container } = render(
-      <ListingView cLines={cLinesOf(program.c)} lines={programLines(program)} />,
+      <ListingView cLines={cLinesOf(program.c)} lines={programLines(program)} showCompilerLines />,
     );
     const details = container.querySelector(".al-compiler-lines");
     expect(details).not.toHaveAttribute("open");

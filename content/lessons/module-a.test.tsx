@@ -13,7 +13,7 @@ const lesson = parseLesson(sameCOnA32);
 describe("Optional A teaches through recorded comparisons and A64 execution", () => {
   it("has ten ordered sections, two mounted exercises and five hints each", () => {
     expect(checkLesson(lesson)).toEqual([]);
-    expect(lesson.module).toBe(12);
+    expect(lesson.module).toBe(13);
     expect(lesson.sections.map((section) => section.kind)).toEqual([...SECTION_KINDS]);
     expect(lesson.challenges).toHaveLength(2);
     for (const challenge of lesson.challenges) {

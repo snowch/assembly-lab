@@ -44,3 +44,17 @@ describe("source connections for every displayed program", () => {
     });
   }
 });
+
+it("shows compiler references only in the introduction and the lesson discussing a mismatch", () => {
+  const optedIn = LESSONS.flatMap((lesson) =>
+    lesson.sections.flatMap((section) =>
+      section.interactives
+        .filter((figure) => figure.props["showCompilerLines"] === true)
+        .map((figure) => [lesson.id, figure.id, figure.kind]),
+    ),
+  );
+  expect(optedIn).toEqual([
+    ["meet-the-machine", "trip-listing", "listing"],
+    ["branches", "describe-listing", "listing"],
+  ]);
+});

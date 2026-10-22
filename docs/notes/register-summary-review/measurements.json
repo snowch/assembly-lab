@@ -1,0 +1,642 @@
+[
+  {
+    "theme": "light",
+    "width": 320,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 29,
+        "y": 795.9375,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 90.5,
+        "y": 795.9375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 146.5,
+        "y": 795.9375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 202.5,
+        "y": 795.9375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "light",
+    "width": 360,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 29,
+        "y": 772.5625,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 90.5,
+        "y": 772.5625,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 146.5,
+        "y": 772.5625,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 202.5,
+        "y": 772.5625,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "light",
+    "width": 375,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 29,
+        "y": 772.53125,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 90.5,
+        "y": 772.53125,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 146.5,
+        "y": 772.53125,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 202.5,
+        "y": 772.53125,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "light",
+    "width": 390,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 29,
+        "y": 748.9375,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 90.5,
+        "y": 748.9375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 146.5,
+        "y": 748.9375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 202.5,
+        "y": 748.9375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "light",
+    "width": 430,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 29,
+        "y": 748.921875,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 90.5,
+        "y": 748.921875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 146.5,
+        "y": 748.921875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 202.5,
+        "y": 748.921875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "light",
+    "width": 812,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 57,
+        "y": 489.359375,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 118.5,
+        "y": 489.359375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 174.5,
+        "y": 489.359375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 230.5,
+        "y": 489.359375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "light",
+    "width": 768,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 57,
+        "y": 694.6875,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 118.5,
+        "y": 694.6875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 174.5,
+        "y": 694.6875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 230.5,
+        "y": 694.6875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "light",
+    "width": 1280,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 169,
+        "y": 694.6875,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 230.5,
+        "y": 694.6875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 286.5,
+        "y": 694.6875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 342.5,
+        "y": 694.6875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "light",
+    "state": "expanded",
+    "bits": 128,
+    "groups": 16
+  },
+  {
+    "theme": "light",
+    "state": "ret-expanded",
+    "bits": 128,
+    "written": 0,
+    "text": " last instruction left it.C1int trip_distance(int leg1, int leg2, int leg3, int detour)2{3    int total = leg1 + leg2;4    total = total + leg3;5    total = total - detour;6    return total;7}InstructionsC linetrip_distance:add w0, w0, w13add w0, w0, w24sub w0, w0, w35Just executedret6BackNextResetRan ret. The function returned.ret returns to the code that called this function. The function's result is whatever w0 holds at that moment.What ret didret does no arithmetic. The function ends, and the code that called it carries on.RegistersHide the bitsw023200000000000000000000000011101000w18500000000000000000000000001010101w24200000000000000000000000000101010w31500000000000000000000000000001111"
+  },
+  {
+    "theme": "light",
+    "state": "reset-expanded",
+    "bits": 128
+  },
+  {
+    "theme": "light",
+    "state": "text200",
+    "overflow": false,
+    "values": ["205", "85", "42", "15"]
+  },
+  {
+    "theme": "dark",
+    "width": 320,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 29,
+        "y": 795.9375,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 90.5,
+        "y": 795.9375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 146.5,
+        "y": 795.9375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 202.5,
+        "y": 795.9375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "dark",
+    "width": 360,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 29,
+        "y": 772.5625,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 90.5,
+        "y": 772.5625,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 146.5,
+        "y": 772.5625,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 202.5,
+        "y": 772.5625,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "dark",
+    "width": 375,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 29,
+        "y": 772.53125,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 90.5,
+        "y": 772.53125,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 146.5,
+        "y": 772.53125,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 202.5,
+        "y": 772.53125,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "dark",
+    "width": 390,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 29,
+        "y": 748.9375,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 90.5,
+        "y": 748.9375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 146.5,
+        "y": 748.9375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 202.5,
+        "y": 748.9375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "dark",
+    "width": 430,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 29,
+        "y": 748.921875,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 90.5,
+        "y": 748.921875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 146.5,
+        "y": 748.921875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 202.5,
+        "y": 748.921875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "dark",
+    "width": 812,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 57,
+        "y": 489.359375,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 118.5,
+        "y": 489.359375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 174.5,
+        "y": 489.359375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 230.5,
+        "y": 489.359375,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "dark",
+    "width": 768,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 57,
+        "y": 694.6875,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 118.5,
+        "y": 694.6875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 174.5,
+        "y": 694.6875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 230.5,
+        "y": 694.6875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "dark",
+    "width": 1280,
+    "state": "initial",
+    "height": 115.671875,
+    "cells": [
+      {
+        "x": 169,
+        "y": 694.6875,
+        "w": 57.5,
+        "h": 55.671875,
+        "text": "w0120"
+      },
+      {
+        "x": 230.5,
+        "y": 694.6875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w185"
+      },
+      {
+        "x": 286.5,
+        "y": 694.6875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w242"
+      },
+      {
+        "x": 342.5,
+        "y": 694.6875,
+        "w": 52,
+        "h": 55.671875,
+        "text": "w315"
+      }
+    ],
+    "overflow": false
+  },
+  {
+    "theme": "dark",
+    "state": "expanded",
+    "bits": 128,
+    "groups": 16
+  },
+  {
+    "theme": "dark",
+    "state": "ret-expanded",
+    "bits": 128,
+    "written": 0,
+    "text": " last instruction left it.C1int trip_distance(int leg1, int leg2, int leg3, int detour)2{3    int total = leg1 + leg2;4    total = total + leg3;5    total = total - detour;6    return total;7}InstructionsC linetrip_distance:add w0, w0, w13add w0, w0, w24sub w0, w0, w35Just executedret6BackNextResetRan ret. The function returned.ret returns to the code that called this function. The function's result is whatever w0 holds at that moment.What ret didret does no arithmetic. The function ends, and the code that called it carries on.RegistersHide the bitsw023200000000000000000000000011101000w18500000000000000000000000001010101w24200000000000000000000000000101010w31500000000000000000000000000001111"
+  },
+  {
+    "theme": "dark",
+    "state": "reset-expanded",
+    "bits": 128
+  },
+  {
+    "theme": "dark",
+    "state": "text200",
+    "overflow": false,
+    "values": ["205", "85", "42", "15"]
+  }
+]
