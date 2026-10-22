@@ -366,7 +366,11 @@ describe("the closed notes under a listing", () => {
 
   it("are two closed details, reached with Tab and opened by their summaries", async () => {
     const user = userEvent.setup();
-    const { container } = figure(ListingFigure, "l", "listing", { program: TRIP, notes });
+    const { container } = figure(ListingFigure, "l", "listing", {
+      program: TRIP,
+      notes,
+      showCompilerLines: true,
+    });
     const details = [
       ...container.querySelectorAll<HTMLDetailsElement>(".al-notes details, .al-compiler-lines"),
     ];

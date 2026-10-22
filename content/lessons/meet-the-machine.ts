@@ -99,6 +99,7 @@ export const meetTheMachine: LessonInput = {
           // Two closed notes under the listing: the compiler and its setting, and GCC's line 7.
           props: {
             program: TRIP_DISTANCE,
+            showCompilerLines: true,
             notes: [PROSE.compilerNote, PROSE.lineNote],
           },
         },

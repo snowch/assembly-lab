@@ -17,6 +17,8 @@ import { RecordedSchema, withProps } from "./props";
 
 const Props = z.object({
   program: RecordedSchema,
+  /** Opt in for the introductory example or a lesson about compiler/source mismatches. */
+  showCompilerLines: z.boolean().default(false),
   afterChallenge: z.string().optional(),
   /** Closed notes under the listing: the words on the control, and Markdown for what opens. */
   notes: z.array(z.object({ summary: z.string().min(1), body: z.string().min(1) })).default([]),
@@ -32,7 +34,11 @@ export const ListingFigure = withProps(Props, function ListingFigure({ data, les
     );
   return (
     <div className="al-figure" data-figure="listing">
-      <ListingView cLines={cLinesOf(data.program.c)} lines={programLines(data.program)} />
+      <ListingView
+        cLines={cLinesOf(data.program.c)}
+        lines={programLines(data.program)}
+        showCompilerLines={data.showCompilerLines}
+      />
       {data.notes.length > 0 && (
         <div className="al-notes">
           {data.notes.map((note) => (

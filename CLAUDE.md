@@ -105,13 +105,15 @@ relationship visible. The complete, numbered C sits beside the instructions at e
 screen the listing scrolls sideways as one contained piece rather than the instructions
 dropping below the C, and the page itself never scrolls sideways. Each instruction is
 tagged with the C line numbers the lesson checked for it, in the numbering the C pane
-shows; the compiler's own recorded references stay in optional details, because they can
-name a line the pane does not show. An explanation of mismatched line numbers does not
-replace this pairing.
+shows. The compiler's original references are shown in optional details on the introductory
+example, and later only where a lesson discusses a mismatch. Routine examples omit that
+disclosure; their original references remain in the recorded listing. An explanation of mismatched
+line numbers does not replace this pairing.
 
 Use checked source associations for the teaching view. Do not alter the compiler's output,
-instruction order or original debug line references to arrange the pairs; show those references
-in optional details. Clearly labelled experiments may still modify or delete instructions.
+instruction order or original debug line references to arrange the pairs. Opt in to compiler
+reference details only when the lesson needs them. Clearly labelled experiments may still modify
+or delete instructions.
 Do not assume that one C statement produces one instruction. For combined operations, repeated
 source lines or alternative paths, show the relevant statements and explain the relationship
 without implying that every highlighted statement executes at that step. Where excerpts repeat

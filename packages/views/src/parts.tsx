@@ -129,6 +129,7 @@ export function ListingView({
   next = null,
   ran = null,
   showC = true,
+  showCompilerLines = false,
   grouped = false,
   stopAfter = null,
   crossedAfter = null,
@@ -142,6 +143,8 @@ export function ListingView({
   ran?: number | null;
   /** False for instructions that no compiler made from any C: only the instructions are drawn. */
   showC?: boolean;
+  /** Original compiler references, only where the lesson introduces or discusses them. */
+  showCompilerLines?: boolean;
   /**
    * Draw the instructions as one group for each label, so that a run which goes on from one
    * function into the next is seen to cross from one box into the other. Off, the labels are
@@ -292,34 +295,36 @@ export function ListingView({
               )}
         </div>
       </div>
-      {hasC && lines.some((line) => line.kind === "instruction" && line.cLine !== null) && (
-        <details className="al-compiler-lines">
-          <summary>{S.listing.compilerLinesSummary}</summary>
-          <p>{S.listing.compilerLinesExplanation}</p>
-          <div className="al-pane">
-            <div className="al-pane-head">
-              <span>{S.listing.instructionsHeading}</span>
-              <span>{S.listing.cLineHeading}</span>
+      {showCompilerLines &&
+        hasC &&
+        lines.some((line) => line.kind === "instruction" && line.cLine !== null) && (
+          <details className="al-compiler-lines">
+            <summary>{S.listing.compilerLinesSummary}</summary>
+            <p>{S.listing.compilerLinesExplanation}</p>
+            <div className="al-pane">
+              <div className="al-pane-head">
+                <span>{S.listing.instructionsHeading}</span>
+                <span>{S.listing.cLineHeading}</span>
+              </div>
+              {lines.map((line, i) =>
+                line.kind === "label" ? (
+                  <div className="al-label" key={i}>
+                    {line.text}:
+                  </div>
+                ) : (
+                  <div className="al-compiler-line" key={i}>
+                    <code className="al-text">{line.text}</code>
+                    {line.cLine !== null && (
+                      <span className="al-ctag" title={S.listing.recordedAgainst(line.cLine)}>
+                        {line.cLine}
+                      </span>
+                    )}
+                  </div>
+                ),
+              )}
             </div>
-            {lines.map((line, i) =>
-              line.kind === "label" ? (
-                <div className="al-label" key={i}>
-                  {line.text}:
-                </div>
-              ) : (
-                <div className="al-compiler-line" key={i}>
-                  <code className="al-text">{line.text}</code>
-                  {line.cLine !== null && (
-                    <span className="al-ctag" title={S.listing.recordedAgainst(line.cLine)}>
-                      {line.cLine}
-                    </span>
-                  )}
-                </div>
-              ),
-            )}
-          </div>
-        </details>
-      )}
+          </details>
+        )}
     </div>
   );
 }
