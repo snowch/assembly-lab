@@ -92,3 +92,8 @@ and 2768 passes; the later full check passed all 138 files and 2770 tests.
 `npm run check` is running its complete 1090-case browser suite after passing formatting,
 copyright, platform integrity, strict types, all unit/integration tests and production build.
 The final result will replace this paragraph when the command completes.
+
+The first push CI check stopped at formatting: the final keyboard-review JSON had been
+created after the initial formatter ran. That measurement file was formatted and the
+complete formatting check rerun. Native CI passed on the implementation commit; this
+format-only correction does not change application behaviour.
