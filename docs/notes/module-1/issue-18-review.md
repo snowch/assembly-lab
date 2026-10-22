@@ -91,3 +91,23 @@ exact current question and explicitly assert absence of the discovery invitation
 learner copy changed. Focused desktop/phone rerun: 2/2 passed. The full run was interrupted to
 restart with that fix: 678 passed, 1 failed, 2 interrupted, 18 skipped, 375 did not run, exit 130.
 Earlier progress updates missed the failure in buffered output; this record corrects that.
+
+## Final results
+
+The authoritative full check passed in GitHub CI on code commit
+`ec1489881cbb85dd36420e430d2085b3e383aac7`:
+[Check run 122](https://github.com/snowch/assembly-lab/actions/runs/39755155174).
+The workflow runs `scripts/check.sh`, the same script as `npm run check`, on Node 22.
+Formatting, copyright, platform integrity, strict types and the production build passed;
+all 136 unit/integration files and 2755 tests passed; browser tests reported **1051 passed,
+23 skipped**, followed by **All checks passed**. No failures or retries were reported.
+
+The separate GNU/QEMU job passed on the same commit: 191 programs, 2256 calls and 284666
+instruction states compared with zero differences; 15 assembler files and 39675 lines checked,
+184 outside the supported subset, with zero disagreements.
+
+The final local run independently passed all unit/integration tests and the build, and reached
+805 browser passes with no failures before it was deliberately stopped once the full CI run
+passed. Its final status was exit 130: 805 passed, 21 skipped, 1 interrupted, 247 did not run.
+This is partial local coverage, not a local full-suite pass. The CI result above supplies the
+complete full-suite verification. Final documentation changes only record these results.
