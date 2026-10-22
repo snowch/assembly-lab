@@ -178,3 +178,52 @@ status and distinguishes earlier development failures from later focused passes.
 
 No necessary correction found in these engineering/inventory changes. This addendum is a
 source/log review; it adds no new rendered-page or full-suite claim.
+
+## Later full-suite findings: SP identity and optional navigation
+
+The earlier source/focused review found no remaining blockers within its stated coverage.
+The subsequent full browser run nevertheless exposed a shared-summary regression and a
+stale navigation assertion; the earlier focused approval does not override those failures.
+Reviewed both corrections independently in source and the rebuilt page:
+
+- StackStepper had supplied the descriptive “Stack pointer (sp)” as RegisterSummary.name,
+  changing the established data-register="sp" identity. RegisterSummary now accepts a
+  separate optional label, defaulting to name. StackStepper passes name="sp" and its
+  existing descriptive label separately. The visible label and accessible group name are
+  preserved; value and recorded-write inputs are unchanged. Added component tests check
+  both primitive identity/label separation and an actual StackStepper value against the
+  model. These assertions strengthen coverage rather than deleting the old SP contract.
+- The shell's optional-A32 previous-title assertion still named Module 11. The actual
+  curriculum correctly inserts the native capstone before A32. The test now asserts the
+  preceding lesson's title from course order and explicitly pins its id as
+  debug-native-instructions. It retains checking missing next navigation, following the
+  previous link, the resulting page heading and absence of browser errors. This checks
+  the intended new order rather than weakening navigation behaviour.
+
+Independent browser recheck at 375px and 1280px, actual light and dark themes, for both
+calls-and-returns and recursive-calls: exactly one canonical data-register="sp" summary,
+existing descriptive visible/accessible name, initial 0x430000 and unmarked; after first
+stack write 0x42ffe0 and marked Written; after final ret 0x430000 with no written mark;
+Reset restores the same initial value/marker. No document overflow observed. Followed
+optional A32's previous link to the final native lesson and its next link back to A32 in
+all four contexts. All checks passed. The managing session's focused browser log also
+records six passing model/navigation cases across desktop and phone; the complete suite
+still requires its separate final result.
+
+## Final validation-record confirmation
+
+Independently checked the final validation document against CI run 39792081414 and job
+119870402584 logs. The completed standard workflow succeeds on
+f3b86e39a6332d09915dc9271ac63fb88b00cf13: 138 files, 2771 unit/integration tests,
+1067 browser passes and 23 skips, followed by “All checks passed”. The run's real-tools
+and native-lessons jobs also report success. Only validation/review documents differ from
+that implementation commit.
+
+The local logs separately retain the earlier interrupted full run's three failures and exit
+130 counts. The additional four-worker run completed with 1066 passes, 23 skips and one
+failure: loading-widths on phone exceeded its 60000ms overall test budget, without a reported
+value/assertion mismatch. Its unchanged one-worker focused rerun passed in 18.0s (22.5s command
+time). The final validation document reports both failed local commands as failures and
+attributes the complete passing check to standard CI; it does not reinterpret focused
+reruns as full-suite local passes. No test rerun, implementation change or timeout increase
+was made for this bounded source/log review. No necessary correction found.

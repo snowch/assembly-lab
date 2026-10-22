@@ -100,9 +100,35 @@ stack pointer retains `data-register="sp"` and the existing visible “Stack poi
 The footer check now pins the final native lesson and verifies the correct previous link.
 New unit coverage checks that identity and the actual stack-pointer value; the focused unit
 rerun passed 9 tests and all six previously affected desktop/phone browser cases passed.
-The complete validation is being rerun; its result will be recorded here.
+Successful final results are recorded below.
 
 The first push CI check stopped at formatting: the final keyboard-review JSON had been
 created after the initial formatter ran. That measurement file was formatted and the
 complete formatting check rerun. Native CI passed on the implementation commit; this
 format-only correction does not change application behaviour.
+
+## Final verification
+
+The complete standard CI workflow passed on implementation commit
+`f3b86e39a6332d09915dc9271ac63fb88b00cf13`:
+[Check run](https://github.com/snowch/assembly-lab/actions/runs/39792081414).
+Formatting, copyright, platform integrity, strict types and production build passed.
+All **138 test files and 2771 unit/integration tests** passed. Browser result: **1067 passed, 23 skipped**, then
+**All checks passed**. The separate native-lessons and real-tools CI jobs also passed.
+
+The final local unit run independently passed 138 files and 2771 tests. The additional local
+complete browser run used `npx playwright test --workers=4`: **1066 passed, 23 skipped,
+1 failed**, exit 1. The failure was the existing loading-widths phone test exceeding its
+60-second overall test budget while checking every register and byte through multiple traces.
+It reported no value/assertion mismatch. The same case passed in the complete standard CI run.
+A focused one-worker local rerun also passed (18.0s test time,
+22.5s command time), without changing an assertion or timeout. The initial anchored grep
+selected no tests; the corrected filter ran the intended loading-widths phone case.
+The repository configuration and standard one-worker CI command were not changed. The earlier
+failed/interrupted full command retains its original exit 130 and counts above; successful
+reruns do not turn either failed local command into a passing run.
+
+Independent review confirmed the final SP identity and navigation fixes at 375px/1280px in
+both actual themes. Final formatting, copyright and platform integrity were checked again.
+The remaining commit only records validation and the independent review, with no application
+change after the validated implementation commit.
