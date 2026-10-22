@@ -27,7 +27,8 @@
     "check": "./scripts/check.sh",
     "check:real-tools": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/real-tools/check.mjs",
     "sync-platform": "node scripts/sync-platform.mjs",
-    "icons": "node scripts/icons.mjs"
+    "icons": "node scripts/icons.mjs",
+    "check:native": "python3 scripts/native/check.py"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1",

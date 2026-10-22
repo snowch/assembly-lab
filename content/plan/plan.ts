@@ -11,11 +11,11 @@ export const STATUSES = ["planned", "drafting", "published"] as const;
 export type ModuleStatus = (typeof STATUSES)[number];
 
 export interface PlannedModule {
-  /** Numeric lesson-schema key; the optional chapter uses 12 while displaying A. */
+  /** Numeric lesson-schema key; the optional chapter uses 13 while displaying A. */
   readonly lessonModule: number;
   /** Unique, lower-case, and the stem a lesson's id may start with. */
   readonly id: string;
-  /** What the module is called in the course: "0" to "11", and "A" for the optional chapter. */
+  /** What the module is called in the course: "0" to "12", and "A" for the optional chapter. */
   readonly label: string;
   readonly title: string;
   /** One line on what the learner does in the module. */
@@ -29,7 +29,7 @@ export interface PlanPart {
 }
 
 const M = (label: string, id: string, title: string, line: string): PlannedModule => ({
-  lessonModule: label === "A" ? 12 : Number(label),
+  lessonModule: label === "A" ? 13 : Number(label),
   id,
   label,
   title,
@@ -126,6 +126,12 @@ export const PARTS: readonly PlanPart[] = [
         "where-c-and-the-machine-disagree",
         "Where C and the machine disagree",
         "Explore what happens when a C program relies on behaviour that the language does not guarantee.",
+      ),
+      M(
+        "12",
+        "running-arm64-outside-assembly-lab",
+        "Running ARM64 outside Assembly Lab",
+        "Build, run and debug the course’s instructions with GNU tools and QEMU on Linux.",
       ),
     ],
   },

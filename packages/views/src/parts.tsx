@@ -87,11 +87,33 @@ export function RegisterRow({
   );
 }
 
-/**
- * A `w` register drawn as its name and its value as a large decimal number, with no bits (the
- * stepper's switch shows the bits as `RegisterRow`s instead). A register that the last step wrote
- * is outlined and says so in words, so the mark does not rest on the outline alone.
- */
+/** A compact summary. Values arrive already formatted, including complete 64-bit hexadecimal. */
+export function RegisterSummary({
+  name,
+  value,
+  written,
+  className = "",
+}: {
+  name: string;
+  value: string | number;
+  written: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`al-register-summary ${className}`}
+      role="group"
+      aria-label={S.register.group(name)}
+      data-register={name}
+      data-changed={written}
+    >
+      <code className="al-dreg-name">{name}</code>
+      <code className="al-dreg-value">{value}</code>
+      {written && <span className="al-dreg-flag">{M0.registers.changed}</span>}
+    </div>
+  );
+}
+
 export function DecimalRegister({
   name,
   value,
@@ -101,19 +123,7 @@ export function DecimalRegister({
   value: number;
   changed: boolean;
 }) {
-  return (
-    <div
-      className="al-dreg"
-      role="group"
-      aria-label={S.register.group(name)}
-      data-register={name}
-      data-changed={changed}
-    >
-      <span className="al-dreg-name">{name}</span>
-      <span className="al-dreg-value">{value}</span>
-      <span className="al-dreg-flag">{changed ? M0.registers.changed : null}</span>
-    </div>
-  );
+  return <RegisterSummary name={name} value={value} written={changed} className="al-dreg" />;
 }
 
 /**

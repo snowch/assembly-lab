@@ -229,7 +229,7 @@ describe("the registers as decimal numbers", () => {
     const user = userEvent.setup();
     const { container } = figure(StepperFigure, "s", "stepper", stepper);
     expect(container.querySelector('[data-changed="true"]')).toBeNull();
-    expect(container.querySelector(".al-dreg-flag")?.textContent).toBe("");
+    expect(container.querySelector(".al-dreg-flag")).toBeNull();
     await user.click(next());
     const changed = [...container.querySelectorAll('[data-changed="true"]')];
     expect(changed.map((e) => e.getAttribute("data-register"))).toEqual(["w0"]);

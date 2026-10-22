@@ -54,6 +54,8 @@ export function instructionsNamedIn(text: string): string[] {
  *   there: `cmn w0, w1` typed in Module 2 still says "not met yet".
  */
 const NAMED_BEFORE_TAUGHT: Readonly<Record<string, readonly string[]>> = {
+  // Module 12 explains adr in an explicitly native-only Linux source, outside browser exercises.
+  "debug-native-instructions": ["adr"],
   "constants-and-widths": ["lsl"],
   "adding-and-the-flags": ["cmn", "cset"],
 };

@@ -6,6 +6,7 @@ import type { ComponentType } from "react";
 
 import type { InteractiveProps } from "@platform/lesson-runtime";
 
+import { NativeFigure } from "./NativeFigure";
 import { AdderFigure } from "./AdderFigure";
 import { ArgsFigure } from "./ArgsFigure";
 import { OperandRoles } from "./OperandRoles";
@@ -48,6 +49,7 @@ import { RecordedPrediction } from "./RecordedPrediction";
 import { StackStepper } from "./StackStepper";
 
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
+  "native-tools": NativeFigure,
   listing: ListingFigure,
   "listing-compare": ListingCompare,
   "model-prediction": ModelPrediction,

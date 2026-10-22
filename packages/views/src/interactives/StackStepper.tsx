@@ -6,7 +6,7 @@ import { useSlot } from "@platform/lesson-runtime";
 import { cLinesOf } from "../listing";
 import { hexAddress, hexByte, memoryRegister } from "../memoryFigure";
 import { stopSentence } from "../messages";
-import { ListingView, withCode } from "../parts";
+import { ListingView, RegisterSummary, withCode } from "../parts";
 import {
   stackFrames,
   stackDepth,
@@ -130,24 +130,20 @@ export const StackStepper = withProps(Props, function StackStepper({ data, store
         {withCode(status)}
       </p>
       <div className="al-memory-registers" role="group" aria-label={S.stepper.registers}>
-        <div
+        <RegisterSummary
           className="al-memory-register"
-          data-register="sp"
-          data-changed={step?.writes.some((w) => w.reg === "sp") ?? false}
-        >
-          <code>{T.sp}</code>
-          <code>{hexAddress(Number(view.state.sp))}</code>
-        </div>
+          name={T.sp}
+          value={hexAddress(Number(view.state.sp))}
+          written={step?.writes.some((w) => w.reg === "sp") ?? false}
+        />
         {data.registers.map((name) => (
-          <div
+          <RegisterSummary
             key={name}
             className="al-memory-register"
-            data-register={name}
-            data-changed={view.written.has(Number(name.slice(1)))}
-          >
-            <code>{name}</code>
-            <code>{memoryRegister(trace, view.k, name)}</code>
-          </div>
+            name={name}
+            value={memoryRegister(trace, view.k, name)}
+            written={view.written.has(Number(name.slice(1)))}
+          />
         ))}
       </div>
       <p className="al-stack-return-target" data-return-target={returnTarget.address.toString()}>

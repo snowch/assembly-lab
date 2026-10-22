@@ -1,0 +1,155 @@
+# Module 12 independent technical review
+
+Source review on 22 October 2026 by a separate reviewer who did not draft or implement
+these lessons. Read issue #16, the public native sources, native verifier, source brief,
+lesson structure/prose/labels, prediction measures, comparison view, grader and curriculum
+migration. This initial pass is source-only: native execution evidence was not yet generated
+and the final built page was not yet available. Findings below require independent checking
+after correction; they are not claims that the external commands have been run.
+
+## Necessary corrections
+
+1. **High: test the evidence and download learners actually receive.**
+   `scripts/native/check.py` computes fresh register stops and outputs, but normal CI never
+   reads `module-12.evidence.json` or `assembly-lab-native.zip`. A stale recording or bundle
+   can therefore ship while all native checks pass. The browser reads that JSON, and the
+   lesson tells the learner to download that zip. Compare the stable recorded observations
+   with a fresh run, and compare archive contents with the public source files. Tool-version
+   differences need not fail the arithmetic comparison. Keep `--record` as the explicit
+   update operation.
+
+2. **Medium: establish the optional image's actual load layout.**
+   The verifier builds `boot` with the checked linker script but never reads its ELF header
+   or program headers. The optional note says the image loads at `0x40080000` and begins
+   at its recorded entry. Assert that entry and all loadable segments belong to the selected
+   virt RAM, and record enough header/segment facts to support this claim. Inspect the
+   standalone ELF's target/static/no-interpreter facts too. Successful output is useful
+   evidence of execution but does not replace the requested ELF/load-address checks.
+
+3. **Medium: supply the explicitly requested recovery paths.**
+   The lesson provides GDB port/cleanup guidance and says to rebuild, but has no recovery
+   guidance for a missing cross-tool command, running the foreign executable directly
+   (`Exec format error`), a missing target dynamic linker after omitting `-static`, or an
+   assembler syntax error. Add a short local troubleshooting disclosure naming each error,
+   its likely cause and the specific command/step to retry. This is required by issue #16
+   and helps a learner with no previous terminal workflow continue the exercise.
+
+4. **Medium: show the instruction corresponding to each comparison stop.**
+   `NativeFigure` displays a named stop, relative PC and register pair, but neither the actual
+   next instruction nor the instruction just executed. For example, “After the third
+   arithmetic instruction” does not let the learner inspect which instruction differs.
+   Derive current/last instruction text from `viewAt` and the checked listing, distinguish
+   their moments, and reuse the paired C/assembly view if C is shown. This completes the
+   requested same-input/current-instruction/register comparison without making the learner
+   reconstruct instruction order from prose.
+
+5. **Medium: require debugging in the independent closing task.**
+   `debug-native-instructions.prose.ts` finalTask currently asks for browser tests, rebuilding
+   and running the native caller, but never asks the learner to debug a failing case or
+   explain the register change. Add concise directions to stop on a native failing case,
+   step to the relevant correction instruction, inspect the value, repair and rerun, then
+   explain the observed change. Existing behavioural tests should remain the grader; no
+   text-matching explanation grader is needed.
+
+6. **Medium: expose the tested tool versions beside the recording.**
+   The prose names Ubuntu 24.04, but the comparison consumes only evidence register rows
+   and PC offsets. Exact generated GCC/QEMU/GDB versions are not visible or linked for the
+   learner. A collapsed reference-run detail sourced from the generated environment/version
+   record, or a direct evidence download, would distinguish the tested run from other tool
+   versions without adding a long explanation.
+
+## Facts and design verified in source
+
+- The downloaded assembly function genuinely supplies the called symbol; `main.c` does not
+  implement a C substitute. The correct and incorrect functions use defined small signed
+  arithmetic inputs, and changing subtraction to addition yields a deterministic error.
+- The build commands separate C/assembly objects and link statically; `-g`, `-O0`, `-c`,
+  `-o`, `-static` and `-no-pie` are explained. The initial native verifier uses the same flags.
+- GDB is loaded with the executable, uses `target remote` and `continue`, not `run`, steps
+  instructions with `stepi`, and inspects `x` names with an explicit low-32-bit distinction.
+  The recorded parser masks x0–x3 and checks instruction-relative PCs and return into main.
+  Actual breakpoint/register syntax remains pending native execution.
+- Linux `write` and `exit` use 64/93, arguments in x0 onwards and register 8 for the number;
+  source and prose distinguish Linux service requests from return and direct UART I/O.
+  The write example correctly limits its claim and notes short-write/error handling.
+- The optional source polls PL011 UARTFR offset 0x18, TXFF bit 5, and writes UARTDR at
+  offset zero. The command retains the default -nographic multiplexer for Ctrl-A X.
+  The source brief carefully separates QEMU's model from physical UART configuration.
+  Actual serial output and interactive escape remain pending native execution.
+- Browser predictions use model measurements; recorded comparison figures are gated by
+  committed prediction state. The two new ModelPrediction modes compute the selected
+  register at a step and the first differing register result. For these four-instruction
+  functions the measured answers are the first addition result and third arithmetic step.
+- The closing browser grader compares register bit patterns, including the negative case,
+  and native verify-challenge.c uses matching four inputs/expected values. The native
+  verifier tries two different passing instruction sequences and rejects the old function.
+- Core Module 12 is inserted before optional A32. The A32 lesson keeps its route/id while
+  its internal module number becomes 13. The public download tree is included by the
+  existing recursive offline precache implementation.
+
+## Scope limits
+
+No built-site, keyboard, theme, layout or final evidence assertions are made in this initial
+record. Test completeness, tool versions, exact native results and the accepted corrections
+will be reviewed after the native run and production build are available.
+
+## Final verification and finding disposition
+
+Independent verification on 22 October 2026 against the completed production build 4,
+served at port 4182, and the checked public native sources:
+
+1. **Accepted and verified.** Normal native checking now reads the saved evidence and
+   compares stable outputs/statuses, original and broken register stops/PC offsets, standalone
+   and UART output, and challenge result. It checks exact archive member names and every
+   member's bytes against the public source files. Version strings can vary without making
+   equivalent arithmetic evidence fail. The separate --record operation remains explicit.
+2. **Accepted and verified.** Standalone and boot ELF headers are checked for AArch64,
+   little-endian EXEC and absence of INTERP. Boot entry is asserted as 0x40080000; all
+   loadable physical segments and their memory sizes are bounded by the selected 128 MiB
+   RAM range. Actual UART output and Ctrl-A X termination are also checked.
+3. **Accepted; mounting verified, prose independently reviewed elsewhere.** The construction
+   now mounts the troubleshooting disclosure. This reviewer drafted that small text and does
+   not claim its independent prose review; root and the separate learner reviewer own that
+   review. The final browser build contains one accessible “If a command fails” disclosure.
+4. **Accepted and verified in source and browser.** The comparison derives the next and
+   just-executed instructions from the model trace. At the changed third step it names
+   add w0, w0, w3, shows PC +12 with ret next, and records 262. The original figure names
+   sub w0, w0, w3 and records 232 at the corresponding step.
+5. **Accepted and verified in source.** The closing task now first uses the unchanged
+   single-correction function to guarantee a failing native case, asks the learner to step
+   it in GDB and explain the register write, then implement and test the revised function
+   in both environments. It retains behaviour-based grading and matching cases.
+6. **Accepted and verified in browser.** The build-pipeline figure's Reference run disclosure
+   displays the generated Ubuntu environment and actual GCC, binutils, QEMU and GDB versions.
+
+Executed independently, without --record:
+
+```
+/tmp/al-docker exec --user 1000:1000 -w /work al-native-tools python3 scripts/native/check.py
+```
+
+Exit 0: ELF checks, original/broken GDB traces, two different passing challenge solutions,
+rejection of the unchanged function, standalone Linux output, optional UART output and console
+exit, saved evidence and archive comparisons all passed. This is QEMU execution evidence,
+not a physical Arm hardware test.
+
+Browser verification used fresh contexts at 375px and 1280px in both light and dark themes;
+checked actual html theme attributes, not only requested preference. Opened reference versions,
+checked both first-lesson predictions/unlocks, and exercised both debugger comparisons from
+initial breakpoint through each arithmetic instruction and ret, then Reset. Selecting an answer
+without commitment kept comparisons locked. Keyboard Enter advanced the focused Next control;
+focus remained there while enabled. Original values 120/205/247/232 and modified final 262
+matched recorded and independently computed sides. Ret cleared written markers without changing
+the result. Opened the optional UART disclosure. No page exceptions or horizontal document
+overflow were observed. Inspected rendered phone/desktop screenshots in both themes, including
+actual third-instruction comparison states. Screenshots from this independent pass are under
+/tmp/module12-after-native-gdb-*.png in the execution workspace.
+
+An initial browser attempt occurred while a concurrent build had temporarily removed preview
+assets and timed out before finding the lesson figure; it was not a successful browser run.
+The stable-build passes above completed successfully. Minor later optional-note wording defines
+RAM, the monitor and serial transmission speeds; reviewed that last copy in source. Its command,
+addresses, polling semantics and escape sequence are unchanged from the rendered/native checks.
+
+No blocking technical findings remain. Full-suite results belong to the managing session's
+separate validation record; this review does not claim a full-suite run.

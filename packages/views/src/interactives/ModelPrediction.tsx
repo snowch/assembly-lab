@@ -14,9 +14,24 @@ import { stopSentence } from "../messages";
 import { traceText } from "../traceText";
 import { VIEW_STRINGS as S } from "../strings";
 import { PredictionBox, type Outcome } from "./PredictionBox";
-import { RecordedSchema, withProps } from "./props";
+import { traceOf, viewAt, wValue } from "../trace";
+import { CallSchema, RecordedSchema, withProps } from "./props";
 
 const Measure = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("register-at-step"),
+    program: RecordedSchema,
+    call: CallSchema,
+    step: z.number().int().min(0),
+    register: z.number().int().min(0).max(30),
+  }),
+  z.object({
+    kind: z.literal("first-divergence"),
+    program: RecordedSchema,
+    other: RecordedSchema,
+    call: CallSchema,
+    register: z.number().int().min(0).max(30),
+  }),
   /** The right option is the only one whose value `mov w0, <value>` assembles to one instruction. */
   z.object({ kind: z.literal("constant-fits") }),
   /**
@@ -71,13 +86,28 @@ function measureRegister(m: Extract<Measured, { kind: "register-at-end" }>): Out
 export const ModelPrediction = withProps(
   Props,
   function ModelPrediction({ data, interactive, store }) {
-    const measure = useCallback(
-      () =>
-        data.measure.kind === "constant-fits"
-          ? measureConstants(data.options)
-          : measureRegister(data.measure),
-      [data.measure, data.options],
-    );
+    const measure = useCallback(() => {
+      const m = data.measure;
+      if (m.kind === "constant-fits") return measureConstants(data.options);
+      if (m.kind === "register-at-end") return measureRegister(m);
+      const trace = traceOf(m.program, m.call);
+      if (m.kind === "register-at-step") {
+        const value = wValue(viewAt(trace, m.step).state, m.register);
+        return {
+          value: String(value),
+          said:
+            data.options.find((option) => option.value === String(value))?.label ?? String(value),
+        };
+      }
+      const other = traceOf(m.other, m.call);
+      const first = trace.result.steps.findIndex(
+        (_, index) =>
+          wValue(viewAt(trace, index + 1).state, m.register) !==
+          wValue(viewAt(other, index + 1).state, m.register),
+      );
+      const value = String(first + 1);
+      return { value, said: data.options.find((option) => option.value === value)?.label ?? value };
+    }, [data.measure, data.options]);
     return (
       <PredictionBox
         id={interactive.id}
