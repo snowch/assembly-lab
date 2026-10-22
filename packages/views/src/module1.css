@@ -364,3 +364,34 @@ figure.interactive[data-kind="challenge-note"]
   max-width: var(--measure);
   margin: var(--space-4) auto;
 }
+
+/* The opener keeps one register pattern above its two numerical readings. */
+.al-reading-stage,
+.al-dual-reading {
+  margin-block: 1rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+.al-reading-phase {
+  font-weight: 700;
+}
+.al-reading-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+.al-reading-inputs > span {
+  white-space: nowrap;
+}
+.al-dual-reading dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+}
+.al-dual-reading dd {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}

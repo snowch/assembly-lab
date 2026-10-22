@@ -7,6 +7,22 @@
 // the facts are checked); a test counts the marks, so a new one is a decision somebody sees.
 
 export const MODULE1_STRINGS = {
+  // Drafted separately from checked facts for issue #18; see the lesson review notes.
+  opener: {
+    stage: "The subtraction and its inputs",
+    before: "Before the subtraction",
+    after: "After the subtraction",
+    willRead: "Will read",
+    read: "Read",
+    willWrite: "will write",
+    wrote: "wrote",
+    unsignedDisplay: "Register numbers shown in unsigned decimal",
+    readings: "Two readings of the same register bits",
+    samePattern: (name: string) => `The same 32 bits in \`${name}\` above:`,
+    signed: "Signed reading (C int)",
+    unsigned: "Unsigned reading",
+    sameBits: "Nothing in the register changes when we change how we read its bits.",
+  },
   register: {
     // DRAFT
     upperHalf: "Upper half",

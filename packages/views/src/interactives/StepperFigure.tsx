@@ -28,11 +28,17 @@ import { VIEW_STRINGS as S } from "../strings";
 import { ARITH_STRINGS as A } from "../strings.arith";
 import { BRANCH_STRINGS as B } from "../strings.branch";
 import { MODULE0_STRINGS as M0 } from "../strings.module0";
-import { traceOf, viewAt, wValue, type StepView, type Trace } from "../trace";
+import { shown } from "../readings";
+import { MODULE1_STRINGS as M1 } from "../strings.module1";
+import { traceOf, viewAt, wValue, wValueAsInt, type StepView, type Trace } from "../trace";
 import { CallSchema, DeleteSchema, RecordedSchema, withProps } from "./props";
 
 const Props = z.object({
   program: RecordedSchema,
+  /** Stage a first subtraction with argument names and two readings of its result. */
+  subtractionReadings: z
+    .object({ argumentNames: z.array(z.string()), register: z.number().int().min(0).max(30) })
+    .optional(),
   call: CallSchema,
   /** The registers to draw: 0 is `w0`. */
   registers: z.array(z.number().int().min(0).max(30)).min(1),
@@ -222,6 +228,19 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
       </p>
     );
   }
+  if (data.subtractionReadings) {
+    const first = flowAt(trace, 1);
+    if (
+      first?.kind !== "arith" ||
+      first.operation !== "sub" ||
+      first.destination.name !== `w${data.subtractionReadings.register}` ||
+      trace.result.steps.length !== 2 ||
+      flowAt(trace, 2)?.kind !== "ret"
+    )
+      throw new Error(
+        "subtractionReadings requires one 32-bit subtraction followed by ret, reading its destination.",
+      );
+  }
   const view = viewAt(trace, k);
   const atEnd = view.k >= view.total;
   // With `expect`, the learner answers for the instruction they are about to run: they pick the
@@ -349,6 +368,39 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           {B.stepper.count(view.k)}
         </p>
       )}
+      {data.subtractionReadings && (
+        <div className="al-reading-stage" role="group" aria-label={M1.opener.stage}>
+          <p className="al-reading-phase">{view.k === 0 ? M1.opener.before : M1.opener.after}</p>
+          {view.k === 0 && (
+            <p className="al-reading-inputs">
+              {data.subtractionReadings.argumentNames.map((name, n) => (
+                <span key={n}>
+                  <code>{name}</code> → <code>w{n}</code> = {wValue(view.state, n)}
+                </span>
+              ))}
+            </p>
+          )}
+          {(() => {
+            // The first instruction's sources come from its actual before-state, including
+            // while that state is still on screen. Never substitute the post-step destination.
+            const calculation = flowAt(trace, 1);
+            return calculation?.kind === "arith" ? (
+              <p className="al-reading-operation">
+                {view.k === 0 ? M1.opener.willRead : M1.opener.read}{" "}
+                {calculation.sources.map((source, i) => (
+                  <span key={i}>
+                    {i > 0 && " − "}
+                    <code>{source.name}</code> ({source.value})
+                  </span>
+                ))}{" "}
+                → {view.k === 0 ? M1.opener.willWrite : M1.opener.wrote}{" "}
+                <code>{calculation.destination.name}</code>
+              </p>
+            ) : null;
+          })()}
+          <p>{M1.opener.unsignedDisplay}</p>
+        </div>
+      )}
       {data.flow && <FlowPanel trace={trace} k={view.k} shown={data.registers} />}
       {data.decimal && (
         <div className="al-registers-head">
@@ -392,6 +444,26 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           ),
         )}
       </div>
+      {data.subtractionReadings && view.k > 0 && (
+        <div className="al-dual-reading" role="group" aria-label={M1.opener.readings}>
+          <p>{withCode(M1.opener.samePattern(`w${data.subtractionReadings.register}`))}</p>
+          <dl>
+            <div>
+              <dt>{M1.opener.signed}</dt>
+              <dd data-reading="signed">
+                {shown(wValueAsInt(view.state, data.subtractionReadings.register))}
+              </dd>
+            </div>
+            <div>
+              <dt>{M1.opener.unsigned}</dt>
+              <dd data-reading="unsigned">
+                {wValue(view.state, data.subtractionReadings.register)}
+              </dd>
+            </div>
+          </dl>
+          <p>{M1.opener.sameBits}</p>
+        </div>
+      )}
       {data.flags && (
         <FlagsRow
           flags={view.state.flags}

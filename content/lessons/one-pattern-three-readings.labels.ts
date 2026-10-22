@@ -25,8 +25,7 @@ export const LABELS = {
     reflection: "What you now know",
   },
   captions: {
-    fuelRun:
-      "fuel_used_wrong(50, 38) as first written. Press Next to see what its subtraction writes to w0.",
+    fuelRun: "fuel_used_wrong(50, 38). Initially before the subtraction; press Next to run it.",
     reader:
       "One register, with each hexadecimal digit under its four bits. Each reading shows the top bit's value and the total from the other bits.",
     compare: "The two functions side by side, with GCC's listing for each.",

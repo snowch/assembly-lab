@@ -179,3 +179,13 @@ caption, and anything shown only after an answer is checked, in italics, as in M
 
 ## 11. The model and the real processor (one short paragraph)
 - The course does not show how an instruction's bits hold its constant. Which constants fit is taken from the GNU assembler, and the course's assembler is tested against it line by line.
+
+## Issue #18 revision brief (22 October 2026)
+
+The opener now stages the existing recorded subtraction. Show the argument mapping before it
+runs, the instruction's original source values in operand order, then two numerical readings of
+one result pattern. Do not introduce hexadecimal before the investigation. State that register
+numbers use unsigned decimal. Explain the signed reading before the addition prediction; the
+addition tests the bits rather than introducing their signed meaning. Keep the prediction's
+answer behind commitment, including when a learner opens later challenge hints first. See
+`issue-18-review.md` for the A/B decision, checked facts and independent review.
