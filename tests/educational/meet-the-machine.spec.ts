@@ -579,7 +579,10 @@ test.describe("the two predictions commit before they reveal", () => {
     // The other prediction keeps the ordinary button, with no invitation of its own.
     const total = page.locator("#ix-predict-total");
     await expect(total.getByRole("button", { name: V.prediction.commit })).toBeDisabled();
-    await expect(total.locator(".prose").first()).toContainText("Where will the C variable");
+    await expect(total.locator(".prose").first()).toHaveText(
+      PROSE.predictionQuestion.replaceAll("**", "").replaceAll("`", ""),
+    );
+    await expect(total).not.toContainText("This is a new situation.");
   });
 
   for (const [id, right, wrong] of [

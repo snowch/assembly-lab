@@ -82,3 +82,12 @@ Final unit/integration run: all 136 files and 2755 tests passed. Focused string 
 3/3 passed; the independent technical reviewer confirmed that the review bookkeeping change
 preserves the legacy invariants. The production build passed. The full browser suite is running
 1074 tests with the repository's configured single worker; its final result will be appended.
+
+The full browser run exposed a pre-existing stale assertion in Module 0's ret-prediction test:
+its other prediction still expected “Where will the C variable”, while baseline lesson copy
+already asks “After the first instruction runs, where is the value of total kept?”. The trace
+confirmed the rendered question was the intended current copy. Updated the assertion to the
+exact current question and explicitly assert absence of the discovery invitation. No Module 0
+learner copy changed. Focused desktop/phone rerun: 2/2 passed. The full run was interrupted to
+restart with that fix: 678 passed, 1 failed, 2 interrupted, 18 skipped, 375 did not run, exit 130.
+Earlier progress updates missed the failure in buffered output; this record corrects that.
