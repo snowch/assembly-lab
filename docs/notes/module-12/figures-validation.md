@@ -41,7 +41,20 @@ review also corrected the RAM label and the section controls' accessible numeric
 - Independent final learner review measured adjacent explanations at 0 pixels (one 0.75-pixel
   loader rounding case), no keyboard-triggered page scroll and focus retained in all four
   width/theme combinations. The technical reviewer independently measured the same correction.
-- Final full check is running; its outcome will be recorded after completion.
+- The second local full check passed formatting, copyright, platform integrity, types,
+  all 138 unit files / 2774 tests and build. A workspace restart interrupted its browser
+  runner before a final summary: the progress log records 655 passed and 17 skipped through
+  case 672, with no assertion failures. Its final exit status was not observed. This is not
+  recorded as a full passing local command.
+- The complete [PR CI run](https://github.com/snowch/assembly-lab/actions/runs/39863996017)
+  passed all three jobs: full check, GNU/QEMU differential checks and native lessons.
+  The full check passed all 138 unit files / 2774 tests, production build and
+  1067 browser tests, with 23 skipped, ending with `All checks passed`.
+  CI checked out merge `b0c126e9a0b168971bbe273722b923b9f3fc0aa9`, whose parents
+  are base `4e6a37b659606e2d46d2d58258ed374a75262d81` and implementation
+  `cd60bee6b4b172368a4cba0d6acd57ce30b2483f`. Its source tree
+  `7e5962c895bb3cc9eeb876677a8d4435a8bb9be5` equals the implementation's tree.
+  The subsequent validation-record commit changes documentation only.
 
 Review pages are immutable copies of the production build, served at separate local ports to
 avoid asset replacement during full-check rebuilds. Review records distinguish directly viewed

@@ -1,6 +1,8 @@
 # Visual audit and implementation to-do
 
-**Opened:** 20 October 2026. **Status:** backlog; no lesson changes are claimed complete here.
+**Opened:** 20 October 2026. **Status:** backlog with separately recorded implementation work.
+The Module 12 section records its new figures and reviews; the earlier backlog remains an audit,
+not a claim that every listed item is complete.
 
 Use [the visual language](visual-language.md) as the acceptance standard. Existing figures may already meet a requirement: **inspect first and record keep/refine/new/remove**, rather than assuming every row means build a new diagram. The lesson inventory below is based on `content/lessons/index.ts` on `main` and the components under `packages/views/src/interactives/`. The `docs/plan.md` figures are useful design intentions, but the lessons now exist beyond the original draft plan.
 

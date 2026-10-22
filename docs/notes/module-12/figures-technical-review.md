@@ -186,3 +186,26 @@ first full check records 138 unit files / 2774 tests and a successful build befo
 browser tail of 50 passed, one skipped, 1038 not run and one interrupted. The focused final
 unit log records two files / 16 tests passing. These observations do not turn the stopped
 full command into a passing run. This final source/document review ran no additional tests.
+
+## Independent final CI confirmation
+
+Independently fetched the raw log for check job `120121478022` in
+[PR CI run 39863996017](https://github.com/snowch/assembly-lab/actions/runs/39863996017).
+It records 138 unit files / 2774 tests passing, 1067 browser tests passing with 23
+skipped, and “All checks passed”. The checkout is PR merge commit
+`b0c126e9a0b168971bbe273722b923b9f3fc0aa9`. Independently queried GitHub's commit
+metadata: its parents are base `4e6a37b659606e2d46d2d58258ed374a75262d81` and
+implementation `cd60bee6b4b172368a4cba0d6acd57ce30b2483f`; both merge and implementation
+have tree `7e5962c895bb3cc9eeb876677a8d4435a8bb9be5`. The tested merge therefore has
+the same source contents as the implementation. Run/job status independently confirms
+completed success for `check`, `real-tools` and `native-lessons`.
+
+Read the final `figures-validation.md` and corrected visual-audit header. Their distinction
+between historical backlog, implemented Module 12 work, interrupted local commands and
+complete successful CI is accurate. Directly read the focused browser log's eight-test
+passing summary. Independently counted the second local full-check progress log: 655
+passing test lines and 17 skipped through case 672, without a final success summary.
+The workspace interruption and unobserved shell exit status remain managing-session
+history rather than an invented completed result. The final pending changes are solely
+documentation recording validation. No additional application change or test run was
+made for this final confirmation.
