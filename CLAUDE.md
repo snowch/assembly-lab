@@ -47,7 +47,13 @@ trace. It is never a scripted animation and never a hand-drawn picture of someth
 could compute. If a lesson needs a figure the model cannot compute, the model is where the work
 goes first.
 
-A number in a learner-facing string is a number the model produced, or a compiler listing that
+Module 12 may compare model states with explicitly labelled, recorded GNU/QEMU/GDB output.
+Its native-only Linux syscall and UART experiments run outside the browser model and must pass
+`scripts/native/check.py`; they do not extend the browser ISA. Supported arithmetic functions
+retain the ordinary GNU/QEMU simulator differential check. Never present a recording as a live
+native process running in the page.
+
+A number in a learner-facing string is a number the model produced, recorded native output, or a compiler listing that
 is recorded in the repository, and a test pins it. A prediction's answer comes from running the
 model, never from the lesson's words.
 
@@ -137,7 +143,8 @@ This course teaches a real instruction set, so every claim about it is checkable
   (`docs/sources.md` names the issue), or by running it under QEMU. Memory is not a source.
 - **The simulator agrees with real hardware:** the differential test assembles every program the
   course shows with the GNU toolchain, runs it under QEMU's user mode, and compares registers,
-  flags and memory with the simulator. A program shown on a page and not in that test is a bug.
+  flags and memory with the simulator. A supported browser program shown on a page and not in that test is a bug. The explicitly
+  native-only Module 12 Linux and device programs instead pass the separate native CI job.
 - **A compiler's output:** every listing a lesson shows or describes is compiled, never typed,
   and recorded with the compiler, its version and its flags. "GCC emits" is a claim about one
   compiler at one version and one optimisation level, and says so where it matters.

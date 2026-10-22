@@ -37,6 +37,8 @@ export const TAUGHT: Readonly<Record<string, readonly string[]>> = {
   "compile-a-loop": [],
   "c-and-overflow": [],
   "checked-arithmetic": [],
+  "from-function-to-executable": [],
+  "debug-native-instructions": [],
   "same-c-on-a32": [],
 };
 

@@ -56,3 +56,13 @@ are recorded in `docs/notes/module-6/listings.md` and `docs/notes/module-6/facts
 
 The scaffold's build records the exact packages; a licence check like metadata-systems' joins
 `scripts/check.sh` when the first lesson adds a runtime dependency.
+
+## Native execution and debugging (Module 12)
+
+The checked GNU/QEMU/GDB workflow and native-only Linux and QEMU virt experiments use
+[the Module 12 source brief](notes/module-12/sources-brief.md). It records the GNU manuals,
+AAPCS64, Linux AArch64 syscall convention, QEMU user/system documentation and PL011 register
+references. [Native verification](../scripts/native/README.md) distinguishes executable
+checks from source claims. The reference output and exact observed tool versions are in
+`content/lessons/module-12.evidence.json`; this is emulation evidence, not physical hardware
+measurement. The ordinary arithmetic examples retain the simulator differential checks.

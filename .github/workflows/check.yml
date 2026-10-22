@@ -52,3 +52,14 @@ jobs:
 
       - name: The simulator and the assembler against the real tools
         run: npm run check:real-tools
+
+  native-lessons:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Native ARM64 lesson tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu qemu-user gdb-multiarch qemu-system-arm file python3
+      - name: Executables, debugger stops, challenges and optional UART
+        run: python3 scripts/native/check.py

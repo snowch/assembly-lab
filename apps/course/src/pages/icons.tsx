@@ -45,6 +45,7 @@ export const MODULE_ICONS: Readonly<Record<string, ReactNode>> = {
   // A warning.
   "where-c-and-the-machine-disagree": <path d="M12 3.5l9 16H3zM12 10v4M12 16.8v.2" />,
   // The same line run two ways, side by side.
+  "running-arm64-outside-assembly-lab": <path d="M3 5h18v14H3zM6 9l3 3-3 3M12 15h5" />,
   "the-same-programs-on-32-bit-arm": <path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4" />,
 };
 

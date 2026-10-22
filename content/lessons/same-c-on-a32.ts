@@ -35,7 +35,7 @@ const finalQueries = {
 export const sameCOnA32: LessonInput = {
   id: "same-c-on-a32",
   title: LABELS.title,
-  module: 12,
+  module: 13,
   order: 0,
   objectives: [...LABELS.objectives],
   introduces: [],

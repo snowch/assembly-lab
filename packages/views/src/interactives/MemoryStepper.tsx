@@ -9,7 +9,7 @@ import { cLinesOf } from "../listing";
 import { hexAddress, hexByte, memoryRegister, memoryTransferAt } from "../memoryFigure";
 import { stopSentence } from "../messages";
 import { FlagsRow } from "../FlagsRow";
-import { ListingView, withCode } from "../parts";
+import { ListingView, RegisterSummary, withCode } from "../parts";
 import { VIEW_STRINGS as S } from "../strings";
 import { MEMORY_STRINGS as M } from "../strings.memory";
 import { memoryAt, traceOf, viewAt } from "../trace";
@@ -116,15 +116,13 @@ export const MemoryStepper = withProps(Props, function MemoryStepper({ data, sto
       </p>
       <div className="al-memory-registers" role="group" aria-label={S.stepper.registers}>
         {data.registers.map((name) => (
-          <div
+          <RegisterSummary
             key={name}
             className="al-memory-register"
-            data-register={name}
-            data-changed={view.written.has(Number(name.slice(1)))}
-          >
-            <code>{name}</code>
-            <code>{memoryRegister(trace, view.k, name)}</code>
-          </div>
+            name={name}
+            value={memoryRegister(trace, view.k, name)}
+            written={view.written.has(Number(name.slice(1)))}
+          />
         ))}
       </div>
       {data.flags && (

@@ -179,6 +179,7 @@ the list from the listings its lessons show.
 | 9 Calls and the stack | `bl`, `ret`, the link register; the stack in memory; `stp`, `ldp`; which registers carry arguments and results and which a function must keep (the calling convention) | the stack growing and shrinking as calls run; the registers a call may change | a function that calls another and keeps its values; a recursive one | functions, arguments, local variables, recursion |
 | 10 From C to assembly | the course's small C compiler: a line of C becomes instructions in a fixed pattern; then a real compiler at `-O1` does better | edit C and watch the listing change; the same C beside GCC's listing | hand-compile a small function and pass its tests | the C subset the course compiles (decided at checkpoint 5) |
 | 11 Where C and the machine disagree | undefined behaviour against what the hardware does; the check the optimiser deletes; narrowing; `%d` and `%u`; sanitizers and checked arithmetic | the notes' ten C scenarios, run on this machine at 32 bits | find and fix the overflow in a given function, with tests that probe the edges | `-fwrapv`, `-fsanitize=undefined`, `ckd_add` |
+| 12 Running ARM64 outside Assembly Lab | GNU cross-toolchain, ELF executables, QEMU user mode, GDB and Linux syscalls | recorded native stops beside model states; source-to-process pipeline | change the trip contract and pass the same browser/native cases | a C harness calls handwritten assembly; optional UART exercise runs without Linux |
 
 ### Optional, after the parts
 
@@ -188,8 +189,9 @@ the list from the listings its lessons show.
 
 ## The model
 
-Everything a figure shows comes from running the course's model, never from a scripted
-animation, as in the earlier courses:
+Figures use the course model, or explicitly labelled native tool recordings in Module 12,
+never scripted animation. Native-only Linux and device experiments pass a separate executable
+check; supported browser instructions retain the simulator differential check. The model contains:
 
 - **An assembler** for the course's subset of A64, in the GNU syntax GCC prints, with the errors a
   real assembler gives for a constant that will not fit or a register of the wrong width. The

@@ -23,6 +23,8 @@ import { fromCToInstructions } from "./from-c-to-instructions";
 import { compileALoop } from "./compile-a-loop";
 import { cAndOverflow } from "./c-and-overflow";
 import { checkedArithmetic } from "./checked-arithmetic";
+import { fromFunctionToExecutable } from "./from-function-to-executable";
+import { debugNativeInstructions } from "./debug-native-instructions";
 import { sameCOnA32 } from "./same-c-on-a32";
 import { zeroTerminatedStrings } from "./zero-terminated-strings";
 import { masks } from "./masks";
@@ -57,6 +59,8 @@ export const LESSONS: readonly Lesson[] = [
   compileALoop,
   cAndOverflow,
   checkedArithmetic,
+  fromFunctionToExecutable,
+  debugNativeInstructions,
   sameCOnA32,
 ]
   .map(withIntroduced)
