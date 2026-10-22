@@ -90,11 +90,13 @@ export function RegisterRow({
 /** A compact summary. Values arrive already formatted, including complete 64-bit hexadecimal. */
 export function RegisterSummary({
   name,
+  label = name,
   value,
   written,
   className = "",
 }: {
   name: string;
+  label?: string;
   value: string | number;
   written: boolean;
   className?: string;
@@ -103,11 +105,11 @@ export function RegisterSummary({
     <div
       className={`al-register-summary ${className}`}
       role="group"
-      aria-label={S.register.group(name)}
+      aria-label={S.register.group(label)}
       data-register={name}
       data-changed={written}
     >
-      <code className="al-dreg-name">{name}</code>
+      <code className="al-dreg-name">{label}</code>
       <code className="al-dreg-value">{value}</code>
       {written && <span className="al-dreg-flag">{M0.registers.changed}</span>}
     </div>

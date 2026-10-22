@@ -6,6 +6,16 @@ import { RegisterSummary } from "./parts";
 import { traceOf, viewAt } from "./trace";
 
 describe("compact register summaries", () => {
+  it("keeps canonical identity separate from a descriptive label", () => {
+    const { container } = render(
+      <RegisterSummary name="sp" label="Stack pointer (sp)" value="0x430000" written={false} />,
+    );
+    expect(container.querySelector('[data-register="sp"] .al-dreg-value')).toHaveTextContent(
+      "0x430000",
+    );
+    expect(screen.getByText("Stack pointer (sp)")).toBeVisible();
+  });
+
   it("keeps preformatted 64-bit values exact and marks a write independently of value", () => {
     const { rerender, container } = render(
       <RegisterSummary name="x0" value="0xffffffffffffffff" written={false} />,

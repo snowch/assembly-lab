@@ -153,3 +153,28 @@ addresses, polling semantics and escape sequence are unchanged from the rendered
 
 No blocking technical findings remain. Full-suite results belong to the managing session's
 separate validation record; this review does not claim a full-suite run.
+
+## Engineering-record and instruction-boundary addendum
+
+Independently reviewed the managing session's `issues-16-17-validation.md`, native README,
+CLAUDE/model-plan amendments and instruction-inventory changes at ed9d8cc. The native-only
+exception is narrow: labelled GNU/QEMU/GDB observations are permitted; Linux startup,
+syscalls and UART remain outside the browser model; ordinary supported arithmetic still
+requires the original differential check. Both new TAUGHT entries are empty, their browser
+challenges allow only add/sub/ret, and the adr prose exception affects only the inventory
+assertion, not introducedBy or the assembler/editor gate. Existing inventory coverage and
+exception-presence assertions remain. No machine implementation changes expand that boundary.
+
+Compared the engineering record with actual logs: `/tmp/issues-real-tools.log` reports
+193 programs, 2264 calls and 284710 instruction states, zero differences, plus 15 files,
+39675 assembler lines, 184 outside the subset and zero disagreements. The ordinary
+`/tmp/al-native-fresh.log` reports successful native checks. `/tmp/issues-focused-browser3.log`
+reports 12 focused passes. The measured 115.671875px summary height is present in the
+independent register review's measurement JSON. `/tmp/issues-full-check.log` records passing
+formatting, integrity/type stages, 138 unit/integration files and 2770 tests, production build,
+and the start of the 1090-test browser suite. That suite is still progressing at this review;
+no full-suite completion is claimed. The validation document correctly preserves its pending
+status and distinguishes earlier development failures from later focused passes.
+
+No necessary correction found in these engineering/inventory changes. This addendum is a
+source/log review; it adds no new rendered-page or full-suite claim.

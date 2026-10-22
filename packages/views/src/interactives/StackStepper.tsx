@@ -132,7 +132,8 @@ export const StackStepper = withProps(Props, function StackStepper({ data, store
       <div className="al-memory-registers" role="group" aria-label={S.stepper.registers}>
         <RegisterSummary
           className="al-memory-register"
-          name={T.sp}
+          name="sp"
+          label={T.sp}
           value={hexAddress(Number(view.state.sp))}
           written={step?.writes.some((w) => w.reg === "sp") ?? false}
         />

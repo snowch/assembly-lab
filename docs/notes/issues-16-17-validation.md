@@ -89,9 +89,18 @@ browser run overlapped a rebuild and was stopped (3 failed, 1 interrupted, 8 did
 The successful 12-test rerun used a stable built site. The earlier all-unit run had 2 failures
 and 2768 passes; the later full check passed all 138 files and 2770 tests.
 
-`npm run check` is running its complete 1090-case browser suite after passing formatting,
-copyright, platform integrity, strict types, all unit/integration tests and production build.
-The final result will replace this paragraph when the command completes.
+The first local full check passed formatting, integrity, types, 2770 unit/integration tests
+and the build, then found three desktop browser failures: both stack traces lost the canonical
+`sp` data identity, and the footer test still expected Module 11 immediately before optional A32.
+The run was stopped to correct these: **588 passed, 16 skipped, 3 failed, 1 interrupted,
+482 did not run**, exit 130. This is a failed/interrupted run, not a full pass.
+
+`RegisterSummary` now separates canonical register identity from its descriptive label. The
+stack pointer retains `data-register="sp"` and the existing visible “Stack pointer (sp)” label.
+The footer check now pins the final native lesson and verifies the correct previous link.
+New unit coverage checks that identity and the actual stack-pointer value; the focused unit
+rerun passed 9 tests and all six previously affected desktop/phone browser cases passed.
+The complete validation is being rerun; its result will be recorded here.
 
 The first push CI check stopped at formatting: the final keyboard-review JSON had been
 created after the initial formatter ran. That measurement file was formatted and the
