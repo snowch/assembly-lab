@@ -1,25 +1,38 @@
 # Native Module 12 verification
 
-`npm run check:native` (or `python3 scripts/native/check.py`) needs the packages named in
-Module 12, plus `qemu-system-arm`. The separate Ubuntu 24.04 CI job installs them and
-checks the actual public download sources. It requires no Node dependency installation.
+Copyright © 2026 Christopher Snow
 
-The script builds separate C and assembly objects, links a static executable, inspects
-its ELF header and disassembly, and compares five real GDB stops in original and deliberately
-broken functions. It verifies normal and failing outputs/statuses, two different valid
-solutions to the final challenge and rejection of the unchanged function. It also builds
-and runs the standalone Linux ELF and optional QEMU virt UART image. The UART check reads
-the serial line, then sends the documented Ctrl-A X console escape and checks clean exit.
-It does not claim physical UART timing or FIFO pressure.
+`npm run check:native` (or `python3 scripts/native/check.py`) checks the actual public download
+sources. The separate Ubuntu 24.04 CI job installs GNU binutils, QEMU system/user mode, GDB,
+`file` and Python. No C compiler is required for the boot capstone or its native verifier.
+
+The script assembles `boot.s` and `trip_distance.s`, links both with `boot.ld`, checks the ELF
+entry/loadable segments and disassembles the function. In system QEMU it connects GDB to the
+CPU paused at reset, checks that this direct-loaded ELF starts at its entry, poisons the BSS
+result before startup, and confirms startup clears it and sets an aligned stack. A loaded
+`.data` value is checked separately. Five real GDB stops in the original and deliberately
+broken functions agree with the browser arithmetic; `ret` returns to assembly label `after_trip`.
+The stored232/262 values and different serial reports are both checked.
+
+The assembly-only `verify-boot.s` harness checks the same four revised-contract tuples as the
+browser. Two different correct instruction sequences pass; the unchanged original fails.
+The verifier also builds/runs the optional standalone Linux assembly source. The old C files
+remain optional comparison sources, but the core build, exercises and verification do not use them.
+
+UART checks read the serial line, then send the documented Ctrl-A X console escape and check
+that the emulator closes cleanly. This is a host action, not guest process exit. No check claims
+physical UART clocks, baud accuracy or realistic FIFO pressure. The selected direct ELF path
+has no guest BIOS, firmware image or boot stub before `_start`; physical board differences and
+checked sources are recorded in `docs/notes/module-12/boot-facts.md`.
 
 `python3 scripts/native/check.py --record` additionally refreshes
 `content/lessons/module-12.evidence.json` and the deterministic source zip. Run this only
-in the documented reference environment; then format the JSON with
-`npx prettier --write content/lessons/module-12.evidence.json`. Normal CI checks never rewrite evidence.
+in the documented reference environment; then format JSON with
+`npx prettier --write content/lessons/module-12.evidence.json`. Normal CI never rewrites evidence.
 The recorded PC offsets are relative to the function; after `ret`, the verifier checks that
-PC belongs to `main` instead of asserting a compiler-specific absolute address.
+PC equals `after_trip` instead of asserting a compiler-specific return address.
 
 Supported A64 arithmetic programs also live in `scripts/real-tools/corpus`: they retain
-the normal simulator/GNU/QEMU differential check. Native `_start`, syscall and UART
-experiments deliberately use instructions/services outside the browser model and have
-this separate executable check. No browser compiler, Linux kernel or device model is added.
+the normal simulator/GNU/QEMU differential check. Boot startup and device instructions remain
+native-only and have this separate executable check. No browser compiler, Linux kernel or
+whole-computer device model is added.

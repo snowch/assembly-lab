@@ -1,44 +1,46 @@
-# Module 12: Running ARM64 outside Assembly Lab (lesson text)
+# Module 12: Boot an assembly program (lesson text)
 
-Drafted in a separate agent pass from the source brief and the existing Module 0 function. Native execution and review are recorded separately. This record contains each learner-facing string verbatim; keys are editorial markers.
+Drafted separately from the checked native assets and source brief. This record contains the current learner-facing prose and labels verbatim. Native execution and independent reviews are recorded separately.
 
-# From a function to an executable
+# Build and boot an assembly program
 
 ## PROSE.question
 
-The four instructions from Module 0 can become a function in a Linux program. **What else must surround those instructions before you can run them outside this page?**
+The trip function can run in a computer that has no operating system. **What must happen before its first instruction, and who does that work?**
 
-You will keep the same trip inputs and result. The new work is building a file that an execution environment can load.
+You will assemble a bootable ARM64 program, give it its own startup code and run it on QEMU's `virt` machine. Its caller, calculation and serial output are all assembly.
 
 ## PROSE.motivation
 
-A text file of instructions is **source**. An assembler translates it into machine instructions in an **object file**. A linker joins object files and resolves their references to names such as `trip_distance`. Its output here is an **executable**, a file prepared for loading and running.
+A text file of instructions is **source**. An assembler translates it into machine instructions in an **object file**. A linker joins object files and resolves references to names such as `trip_distance`. Its output here is an **executable**, a file prepared for loading and running.
 
-The GNU tools below run on your Linux computer and produce AArch64 code. Producing code for another target is **cross-compilation**. QEMU user mode then executes that AArch64 Linux program by emulation. It forwards Linux requests to the host environment. It does not boot a guest Linux kernel, the operating system’s core that manages processes and provides their services.
+QEMU system mode emulates a complete computer: a processor, working memory and devices. That computer runs our program directly, without Linux or a C library. This is **bare-metal** programming. Your host computer still runs its usual operating system and uses it to run the tools and QEMU.
+
+The GNU tools below produce AArch64 code, even if your host uses another instruction set. The `linux-gnu` part of their names does not require the program they build to use Linux.
 
 ## PROSE.setup
 
-Use a Linux terminal, the window in which you enter commands and read their output. Each code block below contains commands to enter, without a prompt character. Run them in order. The checked reference environment is Ubuntu 24.04. On Windows, use an Ubuntu terminal in WSL2, the Windows facility for running Linux. These are Linux commands; they are not commands for PowerShell or a macOS terminal.
+Use a Linux terminal, the window in which you enter commands and read their output. The checked reference environment is Ubuntu 24.04. On Windows, use an Ubuntu terminal in WSL2, the Windows facility for running Linux. These commands are for that Linux terminal.
 
-Install the tools first. `sudo` asks to run the package installation with administrator privileges. `apt-get update` refreshes the package list; `install` downloads and installs the named packages. This step needs a network connection.
+Each command block below contains commands to enter in order, without a prompt character. Install the tools first. `sudo` asks for administrator privileges. `apt-get update` refreshes the package list; `install` downloads and installs the named packages. This step needs a network connection.
 
 ```sh
 sudo apt-get update
-sudo apt-get install gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu qemu-user gdb-multiarch file make unzip
+sudo apt-get install binutils-aarch64-linux-gnu qemu-system-arm gdb-multiarch make unzip
 ```
 
-[Download the complete source bundle](native/assembly-lab-native.zip). Save it in a folder where you can open a terminal. In that folder, extract the bundle with `unzip`, then change into its new directory with `cd`:
+[Download the complete source bundle](native/assembly-lab-native.zip). Save it in a folder where you can open a terminal. Extract it with `unzip`, then change into its new directory with `cd`:
 
 ```sh
 unzip assembly-lab-native.zip -d assembly-lab-native
 cd assembly-lab-native
 ```
 
-The [assembly function](native/trip_distance.s) and [C caller](native/main.c) are also available separately. Keep them in the same working directory. The other files in the bundle are used in the next lesson. Once installed and downloaded, this work needs no online compiler.
+Open [boot.s](native/boot.s), [trip_distance.s](native/trip_distance.s) and [boot.ld](native/boot.ld) in a text editor. The first file supplies startup and output. The second contains the familiar trip function. The last tells the linker where to place the program in memory. Keep the files together. No C compiler or online compiler is needed for this path.
 
 ## PROSE.prediction
 
-The downloaded `main.c` calls `trip_distance(120, 85, 42, 15)`. The function receives those four `int` arguments in `w0` to `w3`. Its two additions are followed by a subtraction and `ret`, as in Module 0.
+At `boot_ready`, the assembly caller places 120, 85, 42 and 15 in `w0` to `w3`, then calls `trip_distance`. The function adds the three distances, subtracts the correction and returns, as in Module 0.
 
 ## PROSE.predictionQuestion
 
@@ -46,47 +48,51 @@ The downloaded `main.c` calls `trip_distance(120, 85, 42, 15)`. The function rec
 
 ## PROSE.predictionExplain
 
-It returns 232. The additions make 205, then 247; subtracting the correction leaves 232. `ret` transfers control to the caller without writing a new result to `w0`.
+It returns 232. The additions make 205, then 247; subtracting the correction leaves 232. `ret` transfers control to the assembly caller without writing a new result to `w0`.
 
 ## PROSE.investigation
 
-Build the C caller and the assembly function separately, then link them:
+Assemble the startup code and the function separately, then link them:
 
 ```sh
-aarch64-linux-gnu-gcc -g -O0 -c main.c -o main.o
+aarch64-linux-gnu-as -g boot.s -o boot.o
 aarch64-linux-gnu-as -g trip_distance.s -o trip_distance.o
-aarch64-linux-gnu-gcc -static -g -no-pie main.o trip_distance.o -o trip
+aarch64-linux-gnu-ld -T boot.ld boot.o trip_distance.o -o boot.elf
 ```
 
-The `-o` option names each output file. For GCC, `-c` stops after producing an object file. `-g` includes information that lets a debugger relate machine code to names and source lines. `-O0` asks GCC to disable most optimisation of the C caller. It does not rewrite the handwritten assembly function.
+`as` is the GNU assembler; `ld` is the GNU linker. `-o` names each output file. `-g` includes information that lets a debugger relate machine code to source names and lines. `-T boot.ld` selects the **linker script**, the file that defines the memory layout and first instruction.
 
-The final GCC command drives the linker and supplies the C startup code and libraries. `-static` includes the required library code in this executable, so the run needs no target shared-library installation. `-no-pie` requests an executable whose code does not need to be relocated to a different base address for each run. These settings make this small experiment easier to inspect.
+Open `boot.ld`. `ENTRY(_start)` selects the executable's **entry point**, the address at which our startup begins. The script places the program at `0x40080000`, inside this QEMU machine's RAM, its working memory. This placement belongs to this example; it is not an ARM64 reset address.
 
-The lines around the four instructions are directions to the assembler, called **directives**. The processor does not execute them. `.text` selects the code section, a group of related content in the object file. `.global` makes the function’s name available to the linker; `.type` identifies it as a function. `.p2align 2` aligns its start to a multiple of four bytes, and `.size` records its size. `.section` selects a named section; the final empty `.note.GNU-stack` section says this source needs no executable stack. Keep these lines and the `trip_distance:` label when editing the function’s instructions.
+The script groups instructions in `.text`, fixed message bytes in `.rodata`, initialised writable data in `.data`, zero-initialised storage in `.bss` and stack space in `.stack`. These are **sections**, groups of related content. It reserves the stack and names its upper address `stack_top`. It aligns the stack region to 16 bytes and reserves a multiple of 16 bytes, so `stack_top` is also aligned as the calling convention requires.
+
+The lines beginning with a dot in the assembly are **directives** for the assembler. They do not execute on the processor. `.section` selects a section; `.global` exposes a name to the linker; `.type` identifies a function; `.p2align 2` aligns to a multiple of four bytes. `.size` records a function's size. `.word` supplies a stored value, `.asciz` stores message bytes followed by zero, and `.skip` reserves space. Keep these lines and the function label when editing the trip instructions.
+
+In `boot.s`, `.ifdef CHALLENGE`, `.else` and `.endif` choose which source block the assembler includes. With the ordinary build, `CHALLENGE` is not defined, so it includes the single-call block after `.else`. These directives do not create a runtime choice. The next lesson selects the other block for its test caller.
 
 ## PROSE.construction
 
-Run the executable with QEMU user mode:
+Boot the linked program:
 
 ```sh
-qemu-aarch64 ./trip
-echo $?
+qemu-system-aarch64 -M virt -cpu cortex-a53 -m 128M -nographic -kernel boot.elf
 ```
 
-`./trip` names the file in the current directory. `echo $?` prints the preceding command's exit status. A status of zero means success here.
+`-M virt` selects QEMU's machine design. `-cpu cortex-a53` selects the emulated processor and `-m 128M` its RAM size. `-kernel` supplies the image to load; this option's name does not make the image a Linux kernel. `-nographic` connects the serial console and QEMU's control interface to this terminal.
 
-Expected output for these files:
+Expected serial output:
 
 ```text
-trip_distance(120, 85, 42, 15) = 232
-0
+Assembly Lab: trip check passed
 ```
 
-The C caller prints the assembly function's result with `printf`. It then returns zero if that result is 232, or one otherwise. The printed number and exit status are separate observations. The executable starts in C startup code, which eventually calls `main`; it does not start at `trip_distance`.
+Startup calls the function, saves its result in memory at `result`, and compares it with the expected value. It chooses a message and sends its bytes to the serial device. The passing line reports that comparison; it does not print the result's digits.
+
+The terminal stays occupied after printing. Our program waits in a loop; there is no operating-system process exit inside the emulated machine. Press Ctrl-A, release it, then press X to leave QEMU. These are host controls, not instructions executed by the program.
 
 ## PROSE.failureExperiment
 
-In the browser experiment, the third instruction has been changed from `sub w0, w0, w3` to `add w0, w0, w3`. The same four inputs are used. The function still returns to its caller.
+In the browser experiment, the third instruction has been changed from `sub w0, w0, w3` to `add w0, w0, w3`. The same four inputs are used. The function still returns to its assembly caller.
 
 ## PROSE.failureQuestion
 
@@ -94,58 +100,80 @@ In the browser experiment, the third instruction has been changed from `sub w0, 
 
 ## PROSE.failureExplain
 
-It returns 262. The first two additions still make 247, but the final addition increases it by 15. In the native caller, this result prints as 262 and makes the process exit with status one. The code builds and runs; the calculation is wrong.
+It returns 262. The first two additions still make 247, but the final addition increases it by 15. The native caller saves that value and chooses its failure message. Building successfully does not establish that the calculation is correct.
 
 ## PROSE.explanation
 
-The linker checks whether references can be resolved. It does not know whether the trip correction should be added or subtracted. QEMU executes either instruction. The C caller makes the intended result testable, so a wrong calculation can produce a clear failure.
+Follow `_start` in `boot.s`. It has no caller that has prepared a stack or promised zeroed working storage.
 
-To reproduce this failure outside the browser, edit only the third instruction in `trip_distance.s`. Repeat the assembly and link commands, then run `qemu-aarch64 ./trip` and `echo $?` again. Rebuilding matters: editing source does not alter an executable that already exists. Restore the subtraction and rebuild before the next lesson.
+- `msr daifset, #0xf` sets the mask bits for debug, SError, IRQ and FIQ exceptions. SError is a system-error exception; IRQ and FIQ are interrupt requests. An interrupt is a request that can divert execution to a handler, code that responds to it. Masking prevents the selected exceptions from being taken while their mask bits are set. This small program supplies no interrupt handlers. It uses polling: repeatedly reading device status to decide when to act.
+- `ldr x0, =stack_top` asks the assembler to arrange a load of the address named by the linker. The following `mov sp, x0` gives the stack pointer its initial value. The `=name` form is assembler shorthand, not an additional processor instruction.
+- The zeroing loop loads `bss_start` and `bss_end`, compares the addresses and clears eight bytes at a time with `str xzr, [x0], #8`. The final operand advances the pointer after the store. The linker makes this region a multiple of eight bytes. `b.hs` leaves the loop when its unsigned address reaches the end.
+- At `boot_ready`, startup supplies the arguments and calls `trip_distance`. `bl` gives that function a return address. At `after_trip`, the caller stores the returned value. It uses `csel` to select the passing message when the comparison is equal, or the failing message otherwise.
+
+`uart_puts` then writes a zero-terminated string to a **UART**, a device that sends bytes serially, one after another. Its `stp` and `ldp` pair save and restore the frame pointer and return address in an aligned stack frame. This is why startup prepares the stack before calling code that uses it.
+
+The PL011 UART's device registers appear at memory addresses on this machine. This is **memory-mapped input/output**: a load or store at a device address talks to the device. The base address here is `0x09000000`. The setup stores configure the UART: offset `0x30` is its control register, written with zero while configuring and `0x301` to enable the UART, transmitter and receiver. Offsets `0x24` and `0x28` hold the integer and fractional baud-rate divisors; this source writes 1 and 0. A divisor sets the serial bit rate from the device’s clock. This QEMU run does not verify physical clock settings or serial timing. Offset `0x2c` controls the line format; `0x60` selects eight data bits. These values describe this experiment, not a board-independent serial-speed recipe. `adr` obtains the address of a nearby message label. `ldrb` reads each message byte; `cbz` detects its zero terminator. The output loop reads the UART flag register at offset `0x18`. `tbnz` tests bit 5 and branches while the transmit buffer is full. `strb` writes an available byte to the data register at offset zero.
+
+After output, `wfi` waits for an interrupt and `b halt` keeps execution in the waiting loop if it resumes. `ret` would be wrong at the program entry: no caller supplied an address to return to.
+
+To reproduce the arithmetic failure, change only the third instruction in `trip_distance.s`. Repeat the assembly and link commands, then boot the new image. Restore the subtraction and rebuild before the next lesson. Editing source does not change the executable already on disk or the running machine.
 
 ## PROSE.generalisation
 
-The executable uses **ELF**, a file format that records machine code, data and instructions for loading them. Object files can use ELF too; an ELF file is not necessarily an executable. Inspect the files you just built:
+The executable uses **ELF**, a file format that records machine code, data and loading information. Object files can use ELF too; not every ELF file is executable. Inspect the image:
 
 ```sh
-file trip_distance.o trip
-aarch64-linux-gnu-readelf -h trip
-aarch64-linux-gnu-readelf -l trip
-aarch64-linux-gnu-objdump -d --disassemble=trip_distance trip
+aarch64-linux-gnu-readelf -h -l boot.elf
+aarch64-linux-gnu-objdump -d --disassemble=_start boot.elf
+aarch64-linux-gnu-objdump -d --disassemble=trip_distance boot.elf
 ```
 
-`file` identifies the files. `readelf -h` reads the ELF header, including the target machine, byte order and entry address. `readelf -l` reads the loading information, including the segments placed in memory. In this build, the executable is 64-bit, little-endian AArch64 and statically linked. Its entry address belongs to startup code.
+`readelf -h` reads the file header, including the target machine, byte order and entry address. `-l` reads its program headers. Each `LOAD` segment describes bytes to place in memory. A segment can include several sections. Its memory size can exceed its file size: the reserved `.bss` and stack need memory without storing an image-sized string of zeros in the file. The ELF loader can supply zeros for that extra memory. Our startup explicitly clears `.bss` before using it, making the program’s own preparation visible. The recorded experiment below writes a non-zero test marker with GDB at entry, then confirms that startup clears it. Initialised `.data`, in contrast, carries its starting bytes in the image.
 
-`objdump -d` translates machine instructions back into assembly text, a **disassembly**. `--disassemble=trip_distance` restricts the output to the named function. Check its two additions, subtraction and return. The executable contains much more code for startup and the C library; that code is outside this four-instruction function.
+`objdump -d` translates machine instructions back into assembly text, a **disassembly**. `--disassemble=name` limits the output to that named function. Compare the four trip instructions with the source.
 
-The executable file contains instructions and data. The running **process** also has live registers, a program counter, memory and operating-system resources. The next lesson inspects that live state.
+How does execution reach `_start`? For this ELF command, QEMU loads the segments into emulated RAM and starts the processor at the ELF entry. It supplies the loading service before our instructions run. No BIOS, UEFI image or guest bootloader runs in this path.
+
+On a physical board, power-on reset starts execution at an address determined by that processor and system. Many Arm systems first execute built-in **boot ROM**, startup code stored in read-only memory. It may load **firmware**, the board's early startup software. Firmware prepares hardware and a **bootloader** loads the next program and transfers control to its entry point. The stages and responsibilities depend on the board.
+
+**BIOS** usually names the legacy PC firmware interface. Some Arm machines use **UEFI**, a modern firmware interface also used on PCs. ARM64 itself does not prescribe one BIOS, firmware chain or boot medium. Our direct-loaded ELF lets you inspect the handoff and the program's own startup without installing board firmware. It is bootable on this chosen QEMU machine; it is not a universal disk or USB boot image.
 
 ## PROSE.finalTask
 
-Repair `trip_distance`. Four signed `int` values arrive in `w0`, `w1`, `w2` and `w3`: three distances and a correction. Return the sum of the distances minus the correction in `w0`, then return to the caller. The supplied tests stay within the signed 32-bit range.
+Repair `trip_distance`. Four signed 32-bit values arrive in `w0`, `w1`, `w2` and `w3`: three distances and a correction. Return the sum of the distances minus the correction in `w0`, then return to the assembly caller. The supplied tests stay within the signed 32-bit range.
 
-The tests check the returned values for several inputs. They do not require a particular spelling or instruction sequence. You can also put your function body into `trip_distance.s`, rebuild the native program and check its printed result and exit status.
+The browser tests check several input sets and accept any permitted instruction sequence with the required behaviour. Copy your function body into `trip_distance.s`, keeping the label and surrounding directives. Assemble it again, link `boot.elf` again and boot it. The native caller checks the original trip inputs and chooses a serial message. The next lesson inspects the stored value and instruction stops.
 
-## PROSE.finalHints
+## PROSE.finalHints.0
 
 Follow the result through the three arithmetic instructions before changing anything.
 
+## PROSE.finalHints.1
+
 The correction reduces the sum. Returning normally does not establish that the value is correct.
+
+## PROSE.finalHints.2
 
 For distances 7, 9 and 4 with correction 2, the required result is 18.
 
+## PROSE.finalHints.3
+
 Keep the accumulated result in w0 and subtract the correction before returning.
+
+## PROSE.finalHints.4
 
 One solution is two additions into w0, followed by sub w0, w0, w3 and ret.
 
 ## PROSE.reflection
 
-- An assembler produces an object file from assembly source.
-- A linker joins object files and resolves their references.
-- QEMU user mode executes this AArch64 Linux program.
-- A printed result and an exit status provide different checks.
-- Changing source requires a rebuild before the next run.
+- The assembler translates source into object files; the linker gives their contents addresses.
+- ELF loading information tells QEMU where to place the program and where to begin.
+- Our startup prepares the stack and zeroes `.bss` before calling the function.
+- Memory-mapped stores send bytes to this machine's UART.
+- Finishing the calculation leaves our bare-metal program in a waiting loop.
 
-Which file must you rebuild after editing only `trip_distance.s`?
+After editing only `trip_distance.s`, which files must you rebuild?
 
 ## PROSE.reflectionNoteSummary
 
@@ -153,21 +181,21 @@ Answer
 
 ## PROSE.reflectionNote
 
-Assemble `trip_distance.s` again to replace `trip_distance.o`, then link again to replace `trip`. The existing `main.o` can be reused while `main.c` is unchanged.
+Assemble `trip_distance.s` again to replace `trip_distance.o`, then link again to replace `boot.elf`. The unchanged `boot.o` can be reused. Stop the old QEMU machine and boot the new executable.
 
 ## PROSE.modelVsReality
 
-The browser executes its A64 instruction model. The terminal instructions build and run a Linux executable with GNU tools and QEMU user mode. QEMU is an emulator, so this is not a measurement from a physical Arm processor.
+The browser executes its A64 instruction model for the arithmetic function. The external tools assemble and link the whole image; QEMU system mode supplies its emulated machine. The browser does not execute the native startup, exception-control instructions or UART accesses.
 
-The handwritten function uses the same supported instructions in both environments. The native program also includes startup and C library code that the browser does not execute. The recorded tool output belongs to the reference build; addresses and formatting can differ with tool versions.
+The recorded output comes from the reference GNU/QEMU build. QEMU does not establish physical-board clock settings, serial speed or realistic transmit-buffer pressure. The UART polling code belongs to this device model and memory map. Different boards require their own startup and device setup.
 
 ## PROSE.originalityNote.textbookExample
 
-A first native assembly program that prints a greeting through a syscall.
+A first bare-metal greeting presented without its startup and loading path.
 
 ## PROSE.originalityNote.howThisDiffers
 
-The existing trip function first becomes a linked C-callable function. A controlled arithmetic error separates successful building and execution from passing a behavioural check.
+The known trip calculation becomes an assembly-only boot image. The learner connects source, ELF loading, explicit stack and storage setup, a callable arithmetic function and a checked serial report, then follows the same state in a debugger.
 
 ## PROSE.troubleshootingNoteSummary
 
@@ -175,31 +203,36 @@ If a command fails
 
 ## PROSE.troubleshootingNote
 
-- **`command not found`:** check the spelling, including `aarch64-linux-gnu-`. Repeat the installation command above in your Ubuntu terminal. These tools produce AArch64 code; your computer's ordinary `gcc` may target a different processor.
-- **`Exec format error`:** use `qemu-aarch64 ./trip` to run this AArch64 executable. An x86 computer cannot execute its instructions directly.
-- **A missing `/lib/ld-linux-aarch64.so.1`:** the executable needs an AArch64 shared-library loader. Repeat the link command with `-static`, then run the new `trip`. The static build avoids installing that target loader and its libraries.
-- **An assembler error:** read the reported line in `trip_distance.s`. Check register names, commas and operands against the original file. Correct the source and repeat the assembly command. Do not link after assembly has failed.
-- **Output from an earlier edit:** repeat the assembly and link commands. Editing the source does not change its object file or executable.
+- **`command not found`:** check the spelling, including `aarch64-linux-gnu-`, and repeat the installation command in your Ubuntu terminal. These tools produce AArch64 code.
+- **An assembler error:** read its reported source line. Check names, commas and operands against the downloaded file. Correct it and repeat assembly. Do not link after assembly fails.
+- **An undefined name at link time:** include both `boot.o` and `trip_distance.o`, with `-T boot.ld`. The script supplies names such as `stack_top`.
+- **No serial output:** use the exact QEMU system command above with `-nographic`. `qemu-aarch64` user mode cannot boot this machine image. Check that linking succeeded and that `boot.elf` is the new file.
+- **An earlier edit still runs:** stop QEMU, assemble and link again, then start a new machine.
+- **The terminal stays occupied:** this is expected after output. Press Ctrl-A, release it, then press X. The guest's waiting loop is not a failure to exit Linux.
 
 ## LABELS.title
 
-From a function to an executable
+Build and boot an assembly program
 
-## LABELS.objectives
+## LABELS.objectives.0
 
-assemble and link the familiar trip function;
+assemble and link an ARM64 boot image without C;
 
-run an AArch64 Linux executable with QEMU;
+## LABELS.objectives.1
 
-check its result and inspect its machine code.
+explain loading, the entry point, stack setup and storage initialisation;
+
+## LABELS.objectives.2
+
+run a bare-metal trip check through the serial device.
 
 ## LABELS.titles.question
 
-What surrounds the four instructions?
+What runs before the trip function?
 
 ## LABELS.titles.motivation
 
-Build a program around the function
+Source, tools and the emulated machine
 
 ## LABELS.titles.prediction
 
@@ -207,11 +240,11 @@ Predict the function result
 
 ## LABELS.titles.investigation
 
-Create objects and link the executable
+Assemble and place the boot image
 
 ## LABELS.titles.construction
 
-Run the trip program
+Boot the assembly program
 
 ## LABELS.titles.failureExperiment
 
@@ -219,15 +252,15 @@ Buildable code with a wrong calculation
 
 ## LABELS.titles.explanation
 
-Test behaviour after rebuilding
+Prepare the machine and send bytes
 
 ## LABELS.titles.generalisation
 
-Inspect the executable
+Loading, entry and firmware
 
 ## LABELS.titles.challenge
 
-Repair the native trip function
+Repair the boot image’s trip function
 
 ## LABELS.titles.reflection
 
@@ -235,11 +268,11 @@ What you now know
 
 ## LABELS.captions.listing
 
-The familiar trip function, paired with its C calculation.
+The handwritten trip function used by the boot image.
 
 ## LABELS.captions.pipeline
 
-Follow the recorded build from source files to a running process.
+Follow the files from assembly source through linking to the emulated machine.
 
 ## LABELS.captions.predict
 
@@ -247,7 +280,7 @@ Predict the result for the four labelled inputs.
 
 ## LABELS.captions.step
 
-Follow the same function in the browser model.
+Follow the assembly function in the browser model.
 
 ## LABELS.captions.predictFailure
 
@@ -259,57 +292,53 @@ Find the arithmetic effect of the changed instruction.
 
 ## LABELS.captions.final
 
-Return the required result for each test case.
+Repair the function, then rebuild the boot image.
 
-## LABELS.options.prediction
-
-### value
+## LABELS.options.prediction.0.value
 
 232
 
-### label
+## LABELS.options.prediction.0.label
 
 232
 
-### value
+## LABELS.options.prediction.1.value
 
 247
 
-### label
+## LABELS.options.prediction.1.label
 
 247
 
-### value
+## LABELS.options.prediction.2.value
 
 262
 
-### label
+## LABELS.options.prediction.2.label
 
 262
 
-## LABELS.options.failure
-
-### value
+## LABELS.options.failure.0.value
 
 232
 
-### label
+## LABELS.options.failure.0.label
 
 232
 
-### value
+## LABELS.options.failure.1.value
 
 247
 
-### label
+## LABELS.options.failure.1.label
 
 247
 
-### value
+## LABELS.options.failure.2.value
 
 262
 
-### label
+## LABELS.options.failure.2.label
 
 262
 
@@ -317,63 +346,81 @@ Return the required result for each test case.
 
 Repair trip_distance
 
-## LABELS.challenges.final.tests
+## LABELS.challenges.final.tests.0
 
 Subtract the trip correction
 
+## LABELS.challenges.final.tests.1
+
 Use a different set of distances
+
+## LABELS.challenges.final.tests.2
 
 Handle zero distances and correction
 
+## LABELS.challenges.final.tests.3
+
 Subtract a correction from zero
 
-# Debug instructions and choose an execution environment
+# Follow startup and debug the boot image
 
 ## PROSE.question
 
-The native trip program prints one final answer. A debugger can stop it between instructions. **Can you find the first instruction at which a wrong calculation diverges from the browser model?**
+The boot image reports whether the trip check passed. **Can you follow the machine from its entry point to the first incorrect arithmetic result?**
 
-Use the working `trip` executable from the previous lesson. Restore its subtraction and rebuild if you left the deliberate error in place.
+Use the working `boot.elf` from the previous lesson. Restore the subtraction and rebuild if you left the deliberate error in place. You will inspect startup, instruction execution and the result saved in RAM.
 
 ## PROSE.motivation
 
-A **debugger** inspects a running program and controls when it stops. GDB is the GNU debugger. QEMU can expose a connection through which GDB controls this emulated process. A **breakpoint** asks the debugger to stop when execution reaches a chosen location.
+A **debugger** inspects a running machine and controls when it stops. GDB is the GNU debugger. QEMU exposes a connection through which GDB controls the emulated processor. A **breakpoint** asks it to stop when execution reaches a chosen location.
 
-Open two terminals in the directory containing `trip`. Terminal 1 will run QEMU. Terminal 2 will run GDB. Keep both open while stepping.
+Open two Linux terminals in the directory containing `boot.elf`. Terminal 1 will run QEMU. Terminal 2 will run GDB. Keep both open while stepping.
 
 ## PROSE.connection
 
-In Terminal 1, start QEMU with a debugger connection on port 1234. A port is a numbered endpoint for a connection.
+In Terminal 1, boot with the processor paused and a debugger connection available:
 
 ```sh
-qemu-aarch64 -g 1234 ./trip
+qemu-system-aarch64 -M virt -cpu cortex-a53 -m 128M -nographic -kernel boot.elf -S -gdb tcp:127.0.0.1:1234
 ```
 
-A quiet terminal is expected: `-g 1234` makes QEMU wait for GDB. It has not reached the call or printed its result.
+`-S` pauses the processor before it executes guest instructions. `-gdb` opens a debugger connection on this computer's loopback address, `127.0.0.1`, at port 1234. A **port** is a numbered connection endpoint. The quiet terminal is expected while the processor is paused.
 
-In Terminal 2, open the executable in GDB:
+In Terminal 2, open this executable in GDB:
 
 ```sh
-gdb-multiarch ./trip
+gdb-multiarch ./boot.elf
 ```
 
 At GDB's `(gdb)` prompt, enter:
 
 ```text
-target remote localhost:1234
+target remote 127.0.0.1:1234
+info registers pc sp
+x/i $pc
+set {unsigned int}&result = 0xa5a5a5a5
+x/1wx &result
+break boot_ready
+continue
+info registers pc sp
+x/1gx &result
 break trip_distance
 continue
 info registers x0 x1 x2 x3 pc
 x/i $pc
 ```
 
-`target remote` connects to the waiting QEMU process on this computer. `break trip_distance` sets a breakpoint at the function. `continue` lets startup and the C caller execute until that breakpoint. Do not use GDB's `run` command for this remote connection.
+`target remote` connects GDB to QEMU. For this direct-loaded ELF, the initial program counter points at `_start`. The **program counter**, `pc`, holds the address of the next instruction. `x/i $pc` displays that instruction without executing it. GDB's `$pc` expression means the current value of the register.
 
-`info registers` prints the named registers. `pc` is the **program counter**, the address of the next instruction to execute. `x/i $pc` displays that instruction; it has not run yet. GDB's `$pc` expression means the current value of that register.
+`set {unsigned int}&result = 0xa5a5a5a5` deliberately writes a test marker into the result storage. This is a debugger action before startup runs. `x/1wx &result` reads one four-byte value in hexadecimal, so you can check the marker. QEMU’s ELF loader may already have supplied zeros; the marker lets you test the startup loop itself.
+
+`break boot_ready` selects the stop after stack setup and `.bss` clearing. `continue` lets the startup instructions run to that stop. Compare `sp` with `stack_top` in the recorded startup figure. `x/1gx &result` displays one eight-byte value in hexadecimal at the address of `result`; it is zero after clearing.
+
+The next breakpoint stops at `trip_distance`, after startup supplies its arguments. `info registers` prints the named registers. Do not use GDB's `run` command for this remote connection: QEMU has already loaded the machine, and `continue` resumes it.
 
 ## PROSE.prediction
 
-At the function breakpoint, the low 32 bits of `x0` to `x3` hold the four inputs: 120, 85, 42 and 15. The next instruction is `add w0, w0, w1`.
+At the function breakpoint, the low 32 bits of `x0` to `x3` hold the four inputs: 120, 85, 42 and 15. The next instruction is `add w0, w0, w1`. GDB’s `stepi` command executes one machine instruction.
 
 ## PROSE.predictionQuestion
 
@@ -381,7 +428,7 @@ At the function breakpoint, the low 32 bits of `x0` to `x3` hold the four inputs
 
 ## PROSE.predictionExplain
 
-They will hold 205. The instruction writes `w0`, adding 120 and 85. A write to `w0` also clears the upper 32 bits of `x0`. The other argument registers are not written by this instruction.
+They will hold 205. The instruction adds 120 and 85 into `w0`. A write to `w0` also clears the upper 32 bits of `x0`. The other argument registers are not written by this instruction.
 
 ## PROSE.investigation
 
@@ -393,28 +440,39 @@ info registers x0 x1 x2 x3 pc
 x/i $pc
 ```
 
-`stepi` executes one machine instruction. Repeat this group through the two additions, subtraction and `ret`. Use instruction stepping here; GDB's `step` follows source-level stepping rules and need not stop after each instruction.
+Repeat this group through the two additions, subtraction and `ret`. Use instruction stepping here; GDB's `step` follows source-level rules and need not stop after each instruction.
 
-Compare each stop with the browser trace and the recorded GDB stops below. GDB prints the 64-bit `x` views. The function uses the low 32-bit `w` views for its `int` arguments and result. The function's instructions determine later writes, but the calling convention does not generally promise zero in the upper bits of every incoming `int` argument.
+Compare each stop with the browser model and the recorded GDB stops below. GDB prints the 64-bit `x` views. This function calculates with their low 32-bit `w` views. The assembly caller explicitly supplies the inputs; later writes follow the executed instruction.
 
-Before `ret`, the program counter points at `ret`. After `ret`, it points back into the C caller. Returning does not write a new value into `w0`.
+Before `ret`, the program counter points at `ret`. After it, the program counter points at `after_trip`, back in the assembly caller. The `bl` instruction supplied that return address in `x30`. Returning does not write a new value into `w0`.
 
 ## PROSE.construction
 
-Finish the process in GDB:
+Stop after the caller has stored the result and written its serial message:
 
 ```text
+break halt
 continue
+x/1wd &result
+info registers pc sp
+```
+
+`x/1wd &result` displays one four-byte value as signed decimal. Compare the saved value with the function's returned `w0`. The caller stored it before the UART routine reused registers. Terminal 1 now shows the check's serial line.
+
+To close this session, enter in GDB:
+
+```text
+detach
 quit
 ```
 
-Terminal 1 prints the trip result and returns to its shell. The remote connection closes when the process exits.
+`detach` releases the target and lets it resume. It remains in its waiting loop. In Terminal 1, press Ctrl-A, release it, then press X to stop QEMU. If GDB is still running when you need to stop, press Ctrl-C there before entering the detach commands.
 
-To stop an unfinished session, press Ctrl-C in GDB, then enter `kill` and confirm when GDB asks. Enter `quit` to leave GDB. If QEMU is still occupying Terminal 1, press Ctrl-C there too. Close the previous QEMU session before starting another on port 1234. If the port is already in use, check that both terminals from your previous attempt have finished.
+Close the old QEMU session before starting another on port 1234. If the port is already in use, finish the previous session in both terminals.
 
 ## PROSE.failureExperiment
 
-Change the third instruction to `add w0, w0, w3`, rebuild, and start a fresh QEMU and GDB session with the same commands. Stop at `trip_distance` and compare after each `stepi`.
+Change the third arithmetic instruction in `trip_distance.s` to `add w0, w0, w3`. Assemble and link again, then start a fresh QEMU and GDB session with the same commands. Stop at `trip_distance` and compare after each `stepi`.
 
 The first two instructions and their inputs are unchanged. Predict the first differing stop before opening the recorded comparison.
 
@@ -424,133 +482,92 @@ The first two instructions and their inputs are unchanged. Predict the first dif
 
 ## PROSE.failureExplain
 
-They first differ after the third arithmetic instruction. Both runs reach 247 after the second addition. The correct subtraction then leaves 232; the modified addition leaves 262. The result is already wrong before `ret`. A debugger narrows the fault from a final output to a specific executed instruction.
+They first differ after the third arithmetic instruction. Both runs reach 247 after the second addition. The subtraction leaves 232; the modified addition leaves 262. The result is already wrong before `ret`. The debugger locates the first incorrect write, before the caller stores it or chooses a message.
 
 ## PROSE.explanation
 
-A function return and a process exit have different jobs. `ret` returns to the address supplied by a caller. A Linux **system call** asks the operating system to perform a service, such as writing bytes or ending a process.
+The boot image contains two kinds of work. The trip function transforms register bits. Its caller provides inputs, saves the answer and talks to the device. GDB can inspect both, but the browser model computes only the supported arithmetic function.
 
-The downloaded [standalone source](native/standalone.s) starts at `_start`, an entry point selected explicitly by the linker. It has no C caller, `main` or C library. On AArch64 Linux, it places the syscall number in register 8 and enters the Linux kernel, the operating system’s core, with `svc #0`. The small numbers here are written with the 64-bit name `x8`; `w8` is its low 32-bit view. Syscall arguments use `x0` onwards, a separate convention from calling an ordinary function.
+A passing serial report depends on the whole path: loading at the linked addresses, reaching startup, preparing memory, calling the function and reaching the UART. A missing line alone cannot identify which part failed. In a fresh paused session, inspect the initial `_start` stop. Then set breakpoints at `boot_ready`, `trip_distance`, `after_trip` and `halt` to narrow that path.
 
-For the `write` syscall, number 64, this source sets `x0` to 1 for standard output, the program’s normal output destination, connected to your terminal here. It sets `x1` to the message address and `x2` to its byte count. For the `exit` syscall, number 93, it sets `x0` to the exit status. These numbers belong to AArch64 Linux, not to every machine that executes A64.
+The initialised marker in `.data` provides another check. At a stop, enter:
 
-The `adr` instruction in this native source obtains a nearby label's address. `.ascii` stores the quoted message bytes; subtracting the two message labels gives their byte count. These assembly directives do not execute as instructions. The browser model does not execute this program's address calculation or `svc` instructions.
+```text
+x/1wx &initialized_marker
+```
+
+`x/1wx` reads one four-byte value in hexadecimal. The value comes from bytes loaded from the ELF file. The zeroed result region and reserved stack serve different purposes: our startup clears `.bss`, and it sets `sp` to the stack's upper boundary. Loading bytes, preparing working storage and choosing the first instruction are separate steps.
 
 ## PROSE.generalisation
 
-Assemble and link the standalone Linux program, explicitly choosing `_start` as its entry point:
+A loader places the program in memory and transfers control to it. Our chosen loader is QEMU's direct ELF loading path. Startup then prepares the assumptions that the rest of our program needs. Calling a function happens later, after startup has supplied arguments and a return address.
 
-```sh
-aarch64-linux-gnu-as -g standalone.s -o standalone.o
-aarch64-linux-gnu-ld -e _start standalone.o -o standalone
-qemu-aarch64 ./standalone
-echo $?
-```
+Changing the execution environment changes those responsibilities. A Linux process receives memory and services from an operating system. Firmware can instead load a program on a physical machine after board setup. A device's address, available services and entry conditions belong to that environment; the arithmetic meaning of `add` does not change.
 
-Expected output for this fixed program:
-
-```text
-Assembly Lab: native ARM64
-0
-```
-
-`ld` is the GNU linker; `-e _start` selects the first instruction for this executable. The source requests process exit after writing its message. `ret` cannot replace that request: this entry point has no caller-provided return address.
-
-The example makes one write request. General output code must handle errors and writes that transfer only part of a buffer, a region of memory holding bytes to write; this short experiment does not implement that recovery.
+This image deliberately supports one processor and polls one UART. It does not install interrupt handlers, enable memory translation or implement an operating system. Those require additional startup code and system-specific knowledge. The next program you boot must state its entry conditions as explicitly as this one.
 
 ## PROSE.bareMetalNoteSummary
 
-Optional: run without Linux
+Optional: compare with a Linux entry point
 
 ## PROSE.bareMetalNote
 
-This extension is not required to complete the core module. QEMU system mode emulates a whole machine. The downloaded [boot source](native/boot.s) writes to a serial device directly, without Linux services. A serial device sends bytes one after another; the PL011 UART is the device model used here. This experiment targets QEMU's `virt` machine, not a physical board.
+The source bundle also contains [standalone.s](native/standalone.s), an assembly-only Linux example, and an optional C caller for the trip function. These are different execution environments from the boot image.
 
-Install the system emulator, then build the image:
+The Linux example asks an operating system to write bytes and end a process. It uses `svc`, an instruction that transfers control through an exception. Linux defines the register convention that turns that transfer into a system-call request. The bare-metal image has no Linux kernel, so copying that request into `boot.s` would not provide Linux output or exit services.
 
-```sh
-sudo apt-get install qemu-system-arm
-aarch64-linux-gnu-as -g boot.s -o boot.o
-aarch64-linux-gnu-ld -T boot.ld boot.o -o boot.elf
-aarch64-linux-gnu-readelf -h -l boot.elf
-qemu-system-aarch64 -M virt -cpu cortex-a53 -m 128M -nographic -kernel boot.elf
-```
-
-The [linker script](native/boot.ld), selected by `-T`, places the program at `0x40080000` and selects `_start`. That address is inside this machine's RAM, its working memory. QEMU loads the ELF image and begins at its recorded entry; this skips a physical board's startup software. `-M virt` selects the machine, `-cpu cortex-a53` the emulated processor and `-m 128M` its RAM size. `-nographic` connects the serial console and the QEMU monitor, its control interface, to this terminal. `-kernel` supplies the image to load.
-
-The expected serial line is:
-
-```text
-Assembly Lab: bare metal
-```
-
-The PL011 device begins at `0x09000000` on this QEMU machine. The program reads its flag register at offset `0x18`, testing bit 5, TXFF, before writing a byte to the data register at offset zero. TXFF means the transmit buffer is full. The polling loop waits while that bit is set. These are device addresses and flags; they are not Linux syscall registers.
-
-QEMU output confirms this emulated path. It does not establish physical clock settings, serial transmission speeds or realistic buffer pressure on a board. After printing, the program waits in a loop. There is no Linux process exit. Press Ctrl-A, release it, then press X to leave QEMU. This escape works because QEMU shares this terminal between its serial console and control interface. It is a host action, not an instruction in the program.
+No Linux or C example is needed to build, boot or debug the core image. Use the assembler, linker and system-mode QEMU commands above for this capstone.
 
 ## PROSE.finalTask
 
-Write a revised `trip_distance` that subtracts the correction twice. Signed `int` inputs arrive in `w0` to `w3`: three distances and one correction. Return the three distances' sum minus twice the correction in `w0`, then return normally. The supplied inputs and intermediate values fit in signed 32 bits.
+Revise `trip_distance` to subtract the correction twice. Signed 32-bit inputs arrive in `w0` to `w3`: three distances and one correction. Return their sum minus twice the correction in `w0`, then return normally. The supplied inputs and intermediate values fit in signed 32 bits.
 
-First inspect a known failing version. Keep the original single-correction function in `trip_distance.s`, restoring it if necessary. Build it with the revised task's test caller:
+First inspect the original single-correction function in GDB. Restore it in `trip_distance.s`, rebuild `boot.elf` and follow one call through the subtraction. Identify the instruction that writes the result and compare its calculation with the revised contract. Close the session before rebuilding.
 
-```sh
-aarch64-linux-gnu-gcc -static -g -O0 -no-pie verify-challenge.c trip_distance.s -o challenge
-qemu-aarch64 ./challenge
-echo $?
-```
-
-The original function fails the first case because it follows the earlier contract. Before editing it, inspect that call in GDB. Close any earlier debugging session. In Terminal 1, start the test executable and wait for GDB:
+Now implement the revision in the browser and pass its tests. Copy the function body into `trip_distance.s`, keeping the label and surrounding directives. Use the assembly-only test caller [verify-boot.s](native/verify-boot.s) for the revised contract:
 
 ```sh
-qemu-aarch64 -g 1234 ./challenge
+aarch64-linux-gnu-as -g trip_distance.s -o trip_distance.o
+aarch64-linux-gnu-as -g verify-boot.s -o verify-boot.o
+aarch64-linux-gnu-ld -T boot.ld verify-boot.o trip_distance.o -o challenge.elf
+qemu-system-aarch64 -M virt -cpu cortex-a53 -m 128M -nographic -kernel challenge.elf
 ```
 
-In Terminal 2, open that same executable:
+`verify-boot.s` uses `.set CHALLENGE, 1` to define the assembly-time selection, and `.include` to read `boot.s`. This selects the four-case caller inside that source. Its `.word` rows hold each case’s four inputs and expected result. Keep `boot.s` beside it. The tests use the same inputs and expected results as the browser. A passing run reports `4 cases passed`; a failure reports `Assembly Lab: trip check failed`. Stop QEMU with Ctrl-A, then X after reading the line.
 
-```sh
-gdb-multiarch ./challenge
-```
+The test checks behaviour rather than a particular instruction sequence. To debug a failure, use the same two-terminal commands with `challenge.elf` in both terminals, and break at `trip_distance`. Each call receives one test case.
 
-At GDB's prompt, connect and stop at the first call:
+The ordinary `boot.elf` caller still checks the original single-correction contract. Use `challenge.elf` to test the revision.
 
-```text
-target remote localhost:1234
-break trip_distance
-continue
-info registers x0 x1 x2 x3 pc
-x/i $pc
-```
-
-Use `stepi` and `info registers x0 x1 x2 x3 pc` to follow the arithmetic through the correction. Identify which instruction writes the result register and explain how its value changes. Compare that calculation with the revised contract, then close the session using the earlier cleanup steps.
-
-Now implement the revised function in the browser and pass its tests. Copy your function body into `trip_distance.s`, keeping the label and surrounding assembler directives. Repeat the build and run commands above to test the revision natively.
-
-The [native test caller](native/verify-challenge.c) checks the same input/output contract as the browser tests. A passing run prints `4 cases passed` and exits with status zero. A failure names the case and shows its actual and expected result. The tests compare behaviour, so another instruction sequence can pass.
-
-The earlier `main.c` still tests the original single-correction contract. Use `verify-challenge.c` for this revised function.
-
-## PROSE.finalHints
+## PROSE.finalHints.0
 
 Keep track of the three distance inputs and the correction separately.
 
+## PROSE.finalHints.1
+
 The revised contract applies the same correction twice. A function that passes the earlier lesson still needs a change.
+
+## PROSE.finalHints.2
 
 For distances 7, 9 and 4 with correction 2, the revised result is 16.
 
+## PROSE.finalHints.3
+
 You can subtract the correction twice, or form twice its value and subtract that.
+
+## PROSE.finalHints.4
 
 One solution adds w1 and w2 into w0, subtracts w3 twice, then executes ret.
 
 ## PROSE.reflection
 
-- A breakpoint stops execution at a selected location.
-- `stepi` executes one machine instruction; the program counter then identifies the next one.
-- A controlled error can be located at the first differing register value.
-- A Linux syscall requests an operating-system service.
-- A standalone entry point needs an explicit way to end its process.
+- GDB can stop at the image's entry and inspect startup before the function runs.
+- A breakpoint selects a location; `stepi` executes one instruction.
+- The program counter identifies the next instruction, not the instruction that just ran.
+- `ret` returns to our assembly caller; it does not finish the machine's execution.
+- ELF loading, startup and device output are distinct parts of a bootable program.
 
-Which parts of the browser model helped you debug the native function, and which parts required the external tools?
+Which parts of this boot path would you need to check before moving the program to a physical Arm board?
 
 ## PROSE.reflectionNoteSummary
 
@@ -558,41 +575,45 @@ Answer
 
 ## PROSE.reflectionNote
 
-The instruction order, register views and arithmetic results carry across. GNU tools create and inspect the executable; QEMU supplies its execution environment, and GDB controls the live process. Startup code, the C library and Linux services extend beyond the browser model.
+Check the board's reset and firmware handoff, the way it loads an image, available RAM, entry address and processor state. Check stack and storage setup, the UART's address and its clock and configuration requirements. The trip function's instruction meanings carry across; this QEMU machine's memory map and loading path are not a board specification.
 
 ## PROSE.modelVsReality
 
-The comparison combines browser-model states with recorded stops from a real GNU/QEMU/GDB run. The recording is evidence of that reference run; stepping it on this page does not start a native process. Use the terminal commands to inspect your own process.
+The comparison combines browser-model states with recorded stops from a GNU/QEMU/GDB run. Stepping that recording on this page does not start a native machine. Use the terminal commands to inspect the machine you boot.
 
-The syscall and optional UART sources are native-only experiments. The browser does not model a Linux kernel, syscall handling, devices or a complete computer. QEMU user mode and system mode provide different execution environments. Neither output is a measurement from physical Arm hardware.
+The browser does not model the complete boot path, exception handling, firmware or devices. QEMU supplies a system emulation, not physical Arm hardware. Its UART output checks this example's emulated path without establishing physical clock setup, serial timing or transmit-buffer pressure.
 
 ## PROSE.originalityNote.textbookExample
 
-An isolated debugger tour followed by an unrelated first bare-metal greeting.
+An isolated debugger tour followed by an unrelated bare-metal greeting.
 
 ## PROSE.originalityNote.howThisDiffers
 
-A known trip function supplies matching browser and native instruction stops, a controlled first divergence and a revised behaviour checked by both environments. Syscall and optional UART experiments identify which execution environment provides each service.
+The learner inspects the same assembly-only boot image from entry through storage setup, the familiar function, its first divergence and serial reporting. A revised arithmetic contract is checked by browser tests and a bootable assembly test caller.
 
 ## LABELS.title
 
-Debug instructions and choose an execution environment
+Follow startup and debug the boot image
 
-## LABELS.objectives
+## LABELS.objectives.0
 
-compare native instruction stops with the browser model;
+inspect the entry point, prepared stack and zeroed storage in GDB;
 
-find the first differing result in a controlled bug;
+## LABELS.objectives.1
 
-run a standalone Linux assembly program.
+compare booted instruction stops with the browser model;
+
+## LABELS.objectives.2
+
+locate a wrong result and check a revised assembly function.
 
 ## LABELS.titles.question
 
-Where does the native calculation first go wrong?
+Where does the booted calculation first go wrong?
 
 ## LABELS.titles.motivation
 
-Stop the live process with GDB
+Stop startup with GDB
 
 ## LABELS.titles.prediction
 
@@ -604,7 +625,7 @@ Compare registers and the next instruction
 
 ## LABELS.titles.construction
 
-Finish and close the debugging session
+Inspect the saved result and close the session
 
 ## LABELS.titles.failureExperiment
 
@@ -612,11 +633,11 @@ Locate the first differing stop
 
 ## LABELS.titles.explanation
 
-Request a Linux service
+Separate loading, startup and calculation
 
 ## LABELS.titles.generalisation
 
-Start without the C runtime
+Check the environment’s entry conditions
 
 ## LABELS.titles.challenge
 
@@ -648,57 +669,53 @@ Compare recorded and modelled stops for the modified function. Use the original 
 
 ## LABELS.captions.final
 
-Check the revised function with the same contract in both environments.
+Check the revised function in the browser and a bootable assembly test image.
 
-## LABELS.options.prediction
-
-### value
+## LABELS.options.prediction.0.value
 
 120
 
-### label
+## LABELS.options.prediction.0.label
 
 120
 
-### value
+## LABELS.options.prediction.1.value
 
 205
 
-### label
+## LABELS.options.prediction.1.label
 
 205
 
-### value
+## LABELS.options.prediction.2.value
 
 247
 
-### label
+## LABELS.options.prediction.2.label
 
 247
 
-## LABELS.options.failure
-
-### value
+## LABELS.options.failure.0.value
 
 1
 
-### label
+## LABELS.options.failure.0.label
 
 After the first arithmetic instruction
 
-### value
+## LABELS.options.failure.1.value
 
 2
 
-### label
+## LABELS.options.failure.1.label
 
 After the second arithmetic instruction
 
-### value
+## LABELS.options.failure.2.value
 
 3
 
-### label
+## LABELS.options.failure.2.label
 
 After the third arithmetic instruction
 
@@ -706,13 +723,19 @@ After the third arithmetic instruction
 
 Subtract the correction twice
 
-## LABELS.challenges.final.tests
+## LABELS.challenges.final.tests.0
 
 Apply both trip corrections
 
+## LABELS.challenges.final.tests.1
+
 Use a different set of distances
 
+## LABELS.challenges.final.tests.2
+
 Handle all zero inputs
+
+## LABELS.challenges.final.tests.3
 
 Return a negative corrected value
 
@@ -742,7 +765,7 @@ After the instruction
 
 ## LABELS.native.notLive
 
-This page steps a recording. Use GDB in your terminal to inspect a live process.
+This page steps a recording. Use GDB in your terminal to inspect the machine you boot.
 
 ## LABELS.native.pcOffset
 
@@ -750,7 +773,7 @@ PC relative to the function entry
 
 ## LABELS.native.returned
 
-Returned to the C caller
+Returned to the assembly caller
 
 ## LABELS.native.good
 
@@ -774,11 +797,11 @@ Linked ELF executable
 
 ## LABELS.native.execute
 
-QEMU user mode
+QEMU system mode
 
 ## LABELS.native.process
 
-Running Linux process
+Booted bare-metal program
 
 ## LABELS.native.copy
 
@@ -788,71 +811,77 @@ Copy commands
 
 Commands copied
 
-## LABELS.native.pipeline
+## LABELS.native.pipeline.0.name
 
-### name
+Assembly sources
 
-Source
+## LABELS.native.pipeline.0.detail
 
-### detail
+boot.s supplies startup and output; trip_distance.s supplies the calculation
 
-main.c and trip_distance.s
-
-### name
+## LABELS.native.pipeline.1.name
 
 Object files
 
-### detail
+## LABELS.native.pipeline.1.detail
 
-GCC compiles C; GNU as assembles instructions
+GNU as translates each source file into machine code and references
 
-### name
+## LABELS.native.pipeline.2.name
 
-Link
+Linker and memory layout
 
-### detail
+## LABELS.native.pipeline.2.detail
 
-GNU tools join the function with startup code and the C library
+GNU ld joins the objects using boot.ld and chooses _start as the entry
 
-### name
+## LABELS.native.pipeline.3.name
 
-Executable file
+ELF boot image
 
-### detail
+## LABELS.native.pipeline.3.detail
 
-The trip file contains machine code and loading information
+boot.elf contains code, data and segment loading information
 
-### name
+## LABELS.native.pipeline.4.name
 
-QEMU user mode
+QEMU direct ELF load
 
-### detail
+## LABELS.native.pipeline.4.detail
 
-Emulates AArch64 instructions and forwards Linux requests
+QEMU loads the segments into RAM and starts at the recorded ELF entry
 
-### name
+## LABELS.native.pipeline.5.name
 
-Running program
+Startup and the program
 
-### detail
+## LABELS.native.pipeline.5.detail
 
-Instructions execute using registers and memory
+Startup prepares the stack and storage; the caller checks the trip and writes UART bytes
 
 ## LABELS.native.model
 
 Browser model
 
-## LABELS.native.stepEntries
+## LABELS.native.stepEntries.0
 
 At the function breakpoint
 
+## LABELS.native.stepEntries.1
+
 After the first addition
+
+## LABELS.native.stepEntries.2
 
 After the second addition
 
+## LABELS.native.stepEntries.3
+
 After the third arithmetic instruction
 
-After returning to the C caller
+## LABELS.native.stepEntries.4
+
+After returning to the assembly caller
 
 ## LABELS.native.previous
 
@@ -876,23 +905,31 @@ Register values at this stop
 
 ## LABELS.native.returnToMain
 
-Returned to the C caller
+Returned to the assembly caller
 
 ## LABELS.native.recordedNote
 
 The native values are the low 32 bits of the recorded x registers. The browser values come from its instruction model.
 
-## LABELS.native.stops
+## LABELS.native.stops.0
 
 At the function breakpoint
 
+## LABELS.native.stops.1
+
 After the first addition
+
+## LABELS.native.stops.2
 
 After the second addition
 
+## LABELS.native.stops.3
+
 After the third arithmetic instruction
 
-After returning to the C caller
+## LABELS.native.stops.4
+
+After returning to the assembly caller
 
 ## LABELS.native.pc
 
@@ -909,3 +946,59 @@ Reference environment
 ## LABELS.native.versions
 
 Tool versions
+
+## LABELS.native.boot.title
+
+Recorded loading and startup
+
+## LABELS.native.boot.recordedNote
+
+These states were recorded with GNU tools, QEMU and GDB, a debugger that inspects a running machine and controls when it stops. At the entry stop, the verifier deliberately wrote 0xa5a5a5a5 to result with GDB. Startup then cleared it. The marker demonstrates the zeroing loop; it is not a claim that QEMU left uninitialised garbage. The diagram is a recording, not a machine running in this page.
+
+## LABELS.native.boot.pc
+
+Next instruction address (PC)
+
+## LABELS.native.boot.sp
+
+Stack pointer (SP)
+
+## LABELS.native.boot.result
+
+Stored result (32-bit word)
+
+## LABELS.native.boot.memory
+
+Selected address ranges on QEMU virt
+
+## LABELS.native.boot.rangeNote
+
+Ranges are ordered by address and are not drawn to scale. Each end address is exclusive. The code range contains instructions; the image also includes message bytes and initialised data.
+
+## LABELS.native.boot.stops.0
+
+At _start, after GDB writes the test marker
+
+## LABELS.native.boot.stops.1
+
+At boot_ready, after stack setup and storage clearing
+
+## LABELS.native.boot.stops.2
+
+At halt, after saving the trip result and sending its report
+
+## LABELS.native.boot.regions.code
+
+Program instructions in RAM
+
+## LABELS.native.boot.regions.bss
+
+Zero-initialised result storage
+
+## LABELS.native.boot.regions.stack
+
+Reserved stack space
+
+## LABELS.native.boot.regions.uart
+
+PL011 UART device registers

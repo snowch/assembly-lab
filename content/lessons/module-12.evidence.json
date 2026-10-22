@@ -1,20 +1,18 @@
 {
   "environment": "Ubuntu 24.04, x86_64 host",
   "versions": {
-    "aarch64-linux-gnu-gcc": "aarch64-linux-gnu-gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
     "aarch64-linux-gnu-as": "GNU assembler (GNU Binutils for Ubuntu) 2.42",
     "aarch64-linux-gnu-ld": "GNU ld (GNU Binutils for Ubuntu) 2.42",
+    "aarch64-linux-gnu-nm": "GNU nm (GNU Binutils for Ubuntu) 2.42",
     "aarch64-linux-gnu-readelf": "GNU readelf (GNU Binutils for Ubuntu) 2.42",
     "aarch64-linux-gnu-objdump": "GNU objdump (GNU Binutils for Ubuntu) 2.42",
     "qemu-aarch64": "qemu-aarch64 version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.18)",
     "gdb-multiarch": "GNU gdb (Ubuntu 15.1-1ubuntu1~24.04.1) 15.1",
     "qemu-system-aarch64": "QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.18)"
   },
-  "file": "ELF 64-bit LSB executable, ARM aarch64, version 1 (GNU/Linux), statically linked, BuildID[sha1]=ccce2ae97654316358f98f414856d63441ba5653, for GNU/Linux 3.7.0, with debug_info, not stripped",
-  "stdout": "trip_distance(120, 85, 42, 15) = 232",
-  "exitCode": 0,
-  "brokenStdout": "trip_distance(120, 85, 42, 15) = 262",
-  "brokenExitCode": 1,
+  "file": "ELF 64-bit LSB executable, ARM aarch64, version 1 (SYSV), statically linked, with debug_info, not stripped",
+  "stdout": "Assembly Lab: trip check passed",
+  "brokenStdout": "Assembly Lab: trip check failed",
   "good": {
     "registers": [
       [120, 85, 42, 15],
@@ -24,7 +22,7 @@
       [232, 85, 42, 15]
     ],
     "pcOffsets": [0, 4, 8, 12],
-    "returnTo": "main"
+    "returnTo": "after_trip"
   },
   "broken": {
     "registers": [
@@ -35,9 +33,60 @@
       [262, 85, 42, 15]
     ],
     "pcOffsets": [0, 4, 8, 12],
-    "returnTo": "main"
+    "returnTo": "after_trip"
+  },
+  "boot": {
+    "entry": 1074266112,
+    "resetPc": 1074266112,
+    "resetCpsr": 1073742789,
+    "ramStart": 1073741824,
+    "ramEnd": 1207959552,
+    "bssStart": 1074270216,
+    "bssEnd": 1074270224,
+    "stackBottom": 1074270224,
+    "stackTop": 1074274320,
+    "initializedMarker": 305419896,
+    "startupStops": [
+      {
+        "pc": 1074266112,
+        "sp": 0,
+        "result": 2779096485
+      },
+      {
+        "pc": 1074266148,
+        "sp": 1074274320,
+        "result": 0
+      },
+      {
+        "pc": 1074266196,
+        "sp": 1074274320,
+        "result": 232
+      }
+    ],
+    "regions": [
+      {
+        "kind": "code",
+        "start": 1074266112,
+        "end": 1074266328
+      },
+      {
+        "kind": "bss",
+        "start": 1074270216,
+        "end": 1074270224
+      },
+      {
+        "kind": "stack",
+        "start": 1074270224,
+        "end": 1074274320
+      },
+      {
+        "kind": "uart",
+        "start": 150994944,
+        "end": 150999040
+      }
+    ]
   },
   "standalone": "Assembly Lab: native ARM64",
-  "bareMetal": "Assembly Lab: bare metal",
+  "bareMetal": "Assembly Lab: trip check passed",
   "challenge": "4 cases passed"
 }

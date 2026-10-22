@@ -1,5 +1,11 @@
 # Module 12 independent source brief
 
+> Historical brief for the initial C/Linux-led implementation. The current assembly-only
+> boot path, commands and checked startup facts are in [boot-facts.md](boot-facts.md).
+> The QEMU, GNU and PL011 source references below still support that path; the C-led
+> lesson architecture and future-verification list below describe the earlier design.
+
+
 Checked on 22 October 2026 for issue #16. This is a fact brief for the drafting and
 technical-review passes, not a native execution record. No terminal output, address or
 version below is claimed to have been measured by this review. The implementation's
