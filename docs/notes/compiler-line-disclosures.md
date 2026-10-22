@@ -43,3 +43,22 @@ scrolling at 360px, without document overflow or browser errors. No blocking fin
 Both reviewers used the parent session's available model/effort, with no model override. The
 implementation and engineering documentation were written directly; existing learner strings
 were reused unchanged.
+
+## Final verification
+
+The full CI workflow passed on implementation commit
+`22494e376c92c6af04e92fc1aa109b540ad1195e`:
+[Check run 126](https://github.com/snowch/assembly-lab/actions/runs/39772376881).
+The workflow runs the same `scripts/check.sh` as `npm run check`. Formatting, copyright,
+platform integrity, strict types and the production build passed. All 136 unit/integration
+files and 2757 tests passed. Browser results: **1055 passed, 23 skipped**, followed by
+**All checks passed**.
+
+GNU/QEMU also passed on that commit: 191 programs, 2256 calls and 284666 instruction states
+compared with zero differences. Assembler checks covered 15 files and 39675 lines, with 184
+outside the supported subset and zero disagreements.
+
+The local full check independently passed units and the build. Its browser run was deliberately
+stopped after the complete CI workflow passed: 869 passed, 22 skipped, 1 interrupted and
+186 did not run, exit 130. This is partial local browser coverage; the CI run supplies the
+successful complete check. Final documentation only records these results.
