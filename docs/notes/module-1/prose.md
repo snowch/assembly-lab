@@ -14,25 +14,23 @@ The improvement pass (the title of Lesson 1, the top-bit table, the halves of si
 
 ## 1. Which is right, −12 or 4294967284?
 
-In Module 0, `fuel_used` was first written with its subtraction the wrong way round. The figure runs that version, named `fuel_used_wrong`, as `fuel_used_wrong(50, 38)`.
+Run `fuel_used_wrong(50, 38)`, the subtraction written the wrong way round in Module 0.
 
-The C calculation is 38 minus 50, with type `int`. That gives −12.
+The figure starts before the subtraction. Press Next to see which values it reads and what it writes.
 
-After `sub w0, w1, w0`, the register `w0` holds a pattern of 32 bits. Read as an unsigned number, where every bit counts as a positive amount, those bits give 4294967284.
-
-How can the same bits be −12?
-
-*fuel_used_wrong(50, 38) as first written. Press Next to see what its subtraction writes to w0.*
+*fuel_used_wrong(50, 38). Initially before the subtraction; press Next to run it.*
 
 ## 2. Why the readings matter
 
-A register holds bits, not a signed or an unsigned number. The decimal number a figure shows is one way of reading those bits.
+The **signed reading** allows negative numbers and is the reading C's `int` uses here. The **unsigned reading** counts every bit as a positive amount. The simulator shows register numbers in unsigned decimal.
 
-A program that reads the bits one way, when the C meant the other, gets a wrong answer with no error. Later modules show instructions that choose a reading.
+Nothing in the register changes when we change how we read its bits.
 
 ## 3. Adding 12
 
-The figure can add 12 to `w0`, with `add w0, w0, 12`.
+Start with the bits the subtraction left in `w0`: −12 signed, or 4294967284 unsigned.
+
+`add w0, w0, 12` acts on those bits and writes a new result. Predict that result before running the added instruction.
 
 **After adding 12, what does `w0` hold?**
 
@@ -79,7 +77,7 @@ Field labels: "the bits of `w0`" and "its unsigned reading".
 
 1. In the signed reading the top bit is worth minus 2147483648, and the other bits add to it.
 2. −1 is not the pattern for 1 with the top bit set.
-3. The pattern for −12 is `0xfffffff4`; adding 12 to it gives 0.
+3. In `0xfffffff4`, the top bit's negative value and the other bits' positive values add to −12.
 4. The pattern for −1 is the one that gives 0 when 1 is added to it.
 5. Set all 32 bits: `0xffffffff`. Its unsigned reading is 4294967295.
 

@@ -10,8 +10,8 @@ Two lessons.
 
 1. **`one-pattern-three-readings`.** Module 0's mistaken `fuel_used(50, 38)` left a value in `w0`
    that its test reported as wrong. This lesson opens that value: 32 bits, written shorter in
-   hexadecimal, read as an unsigned number and as a signed one. The signed reading is derived
-   from the machine: adding 12 back to the pattern gives 0, so the pattern behaves as −12. Then
+   hexadecimal, read as an unsigned number and as a signed one. Both readings are shown after
+   the subtraction, before the reader predicts what adding 12 does. Then
    the reader finds that GCC makes the same instruction from the `int` and the `unsigned` version
    of the function: the type is not in the machine.
 2. **`constants-and-widths`.** How a value gets into a register: `mov` with a constant, which
@@ -85,8 +85,8 @@ Instructions the lessons allow: lesson 1 `add`, `sub`, `ret`; lesson 2 adds `mov
 ## Originality
 
 The obvious way in is a table of two's complement values, or the "flip the bits and add one"
-rule. This module starts from a wrong answer the reader has already seen in Module 0, derives the
-signed reading by adding the missing amount back on the machine, and shows the type's absence by
+rule. This module starts from a wrong answer the reader has already seen in Module 0, shows its
+two readings before experimenting with addition, and shows the type's absence by
 two compiled listings that are identical. The constants lesson works from the assembler's own
 refusal, not from the encoding.
 

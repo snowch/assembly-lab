@@ -6,16 +6,16 @@
 
 export const PROSE = {
   question:
-    "In Module 0, `fuel_used` was first written with its subtraction the wrong way round. The figure runs that version, named `fuel_used_wrong`, as `fuel_used_wrong(50, 38)`.\n\n" +
-    "The C calculation is 38 minus 50, with type `int`. That gives −12.\n\n" +
-    "After `sub w0, w1, w0`, the register `w0` holds a pattern of 32 bits. Read as an unsigned number, where every bit counts as a positive amount, those bits give 4294967284.\n\n" +
-    "How can the same bits be −12?",
+    "Run `fuel_used_wrong(50, 38)`, the subtraction written the wrong way round in Module 0.\n\n" +
+    "The figure starts before the subtraction. Press Next to see which values it reads and what it writes.",
 
   motivation:
-    "A register holds bits, not a signed or an unsigned number. The decimal number a figure shows is one way of reading those bits.\n\n" +
-    "A program that reads the bits one way, when the C meant the other, gets a wrong answer with no error. Later modules show instructions that choose a reading.",
+    "The **signed reading** allows negative numbers and is the reading C's `int` uses here. The **unsigned reading** counts every bit as a positive amount. The simulator shows register numbers in unsigned decimal.\n\n" +
+    "Nothing in the register changes when we change how we read its bits.",
 
-  prediction: "The figure can add 12 to `w0`, with `add w0, w0, 12`.",
+  prediction:
+    "Start with the bits the subtraction left in `w0`: −12 signed, or 4294967284 unsigned.\n\n" +
+    "`add w0, w0, 12` acts on those bits and writes a new result. Predict that result before running the added instruction.",
   predictionQuestion: "**After adding 12, what does `w0` hold?**",
   predictionExplain:
     "`w0` holds 0. 4294967284 plus 12 is 4294967296, which needs 33 bits: a 1 followed by 32 zeros. `w0` has 32 bits, so the 33rd bit is dropped and only the 32 zeros are kept. Adding 12 to the pattern gives 0, so the pattern behaves exactly as −12 would.",
@@ -41,7 +41,7 @@ export const PROSE = {
   makeHints: [
     "In the signed reading the top bit is worth minus 2147483648, and the other bits add to it.",
     "−1 is not the pattern for 1 with the top bit set.",
-    "The pattern for −12 is `0xfffffff4`; adding 12 to it gives 0.",
+    "In `0xfffffff4`, the top bit's negative value and the other bits' positive values add to −12.",
     "The pattern for −1 is the one that gives 0 when 1 is added to it.",
     "Set all 32 bits: `0xffffffff`. Its unsigned reading is 4294967295.",
   ] as const,
