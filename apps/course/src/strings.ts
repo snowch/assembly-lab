@@ -14,7 +14,13 @@ export const COMPANION_LINKS = {
 } as const;
 
 export const STRINGS = {
-  version: { commit: "Commit", committed: "committed", utc: "(UTC)" },
+  version: {
+    commit: "Commit",
+    committed: "committed",
+    utc: "(UTC)",
+    latest: "Up to date ✓",
+    latestNote: "Matches the latest commit on GitHub’s main branch at the last check.",
+  },
   title: "Assembly Lab",
   subtitle: "From a line of C to the bits in a register",
   intro:
