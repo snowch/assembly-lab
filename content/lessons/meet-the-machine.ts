@@ -85,6 +85,8 @@ export const meetTheMachine: LessonInput = {
     "assembly language",
     "operand",
     "program counter",
+    "caller",
+    "argument",
   ],
   sections: [
     {
@@ -105,11 +107,16 @@ export const meetTheMachine: LessonInput = {
           props: {
             stages: PRIMITIVE_PROGRAMS.map((item, index) => ({
               ...PROSE.primitiveStages[index],
+              kind: item.kind,
+              showCompilerLines: item.kind === "function",
               program: primitiveProgram(item),
               call: { entry: item.entry, args: [...item.args] },
               registers: [...item.registers],
               steps: item.instructions.length,
-              predict: index > 0 && index < 4,
+              predict:
+                item.kind === "operation" &&
+                item.entry !== "primitive_add" &&
+                item.instructions.length === 1,
             })),
           },
         },

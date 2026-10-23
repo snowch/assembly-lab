@@ -48,7 +48,7 @@ and positive (signed and unsigned readings are Module 1's): `trip_distance(120, 
 ## Terms the lesson introduces (the term gate)
 
 *instruction*, *register*, *listing* (a compiler's listing), *assembly language*, *operand*,
-*program counter*. Not yet: *flag*, *hexadecimal*, *signed*, *memory address*, *stack*, *link
+*program counter*, *caller*, *argument*. The small `increment_int` activity introduces the last two immediately after the first addition. Module 9 develops nested-call mechanics rather than introducing the word *caller*. Not yet: *flag*, *hexadecimal*, *signed*, *memory address*, *stack*, *link
 register*, *calling convention* (the lesson says "the function's arguments arrive in `w0`, `w1`
 and on, and its result leaves in `w0`" without naming the convention).
 

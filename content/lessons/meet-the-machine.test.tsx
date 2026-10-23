@@ -37,7 +37,7 @@ describe("the lesson", () => {
     expect([lesson.module, lesson.order]).toEqual([0, 0]);
   });
 
-  it("introduces the six terms of the module plan, and passes the term gate", () => {
+  it("introduces the opening terms, including the small function call, and passes the term gate", () => {
     expect(lesson.introduces).toEqual([
       "instruction",
       "register",
@@ -45,6 +45,8 @@ describe("the lesson", () => {
       "assembly language",
       "operand",
       "program counter",
+      "caller",
+      "argument",
     ]);
     expect(termProblems(LESSONS)).toEqual([]);
   });

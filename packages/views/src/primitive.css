@@ -21,6 +21,20 @@
 .al-primitive-registers .al-dreg {
   min-width: 4.25rem;
 }
+.al-primitive-caller {
+  display: grid;
+  gap: var(--space-1);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: var(--space-2);
+}
+.al-primitive-caller[data-caller-returned="true"] {
+  border-color: var(--accent);
+}
+.al-primitive .al-listing {
+  max-width: 100%;
+  min-width: 0;
+}
 .al-primitive-instructions {
   padding: var(--space-2);
   margin: 0;
@@ -91,4 +105,9 @@
 .al-primitive-answer input {
   width: 8rem;
   min-height: 2.75rem;
+}
+
+.al-primitive-function-listing {
+  min-width: 0;
+  max-width: 100%;
 }

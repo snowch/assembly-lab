@@ -99,3 +99,21 @@ fuel_used:
         add     sp, sp, 16            C13
         ret                           C13
 ```
+
+## `increment_int.c`
+
+Fetched 23 October 2026 from Compiler Explorer, ARM64 GCC 16.1.0 (`carm64g1610`), flags `-g -O1 -fno-verbose-asm`. The complete request and response are retained in `increment/`. As above, displayed C omits the copyright comment, lowering recorded references by one. Checked teaching associations for both instructions name the return expression; the original GCC references name the closing brace.
+
+```c
+// Copyright © 2026 Christopher Snow
+int increment_int(int n)
+{
+    return n + 1;
+}
+```
+
+```
+increment_int:
+add     w0, w0, 1 C5
+ret C5
+```

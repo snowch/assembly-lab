@@ -70,7 +70,6 @@ export const callsAndReturns: LessonInput = {
   order: 0,
   objectives: [...LABELS.objectives],
   introduces: [
-    "caller",
     "callee",
     "link register",
     "stack",

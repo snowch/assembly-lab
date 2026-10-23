@@ -8,7 +8,7 @@ After the author's second read (17 October 2026) thirteen texts were drafted by 
 
 On 17 October 2026, a separate Codex drafting agent revised the prose from checked findings, followed by independent learner and technical review. See [the review record](./clarity-review.md).
 
-A separate Codex drafting session revised the opening on 23 October 2026 from the checked arithmetic/trace brief. Assembly-only primitive activities precede the recorded C function; the compiled listing and exercises remain synthesis. See `docs/notes/course-load-implementation/opening.md`.
+A separate Codex drafting session revised the opening on 23 October 2026 from the checked arithmetic/trace brief. A first assembly-only addition precedes a small recorded C function call and return; later operations build towards the trip function and exercises. See `docs/notes/course-load-implementation/opening.md`.
 
 ## 0. Objectives
 
@@ -19,7 +19,7 @@ A separate Codex drafting session revised the opening on 23 October 2026 from th
 
 ## 1. What does the processor do?
 
-A trip computer adds distances and subtracts a detour. How does the processor perform one of those operations? Start with one addition. You will combine operations into a complete function afterwards.
+A trip computer adds distances and subtracts a detour. How does the processor perform one of those operations? Start with one addition, then follow a small function call.
 
 ## 2. One operation at a time
 
@@ -29,13 +29,31 @@ An **instruction** tells the processor to perform an operation. Assembly languag
 
 For `add` and `sub`, the first operand names the register written. The second and third supply the input values. Run the first addition, then try the next activities. Each activity replaces the previous one, so you can focus on its operation.
 
-Practise one operation at a time before following a complete function.
+Start with one addition, then follow a function call and return.
 
 *Shown by the opening activity after a prediction is committed: “Your prediction” labels the submitted value beside the model result. The submitted value remains visible after reload.*
 
 Add into a different register
 
 `add w2, w0, w1` reads `w0` and `w1`, adds their values, and writes the sum into `w2`. Run it to see the result.
+
+Return from a tiny function
+
+`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C into this assembly **listing**. `increment_int:` names the function.
+
+Code that calls a function is its **caller**. The input it supplies is an **argument**. Here, the argument arrives in `w0`; the function leaves its integer result there too.
+
+In `add w0, w0, 1`, the last operand is the number one. Run `add` to prepare the result. Then `ret` returns to the caller without calculating or moving the result.
+
+*Shown beside the function listing: “Show instructions” reveals its instructions; “Show C” reveals its C. The controls are grouped as “View the function’s C and instructions”. Both remain in the complete paired listing.*
+
+*Shown in the small caller box: its call and supplied argument remain visible. Before `ret`, it says “Waiting for increment_int to return”. Only after `ret`, it says “Resumed with result”, followed by the model's returned value.*
+
+*Shown at entry:* The argument is in w0. Run add to prepare the result.
+
+*Shown after the addition:* The result is in w0. Run ret to return to the caller.
+
+*Shown after the return:* ret returned to the caller. It left w0 unchanged.
 
 Choose a different destination
 
@@ -57,9 +75,9 @@ The marker ▸ shows the instruction that runs next. Run each instruction in tur
 
 Now combine those operations. The trip computer logs three distances, called legs, with a private detour removed. The C function `trip_distance` adds the three legs and subtracts the detour.
 
-GCC, a C compiler, translated this function into four instructions for a 64-bit Arm processor. Its assembly output is called a **listing**. The complete C and its related instructions appear together below.
+GCC translated this function into four instructions for a 64-bit Arm processor. The complete C and its related instructions appear together below.
 
-For the functions here, integer arguments arrive in registers in order: the first in `w0`, the second in `w1`, and so on. They leave their result in `w0`. The instruction `ret` returns to the code that called the function; it does not calculate or move the result. The line ending in a colon names the function.
+For the `int` arguments here, the first arrives in `w0`, the second in `w1`, and so on. As in `increment_int`, the function leaves its `int` result in `w0`.
 
 The C names a variable, `total`. The instructions name registers. Use the operand rule you practised to decide where the first value of `total` goes.
 
