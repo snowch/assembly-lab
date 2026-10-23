@@ -165,6 +165,7 @@ test("Update now reloads all app tabs offline, preserving edits, routes and them
     await controlled(second, `${site.url}#/lesson/meet-the-machine`);
     const answer = second.locator("#challenge-trace-the-call").getByRole("textbox").first();
     await answer.fill("123");
+    await second.getByLabel(STRINGS.theme).selectOption("light");
     const observer = await context.newPage();
     await observer.goto(`${site.origin}/another-course/`);
     await observer.evaluate(async (name) => {
@@ -191,8 +192,9 @@ test("Update now reloads all app tabs offline, preserving edits, routes and them
       );
       await expect(page.getByText(STRINGS.offline.ready, { exact: true })).toBeVisible();
       await expect(page.getByRole("button", { name: STRINGS.offline.updateNow })).toHaveCount(0);
-      await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     }
+    await expect(first.locator("html")).toHaveAttribute("data-theme", "dark");
+    await expect(second.locator("html")).toHaveAttribute("data-theme", "light");
     await expect(editor).toHaveValue(code);
     await expect(answer).toHaveValue("123");
     await expect(first).toHaveURL(`${site.url}#/lesson/from-c-to-instructions`);
@@ -246,6 +248,32 @@ test("Update now refuses to discard another tab's memory-only edits and can retr
     await second.evaluate(() => window.dispatchEvent(new Event("restore-test-storage")));
     const savedCode = "unsigned saved(unsigned value) { return value; }";
     await editor.fill(savedCode);
+    // An in-progress input-method composition has not necessarily committed to the artifact.
+    await second.evaluate(() => document.dispatchEvent(new CompositionEvent("compositionstart")));
+    await first.getByRole("button", { name: STRINGS.offline.updateNow }).click();
+    await expect(first.getByRole("alert")).toHaveText(STRINGS.offline.updateErrors.unsaved);
+    await expect(editor).toHaveValue(savedCode);
+    await second.evaluate(() => document.dispatchEvent(new CompositionEvent("compositionend")));
+    // A tab with no exercise edits must also preserve its current theme.
+    await first.evaluate(() => {
+      const original = Storage.prototype.setItem;
+      Storage.prototype.setItem = () => {
+        throw new Error("Storage full");
+      };
+      window.addEventListener(
+        "restore-test-storage",
+        () => {
+          Storage.prototype.setItem = original;
+        },
+        { once: true },
+      );
+    });
+    await first.getByLabel(STRINGS.theme).selectOption("dark");
+    await first.getByRole("button", { name: STRINGS.offline.updateNow }).click();
+    await expect(first.getByRole("alert")).toHaveText(STRINGS.offline.updateErrors.unsaved);
+    await expect(first.locator("html")).toHaveAttribute("data-theme", "dark");
+    await first.evaluate(() => window.dispatchEvent(new Event("restore-test-storage")));
+    await first.getByLabel(STRINGS.theme).selectOption("auto");
     await first.getByRole("button", { name: STRINGS.offline.updateNow }).click();
     await expect(second.locator('meta[name="offline-test-release"]')).toHaveAttribute(
       "content",
@@ -281,6 +309,41 @@ test("an unresponsive old tab blocks Update now until it is closed", async ({ co
       "content",
       "after-legacy",
     );
+  } finally {
+    await context.close();
+    await site.close();
+  }
+});
+
+test("a newer waiting release safely unlocks every tab paused for a superseded update", async ({
+  context,
+}) => {
+  const site = await deployment();
+  try {
+    const first = await context.newPage();
+    await controlled(first, site.url);
+    const second = await context.newPage();
+    await controlled(second, site.url);
+    const legacy = await context.newPage();
+    await legacy.goto(`${site.url}legacy.html`);
+    site.publish("superseded");
+    expect(await update(first)).toBe("installed");
+    await first.getByRole("button", { name: STRINGS.offline.updateNow }).click();
+    await expect(second.locator("main")).toHaveAttribute("inert");
+    site.publish("latest");
+    expect(await update(second)).toBe("installed");
+    for (const page of [first, second]) {
+      await expect(page.locator("main")).not.toHaveAttribute("inert");
+      await expect(page.getByRole("alert")).toHaveText(STRINGS.offline.updateErrors.changed);
+      await expect(page.locator('meta[name="offline-test-release"]')).toHaveCount(0);
+    }
+    await legacy.close();
+    await first.getByRole("button", { name: STRINGS.offline.updateNow }).click();
+    for (const page of [first, second])
+      await expect(page.locator('meta[name="offline-test-release"]')).toHaveAttribute(
+        "content",
+        "latest",
+      );
   } finally {
     await context.close();
     await site.close();

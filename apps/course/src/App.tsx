@@ -4,7 +4,7 @@
 // the course's book; the shell itself knows nothing about the machine. The front page lists the
 // plan, a lesson address shows the lesson with a way back, and an address with no lesson says so.
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import { LessonView } from "@platform/lesson-runtime";
 
@@ -17,7 +17,7 @@ import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
 import { RUNTIME_STRINGS } from "./runtime-strings";
 import { COMPANION_LINKS, STRINGS } from "./strings";
-import { useTheme, type Theme } from "./theme";
+import { clearThemeUpdate, saveThemeForUpdate, useTheme, type Theme } from "./theme";
 
 /**
  * The skip link moves focus to the main content and leaves the address alone: its `#main` is not a
@@ -35,9 +35,13 @@ export function App() {
     location.hostname === "snowch.github.io",
   );
   const persistence = useMemo(updateStorage, []);
-  const offline = useOffline(persistence.saved);
   const route = useRoute();
   const [theme, setTheme] = useTheme();
+  const canReload = useCallback(
+    () => persistence.saved() && saveThemeForUpdate(theme),
+    [persistence, theme],
+  );
+  const offline = useOffline(canReload, clearThemeUpdate);
   const storage = persistence.storage;
   const book = useMemo(() => createBook(), []);
   // The tab names the page, so a reader with several pages open can tell them apart.

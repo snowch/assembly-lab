@@ -104,7 +104,7 @@ const appClients = async () =>
     client.url.startsWith(scope),
   );
 
-function prepare(client, id) {
+function prepare(client, id, type = "PREPARE_UPDATE") {
   return new Promise((resolve) => {
     const channel = new MessageChannel();
     const finish = (ready) => {
@@ -114,12 +114,13 @@ function prepare(client, id) {
     };
     const timeout = setTimeout(() => finish("tabs"), 5000);
     channel.port1.onmessage = (event) => finish(event.data?.ready === true ? null : "unsaved");
-    client.postMessage({ type: "PREPARE_UPDATE", id }, [channel.port2]);
+    client.postMessage({ type, id }, [channel.port2]);
   });
 }
 
 let activation;
 function cancelUpdate(request, error) {
+  if (request.committed) return;
   request.cancelled = true;
   for (const client of request.clients)
     client.postMessage({ type: "CANCEL_UPDATE", id: request.id, error });
@@ -131,19 +132,34 @@ async function activateUpdate(request) {
     await repair();
     if (request.cancelled) return { ok: false, error: "tabs" };
     request.clients = await appClients();
-    const results = await Promise.all(request.clients.map((client) => prepare(client, request.id)));
+    let results = await Promise.all(request.clients.map((client) => prepare(client, request.id)));
     error = results.find(Boolean);
     if (error) return { ok: false, error };
+    if (request.cancelled) return { ok: false, error: "tabs" };
+    // Recheck only after every tab has paused: a slower tab could have edited
+    // shared storage after an earlier tab's first acknowledgement.
+    results = await Promise.all(
+      request.clients.map((client) => prepare(client, request.id, "VERIFY_UPDATE")),
+    );
+    error = results.find(Boolean);
+    if (error) return { ok: false, error };
+    if (request.cancelled) return { ok: false, error: "tabs" };
     // A newly opened tab has not acknowledged. Leave the current release in place.
+    if (!(await complete(await caches.open(cacheName)))) {
+      error = "download";
+      return { ok: false, error };
+    }
     const ids = new Set(request.clients.map((client) => client.id));
     if ((await appClients()).some((client) => !ids.has(client.id))) {
       error = "tabs";
       return { ok: false, error };
     }
     if (request.cancelled) return { ok: false, error: "tabs" };
+    request.committed = true;
     await self.skipWaiting();
     return { ok: true };
   } catch {
+    request.committed = false;
     error ||= "tabs";
     return { ok: false, error };
   } finally {
@@ -156,22 +172,35 @@ self.addEventListener("message", (event) => {
   if (
     type === "CANCEL_ACTIVATION" &&
     activation &&
-    event.source?.id === activation.owner &&
+    (event.source?.id === activation.owner ||
+      activation.clients.some((client) => client.id === event.source?.id)) &&
     event.data.id === activation.id
   ) {
     cancelUpdate(activation, "tabs");
     return;
   }
   if (type === "ACTIVATE_UPDATE" && event.ports[0]) {
+    // Reserve the attempt synchronously, so a cancellation cannot overtake validation.
+    const source = event.source;
+    if (
+      !source?.id ||
+      !source.url?.startsWith(scope) ||
+      typeof event.data.id !== "string" ||
+      activation
+    ) {
+      event.ports[0].postMessage({ ok: false, error: "tabs" });
+      return;
+    }
+    const request = {
+      id: event.data.id,
+      owner: source.id,
+      clients: [],
+      cancelled: false,
+      committed: false,
+    };
+    activation = request;
     event.waitUntil(
       (async () => {
-        const source = event.source?.id && (await self.clients.get(event.source.id));
-        if (!source?.url.startsWith(scope) || typeof event.data.id !== "string" || activation) {
-          event.ports[0].postMessage({ ok: false, error: "tabs" });
-          return;
-        }
-        const request = { id: event.data.id, owner: source.id, clients: [], cancelled: false };
-        activation = request;
         try {
           event.ports[0].postMessage(await activateUpdate(request));
         } finally {

@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
 export type OfflineState = "preparing" | "ready" | "unavailable" | "unsupported";
@@ -8,7 +8,7 @@ export interface OfflineStatus {
   state: OfflineState;
   updateWaiting: boolean;
 }
-type UpdateError = "unsaved" | "tabs" | "download";
+type UpdateError = "unsaved" | "tabs" | "download" | "changed";
 
 /** Ask the controlling release, not a waiting update, whether its files are saved. */
 function saved(worker: ServiceWorker): Promise<boolean> {
@@ -33,13 +33,19 @@ function saved(worker: ServiceWorker): Promise<boolean> {
 }
 
 /** Production only: development files must never be held by an offline worker. */
-export function useOffline(canReload: () => boolean) {
+export function useOffline(canReload: () => boolean, onCancel: () => void) {
   const [status, setStatus] = useState<OfflineStatus | null>(
     import.meta.env.PROD ? { state: "preparing", updateWaiting: false } : null,
   );
   const [updating, setUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<UpdateError | null>(null);
   const update = useRef(() => {});
+  const readiness = useRef(canReload);
+  const cancel = useRef(onCancel);
+  useLayoutEffect(() => {
+    readiness.current = canReload;
+    cancel.current = onCancel;
+  }, [canReload, onCancel]);
   useEffect(() => {
     if (!import.meta.env.PROD) return;
     if (!navigator.serviceWorker || !window.isSecureContext) {
@@ -53,8 +59,11 @@ export function useOffline(canReload: () => boolean) {
     let preparedId: string | null = null;
     let controlled = !!navigator.serviceWorker.controller;
     let reloading = false;
+    let composing = false;
     let updateChannel: MessageChannel | undefined;
     let updateTimeout: ReturnType<typeof setTimeout> | undefined;
+    let participantTimeout: ReturnType<typeof setTimeout> | undefined;
+    let unwatchPrepared: (() => void) | undefined;
     const cleanups: (() => void)[] = [];
     const listen = (target: EventTarget, event: string, fn: () => void) => {
       target.addEventListener(event, fn);
@@ -94,6 +103,9 @@ export function useOffline(canReload: () => boolean) {
       if (preparedId && preparedId !== id) return;
       preparedWorker = null;
       preparedId = null;
+      cancel.current();
+      unwatchPrepared?.();
+      clearTimeout(participantTimeout);
       setUpdating(false);
       setUpdateError(error);
       clearTimeout(updateTimeout);
@@ -107,12 +119,38 @@ export function useOffline(canReload: () => boolean) {
       ) {
         preparedWorker = event.source as ServiceWorker;
         preparedId = event.data.id;
+        const worker = preparedWorker;
+        const id: string = event.data.id;
+        const redundant = () => {
+          if (worker.state === "redundant" && preparedWorker === worker && preparedId === id)
+            fail("changed", id);
+        };
+        unwatchPrepared?.();
+        worker.addEventListener("statechange", redundant);
+        unwatchPrepared = () => worker.removeEventListener("statechange", redundant);
+        clearTimeout(participantTimeout);
+        participantTimeout = setTimeout(() => {
+          // Unlock only after the worker confirms cancellation or becomes redundant.
+          try {
+            worker.postMessage({ type: "CANCEL_ACTIVATION", id });
+          } catch {
+            /* Redundant workers cannot accept messages. */
+          }
+          redundant();
+        }, 15000);
         // Commit the interaction lock before acknowledging readiness to the waiting worker.
         flushSync(() => {
           setUpdating(true);
           setUpdateError(null);
         });
-        event.ports[0]?.postMessage({ ready: canReload() });
+        event.ports[0]?.postMessage({ ready: !composing && readiness.current() });
+        event.ports[0]?.close();
+      } else if (
+        event.data?.type === "VERIFY_UPDATE" &&
+        event.source === preparedWorker &&
+        event.data.id === preparedId
+      ) {
+        event.ports[0]?.postMessage({ ready: !composing && readiness.current() });
         event.ports[0]?.close();
       } else if (
         event.data?.type === "CANCEL_UPDATE" &&
@@ -128,6 +166,12 @@ export function useOffline(canReload: () => boolean) {
       }
     };
     navigator.serviceWorker.addEventListener("message", message);
+    listen(document, "compositionstart", () => {
+      composing = true;
+    });
+    listen(document, "compositionend", () => {
+      composing = false;
+    });
     cleanups.push(() => navigator.serviceWorker.removeEventListener("message", message));
     update.current = () => {
       const worker = registration?.waiting;
@@ -140,9 +184,10 @@ export function useOffline(canReload: () => boolean) {
       updateTimeout = setTimeout(() => {
         try {
           worker.postMessage({ type: "CANCEL_ACTIVATION", id });
-        } finally {
-          fail("tabs", id);
+        } catch {
+          /* Redundant workers cannot accept messages. */
         }
+        if (worker.state === "redundant") fail("changed", id);
       }, 15000);
       channel.port1.onmessage = (event: MessageEvent<{ ok: boolean; error?: UpdateError }>) => {
         if (updateChannel !== channel) return;
@@ -181,9 +226,11 @@ export function useOffline(canReload: () => boolean) {
       disposed = true;
       update.current = () => {};
       clearTimeout(updateTimeout);
+      clearTimeout(participantTimeout);
+      unwatchPrepared?.();
       updateChannel?.port1.close();
       for (const cleanup of cleanups) cleanup();
     };
-  }, [canReload]);
+  }, []);
   return status && { ...status, updating, updateError, updateNow: () => update.current() };
 }
