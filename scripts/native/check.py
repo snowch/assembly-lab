@@ -9,6 +9,7 @@ import re
 import select
 import shutil
 import socket
+import struct
 import subprocess
 import tempfile
 import time
@@ -45,6 +46,56 @@ def build(directory, source, name, harness='boot.s'):
 def symbols(exe):
     output = run('aarch64-linux-gnu-nm', '-n', str(exe))
     return {name: int(address, 16) for address, name in re.findall(r'^([0-9a-f]+) \w (\w+)$', output, re.M)}
+
+
+def image_layout(exe):
+    """Read actual ELF64 metadata, retaining zero file size for NOBITS reservations."""
+    data = exe.read_bytes()
+    header = struct.unpack_from('<16sHHIQQQIHHHHHH', data)
+    assert header[0][:6] == b'\x7fELF\x02\x01' and header[1:3] == (2, 183)
+    entry, phoff, shoff = header[4:7]
+    phsize, phcount, shsize, shcount, names_index = header[9:14]
+    assert phsize == 56 and shsize == 64
+    raw_sections = [struct.unpack_from('<IIQQQQIIQQ', data, shoff + i * shsize) for i in range(shcount)]
+    names = raw_sections[names_index]
+    name_bytes = data[names[4]:names[4] + names[5]]
+    sections = []
+    wanted = ['.text', '.rodata', '.data', '.bss', '.stack']
+    for section in raw_sections:
+        name = name_bytes[section[0]:].split(b'\0', 1)[0].decode('ascii')
+        if name not in wanted:
+            continue
+        assert section[2] & 2, ('Section is not allocated', name)
+        assert section[1] == (8 if name in ['.bss', '.stack'] else 1)
+        file_size = 0 if section[1] == 8 else section[5]
+        assert section[4] + file_size <= len(data)
+        sections.append({'name': name, 'address': section[3], 'size': section[5],
+                         'fileOffset': section[4], 'fileSize': file_size})
+    assert [section['name'] for section in sections] == wanted
+    segments = []
+    for index in range(phcount):
+        segment = struct.unpack_from('<IIQQQQQQ', data, phoff + index * phsize)
+        if segment[0] != 1:  # PT_LOAD
+            continue
+        assert segment[3] == segment[4] and segment[5] <= segment[6]
+        assert segment[2] + segment[5] <= len(data)
+        segments.append({'offset': segment[2], 'address': segment[3],
+                         'fileSize': segment[5], 'memorySize': segment[6]})
+    assert len(segments) == 2
+    for section in sections:
+        covering = [segment for segment in segments
+                    if segment['address'] <= section['address']
+                    and section['address'] + section['size'] <= segment['address'] + segment['memorySize']]
+        assert len(covering) == 1, ('Section outside a load segment', section)
+        if section['fileSize']:
+            segment = covering[0]
+            assert section['fileOffset'] - segment['offset'] == section['address'] - segment['address']
+            assert section['fileOffset'] + section['fileSize'] <= segment['offset'] + segment['fileSize']
+    assert sections[0]['address'] == entry
+    # Keep the standard tool in the verification path alongside the binary parser.
+    table = run('aarch64-linux-gnu-readelf', '-SW', str(exe))
+    assert all(section['name'] in table for section in sections)
+    return {'sections': sections, 'segments': segments}
 
 
 def read_serial(process, expected):
@@ -84,26 +135,36 @@ def debug(exe, expected):
         port = sock.getsockname()[1]
     process = subprocess.Popen([*QEMU, '-kernel', str(exe), '-S', '-gdb', f'tcp:127.0.0.1:{port}'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     try:
+        flow_row = 'printf "ALFLOW %lu\\n", $pc'
         boot_row = 'printf "ALBOOT %lu %lu %lu\\n", $pc, $sp, *(unsigned int*)&result'
         commands = ['set pagination off', 'set confirm off', 'set tcp auto-retry on',
                     'set remotetimeout 10', f'target remote localhost:{port}',
-                    'printf "ALRESET %lu %lu\\n", $pc, $cpsr', 'x/6i $pc',
+                    'printf "ALRESET %lu %lu\\n", $pc, $cpsr', flow_row, 'x/6i $pc',
                     'set {unsigned int}&result = 0xa5a5a5a5', boot_row,
-                    'tbreak boot_ready', 'continue', boot_row,
+                    'tbreak boot_ready', 'continue', boot_row, flow_row,
                     'printf "ALDATA %u\\n", *(unsigned int*)&initialized_marker',
-                    'break trip_distance', 'continue']
+                    'break trip_distance', 'continue', flow_row]
         for index in range(5):
             if index:
                 commands.append('stepi')
             commands.append('printf "ALSTATE %lu %lu %lu %lu %ld\\n", $x0 & 0xffffffff, $x1 & 0xffffffff, $x2 & 0xffffffff, $x3 & 0xffffffff, $pc - (long)&trip_distance')
-        commands += ['info symbol $pc', 'tbreak halt', 'continue', boot_row, 'detach']
+        commands += [flow_row, 'info symbol $pc', 'tbreak *uart_puts', 'continue', flow_row,
+                     'printf "ALSPBEFORE %lu\\n", $sp', 'stepi',
+                     'printf "ALSPFRAME %lu\\n", $sp',
+                     'tbreak halt', 'continue', boot_row, flow_row, 'detach']
         output = run('gdb-multiarch', '-q', '-batch', str(exe), *[v for c in commands for v in ['-ex', c]])
         rows = [[int(n) for n in match] for match in re.findall(r'ALSTATE (\d+) (\d+) (\d+) (\d+) (-?\d+)', output)]
         boots = [[int(n) for n in match] for match in re.findall(r'ALBOOT (\d+) (\d+) (\d+)', output)]
+        flow = [int(pc) for pc in re.findall(r'ALFLOW (\d+)', output)]
+        before_sp = re.search(r'ALSPBEFORE (\d+)', output)
+        frame_sp = re.search(r'ALSPFRAME (\d+)', output)
         reset = re.search(r'ALRESET (\d+) (\d+)', output)
         assert reset and len(rows) == 5 and len(boots) == 3, output
         assert [row[4] for row in rows[:4]] == [0, 4, 8, 12], output
         sym = symbols(exe)
+        assert flow == [sym[name] for name in ['_start', 'boot_ready', 'trip_distance', 'after_trip', 'uart_puts', 'halt']], output
+        assert before_sp and frame_sp, output
+        assert int(before_sp[1]) == sym['stack_top'] and int(frame_sp[1]) == sym['stack_top'] - 16, output
         assert rows[-1][4] == sym['after_trip'] - sym['trip_distance'], output
         assert int(reset[1]) == sym['_start'], output
         assert int(reset[2]) & 0xf == 5, output  # this configured machine starts at EL1h
@@ -119,6 +180,10 @@ def debug(exe, expected):
                 'bssStart': sym['bss_start'], 'bssEnd': sym['bss_end'],
                 'stackBottom': sym['stack_bottom'], 'stackTop': sym['stack_top'],
                 'initializedMarker': 0x12345678,
+                'image': image_layout(exe),
+                'flow': dict(zip(['entry', 'ready', 'trip', 'returned', 'output', 'halted'], flow)),
+                'stackFrame': {'beforeSp': int(before_sp[1]), 'frameSp': int(frame_sp[1]),
+                               'frameSize': int(before_sp[1]) - int(frame_sp[1])},
                 'startupStops': [{'pc': pc, 'sp': sp, 'result': result} for pc, sp, result in boots],
                 'regions': [{'kind': 'code', 'start': sym['text_start'], 'end': sym['text_end']},
                             {'kind': 'bss', 'start': sym['bss_start'], 'end': sym['bss_end']},

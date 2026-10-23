@@ -1,6 +1,8 @@
 # Visual audit and implementation to-do
 
-**Opened:** 20 October 2026. **Status:** backlog; no lesson changes are claimed complete here.
+**Opened:** 20 October 2026. **Status:** backlog with separately recorded implementation work.
+The Module 12 section records its new figures and reviews; the earlier backlog remains an audit,
+not a claim that every listed item is complete.
 
 Use [the visual language](visual-language.md) as the acceptance standard. Existing figures may already meet a requirement: **inspect first and record keep/refine/new/remove**, rather than assuming every row means build a new diagram. The lesson inventory below is based on `content/lessons/index.ts` on `main` and the components under `packages/views/src/interactives/`. The `docs/plan.md` figures are useful design intentions, but the lessons now exist beyond the original draft plan.
 
@@ -104,3 +106,24 @@ No row was left unexamined; no lesson needed a new figure to carry its mechanism
 
 - Semantics inventory: `module0.css`, `module1.css`, `arith.css`, `bits.css`, `branch.css`, `loop.css`, `memory.css`, `products.css`, `stack.css` and `compiler.css` reviewed. All already draw meaning with tokens, not hard-coded colour; the one inconsistency found (operand/argument chips not matching the flow panel's shapes; the just-executed instruction unmarked) is fixed in P0 above.
 - Tests added: operand roles in place, one-register-two-moments tie (present and absent), the ask-before-step verdict, and the existing written/changed pins kept.
+
+## Module 12: boot handoff and file-to-memory figures
+
+The assembly-only capstone now has two additional schematics in its first lesson. Their native
+addresses and byte counts come from the checked public build in `module-12.evidence.json`.
+The physical-board comparison is a separately labelled, source-backed example, not a recording
+of firmware executed by the QEMU command.
+
+| Existing need | Decision | Result |
+| --- | --- | --- |
+| Know who loads the program and who executes startup | New | Selectable direct-ELF control path, with host loading and guest code distinguished, beside a qualified physical-board example |
+| Follow stored ELF bytes into RAM and distinguish reservation | Refine | Paired file/RAM section rows replace the old selected-address cards; actual LOAD ranges, a measured stack frame and a separate UART device region make the relationships visible |
+| Inspect startup values | Keep | The three recorded PC/SP/result snapshots retain their prediction gate |
+| Compare the function with the model | Keep | Existing arithmetic predictions, GDB/model comparisons and challenges remain |
+
+The first lesson's generalisation is shorter: definitions and tool commands remain, while the
+figures carry the detailed boot path and file/memory relationships. Selecting a control reveals
+its explanation inline and does not execute native code. See
+[the checked figure facts](notes/module-12/figure-facts.md) and the independent
+[learner](notes/module-12/figures-learner-review.md) and
+[technical](notes/module-12/figures-technical-review.md) records for findings and verification.

@@ -8,6 +8,7 @@
 @import "./stack.css";
 @import "./compiler.css";
 @import "./module0.css";
+@import "./native.css";
 
 /* The course's figures, assembly editor and answer boxes. Phone first: the C sits above the
    instructions and a register's 32 cells fit 375 pixels. Every colour is a token of the app, so a

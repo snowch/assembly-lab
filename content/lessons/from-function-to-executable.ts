@@ -12,6 +12,7 @@ import {
 } from "./native.listings";
 import EVIDENCE from "./module-12.evidence.json" with { type: "json" };
 import { LABELS as NATIVE_LABELS } from "./debug-native-instructions.labels";
+import { LABELS as DIAGRAM_LABELS } from "./native-diagrams.labels";
 export const fromFunctionToExecutable: LessonInput = {
   id: "from-function-to-executable",
   title: LABELS.title,
@@ -141,6 +142,18 @@ export const fromFunctionToExecutable: LessonInput = {
       title: LABELS.titles.generalisation,
       prose: PROSE.generalisation,
       interactives: [
+        ...(["flow", "memory"] as const).map((kind) => ({
+          id: kind === "flow" ? "native-boot-path" : "native-elf-memory",
+          kind: "native-tools" as const,
+          role: "diagram" as const,
+          timeModel: "none" as const,
+          caption: DIAGRAM_LABELS[kind].title,
+          props: {
+            stages: [],
+            diagram: { kind, evidence: EVIDENCE.boot, labels: DIAGRAM_LABELS },
+            after: "predict-native-result",
+          },
+        })),
         {
           id: "native-boot-startup",
           kind: "native-tools",

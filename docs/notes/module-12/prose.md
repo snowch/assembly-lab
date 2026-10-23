@@ -129,15 +129,15 @@ aarch64-linux-gnu-objdump -d --disassemble=_start boot.elf
 aarch64-linux-gnu-objdump -d --disassemble=trip_distance boot.elf
 ```
 
-`readelf -h` reads the file header, including the target machine, byte order and entry address. `-l` reads its program headers. Each `LOAD` segment describes bytes to place in memory. A segment can include several sections. Its memory size can exceed its file size: the reserved `.bss` and stack need memory without storing an image-sized string of zeros in the file. The ELF loader can supply zeros for that extra memory. Our startup explicitly clears `.bss` before using it, making the program’s own preparation visible. The recorded experiment below writes a non-zero test marker with GDB at entry, then confirms that startup clears it. Initialised `.data`, in contrast, carries its starting bytes in the image.
+`readelf -h` reads the file header, including the target machine, byte order and entry address. `-l` lists its program headers. Each `LOAD` segment describes a region the loader places in memory. A segment can contain several sections. The file-to-memory figure below separates stored bytes from reserved memory.
 
 `objdump -d` translates machine instructions back into assembly text, a **disassembly**. `--disassemble=name` limits the output to that named function. Compare the four trip instructions with the source.
 
-How does execution reach `_start`? For this ELF command, QEMU loads the segments into emulated RAM and starts the processor at the ELF entry. It supplies the loading service before our instructions run. No BIOS, UEFI image or guest bootloader runs in this path.
+For this command, QEMU supplies the ELF loader before our instructions run. The control-flow schematic separates host loading from guest execution and compares it with a possible physical-board boot chain.
 
-On a physical board, power-on reset starts execution at an address determined by that processor and system. Many Arm systems first execute built-in **boot ROM**, startup code stored in read-only memory. It may load **firmware**, the board's early startup software. Firmware prepares hardware and a **bootloader** loads the next program and transfers control to its entry point. The stages and responsibilities depend on the board.
+On a physical board, reset begins at an address determined by that processor and system. Many Arm systems first execute **boot ROM**, startup code stored in read-only memory. **Firmware** is the board’s early startup software; a **bootloader** loads the next program and transfers control to it. Their stages and handoff conditions depend on the board.
 
-**BIOS** usually names the legacy PC firmware interface. Some Arm machines use **UEFI**, a modern firmware interface also used on PCs. ARM64 itself does not prescribe one BIOS, firmware chain or boot medium. Our direct-loaded ELF lets you inspect the handoff and the program's own startup without installing board firmware. It is bootable on this chosen QEMU machine; it is not a universal disk or USB boot image.
+**BIOS** usually names the legacy PC firmware interface. Some Arm machines use **UEFI**, a modern firmware interface also used on PCs. Neither runs in this QEMU direct-ELF path. Our image is bootable on the chosen QEMU machine; it is not a universal disk or USB boot image.
 
 ## PROSE.finalTask
 
@@ -1002,3 +1002,329 @@ Reserved stack space
 ## LABELS.native.boot.regions.uart
 
 PL011 UART device registers
+
+# Native diagrams
+
+## NATIVE_DIAGRAM_LABELS.flow.title
+
+From image loading to serial output
+
+## NATIVE_DIAGRAM_LABELS.flow.note
+
+This control-flow schematic uses selected recorded instruction addresses. Select a stage to inspect its role; selecting does not execute instructions.
+
+## NATIVE_DIAGRAM_LABELS.flow.qemuTitle
+
+This QEMU command: direct ELF boot
+
+## NATIVE_DIAGRAM_LABELS.flow.boardTitle
+
+Physical board: one possible boot chain
+
+## NATIVE_DIAGRAM_LABELS.flow.boardNote
+
+This board-dependent example groups firmware stages described by Trusted Firmware-A. The board defines its handoff convention and accepted image formats. These firmware stages do not run in our QEMU experiment.
+
+## NATIVE_DIAGRAM_LABELS.flow.controlArrow
+
+Transfers control
+
+## NATIVE_DIAGRAM_LABELS.flow.loadArrow
+
+Loads file bytes into RAM
+
+## NATIVE_DIAGRAM_LABELS.flow.entry
+
+ELF entry point
+
+## NATIVE_DIAGRAM_LABELS.flow.host
+
+Host: QEMU loading
+
+## NATIVE_DIAGRAM_LABELS.flow.guest
+
+Guest: our instructions
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.0.id
+
+loader
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.0.title
+
+QEMU loads boot.elf
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.0.actor
+
+Host: QEMU loading
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.0.detail
+
+The host reads the ELF load segments, places their contents in emulated RAM and sets the processor’s first instruction address to the ELF entry.
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.1.id
+
+entry
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.1.title
+
+_start
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.1.actor
+
+Guest: our startup
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.1.detail
+
+The processor begins our code at the linked entry point. No guest BIOS, UEFI or boot stub runs before it in this direct ELF path.
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.2.id
+
+startup
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.2.title
+
+boot_ready
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.2.actor
+
+Guest: our startup
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.2.detail
+
+Startup has set the stack pointer and cleared .bss. The caller supplies the trip inputs before calling the function.
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.3.id
+
+trip
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.3.title
+
+trip_distance
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.3.actor
+
+Guest: our function
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.3.detail
+
+bl supplies a return address. The function calculates in registers, then ret transfers control back to after_trip.
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.4.id
+
+result
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.4.title
+
+after_trip
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.4.actor
+
+Guest: our caller
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.4.detail
+
+The caller stores the returned value in result, compares it with the expected answer and selects the report’s message.
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.5.id
+
+uart
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.5.title
+
+uart_puts
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.5.actor
+
+Guest: our output routine
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.5.detail
+
+The routine saves its return address on the stack, writes message bytes to the UART device and returns to its caller.
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.6.id
+
+halt
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.6.title
+
+halt
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.6.actor
+
+Guest: our waiting loop
+
+## NATIVE_DIAGRAM_LABELS.flow.nodes.6.detail
+
+Execution remains in the wfi and branch loop. Leaving QEMU is a host action; our program does not request a Linux process exit.
+
+## NATIVE_DIAGRAM_LABELS.flow.boardNodes.0.id
+
+rom
+
+## NATIVE_DIAGRAM_LABELS.flow.boardNodes.0.title
+
+ROM and platform firmware
+
+## NATIVE_DIAGRAM_LABELS.flow.boardNodes.0.actor
+
+Board startup software
+
+## NATIVE_DIAGRAM_LABELS.flow.boardNodes.0.detail
+
+Reset reaches the board’s first code. Firmware stages prepare hardware and arrange the handoff to later boot software.
+
+## NATIVE_DIAGRAM_LABELS.flow.boardNodes.1.id
+
+loader
+
+## NATIVE_DIAGRAM_LABELS.flow.boardNodes.1.title
+
+Later loader, for example UEFI
+
+## NATIVE_DIAGRAM_LABELS.flow.boardNodes.1.actor
+
+Firmware or bootloader
+
+## NATIVE_DIAGRAM_LABELS.flow.boardNodes.1.detail
+
+A loader places the selected next program in memory and transfers control according to that system’s handoff convention.
+
+## NATIVE_DIAGRAM_LABELS.flow.boardNodes.2.id
+
+program
+
+## NATIVE_DIAGRAM_LABELS.flow.boardNodes.2.title
+
+Selected next program
+
+## NATIVE_DIAGRAM_LABELS.flow.boardNodes.2.actor
+
+Program instructions
+
+## NATIVE_DIAGRAM_LABELS.flow.boardNodes.2.detail
+
+The program begins with the memory and processor state promised by that board’s handoff. It must use an image format the loader accepts.
+
+## NATIVE_DIAGRAM_LABELS.memory.title
+
+From ELF file contents to memory
+
+## NATIVE_DIAGRAM_LABELS.memory.note
+
+Select a section to follow the same contents from the file to the machine’s address space. The addresses and byte counts come from the checked boot.elf build. The figure shows selected regions, not every byte of the file or all of RAM.
+
+## NATIVE_DIAGRAM_LABELS.memory.file
+
+File: boot.elf
+
+## NATIVE_DIAGRAM_LABELS.memory.segments
+
+ELF load segments
+
+## NATIVE_DIAGRAM_LABELS.memory.segmentFile
+
+Stored file bytes
+
+## NATIVE_DIAGRAM_LABELS.memory.segmentMemory
+
+Memory bytes
+
+## NATIVE_DIAGRAM_LABELS.memory.stackSave
+
+Recorded UART stack frame
+
+## NATIVE_DIAGRAM_LABELS.memory.ram
+
+RAM on QEMU virt
+
+## NATIVE_DIAGRAM_LABELS.memory.fileOffset
+
+Offset in the file
+
+## NATIVE_DIAGRAM_LABELS.memory.loadAddress
+
+Address in memory
+
+## NATIVE_DIAGRAM_LABELS.memory.bytes
+
+bytes
+
+## NATIVE_DIAGRAM_LABELS.memory.notStored
+
+No section bytes stored in the file
+
+## NATIVE_DIAGRAM_LABELS.memory.load
+
+Load these bytes
+
+## NATIVE_DIAGRAM_LABELS.memory.reserve
+
+Reserve memory; no section bytes to copy
+
+## NATIVE_DIAGRAM_LABELS.memory.bss
+
+Startup explicitly clears .bss
+
+## NATIVE_DIAGRAM_LABELS.memory.stack
+
+Stack storage is reserved for calls
+
+## NATIVE_DIAGRAM_LABELS.memory.uart
+
+UART device
+
+## NATIVE_DIAGRAM_LABELS.memory.select
+
+Select a section
+
+## NATIVE_DIAGRAM_LABELS.memory.rangeNote
+
+Addresses increase down the rows. Each range’s end is exclusive. Rows are not drawn to scale: row height does not show byte count. Address gaps and file padding are omitted between the selected rows. Stack growth is shown separately.
+
+## NATIVE_DIAGRAM_LABELS.memory.sectionDetails..text
+
+Machine instructions stored in the image and loaded into RAM.
+
+## NATIVE_DIAGRAM_LABELS.memory.sectionDetails..rodata
+
+Fixed message bytes stored in the image and loaded into RAM.
+
+## NATIVE_DIAGRAM_LABELS.memory.sectionDetails..data
+
+Initialised writable bytes stored in the image and loaded into RAM.
+
+## NATIVE_DIAGRAM_LABELS.memory.sectionDetails..bss
+
+Result storage occupies memory without section bytes in the file. Our startup clears this region before use.
+
+## NATIVE_DIAGRAM_LABELS.memory.sectionDetails..stack
+
+Reserved stack space occupies memory without section bytes in the file. Startup sets sp to its aligned upper boundary.
+
+## NATIVE_DIAGRAM_LABELS.memory.entry
+
+Entry address: _start
+
+## NATIVE_DIAGRAM_LABELS.memory.stackTop
+
+Initial stack pointer: stack_top
+
+## NATIVE_DIAGRAM_LABELS.memory.stackBefore
+
+SP before the UART save
+
+## NATIVE_DIAGRAM_LABELS.memory.stackAfter
+
+SP after the UART save
+
+## NATIVE_DIAGRAM_LABELS.memory.stackGrowth
+
+The UART routine’s first save moves sp towards lower addresses and stores the frame pointer and return address in that stack frame. The displayed addresses come from the recorded run.
+
+## NATIVE_DIAGRAM_LABELS.memory.uartNote
+
+The UART’s device registers are outside RAM. No ELF section is loaded there. The running program sends bytes by storing to the device’s mapped addresses.
+
+## NATIVE_DIAGRAM_LABELS.memory.segmentNote
+
+The loader follows ELF LOAD segments, not the section names. The writable segment’s memory size exceeds its file size, so its extra memory is zero-filled when loaded. Our startup also explicitly clears .bss. Memory-only sections have no stored section bytes; a displayed ELF file-offset field does not give them file contents.
