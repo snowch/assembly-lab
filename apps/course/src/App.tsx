@@ -4,19 +4,20 @@
 // the course's book; the shell itself knows nothing about the machine. The front page lists the
 // plan, a lesson address shows the lesson with a way back, and an address with no lesson says so.
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
-import { browserStorage, LessonView } from "@platform/lesson-runtime";
+import { LessonView } from "@platform/lesson-runtime";
 
 import { createBook } from "./book";
 import { BUILD_VERSION, commitHref } from "./build-version";
 import { useLatestCommit } from "./latest-commit";
 import { useOffline } from "./offline";
+import { updateStorage } from "./update-storage";
 import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
 import { RUNTIME_STRINGS } from "./runtime-strings";
 import { COMPANION_LINKS, STRINGS } from "./strings";
-import { useTheme, type Theme } from "./theme";
+import { clearThemeUpdate, saveThemeForUpdate, useTheme, type Theme } from "./theme";
 
 /**
  * The skip link moves focus to the main content and leaves the address alone: its `#main` is not a
@@ -33,10 +34,15 @@ export function App() {
     BUILD_VERSION?.sha ?? null,
     location.hostname === "snowch.github.io",
   );
-  const offline = useOffline();
+  const persistence = useMemo(updateStorage, []);
   const route = useRoute();
   const [theme, setTheme] = useTheme();
-  const storage = useMemo(() => browserStorage(), []);
+  const canReload = useCallback(
+    () => persistence.saved() && saveThemeForUpdate(theme),
+    [persistence, theme],
+  );
+  const offline = useOffline(canReload, clearThemeUpdate);
+  const storage = persistence.storage;
   const book = useMemo(() => createBook(), []);
   // The tab names the page, so a reader with several pages open can tell them apart.
   useEffect(() => {
@@ -116,7 +122,12 @@ export function App() {
       <a className="skip-link" href="#main" onClick={skipToContent}>
         {STRINGS.skip}
       </a>
-      <header className="shell-header">
+      {offline?.updating && (
+        <p className="update-progress" role="status">
+          {STRINGS.offline.updating}
+        </p>
+      )}
+      <header className="shell-header" inert={offline?.updating}>
         <a className="brand" href="#/">
           {STRINGS.title}
         </a>
@@ -129,13 +140,23 @@ export function App() {
           </select>
         </label>
       </header>
-      <main id="main" className="shell-main" tabIndex={-1}>
+      <main id="main" className="shell-main" tabIndex={-1} inert={offline?.updating}>
         {offline && (
           <div className="offline-status" data-offline={offline.state}>
             <p className="offline-current" role="status">
               {STRINGS.offline[offline.state]}
             </p>
-            {offline.updateWaiting && <p>{STRINGS.offline.updateWaiting}</p>}
+            {offline.updateWaiting && (
+              <>
+                <p>{STRINGS.offline.updateWaiting}</p>
+                <button type="button" onClick={offline.updateNow} disabled={offline.updating}>
+                  {STRINGS.offline.updateNow}
+                </button>
+              </>
+            )}
+            {offline.updateError && (
+              <p role="alert">{STRINGS.offline.updateErrors[offline.updateError]}</p>
+            )}
             {offline.state !== "unsupported" && (
               <details>
                 <summary>{STRINGS.offline.detailsLabel}</summary>
@@ -149,7 +170,7 @@ export function App() {
         )}
         {page}
       </main>
-      <footer className="shell-footer">
+      <footer className="shell-footer" inert={offline?.updating}>
         <p className="footer-intro">
           {STRINGS.companions.intro.map((part, i) =>
             typeof part === "string" ? part : <em key={i}>{part.title}</em>,
