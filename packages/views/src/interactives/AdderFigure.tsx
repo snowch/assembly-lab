@@ -421,6 +421,59 @@ export const AdderFigure = withProps(Props, function AdderFigure({ data, store, 
         </div>
         {detail && <Calc record={record} done={done} names={names} />}
       </div>
+      {detail && justDone !== null && (
+        <details className="al-adder-zoom">
+          <summary>{A.adder.enlargeGroup}</summary>
+          {(() => {
+            const low = Math.floor(justDone / 4) * 4;
+            const high = low + 3;
+            const selected = Array.from({ length: 4 }, (_, i) => high - i);
+            const rows = [
+              { key: "carry", label: A.adder.carryRow, cells: carryCells },
+              { key: "a", label: names?.a ?? "a", cells: bitCells(record.a, 33) },
+              ...(record.subtraction
+                ? [
+                    {
+                      key: "given",
+                      label: names?.b ?? "b",
+                      cells: bitCells(secondAsGiven(record), 33),
+                    },
+                  ]
+                : []),
+              {
+                key: "b",
+                label: record.subtraction ? A.adder.turnedOver(names?.b ?? "b") : (names?.b ?? "b"),
+                cells: bitCells(record.b, 33),
+              },
+              { key: "sum", label: A.adder.answerRow, cells: bitCells(record.result, done) },
+            ];
+            return (
+              <>
+                <p className="al-memory-heading">{A.adder.groupBits(high, low)}</p>
+                {rows.map((row) => (
+                  <div className="al-adder-zoom-row" key={row.key} data-zoom-row={row.key}>
+                    <span>{row.label}</span>
+                    <span className="al-adder-zoom-bits">
+                      {selected.map((column) => {
+                        const cell = row.cells[column];
+                        return (
+                          <code
+                            key={column}
+                            data-column={column}
+                            data-current={column === justDone}
+                          >
+                            {cell?.shown ? cell.text : "·"}
+                          </code>
+                        );
+                      })}
+                    </span>
+                  </div>
+                ))}
+              </>
+            );
+          })()}
+        </details>
+      )}
       {detail ? (
         <div className="al-adder-lower">
           {flagsRow}

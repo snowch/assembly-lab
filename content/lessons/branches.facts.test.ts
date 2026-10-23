@@ -115,7 +115,6 @@ describe("the listings the lesson shows or describes", () => {
       ls.map((l) => (l.kind === "label" ? l : { ...l, cLine: null }));
     const as = (text: string) => noTags(parseListing(text));
     const wanted = [
-      noTags(listingOf("describe")),
       as(SERVICE.listing),
       // The excerpt: maybe_beep's first two instructions only.
       noTags(listingOf("maybe_beep").slice(0, 3)),
@@ -124,8 +123,14 @@ describe("the listings the lesson shows or describes", () => {
   });
 
   it("show the C of describe as recorded where the prose gives it", () => {
-    const c = fencesOf(PROSE.question).find((f) => f.lang === "c")!;
-    expect(c.lines).toEqual(RECORDED_C.slice(13, 21));
+    // The opening's sole full listing is the paired figure, rather than a duplicate prose fence.
+    expect(fencesOf(PROSE.question).filter((f) => f.lang === "c")).toEqual([]);
+    const opening = lesson.sections
+      .flatMap((section) => section.interactives)
+      .find((figure) => figure.id === "describe-listing")!;
+    const program = opening.props["program"] as { c: string; listing: string };
+    expect(program.c.split("\n")).toEqual(RECORDED_C.slice(13, 21));
+    expect(program.listing).toBe(DESCRIBE.listing);
     // maybe_beep's C is recorded over five lines; the prose gives it on one, with the same tokens.
     const oneLine = RECORDED_C.slice(22, 27).join(" ").replace(/\s+/g, " ");
     expect(oneLine).toBe("void maybe_beep(unsigned litres) { if (litres == 0) beep(); }");

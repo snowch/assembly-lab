@@ -595,3 +595,15 @@ Compiled to 2 assembly lines.
 The C evaluator and A64 simulator both return {value}.
 
 Line {line}, column {column}: {message}
+
+## Loop-phase cues
+
+Loop: set the starting value
+
+Loop: test whether to run the body
+
+Loop: execute the body
+
+Loop: run the update
+
+Loop: return to the condition

@@ -111,3 +111,125 @@
     grid-template-columns: repeat(min(var(--array-byte-columns), 2), minmax(0, 1fr));
   }
 }
+
+/* Keep the source bytes and the copied/fill regions readable together on phones. */
+.al-memory .al-memory-cells {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+.al-memory .al-memory-cells li {
+  padding: var(--space-1) 2px;
+  gap: 2px;
+}
+.al-memory .al-memory-address {
+  font-size: 11px;
+  white-space: nowrap;
+  letter-spacing: -0.025em;
+}
+.al-memory .al-memory-order {
+  margin-block: var(--space-1) var(--space-2);
+}
+.al-memory-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  margin-block: var(--space-1);
+}
+.al-memory-legend [data-access] {
+  padding-inline: var(--space-1);
+  border: 2px solid var(--accent);
+}
+.al-memory-legend [data-access="loaded"] {
+  border-style: dashed;
+}
+.al-memory .al-memory-register-bytes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.al-memory-region {
+  min-width: 0;
+}
+.al-memory-region-label {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-2);
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-sm);
+}
+.al-memory-region-bytes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+.al-memory .al-memory-register-byte {
+  padding: var(--space-1) 2px;
+  gap: 2px;
+}
+.al-memory .al-memory-register-byte .al-memory-range {
+  font-size: 11px;
+}
+.al-memory-bit-toggle {
+  margin-top: var(--space-2);
+}
+
+.al-memory .al-memory-cells li[data-access="loaded"],
+.al-memory .al-memory-register-byte[data-role="source"] {
+  border-style: dashed;
+}
+.al-memory .al-memory-cells li[data-access="stored"] {
+  border-style: solid;
+}
+
+.al-figure.al-memory {
+  gap: var(--space-2);
+}
+.al-memory .al-memory-heading,
+.al-memory-transfer > p {
+  margin-block: var(--space-1) var(--space-2);
+}
+
+.al-memory-case {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.al-memory-case select {
+  max-width: 100%;
+  min-height: 44px;
+  color: var(--fg);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  padding: var(--space-1) var(--space-2);
+}
+.al-memory-case-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+}
+.al-memory-source-details > summary {
+  min-height: 44px;
+  padding-block: var(--space-1);
+  cursor: pointer;
+}
+.al-memory-source-details > summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Details is a grid item too: its intrinsic listing width must not expand the page. */
+.al-memory-source-details {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+}
+.al-memory-source-details > .al-listing {
+  min-width: 0;
+  max-width: 100%;
+}

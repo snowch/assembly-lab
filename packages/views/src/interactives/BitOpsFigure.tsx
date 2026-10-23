@@ -18,11 +18,13 @@ import { z } from "zod";
 import { useSlot } from "@platform/lesson-runtime";
 
 import {
+  BitCells,
   BitKey,
   BitRow,
   MarkRow,
   Ruler,
   bitList,
+  bitsFrom,
   differing,
   hex,
   parseWord,
@@ -227,56 +229,112 @@ export const BitOpsFigure = withProps(Props, function BitOpsFigure({ data, store
     else return;
     e.preventDefault();
   };
+  const groupLow = Math.floor((picked ?? 0) / 8) * 8;
+  const visibleBits = bitsFrom(groupLow, groupLow + 7);
   return (
     <div className="al-figure al-bitops" data-figure="bit-ops" data-function={fn.entry}>
       {head}
       {inputs}
-      <div className="al-bitrows">
-        <Ruler />
-        <BitRow
-          row="word"
+      <p className="al-legend">{S.bits.bitRange(groupLow, groupLow + 7)}</p>
+      <div
+        className="al-cellrows"
+        data-view="selected-byte"
+        role="group"
+        aria-label={S.bitOps.pickGroup}
+        tabIndex={0}
+        onKeyDown={onKeys}
+        onClick={(e) => {
+          const cell = (e.target as HTMLElement).closest<HTMLElement>("[data-bit]");
+          if (cell?.dataset.bit !== undefined) pick(Number(cell.dataset.bit));
+        }}
+      >
+        <BitCells
+          row="detail-word"
           name={S.bitOps.rowBefore("w0")}
           value={word}
           text={rowText(word)}
+          bits={visibleBits}
           marks={wordMarks}
-          pick={{ onPick: pick }}
+          numbers
         />
         {fn.second && (
-          <BitRow
-            row="second"
+          <BitCells
+            row="detail-second"
             name={S.bitOps.rowBefore("w1")}
             value={second}
             text={rowText(second)}
+            bits={visibleBits}
             marks={secondMarks}
-            pick={{ onPick: pick }}
           />
         )}
         {shape.kind === "logic" && (
-          <BitRow
-            row="mask"
+          <BitCells
+            row="detail-mask"
             name={S.bitOps.rowMask}
             value={shape.mask}
             text={`${hex(shape.mask)} (${signedOf(shape.mask)})`}
+            bits={visibleBits}
             marks={maskMarks}
-            pick={{ onPick: pick }}
           />
         )}
-        <BitRow
-          row="result"
+        <BitCells
+          row="detail-result"
           name={S.bitOps.rowAfter("w0")}
           value={result}
           text={rowText(result)}
+          bits={visibleBits}
           marks={resultMarks}
-          pick={{ onPick: pick, keyboard: true, at: picked ?? 0 }}
         />
-        {changed.size > 0 && (
-          <MarkRow
-            row="changed"
-            name={S.bitOps.rowChanged}
-            glyphs={new Map([...changed].map((n) => [n, S.bitOps.changedGlyph]))}
-          />
-        )}
       </div>
+      <details className="al-all32">
+        <summary>{S.maskView.all}</summary>
+        <div className="al-bitrows">
+          <Ruler />
+          <BitRow
+            row="word"
+            name={S.bitOps.rowBefore("w0")}
+            value={word}
+            text={rowText(word)}
+            marks={wordMarks}
+            pick={{ onPick: pick }}
+          />
+          {fn.second && (
+            <BitRow
+              row="second"
+              name={S.bitOps.rowBefore("w1")}
+              value={second}
+              text={rowText(second)}
+              marks={secondMarks}
+              pick={{ onPick: pick }}
+            />
+          )}
+          {shape.kind === "logic" && (
+            <BitRow
+              row="mask"
+              name={S.bitOps.rowMask}
+              value={shape.mask}
+              text={`${hex(shape.mask)} (${signedOf(shape.mask)})`}
+              marks={maskMarks}
+              pick={{ onPick: pick }}
+            />
+          )}
+          <BitRow
+            row="result"
+            name={S.bitOps.rowAfter("w0")}
+            value={result}
+            text={rowText(result)}
+            marks={resultMarks}
+            pick={{ onPick: pick, keyboard: true, at: picked ?? 0 }}
+          />
+          {changed.size > 0 && (
+            <MarkRow
+              row="changed"
+              name={S.bitOps.rowChanged}
+              glyphs={new Map([...changed].map((n) => [n, S.bitOps.changedGlyph]))}
+            />
+          )}
+        </div>
+      </details>
       <div className="al-pick" role="group" aria-label={S.bitOps.pickGroup} onKeyDown={onKeys}>
         <button
           type="button"

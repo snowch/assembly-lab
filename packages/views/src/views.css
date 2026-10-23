@@ -8,6 +8,7 @@
 @import "./stack.css";
 @import "./compiler.css";
 @import "./module0.css";
+@import "./primitive.css";
 @import "./native.css";
 
 /* The course's figures, assembly editor and answer boxes. Phone first: the C sits above the

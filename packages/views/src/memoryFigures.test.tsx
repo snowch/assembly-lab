@@ -140,6 +140,79 @@ describe("memory stepper", () => {
     expect(back).toBeDisabled();
   });
 
+  it("keeps source addresses aligned with increasing register bits and labels each extension region once", () => {
+    const { container } = draw({});
+    fireEvent.click(screen.getByRole("button", { name: S.stepper.next }));
+    const cells = [...container.querySelectorAll(".al-memory-register-byte")];
+    expect(cells.map((cell) => cell.getAttribute("data-byte"))).toEqual([
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+    ]);
+    const regions = [...container.querySelectorAll(".al-memory-region")];
+    expect(regions).toHaveLength(3);
+    expect(regions[0]).toHaveTextContent(M.loadedBits);
+    expect(regions[0]).toHaveTextContent("0x410000");
+    expect(regions[1]).toHaveTextContent(M.signFill);
+    expect(regions[2]).toHaveTextContent(M.clearedUpper);
+    expect(container.querySelectorAll(".al-memory-bits")).toHaveLength(0);
+    fireEvent.click(screen.getByRole("button", { name: M.showBits }));
+    expect(container.querySelectorAll(".al-memory-bits")).toHaveLength(8);
+    expect(screen.getByRole("button", { name: M.hideBits })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+    fireEvent.click(screen.getByRole("button", { name: M.hideBits }));
+    expect(container.querySelectorAll(".al-memory-bits")).toHaveLength(0);
+    // Rewinding removes the result but retains all original addressed source bytes.
+    fireEvent.click(screen.getByRole("button", { name: S.stepper.back }));
+    expect(container.querySelector(".al-memory-transfer")).toBeNull();
+    expect(container.querySelectorAll(".al-memory-cells [data-address]")).toHaveLength(4);
+  });
+
+  it("compares the same executed moment without retaining another instruction's result", () => {
+    const program = (instruction: string) => ({ c: "", listing: `f:\n ${instruction}\n ret` });
+    const { container } = draw({
+      cases: [
+        {
+          label: "unsigned",
+          program: program("ldrb w1, [x0]"),
+          call,
+          registers: ["x0", "w1", "x1"],
+        },
+        {
+          label: "signed",
+          program: program("ldrsb w1, [x0]"),
+          call,
+          registers: ["x0", "w1", "x1"],
+        },
+      ],
+    });
+    expect(container.querySelector(".al-status")).toHaveTextContent("ldrb w1, [x0]");
+    expect(container.querySelector(".al-memory-source-details")).not.toHaveAttribute("open");
+    expect(container.querySelector(".al-memory-source-details .al-listing")).not.toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: S.stepper.next }));
+    expect(container.querySelector('[data-register="w1"]')).toHaveTextContent("0x000000f9");
+    const choose = screen.getByRole("combobox", { name: M.comparison });
+    fireEvent.change(choose, { target: { value: "1" } });
+    expect(container.querySelector('[data-figure="memory-stepper"]')).toHaveAttribute(
+      "data-k",
+      "1",
+    );
+    expect(container.querySelector('[data-register="w1"]')).toHaveTextContent("0xfffffff9");
+    expect(container.querySelectorAll('[data-role="signFill"]')).toHaveLength(3);
+    expect(container.querySelector(".al-memory-case-summary")).toHaveTextContent("0x410000");
+    fireEvent.click(screen.getByRole("button", { name: S.stepper.reset }));
+    expect(choose).toHaveValue("1");
+    expect(container.querySelector(".al-memory-transfer")).toBeNull();
+    expect(container.querySelector('[data-register="w1"]')).toHaveTextContent("0x12345678");
+  });
+
   it("draws register-only extension without pretending it accessed memory", () => {
     const { container } = draw({
       program: { c: "", listing: "f:\n sxtb w1, w0\n ret" },

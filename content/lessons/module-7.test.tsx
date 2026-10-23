@@ -102,10 +102,9 @@ describe("Module7 lessons", () => {
     const { container } = render(
       <LessonView book={book} lesson={arrayAddresses} storage={storage} />,
     );
-    const figure = container.querySelector(
-      '#ix-step-array-post-index [data-figure="memory-stepper"]',
-    )!;
+    const figure = container.querySelector('#ix-step-array-offset [data-figure="memory-stepper"]')!;
     expect(figure).not.toBeNull();
+    fireEvent.change(figure.querySelector("select")!, { target: { value: "2" } });
     const next = [...figure.querySelectorAll("button")].find((b) => b.textContent === "Next")!;
     fireEvent.click(next);
     expect(figure.querySelector('[data-register="x0"]')!.textContent).toContain("0000000000410004");

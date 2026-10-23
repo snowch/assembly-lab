@@ -52,7 +52,9 @@ export const sameCOnA32: LessonInput = {
           role: "diagram",
           timeModel: "none",
           caption: LABELS.captions.limitPair,
-          props: pair(LIMIT_TRIP_A32, LIMIT_TRIP_A64),
+          props: {
+            ...pair(LIMIT_TRIP_A32, LIMIT_TRIP_A64),
+          },
         },
       ],
     },
@@ -106,6 +108,17 @@ export const sameCOnA32: LessonInput = {
       prose: PROSE.construction,
       interactives: [
         {
+          id: "a32-limit-reference",
+          kind: "listing-pair",
+          role: "drilldown",
+          timeModel: "none",
+          caption: LABELS.captions.limitPair,
+          props: {
+            ...pair(LIMIT_TRIP_A32, LIMIT_TRIP_A64),
+            referenceTitle: LABELS.references.read,
+          },
+        },
+        {
           id: "read-a32-conditional",
           kind: "challenge",
           role: "exercise",
@@ -146,7 +159,9 @@ export const sameCOnA32: LessonInput = {
           role: "diagram",
           timeModel: "none",
           caption: LABELS.captions.markerPair,
-          props: pair(SERVICE_MARKER_A32, SERVICE_MARKER_A64),
+          props: {
+            ...pair(SERVICE_MARKER_A32, SERVICE_MARKER_A64),
+          },
         },
       ],
     },
@@ -162,7 +177,9 @@ export const sameCOnA32: LessonInput = {
           role: "diagram",
           timeModel: "none",
           caption: LABELS.captions.divisionPair,
-          props: pair(AVERAGE_TRIP_A32, AVERAGE_TRIP_A64),
+          props: {
+            ...pair(AVERAGE_TRIP_A32, AVERAGE_TRIP_A64),
+          },
         },
       ],
     },
@@ -180,6 +197,28 @@ export const sameCOnA32: LessonInput = {
             program: AVERAGE_TRIP_A64,
             call: { entry: "average_trip", args: [95, 4] },
             registers: [0, 1],
+          },
+        },
+        {
+          id: "a32-marker-reference",
+          kind: "listing-pair",
+          role: "drilldown",
+          timeModel: "none",
+          caption: LABELS.captions.markerPair,
+          props: {
+            ...pair(SERVICE_MARKER_A32, SERVICE_MARKER_A64),
+            referenceTitle: LABELS.references.marker,
+          },
+        },
+        {
+          id: "a32-average-reference",
+          kind: "listing-pair",
+          role: "drilldown",
+          timeModel: "none",
+          caption: LABELS.captions.divisionPair,
+          props: {
+            ...pair(AVERAGE_TRIP_A32, AVERAGE_TRIP_A64),
+            referenceTitle: LABELS.references.final,
           },
         },
         {

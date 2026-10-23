@@ -48,6 +48,7 @@ interface FigureProps {
   memory?: { address: number; length: number };
   after?: string;
   extension?: boolean;
+  cases?: (Pick<FigureProps, "program" | "call" | "registers"> & { label: string })[];
 }
 interface PredictionProps extends FigureProps {
   options: { value: string; label: string }[];
@@ -99,6 +100,35 @@ async function checkState(page: Page, id: string, props: FigureProps, trace: Tra
       );
   }
 }
+
+test("addressing forms share one comparison moment and preserve distinct address/update effects", async ({
+  page,
+}) => {
+  await openLesson(page, MEMORY);
+  await unlock(page, MEMORY, "predict-read-trip");
+  const id = "step-array-offset";
+  const figure = page.locator(`#ix-${id}`);
+  const base = figures(MEMORY).find((item) => item.id === id)!.props as unknown as FigureProps;
+  await press(page, figure.getByRole("button", { name: V.stepper.next }));
+  for (const [index, choice] of base.cases!.entries()) {
+    await figure.getByRole("combobox").selectOption(String(index));
+    const props = { ...base, ...choice };
+    const trace = traceOf(choice.program, choice.call);
+    await checkState(page, id, props, trace, 1);
+    const address = trace.result.steps[0]!.loads[0]!.address;
+    await expect(figure.locator(".al-memory-case-summary")).toContainText(
+      `0x${address.toString(16)}`,
+    );
+    await expect(figure.locator(".al-memory-case-summary")).toContainText(
+      registerHex(trace, 0, "x0"),
+    );
+    await expect(figure.locator(".al-memory-case-summary")).toContainText(
+      registerHex(trace, 1, "x0"),
+    );
+  }
+  await press(page, figure.getByRole("button", { name: V.stepper.reset }));
+  await expect(figure.locator(".al-memory-case-summary")).toHaveCount(0);
+});
 
 for (const route of [MEMORY, WIDTHS]) {
   test(`${route}: ten sections, two challenges and no browser errors`, async ({ page }) => {

@@ -71,6 +71,18 @@ export const fromFunctionToExecutable: LessonInput = {
       prose: PROSE.investigation,
       interactives: [
         {
+          id: "native-elf-memory",
+          kind: "native-tools",
+          role: "diagram",
+          timeModel: "none",
+          caption: DIAGRAM_LABELS.memory.title,
+          props: {
+            stages: [],
+            diagram: { kind: "memory", evidence: EVIDENCE.boot, labels: DIAGRAM_LABELS },
+            after: "predict-native-result",
+          },
+        },
+        {
           id: "native-model-trip",
           kind: "stepper",
           timeModel: "steps",
@@ -136,24 +148,12 @@ export const fromFunctionToExecutable: LessonInput = {
         },
       ],
     },
-    { kind: "explanation", title: LABELS.titles.explanation, prose: PROSE.explanation },
     {
-      kind: "generalisation",
-      title: LABELS.titles.generalisation,
-      prose: PROSE.generalisation,
+      kind: "explanation",
+      title: LABELS.titles.explanation,
+      prose: PROSE.explanation,
+      details: { summary: PROSE.deviceNoteSummary, prose: PROSE.deviceNote },
       interactives: [
-        ...(["flow", "memory"] as const).map((kind) => ({
-          id: kind === "flow" ? "native-boot-path" : "native-elf-memory",
-          kind: "native-tools" as const,
-          role: "diagram" as const,
-          timeModel: "none" as const,
-          caption: DIAGRAM_LABELS[kind].title,
-          props: {
-            stages: [],
-            diagram: { kind, evidence: EVIDENCE.boot, labels: DIAGRAM_LABELS },
-            after: "predict-native-result",
-          },
-        })),
         {
           id: "native-boot-startup",
           kind: "native-tools",
@@ -163,7 +163,26 @@ export const fromFunctionToExecutable: LessonInput = {
           props: {
             stages: [],
             boot: EVIDENCE.boot,
-            bootLabels: NATIVE_LABELS.native.boot,
+            bootLabels: { ...NATIVE_LABELS.native.boot, stackTop: DIAGRAM_LABELS.memory.stackTop },
+            after: "predict-native-result",
+          },
+        },
+      ],
+    },
+    {
+      kind: "generalisation",
+      title: LABELS.titles.generalisation,
+      prose: PROSE.generalisation,
+      interactives: [
+        {
+          id: "native-boot-path",
+          kind: "native-tools",
+          role: "diagram",
+          timeModel: "none",
+          caption: DIAGRAM_LABELS.flow.title,
+          props: {
+            stages: [],
+            diagram: { kind: "flow", evidence: EVIDENCE.boot, labels: DIAGRAM_LABELS },
             after: "predict-native-result",
           },
         },

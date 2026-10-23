@@ -62,6 +62,8 @@ it("records every stack diagram label and parameterised message", () => {
     STACK_STRINGS.savedRegister("{register}"),
     STACK_STRINGS.returnTarget("{address}", "{instruction}"),
     STACK_STRINGS.returnOutside("{address}"),
+    STACK_STRINGS.frameRange("{first}", "{last}"),
+    STACK_STRINGS.slotRange("{first}", "{last}"),
     STACK_STRINGS.address("{address}"),
     STACK_STRINGS.byte("{address}", "{byte}"),
     STACK_STRINGS.depth(0),

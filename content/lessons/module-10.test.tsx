@@ -118,7 +118,23 @@ describe("Module 10 checked numbers and recorded programs", () => {
     if (!compiled.ok) return;
     expect(record.source).toBe(source);
     expect(record.listing).toBe(compiled.listing);
-    expect(record.lineMap).toEqual(compiled.lineMap);
+    // The record pins emitted instructions and their source lines. Loop-phase cues are
+    // additional AST-derived UI metadata, independently checked in compiler.test.ts.
+    expect(record.lineMap).toEqual(
+      compiled.lineMap.map(({ assemblyLine, cLine }) => ({ assemblyLine, cLine })),
+    );
+    const phases = new Set(
+      compiled.lineMap.flatMap((entry) => (entry.loopPhase ? [entry.loopPhase] : [])),
+    );
+    if (["accumulated_charge", "course_while", "ui-extra-iteration"].includes(name!)) {
+      expect(phases).toContain("condition");
+      expect(phases).toContain("body");
+      expect(phases).toContain("repeat");
+      if (name !== "course_while") {
+        expect(phases).toContain("initialisation");
+        expect(phases).toContain("update");
+      }
+    } else expect(phases.size).toBe(0);
   });
   it.each([
     [C.TRIP, "module10-trip-charge-course"],

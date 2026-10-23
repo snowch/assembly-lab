@@ -115,23 +115,21 @@ describe("the listings the lesson shows or describes", () => {
         rest = next < 0 ? [] : rest.slice(next);
       }
     }
-    expect([...seen].sort()).toEqual([
-      "downhill",
-      "fuel_low",
-      "steeper_s",
-      "steeper_u",
-      "warning_light",
-    ]);
+    expect([...seen].sort()).toEqual(["downhill", "fuel_low", "steeper_u", "warning_light"]);
   });
 
   it("show the C as recorded where the prose gives it", () => {
-    const c = fencesOf(PROSE.question).find((f) => f.lang === "c")!;
-    // The prose sets each function out over several lines; the words and symbols are the recorded
-    // one-line C's, so the two are compared with their layout (spaces and line breaks) removed.
-    const layout = (s: string) => s.replace(/\s+/g, " ").trim();
-    expect(layout(c.lines.join(" "))).toBe(
+    // The complete motivating C now lives in its sole paired figure, not a repeated fence.
+    expect(fencesOf(PROSE.question).filter((f) => f.lang === "c")).toEqual([]);
+    const opening = lesson.sections
+      .flatMap((section) => section.interactives)
+      .find((figure) => figure.id === "steeper-runs")!;
+    const program = opening.props["program"] as { c: string; listing: string };
+    const layout = (text: string) => text.replace(/\s+/g, " ").trim();
+    expect(layout(program.c)).toBe(
       layout([shownFunction("steeper_s").c, shownFunction("steeper_u").c].join(" ")),
     );
+    expect(program.listing).toBe(STEEPER_BOTH.listing);
     const fuelLow = fencesOf(PROSE.generalisation).find((f) => f.lang === "c")!;
     expect(layout(fuelLow.lines.join(" "))).toBe(layout(shownFunction("fuel_low").c));
     expect(PROSE.generalisation).toContain(shownFunction("downhill").c);

@@ -252,13 +252,13 @@ The full `x0` register holds `0x00000000fffffff9`. Its upper 32 bits are zero be
 
 ## 4. Compare the width and the extension
 
-Compare the two loads of the same byte in the figures. Both copy the stored bits into the low end of `w0`. Above those bits, `ldrb` adds zeros and `ldrsb` copies the sign bit. Neither instruction changes memory.
+Choose a load in the comparison, then press Next. Switch between `ldrb w0` and `ldrsb w0` to compare the same byte at the same step. Both copy the stored bits into the low end of `w0`. Above those bits, `ldrb` adds zeros and `ldrsb` copies the sign bit. Neither instruction changes memory.
 
 The same distinction applies to two-byte values. `ldrh` reads two bytes and zero-extends them. `ldrsh` reads two bytes and sign-extends them. In these listings, `unsigned short` selects `ldrh` and signed `short` selects `ldrsh`.
 
 The destination also matters. `ldrsb x0, [x0]` sign-extends its byte through all 64 bits. `ldrsw x0, [x0]` reads four bytes and sign-extends that 32-bit value to 64 bits. GCC uses the latter when returning a stored `int` as a `long` on this target.
 
-Use the figures to separate three regions: the bits read from memory, the bits added by extension, and any upper bits cleared by a write through a `w` register name.
+Use the comparison to separate three regions: the bits read from memory, the bits added by extension, and any upper bits cleared by a write through a `w` register name.
 
 ## 5. Add a correction to a signed gradient
 
@@ -441,9 +441,45 @@ Loading the same byte as a signed and unsigned integer in isolation.
 
 A gradient correction makes the consequence of the load choice visible. The final trip-computer record combines four field widths and interpretations while requiring the learner to preserve its address.
 
+## Figure captions and labels
+
+ldrb w0: unsigned byte
+
+ldrsb w0: signed byte
+
+ldrh w0: unsigned halfword
+
+ldrsh w0: signed halfword
+
+ldrsw x0: signed word
+
+ldrsb x0: signed byte
+
+Compare load widths and extension from the same source bytes.
+
 # Memory figure interface
 
 Parameterized messages use example values and placeholders. The figures substitute values from the simulator.
+
+## inspectSource
+
+Inspect C and instructions
+
+## comparison
+
+Instruction to compare
+
+## addressUsed
+
+Address used
+
+## before
+
+Before
+
+## after
+
+After
 
 ## memory
 
@@ -458,6 +494,22 @@ Addresses increase from left to right, then continue on the next row.
 Address 0x00410000: byte f9
 
 Address {address}: byte {byte}
+
+## untouchedLegend
+
+Other bytes: not accessed
+
+## registerOrder
+
+Register bits: low → high, left to right.
+
+## showBits
+
+Show byte bits
+
+## hideBits
+
+Hide byte bits
 
 ## loaded
 

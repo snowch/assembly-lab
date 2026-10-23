@@ -32,8 +32,8 @@ export const PROSE = {
     'Set or clear any bit, or press "Clear bits" to start from zero.',
 
   construction:
-    'You can press bits one at a time, or type a pattern in hexadecimal and the bits follow it. The figure in "Reading the bits" shows both readings of any bits you change there.',
-  /** Shown once Make −1 has passed. */
+    "You can press bits one at a time, or type a pattern in hexadecimal and the bits follow it.\n\nUse the optional scratch register beside this exercise to try a pattern and inspect its readings. It starts with all bits clear. Changes there do not fill in your answers below.",
+
   constructionSolved:
     "With all 32 bits set, the signed reading is −1 and the unsigned reading is 4294967295.",
   makeTask:

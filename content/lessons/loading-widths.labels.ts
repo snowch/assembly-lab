@@ -20,7 +20,16 @@ export const LABELS = {
     challenge: "Read the sensor record",
     reflection: "What you now know",
   },
+  comparisonCases: {
+    unsignedByte: "ldrb w0: unsigned byte",
+    signedByte: "ldrsb w0: signed byte",
+    unsignedHalf: "ldrh w0: unsigned halfword",
+    signedHalf: "ldrsh w0: signed halfword",
+    signedWord: "ldrsw x0: signed word",
+    signedWideByte: "ldrsb x0: signed byte",
+  },
   captions: {
+    comparison: "Compare load widths and extension from the same source bytes.",
     listing: "read_fuel returns an unsigned byte as an unsigned 32-bit value.",
     predict: "Predict the result of a signed byte load into w0.",
     step: "Read the gradient byte and follow the added bits in w0 and x0.",

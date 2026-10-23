@@ -71,6 +71,7 @@ describe("the lesson", () => {
     const gated = all.filter((x) => typeof x.props["after"] === "string");
     expect(gated.map((x) => [x.id, x.props["after"]])).toEqual([
       ["mask-bits", "predict-minus-five"],
+      ["read-gear", "predict-minus-five"],
       ["step-no-clear", "predict-no-clear"],
       ["compare-no-clear", "predict-no-clear"],
     ]);
@@ -91,7 +92,7 @@ describe("the lesson", () => {
       .flatMap((s) => s.interactives)
       .find((x) => x.id === "mask-bits")!;
     const entries = (figure.props["functions"] as { entry: string }[]).map((f) => f.entry);
-    expect(entries).toEqual(["warn_fuel", "clear_door", "toggle_lights", "gear_of"]);
+    expect(entries).toEqual(["warn_fuel", "clear_door", "toggle_lights"]);
     expect(JSON.stringify(figure.props)).not.toContain("7u << 4");
   });
 
@@ -246,7 +247,7 @@ describe("the page", () => {
     // The bit figure, the stepper and the comparison wait for their predictions, and the solution
     // stepper and the comparison with GCC's function wait for the challenge; nothing of any run is
     // on the page.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(5);
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(6);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
     expect(container.querySelectorAll('[data-figure="warning-word"] .al-bit')).toHaveLength(32);

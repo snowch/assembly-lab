@@ -31,6 +31,8 @@ export const ARITH_STRINGS = {
 
   adder: {
     controls: "Step through the addition",
+    enlargeGroup: "Enlarge the selected group",
+    groupBits: (high: number, low: number) => `Bits ${high} to ${low}`,
     next: "Next column",
     back: "Back",
     reset: "Reset",

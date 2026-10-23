@@ -71,6 +71,13 @@ export const COMPILER_STRINGS = {
     cached: "Showing the saved compiler response for this source and these settings.",
     gccTitle: "Recorded GCC response",
     courseTitle: "Course compiler assembly",
+    loopPhase: {
+      initialisation: "Loop: set the starting value",
+      condition: "Loop: test whether to run the body",
+      body: "Loop: execute the body",
+      update: "Loop: run the update",
+      repeat: "Loop: return to the condition",
+    },
     argumentsInvalid: "Enter one whole unsigned 32-bit value for each parameter.",
     machineFailed:
       "The assembly did not complete with the result calculated by the C evaluator. Check the reported run before using its result.",

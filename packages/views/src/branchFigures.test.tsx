@@ -345,6 +345,20 @@ describe("the prediction about how many instructions run", () => {
     expect(container.querySelector(".al-outcome")).toBeNull();
   });
 
+  it("keeps compact loop input values and makes their bits available without committing a prediction", async () => {
+    const user = userEvent.setup({ delay: null });
+    const { container } = figure("count-prediction", "n", { ...props, decimal: true });
+    expect(container.querySelectorAll(".al-bit")).toHaveLength(0);
+    expect(container.querySelector('[data-register="w0"]')).toHaveTextContent("15");
+    const toggle = screen.getByRole("button", { name: "Show the bits" });
+    await user.click(toggle);
+    expect(container.querySelectorAll(".al-bit")).toHaveLength(32);
+    expect(container.querySelector(".al-outcome")).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Hide the bits" }));
+    expect(container.querySelectorAll(".al-bit")).toHaveLength(0);
+    expect(screen.getByRole("button", { name: S.prediction.commit })).toBeDisabled();
+  });
+
   it("counts the steps the model recorded after the commit: five", async () => {
     const user = userEvent.setup({ delay: null });
     const { container } = figure("count-prediction", "n", props);

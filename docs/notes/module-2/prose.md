@@ -75,6 +75,13 @@ The first line, `add_overflows:`, is the function's name and a colon. The two in
 
 Earlier, you predicted one addition. Now you predict three.
 
+For these 32-bit additions:
+
+- N is the result's top bit.
+- Z is 1 when the result bits are all zero.
+- C is the carry out of bit 31.
+- V is 1 when the carry into bit 31 differs from the carry out.
+
 **Predict the four flags**
 
 Give N, Z, C and V for each of three additions with `adds`. Each addition has its own group of four boxes, N, Z, C and V. Each box takes 0 or 1.
@@ -372,3 +379,10 @@ V: Compare the carry into the top bit with the carry out of it.
 ## After add (lesson 1, section 6), the stepper's status
 
 `w0` was written. N, Z, C and V were not updated by `add`.
+
+## Selected-group inspection labels
+
+- Enlarge the selected group
+- Bits {high} to {low}
+
+The enlargement uses the same already revealed columns as the overview. The input, complemented input, carry and result cells come from the recorded addition. It does not advance execution.

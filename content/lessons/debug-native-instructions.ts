@@ -1,6 +1,7 @@
 // Copyright © 2026 Christopher Snow
 import type { LessonInput } from "@platform/lesson-schema";
 import { LABELS } from "./debug-native-instructions.labels";
+import { LABELS as DIAGRAM_LABELS } from "./native-diagrams.labels";
 import { PROSE } from "./debug-native-instructions.prose";
 import {
   NATIVE_TRIP,
@@ -24,11 +25,25 @@ export const debugNativeInstructions: LessonInput = {
       kind: "motivation",
       title: LABELS.titles.motivation,
       prose: PROSE.motivation + "\n\n" + PROSE.connection,
+      interactives: [
+        {
+          id: "native-debug-startup",
+          kind: "native-tools",
+          role: "diagram",
+          timeModel: "steps",
+          caption: LABELS.native.boot.title,
+          props: {
+            stages: [],
+            boot: EVIDENCE.boot,
+            bootLabels: { ...LABELS.native.boot, stackTop: DIAGRAM_LABELS.memory.stackTop },
+          },
+        },
+      ],
     },
     {
       kind: "prediction",
       title: LABELS.titles.prediction,
-      prose: PROSE.prediction,
+      prose: PROSE.functionInputs + "\n\n" + PROSE.prediction,
       interactives: [
         {
           id: "predict-native-step",

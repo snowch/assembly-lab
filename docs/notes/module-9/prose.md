@@ -518,3 +518,37 @@ x30 points to {address}: {instruction}
 ## returnOutside
 
 x30 points to {address}, outside the instructions shown.
+
+
+## savedValues
+
+Saved values in this frame
+
+## inspectBytes
+
+Inspect individual bytes
+
+## noSavedValue
+
+Other frame space
+
+## frameRange
+
+Addresses {first} to {last}
+
+## slotRange
+
+{first} to {last}
+
+## stored
+
+Written by this instruction
+
+## loaded
+
+Read by this instruction
+
+
+## offsets
+
+Slot offsets count bytes from the first address of each frame.

@@ -3,6 +3,8 @@
 export { compileC, interpretC, COMPILER_LIMITS } from "./compiler.ts";
 export type {
   CompiledC,
+  LoopPhase,
+  SourceAssociation,
   CompileResult,
   Diagnostic,
   DiagnosticCode,

@@ -24,6 +24,7 @@ import {
 } from "@al/views";
 
 import { LESSONS } from ".";
+import { PRIMITIVE_PROGRAMS, primitiveProgram } from "./meet-the-machine.primitives";
 import {
   FUEL_USED_FIXED_TEXT,
   FUEL_USED_MISTAKEN_TEXT,
@@ -33,6 +34,43 @@ import {
 } from "./meet-the-machine.listings";
 
 const lesson = LESSONS.find((l) => l.id === "meet-the-machine")!;
+
+describe("the first arithmetic applications", () => {
+  it("gets each result from the model and retains the unmodified inputs", () => {
+    const outcomes = PRIMITIVE_PROGRAMS.map((item) => {
+      const trace = traceOf(primitiveProgram(item), { entry: item.entry, args: [...item.args] });
+      const view = viewAt(trace, item.instructions.length);
+      return item.registers.map((register) => wValue(view.state, register));
+    });
+    expect(outcomes).toEqual([
+      [12, 7, 19],
+      [14, 19, 5],
+      [13, 4],
+      [20, 14],
+      [8, 3, 8],
+    ]);
+  });
+
+  it("keeps every displayed arithmetic snippet in the real-tool corpus", () => {
+    const source = readFileSync(
+      new URL("../../scripts/real-tools/corpus/module0-primitives.s", import.meta.url),
+      "utf8",
+    );
+    const calls = JSON.parse(
+      readFileSync(
+        new URL("../../scripts/real-tools/corpus/module0-primitives.json", import.meta.url),
+        "utf8",
+      ),
+    );
+    for (const item of PRIMITIVE_PROGRAMS) {
+      expect(source).toContain(primitiveProgram(item).listing);
+      expect(calls.calls).toContainEqual({
+        entry: item.entry,
+        args: item.args.map((value) => [String(value), 32]),
+      });
+    }
+  });
+});
 
 // ---------------------------------------------------------------------------------------------
 // The recorded file

@@ -176,7 +176,23 @@ export function CSourceEditor({
           aria-pressed={mode === "templates"}
           onClick={() => {
             setMode("templates");
-            selectLine(at);
+            const current = lines[at];
+            const firstStatement = lines.findIndex((line) => {
+              const parsed = parseCStatement(line, config);
+              return (
+                parsed !== null &&
+                parsed.kind !== "function" &&
+                parsed.kind !== "end" &&
+                parsed.kind !== "else"
+              );
+            });
+            const currentStatement = current ? parseCStatement(current, config) : null;
+            selectLine(
+              currentStatement !== null &&
+                !["function", "end", "else"].includes(currentStatement.kind)
+                ? at
+                : Math.max(0, firstStatement),
+            );
           }}
         >
           {C.editor.templates}

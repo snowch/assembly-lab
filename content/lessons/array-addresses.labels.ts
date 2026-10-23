@@ -20,7 +20,13 @@ export const LABELS = {
     challenge: "Add the trip distances",
     reflection: "What you now know",
   },
+  comparisonCases: {
+    offset: "[x0, #4]: offset",
+    preIndex: "[x0, #4]!: pre-index",
+    postIndex: "[x0], #4: post-index",
+  },
   captions: {
+    comparison: "Compare the address used and x0 before and after each load.",
     listing: "read_trip in C and the instructions GCC made from it.",
     predict: "Predict which array element the scaled load reads.",
     step: "Follow the selected bytes into w0.",

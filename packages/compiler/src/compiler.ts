@@ -59,12 +59,18 @@ type Statement = (
   | { kind: "while"; condition: Expr; body: Statement }
   | { kind: "for"; init: Statement; condition: Expr; increment: Statement; body: Statement }
 ) & { token: Token };
+export type LoopPhase = "initialisation" | "condition" | "body" | "update" | "repeat";
+export interface SourceAssociation {
+  assemblyLine: number;
+  cLine: number;
+  loopPhase?: LoopPhase;
+}
 export interface CompiledC {
   ok: true;
   name: string;
   parameters: string[];
   listing: string;
-  lineMap: { assemblyLine: number; cLine: number }[];
+  lineMap: SourceAssociation[];
   ast: Statement;
 }
 export type CompileResult = CompiledC | { ok: false; errors: Diagnostic[] };
@@ -402,12 +408,23 @@ function returns(stmt: Statement): boolean {
 
 class Generator {
   private lines: string[] = [];
-  private map: { assemblyLine: number; cLine: number }[] = [];
+  private map: SourceAssociation[] = [];
+  private loopPhase: LoopPhase | undefined;
+  private inPhase(phase: LoopPhase, generate: () => void): void {
+    const previous = this.loopPhase;
+    this.loopPhase = phase;
+    generate();
+    this.loopPhase = previous;
+  }
   private labels = 0;
   private emit(text: string, token: Token): void {
     if (this.lines.length >= COMPILER_LIMITS.instructions) fail(token, "instruction-limit");
     this.lines.push(text);
-    this.map.push({ assemblyLine: this.lines.length, cLine: token.line });
+    this.map.push({
+      assemblyLine: this.lines.length,
+      cLine: token.line,
+      ...(this.loopPhase === undefined ? {} : { loopPhase: this.loopPhase }),
+    });
   }
   private label(): string {
     return `.Lcourse${this.labels++}`;
@@ -499,19 +516,18 @@ class Generator {
     }
     const start = this.label(),
       end = this.label();
-    if (stmt.kind === "for") this.statement(stmt.init);
+    if (stmt.kind === "for") this.inPhase("initialisation", () => this.statement(stmt.init));
     emit(`${start}:`);
-    this.expression(stmt.condition);
-    emit(`    cbz w8, ${end}`);
-    this.statement(stmt.body);
-    if (stmt.kind === "for") this.statement(stmt.increment);
-    emit(`    b ${start}`);
+    this.inPhase("condition", () => {
+      this.expression(stmt.condition);
+      emit(`    cbz w8, ${end}`);
+    });
+    this.inPhase("body", () => this.statement(stmt.body));
+    if (stmt.kind === "for") this.inPhase("update", () => this.statement(stmt.increment));
+    this.inPhase("repeat", () => emit(`    b ${start}`));
     emit(`${end}:`);
   }
-  generate(
-    name: string,
-    ast: Statement,
-  ): { listing: string; lineMap: { assemblyLine: number; cLine: number }[] } {
+  generate(name: string, ast: Statement): { listing: string; lineMap: SourceAssociation[] } {
     this.emit(`${name}:`, ast.token);
     this.statement(ast);
     return { listing: this.lines.join("\n"), lineMap: this.map };

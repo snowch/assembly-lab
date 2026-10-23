@@ -35,21 +35,18 @@ export const PROSE = {
     "The processor does not subtract 5. `and` keeps the bits where the mask has a 1, and clears bit 2, where the mask has a 0. Every other bit stays as it was. The figure shows the low eight bits of the word, the mask and the result, with bit 2 marked.",
 
   investigation:
-    "A value chosen to pick out bits is a **mask**. Each of the three operations treats a mask bit in its own way.\n\n" +
-    "- **AND** (`and`): a mask bit of 0 clears the bit, and a 1 keeps it. `and w0, w0, -5` clears bit 2.\n" +
-    "- **OR** (`orr`): a mask bit of 1 sets the bit, and a 0 keeps it. `orr w0, w0, 1` sets bit 0.\n" +
-    "- **Exclusive OR** (`eor`): a mask bit of 1 flips the bit, and a 0 keeps it. `eor w0, w0, 8` flips bit 3.\n\n" +
-    "C uses `~` to turn every bit over. In `w & ~DOOR_OPEN`, GCC worked out the bits of `~DOOR_OPEN` itself. It printed those bits as −5, their signed reading. So the listing needs no separate instruction that turns bits over.\n\n" +
-    "The figure combines a word and a mask with the instruction you choose. It marks which bits changed.\n\n" +
-    "A run of bits that together hold one number is called a **field**. The gear is a field, in bits 4 to 6.\n\n" +
-    "`lsl` moves every bit towards the top by a number of places. `lsl w1, w1, 4` moves each bit of `w1` up four places. Zeros fill the four lowest bits. Bits moved past bit 31 are lost. So bits 0 to 2 move to bits 4 to 6. The `lsl 16` in `movk`, from Module 1, moved a number into the upper half the same way.\n\n" +
-    "GCC reads the gear with `ubfx x0, x0, 4, 3`. This takes 3 bits, starting at bit 4, and moves them to the lowest three places. The result is their unsigned value.\n\n" +
-    "`gear_of` returns the gear. Its C uses `>> 4` to move the bits four places right, then `& 7` to keep the lowest three. GCC uses `ubfx` to do both operations, then `ret` to return. For `0x35`, which is `0011 0101`, bits 6 to 4 are `011`. So `gear_of(0x35)` is 3.\n\n" +
-    "The listing names `x0`, the 64-bit name of the register. The gear lies in its lower 32 bits, which `w0` names, so the result is the same.\n\n" +
-    "`clear_door` is the function whose C is `return w & ~DOOR_OPEN;`. `clear_door(0xf)` gives `0xb`, which is 11.",
+    "A value chosen to pick out bits is a **mask**. Each of the three operations treats a mask bit in its own way.\n\n- **AND** (`and`): a mask bit of 0 clears the bit, and a 1 keeps it. `and w0, w0, -5` clears bit 2.\n- **OR** (`orr`): a mask bit of 1 sets the bit, and a 0 keeps it. `orr w0, w0, 1` sets bit 0.\n- **Exclusive OR** (`eor`): a mask bit of 1 flips the bit, and a 0 keeps it. `eor w0, w0, 8` flips bit 3.\n\nC uses `~` to turn every bit over. In `w & ~DOOR_OPEN`, GCC worked out the bits of `~DOOR_OPEN` itself. It printed those bits as −5, their signed reading. So the listing needs no separate instruction that turns bits over.\n\nThe figure combines a word and a mask with the instruction you choose. It marks which bits changed.\n\n`clear_door` is the function whose C is `return w & ~DOOR_OPEN;`. `clear_door(0xf)` gives `0xb`, which is 11.",
+
+  fieldReading:
+    "A run of bits that together hold one number is called a **field**. The gear is a field, in bits 4 to 6.\n\n`lsl` moves every bit towards the top by a number of places. `lsl w1, w1, 4` moves each bit of `w1` up four places. Zeros fill the four lowest bits. Bits moved past bit 31 are lost. So bits 0 to 2 move to bits 4 to 6. The `lsl 16` in `movk`, from Module 1, moved a number into the upper half the same way.\n\nGCC reads the gear with `ubfx x0, x0, 4, 3`. This takes 3 bits, starting at bit 4, and moves them to the lowest three places. The result is their unsigned value.\n\n`gear_of` returns the gear. Its C uses `>> 4` to move the bits four places right, then `& 7` to keep the lowest three. GCC uses `ubfx` to do both operations, then `ret` to return. For `0x35`, which is `0011 0101`, bits 6 to 4 are `011`. So `gear_of(0x35)` is 3.\n\nThe listing names `x0`, the 64-bit name of the register. The gear lies in its lower 32 bits, which `w0` names, so the result is the same.",
 
   construction:
     "Writing a field changes only its own bits and leaves the rest as they were. The challenge below writes a new gear into a word.",
+  fieldPlanQuestion:
+    "Start with a gear that already fits its three bits. The warning word is `0x35`, and the new gear is 2. Clear the old gear, place the new gear in bits 4 to 6, and keep every warning bit.\n\n**What word should this field replacement return?**",
+  fieldPlanExplain:
+    "The result is `0x25`. Clearing bits 4 to 6 keeps the warnings in the low four bits. Placing gear 2 in the cleared field gives `0010 0101`. OR joins the prepared word and the positioned gear.\n\nThe writing exercise adds one more requirement: when the new value is larger than the field can hold, keep only its low three bits before positioning it.",
+
   setGearTask:
     "Write `set_gear(w, g)`. It puts the low 3 bits of `g` into bits 4 to 6 of `w`, and returns the word. `w` arrives in `w0`, and `g` arrives in `w1`. Put the result in `w0`.\n\n" +
     "Use only `and`, `lsl`, `orr` and `ret`. Four calls test your code. In one of them, `g` is 13, which is larger than 7. Only its low 3 bits may land in the field. Every bit outside bits 4 to 6 must stay unchanged.",

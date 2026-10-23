@@ -87,6 +87,13 @@ describe("the warning word's functions, as GCC made them", () => {
     expect(w0(gcc, "gear_of", 0x35)).toBe(3);
   });
 
+  it("replace an in-range gear without changing warning bits in the preparation attempt", () => {
+    const result = w0(gcc, "set_gear", 0x35, 2);
+    expect(hex(result)).toBe("0x25");
+    expect(result & 0xf).toBe(0x35 & 0xf);
+    expect((result >>> 4) & 7).toBe(2);
+  });
+
   it("write the gear with bfi: set_gear(0x35, 5) is 0x55, only the low 3 bits of g land, and the rest of w is left alone", () => {
     expect(hex(w0(gcc, "set_gear", 0x35, 5))).toBe("0x55");
     expect(w0(gcc, "set_gear", 0x35, 5 + 8)).toBe(0x55);
@@ -271,7 +278,8 @@ describe("every number the lesson states", () => {
     [8, "the mask of eor w0, w0, 8"],
     [9, "-9, the mask that clears bit 3"],
     [11, "clear_door(0xf) is 0xb"],
-    [32, "a register's 32 bits"],
+    [32, "a register's 32 bits; gear 2 positioned at bit 4"],
+    [37, "the model returns 0x25 for set_gear(0x35, 2)"],
     // The compiler's version, from the recorded file's header (held in
     // logic-shifts-masks.listings.test.ts), and the width of x0, which w0 names the low 32 bits of
     // (held by the model, below).
@@ -294,6 +302,8 @@ describe("every number the lesson states", () => {
       "0xf",
       "0xb",
       "0x35",
+      "0x25",
+      "0x20",
       "0x75",
       "0x55",
       "0x2a",
@@ -319,6 +329,7 @@ describe("every number the lesson states", () => {
     // Each is a byte of a result the model produced (checked under "the rework's numbers").
     expect([...new Set(stated.binary)].sort()).toEqual(
       [
+        "0010 0101", // 0x25 from bounded field replacement
         "0010 1010", // 0x2a
         "0011 0101", // 0x35
         "0100 0111", // 0x47
@@ -335,6 +346,8 @@ describe("every number the lesson states", () => {
       hex(0xf),
       hex(w0(gcc, "clear_door", 0xf)),
       hex(0x35),
+      hex(w0(gcc, "set_gear", 0x35, 2)),
+      hex(w0(gcc, "set_gear", 0, 2)),
       hex(wValue(call(withoutClear, "set_gear", [0x35, 5]).final, 0)),
       hex(0x47),
       hex(w0(build("f:\n eor w0, w0, 4\n ret\n"), "f", 0x47)),

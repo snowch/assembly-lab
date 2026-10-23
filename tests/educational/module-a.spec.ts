@@ -28,7 +28,9 @@ test("optional A renders three recorded comparisons and only A64 steppers", asyn
   const errors = watchErrors(page);
   await openLesson(page, route);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(LABELS.title);
-  await expect(page.locator('[data-figure="listing-pair"]')).toHaveCount(3);
+  await expect(page.locator('[data-figure="listing-pair"]')).toHaveCount(6);
+  await expect(page.locator(".al-recorded-reference")).toHaveCount(3);
+  await expect(page.locator(".al-recorded-reference[open]")).toHaveCount(0);
   await expect(page.locator("section.challenge")).toHaveCount(2);
   await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
   await expect(page.locator("#ix-step-a64-limit .al-locked")).toBeVisible();

@@ -64,11 +64,15 @@ aarch64-linux-gnu-ld -T boot.ld boot.o trip_distance.o -o boot.elf
 
 Open `boot.ld`. `ENTRY(_start)` selects the executable's **entry point**, the address at which our startup begins. The script places the program at `0x40080000`, inside this QEMU machine's RAM, its working memory. This placement belongs to this example; it is not an ARM64 reset address.
 
+The executable uses **ELF**, a file format that records machine code, data and loading information. Object files can use ELF too; not every ELF file is executable.
+
 The script groups instructions in `.text`, fixed message bytes in `.rodata`, initialised writable data in `.data`, zero-initialised storage in `.bss` and stack space in `.stack`. These are **sections**, groups of related content. It reserves the stack and names its upper address `stack_top`. It aligns the stack region to 16 bytes and reserves a multiple of 16 bytes, so `stack_top` is also aligned as the calling convention requires.
 
 The lines beginning with a dot in the assembly are **directives** for the assembler. They do not execute on the processor. `.section` selects a section; `.global` exposes a name to the linker; `.type` identifies a function; `.p2align 2` aligns to a multiple of four bytes. `.size` records a function's size. `.word` supplies a stored value, `.asciz` stores message bytes followed by zero, and `.skip` reserves space. Keep these lines and the function label when editing the trip instructions.
 
 In `boot.s`, `.ifdef CHALLENGE`, `.else` and `.endif` choose which source block the assembler includes. With the ordinary build, `CHALLENGE` is not defined, so it includes the single-call block after `.else`. These directives do not create a runtime choice. The next lesson selects the other block for its test caller.
+
+The ELF loader follows **LOAD segments**, regions the executable asks it to place in memory. A segment can contain several sections. Use the file-to-memory diagram to match sections to their addresses. Select a section to inspect its stored bytes or reserved space before following startup.
 
 ## PROSE.construction
 
@@ -104,24 +108,35 @@ It returns 262. The first two additions still make 247, but the final addition i
 
 ## PROSE.explanation
 
-Follow `_start` in `boot.s`. It has no caller that has prepared a stack or promised zeroed working storage.
+Follow `_start` in `boot.s`. It has no caller that has prepared a stack or promised zeroed working storage. For this pass, follow stack setup, storage clearing and the function call. Keep the supplied device setup unchanged.
 
-- `msr daifset, #0xf` sets the mask bits for debug, SError, IRQ and FIQ exceptions. SError is a system-error exception; IRQ and FIQ are interrupt requests. An interrupt is a request that can divert execution to a handler, code that responds to it. Masking prevents the selected exceptions from being taken while their mask bits are set. This small program supplies no interrupt handlers. It uses polling: repeatedly reading device status to decide when to act.
 - `ldr x0, =stack_top` asks the assembler to arrange a load of the address named by the linker. The following `mov sp, x0` gives the stack pointer its initial value. The `=name` form is assembler shorthand, not an additional processor instruction.
 - The zeroing loop loads `bss_start` and `bss_end`, compares the addresses and clears eight bytes at a time with `str xzr, [x0], #8`. The final operand advances the pointer after the store. The linker makes this region a multiple of eight bytes. `b.hs` leaves the loop when its unsigned address reaches the end.
 - At `boot_ready`, startup supplies the arguments and calls `trip_distance`. `bl` gives that function a return address. At `after_trip`, the caller stores the returned value. It uses `csel` to select the passing message when the comparison is equal, or the failing message otherwise.
 
-`uart_puts` then writes a zero-terminated string to a **UART**, a device that sends bytes serially, one after another. Its `stp` and `ldp` pair save and restore the frame pointer and return address in an aligned stack frame. This is why startup prepares the stack before calling code that uses it.
+`uart_puts` sends the selected zero-terminated string to a **UART**, a device that sends bytes serially, one after another. Its aligned stack frame preserves the frame pointer and return address. Treat this supplied routine as the output operation on the first pass; inspect its device accesses in the detail below.
 
-The PL011 UART's device registers appear at memory addresses on this machine. This is **memory-mapped input/output**: a load or store at a device address talks to the device. The base address here is `0x09000000`. The setup stores configure the UART: offset `0x30` is its control register, written with zero while configuring and `0x301` to enable the UART, transmitter and receiver. Offsets `0x24` and `0x28` hold the integer and fractional baud-rate divisors; this source writes 1 and 0. A divisor sets the serial bit rate from the device’s clock. This QEMU run does not verify physical clock settings or serial timing. Offset `0x2c` controls the line format; `0x60` selects eight data bits. These values describe this experiment, not a board-independent serial-speed recipe. `adr` obtains the address of a nearby message label. `ldrb` reads each message byte; `cbz` detects its zero terminator. The output loop reads the UART flag register at offset `0x18`. `tbnz` tests bit 5 and branches while the transmit buffer is full. `strb` writes an available byte to the data register at offset zero.
+The recorded startup figure shows stops before setup, after stack preparation and storage clearing, and after the calculation. Select each stop to compare the program counter, stack pointer and stored result. This is a recording from GNU/QEMU/GDB, not a machine running in this page.
 
-After output, `wfi` waits for an interrupt and `b halt` keeps execution in the waiting loop if it resumes. `ret` would be wrong at the program entry: no caller supplied an address to return to.
+After output, `wfi` waits for an interrupt, a request that can divert execution to other code. `b halt` keeps execution in the waiting loop if it resumes. `ret` would be wrong at the program entry: no caller supplied an address to return to.
 
 To reproduce the arithmetic failure, change only the third instruction in `trip_distance.s`. Repeat the assembly and link commands, then boot the new image. Restore the subtraction and rebuild before the next lesson. Editing source does not change the executable already on disk or the running machine.
 
+## PROSE.deviceNoteSummary
+
+Inspect the supplied device and exception setup
+
+## PROSE.deviceNote
+
+`msr daifset, #0xf` sets the mask bits for debug, SError, IRQ and FIQ exceptions. SError is a system-error exception; IRQ and FIQ are interrupt requests. A handler is code that responds to an exception. Masking prevents the selected exceptions from being taken while their mask bits are set. This small program supplies no interrupt handlers. It uses **polling**: repeatedly reading device status to decide when to act.
+
+The PL011 UART's device registers appear at memory addresses on this machine. This is **memory-mapped input/output**: a load or store at a device address talks to the device. The base address here is `0x09000000`. The setup stores configure the UART: offset `0x30` is its control register, written with zero while configuring and `0x301` to enable the UART, transmitter and receiver. Offsets `0x24` and `0x28` hold the integer and fractional baud-rate divisors; this source writes 1 and 0. A divisor sets the serial bit rate from the device’s clock. This QEMU run does not verify physical clock settings or serial timing. Offset `0x2c` controls the line format; `0x60` selects eight data bits. These values describe this experiment, not a board-independent serial-speed recipe. `adr` obtains the address of a nearby message label. `ldrb` reads each message byte; `cbz` detects its zero terminator. The output loop reads the UART flag register at offset `0x18`. `tbnz` tests bit 5 and branches while the transmit buffer is full. `strb` writes an available byte to the data register at offset zero.
+
+`uart_puts` uses `stp` and `ldp` to save and restore its frame pointer and return address. Startup prepares the aligned stack before calling code that uses it.
+
 ## PROSE.generalisation
 
-The executable uses **ELF**, a file format that records machine code, data and loading information. Object files can use ELF too; not every ELF file is executable. Inspect the image:
+Inspect the ELF image with the GNU tools:
 
 ```sh
 aarch64-linux-gnu-readelf -h -l boot.elf
@@ -129,7 +144,7 @@ aarch64-linux-gnu-objdump -d --disassemble=_start boot.elf
 aarch64-linux-gnu-objdump -d --disassemble=trip_distance boot.elf
 ```
 
-`readelf -h` reads the file header, including the target machine, byte order and entry address. `-l` lists its program headers. Each `LOAD` segment describes a region the loader places in memory. A segment can contain several sections. The file-to-memory figure below separates stored bytes from reserved memory.
+`readelf -h` reads the file header, including the target machine, byte order and entry address. `-l` lists its program headers, including the `LOAD` segments used by the loader. The file-to-memory figure beside the linker inspection separates stored bytes from reserved memory.
 
 `objdump -d` translates machine instructions back into assembly text, a **disassembly**. `--disassemble=name` limits the output to that named function. Compare the four trip instructions with the source.
 
@@ -384,7 +399,7 @@ In Terminal 1, boot with the processor paused and a debugger connection availabl
 qemu-system-aarch64 -M virt -cpu cortex-a53 -m 128M -nographic -kernel boot.elf -S -gdb tcp:127.0.0.1:1234
 ```
 
-`-S` pauses the processor before it executes guest instructions. `-gdb` opens a debugger connection on this computer's loopback address, `127.0.0.1`, at port 1234. A **port** is a numbered connection endpoint. The quiet terminal is expected while the processor is paused.
+`-S` pauses the processor before it executes guest instructions. `-gdb` opens a debugger connection on this computer at `127.0.0.1`, its loopback address, and port 1234. A **port** is a numbered connection endpoint. The quiet terminal is expected while the processor is paused.
 
 In Terminal 2, open this executable in GDB:
 
@@ -392,31 +407,54 @@ In Terminal 2, open this executable in GDB:
 gdb-multiarch ./boot.elf
 ```
 
-At GDB's `(gdb)` prompt, enter:
+### Connect and inspect the entry point
+
+At GDB's `(gdb)` prompt, enter this group:
 
 ```text
 target remote 127.0.0.1:1234
 info registers pc sp
 x/i $pc
+```
+
+`target remote` connects GDB to QEMU. `info registers` prints the named registers. For this direct-loaded ELF, the initial program counter points at `_start`. The **program counter**, `pc`, holds the address of the next instruction. `x/i $pc` displays that instruction without executing it. GDB's `$pc` expression means the current value of the register.
+
+Check the displayed instruction before continuing. The processor is still paused at entry; no guest instruction has run.
+
+### Mark the storage before startup
+
+```text
 set {unsigned int}&result = 0xa5a5a5a5
 x/1wx &result
+```
+
+The `set` command deliberately writes a test marker into the result storage. This is a debugger action before startup runs. `x/1wx &result` reads one four-byte value in hexadecimal, so you can check the marker. QEMU's ELF loader may already have supplied zeros; the marker lets you test the startup loop itself. Check that the displayed value matches the marker before continuing.
+
+### Run to the prepared startup stop
+
+```text
 break boot_ready
 continue
 info registers pc sp
 x/1gx &result
+```
+
+`break boot_ready` selects the stop after stack setup and `.bss` clearing. `continue` lets startup run to that stop. Compare `sp` with `stack_top` in the recorded startup figure below. `x/1gx &result` displays one eight-byte value in hexadecimal at `result`; it is zero after clearing.
+
+Select the prepared-startup stop in the recording and compare it with your terminal before proceeding. The recording is a reference, not the machine GDB controls.
+
+## PROSE.functionInputs
+
+### Run to the function inputs
+
+```text
 break trip_distance
 continue
 info registers x0 x1 x2 x3 pc
 x/i $pc
 ```
 
-`target remote` connects GDB to QEMU. For this direct-loaded ELF, the initial program counter points at `_start`. The **program counter**, `pc`, holds the address of the next instruction. `x/i $pc` displays that instruction without executing it. GDB's `$pc` expression means the current value of the register.
-
-`set {unsigned int}&result = 0xa5a5a5a5` deliberately writes a test marker into the result storage. This is a debugger action before startup runs. `x/1wx &result` reads one four-byte value in hexadecimal, so you can check the marker. QEMU’s ELF loader may already have supplied zeros; the marker lets you test the startup loop itself.
-
-`break boot_ready` selects the stop after stack setup and `.bss` clearing. `continue` lets the startup instructions run to that stop. Compare `sp` with `stack_top` in the recorded startup figure. `x/1gx &result` displays one eight-byte value in hexadecimal at the address of `result`; it is zero after clearing.
-
-The next breakpoint stops at `trip_distance`, after startup supplies its arguments. `info registers` prints the named registers. Do not use GDB's `run` command for this remote connection: QEMU has already loaded the machine, and `continue` resumes it.
+This breakpoint stops at `trip_distance`, after startup supplies its arguments. Check the four inputs and the next instruction before stepping. Do not use GDB's `run` command for this remote connection: QEMU has already loaded the machine, and `continue` resumes it.
 
 ## PROSE.prediction
 
@@ -504,7 +542,7 @@ A loader places the program in memory and transfers control to it. Our chosen lo
 
 Changing the execution environment changes those responsibilities. A Linux process receives memory and services from an operating system. Firmware can instead load a program on a physical machine after board setup. A device's address, available services and entry conditions belong to that environment; the arithmetic meaning of `add` does not change.
 
-This image deliberately supports one processor and polls one UART. It does not install interrupt handlers, enable memory translation or implement an operating system. Those require additional startup code and system-specific knowledge. The next program you boot must state its entry conditions as explicitly as this one.
+This image deliberately supports one processor and polls one UART. It does not install interrupt handlers, translate program addresses into different physical addresses or implement an operating system. Those require additional startup code and system-specific knowledge. The next program you boot must state its entry conditions as explicitly as this one.
 
 ## PROSE.bareMetalNoteSummary
 

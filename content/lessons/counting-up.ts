@@ -70,6 +70,7 @@ export const countingUp: LessonInput = {
             program: DIM_UP,
             call: CALL,
             inputs: [0, 1, 2],
+            decimal: true,
           },
         },
         {
@@ -83,6 +84,7 @@ export const countingUp: LessonInput = {
             registers: [0, 1, 2],
             flags: true,
             count: true,
+            decimal: true,
             branchStatus: true,
             after: "predict-dim-up-count",
           },
@@ -152,6 +154,7 @@ export const countingUp: LessonInput = {
             program: DIM_UP_BEQ,
             call: CALL,
             inputs: [0, 1, 2],
+            decimal: true,
             measure: { kind: "register", register: 0, as: "decimal" },
           },
         },

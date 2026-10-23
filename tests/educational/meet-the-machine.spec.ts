@@ -17,6 +17,7 @@ import { VIEW_STRINGS as V, quoted } from "../../packages/views/src/strings";
 import { traceOf, viewAt, wValue } from "../../packages/views/src/trace";
 import { DEFAULT_STRINGS as S, format } from "../../platform/lesson-runtime/src/strings";
 
+import { PRIMITIVE_STRINGS as P } from "../../packages/views/src/strings.primitive";
 import { MODULE0_STRINGS as M0 } from "../../packages/views/src/strings.module0";
 import { PROSE } from "../../content/lessons/meet-the-machine.prose";
 import { LABELS } from "../../content/lessons/meet-the-machine.labels";
@@ -109,69 +110,33 @@ test("the way back leads to the front page", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Assembly Lab");
 });
 
-test.describe("the operands flow", () => {
-  test("draws the reads feeding one operation, and the operation writing the destination, with the connectors on the chips they join", async ({
+test.describe("the first arithmetic activities", () => {
+  test("starts with one operation, requires a new prediction and preserves the result on reload", async ({
     page,
   }) => {
     await openLesson(page);
-    await commit(page, "predict-total", /^In w0/);
-    const stepper = page.locator("#ix-step-trip");
-    await expect(stepper.locator(".al-operands")).toHaveCount(0);
-    await press(page, stepper.getByRole("button", { name: V.stepper.next }));
-    const fig = stepper.locator(".al-operands");
-    await fig.scrollIntoViewIfNeeded();
-    // The flow's geometry, measured in the rendered page: each join leg starts under its read
-    // chip's centre, the legs meet one arrowhead aligned with the Add chip's centre, and the
-    // second connector runs the Add chip's centre to the Write chip's centre. The connectors
-    // and the chips share the flow's bounded grid, so their positions agree at any width.
-    const ok = await fig.evaluate((el) => {
-      const box = (e: Element) => e.getBoundingClientRect();
-      const cx = (e: Element) => box(e).left + box(e).width / 2;
-      const reads = [...el.querySelectorAll(".al-op-read")];
-      const joins = el.querySelectorAll(".al-op-join, .al-op-step");
-      if (joins.length !== 2) return { ok: false, why: "joins", joins: joins.length };
-      const join = joins[0]!;
-      const step = joins[1]!;
-      const legs = [...join.querySelectorAll(".al-op-line")];
-      const doChip = el.querySelector(".al-op-do")!;
-      const writeChip = el.querySelector(".al-op-write")!;
-      const head = join.querySelector(".al-op-head");
-      if (head === null) return { ok: false, why: "no head" };
-      // An SVG path's start x, turned into the page's pixels through its own viewBox.
-      const startX = (svg: Element, path: Element) => {
-        const units = Number(svg.getAttribute("viewBox")!.split(" ")[2]);
-        const x = Number(path.getAttribute("d")!.split(" ")[1]);
-        return box(svg).left + (x / units) * box(svg).width;
-      };
-      const joinSvg = join.querySelector("svg")!;
-      const stepSvg = step.querySelector("svg")!;
-      const stepLine = step.querySelector(".al-op-line")!;
-      const headX = cx(head);
-      const legXs = legs.map((l) => startX(joinSvg, l));
-      return {
-        ok:
-          reads.length === legs.length &&
-          reads.every((r, i) => Math.abs(legXs[i]! - cx(r)) < 4) &&
-          Math.abs(headX - cx(doChip)) < 4 &&
-          Math.abs(startX(stepSvg, stepLine) - cx(doChip)) < 4 &&
-          Math.abs(cx(stepSvg) - cx(writeChip)) < 4 &&
-          box(step).top >= box(doChip).bottom - 1 &&
-          box(step).bottom <= box(writeChip).top + 1 &&
-          join.querySelectorAll(".al-op-head").length === 1 &&
-          // No stray arrows attached to the nodes themselves.
-          el.querySelectorAll(".al-op::after").length === 0,
-        why: "alignment",
-        readCentres: reads.map((r) => Math.round(cx(r))),
-        legStartXs: legXs.map((x) => Math.round(x)),
-        headX: Math.round(headX),
-        doCentre: Math.round(cx(doChip)),
-        writeCentre: Math.round(cx(writeChip)),
-      };
-    });
-    expect(ok.ok, JSON.stringify(ok)).toBe(true);
-    // The stages read in order, and the page does not overflow sideways.
-    await expect(fig.locator(".al-op-read")).toHaveCount(2);
-    await expect(fig.locator(".al-op-write code")).toHaveText("w0");
+    const fig = page.locator("#ix-first-operations");
+    const firstSection = page.locator("section.lesson-section").nth(1);
+    await expect(firstSection.locator(".al-listing")).toHaveCount(0);
+    await expect(fig.locator(".al-primitive-instructions li")).toHaveCount(1);
+    await expect(fig.locator(".al-primitive-result")).toHaveCount(0);
+    await press(page, fig.getByRole("button", { name: P.run }));
+    await expect(fig.getByRole("status")).toContainText("w2 = 19");
+    await expect(fig.getByRole("status")).toContainText("w0, w1 keep their values");
+    await press(page, fig.getByRole("button", { name: P.continue }));
+    await expect(fig.getByRole("button", { name: P.check })).toBeDisabled();
+    await expect(fig.locator(".al-primitive-result")).toHaveCount(0);
+    await fig.getByRole("spinbutton").fill("14");
+    await press(page, fig.getByRole("button", { name: P.check }));
+    await expect(fig.getByRole("status")).toContainText(P.incorrect);
+    await expect(fig.getByRole("status")).toContainText("Your prediction: 14");
+    await expect(fig.getByRole("status")).toContainText("w1 = 19");
+    await page.reload();
+    await expect(fig.getByRole("heading")).toHaveText("Choose a different destination");
+    await expect(fig.getByRole("status")).toContainText("Your prediction: 14");
+    await expect(fig.getByRole("status")).toContainText("w1 = 19");
+    await press(page, fig.getByRole("button", { name: P.restart }));
+    await expect(fig.getByRole("heading")).toHaveText("Add into a different register");
     expect(await designProblems(page, false)).toEqual([]);
   });
 });
@@ -355,49 +320,21 @@ test.describe("the stepper", () => {
 });
 
 test.describe("the stepper's panel of what the last instruction read and wrote", () => {
-  test("shows nothing of an instruction before it has run, then the first add: 120 and 85 read, 205 written to w0", async ({
+  test("keeps the synthesis focused on current instruction and values after operand practice", async ({
     page,
   }) => {
     await openLesson(page);
     await commit(page, "predict-total", /^In w0/);
     const figure = page.locator("#ix-step-trip");
-    await figure.scrollIntoViewIfNeeded();
-    expect(await flowText(figure)).toBe("");
-    const next = figure.getByRole("button", { name: V.stepper.next });
-    await press(page, next);
-    const text = await flowText(figure);
-    expect(text).toContain("Reads w0 (120) + w1 (85) → Writes w0 = 205 (w0 was 120)");
-    expect(text).toContain("Written: w0");
-    expect(text).toContain("Not written: w1, w2, w3");
-    // The shapes differ as well as the words: a dashed outline for what was read, a solid one for what was written.
-    const [src, dst] = await Promise.all([
-      figure
-        .locator('[data-role="source"]')
-        .first()
-        .evaluate((e) => getComputedStyle(e).borderTopStyle),
-      figure
-        .locator('[data-role="destination"]')
-        .evaluate((e) => getComputedStyle(e).borderTopStyle),
-    ]);
-    expect([src, dst]).toEqual(["dashed", "solid"]);
-    await press(page, next);
-    expect(await flowText(figure)).toContain(
-      "Reads w0 (205) + w2 (42) → Writes w0 = 247 (w0 was 205)",
-    );
-    await press(page, next);
-    const sub = await flowText(figure);
-    expect(sub).toContain("Reads w0 (247) − w3 (15) → Writes w0 = 232 (w0 was 247)");
-    expect(sub).toContain(M0.flow.subtracts);
-    expect(sub).toContain("Not written: w1, w2, w3");
-    await press(page, next);
-    expect(await flowText(figure)).toContain("does no arithmetic");
-    // Back restores the previous panel and the value.
-    await press(page, figure.getByRole("button", { name: V.stepper.back }));
-    expect(await flowText(figure)).toContain("Reads w0 (247) − w3 (15)");
-    await expect(registerValue(figure, "w0")).toHaveText("232");
-    await press(page, figure.getByRole("button", { name: V.stepper.back }));
-    expect(await flowText(figure)).toContain("Reads w0 (205) + w2 (42)");
+    await expect(figure.locator(".al-flow, .al-operands, .al-expect")).toHaveCount(0);
+    await press(page, figure.getByRole("button", { name: V.stepper.next }));
+    await expect(figure.locator(".al-status")).toContainText("add w0, w0, w1");
+    await expect(registerValue(figure, "w0")).toHaveText("205");
+    await expect(figure.locator(".al-flow, .al-operands, .al-expect")).toHaveCount(0);
+    await press(page, figure.getByRole("button", { name: V.stepper.next }));
     await expect(registerValue(figure, "w0")).toHaveText("247");
+    await press(page, figure.getByRole("button", { name: V.stepper.back }));
+    await expect(registerValue(figure, "w0")).toHaveText("205");
   });
 
   test("shows the sentence about ret only once the run has ended", async ({ page }) => {
@@ -1078,46 +1015,34 @@ test.describe("both themes", () => {
 });
 
 for (const theme of ["light", "dark"] as const) {
-  test(`compact stepper teaches the first step then asks about later writes in ${theme}`, async ({
+  test(`one operation at a time and then whole-function synthesis in ${theme}`, async ({
     page,
   }) => {
     await page.emulateMedia({ colorScheme: theme });
     await openLesson(page);
+    const primitive = page.locator("#ix-first-operations");
+    await press(page, primitive.getByRole("button", { name: P.run }));
+    await expect(primitive.getByRole("status")).toContainText("w2 = 19");
+    for (const value of ["19", "13", "14"]) {
+      await press(page, primitive.getByRole("button", { name: P.continue }));
+      await primitive.getByRole("spinbutton").fill(value);
+      await press(page, primitive.getByRole("button", { name: P.check }));
+      await expect(primitive.getByRole("status")).toContainText(P.correct);
+    }
+    await press(page, primitive.getByRole("button", { name: P.continue }));
+    await expect(primitive.locator(".al-primitive-instructions li")).toHaveCount(2);
+    await press(page, primitive.getByRole("button", { name: P.run }));
+    await expect(primitive.locator('li[data-next="true"]')).toContainText("sub w2, w2, w1");
+    await press(page, primitive.getByRole("button", { name: P.run }));
+    await expect(primitive.getByRole("status")).toContainText("Write w2 = 8");
+    await expect(primitive.getByText(P.complete)).toBeVisible();
     await commit(page, "predict-total", /^In w0/);
-    const fig = page.locator("#ix-step-trip");
-    await expect(fig.locator(".al-operands, .al-step-explanation, .al-expect")).toHaveCount(0);
-    await press(page, fig.getByRole("button", { name: V.stepper.next }));
-    await expect(fig.locator(".al-status")).toHaveText("w0 ← 120 + 85 = 205");
-    await expect(fig.locator(".al-op-write")).toBeVisible();
-    await expect(fig.locator(".al-op-write")).toContainText("Write w0");
-    await expect(fig.locator(".al-expect-ask")).toContainText("add w0, w0, w2");
-    const detail = fig.locator(".al-step-explanation");
-    await expect(detail).not.toHaveAttribute("open", "");
-    await expect(fig.locator(".al-flow")).not.toBeVisible();
-    const summary = detail.locator("summary");
-    await summary.focus();
-    await page.keyboard.press("Enter");
-    await expect(fig.locator(".al-flow")).toBeVisible();
-    await press(page, fig.getByRole("button", { name: "w1", exact: true }));
-    await press(page, fig.getByRole("button", { name: V.stepper.next }));
-    await expect(fig.locator(".al-status")).toHaveText("Not quite. w0 ← 205 + 42 = 247");
-    await expect(fig.locator(".al-flow")).not.toBeVisible();
-    await expect(fig.locator(".al-operands")).toHaveCount(0);
-    await expect(fig.locator(".al-expect-ask")).toContainText("sub w0, w0, w3");
-    await press(page, fig.getByRole("button", { name: V.stepper.back }));
-    await expect(fig.locator(".al-status")).toHaveText("w0 ← 120 + 85 = 205");
-    await expect(fig.locator(".al-operands")).toBeVisible();
-    await press(page, fig.getByRole("button", { name: V.stepper.next }));
-    await press(page, fig.getByRole("button", { name: "w0", exact: true }));
-    await press(page, fig.getByRole("button", { name: V.stepper.next }));
-    await expect(fig.locator(".al-status")).toHaveText("Correct. w0 ← 247 − 15 = 232");
-    await expect(fig.locator(".al-expect")).toHaveCount(0);
-    await expect(fig.locator(".al-up-next")).toContainText("ret");
-    await press(page, fig.getByRole("button", { name: V.stepper.next }));
-    await expect(fig.getByRole("button", { name: V.stepper.next })).toBeDisabled();
-    await expect(fig.locator(".al-expect")).toHaveCount(0);
-    await press(page, fig.getByRole("button", { name: V.stepper.reset }));
-    await expect(fig.locator(".al-expect, .al-step-explanation, .al-operands")).toHaveCount(0);
+    const synthesis = page.locator("#ix-step-trip");
+    for (let k = 0; k < 4; k++)
+      await press(page, synthesis.getByRole("button", { name: V.stepper.next }));
+    await expect(registerValue(synthesis, "w0")).toHaveText("232");
+    await expect(synthesis.getByRole("button", { name: V.stepper.next })).toBeDisabled();
+    await expect(synthesis.locator(".al-operands, .al-flow, .al-expect")).toHaveCount(0);
     expect(await designProblems(page, false)).toEqual([]);
   });
 }

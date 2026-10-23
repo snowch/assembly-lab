@@ -65,3 +65,36 @@ it("reports the machine instruction limit rather than a returned-value disagreem
   expect(screen.getByRole("alert")).not.toHaveTextContent(C.playground.machineFailed);
   expect(container.querySelector("[data-compiler-step]")).toBeNull();
 });
+
+it("names the loop phase beside the next instruction while the C highlight remains on the for header", () => {
+  const source =
+    "unsigned f(unsigned count) { unsigned total=0; for(unsigned i=0;i<count;i++){total=total+1;} return total; }";
+  const { container } = render(
+    <CompilerPlayground
+      lesson={{} as Lesson}
+      interactive={Interactive.parse({
+        id: "phase",
+        kind: "compiler-playground",
+        timeModel: "steps",
+        caption: "test",
+        props: {
+          source,
+          args: [2],
+          signature: "unsigned f(unsigned count)",
+          names: ["count", "total", "i"],
+        },
+      })}
+      store={new LessonStore(memoryStorage(), "assembly-lab", "phase")}
+    />,
+  );
+  fireEvent.click(screen.getByRole("button", { name: C.playground.run }));
+  const observed = new Set<string>();
+  for (let step = 0; step < 40; step++) {
+    const phase = container.querySelector(".al-compiler-phase")?.textContent;
+    if (phase) observed.add(phase);
+    const next = screen.getByRole("button", { name: S.stepper.next });
+    if (next.hasAttribute("disabled")) break;
+    fireEvent.click(next);
+  }
+  expect(observed).toEqual(new Set(Object.values(C.playground.loopPhase)));
+});

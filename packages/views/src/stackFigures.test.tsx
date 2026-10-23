@@ -52,9 +52,23 @@ describe("computed stack diagram", () => {
       hexAddress(Number(viewAt(trace, 22).state.sp)),
     );
     const oldest = container.querySelector(".al-stack-frame")!;
-    expect([...oldest.querySelectorAll("[data-access] code")].map((e) => e.textContent)).toEqual(
-      memoryAt(trace, 22, STACK_TOP - 32, 32)!.map(hexByte),
+    const offsets = oldest.querySelectorAll(".al-stack-slot-offset");
+    expect([...offsets].map((offset) => offset.textContent)).toEqual([
+      "+0 to +7",
+      "+8 to +15",
+      "+16 to +23",
+      "+24 to +31",
+    ]);
+    expect(offsets[0]).toHaveAttribute(
+      "aria-label",
+      T.slotRange(hexAddress(STACK_TOP - 32), hexAddress(STACK_TOP - 25)),
     );
+    expect(oldest.querySelector(".al-stack-frame-range")).toHaveTextContent(
+      T.frameRange(hexAddress(STACK_TOP - 32), hexAddress(STACK_TOP - 1)),
+    );
+    expect(
+      [...oldest.querySelectorAll(".al-stack-bytes [data-access] code")].map((e) => e.textContent),
+    ).toEqual(memoryAt(trace, 22, STACK_TOP - 32, 32)!.map(hexByte));
   });
   it("identifies recursive calls and distinguishes saved x19 values from the current register", () => {
     const { container } = figure({ initialStep: 25 });
@@ -73,6 +87,12 @@ describe("computed stack diagram", () => {
       ),
     ).toEqual(["0x0", "0x7", "0x3", "0x1"]);
     expect(container.querySelectorAll(".al-stack-bytes [data-access]")).toHaveLength(128);
+    const details = [...container.querySelectorAll(".al-stack-detail")];
+    expect(details).toHaveLength(4);
+    for (const disclosure of details) expect(disclosure).not.toHaveAttribute("open");
+    for (const saved of container.querySelectorAll(".al-stack-slots [data-saved-register]"))
+      expect(saved).toBeVisible();
+    expect(container.querySelector(".al-stack-bytes [data-access]")).not.toBeVisible();
     for (const group of container.querySelectorAll('[data-saved-slot="true"]'))
       expect(group.querySelectorAll("[data-access]")).toHaveLength(8);
     expect(container.querySelectorAll('[data-saved-slot="false"] [data-access]')).toHaveLength(32);
@@ -110,7 +130,12 @@ describe("computed stack diagram", () => {
     expect(screen.getByText(T.empty)).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: S.stepper.next }));
     expect(container.querySelectorAll(".al-stack-frame")).toHaveLength(1);
-    expect(container.querySelectorAll('[data-access="stored"]')).toHaveLength(16);
+    expect(container.querySelectorAll('.al-stack-bytes [data-access="stored"]')).toHaveLength(16);
+    const saved = container.querySelector('.al-stack-slots [data-saved-register="x30"]')!;
+    expect(saved).toHaveAttribute("data-access", "stored");
+    expect(saved).toHaveTextContent(
+      `0x${traceOf(REPORT, { entry: "trip_report", args: [128, 9] }).result.initial.x[30]!.toString(16)}`,
+    );
     fireEvent.click(screen.getByRole("button", { name: S.stepper.back }));
     expect(screen.getByText(T.empty)).toBeVisible();
     fireEvent.change(screen.getByRole("slider", { name: T.position }), { target: { value: "11" } });

@@ -20,10 +20,10 @@ export const PROSE = {
     "`w0` holds `0xfffffff9`, which represents −7 as a signed 32-bit value. The load copies the byte `f9` and fills the next 24 bits with ones. An unsigned `ldrb` of the same byte would produce `0x000000f9`, or 249.\n\n" +
     "The full `x0` register holds `0x00000000fffffff9`. Its upper 32 bits are zero because the instruction wrote `w0`. That 64-bit pattern does not represent −7 as a signed 64-bit value.",
   investigation:
-    "Compare the two loads of the same byte in the figures. Both copy the stored bits into the low end of `w0`. Above those bits, `ldrb` adds zeros and `ldrsb` copies the sign bit. Neither instruction changes memory.\n\n" +
+    "Choose a load in the comparison, then press Next. Switch between `ldrb w0` and `ldrsb w0` to compare the same byte at the same step. Both copy the stored bits into the low end of `w0`. Above those bits, `ldrb` adds zeros and `ldrsb` copies the sign bit. Neither instruction changes memory.\n\n" +
     "The same distinction applies to two-byte values. `ldrh` reads two bytes and zero-extends them. `ldrsh` reads two bytes and sign-extends them. In these listings, `unsigned short` selects `ldrh` and signed `short` selects `ldrsh`.\n\n" +
     "The destination also matters. `ldrsb x0, [x0]` sign-extends its byte through all 64 bits. `ldrsw x0, [x0]` reads four bytes and sign-extends that 32-bit value to 64 bits. GCC uses the latter when returning a stored `int` as a `long` on this target.\n\n" +
-    "Use the figures to separate three regions: the bits read from memory, the bits added by extension, and any upper bits cleared by a write through a `w` register name.",
+    "Use the comparison to separate three regions: the bits read from memory, the bits added by extension, and any upper bits cleared by a write through a `w` register name.",
   construction:
     "A gradient correction must treat the stored byte as signed before adding. Otherwise, a negative reading becomes a large positive input to the addition.",
   writeTask:

@@ -73,6 +73,8 @@ describe("the lesson's words", () => {
   it("have the captions the file gives, and only four captions of their own, each through the prose process", () => {
     expect(fileFlat).toContain(flat(LABELS.captions.fuelRun));
     expect(fileFlat).toContain(flat(LABELS.captions.reader));
+    expect(fileFlat).toContain(flat(LABELS.captions.scratch));
+    expect(fileFlat).toContain(flat(LABELS.scratch.disclosure));
     expect(fileFlat).toContain(flat(LABELS.captions.compare));
     const own = [
       LABELS.captions.predictAdd12,
@@ -80,7 +82,7 @@ describe("the lesson's words", () => {
       LABELS.captions.make,
       LABELS.captions.read,
     ];
-    expect(Object.keys(LABELS.captions)).toHaveLength(3 + own.length);
+    expect(Object.keys(LABELS.captions)).toHaveLength(4 + own.length);
     for (const caption of own) expect(fileFlat, caption).not.toContain(flat(caption));
     const source = readFileSync(
       new URL("./one-pattern-three-readings.labels.ts", import.meta.url),
