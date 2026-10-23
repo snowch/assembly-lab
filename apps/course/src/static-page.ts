@@ -14,6 +14,7 @@ import { LESSONS } from "@al/content";
 import { PLAN, statusOf } from "@al/content/plan";
 
 import { COMPANION_LINKS, STRINGS } from "./strings";
+import { commitHref, type BuildVersion } from "./build-version";
 import { BACKGROUND, ICONS, MANIFEST_FILE, shortName } from "./web-manifest";
 
 const escape = (text: string) =>
@@ -30,7 +31,7 @@ export function courseTitle(html: string): string {
  * index.html with the cover's words written in, its title kept as the course's name, and its icons
  * and manifest named under `base`, the path the site is served from.
  */
-export function staticPage(html: string, base = "/"): string {
+export function staticPage(html: string, base = "/", version: BuildVersion | null = null): string {
   const title = courseTitle(html);
   const description = escape(STRINGS.description);
   const head = [
@@ -71,6 +72,11 @@ export function staticPage(html: string, base = "/"): string {
     `</ul>`,
     `</nav>`,
     `<p class="copyright">${escape(STRINGS.copyright)}</p>`,
+    ...(version
+      ? [
+          `<p class="build-version">${escape(STRINGS.version.commit)} <a href="${escape(commitHref(version.sha))}">${escape(version.sha.slice(0, 7))}</a> · ${escape(STRINGS.version.committed)} <time datetime="${escape(version.committedAt)}">${escape(version.committedAt.slice(0, 10))}</time> ${escape(STRINGS.version.utc)}</p>`,
+        ]
+      : []),
     `</footer>`,
   ];
   // The stylesheet is linked from the head, so it applies without scripts: the page gets the

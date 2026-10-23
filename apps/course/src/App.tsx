@@ -9,6 +9,8 @@ import { useEffect, useMemo } from "react";
 import { browserStorage, LessonView } from "@platform/lesson-runtime";
 
 import { createBook } from "./book";
+import { BUILD_VERSION, commitHref } from "./build-version";
+import { useLatestCommit } from "./latest-commit";
 import { useOffline } from "./offline";
 import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
@@ -27,6 +29,10 @@ function skipToContent(e: React.MouseEvent<HTMLAnchorElement>) {
 }
 
 export function App() {
+  const latestCommit = useLatestCommit(
+    BUILD_VERSION?.sha ?? null,
+    location.hostname === "snowch.github.io",
+  );
   const offline = useOffline();
   const route = useRoute();
   const [theme, setTheme] = useTheme();
@@ -163,6 +169,24 @@ export function App() {
           </ul>
         </nav>
         <p className="copyright">{STRINGS.copyright}</p>
+        {BUILD_VERSION && (
+          <p className="build-version">
+            {STRINGS.version.commit}{" "}
+            <a href={commitHref(BUILD_VERSION.sha)}>{BUILD_VERSION.sha.slice(0, 7)}</a>
+            {" · "}
+            {STRINGS.version.committed}{" "}
+            <time dateTime={BUILD_VERSION.committedAt}>
+              {BUILD_VERSION.committedAt.slice(0, 10)}
+            </time>{" "}
+            {STRINGS.version.utc}
+            {latestCommit && (
+              <span className="latest-commit" role="status" title={STRINGS.version.latestNote}>
+                {" · "}
+                {STRINGS.version.latest}
+              </span>
+            )}
+          </p>
+        )}
       </footer>
     </>
   );
