@@ -61,6 +61,14 @@ Run two distinct reviews, which may be assigned to separate reviewers:
   output and the executable model. Check diagrams, expected answers, feedback and edge cases.
   Distinguish what the architecture defines, what a compiler emits and what the simulator models.
 
+In the learner review, distinguish a mechanism being **defined**, **demonstrated in a small
+complete example**, and **practised**. Before its first composition with other mechanisms,
+identify the bridge from preparation to that task. Compare the chosen first example with a
+smaller complete candidate and record why an extra bridge is useful or unnecessary. A definition
+before use does not alone establish adequate preparation. Related mechanisms may stay together;
+this check does not require an activity for every opcode or a worked answer before every
+exploratory prediction. See the [opening retrospective](notes/module-0/increment-retrospective.md).
+
 For each finding, quote or locate the problem, state its effect on the learner, give the
 evidence and suggest a direction for correction. Follow `CLAUDE.md`'s reader, sceptic and
 checker stages: challenge findings, fix those supported by evidence, and verify the fixes in
