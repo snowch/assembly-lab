@@ -25,16 +25,29 @@ function setup() {
     props: {
       stages: PRIMITIVE_PROGRAMS.map((item, index) => ({
         ...PROSE.primitiveStages[index],
+        kind: item.kind,
+        showCompilerLines: item.kind === "function",
         program: primitiveProgram(item),
         call: { entry: item.entry, args: [...item.args] },
         registers: [...item.registers],
         steps: item.instructions.length,
-        predict: index > 0 && index < 4,
+        predict:
+          item.kind === "operation" &&
+          item.entry !== "primitive_add" &&
+          item.instructions.length === 1,
       })),
     },
   });
   const props = { lesson: {} as Lesson, interactive, store };
   return { ...render(<PrimitiveOperation {...props} />), props, storage, user: userEvent.setup() };
+}
+
+async function reachPrediction(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole("button", { name: S.run }));
+  await user.click(screen.getByRole("button", { name: S.continue }));
+  await user.click(screen.getByRole("button", { name: S.run }));
+  await user.click(screen.getByRole("button", { name: S.run }));
+  await user.click(screen.getByRole("button", { name: S.continue }));
 }
 
 describe("first arithmetic applications", () => {
@@ -51,10 +64,92 @@ describe("first arithmetic applications", () => {
     expect(container.textContent).not.toContain("ret");
   });
 
-  it("requires an independent prediction, gives model feedback even when wrong, and restores the completed state", async () => {
-    const { container, props, storage, unmount, user } = setup();
+  it("runs a complete tiny function after the first addition and returns without writing w0", async () => {
+    const { container, user } = setup();
     await user.click(screen.getByRole("button", { name: S.run }));
     await user.click(screen.getByRole("button", { name: S.continue }));
+    expect(screen.getByRole("heading")).toHaveTextContent("Return from a tiny function");
+    expect(container.querySelectorAll(".al-cline")).toHaveLength(4);
+    expect(container.querySelectorAll(".al-insn")).toHaveLength(2);
+    expect(container.querySelector('.al-insn[data-next="true"]')).toHaveTextContent(
+      "add w0, w0, 1",
+    );
+    expect(container.querySelectorAll('.al-cline[data-lit="true"]')).toHaveLength(0);
+    const register = () => container.querySelector('[data-register="w0"]')!;
+    expect(register().querySelector(".al-dreg-value")).toHaveTextContent("7");
+    expect(container.querySelector(".al-primitive-caller")).toHaveTextContent(S.callArgument(7));
+    expect(screen.getByText(S.callerWaiting)).toBeInTheDocument();
+    expect(screen.queryByText(S.callerReturned(8))).toBeNull();
+    expect(container.querySelector(".al-primitive-result")).toBeNull();
+    await user.click(screen.getByRole("button", { name: S.run }));
+    expect(register().querySelector(".al-dreg-value")).toHaveTextContent("8");
+    expect(register()).toHaveAttribute("data-changed", "true");
+    expect(container.querySelector('.al-insn[data-ran="true"]')).toHaveTextContent("add w0, w0, 1");
+    expect(container.querySelector('.al-insn[data-next="true"]')).toHaveTextContent("ret");
+    expect(container.querySelector('.al-cline[data-lit="true"]')).toHaveTextContent(
+      "return n + 1;",
+    );
+    expect(screen.getByText(S.callerWaiting)).toBeInTheDocument();
+    // Viewing either pane must not execute ret or resume the caller.
+    await user.click(screen.getByRole("button", { name: S.showInstructions }));
+    expect(screen.getByRole("button", { name: S.showC })).toBeInTheDocument();
+    expect(screen.getByText(S.callerWaiting)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: S.showC }));
+    expect(screen.getByRole("button", { name: S.showInstructions })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(S.functionAfterAdd);
+    await user.click(screen.getByRole("button", { name: S.run }));
+    expect(register().querySelector(".al-dreg-value")).toHaveTextContent("8");
+    expect(register()).toHaveAttribute("data-changed", "false");
+    expect(container.querySelector('.al-insn[data-ran="true"]')).toHaveTextContent("ret");
+    expect(container.querySelector('.al-insn[data-next="true"]')).toBeNull();
+    expect(screen.getByText(S.callerReturned(8))).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(S.functionReturned);
+    expect(screen.getByRole("button", { name: S.continue })).toBeEnabled();
+  });
+
+  it("restores a paused function with its caller waiting and clears it on Start again", async () => {
+    const { props, storage, unmount, user } = setup();
+    act(() =>
+      props.store.setSlot("first-operations", { stage: 1, entry: "increment_int", step: 1 }),
+    );
+    unmount();
+    const restored = render(
+      <PrimitiveOperation
+        {...props}
+        store={new LessonStore(storage, "assembly-lab", "primitive-test")}
+      />,
+    );
+    expect(screen.getByRole("heading")).toHaveTextContent("Return from a tiny function");
+    expect(screen.getByText(S.callerWaiting)).toBeInTheDocument();
+    expect(
+      restored.container.querySelector('[data-register="w0"] .al-dreg-value'),
+    ).toHaveTextContent("8");
+    expect(screen.queryByText(S.callerReturned(8))).toBeNull();
+    await user.click(screen.getByRole("button", { name: S.run }));
+    expect(screen.getByText(S.callerReturned(8))).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: S.restart }));
+    expect(screen.getByRole("heading")).toHaveTextContent("Add into a different register");
+    expect(restored.container.querySelector(".al-primitive-caller")).toBeNull();
+    expect(restored.container.querySelector(".al-primitive-result")).toBeNull();
+  });
+
+  it("keeps an old saved destination prediction on that operation instead of opening the inserted function", async () => {
+    const { container, props, user } = setup();
+    act(() => props.store.setSlot("first-operations", { stage: 1, step: 1, prediction: "14" }));
+    expect(screen.getByRole("heading")).toHaveTextContent("Choose a different destination");
+    expect(container.querySelector(".al-primitive")).toHaveAttribute("data-stage", "2");
+    expect(screen.getByRole("status")).toHaveTextContent("Your prediction: 14");
+    expect(screen.getByRole("status")).toHaveTextContent("w1 = 19");
+    expect(container.querySelector(".al-primitive-caller")).toBeNull();
+    await user.click(screen.getByRole("button", { name: S.continue }));
+    expect(screen.getByRole("heading")).toHaveTextContent(
+      "Read a register, then replace its value",
+    );
+  });
+
+  it("requires an independent prediction, gives model feedback even when wrong, and restores the completed state", async () => {
+    const { container, props, storage, unmount, user } = setup();
+    await reachPrediction(user);
     expect(screen.getByRole("button", { name: S.check })).toBeDisabled();
     expect(container.querySelector(".al-primitive-result")).toBeNull();
     await user.type(screen.getByRole("spinbutton"), "14");
@@ -72,8 +167,7 @@ describe("first arithmetic applications", () => {
 
   it("reads the old destination value, then subtracts in operand order", async () => {
     const { user } = setup();
-    await user.click(screen.getByRole("button", { name: S.run }));
-    await user.click(screen.getByRole("button", { name: S.continue }));
+    await reachPrediction(user);
     await user.type(screen.getByRole("spinbutton"), "19");
     await user.click(screen.getByRole("button", { name: S.check }));
     await user.click(screen.getByRole("button", { name: S.continue }));

@@ -68,3 +68,10 @@ export const FUEL_USED_MISTAKEN_TEXT = ["sub w0, w1, w0", "ret"].join("\n");
 
 /** The corrected `fuel_used`: the challenge's reference. */
 export const FUEL_USED_FIXED_TEXT = ["sub w0, w0, w1", "ret"].join("\n");
+
+/** increment_int.c, ARM64 GCC 16.1.0 -O1; raw request/response retained in module-0/increment. */
+export const INCREMENT_INT = {
+  c: ["int increment_int(int n)", "{", "    return n + 1;", "}"].join("\n"),
+  listing: ["increment_int:", "  add w0, w0, 1 C4", "  ret C4"].join("\n"),
+  sourceLines: [[3], [3]],
+} as const;

@@ -1,0 +1,13 @@
+{
+  "source": "// Copyright \u00a9 2026 Christopher Snow\nint increment_int(int n)\n{\n    return n + 1;\n}\n",
+  "options": {
+    "userArguments": "-g -O1 -fno-verbose-asm",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false,
+      "demangle": false
+    }
+  }
+}

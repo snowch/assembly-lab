@@ -6,7 +6,7 @@
 
 export const PROSE = {
   question:
-    "A trip computer adds distances and subtracts a detour. How does the processor perform one of those operations? Start with one addition. You will combine operations into a complete function afterwards.",
+    "A trip computer adds distances and subtracts a detour. How does the processor perform one of those operations? Start with one addition, then follow a small function call.",
   // Two notes under the listing, each shut until the learner opens it.
   compilerNote: {
     summary: "Which compiler made these instructions?",
@@ -29,12 +29,17 @@ export const PROSE = {
 
   motivation:
     "A **register** is a small store inside the processor that holds one value. The names `w0`, `w1` and `w2` refer to three registers. Each name here selects 32 bits; Module 1 shows the rest of each register.\n\nAn **instruction** tells the processor to perform an operation. Assembly language writes instructions with names such as `add`. The parts after the name are its **operands**.\n\nFor `add` and `sub`, the first operand names the register written. The second and third supply the input values. Run the first addition, then try the next activities. Each activity replaces the previous one, so you can focus on its operation.",
-  primitiveCaption: "Practise one operation at a time before following a complete function.",
+  primitiveCaption: "Start with one addition, then follow a function call and return.",
   primitiveStages: [
     {
       title: "Add into a different register",
       prose:
         "`add w2, w0, w1` reads `w0` and `w1`, adds their values, and writes the sum into `w2`. Run it to see the result.",
+    },
+    {
+      title: "Return from a tiny function",
+      prose:
+        "`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C into this assembly **listing**. `increment_int:` names the function.\n\nCode that calls a function is its **caller**. The input it supplies is an **argument**. Here, the argument arrives in `w0`; the function leaves its integer result there too.\n\nIn `add w0, w0, 1`, the last operand is the number one. Run `add` to prepare the result. Then `ret` returns to the caller without calculating or moving the result.",
     },
     {
       title: "Choose a different destination",
@@ -59,7 +64,7 @@ export const PROSE = {
   ],
 
   prediction:
-    "Now combine those operations. The trip computer logs three distances, called legs, with a private detour removed. The C function `trip_distance` adds the three legs and subtracts the detour.\n\nGCC, a C compiler, translated this function into four instructions for a 64-bit Arm processor. Its assembly output is called a **listing**. The complete C and its related instructions appear together below.\n\nFor the functions here, integer arguments arrive in registers in order: the first in `w0`, the second in `w1`, and so on. They leave their result in `w0`. The instruction `ret` returns to the code that called the function; it does not calculate or move the result. The line ending in a colon names the function.\n\nThe C names a variable, `total`. The instructions name registers. Use the operand rule you practised to decide where the first value of `total` goes.",
+    "Now combine those operations. The trip computer logs three distances, called legs, with a private detour removed. The C function `trip_distance` adds the three legs and subtracts the detour.\n\nGCC translated this function into four instructions for a 64-bit Arm processor. The complete C and its related instructions appear together below.\n\nFor the `int` arguments here, the first arrives in `w0`, the second in `w1`, and so on. As in `increment_int`, the function leaves its `int` result in `w0`.\n\nThe C names a variable, `total`. The instructions name registers. Use the operand rule you practised to decide where the first value of `total` goes.",
   argsSay: "The first instruction is `add w0, w0, w1`.",
   argsQuestion:
     "It adds two register values and stores the result. Where will the C variable `total` be kept?",

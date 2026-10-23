@@ -1,29 +1,33 @@
 // Copyright © 2026 Christopher Snow
 
 // Small first applications of arithmetic. All displayed input/result values and read/write
-// relationships come from a simulator trace. A trailing return belongs to the trace wrapper;
-// the activity explicitly stops after the displayed arithmetic prefix.
-import { useMemo, useState } from "react";
+// relationships come from a simulator trace. Operation activities stop at their arithmetic
+// prefix; the function activity also executes its return to the model's caller.
+import { useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { Prose, useSlot } from "@platform/lesson-runtime";
 import { flowAt } from "../flow";
-import { DecimalRegister } from "../parts";
+import { cLinesOf } from "../listing";
+import { DecimalRegister, ListingView } from "../parts";
 import { PRIMITIVE_STRINGS as S } from "../strings.primitive";
 import { traceOf, viewAt, wValue } from "../trace";
 import { CallSchema, RecordedSchema, withProps } from "./props";
 
 const Stage = z.object({
+  kind: z.enum(["operation", "function"]).default("operation"),
   title: z.string(),
   prose: z.string(),
   program: RecordedSchema,
   call: CallSchema,
-  registers: z.array(z.number().int().min(0).max(30)).min(2).max(3),
+  registers: z.array(z.number().int().min(0).max(30)).min(1).max(3),
   steps: z.number().int().min(1).max(2).default(1),
   predict: z.boolean().default(false),
+  showCompilerLines: z.boolean().default(false),
 });
 const Props = z.object({ stages: z.array(Stage).min(1).max(8) });
 interface Stored {
   stage: number;
+  entry?: string;
   step: number;
   prediction?: string;
 }
@@ -33,13 +37,30 @@ export const PrimitiveOperation = withProps(
   function PrimitiveOperation({ data, store, interactive }) {
     const [stored, setStored] = useSlot<Stored>(store, interactive.id);
     const [answer, setAnswer] = useState("");
-    const stageIndex = Math.max(0, Math.min(data.stages.length - 1, stored?.stage ?? 0));
+    const [showingInstructions, setShowingInstructions] = useState(false);
+    const functionListing = useRef<HTMLDivElement>(null);
+    function revealPane() {
+      const listing = functionListing.current?.querySelector<HTMLElement>(".al-listing");
+      const target = listing?.querySelector<HTMLElement>(showingInstructions ? ".al-c" : ".al-asm");
+      if (!listing || !target) return;
+      listing.scrollLeft +=
+        target.getBoundingClientRect().left - listing.getBoundingClientRect().left;
+      setShowingInstructions(!showingInstructions);
+    }
+    // Earlier saved work numbered only the five operation activities. Keep its meaning after
+    // inserting the function, and use the program entry as the stable identity for new work.
+    const legacyStage = data.stages.filter((item) => item.kind === "operation")[stored?.stage ?? 0];
+    const entry = stored?.entry ?? legacyStage?.call.entry;
+    const restoredIndex = data.stages.findIndex((item) => item.call.entry === entry);
+    const stageIndex = restoredIndex < 0 ? 0 : restoredIndex;
     const stage = data.stages[stageIndex]!;
+    const isFunction = stage.kind === "function";
     const trace = useMemo(() => traceOf(stage.program, stage.call), [stage.program, stage.call]);
     const position = Math.max(0, Math.min(stage.steps, stored?.step ?? 0));
     const view = viewAt(trace, position);
     const flow = flowAt(trace, position);
     const complete = position === stage.steps;
+    const returned = isFunction && view.stop?.kind === "returned";
     const nextFlow = flowAt(trace, position + 1);
     const target = nextFlow?.kind === "arith" ? nextFlow.destination.name : "";
     const matches =
@@ -52,12 +73,14 @@ export const PrimitiveOperation = withProps(
         ? stage.registers.map((n) => `w${n}`).filter((name) => name !== flow.destination.name)
         : [];
     function reset() {
-      setStored({ stage: 0, step: 0 });
+      setShowingInstructions(false);
+      setStored({ stage: 0, entry: data.stages[0]!.call.entry, step: 0 });
       setAnswer("");
     }
     function advance() {
       setStored({
         stage: stageIndex,
+        entry: stage.call.entry,
         step: position + 1,
         ...(stage.predict ? { prediction: answer } : {}),
       });
@@ -73,6 +96,14 @@ export const PrimitiveOperation = withProps(
         <p className="al-primitive-progress">{S.progress(stageIndex + 1, data.stages.length)}</p>
         <h4>{stage.title}</h4>
         <Prose markdown={stage.prose} />
+        {isFunction && (
+          <div className="al-primitive-caller" data-caller-returned={returned}>
+            <strong>{S.caller}</strong>
+            <code>{S.callerCall(stage.call.entry, wValue(viewAt(trace, 0).state, 0))}</code>
+            <p>{S.callArgument(wValue(viewAt(trace, 0).state, 0))}</p>
+            <p>{returned ? S.callerReturned(wValue(view.state, 0)) : S.callerWaiting}</p>
+          </div>
+        )}
         <p className="al-primitive-state-label">{stage.steps > 1 ? S.current : S.before}</p>
         <div
           className="al-primitive-registers"
@@ -88,22 +119,44 @@ export const PrimitiveOperation = withProps(
             />
           ))}
         </div>
-        <ol className="al-primitive-instructions" aria-label={S.instruction}>
-          {shownLines.map((step, index) => (
-            <li key={index} data-next={index === position} data-ran={index === position - 1}>
-              <span className="al-primitive-marker" aria-hidden="true">
-                {index === position ? "▸" : ""}
-              </span>
-              <code>{step.text}</code>
-              {stage.steps > 1 && (index === position || index === position - 1) && (
-                <span className="al-primitive-line-label">
-                  {index === position ? S.nextInstruction : S.ranInstruction}
+        {isFunction ? (
+          <div className="al-primitive-function-listing" ref={functionListing}>
+            <div className="al-controls" role="group" aria-label={S.functionNavigation}>
+              <button type="button" className="button secondary" onClick={revealPane}>
+                {showingInstructions ? S.showC : S.showInstructions}
+              </button>
+            </div>
+            <ListingView
+              cLines={cLinesOf(stage.program.c)}
+              lines={trace.lines}
+              ran={view.ran}
+              next={view.next}
+              showCompilerLines={stage.showCompilerLines}
+            />
+          </div>
+        ) : (
+          <ol className="al-primitive-instructions" aria-label={S.instruction}>
+            {shownLines.map((step, index) => (
+              <li key={index} data-next={index === position} data-ran={index === position - 1}>
+                <span className="al-primitive-marker" aria-hidden="true">
+                  {index === position ? "▸" : ""}
                 </span>
-              )}
-            </li>
-          ))}
-        </ol>
-        {position > 0 && flow?.kind === "arith" && (
+                <code>{step.text}</code>
+                {stage.steps > 1 && (index === position || index === position - 1) && (
+                  <span className="al-primitive-line-label">
+                    {index === position ? S.nextInstruction : S.ranInstruction}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ol>
+        )}
+        {isFunction && (
+          <p className="al-primitive-function-status" role="status">
+            {returned ? S.functionReturned : position === 0 ? S.functionEntry : S.functionAfterAdd}
+          </p>
+        )}
+        {!isFunction && position > 0 && flow?.kind === "arith" && (
           <div className="al-primitive-result" role="status">
             {stored?.prediction !== undefined && (
               <p className="al-primitive-submitted">
@@ -169,7 +222,12 @@ export const PrimitiveOperation = withProps(
               className="button primary"
               type="button"
               onClick={() => {
-                setStored({ stage: stageIndex + 1, step: 0 });
+                setShowingInstructions(false);
+                setStored({
+                  stage: stageIndex + 1,
+                  entry: data.stages[stageIndex + 1]!.call.entry,
+                  step: 0,
+                });
                 setAnswer("");
               }}
             >
@@ -184,7 +242,11 @@ export const PrimitiveOperation = withProps(
         </div>
         {complete && (
           <p className="al-primitive-stopped">
-            {stageIndex === data.stages.length - 1 ? S.complete : S.stopped}
+            {isFunction
+              ? S.functionComplete
+              : stageIndex === data.stages.length - 1
+                ? S.complete
+                : S.stopped}
           </p>
         )}
       </div>

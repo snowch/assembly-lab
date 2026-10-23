@@ -26,6 +26,7 @@ import {
 import { LESSONS } from ".";
 import { PRIMITIVE_PROGRAMS, primitiveProgram } from "./meet-the-machine.primitives";
 import {
+  INCREMENT_INT,
   FUEL_USED_FIXED_TEXT,
   FUEL_USED_MISTAKEN_TEXT,
   KM_TO_SERVICE,
@@ -42,30 +43,34 @@ describe("the first arithmetic applications", () => {
       const view = viewAt(trace, item.instructions.length);
       return item.registers.map((register) => wValue(view.state, register));
     });
-    expect(outcomes).toEqual([
-      [12, 7, 19],
-      [14, 19, 5],
-      [13, 4],
-      [20, 14],
-      [8, 3, 8],
-    ]);
+    expect(outcomes).toEqual([[12, 7, 19], [8], [14, 19, 5], [13, 4], [20, 14], [8, 3, 8]]);
   });
 
   it("keeps every displayed arithmetic snippet in the real-tool corpus", () => {
-    const source = readFileSync(
-      new URL("../../scripts/real-tools/corpus/module0-primitives.s", import.meta.url),
-      "utf8",
-    );
-    const calls = JSON.parse(
-      readFileSync(
-        new URL("../../scripts/real-tools/corpus/module0-primitives.json", import.meta.url),
-        "utf8",
-      ),
-    );
     for (const item of PRIMITIVE_PROGRAMS) {
-      expect(source).toContain(primitiveProgram(item).listing);
+      const name = item.entry === "increment_int" ? "module0-increment" : "module0-primitives";
+      const source = readFileSync(
+        new URL(`../../scripts/real-tools/corpus/${name}.s`, import.meta.url),
+        "utf8",
+      );
+      const calls = JSON.parse(
+        readFileSync(
+          new URL(`../../scripts/real-tools/corpus/${name}.json`, import.meta.url),
+          "utf8",
+        ),
+      );
+      expect(
+        assemblyOf(
+          parseListing(
+            source
+              .split("\n")
+              .filter((line) => !line.startsWith("//"))
+              .join("\n"),
+          ),
+        ),
+      ).toContain(assemblyOf(parseListing(primitiveProgram(item).listing)).trim());
       expect(calls.calls).toContainEqual({
-        entry: item.entry,
+        ...(item.entry === "increment_int" ? {} : { entry: item.entry }),
         args: item.args.map((value) => [String(value), 32]),
       });
     }
@@ -105,6 +110,7 @@ function recordedProgram(title: string) {
 
 const m0b = recordedProgram("`m0b.c`");
 const m0c = recordedProgram("`m0c.c`");
+const increment = recordedProgram("`increment_int.c`");
 
 /** The listing with every recorded C line number lowered by one, as the lesson shows it. */
 const shown = (lines: ListingLine[]): ListingLine[] =>
@@ -118,6 +124,29 @@ describe("the listings the lesson shows", () => {
   it("names the compiler and the setting the recorded file records", () => {
     expect(recorded).toContain("ARM64 GCC 16.1.0");
     expect(recorded).toContain("flags `-O1`");
+  });
+
+  it("keeps the increment source, emitted instructions and original debug references unchanged", () => {
+    expect(cOf(INCREMENT_INT.c)).toEqual(increment.cShown);
+    expect(parseListing(INCREMENT_INT.listing)).toEqual(shown(increment.listing));
+    expect(INCREMENT_INT.sourceLines).toEqual([[3], [3]]);
+    const response = JSON.parse(
+      readFileSync(
+        new URL("../../docs/notes/module-0/increment/response.json", import.meta.url),
+        "utf8",
+      ),
+    );
+    expect(response.code).toBe(0);
+    expect(
+      response.asm.map((row: { text: string; source: { line: number } | null }) => ({
+        text: row.text.trim().replace(/\s+/g, " "),
+        cLine: row.source ? row.source.line - 1 : null,
+      })),
+    ).toEqual([
+      { text: "increment_int:", cLine: null },
+      { text: "add w0, w0, 1", cLine: 4 },
+      { text: "ret", cLine: 4 },
+    ]);
   });
 
   it("show trip_distance's C and instructions as recorded, C line numbers one less", () => {
@@ -438,5 +467,18 @@ describe("every number the lesson states", () => {
     ];
     for (const n of results) expect(model.has(n), String(n)).toBe(true);
     expect(wValue(trip.final, 1)).toBe(85);
+  });
+});
+
+describe("increment_int: preparing a result and returning are different steps", () => {
+  it("takes the argument in w0 and preserves its prepared result through ret", () => {
+    const trace = traceOf(INCREMENT_INT, { entry: "increment_int", args: [7] });
+    const views = [0, 1, 2].map((k) => viewAt(trace, k));
+    expect(views.map((view) => wValue(view.state, 0))).toEqual([7, 8, 8]);
+    expect([...views[1]!.written]).toEqual([0]);
+    expect([...views[2]!.written]).toEqual([]);
+    expect(views.map((view) => view.stop?.kind ?? null)).toEqual([null, null, "returned"]);
+    expect(trace.lines[views[1]!.next!]!.kind).toBe("instruction");
+    expect(views[2]!.next).toBeNull();
   });
 });

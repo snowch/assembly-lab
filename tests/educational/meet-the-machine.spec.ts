@@ -21,7 +21,7 @@ import { PRIMITIVE_STRINGS as P } from "../../packages/views/src/strings.primiti
 import { MODULE0_STRINGS as M0 } from "../../packages/views/src/strings.module0";
 import { PROSE } from "../../content/lessons/meet-the-machine.prose";
 import { LABELS } from "../../content/lessons/meet-the-machine.labels";
-import { TRIP_DISTANCE } from "../../content/lessons/meet-the-machine.listings";
+import { INCREMENT_INT, TRIP_DISTANCE } from "../../content/lessons/meet-the-machine.listings";
 import { designProblems } from "./design";
 
 const LESSON_ID = "meet-the-machine";
@@ -110,6 +110,63 @@ test("the way back leads to the front page", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Assembly Lab");
 });
 
+/** The tiny function follows the first worked add, before the operand exercises. */
+async function followIncrement(page: Page, figure: Locator, reloadAfterAdd = false) {
+  await press(page, figure.getByRole("button", { name: P.continue }));
+  await expect(figure.getByRole("heading")).toHaveText(PROSE.primitiveStages[1].title);
+  await expect(figure.locator(".al-cline .al-src")).toHaveText(INCREMENT_INT.c.split("\n"));
+  await expect(figure.locator(".al-insn .al-text")).toHaveText(["add w0, w0, 1", "ret"]);
+  await expect(figure.locator(".al-insn .al-ctag")).toHaveText(["3", "3"]);
+  await expect(figure.locator(".al-compiler-lines")).not.toHaveAttribute("open");
+  // Both complete panes remain paired; the local control reveals either contained pane.
+  for (const [name, selector] of [
+    [P.showInstructions, ".al-asm"],
+    [P.showC, ".al-c"],
+  ] as const) {
+    const button = figure.getByRole("button", { name, exact: true });
+    await button.scrollIntoViewIfNeeded();
+    const before = await page.evaluate(() => window.scrollY);
+    await press(page, button);
+    await expect(
+      figure.getByRole("group", { name: P.functionNavigation }).getByRole("button"),
+    ).toBeFocused();
+    expect(await page.evaluate(() => window.scrollY)).toBe(before);
+    expect(
+      await figure.locator(".al-listing").evaluate((listing, pane) => {
+        const outer = listing.getBoundingClientRect();
+        const inner = listing.querySelector(pane)!.getBoundingClientRect();
+        return inner.left >= outer.left - 2 && inner.left < outer.right;
+      }, selector),
+    ).toBe(true);
+  }
+  const value = figure.locator('[data-register="w0"] .al-dreg-value');
+  const caller = figure.locator(".al-primitive-caller");
+  await expect(value).toHaveText("7");
+  await expect(caller).toHaveAttribute("data-caller-returned", "false");
+  await expect(caller).toContainText(P.callerWaiting);
+  await expect(figure.getByText(P.callerReturned(8))).toHaveCount(0);
+  await press(page, figure.getByRole("button", { name: P.run }));
+  await expect(value).toHaveText("8");
+  await expect(figure.locator('[data-register="w0"]')).toHaveAttribute("data-changed", "true");
+  await expect(figure.locator('.al-insn[data-next="true"] .al-text')).toHaveText("ret");
+  await expect(caller).toHaveAttribute("data-caller-returned", "false");
+  await expect(caller).toContainText(P.callerWaiting);
+  await expect(figure.getByText(P.callerReturned(8))).toHaveCount(0);
+  if (reloadAfterAdd) {
+    await page.reload();
+    await expect(value).toHaveText("8");
+    await expect(caller).toContainText(P.callerWaiting);
+    await expect(figure.locator('.al-insn[data-next="true"] .al-text')).toHaveText("ret");
+  }
+  await press(page, figure.getByRole("button", { name: P.run }));
+  await expect(value).toHaveText("8");
+  await expect(figure.locator('[data-register="w0"]')).toHaveAttribute("data-changed", "false");
+  await expect(caller).toHaveAttribute("data-caller-returned", "true");
+  await expect(caller).toContainText(P.callerReturned(8));
+  await expect(figure.locator('.al-insn[data-ran="true"] .al-text')).toHaveText("ret");
+  await expect(figure.locator('.al-insn[data-next="true"]')).toHaveCount(0);
+}
+
 test.describe("the first arithmetic activities", () => {
   test("starts with one operation, requires a new prediction and preserves the result on reload", async ({
     page,
@@ -123,6 +180,7 @@ test.describe("the first arithmetic activities", () => {
     await press(page, fig.getByRole("button", { name: P.run }));
     await expect(fig.getByRole("status")).toContainText("w2 = 19");
     await expect(fig.getByRole("status")).toContainText("w0, w1 keep their values");
+    await followIncrement(page, fig, true);
     await press(page, fig.getByRole("button", { name: P.continue }));
     await expect(fig.getByRole("button", { name: P.check })).toBeDisabled();
     await expect(fig.locator(".al-primitive-result")).toHaveCount(0);
@@ -1023,6 +1081,7 @@ for (const theme of ["light", "dark"] as const) {
     const primitive = page.locator("#ix-first-operations");
     await press(page, primitive.getByRole("button", { name: P.run }));
     await expect(primitive.getByRole("status")).toContainText("w2 = 19");
+    await followIncrement(page, primitive);
     for (const value of ["19", "13", "14"]) {
       await press(page, primitive.getByRole("button", { name: P.continue }));
       await primitive.getByRole("spinbutton").fill(value);
