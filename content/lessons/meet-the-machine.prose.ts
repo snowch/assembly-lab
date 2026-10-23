@@ -55,7 +55,7 @@ export const PROSE = {
   investigation:
     "The simulator is a JavaScript program that loads with this page and runs in your browser. It imitates the processor, one instruction at a time. The instructions are GCC's real output. Only the running is imitated. The course calls the simulator its model of the processor.\n\n" +
     "The stepper figure runs `trip_distance(120, 85, 42, 15)`. Each register is shown as a decimal number. Press Show the bits to see all four registers as 32-bit patterns. The `w` in `w0` says this instruction works on those 32 bits. A register is wider than that. Module 1 shows the rest of each register.\n\n" +
-    "The marker shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`.\n\n" +
+    "The marker ▸ shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`.\n\n" +
     "An instruction's parts after its name are its **operands**. Press Next to run the first instruction. Its result and diagram show how the operands name the inputs and the register written.\n\n" +
     "Apply that operand rule to the remaining arithmetic instructions. Choose the register each instruction will write, then press Next to check. There is no register question for `ret`. Open Explain this step for detailed reads and writes. Back undoes a step; Reset starts again.",
   // Shown by the stepper once the run has ended.
