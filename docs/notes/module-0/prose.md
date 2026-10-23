@@ -103,7 +103,7 @@ The simulator is a JavaScript program that loads with this page and runs in your
 
 The stepper figure runs `trip_distance(120, 85, 42, 15)`. Each register is shown as a decimal number. Press Show the bits to see all four registers as 32-bit patterns. The `w` in `w0` says this instruction works on those 32 bits. A register is wider than that. Module 1 shows the rest of each register.
 
-The marker shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`.
+The marker ▸ shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`.
 
 An instruction's parts after its name are its **operands**. Press Next to run the first instruction. Its result and diagram show how the operands name the inputs and the register written.
 

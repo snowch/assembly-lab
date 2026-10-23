@@ -1,0 +1,7 @@
+# Independent technical review
+
+Approved; no technical findings. The diff adds only the inline marker to the existing investigation sentence and synchronises the canonical Module 0 prose. The final source uses U+25B8 (`▸`), a small solid right-pointing triangle. The earlier U+25B6 plus U+FE0E candidate still rendered as an orange emoji in the actual browser; the initial source-only review did not catch that font/presentation fallback. The learner visual review found it, and the final text-only glyph replaces that candidate in both files. The program-counter definition and the explanation that the marker indicates the next instruction are preserved.
+
+Checked the listing source and CSS: `data-next` controls the solid right-pointing triangle drawn by `.al-insn[data-next="true"] .al-mark::before`, alongside the dotted next-instruction edge. The just-executed instruction retains its separate filled-row and solid-edge treatment. Existing accessible “Runs next” text remains unchanged. No model, sequencing, listing logic, CSS or test assertions changed.
+
+Independently ran the existing canonical prose consistency file on the first glyph candidate: **12 tests passed** (`/tmp/inline-marker-technical-unit.log`). `git diff --check` passed. The managing session is rerunning build/tests after the glyph correction. Actual final built appearance in phone/desktop light/dark is assigned to the separate learner review; this note records source and focused-test verification only.

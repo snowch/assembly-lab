@@ -1,0 +1,5 @@
+# Identify the marker in prose
+
+User asks to show the marker icon immediately after the word marker in the paragraph introducing the program counter. Existing listing marker is a solid right-pointing triangle, drawn by `.al-insn[data-next="true"] .al-mark::before` in views.css. It indicates the instruction that runs next, distinct from the executed instruction's filled row. The paragraph already explains the meaning; keep its words and add the matching triangle shape beside the first occurrence of marker. Keep the canonical Module 0 prose record synchronised. No simulator, sequencing or listing changes are needed.
+
+Use a text-presentation right-pointing triangle in this Markdown paragraph so the icon remains inline, scales with prose and avoids emoji presentation. Verify the actual built paragraph and listing marker in phone/desktop light/dark. Retain the program-counter definition and existing accessibility context. Follow docs/style.md. This is a small visual clarification; use existing prose consistency tests rather than adding implementation-mirroring tests.
