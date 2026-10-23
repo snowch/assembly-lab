@@ -131,6 +131,23 @@ describe("the closed notes and the wrong-answer sentences", () => {
 });
 
 describe("the lesson's words", () => {
+  it("makes all earlier Fundamentals lessons discoverable from the preserved bookmark", () => {
+    expect(lesson.title).toBe("Putting it together");
+    expect(lesson.order).toBe(4);
+    expect(
+      lesson.sections.flatMap((s) => s.interactives).some((x) => x.kind === "primitive-operation"),
+    ).toBe(false);
+    for (const id of [
+      "one-addition",
+      "tiny-function",
+      "subtraction-and-reuse",
+      "instructions-in-sequence",
+    ]) {
+      expect(PROSE.motivation).toContain(`](#/lesson/${id})`);
+      expect(LESSONS.find((l) => l.id === id)?.order).toBeLessThan(lesson.order);
+    }
+  });
+
   it("include every line of docs/notes/module-0/prose.md", () => {
     expect(wordsOfFile.length).toBeGreaterThan(40);
     expect(wordsOfFile.filter((l) => !shown.includes(flat(l)))).toEqual([]);

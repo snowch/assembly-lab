@@ -5,16 +5,13 @@
 // backticks taken out, because the page draws a section's title as plain text). A caption the prose
 // file does not give is marked DRAFT, and so is any other label it does not give.
 
+import { SYNTHESIS_COPY } from "./fundamentals.prose";
+
 export const LABELS = {
-  objectives: [
-    "Step through a compiled function one instruction at a time, and say what each instruction changed.",
-    "Say which registers hold the arguments and results of this lesson's functions.",
-    "Fix a compiled function so that it returns the right value.",
-    "Say what `ret` does, and what happens without it.",
-  ],
+  objectives: SYNTHESIS_COPY.objectives,
   titles: {
     question: "What does the processor do?",
-    motivation: "One operation at a time",
+    motivation: SYNTHESIS_COPY.motivationTitle,
     prediction: "Connect the operations to a function",
     investigation: "Stepping through",
     construction: "Fixing fuel_used",

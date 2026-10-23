@@ -105,10 +105,12 @@ test("a module with a lesson is published; with one lesson its title links to it
   await expect(page.locator(".plan-module h3 a")).toHaveCount(
     written.filter((m) => lessonsOf(m, LESSONS).length === 1).length,
   );
-  const meet = page.locator('.plan-module[data-module="meet-the-machine"] h3 a');
+  const meet = page
+    .locator('.plan-module[data-module="meet-the-machine"] .module-lessons li a')
+    .first();
   await meet.click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Meet the machine");
-  expect(new URL(page.url()).hash).toBe("#/lesson/meet-the-machine");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(LESSONS[0]!.title);
+  expect(new URL(page.url()).hash).toBe("#/lesson/one-addition");
   await page.goto("#/");
   await page
     .locator('.plan-module[data-module="registers-and-readings"] .module-lessons li a')
@@ -151,8 +153,8 @@ test("the tab is named for the page, and the course has an address for a lesson"
   await page.goto("#/");
   await expect(page).toHaveTitle(STRINGS.title);
   await page.goto("#/lesson/meet-the-machine");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Meet the machine");
-  await expect(page).toHaveTitle(STRINGS.pageTitle("Meet the machine"));
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Putting it together");
+  await expect(page).toHaveTitle(STRINGS.pageTitle("Putting it together"));
   await page.goto("#/lesson/no-such-lesson");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     STRINGS.noLesson("no-such-lesson"),
@@ -170,16 +172,16 @@ test("each lesson foot names the lesson before it and the one after, in course o
 }) => {
   const errors = watchErrors(page);
   // The first lesson has no previous, and the last has no next: the missing side keeps its place.
-  await page.goto("#/lesson/meet-the-machine");
+  await page.goto("#/lesson/one-addition");
   const nav = page.getByRole("navigation", { name: STRINGS.lessonNav });
   await expect(nav.locator('[data-direction="previous"]')).toHaveCount(0);
   await expect(nav.locator('[data-direction="next"] .lesson-nav-title')).toHaveText(
-    "Same bits, two readings",
+    LESSONS[1]!.title,
   );
   await page.getByRole("link", { name: new RegExp(STRINGS.nextLesson) }).click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Same bits, two readings");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(LESSONS[1]!.title);
   await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
-    "Meet the machine",
+    LESSONS[0]!.title,
   );
   // Optional A32 follows the final native lesson, and still has no next.
   expect(LESSONS.at(-2)!.id).toBe("debug-native-instructions");

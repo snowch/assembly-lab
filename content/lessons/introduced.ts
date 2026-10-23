@@ -14,7 +14,11 @@ import type { LessonInput } from "@platform/lesson-schema";
 
 /** The instructions each lesson teaches, by lesson id: what a lesson adds to the earlier ones. */
 export const TAUGHT: Readonly<Record<string, readonly string[]>> = {
-  "meet-the-machine": ["add", "sub", "ret"],
+  "one-addition": ["add"],
+  "tiny-function": ["ret"],
+  "subtraction-and-reuse": ["sub"],
+  "instructions-in-sequence": [],
+  "meet-the-machine": [],
   "one-pattern-three-readings": [],
   "constants-and-widths": ["mov", "movk"],
   "adding-and-the-flags": ["adds"],

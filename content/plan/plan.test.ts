@@ -79,7 +79,7 @@ describe("the course's plan", () => {
       MODULES.filter((m) => LESSONS.some((l) => l.module === m.lessonModule)).map((m) => m.title),
     );
     expect(published.slice(0, 4).map((m) => m.title)).toEqual([
-      "Meet the machine",
+      "Fundamentals",
       "Registers and readings",
       "Adding, subtracting and the flags",
       "Logic, shifts and masks",
@@ -90,7 +90,13 @@ describe("the course's plan", () => {
 
   it("finds a module's lessons by the module number a lesson holds", () => {
     const meet = moduleByNumber(0)!;
-    expect(lessonsOf(meet, LESSONS).map((l) => l.id)).toEqual(["meet-the-machine"]);
+    expect(lessonsOf(meet, LESSONS).map((l) => l.id)).toEqual([
+      "one-addition",
+      "tiny-function",
+      "subtraction-and-reuse",
+      "instructions-in-sequence",
+      "meet-the-machine",
+    ]);
     // Modules 1 and 2 have two lessons each, in the order they are taught.
     expect(lessonsOf(moduleByNumber(1)!, LESSONS).map((l) => l.id)).toEqual([
       "one-pattern-three-readings",
@@ -112,7 +118,7 @@ describe("the course's plan", () => {
   });
 
   it("finds a module by the number a lesson holds", () => {
-    expect(moduleByNumber(0)?.title).toBe("Meet the machine");
+    expect(moduleByNumber(0)?.title).toBe("Fundamentals");
     expect(moduleByNumber(11)?.title).toBe("Where C and the machine disagree");
     expect(moduleByNumber(13)?.label).toBe("A");
     expect(lessonsOf(moduleByNumber(13)!, [{ id: "arm32", module: 13 }])).toEqual([

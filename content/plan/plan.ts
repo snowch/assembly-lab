@@ -7,6 +7,8 @@
 // are written (`statusOf`), so the plan cannot say a module has a lesson it does not have. A module
 // is `published` once a lesson of it is on the site and `planned` until then.
 
+import { FUNDAMENTALS_MODULE } from "../lessons/fundamentals.prose";
+
 export const STATUSES = ["planned", "drafting", "published"] as const;
 export type ModuleStatus = (typeof STATUSES)[number];
 
@@ -42,12 +44,7 @@ export const PARTS: readonly PlanPart[] = [
     id: "state",
     title: "The machine's state",
     modules: [
-      M(
-        "0",
-        "meet-the-machine",
-        "Meet the machine",
-        "Step through a C function's compiled instructions and watch what each instruction changes.",
-      ),
+      M("0", "meet-the-machine", FUNDAMENTALS_MODULE.title, FUNDAMENTALS_MODULE.line),
       M(
         "1",
         "registers-and-readings",

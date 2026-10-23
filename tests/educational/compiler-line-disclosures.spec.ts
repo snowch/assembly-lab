@@ -5,7 +5,7 @@ import { LESSONS } from "@al/content";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { openLesson, watchErrors } from "./module1";
 
-const exceptions = new Set(["meet-the-machine", "branches"]);
+const exceptions = new Set(["tiny-function", "meet-the-machine", "branches"]);
 
 for (const theme of ["light", "dark"] as const) {
   test(`compiler references appear only where discussed throughout the course in ${theme}`, async ({

@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-// Lesson: Meet the machine (module 0, the only lesson of the module). The learner steps a compiled
+// Lesson: Putting it together (module 0, after the four Fundamentals lessons). The learner steps a compiled
 // function one instruction at a time, fixes a subtraction whose operands are the wrong way round,
 // watches a run go past a deleted `ret`, and traces a five-instruction function.
 //
@@ -11,6 +11,7 @@
 import { TEXT_BASE, assemble, run } from "@al/machine";
 import type { LessonInput } from "@platform/lesson-schema";
 
+import { SYNTHESIS_COPY } from "./fundamentals.prose";
 import { LABELS } from "./meet-the-machine.labels";
 import {
   FUEL_USED_FIXED_TEXT,
@@ -20,7 +21,6 @@ import {
   TRIP_DISTANCE_AND_FUEL_USED,
 } from "./meet-the-machine.listings";
 import { PROSE } from "./meet-the-machine.prose";
-import { PRIMITIVE_PROGRAMS, primitiveProgram } from "./meet-the-machine.primitives";
 
 /** The model the lesson's figures run: one instruction to a step (the book's note names it). */
 const STEPS = "steps";
@@ -74,20 +74,11 @@ const KM_ARGS = { w0: 30000, w1: 28750, w2: 140, w3: 390 } as const;
 
 export const meetTheMachine: LessonInput = {
   id: "meet-the-machine",
-  title: "Meet the machine",
+  title: SYNTHESIS_COPY.title,
   module: 0,
-  order: 0,
+  order: 4,
   objectives: [...LABELS.objectives],
-  introduces: [
-    "instruction",
-    "register",
-    "listing",
-    "assembly language",
-    "operand",
-    "program counter",
-    "caller",
-    "argument",
-  ],
+  introduces: [],
   sections: [
     {
       kind: "question",
@@ -98,29 +89,6 @@ export const meetTheMachine: LessonInput = {
       kind: "motivation",
       title: LABELS.titles.motivation,
       prose: PROSE.motivation,
-      interactives: [
-        {
-          id: "first-operations",
-          kind: "primitive-operation",
-          timeModel: STEPS,
-          caption: PROSE.primitiveCaption,
-          props: {
-            stages: PRIMITIVE_PROGRAMS.map((item, index) => ({
-              ...PROSE.primitiveStages[index],
-              kind: item.kind,
-              showCompilerLines: item.kind === "function",
-              program: primitiveProgram(item),
-              call: { entry: item.entry, args: [...item.args] },
-              registers: [...item.registers],
-              steps: item.instructions.length,
-              predict:
-                item.kind === "operation" &&
-                item.entry !== "primitive_add" &&
-                item.instructions.length === 1,
-            })),
-          },
-        },
-      ],
     },
     {
       kind: "prediction",
@@ -344,10 +312,5 @@ export const meetTheMachine: LessonInput = {
     },
   ],
   modelVsReality: PROSE.modelVsReality,
-  originalityNote: {
-    textbookExample:
-      'The obvious first program in an assembly textbook or tutorial is "hello, world" through a system call, or adding two numbers held in registers set by `mov`.',
-    howThisDiffers:
-      "This lesson starts from C a reader might write, a three-statement function, uses the compiler's own listing rather than hand-written assembly, and finds out what an instruction is by stepping it. Its failure experiment (running past a deleted `ret` into the next function) and its operand-order fix are its own. The trip computer is the course's running situation; its quantities differ from digital-design's.",
-  },
+  originalityNote: SYNTHESIS_COPY.originalityNote,
 };
