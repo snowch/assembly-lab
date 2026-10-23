@@ -397,12 +397,12 @@
 }
 .al-op-line {
   fill: none;
-  stroke: var(--border-strong);
-  stroke-width: 0.12;
+  stroke: var(--fg-muted);
+  stroke-width: 2px;
   vector-effect: non-scaling-stroke;
 }
 .al-op-head {
-  fill: var(--border-strong);
+  fill: var(--fg-muted);
 }
 
 /* The tie that says a read chip and the write chip name one register. */
