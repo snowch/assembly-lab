@@ -1,0 +1,34 @@
+# Adding, and the four flags
+
+Module 2, lesson 1; fourth lesson in registry order (review order 3). Reviewed snapshot f1fdf35. Independent reader review, not an implementation proposal or an assessment of mathematical correctness.
+
+## Prior knowledge and new work
+
+Read the three earlier entries in `/tmp/course-load-review/lessons.json`: Meet the machine; One pattern, three readings; Constants and widths. Their relevant teaching includes register operands and stepping, `add`/`sub`/`ret`, hexadecimal, top-bit significance, both 32-bit readings and their ranges, and `w`/`x` widths. In particular, One pattern, three readings explicitly supplies the signed range and explains that arithmetic gives the same bits whichever reading is used later. Signed/unsigned interpretation is therefore consolidation here, not a second new mechanism.
+
+Genuinely new: `adds` writing four one-bit records, binary column addition and carry propagation, the relation of the top two carries to C/V, signed overflow, and flags persisting across an instruction that does not write them. The first attempt asks “Which readings of the answer are right?” (`adding-and-the-flags.prose.ts:19`). It requires the familiar signed boundary and result-bit reading, not prediction of four unexplained flags. Introducing `adds` first does not make this an unreasonable first task.
+
+The ten sections form a coherent sequence: question/motivation establish the fitting problem and flags; prediction applies old reading knowledge; investigation exposes the carry mechanism; construction generalises to new inputs; failure experiment isolates persistent flags; explanation/generalisation name the numerical interpretation and lifetime; challenge and reflection apply those rules. No high-severity novelty bottleneck found.
+
+## Confirmed finding
+
+**Medium, avoidable reference switching in the first independent flag exercise.** In construction, “Give N, Z, C and V for each of three additions with `adds`” and “Each box takes 0 or 1” (`adding-and-the-flags.prose.ts:45–51`) introduce twelve responses. The four definitions are above the preceding adder (`:27–32`), rather than beside the response groups. A first-time learner must work out three result/carry patterns, associate four unfamiliar letters with their tests, and scroll back to check those tests. On the 375px page, the completed investigation adder itself occupies over a viewport between its opening and status, before the construction prose/listing/choices; the reference and responses cannot be seen together. The first hint repeats only C and V (`:53`). This is reference distance and tracking burden, not evidence that four flags or three examples should be removed.
+
+Reproduce: fresh page, commit the first prediction, use Next column / Next group of four / Show all, then move into “Three additions to predict”. Evidence: `adding-and-the-flags-375-light-carry.png`, full-page committed screenshots, and construction task rendered in the browser log. Smallest direction: keep an unworked four-rule reference next to the grouped flag inputs. Keep all three cases and the model-based feedback. If learner trials still show difficulty, consider checking a single group before continuing, but that additional staging is a design option, not a demonstrated requirement.
+
+## Treatments worth keeping
+
+- The investigation externalises the very thing newly being learned. “Carry in”, “Bit of w0”, “Bit of w1”, “Total”, “Result bit kept”, and “Carry out” show one current column; bit 31's carries and the C/V interpretation appear only on completing the calculation (`packages/views/src/interactives/AdderFigure.tsx`, `Calc`, `Final`, and `finished`). At phone width the full bit grid fits without sideways page scrolling. This replaces mental arithmetic bookkeeping effectively.
+- “Next group of four” and “Show all” avoid requiring 32 repetitive clicks. They advance a calculation rather than implying another instruction executed. The page explains the distinction before the figure.
+- The initial prediction gates the calculation until an attempt has been checked, including an incorrect attempt. Initial registers are explicitly labelled “Registers before the run”; committed feedback remains distinguishable. No premature answer disclosure observed in that gate.
+- The second adder and its case comparison are gated behind passing construction (`adding-and-the-flags.ts`, `afterChallenge: "predict-flags"`). This preserves an independent attempt on new cases.
+- Persistence gets a short two-operation experiment rather than another large function. After its second step the status explicitly says the flags “were not updated by add”; writes and flag changes have different markings. The four register rows and flags are relevant to the comparison, rather than incidental state.
+- The final challenge narrows to V after the four-rule practice. The closed GCC disclosure contains unfamiliar `cmn`, `cset`, and `vs`, but explicitly says a later module explains them. They are not required to operate the main lesson; no prerequisite gap is asserted for that optional preview.
+
+## Coverage and limits
+
+Read all ten sections, captions, task descriptions and disclosures; lesson structure, recorded `PLUS`/`SUM_FLAGS` programs, `AdderFigure.tsx`, `RunPrediction.tsx`, and relevant `StepperFigure.tsx` controls/state presentation. Read repository guidance, review brief, style and visual-language guidance. Did not use later-lesson teaching to justify prerequisites.
+
+Browser: fresh contexts for each of 375×900 and 1280×900 in light and dark system preferences. Actual body backgrounds were respectively `rgb(243, 246, 245)` and `rgb(16, 22, 21)`; measured page horizontal overflow was zero in all four initial states. Inspected initial page and locked figures; committed the reading prediction; advanced the adder by one column and a group, then Show all; committed the persistence prediction and stepped both arithmetic instructions; opened “How GCC checks for overflow”; ran the construction with empty inputs and opened its first hint. Screenshots: `/tmp/course-load-review/adding-and-the-flags-{375,1280}-{light,dark}-{initial,committed,carry,flags}.png`; reproducible script and text at the same prefix `-browser.cjs`/`-browser.log`. Inspected phone light carry and phone dark flag screenshots directly; other screenshots and rendered states were collected by Playwright, with text assertions/inspection rather than individual image review.
+
+Construction success and its follow-up adder, final challenge grading, later hints, reflection answer, back/reset/restoration, keyboard/screen-reader behaviour and extended experiments were source-only or untested. No claim about their browser behaviour follows from this review. No external compiler calls, rebuilds, source edits, or challenge answers included.
