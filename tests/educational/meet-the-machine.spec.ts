@@ -118,7 +118,6 @@ test.describe("the operands flow", () => {
     const stepper = page.locator("#ix-step-trip");
     await expect(stepper.locator(".al-operands")).toHaveCount(0);
     await press(page, stepper.getByRole("button", { name: V.stepper.next }));
-    await press(page, stepper.locator(".al-step-explanation summary"));
     const fig = stepper.locator(".al-operands");
     await fig.scrollIntoViewIfNeeded();
     // The flow's geometry, measured in the rendered page: each join leg starts under its read
@@ -1079,33 +1078,46 @@ test.describe("both themes", () => {
 });
 
 for (const theme of ["light", "dark"] as const) {
-  test(`compact stepper separates the first check from results in ${theme}`, async ({ page }) => {
+  test(`compact stepper teaches the first step then asks about later writes in ${theme}`, async ({
+    page,
+  }) => {
     await page.emulateMedia({ colorScheme: theme });
     await openLesson(page);
     await commit(page, "predict-total", /^In w0/);
     const fig = page.locator("#ix-step-trip");
-    await expect(fig.locator(".al-operands, .al-step-explanation")).toHaveCount(0);
-    await expect(fig.locator(".al-expect")).toBeVisible();
-    await press(page, fig.getByRole("button", { name: "w1", exact: true }));
+    await expect(fig.locator(".al-operands, .al-step-explanation, .al-expect")).toHaveCount(0);
     await press(page, fig.getByRole("button", { name: V.stepper.next }));
-    await expect(fig.locator(".al-status")).toHaveText("Not quite. w0 ← 120 + 85 = 205");
-    await expect(fig.locator(".al-expect")).toHaveCount(0);
+    await expect(fig.locator(".al-status")).toHaveText("w0 ← 120 + 85 = 205");
+    await expect(fig.locator(".al-op-write")).toBeVisible();
+    await expect(fig.locator(".al-op-write")).toContainText("Write w0");
+    await expect(fig.locator(".al-expect-ask")).toContainText("add w0, w0, w2");
     const detail = fig.locator(".al-step-explanation");
     await expect(detail).not.toHaveAttribute("open", "");
     await expect(fig.locator(".al-flow")).not.toBeVisible();
-    await expect(fig.locator(".al-operands")).not.toBeVisible();
     const summary = detail.locator("summary");
     await summary.focus();
     await page.keyboard.press("Enter");
-    await expect(fig.locator(".al-op-write")).toBeVisible();
-    await expect(fig.locator(".al-op-write")).toContainText("Write w0");
+    await expect(fig.locator(".al-flow")).toBeVisible();
+    await press(page, fig.getByRole("button", { name: "w1", exact: true }));
     await press(page, fig.getByRole("button", { name: V.stepper.next }));
-    await expect(fig.locator(".al-status")).toHaveText("w0 ← 205 + 42 = 247");
+    await expect(fig.locator(".al-status")).toHaveText("Not quite. w0 ← 205 + 42 = 247");
     await expect(fig.locator(".al-flow")).not.toBeVisible();
-    await expect(fig.locator(".al-expect, .al-operands")).toHaveCount(0);
+    await expect(fig.locator(".al-operands")).toHaveCount(0);
+    await expect(fig.locator(".al-expect-ask")).toContainText("sub w0, w0, w3");
+    await press(page, fig.getByRole("button", { name: V.stepper.back }));
+    await expect(fig.locator(".al-status")).toHaveText("w0 ← 120 + 85 = 205");
+    await expect(fig.locator(".al-operands")).toBeVisible();
+    await press(page, fig.getByRole("button", { name: V.stepper.next }));
+    await press(page, fig.getByRole("button", { name: "w0", exact: true }));
+    await press(page, fig.getByRole("button", { name: V.stepper.next }));
+    await expect(fig.locator(".al-status")).toHaveText("Correct. w0 ← 247 − 15 = 232");
+    await expect(fig.locator(".al-expect")).toHaveCount(0);
+    await expect(fig.locator(".al-up-next")).toContainText("ret");
+    await press(page, fig.getByRole("button", { name: V.stepper.next }));
+    await expect(fig.getByRole("button", { name: V.stepper.next })).toBeDisabled();
+    await expect(fig.locator(".al-expect")).toHaveCount(0);
     await press(page, fig.getByRole("button", { name: V.stepper.reset }));
-    await expect(fig.locator(".al-expect")).toBeVisible();
-    await expect(fig.locator(".al-step-explanation, .al-operands")).toHaveCount(0);
+    await expect(fig.locator(".al-expect, .al-step-explanation, .al-operands")).toHaveCount(0);
     expect(await designProblems(page, false)).toEqual([]);
   });
 }

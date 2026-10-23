@@ -166,7 +166,7 @@ export const meetTheMachine: LessonInput = {
             // Module 0 shows what each step read and wrote, and each register as a decimal number.
             flow: true,
             decimal: true,
-            // Only the first step asks for a register; later steps run freely.
+            // The first step teaches the operand rule; later arithmetic steps ask learners to apply it.
             expect: true,
             compact: true,
             endNote: PROSE.investigationEnd,

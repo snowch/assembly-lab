@@ -105,11 +105,11 @@ The stepper figure runs `trip_distance(120, 85, 42, 15)`. Each register is shown
 
 The marker shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`.
 
-An instruction's parts after its name are its **operands**. For this first-step check, recall your prediction above. Choose the register the first instruction will write, then press Next.
+An instruction's parts after its name are its **operands**. Press Next to run the first instruction. Its result and diagram show how the operands name the inputs and the register written.
 
-Only the first step asks for a register choice. Keep pressing Next to follow the remaining instructions. Each step shows a short result and marks register writes. Open Explain this step to inspect what the instruction read and wrote. Back undoes a step; Reset starts again.
+Apply that operand rule to the remaining arithmetic instructions. Choose the register each instruction will write, then press Next to check. There is no register question for `ret`. Open Explain this step for detailed reads and writes. Back undoes a step; Reset starts again.
 
-*Shown inside Explain this step after the first instruction runs: the operand diagram.*
+*Shown automatically after the first instruction runs: the operand diagram and destination rule.*
 
 *`trip_distance(120, 85, 42, 15)`, one instruction at a time. A register with an outline was written by the last instruction. The highlighted C statement and instruction show what just ran; the arrow marks the next instruction.*
 
