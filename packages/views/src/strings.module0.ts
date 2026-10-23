@@ -10,6 +10,10 @@
 export const MODULE0_STRINGS = {
   flow: {
     // DRAFT
+    addOperation: "Add",
+    // DRAFT
+    subtractOperation: "Subtract",
+    // DRAFT
     label: "What the last instruction did",
     // DRAFT
     head: (text: string) => `What \`${text}\` did`,

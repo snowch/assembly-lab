@@ -52,14 +52,12 @@ export const PROSE = {
     w3: "`w3` holds `detour`. The third instruction, `sub w0, w0, w3`, still needs it. What happens to a value when another value is written into the same register?",
   },
 
-  operandOperation: "Add",
   investigation:
     "The simulator is a JavaScript program that loads with this page and runs in your browser. It imitates the processor, one instruction at a time. The instructions are GCC's real output. Only the running is imitated. The course calls the simulator its model of the processor.\n\n" +
     "The stepper figure runs `trip_distance(120, 85, 42, 15)`. Each register is shown as a decimal number. Press Show the bits to see all four registers as 32-bit patterns. The `w` in `w0` says this instruction works on those 32 bits. A register is wider than that. Module 1 shows the rest of each register.\n\n" +
     "The marker shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`.\n\n" +
-    "An instruction's parts after its name are its **operands**. In `add w0, w0, w1`, the first operand is where the result goes. The other two are the values it adds.\n\n" +
-    "Before you press Next, say which register the next instruction will write. Press Next and the figure says whether you were right, then runs the instruction and shows what it read, what it wrote, and which registers it left alone. Press Back to undo a step.\n\n" +
-    "At each step, look for two things: which register the instruction writes, and which registers it leaves alone.",
+    "An instruction's parts after its name are its **operands**. For this first-step check, recall your prediction above. Choose the register the first instruction will write, then press Next.\n\n" +
+    "Only the first step asks for a register choice. Keep pressing Next to follow the remaining instructions. Each step shows a short result and marks register writes. Open Explain this step to inspect what the instruction read and wrote. Back undoes a step; Reset starts again.",
   // Shown by the stepper once the run has ended.
   investigationEnd:
     "`ret` returns to the code that called this function. The function's result is whatever `w0` holds at that moment.",

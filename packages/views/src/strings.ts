@@ -72,6 +72,11 @@ export const VIEW_STRINGS = {
     // DRAFT: `instruction` is the instruction about to run.
     expectAsk: (instruction: string) =>
       `Before you press Next: which register will \`${instruction}\` write?`,
+    explain: "Explain this step",
+    compactRight: "Correct.",
+    compactWrong: "Not quite.",
+    result: (register: string, left: string, operator: string, right: string, value: string) =>
+      `\`${register}\` ← ${left} ${operator} ${right} = ${value}`,
     // DRAFT
     expectRight: (register: string) => `You were right: it wrote \`${register}\`.`,
     // DRAFT: `register` is the register the instruction wrote.

@@ -32,8 +32,13 @@ export const OperandRoles = withProps(Props, function OperandRoles({ data, store
         {S.stepper.locked}
       </p>
     );
-  const destination = first;
-  const inputs = rest;
+  return <OperandDiagram data={data} />;
+});
+
+/** Shared schematic; callers control when its worked instruction is revealed. */
+export function OperandDiagram({ data }: { data: z.infer<typeof Props> }) {
+  const [destination, ...inputs] = data.operands;
+  if (destination === undefined || inputs.length === 0) return null;
   // A register can be both read and written, as `w0` is here: the flow says so, rather than
   // implying two registers.
   const tied = inputs.includes(destination);
@@ -107,4 +112,4 @@ export const OperandRoles = withProps(Props, function OperandRoles({ data, store
       {tied && <p className="al-operands-tie">{withCode(S.operands.sameRegister(destination))}</p>}
     </div>
   );
-});
+}

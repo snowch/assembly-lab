@@ -32,6 +32,7 @@ import { shown } from "../readings";
 import { MODULE1_STRINGS as M1 } from "../strings.module1";
 import { traceOf, viewAt, wValue, wValueAsInt, type StepView, type Trace } from "../trace";
 import { CallSchema, DeleteSchema, RecordedSchema, withProps } from "./props";
+import { OperandDiagram } from "./OperandRoles";
 
 const Props = z.object({
   program: RecordedSchema,
@@ -77,6 +78,8 @@ const Props = z.object({
    * the drawn registers; the step then says whether the pick was right before it shows the run.
    */
   expect: z.boolean().default(false),
+  /** A short result, a first-step-only check, and optional detailed explanation. */
+  compact: z.boolean().default(false),
 });
 
 /**
@@ -243,6 +246,8 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
   }
   const view = viewAt(trace, k);
   const atEnd = view.k >= view.total;
+  const flow = flowAt(trace, view.k);
+  const ask = data.expect && (!data.compact || view.k === 0);
   // With `expect`, the learner answers for the instruction they are about to run: they pick the
   // register it will write, and the step that follows says whether the pick was right before it
   // shows what the instruction did. A pick or a verdict belongs to one instruction only: any
@@ -316,7 +321,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           {S.stepper.reset}
         </button>
       </div>
-      {data.expect && view.next !== null && (
+      {ask && view.next !== null && (
         <div className="al-expect" role="group" aria-label={S.stepper.expectGroup}>
           <p className="al-expect-ask">
             {withCode(
@@ -343,21 +348,42 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
       )}
       <p className="al-status" role="status">
         {withCode(
-          [
-            data.expect && verdict !== null
-              ? verdict.right
-                ? S.stepper.expectRight(`w${verdict.register}`)
-                : S.stepper.expectWrong(`w${verdict.register}`)
-              : null,
-            statusOf(
-              trace,
-              view,
-              data.branchStatus,
-              data.showChanges ? leftFlagsAlone(trace, view.k) : null,
-            ),
-          ]
-            .filter((part) => part !== null)
-            .join(" "),
+          data.compact
+            ? [
+                verdict !== null
+                  ? verdict.right
+                    ? S.stepper.compactRight
+                    : S.stepper.compactWrong
+                  : null,
+                flow?.kind === "arith"
+                  ? S.stepper.result(
+                      flow.destination.name,
+                      flow.sources[0].value,
+                      flow.operation === "add" ? "+" : "−",
+                      flow.sources[1].value,
+                      flow.destination.after,
+                    )
+                  : flow?.kind === "ret"
+                    ? S.stepper.ended
+                    : S.stepper.start,
+              ]
+                .filter((part) => part !== null)
+                .join(" ")
+            : [
+                data.expect && verdict !== null
+                  ? verdict.right
+                    ? S.stepper.expectRight(`w${verdict.register}`)
+                    : S.stepper.expectWrong(`w${verdict.register}`)
+                  : null,
+                statusOf(
+                  trace,
+                  view,
+                  data.branchStatus,
+                  data.showChanges ? leftFlagsAlone(trace, view.k) : null,
+                ),
+              ]
+                .filter((part) => part !== null)
+                .join(" "),
         )}
       </p>
       {data.endNote !== undefined && atEnd && (
@@ -401,7 +427,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           <p>{M1.opener.unsignedDisplay}</p>
         </div>
       )}
-      {data.flow && <FlowPanel trace={trace} k={view.k} shown={data.registers} />}
+      {data.flow && !data.compact && <FlowPanel trace={trace} k={view.k} shown={data.registers} />}
       {data.decimal && (
         <div className="al-registers-head">
           <span className="al-registers-title">{S.stepper.registers}</span>
@@ -471,6 +497,22 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           {...(data.explainFlags ? { explain: flagsKind(trace, view.k) } : {})}
           tagChanged={data.showChanges}
         />
+      )}
+      {data.compact && data.flow && view.k > 0 && (
+        <details className="al-step-explanation" key={view.k}>
+          <summary>{S.stepper.explain}</summary>
+          <FlowPanel trace={trace} k={view.k} shown={data.registers} />
+          {view.k === 1 && flow?.kind === "arith" && (
+            <OperandDiagram
+              data={{
+                name: flow.operation,
+                operands: [flow.destination.name, ...flow.sources.map((source) => source.name)],
+                operation:
+                  flow.operation === "add" ? M0.flow.addOperation : M0.flow.subtractOperation,
+              }}
+            />
+          )}
+        </details>
       )}
       {data.panel && <StepPanel panel={data.panel} trace={trace} k={view.k} />}
     </div>

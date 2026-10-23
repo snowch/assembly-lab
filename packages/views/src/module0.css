@@ -431,6 +431,16 @@
   border-color: var(--accent);
   color: var(--accent-strong);
 }
+.al-step-explanation > summary {
+  min-height: 44px;
+  padding-block: var(--space-2);
+  cursor: pointer;
+  color: var(--accent);
+}
+.al-step-explanation > summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
 
 /* The tie that says an input chip and the destination chip name one register. */
 .al-operands-tie {
