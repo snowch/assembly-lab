@@ -28,6 +28,7 @@ import { debugNativeInstructions } from "./debug-native-instructions";
 import { sameCOnA32 } from "./same-c-on-a32";
 import { zeroTerminatedStrings } from "./zero-terminated-strings";
 import { masks } from "./masks";
+import { fundamentalsLessons } from "./fundamentals";
 import { meetTheMachine } from "./meet-the-machine";
 import { memoryAndAddresses } from "./memory-and-addresses";
 import { loadingWidths } from "./loading-widths";
@@ -36,6 +37,7 @@ import { shifts } from "./shifts";
 import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
 
 export const LESSONS: readonly Lesson[] = [
+  ...fundamentalsLessons,
   meetTheMachine,
   onePatternThreeReadings,
   constantsAndWidths,

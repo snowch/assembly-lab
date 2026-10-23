@@ -69,6 +69,15 @@ before use does not alone establish adequate preparation. Related mechanisms may
 this check does not require an activity for every opcode or a worked answer before every
 exploratory prediction. See the [opening retrospective](notes/module-0/increment-retrospective.md).
 
+Check discoverability separately from the size of an example. A required activity needs a
+visible name and a discoverable entry before the learner completes earlier activities. A valid
+prerequisite gate can still control when it runs. Give distinct lessons entries in the course
+plan; do not rely on a completion-dependent Next activity button
+to announce them. Ordinary instruction stepping, named comparisons, optional detail and
+prediction or solution gates can remain local. Read later explanations as someone who has not
+found an unannounced stage: their prerequisites must still be discoverable. See the
+[Fundamentals audit and reviews](notes/fundamentals/implementation-brief.md).
+
 For each finding, quote or locate the problem, state its effect on the learner, give the
 evidence and suggest a direction for correction. Follow `CLAUDE.md`'s reader, sceptic and
 checker stages: challenge findings, fix those supported by evidence, and verify the fixes in

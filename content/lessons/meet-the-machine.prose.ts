@@ -4,9 +4,10 @@
 // checked facts and kept word for word from docs/notes/module-0/prose.md. meet-the-machine.prose.test.ts
 // holds every string here to that file, so a change of wording is made there first.
 
+import { SYNTHESIS_COPY } from "./fundamentals.prose";
+
 export const PROSE = {
-  question:
-    "A trip computer adds distances and subtracts a detour. How does the processor perform one of those operations? Start with one addition, then follow a small function call.",
+  question: SYNTHESIS_COPY.question,
   // Two notes under the listing, each shut until the learner opens it.
   compilerNote: {
     summary: "Which compiler made these instructions?",
@@ -27,44 +28,11 @@ export const PROSE = {
       "GCC's original line references are kept in the compiler details. GCC 16.1 at `-O1` records both instructions against line 7, the closing brace. These references help debugging tools locate C code. They do not always identify the statement an instruction carries out.",
   },
 
-  motivation:
-    "A **register** is a small store inside the processor that holds one value. The names `w0`, `w1` and `w2` refer to three registers. Each name here selects 32 bits; Module 1 shows the rest of each register.\n\nAn **instruction** tells the processor to perform an operation. Assembly language writes instructions with names such as `add`. The parts after the name are its **operands**.\n\nFor `add` and `sub`, the first operand names the register written. The second and third supply the input values. Run the first addition, then try the next activities. Each activity replaces the previous one, so you can focus on its operation.",
-  primitiveCaption: "Start with one addition, then follow a function call and return.",
-  primitiveStages: [
-    {
-      title: "Add into a different register",
-      prose:
-        "`add w2, w0, w1` reads `w0` and `w1`, adds their values, and writes the sum into `w2`. Run it to see the result.",
-    },
-    {
-      title: "Return from a tiny function",
-      prose:
-        "`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C into this assembly **listing**. `increment_int:` names the function.\n\nCode that calls a function is its **caller**. The input it supplies is an **argument**. Here, the argument arrives in `w0`; the function leaves its integer result there too.\n\nIn `add w0, w0, 1`, the last operand is the number one. Run `add` to prepare the result. Then `ret` returns to the caller without calculating or moving the result.",
-    },
-    {
-      title: "Choose a different destination",
-      prose:
-        "This addition uses different inputs and writes a different register. Predict its result before running it. The first operand still names the destination.",
-    },
-    {
-      title: "Read a register, then replace its value",
-      prose:
-        "The same register can supply an input and receive the result. The instruction reads the old values before writing. Predict the new value in `w0`.",
-    },
-    {
-      title: "Subtract in operand order",
-      prose:
-        "`sub` subtracts the third operand from the second, then writes the first operand. Predict the value this instruction writes.",
-    },
-    {
-      title: "Run two instructions in order",
-      prose:
-        "The marker ▸ shows the instruction that runs next. Run each instruction in turn. The second uses the state left by the first. The activity stops after these two instructions.",
-    },
-  ],
+  motivation: SYNTHESIS_COPY.motivation,
 
   prediction:
-    "Now combine those operations. The trip computer logs three distances, called legs, with a private detour removed. The C function `trip_distance` adds the three legs and subtracts the detour.\n\nGCC translated this function into four instructions for a 64-bit Arm processor. The complete C and its related instructions appear together below.\n\nFor the `int` arguments here, the first arrives in `w0`, the second in `w1`, and so on. As in `increment_int`, the function leaves its `int` result in `w0`.\n\nThe C names a variable, `total`. The instructions name registers. Use the operand rule you practised to decide where the first value of `total` goes.",
+    "Now combine those operations. The trip computer logs three distances, called legs, with a private detour removed. The C function `trip_distance` adds the three legs and subtracts the detour.\n\nGCC translated this function into four instructions for a 64-bit Arm processor. The complete C and its related instructions appear together below.\n\nFor the `int` arguments here, the first arrives in `w0`, the second in `w1`, and so on. As in `increment_int`, the function leaves its `int` result in `w0`.\n\nThe C names a variable, `total`. The instructions name registers. Use the operand rule you practised to decide where the first value of `total` goes.\n\n" +
+    SYNTHESIS_COPY.listingNavigation,
   argsSay: "The first instruction is `add w0, w0, w1`.",
   argsQuestion:
     "It adds two register values and stores the result. Where will the C variable `total` be kept?",

@@ -24,10 +24,8 @@ const Stage = z.object({
   predict: z.boolean().default(false),
   showCompilerLines: z.boolean().default(false),
 });
-const Props = z.object({ stages: z.array(Stage).min(1).max(8) });
+const Props = z.object({ stage: Stage });
 interface Stored {
-  stage: number;
-  entry?: string;
   step: number;
   prediction?: string;
 }
@@ -47,13 +45,7 @@ export const PrimitiveOperation = withProps(
         target.getBoundingClientRect().left - listing.getBoundingClientRect().left;
       setShowingInstructions(!showingInstructions);
     }
-    // Earlier saved work numbered only the five operation activities. Keep its meaning after
-    // inserting the function, and use the program entry as the stable identity for new work.
-    const legacyStage = data.stages.filter((item) => item.kind === "operation")[stored?.stage ?? 0];
-    const entry = stored?.entry ?? legacyStage?.call.entry;
-    const restoredIndex = data.stages.findIndex((item) => item.call.entry === entry);
-    const stageIndex = restoredIndex < 0 ? 0 : restoredIndex;
-    const stage = data.stages[stageIndex]!;
+    const stage = data.stage;
     const isFunction = stage.kind === "function";
     const trace = useMemo(() => traceOf(stage.program, stage.call), [stage.program, stage.call]);
     const position = Math.max(0, Math.min(stage.steps, stored?.step ?? 0));
@@ -74,26 +66,18 @@ export const PrimitiveOperation = withProps(
         : [];
     function reset() {
       setShowingInstructions(false);
-      setStored({ stage: 0, entry: data.stages[0]!.call.entry, step: 0 });
+      setStored({ step: 0 });
       setAnswer("");
     }
     function advance() {
       setStored({
-        stage: stageIndex,
-        entry: stage.call.entry,
         step: position + 1,
         ...(stage.predict ? { prediction: answer } : {}),
       });
       setAnswer("");
     }
     return (
-      <div
-        className="al-figure al-primitive"
-        data-figure="primitive-operation"
-        data-stage={stageIndex}
-        data-k={position}
-      >
-        <p className="al-primitive-progress">{S.progress(stageIndex + 1, data.stages.length)}</p>
+      <div className="al-figure al-primitive" data-figure="primitive-operation" data-k={position}>
         <h4>{stage.title}</h4>
         <Prose markdown={stage.prose} />
         {isFunction && (
@@ -217,38 +201,13 @@ export const PrimitiveOperation = withProps(
               {stage.predict ? S.check : S.run}
             </button>
           )}
-          {complete && stageIndex < data.stages.length - 1 && (
-            <button
-              className="button primary"
-              type="button"
-              onClick={() => {
-                setShowingInstructions(false);
-                setStored({
-                  stage: stageIndex + 1,
-                  entry: data.stages[stageIndex + 1]!.call.entry,
-                  step: 0,
-                });
-                setAnswer("");
-              }}
-            >
-              {S.continue}
-            </button>
-          )}
-          {(stageIndex > 0 || position > 0) && (
+          {position > 0 && (
             <button className="button secondary" type="button" onClick={reset}>
               {S.restart}
             </button>
           )}
         </div>
-        {complete && (
-          <p className="al-primitive-stopped">
-            {isFunction
-              ? S.functionComplete
-              : stageIndex === data.stages.length - 1
-                ? S.complete
-                : S.stopped}
-          </p>
-        )}
+        {complete && !isFunction && <p className="al-primitive-stopped">{S.stopped}</p>}
       </div>
     );
   },

@@ -1,0 +1,132 @@
+// Copyright © 2026 Christopher Snow
+
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+import { parseLesson, learnerText } from "@platform/lesson-schema";
+import { traceOf, viewAt, wValue } from "@al/views";
+import { grade } from "../../packages/views/src/grader";
+import { fundamentalsLessons } from "./fundamentals";
+import { FUNDAMENTALS_PROSE, SYNTHESIS_COPY, FUNDAMENTALS_MODULE } from "./fundamentals.prose";
+import { FUNDAMENTALS_LABELS } from "./fundamentals.labels";
+
+const lessons = fundamentalsLessons.map(parseLesson);
+const flat = (value: string) => value.replace(/[`*]/g, "").replace(/\s+/g, " ").trim();
+const strings = (value: unknown): string[] =>
+  typeof value === "string"
+    ? [value]
+    : Array.isArray(value)
+      ? value.flatMap(strings)
+      : value && typeof value === "object"
+        ? Object.values(value).flatMap(strings)
+        : [];
+
+describe("visible Fundamentals lessons", () => {
+  it("gives each mechanism a stable lesson and mounts both reuse and subtraction", () => {
+    expect(lessons.map((lesson) => lesson.id)).toEqual([
+      "one-addition",
+      "tiny-function",
+      "subtraction-and-reuse",
+      "instructions-in-sequence",
+    ]);
+    expect(lessons.map((lesson) => lesson.order)).toEqual([0, 1, 2, 3]);
+    for (const lesson of lessons) {
+      expect(lesson.sections).toHaveLength(10);
+      for (const figure of lesson.sections
+        .flatMap((section) => section.interactives)
+        .filter((figure) => figure.kind === "primitive-operation")) {
+        expect(figure.props["stage"]).toBeDefined();
+        expect(figure.props["stages"]).toBeUndefined();
+      }
+    }
+    expect(
+      lessons[2]!.sections
+        .flatMap((section) => section.interactives)
+        .filter((figure) => figure.kind === "primitive-operation"),
+    ).toHaveLength(2);
+  });
+
+  it.each(lessons)("grades fresh inputs in $id without requiring the worked result", (lesson) => {
+    const challenge = lesson.challenges[0]!;
+    expect(grade(challenge, challenge.initial).passed).toBe(false);
+    expect(grade(challenge, challenge.reference).passed).toBe(true);
+    expect(
+      grade(challenge, {
+        answers: Object.fromEntries(challenge.fields.map((field) => [field.id, "999"])),
+      }).passed,
+    ).toBe(false);
+    expect(challenge.initial.data?.["program"]).toBeUndefined();
+    expect(challenge.initial.data?.["model"]).toBeDefined();
+  });
+
+  it("pins every fresh challenge result and the wrapper return's lack of register writes", () => {
+    expect(lessons.map((lesson) => lesson.challenges[0]!.reference.answers)).toEqual([
+      { w1: "19", w0: "14" },
+      { w0: "1" },
+      { w1: "13", w0: "18" },
+      { w2: "10", w1: "4" },
+    ]);
+    for (const lesson of lessons) {
+      const challenge = lesson.challenges[0]!;
+      if (challenge.tests.kind !== "answers") throw new Error("Answer challenge expected");
+      const test = challenge.tests.cases[0]!;
+      const args = Array.from({ length: 3 }, (_, n) => test.given[`w${n}`])
+        .filter((n) => n !== undefined)
+        .map(Number);
+      const trace = traceOf(challenge.initial.data!["model"] as { c: string; listing: string }, {
+        entry: String(test.given["entry"]),
+        args,
+      });
+      expect(trace.result.stop.kind).toBe("returned");
+      expect(trace.result.steps.at(-1)!.writes).toEqual([]);
+      const final = viewAt(trace, trace.result.steps.length).state;
+      for (const field of challenge.fields)
+        expect(String(wValue(final, Number(field.id.slice(1))))).toBe(
+          challenge.reference.answers![field.id],
+        );
+    }
+  });
+
+  it("pins stated numeric inputs and results to the checked primitive traces", () => {
+    // Existing primitive facts check all worked calls; fresh challenge traces are checked above.
+    // Width and compiler/version values are pinned by the recorded increment listing facts.
+    const pinned = new Set([
+      0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 18, 19, 20, 32, 64, 16.1,
+    ]);
+    const text = lessons
+      .flatMap(learnerText)
+      .join("\n")
+      .replace(/[A-Za-z_][A-Za-z_0-9]*/g, " ");
+    expect(
+      [...text.matchAll(/\d+(?:\.\d+)?/g)]
+        .map((match) => Number(match[0]))
+        .filter((number) => !pinned.has(number)),
+    ).toEqual([]);
+  });
+
+  it("keeps all drafted words and labels in the canonical prose record", () => {
+    const canonical = flat(
+      readFileSync(new URL("../../docs/notes/fundamentals/prose.md", import.meta.url), "utf8"),
+    );
+    for (const value of [...strings(FUNDAMENTALS_PROSE), ...strings(FUNDAMENTALS_LABELS)])
+      expect(canonical).toContain(flat(value));
+    const body = readFileSync(
+      new URL("../../docs/notes/fundamentals/prose.md", import.meta.url),
+      "utf8",
+    ).split("## One addition")[1]!;
+    const drafted = flat(
+      [
+        ...strings(FUNDAMENTALS_PROSE),
+        ...strings(FUNDAMENTALS_LABELS),
+        ...strings(SYNTHESIS_COPY),
+        ...strings(FUNDAMENTALS_MODULE),
+      ].join("\n"),
+    );
+    for (const line of body.split("\n").filter((line) => line.trim() && !line.startsWith("#")))
+      expect(drafted).toContain(flat(line));
+    const shown = flat(
+      [...lessons.flatMap(learnerText), ...strings(FUNDAMENTALS_LABELS)].join("\n"),
+    );
+    expect(shown).toContain("increment_int(0)");
+    expect(shown).not.toContain("Next activity");
+  });
+});

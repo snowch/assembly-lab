@@ -1,4 +1,4 @@
-# Module 0: the lesson's words, as drafted
+# Module 0, Putting it together: the lesson's words
 
 Drafted by Haiku from the fact brief in `docs/notes/module-0/brief.md`, a part at a time; checked for facts by the managing session, which sent parts 6 and 8 back once (a word used in two senses, and a missing fact) and changed one sentence of part 7 to keep it true once memory is introduced. The lesson's `.prose.ts` and `.labels.ts` files take their words from here.
 
@@ -10,66 +10,29 @@ On 17 October 2026, a separate Codex drafting agent revised the prose from check
 
 A separate Codex drafting session revised the opening on 23 October 2026 from the checked arithmetic/trace brief. A first assembly-only addition precedes a small recorded C function call and return; later operations build towards the trip function and exercises. See `docs/notes/course-load-implementation/opening.md`.
 
+The opening activities became four separate Fundamentals lessons on 23 October 2026. Their canonical prose is in `docs/notes/fundamentals/prose.md`. A separate drafting agent supplied this lesson's new synthesis opening from the checked brief. Its existing ID and challenge IDs remain stable.
+
 ## 0. Objectives
 
-- Step through a compiled function one instruction at a time, and say what each instruction changed.
-- Say which registers hold the arguments and results of this lesson's functions.
-- Fix a compiled function so that it returns the right value.
-- Say what `ret` does, and what happens without it.
+- Trace a complete compiled function using the operand rules.
+- Connect C arguments and results to the registers that hold them.
+- Repair a subtraction whose inputs are reversed.
+- Explain what happens when a function's `ret` is removed.
 
 ## 1. What does the processor do?
 
-A trip computer adds distances and subtracts a detour. How does the processor perform one of those operations? Start with one addition, then follow a small function call.
+How do individual instructions perform a complete C function? Follow a trip calculation, then repair another function.
 
-## 2. One operation at a time
+## 2. From instructions to a function
 
-A **register** is a small store inside the processor that holds one value. The names `w0`, `w1` and `w2` refer to three registers. Each name here selects 32 bits; Module 1 shows the rest of each register.
+You have practised addition, a function call and return, subtraction, and instructions in sequence. Now combine those mechanics.
 
-An **instruction** tells the processor to perform an operation. Assembly language writes instructions with names such as `add`. The parts after the name are its **operands**.
+If you arrived here directly, start with the earlier Fundamentals lessons:
 
-For `add` and `sub`, the first operand names the register written. The second and third supply the input values. Run the first addition, then try the next activities. Each activity replaces the previous one, so you can focus on its operation.
-
-Start with one addition, then follow a function call and return.
-
-*Shown by the opening activity after a prediction is committed: “Your prediction” labels the submitted value beside the model result. The submitted value remains visible after reload.*
-
-Add into a different register
-
-`add w2, w0, w1` reads `w0` and `w1`, adds their values, and writes the sum into `w2`. Run it to see the result.
-
-Return from a tiny function
-
-`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C into this assembly **listing**. `increment_int:` names the function.
-
-Code that calls a function is its **caller**. The input it supplies is an **argument**. Here, the argument arrives in `w0`; the function leaves its integer result there too.
-
-In `add w0, w0, 1`, the last operand is the number one. Run `add` to prepare the result. Then `ret` returns to the caller without calculating or moving the result.
-
-*Shown beside the function listing: “Show instructions” reveals its instructions; “Show C” reveals its C. The controls are grouped as “View the function’s C and instructions”. Both remain in the complete paired listing.*
-
-*Shown in the small caller box: its call and supplied argument remain visible. Before `ret`, it says “Waiting for increment_int to return”. Only after `ret`, it says “Resumed with result”, followed by the model's returned value.*
-
-*Shown at entry:* The argument is in w0. Run add to prepare the result.
-
-*Shown after the addition:* The result is in w0. Run ret to return to the caller.
-
-*Shown after the return:* ret returned to the caller. It left w0 unchanged.
-
-Choose a different destination
-
-This addition uses different inputs and writes a different register. Predict its result before running it. The first operand still names the destination.
-
-Read a register, then replace its value
-
-The same register can supply an input and receive the result. The instruction reads the old values before writing. Predict the new value in `w0`.
-
-Subtract in operand order
-
-`sub` subtracts the third operand from the second, then writes the first operand. Predict the value this instruction writes.
-
-Run two instructions in order
-
-The marker ▸ shows the instruction that runs next. Run each instruction in turn. The second uses the state left by the first. The activity stops after these two instructions.
+- [One addition](#/lesson/one-addition)
+- [A tiny function](#/lesson/tiny-function)
+- [Subtraction and reuse](#/lesson/subtraction-and-reuse)
+- [Instructions in sequence](#/lesson/instructions-in-sequence)
 
 ## 3. Connect the operations to a function
 
@@ -80,6 +43,8 @@ GCC translated this function into four instructions for a 64-bit Arm processor. 
 For the `int` arguments here, the first arrives in `w0`, the second in `w1`, and so on. As in `increment_int`, the function leaves its `int` result in `w0`.
 
 The C names a variable, `total`. The instructions name registers. Use the operand rule you practised to decide where the first value of `total` goes.
+
+On a narrow screen, swipe sideways within the listing to move between the C and instructions.
 
 *The four instructions GCC made from trip_distance, paired with their related C statements. The line ending in a colon, trip_distance:, is the function's name.*
 
@@ -154,8 +119,6 @@ The stepper figure runs `trip_distance(120, 85, 42, 15)`. Each register is shown
 The marker ▸ shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`.
 
 Press Next to run one instruction. The status names what ran and what runs next. The outlined register was written by the last instruction. Apply the operand rule you practised to follow each result. Back undoes a step; Reset starts again.
-
-*Shown automatically after the first instruction runs: the operand diagram and destination rule.*
 
 *`trip_distance(120, 85, 42, 15)`, one instruction at a time. A register with an outline was written by the last instruction. The highlighted C statement and instruction show what just ran; the arrow marks the next instruction.*
 

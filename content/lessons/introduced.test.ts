@@ -85,7 +85,7 @@ describe("what each lesson teaches", () => {
   });
 
   it("keeps C grammar and editor data separate from the assembly gate", () => {
-    const base = LESSONS[0]!;
+    const base = LESSONS.find((lesson) => lesson.id === "meet-the-machine")!;
     const assembly = base.challenges.find((c) => c.gradedDirection === "write")!;
     const cChallenge = {
       ...assembly,
