@@ -1,0 +1,3 @@
+# Operand connector visibility
+
+The user reports that the arrow shafts in the Meet the machine operand diagram are difficult to see on a dark phone screenshot. Inspect OperandRoles and its shared CSS, plus sibling arrow styles. Improve the visibility of the connectors in both themes without changing operand semantics, prediction gates or diagram alignment. Verify the built diagram at phone and desktop widths in light and dark themes; report measured stroke width and contrast, overflow and any remaining issues. This is a visual styling correction; no learner-facing wording changes are intended.

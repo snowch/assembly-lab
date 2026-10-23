@@ -397,12 +397,12 @@
 }
 .al-op-line {
   fill: none;
-  stroke: var(--border-strong);
-  stroke-width: 0.12;
+  stroke: var(--fg-muted);
+  stroke-width: 2px;
   vector-effect: non-scaling-stroke;
 }
 .al-op-head {
-  fill: var(--border-strong);
+  fill: var(--fg-muted);
 }
 
 /* The tie that says a read chip and the write chip name one register. */
@@ -430,6 +430,16 @@
 .al-expect-pick[data-picked="true"] {
   border-color: var(--accent);
   color: var(--accent-strong);
+}
+.al-step-explanation > summary {
+  min-height: 44px;
+  padding-block: var(--space-2);
+  cursor: pointer;
+  color: var(--accent);
+}
+.al-step-explanation > summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }
 
 /* The tie that says an input chip and the destination chip name one register. */

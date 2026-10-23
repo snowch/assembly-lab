@@ -154,19 +154,6 @@ export const meetTheMachine: LessonInput = {
       prose: PROSE.investigation,
       interactives: [
         {
-          id: "operand-roles",
-          kind: "operand-roles",
-          timeModel: "none",
-          role: "diagram",
-          caption: LABELS.captions.operandRoles,
-          props: {
-            name: "add",
-            operands: ["w0", "w0", "w1"],
-            operation: PROSE.operandOperation,
-            after: "predict-total",
-          },
-        },
-        {
           id: "step-trip",
           kind: "stepper",
           timeModel: STEPS,
@@ -179,8 +166,9 @@ export const meetTheMachine: LessonInput = {
             // Module 0 shows what each step read and wrote, and each register as a decimal number.
             flow: true,
             decimal: true,
-            // Each step begins with the learner naming the register the instruction will write.
+            // Only the first step asks for a register; later steps run freely.
             expect: true,
+            compact: true,
             endNote: PROSE.investigationEnd,
           },
         },
