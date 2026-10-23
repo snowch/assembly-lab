@@ -36,19 +36,32 @@ function worker(base = "/assembly-lab/") {
   };
   const handlers = new Map<string, Handler>();
   const claim = vi.fn(async () => undefined);
+  const skipWaiting = vi.fn(async () => undefined);
+  const clients: { id: string; url: string; postMessage: ReturnType<typeof vi.fn> }[] = [];
+  const matchAll = vi.fn(async () => clients);
   const fetch = vi.fn(async () => new Response("network"));
   runInContext(
     renderWorker(template, files),
     createContext({
       self: {
         registration: { scope },
-        clients: { claim },
+        clients: { claim, matchAll, get: async (id: string) => clients.find((c) => c.id === id) },
+        skipWaiting,
         addEventListener: (name: string, handler: Handler) => handlers.set(name, handler),
       },
       caches,
       fetch,
       URL,
       Request,
+      setTimeout,
+      clearTimeout,
+      MessageChannel: class {
+        port1 = {
+          onmessage: undefined as undefined | ((event: { data: unknown }) => void),
+          close() {},
+        };
+        port2 = { postMessage: (data: unknown) => this.port1.onmessage?.({ data }) };
+      },
     }),
   );
   function dispatch(name: string, event: Record<string, unknown> = {}) {
@@ -74,6 +87,29 @@ function worker(base = "/assembly-lab/") {
     oldCache,
     dispatch,
     status,
+    clients,
+    matchAll,
+    skipWaiting,
+    client(id: string, ready: boolean | null = true, url = `${scope}#/lesson/test`) {
+      const client = {
+        id,
+        url,
+        postMessage: vi.fn((message, ports) => {
+          if (message.type === "PREPARE_UPDATE" && ready !== null) ports[0].postMessage({ ready });
+        }),
+      };
+      clients.push(client);
+      return client;
+    },
+    async update(id: string) {
+      const reply = vi.fn();
+      await dispatch("message", {
+        data: { type: "ACTIVATE_UPDATE", id: "request-1" },
+        source: { id },
+        ports: [{ postMessage: reply }],
+      });
+      return reply.mock.calls[0]?.[0];
+    },
   };
 }
 
@@ -109,6 +145,95 @@ describe("offline release", () => {
 });
 
 describe("offline worker", () => {
+  it("activates only after all app clients acknowledge, leaving other apps alone", async () => {
+    const w = worker();
+    const first = w.client("first");
+    const second = w.client("second");
+    const other = w.client("other", false, "https://example.test/assembly-lab-extra/");
+    await w.dispatch("install");
+    expect(await w.update(first.id)).toEqual({ ok: true });
+    expect(first.postMessage.mock.calls[0]?.[0]).toEqual({
+      type: "PREPARE_UPDATE",
+      id: "request-1",
+    });
+    expect(Array.isArray(first.postMessage.mock.calls[0]?.[1])).toBe(true);
+    expect(second.postMessage).toHaveBeenCalledOnce();
+    expect(other.postMessage).not.toHaveBeenCalled();
+    expect(w.skipWaiting).toHaveBeenCalledOnce();
+  });
+
+  it("keeps the old release when any tab cannot confirm saved work", async () => {
+    const w = worker();
+    const first = w.client("first");
+    const second = w.client("second", false);
+    await w.dispatch("install");
+    expect(await w.update(first.id)).toEqual({ ok: false, error: "unsaved" });
+    expect(w.skipWaiting).not.toHaveBeenCalled();
+    for (const client of [first, second])
+      expect(client.postMessage).toHaveBeenCalledWith({
+        type: "CANCEL_UPDATE",
+        id: "request-1",
+        error: "unsaved",
+      });
+  });
+
+  it("does not activate if a tab opens during preparation", async () => {
+    const w = worker();
+    const first = w.client("first");
+    const initial = [...w.clients];
+    w.client("new");
+    w.matchAll.mockResolvedValueOnce(initial);
+    await w.dispatch("install");
+    expect(await w.update(first.id)).toEqual({ ok: false, error: "tabs" });
+    expect(w.skipWaiting).not.toHaveBeenCalled();
+  });
+
+  it("refuses incomplete cached updates and out-of-scope activation requests", async () => {
+    const w = worker();
+    const first = w.client("first");
+    const other = w.client("other", true, "https://example.test/other/");
+    expect(await w.update(other.id)).toEqual({ ok: false, error: "tabs" });
+    w.addAll.mockRejectedValueOnce(new Error("download failed"));
+    expect(await w.update(first.id)).toEqual({ ok: false, error: "download" });
+    expect(w.skipWaiting).not.toHaveBeenCalled();
+    expect(first.postMessage).not.toHaveBeenCalled();
+  });
+
+  it("ignores cancellation from an older request or a different tab", async () => {
+    const w = worker();
+    const first = w.client("first");
+    const second = w.client("second", null);
+    await w.dispatch("install");
+    const pending = w.update(first.id);
+    await vi.waitFor(() => expect(second.postMessage).toHaveBeenCalled());
+    await w.dispatch("message", {
+      data: { type: "CANCEL_ACTIVATION", id: "older-request" },
+      source: { id: first.id },
+    });
+    await w.dispatch("message", {
+      data: { type: "CANCEL_ACTIVATION", id: "request-1" },
+      source: { id: second.id },
+    });
+    second.postMessage.mock.calls[0]?.[1][0].postMessage({ ready: true });
+    expect(await pending).toEqual({ ok: true });
+    expect(w.skipWaiting).toHaveBeenCalledOnce();
+  });
+
+  it("cannot activate a cancelled preparation after a late acknowledgement", async () => {
+    const w = worker();
+    const first = w.client("first");
+    const second = w.client("second", null);
+    await w.dispatch("install");
+    const pending = w.update(first.id);
+    await vi.waitFor(() => expect(second.postMessage).toHaveBeenCalled());
+    await w.dispatch("message", {
+      data: { type: "CANCEL_ACTIVATION", id: "request-1" },
+      source: { id: first.id },
+    });
+    second.postMessage.mock.calls[0]?.[1][0].postMessage({ ready: true });
+    expect(await pending).toEqual({ ok: false, error: "tabs" });
+    expect(w.skipWaiting).not.toHaveBeenCalled();
+  });
   it.each(["/", "/assembly-lab/"])(
     "installs every file with integrity and serves app navigations at %s",
     async (base) => {

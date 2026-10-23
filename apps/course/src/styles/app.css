@@ -183,6 +183,22 @@ svg {
   max-width: 62ch;
   margin: 0;
 }
+.offline-status button {
+  min-height: 44px;
+  margin: var(--space-2) 0;
+  padding: var(--space-1) var(--space-3);
+  font: inherit;
+  color: var(--fg);
+  background: var(--bg-inset);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.update-progress {
+  padding: var(--space-3) var(--gutter);
+  color: var(--fg);
+  background: var(--bg-inset);
+}
 .offline-status p + p {
   margin-top: var(--space-2);
 }

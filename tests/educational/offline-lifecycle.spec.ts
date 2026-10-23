@@ -150,6 +150,143 @@ async function update(page: Page): Promise<string> {
   });
 }
 
+test("Update now reloads all app tabs offline, preserving edits, routes and theme", async ({
+  context,
+}) => {
+  const site = await deployment();
+  try {
+    const first = await context.newPage();
+    await controlled(first, `${site.url}#/lesson/from-c-to-instructions`);
+    await first.getByLabel(STRINGS.theme).selectOption("dark");
+    const code = "unsigned cap_charge(unsigned a, unsigned b) { return a + b; }";
+    const editor = first.locator("#challenge-write-cap-charge").getByRole("textbox");
+    await editor.fill(code); // Deliberately do not run: unsubmitted edits must survive.
+    const second = await context.newPage();
+    await controlled(second, `${site.url}#/lesson/meet-the-machine`);
+    const answer = second.locator("#challenge-trace-the-call").getByRole("textbox").first();
+    await answer.fill("123");
+    const observer = await context.newPage();
+    await observer.goto(`${site.origin}/another-course/`);
+    await observer.evaluate(async (name) => {
+      await caches.open(name);
+    }, unrelatedCache);
+    const originalCaches = await cacheNames(first);
+    site.publish("button-update");
+    expect(await update(first)).toBe("installed");
+    await expect(first.getByRole("button", { name: STRINGS.offline.updateNow })).toBeVisible();
+    let firstReloads = 0;
+    let secondReloads = 0;
+    first.on("framenavigated", (frame) => {
+      if (frame === first.mainFrame()) firstReloads++;
+    });
+    second.on("framenavigated", (frame) => {
+      if (frame === second.mainFrame()) secondReloads++;
+    });
+    await context.setOffline(true);
+    await first.getByRole("button", { name: STRINGS.offline.updateNow }).click();
+    for (const page of [first, second]) {
+      await expect(page.locator('meta[name="offline-test-release"]')).toHaveAttribute(
+        "content",
+        "button-update",
+      );
+      await expect(page.getByText(STRINGS.offline.ready, { exact: true })).toBeVisible();
+      await expect(page.getByRole("button", { name: STRINGS.offline.updateNow })).toHaveCount(0);
+      await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    }
+    await expect(editor).toHaveValue(code);
+    await expect(answer).toHaveValue("123");
+    await expect(first).toHaveURL(`${site.url}#/lesson/from-c-to-instructions`);
+    await expect(second).toHaveURL(`${site.url}#/lesson/meet-the-machine`);
+    expect([firstReloads, secondReloads]).toEqual([1, 1]);
+    const currentCaches = await cacheNames(first);
+    expect(currentCaches).toContain(unrelatedCache);
+    for (const name of originalCaches.filter((name) => name !== unrelatedCache))
+      expect(currentCaches).not.toContain(name);
+    expect(observer.url()).toBe(`${site.origin}/another-course/`);
+  } finally {
+    await context.close();
+    await site.close();
+  }
+});
+
+test("Update now refuses to discard another tab's memory-only edits and can retry", async ({
+  context,
+}) => {
+  const site = await deployment();
+  try {
+    const first = await context.newPage();
+    await controlled(first, site.url);
+    const second = await context.newPage();
+    await controlled(second, `${site.url}#/lesson/from-c-to-instructions`);
+    await second.evaluate(() => {
+      const original = Storage.prototype.setItem;
+      Storage.prototype.setItem = () => {
+        throw new Error("Storage full");
+      };
+      window.addEventListener(
+        "restore-test-storage",
+        () => {
+          Storage.prototype.setItem = original;
+        },
+        { once: true },
+      );
+    });
+    const editor = second.locator("#challenge-write-cap-charge").getByRole("textbox");
+    await editor.fill("unsigned unsaved(unsigned value) { return value; }");
+    site.publish("safe-retry");
+    expect(await update(first)).toBe("installed");
+    await first.getByRole("button", { name: STRINGS.offline.updateNow }).click();
+    await expect(first.getByRole("alert")).toHaveText(STRINGS.offline.updateErrors.unsaved);
+    await expect(second.getByRole("alert")).toHaveText(STRINGS.offline.updateErrors.unsaved);
+    await expect(editor).toHaveValue("unsigned unsaved(unsigned value) { return value; }");
+    for (const page of [first, second]) {
+      await expect(page.locator("main")).not.toHaveAttribute("inert");
+      await expect(page.locator('meta[name="offline-test-release"]')).toHaveCount(0);
+    }
+    await second.evaluate(() => window.dispatchEvent(new Event("restore-test-storage")));
+    const savedCode = "unsigned saved(unsigned value) { return value; }";
+    await editor.fill(savedCode);
+    await first.getByRole("button", { name: STRINGS.offline.updateNow }).click();
+    await expect(second.locator('meta[name="offline-test-release"]')).toHaveAttribute(
+      "content",
+      "safe-retry",
+    );
+    await expect(editor).toHaveValue(savedCode);
+  } finally {
+    await context.close();
+    await site.close();
+  }
+});
+
+test("an unresponsive old tab blocks Update now until it is closed", async ({ context }) => {
+  const site = await deployment();
+  try {
+    const page = await context.newPage();
+    await controlled(page, site.url);
+    const legacy = await context.newPage();
+    // This in-scope document has no app message handler, modelling an older tab.
+    await legacy.goto(`${site.url}legacy.html`);
+    site.publish("after-legacy");
+    expect(await update(page)).toBe("installed");
+    await page.getByRole("button", { name: STRINGS.offline.updateNow }).click();
+    // The worker allows five seconds for other tabs to acknowledge readiness.
+    await expect(page.getByRole("alert")).toHaveText(STRINGS.offline.updateErrors.tabs, {
+      timeout: 10000,
+    });
+    await expect(page.locator("main")).not.toHaveAttribute("inert");
+    await expect(page.locator('meta[name="offline-test-release"]')).toHaveCount(0);
+    await legacy.close();
+    await page.getByRole("button", { name: STRINGS.offline.updateNow }).click();
+    await expect(page.locator('meta[name="offline-test-release"]')).toHaveAttribute(
+      "content",
+      "after-legacy",
+    );
+  } finally {
+    await context.close();
+    await site.close();
+  }
+});
+
 test("an update waits for every old tab and removes only this app's old cache", async ({
   context,
 }) => {

@@ -116,7 +116,14 @@ export const STRINGS = {
     unsupported:
       "This browser cannot save the course for offline use. You can use it while connected to the internet.",
     updateWaiting:
-      "An update is ready. Close every Assembly Lab tab or window, then reopen the course to use the update.",
+      "An update is ready. Update now checks that exercise edits are saved, then reloads all open Assembly Lab tabs.",
+    updateNow: "Update now",
+    updating: "Preparing the update. Checking saved exercise edits in every open tab.",
+    updateErrors: {
+      unsaved: "Some exercise edits are not saved. Copy your work before trying again.",
+      tabs: "Another Assembly Lab tab did not respond. Copy your work from the other tabs, close them, then try again.",
+      download: "The downloaded update is unavailable. Reconnect to the internet, then try again.",
+    },
     limitations:
       "Links to other websites and the optional “Compare with GCC” feature need an internet connection.",
     storage:
