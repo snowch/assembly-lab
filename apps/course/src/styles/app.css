@@ -201,7 +201,8 @@ svg {
   margin: 0;
   padding: 0;
 }
-.footer-links a {
+.footer-links a,
+.build-version a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;

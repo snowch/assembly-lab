@@ -9,6 +9,7 @@ import { useEffect, useMemo } from "react";
 import { browserStorage, LessonView } from "@platform/lesson-runtime";
 
 import { createBook } from "./book";
+import { BUILD_VERSION, commitHref } from "./build-version";
 import { useOffline } from "./offline";
 import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
@@ -163,6 +164,18 @@ export function App() {
           </ul>
         </nav>
         <p className="copyright">{STRINGS.copyright}</p>
+        {BUILD_VERSION && (
+          <p className="build-version">
+            {STRINGS.version.commit}{" "}
+            <a href={commitHref(BUILD_VERSION.sha)}>{BUILD_VERSION.sha.slice(0, 7)}</a>
+            {" · "}
+            {STRINGS.version.committed}{" "}
+            <time dateTime={BUILD_VERSION.committedAt}>
+              {BUILD_VERSION.committedAt.slice(0, 10)}
+            </time>{" "}
+            {STRINGS.version.utc}
+          </p>
+        )}
       </footer>
     </>
   );

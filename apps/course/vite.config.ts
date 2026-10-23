@@ -13,13 +13,25 @@
 // lessons by itself: they import TypeScript sources by paths without an extension. So Vite loads
 // static-page.ts, as it loads the app, when the page or the manifest is first wanted.
 import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import react from "@vitejs/plugin-react";
 import { createServer, defineConfig, type Plugin } from "vite";
 
 import { offlineApp } from "./offline/plugin";
 import { MANIFEST_FILE, webManifest } from "./src/web-manifest";
+import type { BuildVersion } from "./src/build-version";
+
+const [sha, committedAt] = execFileSync("git", ["log", "-1", "--format=%H%n%cI"], {
+  cwd: fileURLToPath(new URL("../..", import.meta.url)),
+  encoding: "utf8",
+})
+  .trim()
+  .split("\n");
+if (!sha || !committedAt) throw new Error("Cannot determine the source commit and date.");
+const version: BuildVersion = { sha, committedAt: new Date(committedAt).toISOString() };
 
 type StaticPage = typeof import("./src/static-page");
 
@@ -55,7 +67,7 @@ function coverWords(): Plugin {
       base = config.base;
       root = config.root;
     },
-    transformIndexHtml: async (html) => (await staticPage()).staticPage(html, base),
+    transformIndexHtml: async (html) => (await staticPage()).staticPage(html, base, version),
     // The development server has no bundle to write the manifest into, so it answers for it.
     configureServer(server) {
       server.middlewares.use(`${base}${MANIFEST_FILE}`, (_request, response, next) => {
@@ -72,6 +84,7 @@ function coverWords(): Plugin {
 }
 
 export default defineConfig({
+  define: { __COURSE_VERSION__: JSON.stringify(version) },
   base: process.env.BASE_PATH ?? "/assembly-lab/",
   plugins: [react(), coverWords(), offlineApp()],
   build: {

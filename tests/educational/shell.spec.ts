@@ -7,6 +7,7 @@
 // baselines: they would be made on a different machine from CI's.
 
 import { expect, test, type Page } from "@playwright/test";
+import { execFileSync } from "node:child_process";
 
 import { LESSONS } from "@al/content";
 import { MODULES, PLAN, lessonsOf, statusOf } from "@al/content/plan";
@@ -16,6 +17,21 @@ import { VIEW_STRINGS } from "../../packages/views/src/strings";
 import { COMPANION_LINKS, STRINGS } from "../../apps/course/src/strings";
 
 const THEME_KEY = "assembly-lab:v1:theme";
+const sourceSha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+const sourceDate = new Date(
+  execFileSync("git", ["show", "-s", "--format=%cI", "HEAD"], { encoding: "utf8" }).trim(),
+).toISOString();
+
+async function expectSourceVersion(page: Page) {
+  const version = page.locator("footer.shell-footer .build-version");
+  await expect(version.getByRole("link")).toHaveText(sourceSha.slice(0, 7));
+  await expect(version.getByRole("link")).toHaveAttribute(
+    "href",
+    `https://github.com/snowch/assembly-lab/commit/${sourceSha}`,
+  );
+  await expect(version.locator("time")).toHaveAttribute("datetime", sourceDate);
+  await expect(version.locator("time")).toHaveText(sourceDate.slice(0, 10));
+}
 
 /** Everything the page logs as an error, or throws, until the test ends. */
 function watchErrors(page: Page): string[] {
@@ -344,7 +360,8 @@ test("the footer carries the copyright and links to the companion courses", asyn
   const footer = page.locator("footer.shell-footer");
   await expect(footer.locator(".copyright")).toHaveText(STRINGS.copyright);
   const links = footer.getByRole("link");
-  await expect(links).toHaveCount(3);
+  await expect(links).toHaveCount(4);
+  await expectSourceVersion(page);
   await expect(
     footer.getByRole("link", { name: STRINGS.companions.digitalDesign }),
   ).toHaveAttribute("href", COMPANION_LINKS.digitalDesign);
@@ -364,6 +381,7 @@ test("the footer carries the copyright and links to the companion courses", asyn
   // The copyright is in the footer of a page that is not the front page too.
   await page.goto("#/nowhere");
   await expect(page.locator("footer.shell-footer .copyright")).toHaveText(STRINGS.copyright);
+  await expectSourceVersion(page);
 });
 
 test("the note on further reading links each companion work by its title", async ({ page }) => {
@@ -474,7 +492,8 @@ test.describe("with scripts off", () => {
     await expect(page.locator(".noscript-page h1")).toBeVisible();
     const heading = await page.locator(".noscript-page h1").boundingBox();
     expect(heading!.x).toBeGreaterThanOrEqual(gutter);
-    await expect(page.locator("footer.shell-footer").getByRole("link")).toHaveCount(3);
+    await expect(page.locator("footer.shell-footer").getByRole("link")).toHaveCount(4);
+    await expectSourceVersion(page);
     await expect(page.locator("footer.shell-footer em")).toHaveText([
       STRINGS.companions.digitalDesign,
       STRINGS.companions.notes,
