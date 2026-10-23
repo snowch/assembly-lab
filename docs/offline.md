@@ -31,10 +31,35 @@ unverified response to the release cache.
 
 ## Updates and recovery
 
-A newly installed release waits until all tabs and installed windows controlled by the
-previous worker close. There is no forced reload or `skipWaiting`. The status area explains
-when an update is waiting. On activation, cleanup deletes only older caches with this
-app's exact registration scope. Other courses on the same origin keep their caches.
+A newly installed release waits by default. The status area offers **Update now** only
+when a downloaded worker is waiting. Selecting it explicitly authorises reloading all
+Assembly Lab tabs and installed app windows; it does not try to close browser windows.
+
+The waiting worker first asks every in-scope window to pause its controls. Each tab checks
+its edited lesson keys against durable local storage, and prepares its own theme handoff
+in session storage. Once all tabs have paused, a second verification round catches any
+same-lesson overwrite that occurred while a slower tab was still editing. In-progress
+input-method composition also blocks activation. Memory-only edits are never treated as
+saved. Conflicting tabs must resolve or back up their work; preparation does not overwrite
+another tab's value to force a save.
+
+After verifying the complete new cache and checking for newly opened clients, the worker
+uses `skipWaiting`. Its claim triggers one reload in each previously controlled tab,
+preserving lesson URLs, stored artifacts and each tab's theme. The initial installation
+claims clients without reloading them. Downloaded updates can be applied while offline.
+Request IDs isolate preparation, verification and cancellation. Participating tabs can
+cancel a slow preparation, but cannot unlock after activation has committed. If a newer
+waiting worker supersedes an update, tabs detect the old worker's terminal redundant state
+and safely unlock to offer the new update.
+
+Failed saving, unresponsive tabs and missing downloads leave the current release open.
+Tabs using an older app without the preparation handler block explicit activation rather
+than being forced to reload. Closing all course tabs and app windows still activates a
+downloaded update normally. Existing cached versions without **Update now** need this
+one-time close and reopen to pick up the button itself.
+
+On activation, cleanup deletes only older caches with this app's exact registration
+scope. Other courses on the same origin keep their caches.
 
 The client asks the controlling worker about readiness through a MessageChannel.
 `OFFLINE_STATUS` checks that every required response exists. `OFFLINE_REPAIR` first
@@ -63,6 +88,9 @@ reopen a lesson. A first-ever offline visit cannot download the app.
 The automated browser checks in `tests/educational/offline.spec.ts` exercise offline
 navigation through every lesson with the HTTP cache disabled, local compilation and
 grading, saved work after reopening, cache loss/repair and unsupported browsers.
-`offline-lifecycle.spec.ts` uses a temporary server to test successive deployments and
-failed downloads. Build and worker unit tests live beside the plugin. These checks are
+`offline-lifecycle.spec.ts` uses a temporary server to test successive deployments,
+failed downloads, coordinated offline activation, unsubmitted edits, distinct tab themes,
+storage and composition failures, unresponsive clients and superseded waiting workers.
+Build and worker unit tests live beside the plugin; storage and theme handoff tests live
+beside their modules. These checks are
 part of the normal `npm run check` suite.

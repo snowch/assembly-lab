@@ -13,10 +13,14 @@ from the `main` branch by `.github/workflows/deploy.yml`.
 
 ## Offline use
 
-Open the course with an internet connection and wait until the footer says
+Open the course with an internet connection and wait until the status near the top says
 “Ready to use offline in this browser.” You can then reopen the course and use its
 lessons and exercises without a connection. Links to other websites and the optional
 “Compare with GCC” feature need an internet connection.
+
+When a downloaded update is ready, **Update now** checks saved changes and reloads
+the course's open tabs and app windows. If changes cannot be preserved, it leaves
+the current app open and explains how to back up work before reopening.
 
 Clearing this site's browser data removes the saved course. Your browser may also
 remove it to free space. See [offline operation](docs/offline.md) for build, update
