@@ -10,6 +10,9 @@
 export const MODULE0_STRINGS = {
   flow: {
     // DRAFT
+    operandRule:
+      "For `add` and `sub`, the first operand names the register written; the other two supply the input values.",
+    // DRAFT
     addOperation: "Add",
     // DRAFT
     subtractOperation: "Subtract",

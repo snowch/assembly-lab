@@ -663,44 +663,65 @@ describe("the stepper's ask before a step", () => {
   });
 });
 
-// The compact opener keeps the worked answer behind the first execution and avoids mixing
-// a previous result with another prediction. Other steppers retain their detailed defaults.
+// The compact opener teaches with one executed example, then asks learners to apply its rule.
 describe("the compact first stepper", () => {
-  it("asks only at the start, reports model results, and resets the explanation on movement", async () => {
+  it("explains the first execution automatically and checks later arithmetic destinations", async () => {
     const user = userEvent.setup();
     const { container } = figure(StepperFigure, "s", "stepper", {
       ...stepper,
       expect: true,
       compact: true,
     });
-    expect(container.querySelector(".al-expect")).not.toBeNull();
-    expect(container.querySelector(".al-step-explanation, .al-operands, .al-flow")).toBeNull();
+    expect(
+      container.querySelector(".al-expect, .al-step-explanation, .al-operands, .al-flow"),
+    ).toBeNull();
+    await user.click(next());
+    expect(flat(container.querySelector(".al-status"))).toBe("w0 ← 120 + 85 = 205");
+    const diagram = container.querySelector(".al-operands")!;
+    expect(diagram).toBeVisible();
+    expect(diagram.closest("details")).toBeNull();
+    expect(flat(container.querySelector(".al-op-write"))).toBe("Write w0");
+    expect(container.querySelector(".al-first-step")).toHaveTextContent(
+      "first operand names the register written",
+    );
+    expect(flat(container.querySelector(".al-expect-ask"))).toContain("add w0, w0, w2");
+    const question = container.querySelector(".al-expect")!;
+    expect(
+      diagram.compareDocumentPosition(question) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      question.compareDocumentPosition(container.querySelector(".al-controls")!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(container.querySelector("details")!.open).toBe(false);
     await user.click(screen.getByRole("button", { name: "w1" }));
     await user.click(next());
-    expect(flat(container.querySelector(".al-status"))).toBe("Not quite. w0 ← 120 + 85 = 205");
-    expect(container.querySelector(".al-expect")).toBeNull();
-    let detail = container.querySelector("details")!;
-    expect(detail.open).toBe(false);
-    await user.click(within(detail).getByText(S.stepper.explain));
-    expect(detail.open).toBe(true);
-    expect(flat(container.querySelector(".al-op-write"))).toBe("Write w0");
-    expect(flat(panel(container))).toContain("Not written: w1, w2, w3");
-    await user.click(next());
-    expect(flat(container.querySelector(".al-status"))).toBe("w0 ← 205 + 42 = 247");
-    expect(container.querySelector("details")!.open).toBe(false);
-    expect(container.querySelector(".al-expect, .al-operands")).toBeNull();
-    await user.click(back());
-    expect(container.querySelector("details")!.open).toBe(false);
-    expect(flat(container.querySelector(".al-status"))).toBe("w0 ← 120 + 85 = 205");
-    await user.click(screen.getByRole("button", { name: S.stepper.reset }));
-    expect(container.querySelector(".al-step-explanation, .al-operands")).toBeNull();
-    expect(container.querySelector(".al-expect")).not.toBeNull();
+    expect(flat(container.querySelector(".al-status"))).toBe("Not quite. w0 ← 205 + 42 = 247");
+    expect(container.querySelector(".al-operands")).toBeNull();
+    expect(flat(container.querySelector(".al-expect-ask"))).toContain("sub w0, w0, w3");
+    await user.click(screen.getByText(S.stepper.explain));
+    expect(container.querySelector("details")!.open).toBe(true);
     await user.click(screen.getByRole("button", { name: "w0" }));
     await user.click(next());
-    expect(flat(container.querySelector(".al-status"))).toBe("Correct. w0 ← 120 + 85 = 205");
-    for (let i = 0; i < 3; i++) await user.click(next());
+    expect(flat(container.querySelector(".al-status"))).toBe("Correct. w0 ← 247 − 15 = 232");
+    expect(container.querySelector("details")!.open).toBe(false);
+    expect(container.querySelector(".al-expect")).toBeNull();
+    expect(container.querySelector(".al-up-next")).toHaveTextContent("ret");
+    await user.click(next());
     expect(flat(container.querySelector(".al-status"))).toBe(S.stepper.ended);
     expect(container.querySelector(".al-expect")).toBeNull();
     expect(next()).toBeDisabled();
+    await user.click(back());
+    expect(container.querySelector(".al-expect")).toBeNull();
+    await user.click(back());
+    expect(flat(container.querySelector(".al-status"))).toBe("w0 ← 205 + 42 = 247");
+    await user.click(back());
+    expect(container.querySelector(".al-operands")).toBeVisible();
+    expect(container.querySelector(".al-expect")).not.toBeNull();
+    await user.click(back());
+    expect(container.querySelector(".al-expect, .al-operands")).toBeNull();
+    await user.click(next());
+    await user.click(screen.getByRole("button", { name: S.stepper.reset }));
+    expect(container.querySelector(".al-expect, .al-step-explanation, .al-operands")).toBeNull();
   });
 });

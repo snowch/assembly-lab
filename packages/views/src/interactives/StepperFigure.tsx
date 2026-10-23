@@ -78,7 +78,7 @@ const Props = z.object({
    * the drawn registers; the step then says whether the pick was right before it shows the run.
    */
   expect: z.boolean().default(false),
-  /** A short result, a first-step-only check, and optional detailed explanation. */
+  /** A worked first step, later register checks, and optional detailed explanation. */
   compact: z.boolean().default(false),
 });
 
@@ -247,7 +247,6 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
   const view = viewAt(trace, k);
   const atEnd = view.k >= view.total;
   const flow = flowAt(trace, view.k);
-  const ask = data.expect && (!data.compact || view.k === 0);
   // With `expect`, the learner answers for the instruction they are about to run: they pick the
   // register it will write, and the step that follows says whether the pick was right before it
   // shows what the instruction did. A pick or a verdict belongs to one instruction only: any
@@ -257,6 +256,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
     const reg = trace.result.steps[view.k]?.writes.find((w) => w.reg !== "sp")?.reg;
     return typeof reg === "number" ? reg : null;
   })();
+  const ask = data.expect && (!data.compact || (view.k > 0 && nextWritten !== null));
   const step = (to: number) => {
     // The verdict names the pick against the register the instruction being run writes.
     if (picked !== null && view.next !== null && nextWritten !== null && to === view.k + 1)
@@ -265,6 +265,59 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
     setPicked(null);
     setK(to);
   };
+  const controls = (
+    <div className="al-controls" role="group" aria-label={S.stepper.controls}>
+      <button
+        type="button"
+        className="button secondary"
+        disabled={view.k === 0}
+        onClick={() => step(Math.max(0, view.k - 1))}
+      >
+        {S.stepper.back}
+      </button>
+      <button
+        type="button"
+        className="button primary"
+        disabled={atEnd}
+        onClick={() => step(view.k + 1)}
+      >
+        {S.stepper.next}
+      </button>
+      <button
+        type="button"
+        className="button secondary"
+        disabled={view.k === 0}
+        onClick={() => step(0)}
+      >
+        {S.stepper.reset}
+      </button>
+    </div>
+  );
+  const question = ask && view.next !== null && (
+    <div className="al-expect" role="group" aria-label={S.stepper.expectGroup}>
+      <p className="al-expect-ask">
+        {withCode(
+          S.stepper.expectAsk(
+            trace.lines[view.next]!.kind === "instruction" ? trace.lines[view.next]!.text : "",
+          ),
+        )}
+      </p>
+      <div className="al-expect-picks" role="group" aria-label={S.stepper.expectChoices}>
+        {data.registers.map((n) => (
+          <button
+            type="button"
+            className="button secondary al-expect-pick"
+            key={n}
+            data-picked={picked === n}
+            aria-pressed={picked === n}
+            onClick={() => setPicked(n)}
+          >
+            {`w${n}`}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
   const decimalOnly = data.decimal && !bitsShown;
   return (
     <div
@@ -295,57 +348,8 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
         stopAfter={data.grouped && view.stop?.kind === "returned" ? view.ran : null}
         crossedAfter={data.grouped ? crossedFrom(trace, view.k) : null}
       />
-      <div className="al-controls" role="group" aria-label={S.stepper.controls}>
-        <button
-          type="button"
-          className="button secondary"
-          disabled={view.k === 0}
-          onClick={() => step(Math.max(0, view.k - 1))}
-        >
-          {S.stepper.back}
-        </button>
-        <button
-          type="button"
-          className="button primary"
-          disabled={atEnd}
-          onClick={() => step(view.k + 1)}
-        >
-          {S.stepper.next}
-        </button>
-        <button
-          type="button"
-          className="button secondary"
-          disabled={view.k === 0}
-          onClick={() => step(0)}
-        >
-          {S.stepper.reset}
-        </button>
-      </div>
-      {ask && view.next !== null && (
-        <div className="al-expect" role="group" aria-label={S.stepper.expectGroup}>
-          <p className="al-expect-ask">
-            {withCode(
-              S.stepper.expectAsk(
-                trace.lines[view.next]!.kind === "instruction" ? trace.lines[view.next]!.text : "",
-              ),
-            )}
-          </p>
-          <div className="al-expect-picks" role="group" aria-label={S.stepper.expectChoices}>
-            {data.registers.map((n) => (
-              <button
-                type="button"
-                className="button secondary al-expect-pick"
-                key={n}
-                data-picked={picked === n}
-                aria-pressed={picked === n}
-                onClick={() => setPicked(n)}
-              >
-                {`w${n}`}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      {!data.compact && controls}
+      {!data.compact && question}
       <p className="al-status" role="status">
         {withCode(
           data.compact
@@ -498,22 +502,30 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           tagChanged={data.showChanges}
         />
       )}
+      {data.compact && data.flow && view.k === 1 && flow?.kind === "arith" && (
+        <div className="al-first-step">
+          <p>{withCode(M0.flow.operandRule)}</p>
+          <OperandDiagram
+            data={{
+              name: flow.operation,
+              operands: [flow.destination.name, ...flow.sources.map((source) => source.name)],
+              operation:
+                flow.operation === "add" ? M0.flow.addOperation : M0.flow.subtractOperation,
+            }}
+          />
+        </div>
+      )}
       {data.compact && data.flow && view.k > 0 && (
         <details className="al-step-explanation" key={view.k}>
           <summary>{S.stepper.explain}</summary>
           <FlowPanel trace={trace} k={view.k} shown={data.registers} />
-          {view.k === 1 && flow?.kind === "arith" && (
-            <OperandDiagram
-              data={{
-                name: flow.operation,
-                operands: [flow.destination.name, ...flow.sources.map((source) => source.name)],
-                operation:
-                  flow.operation === "add" ? M0.flow.addOperation : M0.flow.subtractOperation,
-              }}
-            />
-          )}
         </details>
       )}
+      {data.compact && question}
+      {data.compact && !ask && view.next !== null && (
+        <p className="al-up-next">{withCode(S.stepper.upNext(trace.lines[view.next]!.text))}</p>
+      )}
+      {data.compact && controls}
       {data.panel && <StepPanel panel={data.panel} trace={trace} k={view.k} />}
     </div>
   );
