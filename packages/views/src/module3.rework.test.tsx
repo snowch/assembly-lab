@@ -182,6 +182,30 @@ describe("the warning word, reworked", () => {
 // ---------------------------------------------------------------------------------------------
 
 describe("the field read out of 0x35", () => {
+  it("releases the field notation beside the diagram only after the earlier basic prediction", () => {
+    const store = new LessonStore(memoryStorage(), "assembly-lab", "masks");
+    const { container } = mount(
+      FieldReadingFigure,
+      "field",
+      "field-reading",
+      {
+        program: GEAR_OF,
+        call: { entry: "gear_of", args: [0x35] },
+        after: "basic",
+        intro: "A **field** holds one number across several bits.",
+      },
+      store,
+    );
+    expect(container.textContent).not.toContain("holds one number");
+    expect(container.querySelector('[data-figure="field-reading"]')).toBeNull();
+    act(() => store.setSlot("basic", { choice: "any" }));
+    const intro = container.querySelector(".prose")!;
+    const diagram = container.querySelector('[data-figure="field-reading"]')!;
+    expect(intro.textContent).toContain("A field holds one number");
+    expect(intro.compareDocumentPosition(diagram) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(cells(container, "result")).toBe(low8(3));
+  });
+
   const props = { program: GEAR_OF, call: { entry: "gear_of", args: [0x35] } };
 
   it("draws the low byte of the word with bits 6 to 4 underlined and numbered, the same byte after the run, and the sentence", () => {
@@ -412,8 +436,10 @@ describe("the mask of the first prediction", () => {
     expect(all.querySelectorAll('[data-row="full-mask"] .al-bit')).toHaveLength(32);
     expect(bits(view, "full-mask")).toBe(pad(0xfffffffb));
     expect(bits(view, "full-result")).toBe(pad(0xb));
-    // The first run, on a word with every bit set, is still shown.
-    expect(bits(container, "ran-after")).toBe(pad(0xfffffffb));
+    // MaskView carries the causal before/mask/after evidence; no second full-width pair
+    // competes with its low-byte-first view. Full-width inspection stays in its disclosure.
+    expect(container.querySelector('[data-row="ran-before"]')).toBeNull();
+    expect(container.querySelector('[data-row="ran-after"]')).toBeNull();
   });
 });
 

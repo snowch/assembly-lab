@@ -41,7 +41,10 @@ describe("recorded GCC and course compiler agree on defined C executions", () =>
       expect(response.code).toBe(0);
       expect(recorded.source).toBe(source);
       expect(recorded.listing).toBe(c.listing);
-      expect(recorded.lineMap).toEqual(c.lineMap);
+      // Recorded source associations stay exact; optional phase labels are AST-derived UI data.
+      expect(recorded.lineMap).toEqual(
+        c.lineMap.map(({ assemblyLine, cLine }) => ({ assemblyLine, cLine })),
+      );
       const gcc = response.asm
         .map((row) => row.text.trim())
         .filter(Boolean)

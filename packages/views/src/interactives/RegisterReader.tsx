@@ -37,6 +37,8 @@ const Props = z.object({
   start: z.object({ program: RecordedSchema, call: CallSchema }).optional(),
   /** Draw the top bit's table, and the button that clears the bits. */
   topBit: z.boolean().default(false),
+  /** An optional adjacent scratch area, initially closed. */
+  disclosure: z.string().optional(),
 });
 
 function Sum({
@@ -112,7 +114,7 @@ export const RegisterReader = withProps(Props, function RegisterReader({ data })
     );
   }
 
-  return (
+  const figure = (
     <div
       className="al-figure al-reader"
       data-figure="register-reader"
@@ -182,5 +184,13 @@ export const RegisterReader = withProps(Props, function RegisterReader({ data })
         </div>
       </details>
     </div>
+  );
+  return data.disclosure === undefined ? (
+    figure
+  ) : (
+    <details className="lesson-details al-reader-scratch">
+      <summary>{data.disclosure}</summary>
+      {figure}
+    </details>
   );
 });

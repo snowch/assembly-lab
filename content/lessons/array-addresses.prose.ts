@@ -15,7 +15,7 @@ export const PROSE = {
   predictionExplain:
     "It returns `0x00000007`, or 7. Index 2 selects the third element. The scaled index is eight bytes, so the load starts eight bytes after the beginning of the array.",
   investigation:
-    "Follow the highlighted bytes and the address register in each figure. The three loads use different rules for updating the pointer.\n\n`[x0, #4]` accesses memory four bytes after `x0` and leaves `x0` unchanged. `[x0, #4]!` first adds four to `x0`, then accesses memory at the updated address. This is **pre-index** addressing.\n\n`[x0], #4` accesses memory at the old address, then adds four to `x0`. This is **post-index** addressing. The number after the brackets is still a byte count.\n\nAll three examples load into `w2`, keeping the loaded value separate from the pointer. Compare both registers, not just the value loaded.",
+    "Press Next in the comparison, then choose another addressing form. The view keeps the same instruction step so you can compare the address used and `x0` before and after. The three loads use different rules for updating the pointer.\n\n`[x0, #4]` accesses memory four bytes after `x0` and leaves `x0` unchanged. `[x0, #4]!` first adds four to `x0`, then accesses memory at the updated address. This is **pre-index** addressing.\n\n`[x0], #4` accesses memory at the old address, then adds four to `x0`. This is **post-index** addressing. The number after the brackets is still a byte count.\n\nAll three examples load into `w2`, keeping the loaded value separate from the pointer. Compare both registers, not just the value loaded.",
   construction:
     "Choose an element by scaling its index to a byte offset. The element's size decides the scale.",
   writeTask:

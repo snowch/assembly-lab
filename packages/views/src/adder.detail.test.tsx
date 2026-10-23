@@ -500,3 +500,21 @@ describe("the note under the adder", () => {
     expect(container.querySelector(".al-adder-note")).toHaveTextContent(NOTE);
   });
 });
+
+describe("selected group inspection", () => {
+  it("enlarges the original and complemented subtraction operands without revealing unworked sum columns", () => {
+    const { container } = figure({ ...subs(4, 7), detail: true });
+    expect(container.querySelector(".al-adder-zoom")).toBeNull();
+    fireEvent.click(button(A.adder.next));
+    const zoom = container.querySelector(".al-adder-zoom") as HTMLDetailsElement;
+    expect(zoom.open).toBe(false);
+    expect(zoom).toHaveTextContent(A.adder.groupBits(3, 0));
+    expect(zoom.querySelector('[data-zoom-row="given"]')).toHaveTextContent("0111");
+    expect(zoom.querySelector('[data-zoom-row="b"]')).toHaveTextContent("1000");
+    expect(zoom.querySelector('[data-zoom-row="sum"]')).toHaveTextContent("···1");
+    fireEvent.click(button(A.adder.nextGroup));
+    expect(zoom.querySelector('[data-zoom-row="sum"]')).toHaveTextContent("1101");
+    fireEvent.click(button(A.adder.reset));
+    expect(container.querySelector(".al-adder-zoom")).toBeNull();
+  });
+});

@@ -14,8 +14,8 @@ export const LABELS = {
   ],
   titles: {
     question: "What does the processor do?",
-    motivation: "Why the instructions matter",
-    prediction: "Where a variable is kept",
+    motivation: "One operation at a time",
+    prediction: "Connect the operations to a function",
     investigation: "Stepping through",
     construction: "Fixing fuel_used",
     failureExperiment: "Removing ret",

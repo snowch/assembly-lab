@@ -109,6 +109,11 @@ export const CompilerPlayground = withProps(
       result?.ok && view?.next !== null && view?.next !== undefined
         ? labelOf(result.trace.lines, view.next)
         : null;
+    const loopPhase =
+      result?.ok && view?.next !== null && view?.next !== undefined
+        ? result.compiled.lineMap.find((association) => association.assemblyLine === view.next! + 1)
+            ?.loopPhase
+        : undefined;
     return (
       <div className="al-figure al-compiler" data-figure="compiler-playground">
         <details>
@@ -177,6 +182,9 @@ export const CompilerPlayground = withProps(
                       : S.stepper.upNextIn(nextLine.text, nextLabel)
                   }
                 />
+                {loopPhase && (
+                  <p className="al-compiler-phase">{C.playground.loopPhase[loopPhase]}</p>
+                )}
                 {nextLine.cLine !== null && (
                   <div>
                     <span>{S.listing.recordedAgainst(nextLine.cLine)}</span>

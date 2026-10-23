@@ -21,4 +21,12 @@ export const STACK_STRINGS = {
     "These bytes belong to the current calls. Restoring sp releases the space; it does not erase the stored bytes.",
   sp: "Stack pointer (sp)",
   instructions: "Instructions in this call sequence",
+  savedValues: "Saved values in this frame",
+  offsets: "Slot offsets count bytes from the first address of each frame.",
+  inspectBytes: "Inspect individual bytes",
+  noSavedValue: "Other frame space",
+  frameRange: (first: string, last: string) => `Addresses ${first} to ${last}`,
+  slotRange: (first: string, last: string) => `${first} to ${last}`,
+  stored: "Written by this instruction",
+  loaded: "Read by this instruction",
 } as const;

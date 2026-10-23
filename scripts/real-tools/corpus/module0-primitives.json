@@ -1,0 +1,43 @@
+{
+  "entry": "primitive_add",
+  "calls": [
+    {
+      "entry": "primitive_add",
+      "args": [
+        ["12", 32],
+        ["7", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "primitive_transfer",
+      "args": [
+        ["14", 32],
+        ["0", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "primitive_reuse",
+      "args": [
+        ["9", 32],
+        ["4", 32]
+      ]
+    },
+    {
+      "entry": "primitive_sub",
+      "args": [
+        ["20", 32],
+        ["6", 32]
+      ]
+    },
+    {
+      "entry": "primitive_sequence",
+      "args": [
+        ["8", 32],
+        ["3", 32],
+        ["0", 32]
+      ]
+    }
+  ]
+}

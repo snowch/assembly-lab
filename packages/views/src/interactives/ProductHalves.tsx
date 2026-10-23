@@ -40,6 +40,7 @@ export const ProductHalves = withProps(Props, function ProductHalves({ data, sto
       role="group"
       aria-label={P.diagram}
     >
+      <p role="note">{P.completed}</p>
       <p>
         {P.inputs}: <code>{result.inputs[0]}</code> × <code>{result.inputs[1]}</code>
       </p>

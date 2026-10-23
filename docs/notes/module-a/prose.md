@@ -48,7 +48,7 @@ The two listings implement the same C rule using different conditional instructi
 
 ## PROSE.construction
 
-Read the instruction names directly from the A32 record. Separate the return instruction from the register that supplies its destination.
+Open the recorded limit function beside this exercise. Read the instruction names directly from its A32 side. Separate the return instruction from the register that supplies its destination.
 
 ## PROSE.readTask
 
@@ -122,7 +122,7 @@ Do not carry A64's 16-byte stack-alignment rule over to this A32 convention.
 
 ## PROSE.finalTask
 
-Read the service-marker and average listings, then run the A64 average with distance 95 and trip count 4. Enter the A32 instruction used for the marker constant, the A32 division helper's name, the A64 division instruction, and the A64 result.
+Open the recorded service-marker and average functions beside this exercise, then run the A64 average with distance 95 and trip count 4. Enter the A32 instruction used for the marker constant, the A32 division helper's name, the A64 division instruction, and the A64 result.
 
 For instruction fields, enter only the mnemonic. For the helper, enter the function name shown after the call instruction.
 
@@ -347,3 +347,15 @@ The A64 simulator returns {value}.
 ## RECORDED_STRINGS.wrong
 
 Check the specified listing or run, then try this field again.
+
+## LABELS.references.read
+
+Recorded limit function for this exercise
+
+## LABELS.references.final
+
+Recorded average function for this exercise
+
+## LABELS.references.marker
+
+Recorded service-marker function for this exercise

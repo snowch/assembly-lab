@@ -116,7 +116,6 @@ export const masks: LessonInput = {
               { entry: "warn_fuel", program: WARN_FUEL, returns: "word" },
               { entry: "clear_door", program: CLEAR_DOOR, returns: "word" },
               { entry: "toggle_lights", program: TOGGLE_LIGHTS, returns: "word" },
-              { entry: "gear_of", program: GEAR_OF, returns: "number" },
             ],
             start: "clear_door",
             word: 0xf,
@@ -130,7 +129,12 @@ export const masks: LessonInput = {
           timeModel: STEPS,
           role: "diagram",
           caption: LABELS.drafts.captions.readGear,
-          props: { program: GEAR_OF, call: { entry: "gear_of", args: [0x35] } },
+          props: {
+            program: GEAR_OF,
+            call: { entry: "gear_of", args: [0x35] },
+            intro: PROSE.fieldReading,
+            after: "predict-minus-five",
+          },
         },
       ],
     },
@@ -139,6 +143,21 @@ export const masks: LessonInput = {
       title: LABELS.titles.construction,
       prose: PROSE.construction,
       interactives: [
+        {
+          id: "plan-field-write",
+          kind: "probe-prediction",
+          timeModel: STEPS,
+          role: "prediction",
+          caption: LABELS.captions.fieldPlan,
+          props: {
+            question: PROSE.fieldPlanQuestion,
+            options: LABELS.options.fieldPlan,
+            explain: PROSE.fieldPlanExplain,
+            program: SET_GEAR,
+            call: { entry: "set_gear", args: [0x35, 2] },
+            measure: { kind: "register-hex", register: 0 },
+          },
+        },
         {
           id: "write-set-gear-here",
           kind: "challenge",

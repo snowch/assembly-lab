@@ -49,6 +49,7 @@ interface FigureProps {
   memory?: { address: number; length: number };
   after?: string;
   extension?: boolean;
+  cases?: (Pick<FigureProps, "program" | "call" | "registers"> & { label: string })[];
 }
 interface PredictionProps extends FigureProps {
   options: { value: string; label: string }[];
@@ -214,15 +215,19 @@ test("sign extension to W fills its low word while clearing the upper half; exte
 }) => {
   await openLesson(page, WIDTHS);
   await unlock(page, WIDTHS, "predict-signed-gradient");
-  for (const [id, loaded, signed, cleared] of [
-    ["step-signed-gradient", 1, 3, 4],
-    ["step-wide-gradient", 1, 7, 0],
-    ["step-signed-offset", 2, 2, 4],
-    ["step-signed-word", 4, 4, 0],
+  for (const [id, selected, loaded, signed, cleared] of [
+    ["step-signed-gradient", null, 1, 3, 4],
+    ["step-unsigned-fuel", 5, 1, 7, 0],
+    ["step-unsigned-fuel", 3, 2, 2, 4],
+    ["step-unsigned-fuel", 4, 4, 4, 0],
   ] as const) {
     const figure = page.locator(`#ix-${id}`);
-    const props = propsOf(WIDTHS, id);
+    const base = propsOf(WIDTHS, id);
+    const props = selected === null ? base : { ...base, ...base.cases![selected]! };
     const trace = traceOf(props.program, props.call);
+    const reset = figure.getByRole("button", { name: V.stepper.reset });
+    if (await reset.isEnabled()) await press(page, reset);
+    if (selected !== null) await figure.getByRole("combobox").selectOption(String(selected));
     await press(page, figure.getByRole("button", { name: V.stepper.next }));
     const diagram = figure.locator(".al-memory-register-bytes");
     await expect(diagram.locator('[data-role="loaded"]')).toHaveCount(loaded);

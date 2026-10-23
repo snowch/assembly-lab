@@ -12,6 +12,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { LESSONS } from "@al/content";
+import { COMPARISON_STRINGS as C } from "../../packages/views/src/strings.comparison";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { traceOf, viewAt, wValue, wValueAsInt } from "../../packages/views/src/trace";
 import { DEFAULT_STRINGS as S } from "../../platform/lesson-runtime/src/strings";
@@ -90,13 +91,30 @@ test.describe("the two listings", () => {
     ]);
     await expect(figure.locator('.al-insn[data-differs="true"]')).toHaveCount(2);
     await expect(figure.locator('.al-insn[data-differs="false"]')).toHaveCount(2);
-    // Side by side on a desk, one above the other on a phone.
+    // Each complete C/instruction pair uses the available width at every viewport.
     const [a, b] = await Promise.all([
       figure.locator('[data-side="int"]').boundingBox(),
       figure.locator('[data-side="unsigned"]').boundingBox(),
     ]);
-    if ((page.viewportSize()?.width ?? 0) >= 800) expect(b!.x).toBeGreaterThan(a!.x + a!.width - 1);
-    else expect(b!.y).toBeGreaterThan(a!.y + a!.height - 1);
+    expect(b!.y).toBeGreaterThan(a!.y + a!.height - 1);
+    expect(Math.abs(b!.width - a!.width)).toBeLessThan(1);
+    // Shared navigation reveals the matching pane in both contained listings.
+    for (const [label, pane] of [
+      [C.instructions, ".al-asm"],
+      [C.source, ".al-c"],
+    ] as const) {
+      await figure.getByRole("button", { name: label, exact: true }).click();
+      const startsInside = await figure.locator(".al-listing").evaluateAll(
+        (listings, target) =>
+          listings.map((listing) => {
+            const outer = listing.getBoundingClientRect();
+            const inner = listing.querySelector(target)!.getBoundingClientRect();
+            return inner.left >= outer.left - 2 && inner.left < outer.right;
+          }),
+        pane,
+      );
+      expect(startsInside).toEqual([true, true]);
+    }
   });
 });
 

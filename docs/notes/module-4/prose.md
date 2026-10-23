@@ -21,39 +21,19 @@ How this file marks what the page does with a passage. A *Closed note* is the se
 
 The trip computer returns the larger of two gradients with `steeper_s`. `steeper_u` is the same C with `unsigned` arguments.
 
-```c
-int steeper_s(int a, int b)
-{
-    return a > b ? a : b;
-}
-
-unsigned steeper_u(unsigned a,
-                   unsigned b)
-{
-    return a > b ? a : b;
-}
-```
-
 `a > b ? a : b` means "`a` if `a` is greater than `b`, otherwise `b`".
 
 Both functions get the same two 32-bit patterns, `0xffffffff` and 1. They return different results: `steeper_s` returns 1, and `steeper_u` returns 4294967295.
 
 Module 1 showed that one pattern can have two readings. `0xffffffff` is −1 signed and 4294967295 unsigned.
 
-GCC compiled `steeper_s` to the three instructions below.
+The paired listings below show the functions and the instructions GCC recorded.
 
 *Closed note: Which compiler?*
 
 GCC 16.1 with `-O1`, as in Module 0.
 
 *End of closed note.*
-
-```
-steeper_s:
-        cmp     w1, w0
-        csel    w0, w1, w0, ge
-        ret
-```
 
 `cmp` and `csel` are explained in the next sections. For now, the one fact you need is that `csel` picks one of two registers.
 
@@ -327,36 +307,7 @@ The simulator's conditions follow the architecture's, and its tests hold each on
 
 The trip computer classifies a gradient as steep uphill, steep downhill or neither. The result depends on how the gradient compares with 10 and −10.
 
-`describe` returns 2 when the gradient is above 10, −2 when it is below −10, and 0 otherwise. Its C is below.
-
-```c
-int describe(int gradient)
-{
-    if (gradient > 10)
-        return 2;
-    if (gradient < -10)
-        return -2;
-    return 0;
-}
-```
-
-GCC made the eight instructions below.
-
-```
-describe:
-        cmp     w0, 10
-        bgt     .L9
-        cmn     w0, #10
-        mov     w0, -2
-        csel    w0, w0, wzr, lt
-.L7:
-        ret
-.L9:
-        mov     w0, 2
-        b       .L7
-```
-
-The figure pairs instructions with the C operations they carry out. It links `cmn` to `if (gradient < -10)` and `mov w0, -2` to `return -2;`. The `csel` instruction is linked to the choice between −2 and 0. GCC records all three against `return 0;`. Those original references are available in the compiler details.
+`describe` returns 2 when the gradient is above 10, −2 when it is below −10, and 0 otherwise. The paired listing below shows its C and GCC's eight instructions.
 
 `wzr` is a register name that always reads as 0. A write to it is thrown away.
 
@@ -367,6 +318,8 @@ Every listing so far ran from its first instruction to its `ret`, in order. This
 *Closed note: Which compiler?*
 
 GCC 16.1 with `-O1`, as in Module 0.
+
+The figure pairs instructions with the C operations they carry out. It links `cmn` to `if (gradient < -10)` and `mov w0, -2` to `return -2;`. The `csel` instruction is linked to the choice between −2 and 0. GCC records all three against `return 0;`. Those original references are available in the compiler details.
 
 *End of closed note.*
 

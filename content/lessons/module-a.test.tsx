@@ -80,6 +80,12 @@ describe("Optional A teaches through recorded comparisons and A64 execution", ()
     );
     expect(container.querySelector(".al-problem")).toBeNull();
     expect(container.querySelector("#ix-step-a64-limit .al-locked")).not.toBeNull();
-    expect(container.querySelectorAll('[data-figure="listing-pair"]')).toHaveLength(3);
+    expect(container.querySelectorAll('[data-figure="listing-pair"]')).toHaveLength(6);
+    const references = container.querySelectorAll(".al-recorded-reference");
+    expect(references).toHaveLength(3);
+    for (const reference of references) {
+      expect(reference).not.toHaveAttribute("open");
+      expect(reference.querySelectorAll(".al-listing")).toHaveLength(2);
+    }
   });
 });

@@ -494,7 +494,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           <p>{M1.opener.sameBits}</p>
         </div>
       )}
-      {data.flags && (
+      {data.flags && data.panel === undefined && (
         <FlagsRow
           flags={view.state.flags}
           before={view.k > 0 ? viewAt(trace, view.k - 1).state.flags : null}

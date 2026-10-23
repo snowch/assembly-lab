@@ -127,3 +127,24 @@ it("loads a selected statement, preserves untouched lines and refuses to guess c
   await user.selectOptions(screen.getByLabelText(C.editor.statement), "return");
   expect(screen.getByRole("button", { name: C.editor.apply })).toBeEnabled();
 });
+
+it("opens a representable statement instead of a leading comment and preserves the source", () => {
+  const source =
+    "// calculation\nunsigned cap_charge(unsigned distance, unsigned rate, unsigned limit)\n{\n    unsigned charge = distance * rate;\n    return charge;\n}";
+  const seen: string[] = [];
+  render(
+    <CSourceEditor
+      source={source}
+      onChange={(value) => seen.push(value)}
+      config={{
+        signature: "unsigned cap_charge(unsigned distance, unsigned rate, unsigned limit)",
+        names: ["distance", "rate", "limit", "charge"],
+      }}
+    />,
+  );
+  fireEvent.click(screen.getByRole("button", { name: C.editor.templates }));
+  expect(screen.getByRole("button", { name: /^Line 4:/ })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByLabelText(C.editor.statement)).toHaveValue("declaration");
+  expect(screen.queryByRole("note")).toBeNull();
+  expect(seen).toEqual([]);
+});

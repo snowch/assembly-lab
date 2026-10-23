@@ -30,6 +30,11 @@ export const LABELS = {
     divisionPair: "Compare hardware division with the recorded library call.",
     final: "Read the target-specific names and calculate the A64 quotient.",
   },
+  references: {
+    read: "Recorded limit function for this exercise",
+    marker: "Recorded service-marker function for this exercise",
+    final: "Recorded average function for this exercise",
+  },
   sides: {
     a32: "A32: GCC 15.2, baseline Armv7-A",
     a64: "A64: GCC 16.1",

@@ -41,7 +41,9 @@ export const PROSE = {
     "```\n\n" +
     "The first line, `add_overflows:`, is the function's name and a colon. The two instructions before `ret` return 1 exactly when V is set. A later module explains them.",
 
-  construction: "Earlier, you predicted one addition. Now you predict three.",
+  construction:
+    "Earlier, you predicted one addition. Now you predict three.\n\nFor these 32-bit additions:\n\n- N is the result's top bit.\n- Z is 1 when the result bits are all zero.\n- C is the carry out of bit 31.\n- V is 1 when the carry into bit 31 differs from the carry out.",
+
   flagsTask:
     "Give N, Z, C and V for each of three additions with `adds`. Each addition has its own group of four boxes, N, Z, C and V. Each box takes 0 or 1.\n\n" +
     "The three additions are:\n\n" +

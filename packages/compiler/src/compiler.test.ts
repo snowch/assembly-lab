@@ -200,3 +200,26 @@ describe("unsupported C and bounded execution", () => {
     ).toBe(false);
   });
 });
+
+it("identifies loop phases even when the whole for header shares one source line", () => {
+  const result = compiled(
+    "unsigned f(unsigned count) { unsigned total=0; for(unsigned i=0;i<count;i++){total=total+1;} return total; }",
+  );
+  const emitted = result.listing.split("\n");
+  const phases = result.lineMap.filter(
+    (entry) => !emitted[entry.assemblyLine - 1]!.trim().endsWith(":"),
+  );
+  expect(new Set(phases.map((entry) => entry.loopPhase))).toEqual(
+    new Set([undefined, "initialisation", "condition", "body", "update", "repeat"]),
+  );
+  const row = (phase: string) =>
+    phases
+      .filter((entry) => entry.loopPhase === phase)
+      .map((entry) => emitted[entry.assemblyLine - 1]!.trim());
+  expect(row("initialisation")).toEqual(["movz w8, #0", "mov w2, w8"]);
+  expect(row("condition").at(-1)).toMatch(/^cbz w8, /);
+  expect(row("body")).toContain("mov w1, w8");
+  expect(row("update")).toContain("mov w2, w8");
+  expect(row("repeat")).toEqual(["b .Lcourse0"]);
+  expect(result.lineMap.every((entry) => entry.cLine === 1)).toBe(true);
+});

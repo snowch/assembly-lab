@@ -210,7 +210,7 @@ export const productsAndWidths: LessonInput = {
           ["x0", "x1", "x2", "x3", "x4"],
           failureGate,
         ),
-        figure("product-halves-diagram", "product-halves", L.captions.halves, {
+        figure("product-halves-diagram", "product-halves", L.captions.completedHalves, {
           program: R.PRODUCT_HALVES,
           call: call("product_halves", [wide("18446744073709551615"), wide("2")]),
           after: failureGate,

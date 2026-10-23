@@ -16,7 +16,7 @@ export const PROSE = {
   questionNote: {
     summary: "What C says",
     prose:
-      "For a negative `int`, the C standard lets the compiler choose and document the result of `>>`. GCC copies the old top bit into the gap, keeping the result negative. This is the arithmetic shift explained below. Another C compiler may make a different choice.\n\n" +
+      "For a negative `int`, the C standard lets the compiler choose and document the result of `>>`. Another C compiler may make a different choice.\n\n" +
       "For some signed left shifts, C gives no guarantee about the program's behaviour. This includes shifting a negative `int` left. GCC supports left shifts of negative signed values as an extension to C, but code that relies on that extension is not guaranteed to work the same way with another compiler. This lesson's C left-shift examples avoid those cases. The compiler is GCC 16.1 with `-O1`, as in Module 0.",
   },
 

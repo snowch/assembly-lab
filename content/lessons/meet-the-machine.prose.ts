@@ -6,9 +6,7 @@
 
 export const PROSE = {
   question:
-    "The trip computer logs each trip's distance. Each trip has three parts, called legs. Their distances include a private detour. To leave that detour out of the log, the computer adds the three distances and subtracts the detour.\n\n" +
-    "The C function `trip_distance` does this with three arithmetic statements and a return statement. GCC, a C compiler, translated that function into four instructions for a 64-bit Arm processor. Each **instruction** tells the processor to perform an operation. The figure pairs the instructions with the related C statements.\n\n" +
-    "The instructions are written in **assembly language**, which uses names such as `add` for operations. The compiler's output shown this way is called a **listing**. You will follow its four instructions one at a time, to see what the processor does.",
+    "A trip computer adds distances and subtracts a detour. How does the processor perform one of those operations? Start with one addition. You will combine operations into a complete function afterwards.",
   // Two notes under the listing, each shut until the learner opens it.
   compilerNote: {
     summary: "Which compiler made these instructions?",
@@ -30,11 +28,38 @@ export const PROSE = {
   },
 
   motivation:
-    "The compiler translates C into instructions that the processor runs. Following those instructions shows each step of the calculation and where the processor keeps each result. This function has four instructions, so you can follow them one at a time. You will read instructions like these throughout the course.",
+    "A **register** is a small store inside the processor that holds one value. The names `w0`, `w1` and `w2` refer to three registers. Each name here selects 32 bits; Module 1 shows the rest of each register.\n\nAn **instruction** tells the processor to perform an operation. Assembly language writes instructions with names such as `add`. The parts after the name are its **operands**.\n\nFor `add` and `sub`, the first operand names the register written. The second and third supply the input values. Run the first addition, then try the next activities. Each activity replaces the previous one, so you can focus on its operation.",
+  primitiveCaption: "Practise one operation at a time before following a complete function.",
+  primitiveStages: [
+    {
+      title: "Add into a different register",
+      prose:
+        "`add w2, w0, w1` reads `w0` and `w1`, adds their values, and writes the sum into `w2`. Run it to see the result.",
+    },
+    {
+      title: "Choose a different destination",
+      prose:
+        "This addition uses different inputs and writes a different register. Predict its result before running it. The first operand still names the destination.",
+    },
+    {
+      title: "Read a register, then replace its value",
+      prose:
+        "The same register can supply an input and receive the result. The instruction reads the old values before writing. Predict the new value in `w0`.",
+    },
+    {
+      title: "Subtract in operand order",
+      prose:
+        "`sub` subtracts the third operand from the second, then writes the first operand. Predict the value this instruction writes.",
+    },
+    {
+      title: "Run two instructions in order",
+      prose:
+        "The marker ▸ shows the instruction that runs next. Run each instruction in turn. The second uses the state left by the first. The activity stops after these two instructions.",
+    },
+  ],
 
   prediction:
-    "A **register** is a small store inside the processor that holds one value. `w0`, `w1`, `w2` and `w3` are four of them.\n\n" +
-    "The C names a variable, `total`. The instructions name no variable at all. They name `w0`, `w1`, `w2` and `w3`. The function receives four arguments. The processor places these values in registers before the first instruction runs.",
+    "Now combine those operations. The trip computer logs three distances, called legs, with a private detour removed. The C function `trip_distance` adds the three legs and subtracts the detour.\n\nGCC, a C compiler, translated this function into four instructions for a 64-bit Arm processor. Its assembly output is called a **listing**. The complete C and its related instructions appear together below.\n\nFor the functions here, integer arguments arrive in registers in order: the first in `w0`, the second in `w1`, and so on. They leave their result in `w0`. The instruction `ret` returns to the code that called the function; it does not calculate or move the result. The line ending in a colon names the function.\n\nThe C names a variable, `total`. The instructions name registers. Use the operand rule you practised to decide where the first value of `total` goes.",
   argsSay: "The first instruction is `add w0, w0, w1`.",
   argsQuestion:
     "It adds two register values and stores the result. Where will the C variable `total` be kept?",
@@ -56,8 +81,7 @@ export const PROSE = {
     "The simulator is a JavaScript program that loads with this page and runs in your browser. It imitates the processor, one instruction at a time. The instructions are GCC's real output. Only the running is imitated. The course calls the simulator its model of the processor.\n\n" +
     "The stepper figure runs `trip_distance(120, 85, 42, 15)`. Each register is shown as a decimal number. Press Show the bits to see all four registers as 32-bit patterns. The `w` in `w0` says this instruction works on those 32 bits. A register is wider than that. Module 1 shows the rest of each register.\n\n" +
     "The marker ▸ shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`.\n\n" +
-    "An instruction's parts after its name are its **operands**. Press Next to run the first instruction. Its result and diagram show how the operands name the inputs and the register written.\n\n" +
-    "Apply that operand rule to the remaining arithmetic instructions. Choose the register each instruction will write, then press Next to check. There is no register question for `ret`. Open Explain this step for detailed reads and writes. Back undoes a step; Reset starts again.",
+    "Press Next to run one instruction. The status names what ran and what runs next. The outlined register was written by the last instruction. Apply the operand rule you practised to follow each result. Back undoes a step; Reset starts again.",
   // Shown by the stepper once the run has ended.
   investigationEnd:
     "`ret` returns to the code that called this function. The function's result is whatever `w0` holds at that moment.",

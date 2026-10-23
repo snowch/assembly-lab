@@ -30,6 +30,7 @@ export const LABELS = {
   captions: {
     warningWord: "The warning word's 32 bits. The table beside it gives each bit's meaning.",
     maskBits: "A word and a mask, combined bit by bit.",
+    fieldPlan: "Replace an in-range gear before writing the general function.",
   },
   options: {
     // A choice's value is the model's name for it (probe.ts); its label is the file's words.
@@ -38,6 +39,11 @@ export const LABELS = {
       { value: "cleared:2", label: "−5 is `0xfffffffb`, every bit set except bit 2" },
       { value: "subtracts", label: "the compiler subtracts 5 from the word" },
       { value: "listing-error", label: "−5 is an error in the instruction" },
+    ],
+    fieldPlan: [
+      { value: "37", label: "`0x25`" },
+      { value: "53", label: "`0x35`" },
+      { value: "32", label: "`0x20`" },
     ],
     noClear: [
       { value: "53", label: "`0x35`" },

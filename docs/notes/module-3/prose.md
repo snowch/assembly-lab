@@ -67,6 +67,10 @@ C uses `~` to turn every bit over. In `w & ~DOOR_OPEN`, GCC worked out the bits 
 
 The figure combines a word and a mask with the instruction you choose. It marks which bits changed.
 
+`clear_door` is the function whose C is `return w & ~DOOR_OPEN;`. `clear_door(0xf)` gives `0xb`, which is 11.
+
+*A word and a mask, combined bit by bit.*
+
 A run of bits that together hold one number is called a **field**. The gear is a field, in bits 4 to 6.
 
 `lsl` moves every bit towards the top by a number of places. `lsl w1, w1, 4` moves each bit of `w1` up four places. Zeros fill the four lowest bits. Bits moved past bit 31 are lost. So bits 0 to 2 move to bits 4 to 6. The `lsl 16` in `movk`, from Module 1, moved a number into the upper half the same way.
@@ -77,13 +81,25 @@ GCC reads the gear with `ubfx x0, x0, 4, 3`. This takes 3 bits, starting at bit 
 
 The listing names `x0`, the 64-bit name of the register. The gear lies in its lower 32 bits, which `w0` names, so the result is the same.
 
-`clear_door` is the function whose C is `return w & ~DOOR_OPEN;`. `clear_door(0xf)` gives `0xb`, which is 11.
-
-*A word and a mask, combined bit by bit.*
-
 ## 5. Writing a field
 
 Writing a field changes only its own bits and leaves the rest as they were. The challenge below writes a new gear into a word.
+
+Start with a gear that already fits its three bits. The warning word is `0x35`, and the new gear is 2. Clear the old gear, place the new gear in bits 4 to 6, and keep every warning bit.
+
+*Replace an in-range gear before writing the general function.*
+
+**What word should this field replacement return?**
+
+- `0x25`;
+- `0x35`;
+- `0x20`.
+
+*Shown after the answer is checked.*
+
+The result is `0x25`. Clearing bits 4 to 6 keeps the warnings in the low four bits. Placing gear 2 in the cleared field gives `0010 0101`. OR joins the prepared word and the positioned gear.
+
+The writing exercise adds one more requirement: when the new value is larger than the field can hold, keep only its low three bits before positioning it.
 
 **Write `set_gear`**
 
@@ -201,7 +217,7 @@ What does each instruction do differently?
 
 *Closed note: What C says*
 
-For a negative `int`, the C standard lets the compiler choose and document the result of `>>`. GCC copies the old top bit into the gap, keeping the result negative. This is the arithmetic shift explained below. Another C compiler may make a different choice.
+For a negative `int`, the C standard lets the compiler choose and document the result of `>>`. Another C compiler may make a different choice.
 
 For some signed left shifts, C gives no guarantee about the program's behaviour. This includes shifting a negative `int` left. GCC supports left shifts of negative signed values as an extension to C, but code that relies on that extension is not guaranteed to work the same way with another compiler. This lesson's C left-shift examples avoid those cases. The compiler is GCC 16.1 with `-O1`, as in Module 0.
 

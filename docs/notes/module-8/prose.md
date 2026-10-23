@@ -153,7 +153,7 @@ Multiply signed 32-bit inputs into a 64-bit result.
 
 Subtract a product from the fourth operand.
 
-Compare the high and low halves for the same input bits.
+Step through the instructions that write the product halves.
 
 Inspect the recorded multiplication used for division by ten.
 
@@ -196,6 +196,11 @@ Keep a product that fits in 32 bits
 Multiplying small constants that fit in every destination width.
 
 A pulse reading crosses the 32-bit boundary before becoming part of a trip total. The same input pattern is then multiplied under two interpretations, with computed high and low halves shown together.
+
+
+## LABELS.captions.completedHalves
+
+Compare the completed high and low halves for the same input bits.
 
 # Lesson 2: Division and remainders
 
@@ -458,3 +463,7 @@ Remainder
 ## groupedPart
 
 Whole groups
+
+## completed
+
+Completed products. This diagram shows the end of the run; Next and Reset in the stepper above do not change it.

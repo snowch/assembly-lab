@@ -368,10 +368,10 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
     await stepper.scrollIntoViewIfNeeded();
     const flags = () =>
       stepper
-        // The row of four under the registers, not the flags the panel beside it draws again.
-        .locator(".al-stepper > .al-flags .al-flag")
+        // One flags row in the compare stage carries the evidence after cmp has run.
+        .locator('.al-stage[data-stage="compare"] .al-flags .al-flag')
         .evaluateAll((els) => els.map((e) => e.getAttribute("data-value")));
-    expect(await flags()).toEqual(["0", "0", "0", "0"]);
+    expect(await flags()).toEqual([]);
     await press(page, stepper.getByRole("button", { name: V.stepper.next }));
     expect(await flags()).toEqual(["1", "0", "0", "1"]);
     await press(page, stepper.getByRole("button", { name: V.stepper.next }));
@@ -1159,7 +1159,8 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
     const flags = viewAt(model, 1).state.flags;
     expect([flags.n, flags.z, flags.c, flags.v].map(Number)).toEqual([0, 1, 1, 0]);
     await expect(registerValue(stepper, "w0")).toHaveText("2");
-    await expect(stepper.locator(".al-stepper > .al-flags .al-flag")).toHaveCount(4);
+    await expect(stepper.locator(".al-stepper > .al-flags .al-flag")).toHaveCount(0);
+    await expect(stepper.locator(".al-two .al-flags .al-flag")).toHaveCount(4);
   });
 
   test.describe("the last challenge, the runs of describe", () => {

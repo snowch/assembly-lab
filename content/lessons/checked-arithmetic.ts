@@ -189,7 +189,6 @@ export const checkedArithmetic: LessonInput = {
       kind: "generalisation",
       title: LABELS.titles.generalisation,
       prose: PROSE.generalisation,
-      details: { summary: PROSE.generalisationNoteSummary, prose: PROSE.generalisationNote },
     },
     {
       kind: "challenge",

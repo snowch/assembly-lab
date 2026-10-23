@@ -26,6 +26,7 @@ import { ShiftFigure } from "./interactives/ShiftFigure";
 import { WarningWordFigure } from "./interactives/WarningWordFigure";
 import { WordStepperFigure } from "./interactives/WordStepperFigure";
 import { VIEW_STRINGS as S } from "./strings";
+import { COMPARISON_STRINGS as C } from "./strings.comparison";
 
 // These tests click through whole editors; a busy machine needs longer than the default.
 vi.setConfig({ testTimeout: 30_000 });
@@ -397,6 +398,7 @@ describe("the prediction checked by the model", () => {
     expect(container.querySelector(".al-match")).toHaveTextContent(S.prediction.match);
     expect(container.querySelector(".al-outcome")).toHaveTextContent("copy of the old top bit");
     expect(container.querySelector(".al-outcome")).toHaveTextContent("It is a copy.");
+    expect(container.querySelector('[data-row="start"]')).toBeNull();
     expect(bits(container, "ran-before")).toBe(pad32(0xfffffff9));
     expect(bits(container, "ran-after")).toBe(pad32(0xfffffffc));
     expect(marked(container, "ran-after", "changed")).toEqual([0, 2]);
@@ -518,7 +520,8 @@ describe("the two listings side by side", () => {
     expect(container.querySelector('[data-side="int"] .al-cline .al-src')).toHaveTextContent(
       "halve_gradient",
     );
-    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(screen.getByRole("button", { name: C.instructions })).toBeEnabled();
+    expect(screen.getByRole("button", { name: C.source })).toBeEnabled();
   });
 });
 

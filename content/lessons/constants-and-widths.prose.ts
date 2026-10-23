@@ -76,7 +76,8 @@ export const PROSE = {
     "Every constant in these listings is a pattern of bits. The C type affects how many bits the instructions use and how the program interprets those bits.",
 
   challenge:
-    "The figure shows four instructions: `mov x1, -1`, `mov w1, 5`, `mov w2, 16960`, `movk w2, 0xf, lsl 16`.",
+    "Follow the four instructions in the listing. Track the two register values separately.",
+
   predictTask: "Without running them, give `x1` and `w2` after all four, as decimal numbers.",
   predictHints: [
     "Writing `w1` clears the upper 32 bits of `x1`.",

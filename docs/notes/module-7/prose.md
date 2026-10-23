@@ -44,7 +44,7 @@ It returns `0x00000007`, or 7. Index 2 selects the third element. The scaled ind
 
 ## 4. Compare three ways to address memory
 
-Follow the highlighted bytes and the address register in each figure. The three loads use different rules for updating the pointer.
+Press Next in the comparison, then choose another addressing form. The view keeps the same instruction step so you can compare the address used and `x0` before and after. The three loads use different rules for updating the pointer.
 
 `[x0, #4]` accesses memory four bytes after `x0` and leaves `x0` unchanged. `[x0, #4]!` first adds four to `x0`, then accesses memory at the updated address. This is **pre-index** addressing.
 
@@ -215,6 +215,16 @@ Summing an anonymous integer array with an index.
 
 A trip log connects element size to its byte layout. Three computed loads separate address selection from pointer movement, and a missing scale exposes bytes spanning neighbouring distances.
 
+## Figure captions and labels
+
+[x0, #4]: offset
+
+[x0, #4]!: pre-index
+
+[x0], #4: post-index
+
+Compare the address used and x0 before and after each load.
+
 # Lesson 2: Strings and the zero byte
 
 ## 0. Objectives
@@ -227,13 +237,15 @@ A trip log connects element size to its byte layout. Three computed loads separa
 
 The trip computer also stores short labels. A label can use fewer bytes than its storage allows. **How can a program find where its text ends?**
 
+In the C loop, `break` exits the nearest enclosing loop.
+
 A C **string** is a sequence of characters stored in bytes, ending with a zero byte. That final byte is the **terminator**. The terminator marks the end and is not counted in the string's length.
 
 These examples use ASCII, a character encoding that assigns byte values to letters, digits and punctuation. The label `A-B-C` uses the bytes `65, 45, 66, 45, 67`, followed by zero.
 
 *Closed note: The C loop and its boundary*
 
-The recorded listing uses GCC 16.1 with `-O1` for little-endian AArch64 Linux. `label_length` accepts a pointer to bytes and a capacity: the maximum number of bytes it may read. In the C loop, `break` exits the nearest enclosing loop.
+The recorded listing uses GCC 16.1 with `-O1` for little-endian AArch64 Linux. `label_length` accepts a pointer to bytes and a capacity: the maximum number of bytes it may read.
 
 The function returns the number of bytes before the first zero, or the capacity if it finds no zero within that limit. A byte array without a zero in the readable region is not a complete C string.
 

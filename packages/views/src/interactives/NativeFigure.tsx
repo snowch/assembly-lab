@@ -37,6 +37,7 @@ const Props = z.object({
       sp: z.string(),
       result: z.string(),
       memory: z.string(),
+      stackTop: z.string().optional(),
       rangeNote: z.string(),
       stops: z.array(z.string()),
       regions: z.record(z.string(), z.string()),
@@ -144,6 +145,15 @@ export const NativeFigure = withProps(Props, function NativeFigure({ data, store
               ),
             )}
           </div>
+          {data.bootLabels.stackTop &&
+            data.boot.regions.some((region) => region.kind === "stack") && (
+              <RegisterSummary
+                name="stack_top"
+                label={data.bootLabels.stackTop}
+                value={`0x${data.boot.regions.find((region) => region.kind === "stack")!.end.toString(16)}`}
+                written={false}
+              />
+            )}
         </div>
       )}
       {view && labels && (

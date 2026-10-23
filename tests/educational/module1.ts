@@ -57,7 +57,7 @@ export async function commit(page: Page, id: string, option: string | RegExp): P
 }
 
 export const registerValue = (figure: Locator, name: string) =>
-  figure.locator(`[data-register="${name}"] .al-reg-value`);
+  figure.locator(`[data-register="${name}"] :is(.al-reg-value, .al-dreg-value)`);
 
 /** A bit's button, in a figure or a challenge: bit 31 is the top bit. */
 export const bit = (where: Locator, n: number) =>

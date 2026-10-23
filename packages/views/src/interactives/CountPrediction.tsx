@@ -5,11 +5,12 @@
 // run is made after the commit, never before, and the right option is the number of steps the model
 // recorded, never a number in the lesson's words.
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { z } from "zod";
 
-import { RegisterRow, ListingView } from "../parts";
+import { DecimalRegister, RegisterRow, ListingView } from "../parts";
 import { cLinesOf, programLines } from "../listing";
+import { MODULE0_STRINGS as M0 } from "../strings.module0";
 import { ARITH_STRINGS as A } from "../strings.arith";
 import { BRANCH_STRINGS as B } from "../strings.branch";
 import { traceOf } from "../trace";
@@ -26,11 +27,13 @@ const Props = z.object({
   call: CallSchema,
   /** The registers to show with the values the call gives them, before the run. */
   inputs: z.array(z.number().int().min(0).max(30)).default([]),
+  decimal: z.boolean().default(false),
 });
 
 export const CountPrediction = withProps(
   Props,
   function CountPrediction({ data, interactive, store }) {
+    const [bitsShown, setBitsShown] = useState(false);
     const measure = useCallback((): Outcome => {
       const trace = traceOf(data.program, data.call);
       const n = trace.result.steps.length;
@@ -41,16 +44,37 @@ export const CountPrediction = withProps(
         <ListingView cLines={cLinesOf(data.program.c)} lines={programLines(data.program)} />
         {data.inputs.length > 0 && (
           <section aria-label={A.prediction.registers}>
-            <p className="al-memory-heading">{A.prediction.registers}</p>
+            <div className="al-registers-head">
+              <p className="al-memory-heading">{A.prediction.registers}</p>
+              {data.decimal && (
+                <button
+                  type="button"
+                  className="button secondary"
+                  aria-expanded={bitsShown}
+                  onClick={() => setBitsShown(!bitsShown)}
+                >
+                  {bitsShown ? M0.registers.hideBits : M0.registers.showBits}
+                </button>
+              )}
+            </div>
             <div className="al-registers">
-              {data.inputs.map((n) => (
-                <RegisterRow
-                  key={n}
-                  name={`w${n}`}
-                  value={Number(BigInt.asUintN(32, BigInt(data.call.args[n] ?? 0)))}
-                  changed={false}
-                />
-              ))}
+              {data.inputs.map((n) =>
+                data.decimal && !bitsShown ? (
+                  <DecimalRegister
+                    key={n}
+                    name={`w${n}`}
+                    value={Number(BigInt.asUintN(32, BigInt(data.call.args[n] ?? 0)))}
+                    changed={false}
+                  />
+                ) : (
+                  <RegisterRow
+                    key={n}
+                    name={`w${n}`}
+                    value={Number(BigInt.asUintN(32, BigInt(data.call.args[n] ?? 0)))}
+                    changed={false}
+                  />
+                ),
+              )}
             </div>
           </section>
         )}

@@ -121,9 +121,9 @@ test.describe("the two predictions commit before they reveal", () => {
     const figure = await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
     const model = traceOf(CLEAR_DOOR, { entry: "clear_door", args: [0xffffffff] });
     const after = wValue(model.result.final, 0);
-    expect(await rowBits(figure, "ran-before")).toBe(pad32(0xffffffff));
-    expect(await rowBits(figure, "ran-after")).toBe(pad32(after));
-    expect(await marked(figure, "ran-after", "changed")).toEqual([2]);
+    expect(await rowBits(figure, "full-word")).toBe(pad32(0xffffffff));
+    expect(await rowBits(figure, "full-result")).toBe(pad32(after));
+    expect(await marked(figure, "full-result", "changed")).toEqual([2]);
     await expect(figure.locator(".al-outcome")).toContainText("Only bit 2 came out 0");
   });
 
@@ -173,8 +173,9 @@ test.describe("the bit figure", () => {
     const figure = page.locator("#ix-mask-bits");
     await figure.scrollIntoViewIfNeeded();
     const word = figure.getByLabel(V.bitOps.inputLabel("w0"));
+    await figure.locator(".al-all32 > summary").click();
     // `set_gear` is not here: its recipe is the construction challenge's answer.
-    for (const name of ["warn_fuel", "clear_door", "toggle_lights", "gear_of"] as const) {
+    for (const name of ["warn_fuel", "clear_door", "toggle_lights"] as const) {
       await press(page, chip(figure, V.bitOps.functions, name));
       await expect(chip(figure, V.bitOps.functions, name)).toHaveAttribute("aria-pressed", "true");
       await expect(chip(figure, V.bitOps.functions, "set_gear" as string)).toHaveCount(0);
@@ -185,10 +186,9 @@ test.describe("the bit figure", () => {
         expect(await rowBits(figure, "word"), label).toBe(pad32(w));
         expect(await rowBits(figure, "result"), label).toBe(pad32(want));
         await expect(rowValue(figure, "result"), label).toContainText(hexOf(want));
-        if (name !== "gear_of")
-          expect(await marked(figure, "result", "changed"), label).toEqual(
-            [...Array(32).keys()].filter((i) => ((w ^ want) >>> i) & 1),
-          );
+        expect(await marked(figure, "result", "changed"), label).toEqual(
+          [...Array(32).keys()].filter((i) => ((w ^ want) >>> i) & 1),
+        );
       }
     }
   });
@@ -198,13 +198,18 @@ test.describe("the bit figure", () => {
   }) => {
     await open(page);
     await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
-    const figure = page.locator("#ix-mask-bits");
+    // Field extraction follows the three-rule experiment in its own computed diagram.
+    const figure = page.locator("#ix-read-gear");
     await figure.scrollIntoViewIfNeeded();
-    await press(page, chip(figure, V.bitOps.functions, "gear_of"));
-    await figure.getByLabel(V.bitOps.inputLabel("w0")).fill("0x35");
-    expect(await marked(figure, "word", "field")).toEqual([4, 5, 6]);
-    expect(await marked(figure, "result", "field")).toEqual([0, 1, 2]);
-    expect(await rowBits(figure, "result")).toBe(pad32(3));
+    const fields = (row: string) =>
+      figure
+        .locator(`[data-row="${row}"] .al-cell[data-field="true"]`)
+        .evaluateAll((cells) =>
+          cells.map((cell) => Number(cell.getAttribute("data-bit"))).sort((a, b) => a - b),
+        );
+    expect(await fields("word")).toEqual([4, 5, 6]);
+    expect(await fields("result")).toEqual([0, 1, 2]);
+    await expect(figure.locator('[data-row="result"]')).toHaveAttribute("data-value", "3");
     await expect(figure.locator(".al-key")).toHaveCount(0);
   });
 
@@ -537,7 +542,7 @@ test.describe("the look of the lesson page", () => {
     await bits.scrollIntoViewIfNeeded();
     await press(page, chip(bits, V.bitOps.functions, "toggle_lights"));
     await bits.getByLabel(V.bitOps.inputLabel("w0")).fill("0x35");
-    await press(page, chip(bits, V.bitOps.functions, "gear_of"));
+    await expect(page.locator("#ix-read-gear .al-fieldreading")).toBeVisible();
     const step = page.locator("#ix-step-no-clear");
     await press(page, step.getByRole("button", { name: V.stepper.next }));
     await press(page, step.getByRole("button", { name: V.stepper.next }));
@@ -640,9 +645,9 @@ test.describe("the reworked figures (17 October 2026)", () => {
         .locator(`[data-row="${row}"] .al-cell-bit`)
         .evaluateAll((c) => c.map((x) => x.textContent).join(""));
     await expect(figure.locator(".al-maskline")).toHaveText("The mask is -5, which is 0xfffffffb.");
-    expect(await cells("view-word")).toBe((await rowBits(figure, "ran-before")).slice(-8));
+    expect(await cells("view-word")).toBe((await rowBits(figure, "full-word")).slice(-8));
     expect(await cells("view-mask")).toBe("11111011");
-    expect(await cells("view-result")).toBe((await rowBits(figure, "ran-after")).slice(-8));
+    expect(await cells("view-result")).toBe((await rowBits(figure, "full-result")).slice(-8));
     await expect(figure.locator(".al-maskview .al-cell[data-picked='true']")).toHaveCount(3);
   });
 
@@ -653,7 +658,7 @@ test.describe("the reworked figures (17 October 2026)", () => {
     await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
     const figure = page.locator("#ix-mask-bits");
     await figure.scrollIntoViewIfNeeded();
-    await figure.locator('[data-row="mask"] [data-bit="2"]').click();
+    await figure.locator('[data-row="detail-mask"] [data-bit="2"]').click();
     await expect(figure.locator("[data-readout='column']")).toHaveText(
       "Bit 2: input 1, mask 0, result 0.",
     );

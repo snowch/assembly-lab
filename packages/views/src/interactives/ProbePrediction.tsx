@@ -72,7 +72,7 @@ export const ProbePrediction = withProps(
         data-committed={stored !== undefined}
       >
         <Prose markdown={data.question} />
-        {start !== undefined && (
+        {start !== undefined && stored === undefined && (
           <div className="al-bitrows">
             <Ruler />
             <BitRow row="start" name={S.bits.onEntry("w0")} value={start} text={text(start)} />
@@ -99,7 +99,7 @@ export const ProbePrediction = withProps(
               {withCode(outcome.said)}{" "}
               {outcome.value === stored.choice ? S.prediction.match : S.prediction.noMatch}
             </p>
-            {outcome.rows && (
+            {outcome.rows && data.maskView === undefined && (
               <div className="al-bitrows">
                 <Ruler />
                 <BitRow

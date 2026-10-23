@@ -25,6 +25,7 @@ export const LABELS = {
     reflection: "What you now know",
   },
   captions: {
+    scratch: "An optional scratch register beside the exercise.",
     fuelRun: "fuel_used_wrong(50, 38). Initially before the subtraction; press Next to run it.",
     reader:
       "One register, with each hexadecimal digit under its four bits. Each reading shows the top bit's value and the total from the other bits.",
@@ -37,6 +38,7 @@ export const LABELS = {
     make: "Set each of the 32 bits of w0 with its button, then type one number in the box.",
     read: "Several bit patterns are shown. Type the unsigned reading and the signed reading of each.",
   },
+  scratch: { disclosure: "Try a pattern in the scratch register" },
   options: {
     add12: [
       { value: "0", label: "0" },

@@ -130,6 +130,14 @@ export const onePatternThreeReadings: LessonInput = {
       prose: PROSE.construction,
       interactives: [
         {
+          id: "scratch-minus-one",
+          kind: "register-reader",
+          timeModel: STEPS,
+          role: "experiment",
+          caption: LABELS.captions.scratch,
+          props: { register: "w0", topBit: true, disclosure: LABELS.scratch.disclosure },
+        },
+        {
           id: "make-minus-one",
           kind: "challenge",
           timeModel: STEPS,

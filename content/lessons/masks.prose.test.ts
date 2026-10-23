@@ -60,16 +60,21 @@ describe("the lesson's words", () => {
       ...stringsIn(LABELS.titles),
       ...stringsIn(LABELS.captions),
       // An option's value is the model's name for it; its label is the file's words.
-      ...stringsIn([...LABELS.options.minusFive, ...LABELS.options.noClear].map((o) => o.label)),
+      ...stringsIn(
+        [...LABELS.options.minusFive, ...LABELS.options.fieldPlan, ...LABELS.options.noClear].map(
+          (o) => o.label,
+        ),
+      ),
       ...stringsIn(LABELS.challenges),
     ];
     expect(strings.length).toBeGreaterThan(40);
     expect(strings.filter((c) => !partFlat.includes(flat(c)))).toEqual([]);
   });
 
-  it("have the two captions the file gives, and only the drafted ones besides, none of them in the file", () => {
+  it("have the captions the file gives, and only the drafted ones besides, none of them in the file", () => {
     expect(partFlat).toContain(flat(LABELS.captions.warningWord));
     expect(partFlat).toContain(flat(LABELS.captions.maskBits));
+    expect(partFlat).toContain(flat(LABELS.captions.fieldPlan));
     const own = Object.values(LABELS.drafts.captions);
     expect(own).toHaveLength(9);
     for (const caption of own) expect(partFlat, caption).not.toContain(flat(caption));

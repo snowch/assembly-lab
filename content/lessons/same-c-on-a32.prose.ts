@@ -17,7 +17,7 @@ export const PROSE = {
   investigation:
     "In the A32 listing, `movcs r0, r1` is a move controlled by a condition. The `cs` suffix means carry set. After this unsigned comparison, that condition holds when the distance is greater than or equal to the limit. Only then does the move copy the limit into the result register.\n\nA64's `csel w0, w0, w1, ls` selects between two values. It keeps the distance when the lower-or-same condition holds, and selects the limit otherwise. Equal inputs give the same value whichever is selected.\n\nThe two listings implement the same C rule using different conditional instructions. Trace the A64 version, then identify the corresponding roles in the static A32 listing.",
   construction:
-    "Read the instruction names directly from the A32 record. Separate the return instruction from the register that supplies its destination.",
+    "Open the recorded limit function beside this exercise. Read the instruction names directly from its A32 side. Separate the return instruction from the register that supplies its destination.",
   readTask:
     "Find two instruction names in the recorded A32 `limit_trip`: the conditional move and the return. Enter the mnemonic only for each, without registers or other operands.",
   readHints: [
@@ -42,7 +42,7 @@ export const PROSE = {
   divisionNote:
     "The A32 listing saves `{r4, lr}` with `push` before calling the helper. Braces enclose the register list. Saving two 32-bit registers preserves the 8-byte stack alignment required by this A32 calling convention. Register `r4` is preserved and supplies the extra space needed for alignment.\n\n`pop {r4, pc}` restores `r4` and loads the saved return address into `pc`, the program counter, which selects the next instruction. Loading that address returns to the caller. This is a different return sequence from the leaf function's `bx lr`.\n\nDo not carry A64's 16-byte stack-alignment rule over to this A32 convention.",
   finalTask:
-    "Read the service-marker and average listings, then run the A64 average with distance 95 and trip count 4. Enter the A32 instruction used for the marker constant, the A32 division helper's name, the A64 division instruction, and the A64 result.\n\nFor instruction fields, enter only the mnemonic. For the helper, enter the function name shown after the call instruction.",
+    "Open the recorded service-marker and average functions beside this exercise, then run the A64 average with distance 95 and trip count 4. Enter the A32 instruction used for the marker constant, the A32 division helper's name, the A64 division instruction, and the A64 result.\n\nFor instruction fields, enter only the mnemonic. For the helper, enter the function name shown after the call instruction.",
   finalHints: [
     "Use the marker pair for the first field and the average pair for the remaining fields.",
     "A call instruction and the helper name that follows it are different tokens. The helper field asks for the name.",

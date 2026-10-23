@@ -7,14 +7,7 @@
 
 export const PROSE = {
   question:
-    "The trip computer returns the larger of two gradients with `steeper_s`. `steeper_u` is the same C with `unsigned` arguments.\n\n" +
-    "```c\nint steeper_s(int a, int b)\n{\n    return a > b ? a : b;\n}\n\nunsigned steeper_u(unsigned a,\n                   unsigned b)\n{\n    return a > b ? a : b;\n}\n```\n\n" +
-    '`a > b ? a : b` means "`a` if `a` is greater than `b`, otherwise `b`".\n\nBoth functions get the same two 32-bit patterns, `0xffffffff` and 1. They return different results: `steeper_s` returns 1, and `steeper_u` returns 4294967295.\n\n' +
-    "Module 1 showed that one pattern can have two readings. `0xffffffff` is −1 signed and 4294967295 unsigned.\n\n" +
-    "GCC compiled `steeper_s` to the three instructions below.\n\n" +
-    "```\nsteeper_s:\n        cmp     w1, w0\n        csel    w0, w1, w0, ge\n        ret\n```\n\n" +
-    "`cmp` and `csel` are explained in the next sections. For now, the one fact you need is that `csel` picks one of two registers.\n\n" +
-    "**Two functions receive the same 32-bit patterns but return different results. What changes in the instructions when the C type changes?**",
+    'The trip computer returns the larger of two gradients with `steeper_s`. `steeper_u` is the same C with `unsigned` arguments.\n\n`a > b ? a : b` means "`a` if `a` is greater than `b`, otherwise `b`".\n\nBoth functions get the same two 32-bit patterns, `0xffffffff` and 1. They return different results: `steeper_s` returns 1, and `steeper_u` returns 4294967295.\n\nModule 1 showed that one pattern can have two readings. `0xffffffff` is −1 signed and 4294967295 unsigned.\n\nThe paired listings below show the functions and the instructions GCC recorded.\n\n`cmp` and `csel` are explained in the next sections. For now, the one fact you need is that `csel` picks one of two registers.\n\n**Two functions receive the same 32-bit patterns but return different results. What changes in the instructions when the C type changes?**',
 
   questionNoteSummary: "Which compiler?",
   questionNote: "GCC 16.1 with `-O1`, as in Module 0.",

@@ -218,7 +218,7 @@ A trip-distance increment separates a direct A64 experiment from two recorded co
 
 ## 1. Which check preserves the intended value?
 
-A trip reading can change width, enter an arithmetic calculation, then be printed. Each step follows its own rules. **Which checks preserve the value you meant to keep?**
+A trip reading can change width before an arithmetic calculation. Each step follows its own rules. **Which checks preserve the value you meant to keep?**
 
 The two recorded functions convert a 32-bit input to a byte-sized type, then return it in a wider register. One selects `unsigned char`; the other selects `signed char`.
 
@@ -302,21 +302,11 @@ For the signed 32-bit destination here, GCC can use `adds` to obtain both the lo
 
 ## 8. Choose checks for the required property
 
-Choose each check from the property you need. A bounds check before narrowing protects a required range. Checked arithmetic reports whether a mathematical result fits. A formatting choice tells an output function what argument type it is receiving.
+Choose the check from the property you need. A bounds check before narrowing protects a required range. Checked arithmetic reports whether a mathematical result fits.
 
-The C function `printf` prints formatted text. Its first argument is a format string: text containing codes that describe how to print the following arguments. The code `%d` expects an `int`, and `%u` expects an `unsigned int`. They are not switches for interpreting an arbitrary argument's bits. Use a deliberate conversion when the argument type needs to change. For example, `printf("%u", (unsigned)gradient)` passes an unsigned value; a negative gradient is converted by the unsigned conversion rule.
+The next exercise applies checked addition. Keep the stored sum bits separate from the returned overflow report. Formatting and run-time checks are further topics in the reflection detail after the exercise.
 
-A narrow integer is promoted when passed to `printf`. A signed-byte value of −2 becomes `int` −2, so `%u` without a cast is not a defined way to print its byte pattern as 254. To request that byte value, convert first to `unsigned char`, then to `unsigned` for `%u`.
 
-*Closed note: Warnings and run-time checks*
-
-Compiler warnings can identify mistakes such as a mismatch between a format and its argument type. You can inspect the [format example’s C source](https://github.com/snowch/assembly-lab/blob/main/docs/notes/module-11/compiler/format_trip.c) and its [recorded compiler warning](https://github.com/snowch/assembly-lab/blob/main/docs/notes/module-11/compiler/format_trip.response.json). This simulator does not run `printf`.
-
-GCC's `-fsanitize=undefined` adds run-time checks for supported undefined operations. A tool that inserts these checks is called a **sanitizer**. The [signed-add source](https://github.com/snowch/assembly-lab/blob/main/docs/notes/module-11/compiler/sanitize_trip.c) and its [recorded compiler output](https://github.com/snowch/assembly-lab/blob/main/docs/notes/module-11/compiler/sanitize_trip.response.json) show the added overflow check and a call to the sanitizer’s reporting function. The course simulator does not run that external function.
-
-A sanitizer checks only paths that execute. Ordinary unsigned wrapping is defined C, so this option does not report it as signed overflow. GCC normally lets execution continue after many reports. This is called recovery; it does not repair the invalid operation or make its result valid. `-fno-sanitize-recover=undefined` makes a detected problem terminate the run. Warnings, tests and run-time checks provide different evidence, and none proves every possible input safe.
-
-*End of closed note.*
 
 ## 9. Write a checked trip adjustment
 
@@ -336,7 +326,7 @@ Leave the four bytes following the result slot unchanged. Store the sum before r
 
 ## 10. What you now know
 
-- A conversion, an arithmetic operation and a format string follow separate rules.
+- A conversion and an arithmetic operation follow separate rules.
 - Narrow values can be promoted before arithmetic.
 - Mixed signed and unsigned expressions can select an unsigned comparison.
 - Checked addition reports whether the mathematical sum fits its destination.
@@ -344,9 +334,19 @@ Leave the four bytes following the result slot unchanged. Store the sum before r
 
 How do C types affect machine code beyond choosing signed or unsigned instructions?
 
-*Closed note: Answer*
+*Closed note: Answer, formatting and run-time checks*
 
 Types also determine conversions and which source operations are defined. A compiler can use those rules to transform or remove calculations before it selects instructions. The registers hold bits, but the source-language rules shape the program that reaches them.
+
+The C function `printf` prints formatted text. Its first argument is a format string: text containing codes that describe how to print the following arguments. The code `%d` expects an `int`, and `%u` expects an `unsigned int`. They are not switches for interpreting an arbitrary argument's bits. Use a deliberate conversion when the argument type needs to change. For example, `printf("%u", (unsigned)gradient)` passes an unsigned value; a negative gradient is converted by the unsigned conversion rule.
+
+A narrow integer is promoted when passed to `printf`. A signed-byte value of −2 becomes `int` −2, so `%u` without a cast is not a defined way to print its byte pattern as 254. To request that byte value, convert first to `unsigned char`, then to `unsigned` for `%u`.
+
+Compiler warnings can identify mistakes such as a mismatch between a format and its argument type. You can inspect the [format example’s C source](https://github.com/snowch/assembly-lab/blob/main/docs/notes/module-11/compiler/format_trip.c) and its [recorded compiler warning](https://github.com/snowch/assembly-lab/blob/main/docs/notes/module-11/compiler/format_trip.response.json). This simulator does not run `printf`.
+
+GCC's `-fsanitize=undefined` adds run-time checks for supported undefined operations. A tool that inserts these checks is called a **sanitizer**. The [signed-add source](https://github.com/snowch/assembly-lab/blob/main/docs/notes/module-11/compiler/sanitize_trip.c) and its [recorded compiler output](https://github.com/snowch/assembly-lab/blob/main/docs/notes/module-11/compiler/sanitize_trip.response.json) show the added overflow check and a call to the sanitizer’s reporting function. The course simulator does not run that external function.
+
+A sanitizer checks only paths that execute. Ordinary unsigned wrapping is defined C, so this option does not report it as signed overflow. GCC normally lets execution continue after many reports. This is called recovery; it does not repair the invalid operation or make its result valid. `-fno-sanitize-recover=undefined` makes a detected problem terminate the run. Warnings, tests and run-time checks provide different evidence, and none proves every possible input safe.
 
 *End of closed note.*
 

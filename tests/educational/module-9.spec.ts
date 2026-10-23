@@ -125,6 +125,23 @@ for (const route of routes) {
           await expect(
             fig.locator(".al-stack-frame").nth(i).locator(".al-stack-bytes [data-access] code"),
           ).toHaveText(frame.bytes.map(hexByte));
+          const byteDetail = drawn.locator(".al-stack-detail");
+          await expect(byteDetail).not.toHaveAttribute("open");
+          for (const slot of frame.slots)
+            await expect(
+              drawn.locator(`.al-stack-slots [data-slot-address="${hexAddress(slot.address)}"]`),
+            ).toBeVisible();
+          if (i === 0) {
+            await expect(drawn.locator(".al-stack-bytes [data-access]").first()).not.toBeVisible();
+            await press(page, byteDetail.locator("summary"));
+            await expect(drawn.locator(".al-stack-bytes [data-access]").first()).toBeVisible();
+            await expect(fig.locator('[data-figure="stack-stepper"]')).toHaveAttribute(
+              "data-k",
+              String(k),
+            );
+            await press(page, byteDetail.locator("summary"));
+            await expect(drawn.locator(".al-stack-bytes [data-access]").first()).not.toBeVisible();
+          }
         }
       }
       await expect(fig.getByRole("button", { name: V.stepper.next })).toBeDisabled();

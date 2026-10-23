@@ -1,0 +1,67 @@
+# Independent technical review
+
+Reviewed by an agent that did not author these implementations. This is a source and focused-test review of the in-progress working tree on 2026-10-23, not final built-site approval. Read `AGENTS.md`, `CLAUDE.md`, the course-load ledger and component implementation notes. No production build was run and no files implementing the changes were edited.
+
+## Verdict and scope
+
+No technical blocker found in the reviewed memory/stack compaction, duplicate-row removal, count presentation or enlarged arithmetic group. The first-operation implementation also preserves trace-derived arithmetic, instruction order and its prediction gates. Final browser checking remains necessary for the actual phone/desktop geometry, both rendered themes and fresh reload persistence.
+
+The source pass covered `MemoryStepper`, `memoryFigure`, `StackStepper`, `stack`, `ProbePrediction`, `MaskView`, `StepperFigure`, both `StepPanel` kinds, `CountPrediction`, `AdderFigure`, `PrimitiveOperation`, its five program definitions and tests. It also checked the changed field-reading gate, listing-pair navigation and reference links, product-halves state note, lesson placements and the relevant canonical prose changes. Native lesson changes were read as rearrangements of existing evidence, without rerunning GNU/QEMU/GDB in this review.
+
+## Accepted corrections and independent challenge
+
+- Memory: region labels group only adjacent, equal roles from `memoryTransferAt`; source addresses retain their model-derived byte-to-bit association. Sorting by increasing index changes display order, not values. The register-order sentence describes the new order. The physical x-register expansion remains available for loads/extension. Store views retain only transferred bytes. The full binary byte detail is opt-in. Read/write markings still derive from actual accesses, including a write of unchanged bits.
+- Stack: frame and slot inclusive bounds derive from the existing reconstructed allocation and actual stores. Summary values use the exact bigint reconstructed from current memory, including zero. A last-instruction access mark uses address-range intersection, independently of whether values changed. Byte detail retains every byte, and frame release retains the explanation that restoring SP does not erase storage. Prediction locks, initial presets, reversible stepping and reset semantics are untouched.
+- Probe rows: the removed committed starting row is represented by the outcome's before row. For the mask case, `MaskView` already retains before, mask and result with full-width disclosure, so suppressing the other outcome rows removes repetition without losing the comparison. The current mask use supplies the same input to both views.
+- Flags: both current stepper uses with a panel compare once and preserve those flags afterwards. Each panel already renders the flags after that compare. Removing the parallel current-flags row therefore removes a duplicate in these actual examples. Before the compare, the panel shows its waiting state rather than exposing the comparison result.
+- Count prediction: decimal presentation is opt-in; starting values retain the same 32-bit conversion, and toggling bits does not execute or commit a run. Existing branch usage retains its original default.
+- Adder enlargement: the selected group follows the most recently revealed bit. Operand, result and carry cells reuse the same arrays and reveal bounds as the main diagram. Unrevealed result bits remain dots. It neither executes another instruction nor supplies a result before arithmetic reveal.
+- First operations: the five snippets use the real simulator, including the old value of a reused destination. The two-instruction task carries state forward and moves the next marker to the second instruction after the first executes. Single-operation tasks keep labelled starting inputs distinct from the resulting read/write diagram. Predictions unlock after submission, including a wrong answer, and persisted stage/step/prediction reconstruct the same result. The displayed arithmetic prefixes omit only the trace wrapper's `ret`; the activity explicitly stops at the prefix.
+- Shared siblings: field-reading and product-halves gates still depend on the submitted prediction slot. ListingPair navigation operates on each contained listing's horizontal position, retaining the complete paired source and checked instruction associations. All component consumers remain eligible for browser overflow checks; source inspection alone cannot establish their geometry.
+
+## Rejected concerns and reasons
+
+- Compact stack summaries fabricate compiler frame layout: rejected. The existing helper identifies allocations from SP writes and slots from executed stores; the new primary view consumes that helper rather than adding a layout assumption.
+- Byte-count tests were weakened to accommodate missing data: rejected. New summary cards introduce additional access attributes; scoping the original exact byte/value assertions to `.al-stack-bytes` preserves their meaning. Closed native disclosures retain those cells in the DOM.
+- Hiding binary detail destroys loading-width evidence: rejected as a source claim. Hex bytes, addressed transferred bytes and grouped loaded/sign-fill/cleared-upper roles remain visible; the binary cells are available on request. Whether the reduced view is legible and sufficient on a phone remains a browser question.
+- Flags dedup is universally safe for arbitrary future panel programs: not accepted as a general claim. The panels describe their first compare; a future program that later writes flags would need separate design. No such later flag writer occurs in the current changed panel examples, so this is not a present regression.
+- A prediction before a result is itself a spoiler: rejected. The new arithmetic tasks reveal feedback only after submission, and the first worked task is explicitly an example.
+
+## Verification and limits
+
+Independent focused command:
+
+`npx vitest run packages/views/src/memoryFigures.test.tsx packages/views/src/stackFigures.test.tsx packages/views/src/stack.test.ts packages/views/src/branchFigures.test.tsx packages/views/src/adder.detail.test.tsx packages/views/src/arith.figures.test.tsx packages/views/src/stepper.changes.test.tsx`
+
+Result: **7 files passed, 117 tests passed**, exit status 0. No skips or failures were reported. This is a focused rerun, not a full-suite result.
+
+Read the new primitive tests and model/corpus facts checks; this reviewer did not execute them in that command. The primitive test described as restoring a completed state rerenders the same mounted component/store. That is useful rendering coverage but does not independently prove a fresh mount or browser reload. Final checker should reload at a completed prediction and mid-sequence, then verify the restored stage, feedback and next marker; also test Restart. Retained stale localStorage can otherwise conceal an initial-state issue.
+
+No browser was exercised by this reviewer at this point. The final checker must inspect initial, committed, stepped, reversed/reset and restored states, byte disclosures/toggles, shared component siblings, phone/desktop and actual light/dark rendering against the final build. In particular, measure the memory register regions, recursive deepest-point view and listing navigation; source/CSS does not establish reduced reference travel or absence of overflow. Subsequent edits affecting these reviewed areas require recheck.
+
+## Final-source follow-up
+
+Re-read the stable changes after the memory comparison selector, compiler phase metadata, compact stack offsets and native stack reference landed. The managing session identifies the final production assets as `index-DCRONSzr.js` / `index-l0iwkmlu.css`, served on port 4322; this reviewer did not rebuild or perform the per-lesson browser matrix. Other independent checkers own that final-browser evidence.
+
+Accepted after challenge:
+
+- Memory comparison switches derive a fresh trace from the selected case and retain the instruction position. Current mounted cases each consist of one load and a return, so the retained position denotes the same executed moment. Loading-width cases keep identical memory and pointer inputs; addressing cases expose the actual recorded access address separately from the address register before/after the instruction, which correctly distinguishes post-index from pre-index. No result from the former selected trace is retained. Reset retains the chosen case and removes its executed transfer. The enclosing prediction gate applies before the selector or source/result views are rendered. Source disclosure retains complete paired C/listing and current run highlighting. The containment rules give the disclosure and listing a bounded width and `min-width: 0`; browser evidence must establish the resulting geometry.
+- Stack compact offsets are relative to the displayed frame base; the inclusive end is `group.address + group.bytes.length - frame.base - 1`. Each frame retains its full inclusive address bounds and individual byte addresses remain available in the disclosure. Title/accessible text supplies full slot ranges. Moving the register bank and return target above the controls does not alter their trace position or write semantics.
+- Compiler `loopPhase` is optional AST-derived metadata. `inPhase` changes only the metadata attached by `emit`; emitted instructions, their order and `cLine` remain unchanged. Nested loop phases override the outer body phase locally and restore it afterwards. CompilerPlayground finds the metadata by the next listing line, so the cue describes the operation about to execute. Existing evidence comparisons now project the two original source-association fields and continue to assert exact listing and source equality. The new compiler test independently pins phase categories and their actual emitted instructions even for a single-line `for` header.
+- CEditor retains the selected valid statement when switching modes and otherwise chooses the first parseable statement rather than a function header/closing brace/else marker. It does not mutate source by switching modes.
+- NativeFigure's `stack_top` is the stack region's exclusive `end`, not its last byte. `scripts/native/check.py` derives that exact region endpoint from `sym['stack_top']` and checks prepared-startup SP against it. The label is reused from the existing native diagram labels and the value is explicitly a reference, without a false write mark.
+- Updated Module A and memory tests reflect actual additional reference panes or consolidated selectors and retain exact listing counts within each reference, closed-disclosure assertions, and the original post-index pointer result. Branches/compare prose-fence checks now assert the same complete recorded C and listing in the sole opening figure. Removed canonical-copy duplicates match the removal of duplicate UI prose, rather than removing independently visible required copy.
+
+One confirmed test-integrity finding was sent to the managing session: `compare-and-choose.facts.test.ts` removed `steeper_s` from the GCC corpus-equivalence loop even though this function remains displayed in `STEEPER_BOTH` and remains in `module4-gcc.s`. Removing the duplicate prose fence does not justify dropping that independent differential-corpus assertion. Smallest correction: restore `steeper_s` to that loop. This is open until the correction is independently read; it is a verification regression rather than an observed application error.
+
+Independent final-source focused command:
+
+`npx vitest run packages/views/src/memoryFigures.test.tsx packages/views/src/stackFigures.test.tsx packages/views/src/CEditor.test.tsx packages/views/src/compilerFigure.test.tsx packages/compiler/src/compiler.test.ts packages/compiler/src/evidence.test.ts content/lessons/module-10.test.tsx content/lessons/module-a.test.tsx content/lessons/compare-and-choose.facts.test.ts content/lessons/branches.facts.test.ts`
+
+Result: **10 files passed, 229 tests passed**, exit status 0, no reported skips or failures. This remains a focused rerun; it does not replace the managing session's full-suite and native-tool results. The earlier 117-test result remains a distinct command. No browser or native process was exercised by this reviewer. Source rechecks establish the technical relationships above, while phone/desktop themes, disclosure geometry, restored state and the final-build learner judgement remain the other checkers' remit.
+
+### Closure
+
+The managing session restored `steeper_s` to the exact GCC corpus-equivalence list. This reviewer independently read that restoration and reran `npx vitest run content/lessons/compare-and-choose.facts.test.ts`: **1 file passed, 47 tests passed**, no reported skips/failures. The sole confirmed verification regression above is therefore **closed**. No open technical blocker remains in the reviewed changes.
+
+The subsequent stack adjustment reorders only slider/legend/controls/status and widens the visible offset column. No model, access-range or offset arithmetic changed; the source verdict on those relationships stands. Its final layout remains subject to the independent browser checker rather than this source review. Full-suite/build/native outcomes must be read from the managing session's separate command records.

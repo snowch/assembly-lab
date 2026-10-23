@@ -20,6 +20,7 @@ import {
   TRIP_DISTANCE_AND_FUEL_USED,
 } from "./meet-the-machine.listings";
 import { PROSE } from "./meet-the-machine.prose";
+import { PRIMITIVE_PROGRAMS, primitiveProgram } from "./meet-the-machine.primitives";
 
 /** The model the lesson's figures run: one instruction to a step (the book's note names it). */
 const STEPS = "steps";
@@ -90,27 +91,46 @@ export const meetTheMachine: LessonInput = {
       kind: "question",
       title: LABELS.titles.question,
       prose: PROSE.question,
+    },
+    {
+      kind: "motivation",
+      title: LABELS.titles.motivation,
+      prose: PROSE.motivation,
+      interactives: [
+        {
+          id: "first-operations",
+          kind: "primitive-operation",
+          timeModel: STEPS,
+          caption: PROSE.primitiveCaption,
+          props: {
+            stages: PRIMITIVE_PROGRAMS.map((item, index) => ({
+              ...PROSE.primitiveStages[index],
+              program: primitiveProgram(item),
+              call: { entry: item.entry, args: [...item.args] },
+              registers: [...item.registers],
+              steps: item.instructions.length,
+              predict: index > 0 && index < 4,
+            })),
+          },
+        },
+      ],
+    },
+    {
+      kind: "prediction",
+      title: LABELS.titles.prediction,
+      prose: PROSE.prediction,
       interactives: [
         {
           id: "trip-listing",
           kind: "listing",
           timeModel: "none",
           caption: LABELS.captions.listing,
-          // Two closed notes under the listing: the compiler and its setting, and GCC's line 7.
           props: {
             program: TRIP_DISTANCE,
             showCompilerLines: true,
             notes: [PROSE.compilerNote, PROSE.lineNote],
           },
         },
-      ],
-    },
-    { kind: "motivation", title: LABELS.titles.motivation, prose: PROSE.motivation },
-    {
-      kind: "prediction",
-      title: LABELS.titles.prediction,
-      prose: PROSE.prediction,
-      interactives: [
         {
           id: "arg-registers",
           kind: "arg-registers",
@@ -164,11 +184,11 @@ export const meetTheMachine: LessonInput = {
             registers: [0, 1, 2, 3],
             after: "predict-total",
             // Module 0 shows what each step read and wrote, and each register as a decimal number.
-            flow: true,
+            flow: false,
             decimal: true,
             // The first step teaches the operand rule; later arithmetic steps ask learners to apply it.
-            expect: true,
-            compact: true,
+            expect: false,
+            compact: false,
             endNote: PROSE.investigationEnd,
           },
         },

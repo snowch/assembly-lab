@@ -47,8 +47,10 @@ import { ProductHalves, DivisionParts } from "./ProductHalves";
 import { CompilerPlayground } from "./CompilerPlayground";
 import { RecordedPrediction } from "./RecordedPrediction";
 import { StackStepper } from "./StackStepper";
+import { PrimitiveOperation } from "./PrimitiveOperation";
 
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
+  "primitive-operation": PrimitiveOperation,
   "native-tools": NativeFigure,
   listing: ListingFigure,
   "listing-compare": ListingCompare,

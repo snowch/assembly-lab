@@ -67,7 +67,13 @@ Set or clear any bit, or press "Clear bits" to start from zero.
 
 ## 5. Bits that read as −1
 
-You can press bits one at a time, or type a pattern in hexadecimal and the bits follow it. The figure in "Reading the bits" shows both readings of any bits you change there.
+You can press bits one at a time, or type a pattern in hexadecimal and the bits follow it.
+
+Use the optional scratch register beside this exercise to try a pattern and inspect its readings. It starts with all bits clear. Changes there do not fill in your answers below.
+
+*An optional scratch register beside the exercise.*
+
+Try a pattern in the scratch register
 
 **Make −1**
 
@@ -297,7 +303,7 @@ Every constant in these listings is a pattern of bits. The C type affects how ma
 
 ## 9. Four instructions
 
-The figure shows four instructions: `mov x1, -1`, `mov w1, 5`, `mov w2, 16960`, `movk w2, 0xf, lsl 16`.
+Follow the four instructions in the listing. Track the two register values separately.
 
 **Predict two registers**
 

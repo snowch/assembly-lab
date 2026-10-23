@@ -121,6 +121,7 @@ describe("the lesson", () => {
       ["predict-add-12", "trace-prediction"],
       ["step-add-12", "stepper"],
       ["read-register", "register-reader"],
+      ["scratch-minus-one", "register-reader"],
       ["make-minus-one", "challenge"],
       ["make-minus-one-solved", "challenge-note"],
       ["compare-int-unsigned", "listing-compare"],
@@ -311,6 +312,9 @@ describe("the page", () => {
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll(".al-compare-result")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
-    expect(container.querySelectorAll('[data-figure="register-reader"]')).toHaveLength(1);
+    expect(container.querySelectorAll('[data-figure="register-reader"]')).toHaveLength(2);
+    const scratch = container.querySelector(".al-reader-scratch")!;
+    expect(scratch.hasAttribute("open")).toBe(false);
+    expect(scratch.querySelector('[data-reading="hex"]')?.textContent).toContain("00000000");
   });
 });
