@@ -2,7 +2,7 @@
 
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { parseLesson, learnerText } from "@platform/lesson-schema";
+import { parseLesson, learnerText, termPattern } from "@platform/lesson-schema";
 import { traceOf, viewAt, wValue } from "@al/views";
 import { parseRegName } from "@al/machine";
 import { grade } from "../../packages/views/src/grader";
@@ -22,6 +22,12 @@ const strings = (value: unknown): string[] =>
         : [];
 
 describe("visible Fundamentals lessons", () => {
+  it("keeps shifting out of the visible addition text while linking the official reference", () => {
+    const visible = learnerText(lessons[0]!)
+      .join("\n")
+      .replace(/https?:\/\/[^\s)]+/g, " ");
+    expect(visible).not.toMatch(termPattern("shift"));
+  });
   it("gives each mechanism a stable lesson and mounts both reuse and subtraction", () => {
     expect(lessons.map((lesson) => lesson.id)).toEqual([
       "one-addition",
@@ -127,6 +133,9 @@ describe("visible Fundamentals lessons", () => {
     const text = lessons
       .flatMap(learnerText)
       .join("\n")
+      // Reference URL issue dates are document identities, not arithmetic claims.
+      // Exact checked destinations remain covered by the browser link assertions.
+      .replace(/https?:\/\/[^\s)]+/g, " ")
       .replace(/[A-Za-z_][A-Za-z_0-9]*/g, " ");
     expect(
       [...text.matchAll(/\d+(?:\.\d+)?/g)]

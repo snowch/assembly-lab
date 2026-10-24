@@ -9,8 +9,8 @@ export const VIEW_STRINGS = {
   /** The note for the simulator (the book's `steps` model), shown on figures without a role badge. */
   modelNote:
     "Each step runs one instruction in the simulator. Between steps, the simulated processor stays as the last instruction left it.",
-  /** The badge on a figure that runs the simulator, and the heading over its note. */
-  modelBadge: "Stepped",
+  /** Steps can be simulated execution or explicitly labelled recorded output. */
+  modelBadge: "Step by step",
   modelHeading: "How the simulator steps",
   figureRoles: {
     prediction: "Prediction",

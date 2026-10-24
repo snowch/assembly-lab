@@ -145,7 +145,7 @@ describe("a visible single arithmetic activity", () => {
     const { user } = setup(Number(index), true);
     await user.type(screen.getByRole("spinbutton"), String(result));
     await user.click(screen.getByRole("button", { name: S.check }));
-    expect(screen.getByRole("status")).toHaveTextContent(`Write ${destination} = ${result}`);
+    expect(screen.getByRole("status")).toHaveTextContent(`${S.output} ${destination} = ${result}`);
     expect(screen.getByRole("status")).toHaveTextContent(S.reused(String(destination)));
     expect(screen.getByRole("status")).toHaveTextContent(S.correct);
   });
@@ -159,8 +159,8 @@ describe("a visible single arithmetic activity", () => {
       within(screen.getByRole("group", { name: S.current })).getByText("11"),
     ).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: S.run }));
-    expect(screen.getByRole("status")).toHaveTextContent("Read w2 = 11");
-    expect(screen.getByRole("status")).toHaveTextContent("Write w2 = 8");
+    expect(screen.getByRole("status")).toHaveTextContent(`${S.input} w2 = 11`);
+    expect(screen.getByRole("status")).toHaveTextContent(`${S.output} w2 = 8`);
     await user.click(screen.getByRole("button", { name: S.restart }));
     expect(container.querySelector(".al-primitive-result")).toBeNull();
     expect(instructions()[0]).toHaveAttribute("data-next", "true");

@@ -14,9 +14,9 @@ export const PRIMITIVE_STRINGS = {
   question: (name: string) => `What value will ${name} hold after this instruction?`,
   correct: "Your prediction matched.",
   incorrect: "Compare your prediction with the result.",
-  input: "Read",
-  output: "Write",
-  outputPending: "Write after running",
+  input: "Input",
+  output: "Destination written",
+  outputPending: "Destination",
   unchanged: (names: string) =>
     `${names} ${names.includes(",") ? "keep their values" : "keeps its value"}.`,
   reused: (name: string) =>

@@ -21,7 +21,7 @@ export const FUNDAMENTALS_LABELS = {
       reflection: "Read before calculating",
     },
     captions: {
-      figure: "One addition with its starting inputs and result.",
+      figure: "Press Run the instruction to see the result written to w2.",
       challenge: "A new addition to trace without running it.",
     },
     challenge: {

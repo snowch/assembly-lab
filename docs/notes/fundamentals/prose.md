@@ -20,7 +20,7 @@ An **instruction** tells the processor to perform an operation. Assembly languag
 
 ### addition / sections / prediction
 
-In `add w2, w0, w1`, the first operand names the register written. The second and third supply the values to add. Point to the inputs and the destination.
+In `add w2, w0, w1`, `w0` and `w1` are the **inputs**: the instruction reads the values stored there. It adds those values and writes the result into `w2`. The register that receives the result is the **destination**, named first in this instruction.
 
 ### addition / sections / investigation
 
@@ -56,7 +56,7 @@ One addition
 
 ### addition / figure / prose
 
-The inputs are already in registers. Run `add w2, w0, w1` once.
+The diagram shows the input values and where the result will go. Run `add w2, w0, w1` once.
 
 ### addition / registerViews / caption
 
@@ -72,7 +72,9 @@ Arm’s reference manuals
 
 ### addition / references / prose
 
-[Arm’s instruction reference](https://developer.arm.com/documentation/ddi0602/latest/) describes the instructions used here. The [architecture reference manual](https://developer.arm.com/documentation/ddi0487/latest/) also describes the registers and the wider processor rules.
+[Arm’s instruction reference](https://support.arm.com/documentation/ddi0602/2026-09/Base-Instructions/ADD--shifted-register---Add-optionally-shifted-register-) opens at the entry for `add`. The [architecture reference manual](https://developer.arm.com/documentation/ddi0487/latest/) describes the registers and wider processor rules.
+
+Both references are free to read without an account. If an Arm ID sign-in panel opens, close it to read the documentation.
 
 ### addition / challenge / task
 
@@ -164,7 +166,7 @@ Read before calculating
 
 ### addition labels / captions / figure
 
-One addition with its starting inputs and result.
+Press Run the instruction to see the result written to w2.
 
 ### addition labels / captions / challenge
 
