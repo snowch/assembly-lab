@@ -16,6 +16,7 @@ export const PRIMITIVE_STRINGS = {
   incorrect: "Compare your prediction with the result.",
   input: "Read",
   output: "Write",
+  outputPending: "Write after running",
   unchanged: (names: string) =>
     `${names} ${names.includes(",") ? "keep their values" : "keeps its value"}.`,
   reused: (name: string) =>
@@ -23,13 +24,13 @@ export const PRIMITIVE_STRINGS = {
   stopped: "The activity stops after the instructions shown.",
   caller: "Caller",
   callerCall: (entry: string, input: number) => `${entry}(${input})`,
-  callArgument: (value: number) => `Argument supplied: ${value}`,
-  callerWaiting: "Waiting for increment_int to return",
+  callerWaiting: "Waiting",
   callerReturned: (value: number) => `Resumed with result: ${value}`,
   functionEntry: "The argument is in w0. Run add to prepare the result.",
   functionAfterAdd: "The result is in w0. Run ret to return to the caller.",
   functionReturned: "ret returned to the caller. It left w0 unchanged.",
-  functionNavigation: "View the function’s C and instructions",
-  showInstructions: "Show instructions",
-  showC: "Show C",
+  argumentPath: "Argument",
+  returnPath: "Return to caller",
+  result: "Result",
+  resultReady: "Result ready",
 } as const;

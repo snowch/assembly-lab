@@ -106,8 +106,7 @@ for (const theme of ["light", "dark"] as const) {
     }) => {
       const errors = watchErrors(page);
       await openLesson(page, "tiny-function");
-      // Measure the pane control after the asynchronous offline notice has settled. Otherwise
-      // Playwright may scroll to follow that layout change before the click handler even runs.
+      // Measure local scrolling after the asynchronous offline notice has settled.
       await expect(page.locator(".offline-status")).toHaveAttribute("data-offline", "ready", {
         timeout: 30_000,
       });
@@ -125,26 +124,44 @@ for (const theme of ["light", "dark"] as const) {
       });
       expect(geometry.asmLeft).toBeGreaterThanOrEqual(geometry.cRight - 1);
       expect(Math.abs(geometry.cTop - geometry.asmTop)).toBeLessThan(1);
-      for (const [name, selector] of [
-        [P.showInstructions, ".al-asm"],
-        [P.showC, ".al-c"],
-      ] as const) {
-        const control = fn.getByRole("button", { name, exact: true });
-        await control.scrollIntoViewIfNeeded();
-        const scroll = await page.evaluate(() => window.scrollY);
-        await press(page, control);
-        await expect(
-          fn.getByRole("group", { name: P.functionNavigation }).getByRole("button"),
-        ).toBeFocused();
-        expect(await page.evaluate(() => window.scrollY)).toBe(scroll);
-        expect(
-          await listing.evaluate((el, pane) => {
-            const outer = el.getBoundingClientRect();
-            const inner = el.querySelector(pane)!.getBoundingClientRect();
-            return inner.left >= outer.left - 2 && inner.left < outer.right;
-          }, selector),
-        ).toBe(true);
+      await expect(fn.getByRole("button", { name: /^Show (C|instructions)$/ })).toHaveCount(0);
+      // Complete source panes stay side by side. Native sideways scrolling moves only the
+      // listing, at phone/tablet widths and after resizing from a wide viewport.
+      for (const width of [375, 768, 1280]) {
+        await page.setViewportSize({ width, height: 900 });
+        await listing.scrollIntoViewIfNeeded();
+        const pageScroll = await page.evaluate(() => window.scrollY);
+        const bounds = await listing.evaluate((el) => ({
+          viewport: el.clientWidth,
+          content: el.scrollWidth,
+        }));
+        await listing.evaluate((el) => {
+          el.scrollLeft = el.scrollWidth;
+        });
+        if (bounds.content > bounds.viewport) {
+          expect(await listing.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+          expect(
+            await listing.evaluate((el) => {
+              const outer = el.getBoundingClientRect();
+              const asm = el.querySelector(".al-asm")!.getBoundingClientRect();
+              return asm.right <= outer.right + 2 && asm.right > outer.left;
+            }),
+          ).toBe(true);
+          await listing.focus();
+          await expect(listing).toBeFocused();
+          const before = await listing.evaluate((el) => el.scrollLeft);
+          await page.keyboard.press("ArrowLeft");
+          await expect.poll(() => listing.evaluate((el) => el.scrollLeft)).toBeLessThan(before);
+        }
+        await listing.evaluate((el) => {
+          el.scrollLeft = 0;
+        });
+        expect(await page.evaluate(() => window.scrollY)).toBe(pageScroll);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+          true,
+        );
       }
+      await page.setViewportSize({ width: isMobile ? 375 : 1280, height: isMobile ? 812 : 800 });
       const caller = fn.locator(".al-primitive-caller");
       await expect(current(fn, "w0")).toHaveText("7");
       await expect(caller).toHaveAttribute("data-caller-returned", "false");

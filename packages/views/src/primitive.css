@@ -111,3 +111,84 @@
   min-width: 0;
   max-width: 100%;
 }
+
+.al-primitive-call-flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(3rem, auto) auto;
+  align-items: center;
+  gap: var(--space-2);
+}
+.al-primitive-call-register {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+}
+.al-primitive-call-register > span,
+.al-primitive-call-path > span:first-child:not(.al-primitive-call-arrow) {
+  font-size: var(--text-sm);
+}
+.al-primitive-call-path {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: center;
+  text-align: center;
+  max-width: 6rem;
+}
+.al-primitive-call-arrow {
+  display: block;
+  width: 3rem;
+  border-top: 2px solid var(--fg);
+  position: relative;
+}
+.al-primitive-call-arrow::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: -5px;
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 7px solid var(--fg);
+}
+.al-primitive-call-path[data-active="false"] .al-primitive-call-arrow {
+  border-top-style: dotted;
+  border-color: var(--border-strong);
+}
+.al-primitive-call-path[data-active="false"] .al-primitive-call-arrow::after {
+  display: none;
+}
+.al-primitive-call-flow[data-returned="true"] .al-primitive-call-arrow {
+  border-top-style: dashed;
+}
+.al-primitive-call-flow[data-returned="true"] .al-primitive-call-arrow::after {
+  left: -1px;
+  right: auto;
+  border-left: 0;
+  border-right: 7px solid var(--fg);
+}
+.al-primitive-output[data-pending="true"] {
+  border: 1px dashed var(--border-strong);
+}
+@media (max-width: 32rem) {
+  .al-primitive-call-flow {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+  .al-primitive-caller {
+    justify-self: stretch;
+  }
+  .al-primitive-call-path {
+    grid-template-columns: auto auto;
+    align-items: center;
+    max-width: none;
+    min-height: 2rem;
+  }
+  .al-primitive-call-arrow {
+    transform: rotate(90deg);
+    width: 1.5rem;
+  }
+  .al-primitive-inputs {
+    flex-wrap: wrap;
+  }
+}

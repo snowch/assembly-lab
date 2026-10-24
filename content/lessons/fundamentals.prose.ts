@@ -5,26 +5,21 @@
 export const FUNDAMENTALS_PROSE = {
   addition: {
     sections: {
-      question:
-        "How does a processor add two values? Start with one instruction and watch where its result goes.",
+      question: "How does a processor add two values?",
       motivation:
         "A **register** is a small store inside the processor that holds a value. The names `w0`, `w1` and `w2` select 32 bits of three registers. Module 1 shows the rest of each register.\n\nAn **instruction** tells the processor to perform an operation. Assembly language writes instructions with names such as `add`. The parts after the name are its **operands**.",
       prediction:
-        "In `add w2, w0, w1`, the first operand names the register written. The instruction adds the values supplied by the second and third operands. Before running it, point to the two inputs and the destination.",
+        "In `add w2, w0, w1`, the first operand names the register written. The second and third supply the values to add. Point to the inputs and the destination.",
       investigation:
-        "The figure starts with `w0` holding 12, `w1` holding 7 and `w2` holding 0. Press Run the instruction. Compare the inputs with the result.\n\nThe figure runs a simulator in your browser. The simulator imitates the processor; the course calls it the model.",
+        "Press Run the instruction. The figure runs a **simulator** in your browser: a program that imitates the processor. The course calls it the model.",
       construction:
-        "Read the instruction from left to right: add, write `w2`, read `w0`, read `w1`. The destination tells you where to put the sum.",
-      failureExperiment:
-        "Reading a register does not empty it. Check the two input registers after the instruction: did either lose its value?",
-      explanation:
-        "This addition reads its inputs and writes its destination. The other registers keep their values.",
+        "Read the result back through the instruction: which operand names the register that was written?",
+      failureExperiment: "Did either input register lose its value when the instruction read it?",
+      explanation: "Reading preserves the inputs. Only the destination is written.",
       generalisation:
-        "The first operand can name a different destination. Use that rule in the new example below; its inputs differ from the figure above.",
-      challenge:
-        "Work out the result of one addition without running it. Give the value written and the value of an input register afterwards.",
-      reflection:
-        "When you read an `add`, identify its destination before calculating. Which operands supply the values, and which operand names the register written?",
+        "The destination can be a different register. Apply the same operand rule below.",
+      challenge: "Trace a new addition without running it.",
+      reflection: "Before calculating, identify the inputs and the destination.",
     },
     figure: {
       title: "One addition",
@@ -51,30 +46,28 @@ export const FUNDAMENTALS_PROSE = {
   },
   function: {
     sections: {
-      question:
-        "How does an addition become the result of a function call? Follow a function that increases its input by one.",
+      question: "How does a function give its result back to the code that called it?",
       motivation:
         "`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C below into an assembly **listing**, a written sequence of instructions. `increment_int:` names the function.\n\nCode that calls a function is its **caller**. The input it supplies is an **argument**. For this function, the argument arrives in `w0` and the integer result is left in `w0` too.",
       prediction:
-        "In `add w0, w0, 1`, the last operand is the number one written inside the instruction. The instruction reads the incoming `w0` and writes the increased value back there. What still needs to happen before the caller can continue?",
+        "In `add w0, w0, 1`, the last operand is the number one written inside the instruction. After the addition, can the caller continue yet?",
       investigation:
-        "Follow `increment_int(7)` below. Run `add` to prepare the result, then run `ret` to return to the caller. Use Show instructions or Show C to move across the paired listing on a narrow screen.",
+        "On a narrow screen, scroll sideways within the listing to see the C and instructions.",
       construction:
-        "Follow the value through the call: the caller supplies the argument, the function calculates in `w0`, and the caller receives the value left there when the function returns.",
+        "Match `n` in the C to the incoming value in `w0`. Which instruction prepares the result?",
       failureExperiment:
-        "Look back at the state after the addition: the result was ready in `w0`, while the caller was still waiting. Running `ret` let the caller continue with that result.",
+        "After `add`, the result was ready but the caller was waiting. Which instruction let it continue?",
       explanation:
-        "`ret` returns to the code that called the function. It does not calculate or move the result. The caller uses the value already in `w0`.",
+        "`ret` returns to the caller without moving the result. The caller uses the value already in `w0`.",
       generalisation:
-        "This placement of an integer argument and result is a rule for calling these functions. It is separate from the operand rule: `add` still writes the register named by its first operand.",
-      challenge:
-        "Now follow the same function with a different argument. Calculate the value it returns without running this call.",
+        "The calling rule puts this integer argument and result in `w0`. The operand rule still makes `add` write its first operand.",
+      challenge: "Trace the same function with a different argument, without running it.",
       reflection:
         "Describe the two jobs separately: what does the addition do, and what does `ret` do?",
     },
     figure: {
       title: "A call and its return",
-      prose: "Step through `increment_int(7)`. The caller waits until `ret` runs.",
+      prose: "Run the addition, then the return. Watch `w0` and the caller.",
     },
     challenge: {
       task: "For `increment_int(0)`, the argument arrives in `w0`. The function runs `add w0, w0, 1`, then `ret`. What value does the caller receive?",
@@ -97,26 +90,20 @@ export const FUNDAMENTALS_PROSE = {
   },
   subtraction: {
     sections: {
-      question:
-        "Can an instruction read a register and replace its value? What changes when the operation is subtraction?",
+      question: "Can an instruction read a register and replace its value?",
       motivation:
-        "A destination can also supply an input. The instruction reads the old input values before writing its result. In `add w0, w0, w1`, both appearances of `w0` name the same register.",
-      prediction:
-        "The first figure starts with `w0` holding 9 and `w1` holding 4. Predict the value written to `w0`, then run the addition.",
+        "In `add w0, w0, w1`, both appearances of `w0` name the same register. The instruction reads its old value before writing the result there.",
+      prediction: "Predict what the addition writes to `w0`, then run it.",
       investigation:
-        "The subtraction figure starts a separate example: `w0` holds 20 and `w1` holds 6. `sub` subtracts its third operand from its second, then writes the register named by its first operand. Predict the result before running it.",
-      construction:
-        "Read `sub w1, w0, w1` as: write `w1` with the old value in `w0` minus the old value in `w1`.",
-      failureExperiment:
-        "Swapping subtraction's inputs changes the calculation. Check their order in the instruction before deciding which value to subtract.",
+        "`sub` subtracts its third operand from its second, then writes its first operand. The next figure starts a separate example. Predict the result before running it.",
+      construction: "In the subtraction, which old value was read before being replaced?",
+      failureExperiment: "Would swapping the subtraction inputs give the same result?",
       explanation:
-        "Repeating a register name does not create another register. An input can be read and then overwritten by the result of the same instruction.",
+        "Repeating a register name does not create another register. Read its old value before replacing it.",
       generalisation:
-        "For both `add` and `sub`, the first operand names the destination. For `sub`, keep the order of the remaining operands: second minus third.",
-      challenge:
-        "Use the subtraction rule with fresh inputs below. Track the register written and a register only read.",
-      reflection:
-        "When a register appears twice, distinguish its old input value from the result written afterwards.",
+        "Both instructions write their first operand. Subtraction keeps the input order: second minus third.",
+      challenge: "Trace a fresh subtraction without running it.",
+      reflection: "Distinguish the old input value from the result written afterwards.",
     },
     figure: {
       title: "Read and replace",
@@ -147,26 +134,21 @@ export const FUNDAMENTALS_PROSE = {
   },
   sequence: {
     sections: {
-      question:
-        "What does the second instruction read when the first has already written a result?",
-      motivation:
-        "Instructions use the state left by earlier instructions. The next example first adds into `w2`, then subtracts from that result.",
+      question: "What does the second instruction read after the first writes a result?",
+      motivation: "The next example adds into `w2`, then subtracts from that result.",
       prediction:
-        "Start with `w0` holding 8, `w1` holding 3 and `w2` holding 0. Identify which register the first instruction writes. Which instruction will read that result?",
+        "Which register does the first instruction write? Which instruction will read that result?",
       investigation:
         "The marker ▸ shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`. Run the two instructions one at a time.",
-      construction:
-        "After the first instruction, pause. Use the value now in `w2` as the second instruction's input. Do not return to its starting value.",
-      failureExperiment:
-        "Starting both instructions from the original register values would describe two separate examples. This figure runs a sequence: the second instruction uses the first instruction's result.",
+      construction: "After the addition, pause. Which value will the subtraction read from `w2`?",
+      failureExperiment: "Using the starting value of `w2` again would lose the addition's result.",
       explanation:
-        "The register values and the next-instruction position together describe this run. An arithmetic instruction updates its destination, then execution moves to the next instruction.",
+        "An arithmetic instruction writes its destination, then execution moves to the next instruction. That instruction uses the values now in the registers.",
       generalisation:
-        "`ret` changes where execution continues by returning to the caller. The worked arithmetic example stops after its two shown instructions; it does not show a complete function.",
+        "This figure stops after two arithmetic instructions. The earlier function continued with `ret` to return to its caller.",
       challenge:
-        "Trace the same sequence with fresh inputs. Keep the intermediate value in mind when you run the second instruction on paper.",
-      reflection:
-        "For each step, ask two questions: what did this instruction write, and which instruction runs next? The next lesson combines these mechanics in a complete function.",
+        "Trace the sequence with fresh inputs. Use the first result when running the second instruction.",
+      reflection: "At each step, ask: what was written, and which instruction runs next?",
     },
     figure: {
       title: "Two instructions",

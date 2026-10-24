@@ -3,7 +3,7 @@
 // Small first applications of arithmetic. All displayed input/result values and read/write
 // relationships come from a simulator trace. Operation activities stop at their arithmetic
 // prefix; the function activity also executes its return to the model's caller.
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { z } from "zod";
 import { Prose, useSlot } from "@platform/lesson-runtime";
 import { flowAt } from "../flow";
@@ -35,16 +35,6 @@ export const PrimitiveOperation = withProps(
   function PrimitiveOperation({ data, store, interactive }) {
     const [stored, setStored] = useSlot<Stored>(store, interactive.id);
     const [answer, setAnswer] = useState("");
-    const [showingInstructions, setShowingInstructions] = useState(false);
-    const functionListing = useRef<HTMLDivElement>(null);
-    function revealPane() {
-      const listing = functionListing.current?.querySelector<HTMLElement>(".al-listing");
-      const target = listing?.querySelector<HTMLElement>(showingInstructions ? ".al-c" : ".al-asm");
-      if (!listing || !target) return;
-      listing.scrollLeft +=
-        target.getBoundingClientRect().left - listing.getBoundingClientRect().left;
-      setShowingInstructions(!showingInstructions);
-    }
     const stage = data.stage;
     const isFunction = stage.kind === "function";
     const trace = useMemo(() => traceOf(stage.program, stage.call), [stage.program, stage.call]);
@@ -65,7 +55,6 @@ export const PrimitiveOperation = withProps(
         ? stage.registers.map((n) => `w${n}`).filter((name) => name !== flow.destination.name)
         : [];
     function reset() {
-      setShowingInstructions(false);
       setStored({ step: 0 });
       setAnswer("");
     }
@@ -80,36 +69,51 @@ export const PrimitiveOperation = withProps(
       <div className="al-figure al-primitive" data-figure="primitive-operation" data-k={position}>
         <h4>{stage.title}</h4>
         <Prose markdown={stage.prose} />
-        {isFunction && (
-          <div className="al-primitive-caller" data-caller-returned={returned}>
-            <strong>{S.caller}</strong>
-            <code>{S.callerCall(stage.call.entry, wValue(viewAt(trace, 0).state, 0))}</code>
-            <p>{S.callArgument(wValue(viewAt(trace, 0).state, 0))}</p>
-            <p>{returned ? S.callerReturned(wValue(view.state, 0)) : S.callerWaiting}</p>
-          </div>
-        )}
-        <p className="al-primitive-state-label">{stage.steps > 1 ? S.current : S.before}</p>
-        <div
-          className="al-primitive-registers"
-          role="group"
-          aria-label={stage.steps > 1 ? S.current : S.before}
-        >
-          {stage.registers.map((n) => (
-            <DecimalRegister
-              key={n}
-              name={`w${n}`}
-              value={wValue(stage.steps > 1 ? view.state : viewAt(trace, 0).state, n)}
-              changed={stage.steps > 1 && view.written.has(n)}
-            />
-          ))}
-        </div>
         {isFunction ? (
-          <div className="al-primitive-function-listing" ref={functionListing}>
-            <div className="al-controls" role="group" aria-label={S.functionNavigation}>
-              <button type="button" className="button secondary" onClick={revealPane}>
-                {showingInstructions ? S.showC : S.showInstructions}
-              </button>
+          <div
+            className="al-primitive-call-flow"
+            data-returned={returned}
+            data-ready={position > 0}
+          >
+            <div className="al-primitive-caller" data-caller-returned={returned}>
+              <strong>{S.caller}</strong>
+              <code>{S.callerCall(stage.call.entry, wValue(viewAt(trace, 0).state, 0))}</code>
+              <span>{returned ? S.callerReturned(wValue(view.state, 0)) : S.callerWaiting}</span>
             </div>
+            <div className="al-primitive-call-path" data-active={position === 0 || returned}>
+              {returned && <span>{S.returnPath}</span>}
+              <span className="al-primitive-call-arrow" aria-hidden="true" />
+            </div>
+            <div className="al-primitive-call-register">
+              <span>{returned ? S.result : position > 0 ? S.resultReady : S.argumentPath}</span>
+              <DecimalRegister
+                name="w0"
+                value={wValue(view.state, 0)}
+                changed={view.written.has(0)}
+              />
+            </div>
+          </div>
+        ) : (
+          <>
+            <p className="al-primitive-state-label">{stage.steps > 1 ? S.current : S.before}</p>
+            <div
+              className="al-primitive-registers"
+              role="group"
+              aria-label={stage.steps > 1 ? S.current : S.before}
+            >
+              {stage.registers.map((n) => (
+                <DecimalRegister
+                  key={n}
+                  name={`w${n}`}
+                  value={wValue(stage.steps > 1 ? view.state : viewAt(trace, 0).state, n)}
+                  changed={stage.steps > 1 && view.written.has(n)}
+                />
+              ))}
+            </div>
+          </>
+        )}
+        {isFunction ? (
+          <div className="al-primitive-function-listing">
             <ListingView
               cLines={cLinesOf(stage.program.c)}
               lines={trace.lines}
@@ -134,6 +138,29 @@ export const PrimitiveOperation = withProps(
               </li>
             ))}
           </ol>
+        )}
+        {!isFunction && position === 0 && nextFlow?.kind === "arith" && (
+          <div className="al-primitive-flow al-primitive-preview" aria-label={S.instruction}>
+            <div className="al-primitive-inputs">
+              {nextFlow.sources.map((source, index) => (
+                <span key={index}>
+                  <small>{S.input}</small>{" "}
+                  <code>
+                    {source.name} = {source.value}
+                  </code>
+                  {index === 0 && (
+                    <b aria-hidden="true">{nextFlow.operation === "add" ? "+" : "−"}</b>
+                  )}
+                </span>
+              ))}
+            </div>
+            <span className="al-primitive-arrow" aria-hidden="true">
+              ↓
+            </span>
+            <div className="al-primitive-output" data-pending="true">
+              <small>{S.outputPending}</small> <code>{nextFlow.destination.name} = ?</code>
+            </div>
+          </div>
         )}
         {isFunction && (
           <p className="al-primitive-function-status" role="status">
