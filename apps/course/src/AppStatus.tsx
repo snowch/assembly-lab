@@ -19,6 +19,8 @@ export function AppStatus({ offline }: { offline: Offline }) {
   }, [removed]);
   const [open, setOpen] = useState(false);
   const pending = offline?.preparedVersion;
+  const currentManifest =
+    published.release?.buildId === RUNNING_BUILD ? published.release : undefined;
   const version = offline?.preparing
     ? "downloading"
     : pending
@@ -212,17 +214,13 @@ export function AppStatus({ offline }: { offline: Offline }) {
                         disabled={
                           !navigator.onLine ||
                           offline.preparing ||
-                          !published.release ||
+                          (!currentManifest && !offline.canDownloadSelected) ||
                           offline.runtimeMismatch ||
                           offline.totalBytes === undefined
                         }
                         onClick={() => {
                           setRemoved(false);
-                          void offline.download(
-                            published.release!.buildId === RUNNING_BUILD
-                              ? published.release!
-                              : undefined,
-                          );
+                          void offline.download(currentManifest);
                         }}
                       >
                         {offline.state === "incomplete" ? S.actions.resume : S.actions.download}

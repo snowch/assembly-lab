@@ -116,6 +116,82 @@ test("cached CDN discovery retries an equivalent network path and never trusts c
   }
 });
 
+test("offline saving uses its matching validated inventory when freshness cannot be checked", async ({
+  context,
+}) => {
+  const site = await deployment();
+  site.cdnCache("all");
+  try {
+    const page = await context.newPage();
+    await controlled(page, site.url);
+    const panel = await openStatus(page);
+    await expect(panel.locator('[data-version="error"]')).toBeVisible();
+    await expect(
+      panel.getByRole("button", { name: "Download for offline use", exact: true }),
+    ).toBeEnabled();
+    await downloadOffline(page);
+    await expect(panel.locator('[data-version="error"]')).toBeVisible();
+    site.connected(false);
+    await context.setOffline(true);
+    expect((await page.reload())?.fromServiceWorker()).toBe(true);
+    const reopened = await openStatus(page);
+    await expect(reopened.locator('[data-version="offline"]')).toBeVisible();
+    await offlineReady(page);
+    expect(await currentBuild(page)).toBe(site.initial.buildId);
+  } finally {
+    await context.close();
+    await site.close();
+  }
+});
+
+test("a retained older selection cannot be saved as the freshly loaded release without its manifest", async ({
+  context,
+}) => {
+  const site = await deployment();
+  try {
+    const page = await context.newPage();
+    await controlled(page, site.url);
+    await downloadOffline(page);
+    const next = site.publish("selected-before-remove");
+    const initialPanel = await prepareUpdate(page);
+    await initialPanel.getByRole("button", { name: "Later", exact: true }).click();
+    const observer = await context.newPage();
+    await observer.goto(`${site.origin}/observer`);
+    await page.close();
+    await waitForRuntime(observer, site.url, next.buildId);
+    const reopened = await context.newPage();
+    await controlled(reopened, site.url);
+    expect(await currentBuild(reopened)).toBe(site.initial.buildId);
+    const panel = await openStatus(reopened);
+    await panel.getByRole("button", { name: "Remove offline copy", exact: true }).click();
+    await panel
+      .locator(".remove-confirmation")
+      .getByRole("button", { name: "Remove offline copy", exact: true })
+      .click();
+    await expect(panel.locator('[data-offline="idle"]')).toBeVisible();
+    site.metadata("failure");
+    await reopened.reload();
+    await expectRelease(reopened, "selected-before-remove", next.buildId);
+    const refreshedPanel = await openStatus(reopened);
+    await expect(refreshedPanel.locator('[data-version="error"]')).toBeVisible();
+    await expect(
+      refreshedPanel.getByRole("button", { name: "Download for offline use", exact: true }),
+    ).toBeDisabled();
+    site.metadata("valid");
+    await refreshedPanel.getByRole("button", { name: "Retry", exact: true }).click();
+    await expect(refreshedPanel.locator('[data-version="current"]')).toBeVisible();
+    await downloadOffline(reopened);
+    site.connected(false);
+    await context.setOffline(true);
+    expect((await reopened.reload())?.fromServiceWorker()).toBe(true);
+    await expectRelease(reopened, "selected-before-remove", next.buildId);
+    await offlineReady(reopened);
+  } finally {
+    await context.close();
+    await site.close();
+  }
+});
+
 test("detect, download, defer and explicit restart reload every app tab while preserving work", async ({
   context,
 }) => {

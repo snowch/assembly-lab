@@ -15,3 +15,13 @@ Focused unit verification: 2 files / 51 tests passed. Final committed-build brow
 Independent Chrome/GitHub Pages verification passed 16 fresh aliases: every response was 200 with `Age: 0`, the expected deployed commit/build and a CDN miss. Reusing three aliases with new query strings returned positive Age, confirming why the fallback guard remains necessary.
 
 The first new browser command was stopped with exit 130 after one failed desktop case and one not run. Its final recovery action incorrectly looked for Check for updates after the deliberately induced error; the correct UI offers Retry. The test now presses Retry, retaining every stale/current/error assertion. An overlapping rerun exited 1 before executing tests because its old port was still occupied. After disposing of that run, the corrected separate-port command passed both desktop and phone cases: 2 passed (8.9 seconds), `/tmp/status-pages-cdn-precommit-corrected.log`. These harness failures are not presented as product passes.
+
+## Offline saving remains independent
+
+The same live failure exposed an unnecessary first-save dependency: the UI required published metadata even when the owned worker already held the validated inventory for the loaded app. The independent technical reviewer confirmed this gap and identified the necessary selection guard. Runtime identity alone is insufficient: after removing a deferred update, selected metadata can still be A while both worker runtime and an online-refreshed document are B. An unspecified download target would then save A.
+
+The UI now permits download without published metadata only when both the worker's selected release and runtime match the loaded build, with known inventory and the existing cold-runtime guard. The download action rechecks both identities through the worker immediately before transfer. A supplied current-document manifest still supports adopting B when selected A is incomplete. No learner-facing strings changed.
+
+Two real browser scenarios check first save with every metadata response cached, followed by a physically disconnected fresh launch; and selected A/runtime B/document B after removal, where an unavailable manifest keeps Download disabled until Retry obtains B's manifest, then saves and reopens B offline.
+
+The earlier committed `2f84dd0` local full command passed 146 unit files / 2,875 tests and built successfully. It was stopped before these edits: exit 130, 396 browser cases passed, 12 skipped, 1 interrupted, 759 not run; no failed cases. This is not a full local pass. Final-source browser and CI results are recorded in the follow-up PR.
