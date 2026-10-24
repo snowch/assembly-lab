@@ -58,7 +58,7 @@ export const PROSE = {
   ] as const,
 
   failureExperiment:
-    "The figures so far showed 32 bits, because they used `w` names. Each register holds 64 bits, and it has two names.\n\n" +
+    "The `w` names in the earlier arithmetic examples selected 32 bits. Each register holds 64 bits, and it has two names.\n\n" +
     "The `x` name, `x3`, names all 64 bits. The `w` name, `w3`, names the lower 32 bits of the same register. They are not two registers.\n\n" +
     "The figure runs `mov x3, -1`, which sets all 64 bits, then `mov w3, -1`.",
   failureQuestion: "**After `mov w3, -1`, what does `x3` hold?**",

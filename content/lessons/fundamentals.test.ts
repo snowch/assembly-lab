@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { parseLesson, learnerText } from "@platform/lesson-schema";
 import { traceOf, viewAt, wValue } from "@al/views";
+import { parseRegName } from "@al/machine";
 import { grade } from "../../packages/views/src/grader";
 import { fundamentalsLessons } from "./fundamentals";
 import { FUNDAMENTALS_PROSE, SYNTHESIS_COPY, FUNDAMENTALS_MODULE } from "./fundamentals.prose";
@@ -86,11 +87,42 @@ describe("visible Fundamentals lessons", () => {
     }
   });
 
+  it("uses the later constant term only to name the linked follow-up lesson", () => {
+    expect(learnerText(lessons[0]!).filter((text) => /\bconstant\w*/i.test(text))).toEqual([
+      FUNDAMENTALS_PROSE.addition.registerViews.after,
+    ]);
+  });
+
+  it("grounds the opening register count and both name widths in the machine", () => {
+    const worked = lessons[0]!.sections
+      .flatMap((section) => section.interactives)
+      .find((figure) => figure.id === "worked-addition")!;
+    const stage = worked.props["stage"] as {
+      program: { c: string; listing: string };
+      call: { entry: string; args: number[] };
+    };
+    const state = viewAt(traceOf(stage.program, stage.call), 0).state;
+    expect(state.x).toHaveLength(31);
+    expect(parseRegName(`x${state.x.length - 1}`)).toMatchObject({
+      n: 30,
+      width: 64,
+      role: "general",
+    });
+    expect(parseRegName(`w${state.x.length - 1}`)).toMatchObject({
+      n: 30,
+      width: 32,
+      role: "general",
+    });
+    expect(parseRegName(`x${state.x.length}`)).toBeNull();
+    expect(parseRegName("x0")).toMatchObject({ n: 0, width: 64 });
+    expect(parseRegName("w0")).toMatchObject({ n: 0, width: 32 });
+  });
+
   it("pins stated numeric inputs and results to the checked primitive traces", () => {
     // Existing primitive facts check all worked calls; fresh challenge traces are checked above.
     // Width and compiler/version values are pinned by the recorded increment listing facts.
     const pinned = new Set([
-      0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 18, 19, 20, 32, 64, 16.1,
+      0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 18, 19, 20, 31, 32, 64, 16.1,
     ]);
     const text = lessons
       .flatMap(learnerText)

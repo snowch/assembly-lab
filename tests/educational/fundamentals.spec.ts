@@ -67,6 +67,50 @@ for (const theme of ["light", "dark"] as const) {
       expect(errors).toEqual([]);
     });
 
+    test("the opening explains register views and links to the detailed lesson and official references", async ({
+      page,
+      isMobile,
+    }) => {
+      const errors = watchErrors(page);
+      await openLesson(page, "one-addition");
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      const views = figure(page, "register-views");
+      await expect(views.getByRole("img")).toHaveAccessibleName(
+        "x0 names one 64-bit register. w0 names its lower 32 bits.",
+      );
+      const geometry = await views.locator(".al-register-view").evaluate((el) => {
+        const full = el.getBoundingClientRect();
+        const lower = el.querySelector(".al-register-view-lower")!.getBoundingClientRect();
+        return {
+          left: full.left,
+          right: full.right,
+          mid: (full.left + full.right) / 2,
+          lowLeft: lower.left,
+          lowRight: lower.right,
+        };
+      });
+      expect(Math.abs(geometry.lowLeft - geometry.mid)).toBeLessThan(2);
+      expect(geometry.lowRight).toBeLessThanOrEqual(geometry.right);
+      const motivation = page.locator('.lesson-section[data-kind="motivation"]');
+      const references = motivation.locator("details");
+      await expect(references).not.toHaveAttribute("open");
+      await references.locator("summary").click();
+      await expect(references).toHaveAttribute("open");
+      await expect(
+        references.getByRole("link", { name: "Arm’s instruction reference" }),
+      ).toHaveAttribute("href", "https://developer.arm.com/documentation/ddi0602/latest/");
+      await expect(
+        references.getByRole("link", { name: "architecture reference manual" }),
+      ).toHaveAttribute("href", "https://developer.arm.com/documentation/ddi0487/latest/");
+      expect(await designProblems(page, isMobile)).toEqual([]);
+      await press(page, views.getByRole("link", { name: "Constants and widths", exact: true }));
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText("Constants and widths");
+      await expect(
+        page.locator('.lesson-section[data-kind="failureExperiment"] .section-title'),
+      ).toHaveText("Two names, one register");
+      expect(errors).toEqual([]);
+    });
+
     test("one addition starts with only its inputs, preserves its result and resets locally", async ({
       page,
       isMobile,

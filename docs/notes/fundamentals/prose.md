@@ -12,9 +12,11 @@ How does a processor add two values?
 
 ### addition / sections / motivation
 
-A **register** is a small store inside the processor that holds a value. The names `w0`, `w1` and `w2` select 32 bits of three registers. Module 1 shows the rest of each register.
+A **register** is a small, fast store inside the processor. This course uses AArch64, Arm’s 64-bit mode. It has 31 general-purpose integer registers, used for ordinary calculations, named `x0` to `x30`. Other registers have special jobs.
 
 An **instruction** tells the processor to perform an operation. Assembly language writes instructions with names such as `add`. The parts after the name are its **operands**.
+
+**Memory** holds the program’s instructions and much more data than the registers can hold. For `add`, a value held in memory must first be brought into a register. A result can be written back.
 
 ### addition / sections / prediction
 
@@ -54,7 +56,23 @@ One addition
 
 ### addition / figure / prose
 
-Run `add w2, w0, w1` once to see what it reads and writes.
+The inputs are already in registers. Run `add w2, w0, w1` once.
+
+### addition / registerViews / caption
+
+Each x name selects all 64 bits; its matching w name selects the lower 32 bits of the same register.
+
+### addition / registerViews / after
+
+You will experiment with both names in [Constants and widths](#/lesson/constants-and-widths) in Module 1, under ‘Two names, one register’.
+
+### addition / references / summary
+
+Arm’s reference manuals
+
+### addition / references / prose
+
+[Arm’s instruction reference](https://developer.arm.com/documentation/ddi0602/latest/) describes the instructions used here. The [architecture reference manual](https://developer.arm.com/documentation/ddi0487/latest/) also describes the registers and the wider processor rules.
 
 ### addition / challenge / task
 
