@@ -266,7 +266,7 @@ Step through your solution below to see the two halves of `w0` after each instru
 
 ## 6. Two names, one register
 
-The figures so far showed 32 bits, because they used `w` names. Each register holds 64 bits, and it has two names.
+The `w` names in the earlier arithmetic examples selected 32 bits. Each register holds 64 bits, and it has two names.
 
 The `x` name, `x3`, names all 64 bits. The `w` name, `w3`, names the lower 32 bits of the same register. They are not two registers.
 

@@ -17,7 +17,7 @@ const CONFIG = [
     test: 2,
     args: [14, 0, 5],
     fields: [1, 0],
-    introduces: ["instruction", "register", "assembly language", "operand"],
+    introduces: ["instruction", "register", "assembly language", "operand", "memory", "AArch64"],
   },
   {
     key: "function",
@@ -107,10 +107,35 @@ export const fundamentalsLessons: LessonInput[] = CONFIG.map((config, order) => 
     order,
     objectives: [...labels.objectives],
     introduces: [...config.introduces],
+    termExemptions:
+      key === "addition"
+        ? [
+            {
+              term: "constant",
+              reason:
+                "Only the linked title Constants and widths names the later lesson; constants are not taught here.",
+            },
+          ]
+        : [],
     sections: SECTION_KINDS.map((kind) => ({
       kind,
       title: labels.titles[kind],
       prose: prose.sections[kind],
+      ...(kind === "motivation" && key === "addition"
+        ? {
+            details: P.addition.references,
+            interactives: [
+              {
+                id: "register-views",
+                kind: "register-views",
+                timeModel: "none",
+                caption: P.addition.registerViews.caption,
+                after: P.addition.registerViews.after,
+                props: { register: 0 },
+              },
+            ],
+          }
+        : {}),
       ...(kind === "investigation"
         ? {
             interactives: [
