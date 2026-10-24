@@ -1,11 +1,13 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // `mov w0, ` followed by a number the learner types. Each time the number changes, the course's
 // assembler is asked to assemble the line. If it does, the line is run and `w0` is drawn as the
 // model left it; if it does not, the page says what the assembler said. Nothing here decides which
 // numbers fit: the assembler does. A figure that names a prediction stays shut until it is checked.
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { z } from "zod";
 
 import { TEXT_BASE, assemble, run } from "@al/machine";
@@ -46,7 +48,7 @@ export function tryMov(text: string): Result {
 }
 
 export const ConstantTester = withProps(Props, function ConstantTester({ data, store }) {
-  const [text, setText] = useState("");
+  const [text, setText] = useHandoffState("ConstantTester.text", "");
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const result = useMemo(() => tryMov(text), [text]);
   if (data.after !== undefined && prediction === undefined) {

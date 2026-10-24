@@ -13,6 +13,7 @@ import { MODULES, PLAN, statusOf } from "@al/content/plan";
 
 import { pageTitle, parseRoute } from "./route";
 import { courseTitle, staticPage } from "./static-page";
+import { STATUS_STRINGS as S } from "./strings.status";
 import { COMPANION_LINKS, STRINGS } from "./strings";
 import { ICONS, MANIFEST_FILE, shortName, webManifest } from "./web-manifest";
 
@@ -28,6 +29,20 @@ const text = (html: string) =>
 const noscript = /<noscript>([\s\S]*)<\/noscript>/.exec(page)?.[1] ?? "";
 
 describe("the page before any script runs", () => {
+  it("exposes accurate native App status before hydration and without JavaScript, once", () => {
+    const sha = "a".repeat(40);
+    const html = staticPage(template, "/assembly-lab/", {
+      sha,
+      committedAt: "2026-10-24T00:00:00.000Z",
+    });
+    const initial = html.slice(html.indexOf('<div id="root">'), html.indexOf("<noscript>"));
+    expect(initial).toContain(S.title);
+    expect(initial).toContain(`https://github.com/snowch/assembly-lab/commit/${sha}`);
+    expect(initial).toContain(S.noScript);
+    expect(initial).not.toContain(S.versionStates.current);
+    expect(html.match(/class="app-status"/g)).toHaveLength(1);
+  });
+
   it("is named as the course is", () => {
     expect(courseTitle(template)).toBe(STRINGS.title);
     expect(page).toContain(`<meta property="og:title" content="${STRINGS.title}" />`);

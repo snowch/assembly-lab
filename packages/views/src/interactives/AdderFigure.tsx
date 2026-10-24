@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // An addition drawn column by column, as on paper: the carry into each column above the two
 // numbers, the answer below, and the four flags beside it. It is stepped a column at a time from the
 // right. Every bit is read from the `addition` record the simulator keeps for the instruction (the
@@ -14,7 +16,7 @@
 // the figure with every column worked. A subtraction's record also draws the second number as it was
 // given, above the same number with every bit changed.
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { z } from "zod";
 
 import type { Addition, Step } from "@al/machine";
@@ -252,9 +254,12 @@ function Final({
 }
 
 export const AdderFigure = withProps(Props, function AdderFigure({ data, store, lesson }) {
-  const [done, setDone] = useState(data.opensAtEnd ? 32 : 0);
+  const [done, setDone] = useHandoffState("AdderFigure.done", data.opensAtEnd ? 32 : 0);
   // The columns a group move just worked, until the next move of any other kind.
-  const [moved, setMoved] = useState<{ from: number; to: number } | null>(null);
+  const [moved, setMoved] = useHandoffState<{ from: number; to: number } | null>(
+    "AdderFigure.moved",
+    null,
+  );
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const stored = useStored(store);
   const trace = useMemo(() => traceOf(data.program, data.call), [data.program, data.call]);

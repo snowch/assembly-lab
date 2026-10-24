@@ -1,12 +1,14 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // The learner's own solution to a written challenge, run one instruction at a time on a test call
 // they choose, with the stages of its compare and `csel` beside it. It stays shut until the learner's
 // saved work for the challenge passes its tests (graded afresh, never read as a mark), so nothing of
 // the run is on the page before the challenge is done. The listing is the learner's own text, its
 // comments left out, and every value comes from running it on the model.
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { z } from "zod";
 
 import { useStored, type StoredLesson } from "@platform/lesson-runtime";
@@ -85,8 +87,8 @@ function statusOf(trace: Trace, k: number, branchStatus: boolean): string {
 
 export const SelectStepper = withProps(Props, function SelectStepper({ data, store, lesson }) {
   const stored = useStored(store);
-  const [call, setCall] = useState(0);
-  const [k, setK] = useState(0);
+  const [call, setCall] = useHandoffState("SelectStepper.call", 0);
+  const [k, setK] = useHandoffState("SelectStepper.k", 0);
   const challenge = lesson.challenges?.find((c) => c.id === data.challenge);
   const ok = challenge !== undefined && passed(lesson, stored, data.challenge);
   const text = stored.challenges[data.challenge]?.artifact.text ?? "";

@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // A program run one instruction at a time, as the stepper does, with every register drawn as a row
 // of bits and its value written in hexadecimal and in one decimal reading. For programs whose point
 // is in the bits: a field cleared or not, a shift, a rounding. Every value comes from `run()` and
@@ -12,7 +14,7 @@
 // is worked out from the state before the step, as the instruction forms it; the register it reads
 // is not changed by forming it.
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { z } from "zod";
 
 import { useSlot } from "@platform/lesson-runtime";
@@ -173,8 +175,8 @@ function StepFacts({
 }
 
 export const WordStepperFigure = withProps(Props, function WordStepperFigure({ data, store }) {
-  const [k, setK] = useState(0);
-  const [which, setWhich] = useState(0);
+  const [k, setK] = useHandoffState("WordStepperFigure.k", 0);
+  const [which, setWhich] = useHandoffState("WordStepperFigure.which", 0);
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const call = data.calls?.[which]?.call ?? data.call;
   const trace = useMemo(() => traceOf(data.program, call), [data.program, call]);

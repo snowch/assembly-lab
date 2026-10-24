@@ -1,11 +1,13 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // Predict, commit, see, for a question about how many instructions a run takes. The figure shows the
 // listing and the registers the call starts with, which the lesson's text has told the learner. The
 // run is made after the commit, never before, and the right option is the number of steps the model
 // recorded, never a number in the lesson's words.
 
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { z } from "zod";
 
 import { DecimalRegister, RegisterRow, ListingView } from "../parts";
@@ -33,7 +35,7 @@ const Props = z.object({
 export const CountPrediction = withProps(
   Props,
   function CountPrediction({ data, interactive, store }) {
-    const [bitsShown, setBitsShown] = useState(false);
+    const [bitsShown, setBitsShown] = useHandoffState("CountPrediction.bitsShown", false);
     const measure = useCallback((): Outcome => {
       const trace = traceOf(data.program, data.call);
       const n = trace.result.steps.length;

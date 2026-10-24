@@ -84,3 +84,5 @@ export { introducedOf } from "./interactives/props";
 export { crossedFrom, flowAt } from "./flow";
 export type { ArithFlow, Flow, FlowSource, ReturnFlow } from "./flow";
 export { MODULE0_STRINGS } from "./strings.module0";
+
+export { prepareViewHandoff, clearViewHandoff } from "./update-handoff";

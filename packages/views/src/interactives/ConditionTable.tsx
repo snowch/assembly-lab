@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // One compare, every condition. The learner types two values, or with `choices: "presets"` picks a pair; the model runs `cmp w0, w1` on them and
 // one `cset` for each condition, and the figure draws the four flags the compare left and, for each
 // condition, its meaning, its rule, the flags it read with their values and whether it holds. Whether
@@ -7,7 +9,7 @@
 // holds: it holds only the names and the rules the lesson's list gives, which are words. A compact
 // view shows the six conditions the lesson leans on, and the rest sit behind a closed disclosure.
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { z } from "zod";
 
 import { ConditionItem } from "../ConditionItem";
@@ -103,8 +105,8 @@ function ValueBox({
 }
 
 export const ConditionTable = withProps(Props, function ConditionTable({ data }) {
-  const [a, setA] = useState(data.start[0]);
-  const [b, setB] = useState(data.start[1]);
+  const [a, setA] = useHandoffState("ConditionTable.a", data.start[0]);
+  const [b, setB] = useHandoffState("ConditionTable.b", data.start[1]);
   const first = parseTyped(a);
   const second = parseTyped(b);
   const result = useMemo(() => {

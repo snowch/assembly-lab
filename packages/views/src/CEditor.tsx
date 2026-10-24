@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
-import { useEffect, useState } from "react";
+
+import { useHandoffState } from "./update-handoff";
+import { useEffect } from "react";
 import { compileC } from "@al/compiler";
 import type { ChallengeEditorProps } from "@platform/lesson-runtime";
 import { COMPILER_DIAGNOSTICS } from "../../compiler/src/strings";
@@ -117,15 +119,15 @@ export function CSourceEditor({
   onChange: (s: string) => void;
   config: CEditorConfig;
 }) {
-  const [mode, setMode] = useState<"text" | "templates">("text"),
-    [selected, setSelected] = useState(0),
-    [kind, setKind] = useState<Kind>("return"),
-    [target, setTarget] = useState(config.names[0] ?? "value"),
-    [left, setLeft] = useState(config.names[0] ?? "value"),
-    [right, setRight] = useState("$number"),
-    [operator, setOperator] = useState(""),
-    [number, setNumber] = useState("0"),
-    [canReplace, setCanReplace] = useState(true);
+  const [mode, setMode] = useHandoffState<"text" | "templates">("CEditor.mode", "text"),
+    [selected, setSelected] = useHandoffState("CEditor.selected", 0),
+    [kind, setKind] = useHandoffState<Kind>("CEditor.kind", "return"),
+    [target, setTarget] = useHandoffState("CEditor.target", config.names[0] ?? "value"),
+    [left, setLeft] = useHandoffState("CEditor.left", config.names[0] ?? "value"),
+    [right, setRight] = useHandoffState("CEditor.right", "$number"),
+    [operator, setOperator] = useHandoffState("CEditor.operator", ""),
+    [number, setNumber] = useHandoffState("CEditor.number", "0"),
+    [canReplace, setCanReplace] = useHandoffState("CEditor.canReplace", true);
   const lines = source === "" ? [] : source.split("\n"),
     at = Math.min(selected, Math.max(0, lines.length - 1));
   const update = (next: string[]) => onChange(next.join("\n"));

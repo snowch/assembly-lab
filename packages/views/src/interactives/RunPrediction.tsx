@@ -10,7 +10,7 @@ import { useMemo } from "react";
 import { z } from "zod";
 
 import { Prose, useSlot } from "@platform/lesson-runtime";
-import { PredictionChallenge } from "@platform/primitives";
+import { PredictionChoice as PredictionChallenge } from "../PredictionChoice";
 
 import { additionSteps, flagDigits, hex32 } from "../arith";
 import { cLinesOf, programLines } from "../listing";

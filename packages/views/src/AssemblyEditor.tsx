@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "./update-handoff";
+
 // The editor for a challenge whose artifact is assembly text, with two modes over the one text.
 // Text is for a keyboard: a monospaced box with autocorrect, capitalisation and spellcheck off, and
 // a bar that types the characters assembly needs. Tap is for a touch screen: the program as a list
@@ -9,14 +11,7 @@
 // time and loses nothing, because the text is the only state. The assembler runs on the text as it
 // changes and each error is shown against its line, in the machine's own sentence.
 
-import {
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ComponentType,
-  type ReactNode,
-} from "react";
+import { useLayoutEffect, useMemo, useRef, type ComponentType, type ReactNode } from "react";
 
 import { assemble, type AsmError } from "@al/machine";
 import type { ChallengeEditorProps } from "@platform/lesson-runtime";
@@ -276,7 +271,7 @@ function LineEditor({
     : undefined;
   const isLabelLine = labelNameOf(text) !== null;
   // The number pad is open for an operand that is a number, or after the learner asks for it.
-  const [padFor, setPadFor] = useState<number | null>(null);
+  const [padFor, setPadFor] = useHandoffState<number | null>("AssemblyEditor.padFor", null);
   const set = (next: Line) => onText(lineText(next));
   return (
     <div className="asm-line-editor" role="group" aria-label={S.editor.editing(n)}>
@@ -462,7 +457,7 @@ function TapMode({
   addresses: readonly string[];
   extensions: readonly string[];
 }) {
-  const [open, setOpen] = useState<number | null>(null);
+  const [open, setOpen] = useHandoffState<number | null>("AssemblyEditor.open", null);
   const replace = (i: number, text: string) => setLines(replaceLine(lines, i, text));
   const insertBelow = (i: number) => {
     const next = [...lines];
@@ -570,7 +565,7 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
   const instructions = allowed.flatMap((m) =>
     m === "b.cond" ? conditions.map((c) => `b.${c}`) : [m],
   );
-  const [mode, setMode] = useState<Mode>(rememberedMode);
+  const [mode, setMode] = useHandoffState<Mode>("AssemblyEditor.mode", rememberedMode);
   const introduced = useMemo(() => introducedOf(challenge), [challenge]);
   const errors = useMemo(
     () => assemble(text, { allowed: new Set(allowed), introduced }).errors,

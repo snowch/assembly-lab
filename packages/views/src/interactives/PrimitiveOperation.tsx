@@ -1,9 +1,11 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // Small first applications of arithmetic. All displayed input/result values and read/write
 // relationships come from a simulator trace. Operation activities stop at their arithmetic
 // prefix; the function activity also executes its return to the model's caller.
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { z } from "zod";
 import { Prose, useSlot } from "@platform/lesson-runtime";
 import { flowAt } from "../flow";
@@ -34,7 +36,7 @@ export const PrimitiveOperation = withProps(
   Props,
   function PrimitiveOperation({ data, store, interactive }) {
     const [stored, setStored] = useSlot<Stored>(store, interactive.id);
-    const [answer, setAnswer] = useState("");
+    const [answer, setAnswer] = useHandoffState("PrimitiveOperation.answer", "");
     const stage = data.stage;
     const isFunction = stage.kind === "function";
     const trace = useMemo(() => traceOf(stage.program, stage.call), [stage.program, stage.call]);

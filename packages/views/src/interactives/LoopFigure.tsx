@@ -1,10 +1,12 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // Small, explicitly selected calls shown as body-execution bars and a register history. The model
 // supplies every count and value. A limited run is a prefix, never a completed iteration count.
 // The ordinary stepper shows the individual instructions and the backward branch's next target.
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { z } from "zod";
 
 import { useSlot } from "@platform/lesson-runtime";
@@ -33,7 +35,7 @@ const Props = z.object({
 const HISTORY_LIMIT = 12;
 
 export const LoopFigure = withProps(Props, function LoopFigure({ data, store }) {
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useHandoffState("LoopFigure.selected", 0);
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const unlocked = data.after === undefined || prediction !== undefined;
   const runs = useMemo(

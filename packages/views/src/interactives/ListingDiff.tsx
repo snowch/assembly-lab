@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // Two listings side by side, instruction by instruction, with each item that differs marked. The
 // course's assembler turns each listing into instructions and the figure compares those, so the
 // mark is what the model found, not a claim in the lesson's words. The figure stays shut until the
@@ -7,7 +9,7 @@
 // runs the function the learner chooses on the call the panel names and draws the three stages
 // (compare, condition, select) of that run.
 
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useMemo } from "react";
 import { z } from "zod";
 
 import { useSlot } from "@platform/lesson-runtime";
@@ -69,7 +71,7 @@ function Items({ items, differing }: { items: readonly string[]; differing: Read
 export const ListingDiff = withProps(Props, function ListingDiff({ data, store }) {
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const rows: DiffRow[] = useMemo(() => diffRows(data.left, data.right), [data.left, data.right]);
-  const [which, setWhich] = useState(0);
+  const [which, setWhich] = useHandoffState("ListingDiff.which", 0);
   const names = [nameOf(data.left), nameOf(data.right)];
   // Each function is run on the panel's call, whichever the learner looks at.
   const traces = useMemo(

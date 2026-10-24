@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // A few instructions run one at a time on a register that is drawn in halves. Every value is what
 // `run()` and `stateAfter()` give, through trace.ts. The registers start at 0, as the machine's do.
 // A figure that names a prediction stays shut until it is checked.
@@ -16,7 +18,7 @@
 //     which is then assembled with that challenge's gate and run; the figure stays shut until the
 //     saved work passes the challenge's tests, graded afresh.
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { z } from "zod";
 
 import { useSlot, useStored } from "@platform/lesson-runtime";
@@ -159,7 +161,7 @@ function Half16({
 }
 
 function Stepping({ data, trace }: { data: Data; trace: Trace }) {
-  const [k, setK] = useState(0);
+  const [k, setK] = useHandoffState("WideStepper.k", 0);
   const view = viewAt(trace, k);
   const atEnd = view.k >= view.total;
   const n = data.register;

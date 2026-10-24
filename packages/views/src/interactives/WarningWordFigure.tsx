@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // A word as the trip computer keeps it: the 32 bits of w0 at the start of a call, the seven bits in
 // use drawn large and numbered, each warning as its own on or off bit and the gear as one bracketed
 // field with its value, the bits above them drawn as unused, and a key that says what the labelled
@@ -7,7 +9,7 @@
 // function leaves in w0; the key's values are read from the word. Focusing a named warning (or
 // the field) marks its bits in both drawings. Nothing here runs anything after the call starts.
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { z } from "zod";
 
 import {
@@ -36,7 +38,7 @@ const Props = z.object({
 });
 
 export const WarningWordFigure = withProps(Props, function WarningWordFigure({ data }) {
-  const [picked, setPicked] = useState<KeyEntry | null>(null);
+  const [picked, setPicked] = useHandoffState<KeyEntry | null>("WarningWordFigure.picked", null);
   const trace = useMemo(() => traceOf(data.program, data.call), [data.program, data.call]);
   const word = wValue(viewAt(trace, 0).state, 0);
   // What the function returns: the field it reads, as the model computed it.

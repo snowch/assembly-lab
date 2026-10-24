@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // A recorded program, run one instruction at a time. The listing shows a marker at the instruction
 // that runs next (the program counter, drawn as the marker only), the C line GCC recorded for the
 // instruction that just ran is lit, and each register is drawn as 32 bits and a number. Every value
@@ -12,7 +14,7 @@
 // for each function, marking where the run stops and where it crosses into the next function) and
 // `endNote` (a sentence that appears only once the run has ended).
 
-import { useId, useMemo, useState } from "react";
+import { useId, useMemo } from "react";
 import { z } from "zod";
 
 import { Prose, useSlot } from "@platform/lesson-runtime";
@@ -214,13 +216,16 @@ function flagsKind(trace: Trace, k: number): FlagsExplained {
 }
 
 export const StepperFigure = withProps(Props, function StepperFigure({ data, store }) {
-  const [removed, setRemoved] = useState(false);
-  const [k, setK] = useState(0);
-  const [bitsShown, setBitsShown] = useState(false);
+  const [removed, setRemoved] = useHandoffState("StepperFigure.removed", false);
+  const [k, setK] = useHandoffState("StepperFigure.k", 0);
+  const [bitsShown, setBitsShown] = useHandoffState("StepperFigure.bitsShown", false);
   // The register the learner picked for the instruction about to run, and the verdict on the
   // pick once that instruction has run: the register it actually wrote.
-  const [picked, setPicked] = useState<number | null>(null);
-  const [verdict, setVerdict] = useState<{ right: boolean; register: number } | null>(null);
+  const [picked, setPicked] = useHandoffState<number | null>("StepperFigure.picked", null);
+  const [verdict, setVerdict] = useHandoffState<{ right: boolean; register: number } | null>(
+    "StepperFigure.verdict",
+    null,
+  );
   const bitsId = useId();
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const trace = useMemo(

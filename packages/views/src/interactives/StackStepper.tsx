@@ -1,6 +1,8 @@
 // Copyright © 2026 Christopher Snow
 
-import { useMemo, useState } from "react";
+import { useHandoffState } from "../update-handoff";
+
+import { useMemo } from "react";
 import { z } from "zod";
 import { useSlot } from "@platform/lesson-runtime";
 import { cLinesOf } from "../listing";
@@ -50,7 +52,7 @@ function byteGroups(frame: StackFrame) {
 }
 
 export const StackStepper = withProps(Props, function StackStepper({ data, store }) {
-  const [k, setK] = useState(data.initialStep);
+  const [k, setK] = useHandoffState("StackStepper.k", data.initialStep);
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const unlocked = data.after === undefined || prediction !== undefined;
   const trace = useMemo(

@@ -9,7 +9,7 @@ import { useMemo } from "react";
 
 import { Prose, useSlot } from "@platform/lesson-runtime";
 import type { LessonStore } from "@platform/lesson-runtime";
-import { PredictionChallenge } from "@platform/primitives";
+import { PredictionChoice as PredictionChallenge } from "../PredictionChoice";
 
 import { withCode } from "../parts";
 import { VIEW_STRINGS as S } from "../strings";

@@ -9,7 +9,7 @@ import { useMemo } from "react";
 import { z } from "zod";
 
 import { Prose, useSlot } from "@platform/lesson-runtime";
-import { PredictionChallenge } from "@platform/primitives";
+import { PredictionChoice as PredictionChallenge } from "../PredictionChoice";
 
 import { BitRow, Ruler, differing, hex, unsignedOf } from "../bits";
 import { withCode } from "../parts";
