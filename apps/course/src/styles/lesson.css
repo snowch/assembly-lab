@@ -488,3 +488,45 @@ figure.interactive > .figure-after {
   max-width: var(--measure);
   margin-inline: auto;
 }
+
+/* Short Fundamentals lessons read as a worked example followed by practice. Keep the
+   authoring sections and their accessible headings, without ten visual chapter breaks. */
+.lesson:is(
+  [data-lesson="one-addition"],
+  [data-lesson="tiny-function"],
+  [data-lesson="subtraction-and-reuse"],
+  [data-lesson="instructions-in-sequence"]
+) {
+  .lesson-section {
+    margin-top: var(--space-4);
+  }
+  .lesson-section > h2 .section-kind {
+    display: none;
+  }
+  .lesson-section:not(
+      [data-kind="investigation"],
+      [data-kind="challenge"],
+      [data-kind="reflection"]
+    )
+    > h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+  .lesson-section:is(
+    [data-kind="investigation"],
+    [data-kind="challenge"],
+    [data-kind="reflection"]
+  ) {
+    margin-top: var(--space-6);
+  }
+  .lesson-section:has(> h2:only-child) {
+    margin-top: 0;
+  }
+}

@@ -8,7 +8,7 @@ Drafted from the checked facts for the existing primitive programs and the recor
 
 ### addition / sections / question
 
-How does a processor add two values? Start with one instruction and watch where its result goes.
+How does a processor add two values?
 
 ### addition / sections / motivation
 
@@ -18,37 +18,35 @@ An **instruction** tells the processor to perform an operation. Assembly languag
 
 ### addition / sections / prediction
 
-In `add w2, w0, w1`, the first operand names the register written. The instruction adds the values supplied by the second and third operands. Before running it, point to the two inputs and the destination.
+In `add w2, w0, w1`, the first operand names the register written. The second and third supply the values to add. Point to the inputs and the destination.
 
 ### addition / sections / investigation
 
-The figure starts with `w0` holding 12, `w1` holding 7 and `w2` holding 0. Press Run the instruction. Compare the inputs with the result.
-
-The figure runs a simulator in your browser. The simulator imitates the processor; the course calls it the model.
+Press Run the instruction. The figure runs a **simulator** in your browser: a program that imitates the processor. The course calls it the model.
 
 ### addition / sections / construction
 
-Read the instruction from left to right: add, write `w2`, read `w0`, read `w1`. The destination tells you where to put the sum.
+Read the result back through the instruction: which operand names the register that was written?
 
 ### addition / sections / failureExperiment
 
-Reading a register does not empty it. Check the two input registers after the instruction: did either lose its value?
+Did either input register lose its value when the instruction read it?
 
 ### addition / sections / explanation
 
-This addition reads its inputs and writes its destination. The other registers keep their values.
+Reading preserves the inputs. Only the destination is written.
 
 ### addition / sections / generalisation
 
-The first operand can name a different destination. Use that rule in the new example below; its inputs differ from the figure above.
+The destination can be a different register. Apply the same operand rule below.
 
 ### addition / sections / challenge
 
-Work out the result of one addition without running it. Give the value written and the value of an input register afterwards.
+Trace a new addition without running it.
 
 ### addition / sections / reflection
 
-When you read an `add`, identify its destination before calculating. Which operands supply the values, and which operand names the register written?
+Before calculating, identify the inputs and the destination.
 
 ### addition / figure / title
 
@@ -178,7 +176,7 @@ w0 after the instruction
 
 ### function / sections / question
 
-How does an addition become the result of a function call? Follow a function that increases its input by one.
+How does a function give its result back to the code that called it?
 
 ### function / sections / motivation
 
@@ -188,31 +186,31 @@ Code that calls a function is its **caller**. The input it supplies is an **argu
 
 ### function / sections / prediction
 
-In `add w0, w0, 1`, the last operand is the number one written inside the instruction. The instruction reads the incoming `w0` and writes the increased value back there. What still needs to happen before the caller can continue?
+In `add w0, w0, 1`, the last operand is the number one written inside the instruction. After the addition, can the caller continue yet?
 
 ### function / sections / investigation
 
-Follow `increment_int(7)` below. Run `add` to prepare the result, then run `ret` to return to the caller. Use Show instructions or Show C to move across the paired listing on a narrow screen.
+On a narrow screen, scroll sideways within the listing to see the C and instructions.
 
 ### function / sections / construction
 
-Follow the value through the call: the caller supplies the argument, the function calculates in `w0`, and the caller receives the value left there when the function returns.
+Match `n` in the C to the incoming value in `w0`. Which instruction prepares the result?
 
 ### function / sections / failureExperiment
 
-Look back at the state after the addition: the result was ready in `w0`, while the caller was still waiting. Running `ret` let the caller continue with that result.
+After `add`, the result was ready but the caller was waiting. Which instruction let it continue?
 
 ### function / sections / explanation
 
-`ret` returns to the code that called the function. It does not calculate or move the result. The caller uses the value already in `w0`.
+`ret` returns to the caller without moving the result. The caller uses the value already in `w0`.
 
 ### function / sections / generalisation
 
-This placement of an integer argument and result is a rule for calling these functions. It is separate from the operand rule: `add` still writes the register named by its first operand.
+The calling rule puts this integer argument and result in `w0`. The operand rule still makes `add` write its first operand.
 
 ### function / sections / challenge
 
-Now follow the same function with a different argument. Calculate the value it returns without running this call.
+Trace the same function with a different argument, without running it.
 
 ### function / sections / reflection
 
@@ -224,7 +222,7 @@ A call and its return
 
 ### function / figure / prose
 
-Step through `increment_int(7)`. The caller waits until `ret` runs.
+Run the addition, then the return. Watch `w0` and the caller.
 
 ### function / challenge / task
 
@@ -338,43 +336,43 @@ Value received by the caller
 
 ### subtraction / sections / question
 
-Can an instruction read a register and replace its value? What changes when the operation is subtraction?
+Can an instruction read a register and replace its value?
 
 ### subtraction / sections / motivation
 
-A destination can also supply an input. The instruction reads the old input values before writing its result. In `add w0, w0, w1`, both appearances of `w0` name the same register.
+In `add w0, w0, w1`, both appearances of `w0` name the same register. The instruction reads its old value before writing the result there.
 
 ### subtraction / sections / prediction
 
-The first figure starts with `w0` holding 9 and `w1` holding 4. Predict the value written to `w0`, then run the addition.
+Predict what the addition writes to `w0`, then run it.
 
 ### subtraction / sections / investigation
 
-The subtraction figure starts a separate example: `w0` holds 20 and `w1` holds 6. `sub` subtracts its third operand from its second, then writes the register named by its first operand. Predict the result before running it.
+`sub` subtracts its third operand from its second, then writes its first operand. The next figure starts a separate example. Predict the result before running it.
 
 ### subtraction / sections / construction
 
-Read `sub w1, w0, w1` as: write `w1` with the old value in `w0` minus the old value in `w1`.
+In the subtraction, which old value was read before being replaced?
 
 ### subtraction / sections / failureExperiment
 
-Swapping subtraction's inputs changes the calculation. Check their order in the instruction before deciding which value to subtract.
+Would swapping the subtraction inputs give the same result?
 
 ### subtraction / sections / explanation
 
-Repeating a register name does not create another register. An input can be read and then overwritten by the result of the same instruction.
+Repeating a register name does not create another register. Read its old value before replacing it.
 
 ### subtraction / sections / generalisation
 
-For both `add` and `sub`, the first operand names the destination. For `sub`, keep the order of the remaining operands: second minus third.
+Both instructions write their first operand. Subtraction keeps the input order: second minus third.
 
 ### subtraction / sections / challenge
 
-Use the subtraction rule with fresh inputs below. Track the register written and a register only read.
+Trace a fresh subtraction without running it.
 
 ### subtraction / sections / reflection
 
-When a register appears twice, distinguish its old input value from the result written afterwards.
+Distinguish the old input value from the result written afterwards.
 
 ### subtraction / figure / title
 
@@ -516,15 +514,15 @@ w0 after the instruction
 
 ### sequence / sections / question
 
-What does the second instruction read when the first has already written a result?
+What does the second instruction read after the first writes a result?
 
 ### sequence / sections / motivation
 
-Instructions use the state left by earlier instructions. The next example first adds into `w2`, then subtracts from that result.
+The next example adds into `w2`, then subtracts from that result.
 
 ### sequence / sections / prediction
 
-Start with `w0` holding 8, `w1` holding 3 and `w2` holding 0. Identify which register the first instruction writes. Which instruction will read that result?
+Which register does the first instruction write? Which instruction will read that result?
 
 ### sequence / sections / investigation
 
@@ -532,27 +530,27 @@ The marker ▸ shows which instruction runs next. The processor tracks that posi
 
 ### sequence / sections / construction
 
-After the first instruction, pause. Use the value now in `w2` as the second instruction's input. Do not return to its starting value.
+After the addition, pause. Which value will the subtraction read from `w2`?
 
 ### sequence / sections / failureExperiment
 
-Starting both instructions from the original register values would describe two separate examples. This figure runs a sequence: the second instruction uses the first instruction's result.
+Using the starting value of `w2` again would lose the addition's result.
 
 ### sequence / sections / explanation
 
-The register values and the next-instruction position together describe this run. An arithmetic instruction updates its destination, then execution moves to the next instruction.
+An arithmetic instruction writes its destination, then execution moves to the next instruction. That instruction uses the values now in the registers.
 
 ### sequence / sections / generalisation
 
-`ret` changes where execution continues by returning to the caller. The worked arithmetic example stops after its two shown instructions; it does not show a complete function.
+This figure stops after two arithmetic instructions. The earlier function continued with `ret` to return to its caller.
 
 ### sequence / sections / challenge
 
-Trace the same sequence with fresh inputs. Keep the intermediate value in mind when you run the second instruction on paper.
+Trace the sequence with fresh inputs. Use the first result when running the second instruction.
 
 ### sequence / sections / reflection
 
-For each step, ask two questions: what did this instruction write, and which instruction runs next? The next lesson combines these mechanics in a complete function.
+At each step, ask: what was written, and which instruction runs next?
 
 ### sequence / figure / title
 

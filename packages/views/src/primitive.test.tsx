@@ -45,6 +45,10 @@ describe("a visible single arithmetic activity", () => {
     const { container, user } = setup();
     expect(container.querySelector(".al-primitive-result")).toBeNull();
     expect(screen.queryByRole("spinbutton")).toBeNull();
+    expect(container.querySelector(".al-primitive-preview")).toHaveTextContent("w0 = 12");
+    expect(container.querySelector(".al-primitive-preview")).toHaveTextContent("w1 = 7");
+    expect(container.querySelector(".al-primitive-preview")).toHaveTextContent("w2 = ?");
+    expect(container.querySelector(".al-primitive-preview")).not.toHaveTextContent("19");
     await user.click(screen.getByRole("button", { name: S.run }));
     expect(screen.getByRole("status")).toHaveTextContent("w2 = 19");
     expect(screen.getByRole("status")).toHaveTextContent("w0, w1 keep their values");
@@ -69,10 +73,13 @@ describe("a visible single arithmetic activity", () => {
     expect(container.querySelector('.al-cline[data-lit="true"]')).toHaveTextContent(
       "return n + 1;",
     );
-    await user.click(screen.getByRole("button", { name: S.showInstructions }));
-    expect(screen.getByRole("button", { name: S.showC })).toBeInTheDocument();
+    expect(screen.getAllByRole("button")).toHaveLength(2);
     expect(screen.getByText(S.callerWaiting)).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: S.showC }));
+    expect(screen.getByText(S.resultReady)).toBeInTheDocument();
+    expect(container.querySelector(".al-primitive-call-path")).toHaveAttribute(
+      "data-active",
+      "false",
+    );
     expect(screen.getByRole("status")).toHaveTextContent(S.functionAfterAdd);
     await user.click(screen.getByRole("button", { name: S.run }));
     expect(register().querySelector(".al-dreg-value")).toHaveTextContent("8");
@@ -81,6 +88,11 @@ describe("a visible single arithmetic activity", () => {
     expect(container.querySelector('.al-insn[data-next="true"]')).toBeNull();
     expect(screen.getByText(S.callerReturned(8))).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent(S.functionReturned);
+    expect(container.querySelector(".al-primitive-call-path")).toHaveAttribute(
+      "data-active",
+      "true",
+    );
+    expect(screen.getByText(S.returnPath)).toBeInTheDocument();
   });
 
   it("restores a paused function and resets that same visible activity", async () => {
