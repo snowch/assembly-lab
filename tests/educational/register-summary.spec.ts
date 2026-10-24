@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 import { expect, test } from "@playwright/test";
-import { openLesson, commit } from "./module1";
+import { openLesson } from "./module1";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { MODULE0_STRINGS as M } from "../../packages/views/src/strings.module0";
 
@@ -13,7 +13,6 @@ for (const theme of ["light", "dark"] as const) {
       theme,
     );
     await openLesson(page, "meet-the-machine");
-    await commit(page, "predict-total", /In.*w0/);
     const figure = page.locator("#ix-step-trip");
     for (const width of [320, 360, 375, 390, 430, 812, 1280]) {
       await page.setViewportSize({ width, height: 900 });

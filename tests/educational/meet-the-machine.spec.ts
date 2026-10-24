@@ -1,8 +1,8 @@
 // Copyright © 2026 Christopher Snow
 
 // Module 0, Meet the machine, in a browser, on the built site, at desktop and phone widths: the
-// lesson loads without an error; the stepper's values after each Next are the model's; both
-// predictions commit before they reveal; the construction challenge is completed by typing (at the
+// lesson loads without an error; the stepper's values after each Next are the model's; the ret
+// prediction commits before it reveals; the construction challenge is completed by typing (at the
 // desktop width) and by tapping alone (at the phone width); a wrong answer is rejected; the answers
 // challenge rejects a wrong w1 with the lesson's sentence and accepts the reference; a completion
 // survives a reload and is graded again; Clear work removes it; and the page keeps the look the
@@ -114,7 +114,7 @@ test.describe("the listing figure", () => {
     page,
   }) => {
     await openLesson(page);
-    const figure = page.locator("#ix-trip-listing");
+    const figure = page.locator("#ix-step-trip");
     await expect(figure.locator(".al-cline")).toHaveCount(7);
     await expect(figure.locator(".al-insn .al-text")).toHaveText([
       "add w0, w0, w1",
@@ -151,7 +151,7 @@ test.describe("the listing figure", () => {
     page,
   }) => {
     await openLesson(page);
-    const figure = page.locator("#ix-trip-listing");
+    const figure = page.locator("#ix-step-trip");
     const notes = figure.locator("details.lesson-details");
     await expect(notes).toHaveCount(2);
     await expect(notes.locator("summary")).toHaveText([
@@ -180,7 +180,7 @@ test.describe("the listing figure", () => {
     page,
   }) => {
     await openLesson(page);
-    const figure = page.locator("#ix-trip-listing");
+    const figure = page.locator("#ix-step-trip");
     const notes = figure.locator("details.lesson-details");
     const summary = (n: number) => notes.nth(n).locator("summary");
     await summary(0).focus();
@@ -202,18 +202,39 @@ test.describe("the listing figure", () => {
 });
 
 test.describe("the stepper", () => {
-  test("stays shut until the prediction before it is checked", async ({ page }) => {
+  test("opens the combined function directly without repeating the introductory register quiz", async ({
+    page,
+  }) => {
     await openLesson(page);
+    await expect(
+      page.locator("#ix-trip-listing, #ix-arg-registers, #ix-predict-total"),
+    ).toHaveCount(0);
     const stepper = page.locator("#ix-step-trip");
-    await expect(stepper.locator(".al-locked")).toBeVisible();
-    await expect(stepper.getByRole("button", { name: V.stepper.next })).toHaveCount(0);
-    await commit(page, "predict-total", /^In w0/);
     await expect(stepper.locator(".al-locked")).toHaveCount(0);
+    await expect(stepper.getByRole("button", { name: V.stepper.next })).toBeEnabled();
+    await expect(registerValue(stepper, "w0")).toHaveText("120");
+    await press(page, stepper.getByRole("button", { name: V.stepper.next }));
+    await expect(registerValue(stepper, "w0")).toHaveText("205");
+    await page.reload();
+    // Stepping is a local inspection: a reload starts its run again, while saved
+    // predictions and challenge work are checked separately below.
+    await expect(registerValue(stepper, "w0")).toHaveText("120");
+    await expect(stepper.locator('.al-insn[data-next="true"] .al-text')).toHaveText(
+      "add w0, w0, w1",
+    );
+    await expect(stepper.locator(".al-locked")).toHaveCount(0);
+    await press(page, stepper.getByRole("button", { name: V.stepper.next }));
+    await expect(registerValue(stepper, "w0")).toHaveText("205");
+    await press(page, stepper.getByRole("button", { name: V.stepper.reset }));
+    await expect(registerValue(stepper, "w0")).toHaveText("120");
+    // The genuinely new failure experiment still requires a committed prediction.
+    const experiment = page.locator("#ix-step-no-ret");
+    await expect(experiment.locator(".al-locked")).toBeVisible();
+    await expect(experiment.getByRole("button", { name: V.stepper.next })).toHaveCount(0);
   });
 
   test("shows the model's values after each Next: 205, 247, 232, and ret", async ({ page }) => {
     await openLesson(page);
-    await commit(page, "predict-total", /^In w0/);
     const figure = page.locator("#ix-step-trip");
     await figure.scrollIntoViewIfNeeded();
     const next = figure.getByRole("button", { name: V.stepper.next });
@@ -242,7 +263,6 @@ test.describe("the stepper", () => {
     page,
   }) => {
     await openLesson(page);
-    await commit(page, "predict-total", /^In w0/);
     const figure = page.locator("#ix-step-trip");
     await figure.scrollIntoViewIfNeeded();
     const marked = () =>
@@ -292,7 +312,6 @@ test.describe("the stepper's panel of what the last instruction read and wrote",
     page,
   }) => {
     await openLesson(page);
-    await commit(page, "predict-total", /^In w0/);
     const figure = page.locator("#ix-step-trip");
     await expect(figure.locator(".al-flow, .al-operands, .al-expect")).toHaveCount(0);
     await press(page, figure.getByRole("button", { name: V.stepper.next }));
@@ -307,15 +326,14 @@ test.describe("the stepper's panel of what the last instruction read and wrote",
 
   test("shows the sentence about ret only once the run has ended", async ({ page }) => {
     await openLesson(page);
-    await commit(page, "predict-total", /^In w0/);
     const figure = page.locator("#ix-step-trip");
     await figure.scrollIntoViewIfNeeded();
     const next = figure.getByRole("button", { name: V.stepper.next });
     for (let k = 0; k < 3; k++) await press(page, next);
     await expect(figure.locator(".al-endnote")).toHaveCount(0);
     await press(page, next);
-    await expect(figure.locator(".al-endnote")).toContainText(
-      "ret returns to the code that called this function. The function's result is whatever w0 holds at that moment.",
+    await expect(figure.locator(".al-endnote")).toHaveText(
+      PROSE.investigationEnd.replaceAll("`", ""),
     );
   });
 });
@@ -325,7 +343,6 @@ test.describe("the registers as decimal numbers", () => {
     page,
   }) => {
     await openLesson(page);
-    await commit(page, "predict-total", /^In w0/);
     const figure = page.locator("#ix-step-trip");
     await figure.scrollIntoViewIfNeeded();
     await expect(figure.locator(".al-bit")).toHaveCount(0);
@@ -344,7 +361,6 @@ test.describe("the registers as decimal numbers", () => {
 
   test("mark the written register by an outline and by the word Written", async ({ page }) => {
     await openLesson(page);
-    await commit(page, "predict-total", /^In w0/);
     const figure = page.locator("#ix-step-trip");
     await figure.scrollIntoViewIfNeeded();
     await expect(figure.locator('[data-changed="true"]')).toHaveCount(0);
@@ -475,7 +491,7 @@ test.describe("the ret experiment, as two connected groups", () => {
   });
 });
 
-test.describe("the two predictions commit before they reveal", () => {
+test.describe("the ret prediction commits before it reveals", () => {
   test("the ret prediction invites a best guess beside the question, and its button says what it does", async ({
     page,
   }) => {
@@ -491,19 +507,9 @@ test.describe("the two predictions commit before they reveal", () => {
     await expect(figure.locator(".al-outcome")).toHaveCount(0);
     await expect(figure.getByRole("button", { name: LABELS.commit.noRet })).toBeDisabled();
     await expect(figure.getByRole("button", { name: V.prediction.commit })).toHaveCount(0);
-    // The other prediction keeps the ordinary button, with no invitation of its own.
-    const total = page.locator("#ix-predict-total");
-    await expect(total.getByRole("button", { name: V.prediction.commit })).toBeDisabled();
-    await expect(total.locator(".prose").first()).toHaveText(
-      PROSE.predictionQuestion.replaceAll("**", "").replaceAll("`", ""),
-    );
-    await expect(total).not.toContainText("This is a new situation.");
   });
 
-  for (const [id, right, wrong] of [
-    ["predict-total", /^In w0/, /^In w3/],
-    ["predict-no-ret", "147", "232"],
-  ] as const) {
+  for (const [id, right, wrong] of [["predict-no-ret", "147", "232"]] as const) {
     test(id, async ({ page }) => {
       await openLesson(page);
       const figure = page.locator(`#ix-${id}`);
@@ -527,9 +533,6 @@ test.describe("the two predictions commit before they reveal", () => {
   }
 
   for (const [id, wrong, sentence] of [
-    ["predict-total", /^In a new place/, PROSE.predictionFeedback["new-place"]],
-    ["predict-total", /^It does not keep/, PROSE.predictionFeedback["not-kept"]],
-    ["predict-total", /^In w3/, PROSE.predictionFeedback.w3],
     ["predict-no-ret", "232", PROSE.failureFeedback["232"]],
     ["predict-no-ret", /^The run stops with an error/, PROSE.failureFeedback.error],
     ["predict-no-ret", "0", PROSE.failureFeedback["0"]],
@@ -541,7 +544,7 @@ test.describe("the two predictions commit before they reveal", () => {
       const figure = await commit(page, id, wrong);
       await expect(figure.locator(".al-nomatch")).toContainText(V.prediction.noMatch);
       await expect(figure.locator(".al-feedback")).toHaveText(sentence.replace(/`/g, ""));
-      const right = id === "predict-total" ? /^In w0/ : "147";
+      const right = "147";
       await figure.getByRole("radio", { name: right }).check();
       await press(
         page,
@@ -556,10 +559,10 @@ test.describe("the two predictions commit before they reveal", () => {
 
   test("a commitment is kept, and is still there after a reload", async ({ page }) => {
     await openLesson(page);
-    await commit(page, "predict-total", /^In w0/);
+    await commit(page, "predict-no-ret", "147");
     await page.reload();
-    await expect(page.locator("#ix-predict-total .al-match")).toBeVisible();
-    await expect(page.locator("#ix-step-trip .al-locked")).toHaveCount(0);
+    await expect(page.locator("#ix-predict-no-ret .al-match")).toBeVisible();
+    await expect(page.locator("#ix-step-no-ret .al-locked")).toHaveCount(0);
   });
 });
 
@@ -870,14 +873,13 @@ test.describe("the look of the lesson page", () => {
   }, info) => {
     const phone = info.project.name === "phone";
     await openLesson(page);
-    await commit(page, "predict-total", /^In w0/);
     await commit(page, "predict-no-ret", "232");
     const step = page.locator("#ix-step-trip");
     await press(page, step.getByRole("button", { name: V.stepper.next }));
     await press(page, step.getByRole("button", { name: V.stepper.next }));
     // Both notes under the listing open, the bits of the registers shown, and the experiment's run
     // across into fuel_used with its connector drawn.
-    for (const summary of await page.locator("#ix-trip-listing summary").all())
+    for (const summary of await page.locator("#ix-step-trip summary").all())
       await press(page, summary);
     await press(page, step.getByRole("button", { name: M0.registers.showBits }));
     const noRet = page.locator("#ix-step-no-ret");
@@ -914,9 +916,8 @@ test.describe("the look of the lesson page", () => {
     const press = (_page: Page, target: Locator) =>
       info.project.name === "phone" ? target.tap() : target.click();
     await openLesson(page);
-    await commit(page, "predict-total", /^In a new place/);
     await commit(page, "predict-no-ret", "232");
-    for (const summary of await page.locator("#ix-trip-listing summary").all())
+    for (const summary of await page.locator("#ix-step-trip summary").all())
       await press(page, summary);
     const step = page.locator("#ix-step-trip");
     await step.scrollIntoViewIfNeeded();
@@ -934,15 +935,12 @@ test.describe("the look of the lesson page", () => {
     await expect(noRet.locator(".al-stop")).toBeVisible();
     expect(await designProblems(page, true)).toEqual([]);
     const reflection = page.locator("section[data-kind='reflection']");
-    await reflection.scrollIntoViewIfNeeded();
-    await press(page, reflection.locator("summary"));
-    await expect(reflection.locator("details")).toContainText("w2 still holds 9.");
+    await expect(reflection.locator("details")).toHaveCount(0);
     expect(await designProblems(page, true)).toEqual([]);
   });
 
   test("a register's 32 cells fit the screen, on a phone and on a desk", async ({ page }) => {
     await openLesson(page);
-    await commit(page, "predict-total", /^In w0/);
     await press(
       page,
       page.locator("#ix-step-trip").getByRole("button", { name: M0.registers.showBits }),
@@ -968,7 +966,6 @@ test.describe("both themes", () => {
       await page.reload();
       await openLesson(page);
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-      await commit(page, "predict-total", /^In w0/);
       const figure = page.locator("#ix-step-trip");
       await press(page, figure.getByRole("button", { name: V.stepper.next }));
       await press(page, figure.getByRole("button", { name: M0.registers.showBits }));
@@ -988,7 +985,6 @@ for (const theme of ["light", "dark"] as const) {
   }) => {
     await page.emulateMedia({ colorScheme: theme });
     await openLesson(page);
-    await commit(page, "predict-total", /^In w0/);
     const synthesis = page.locator("#ix-step-trip");
     for (let k = 0; k < 4; k++)
       await press(page, synthesis.getByRole("button", { name: V.stepper.next }));

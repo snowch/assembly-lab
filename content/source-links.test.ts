@@ -54,7 +54,7 @@ it("shows compiler references only in the introduction and the lesson discussing
     ),
   );
   expect(optedIn).toEqual([
-    ["meet-the-machine", "trip-listing", "listing"],
+    ["meet-the-machine", "step-trip", "stepper"],
     ["branches", "describe-listing", "listing"],
   ]);
 });

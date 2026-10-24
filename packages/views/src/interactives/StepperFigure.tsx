@@ -15,7 +15,7 @@
 import { useId, useMemo, useState } from "react";
 import { z } from "zod";
 
-import { useSlot } from "@platform/lesson-runtime";
+import { Prose, useSlot } from "@platform/lesson-runtime";
 
 import { branchStatusAt, jumpedAt } from "../branchPath";
 import { crossedFrom, flowAt } from "../flow";
@@ -36,6 +36,9 @@ import { OperandDiagram } from "./OperandRoles";
 
 const Props = z.object({
   program: RecordedSchema,
+  /** Optional compiler/source context on the introductory complete function. */
+  showCompilerLines: z.boolean().default(false),
+  notes: z.array(z.object({ summary: z.string().min(1), body: z.string().min(1) })).default([]),
   /** Stage a first subtraction with argument names and two readings of its result. */
   subtractionReadings: z
     .object({ argumentNames: z.array(z.string()), register: z.number().int().min(0).max(30) })
@@ -344,6 +347,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
         lines={trace.lines}
         next={view.next}
         ran={view.ran}
+        showCompilerLines={data.showCompilerLines}
         grouped={data.grouped}
         stopAfter={data.grouped && view.stop?.kind === "returned" ? view.ran : null}
         crossedAfter={data.grouped ? crossedFrom(trace, view.k) : null}
@@ -527,6 +531,16 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
       )}
       {data.compact && controls}
       {data.panel && <StepPanel panel={data.panel} trace={trace} k={view.k} />}
+      {data.notes.length > 0 && (
+        <div className="al-notes">
+          {data.notes.map((note) => (
+            <details className="lesson-details" key={note.summary}>
+              <summary>{note.summary}</summary>
+              <Prose markdown={note.body} />
+            </details>
+          ))}
+        </div>
+      )}
     </div>
   );
 });

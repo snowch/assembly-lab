@@ -1,10 +1,8 @@
 // Copyright © 2026 Christopher Snow
 
-// The lesson's words are docs/notes/module-0/prose.md's, kept word for word. This test holds the
-// lesson to that file in both directions: every line of the file is somewhere in the lesson (so
-// nothing was dropped), and every string the lesson takes from the file is in it (so nothing was
-// reworded). The strings the file does not give are five captions of the lesson's own, drafted by
-// Haiku, and this test lists them, so a new one is a decision somebody sees.
+// The canonical prose and rendered lesson are checked in both directions, including captions,
+// optional compiler notes, retained prediction feedback and challenge hints. Deleted activities
+// must not survive as orphaned canonical copy or stale exports.
 
 import { readFileSync } from "node:fs";
 
@@ -66,14 +64,14 @@ const figure = (id: string) =>
 
 describe("the closed notes and the wrong-answer sentences", () => {
   it("hang two closed notes under the listing, with the file's titles and words", () => {
-    expect(figure("trip-listing").props["notes"]).toEqual([PROSE.compilerNote, PROSE.lineNote]);
+    expect(figure("step-trip").props["notes"]).toEqual([PROSE.compilerNote, PROSE.lineNote]);
     const titles = [...body.matchAll(/^\*Closed note under the listing[^\n]*\n\n\*\*(.*)\*\*$/gm)];
     expect(titles.map((m) => m[1])).toEqual([PROSE.compilerNote.summary, PROSE.lineNote.summary]);
     // The notes replace the open paragraph that used to sit under the listing.
-    expect(figure("trip-listing").after).toBeUndefined();
+    expect(figure("step-trip").after).toBeUndefined();
   });
 
-  it("give each wrong option of the two predictions the file's sentence, and the right option none", () => {
+  it("give each wrong option of the failure prediction the file's sentence, and the right option none", () => {
     const feedbackOf = (id: string) =>
       Object.fromEntries(
         (figure(id).props["options"] as { value: string; feedback?: string }[]).map((o) => [
@@ -81,12 +79,6 @@ describe("the closed notes and the wrong-answer sentences", () => {
           o.feedback,
         ]),
       );
-    expect(feedbackOf("predict-total")).toEqual({
-      w0: undefined,
-      "new-place": PROSE.predictionFeedback["new-place"],
-      "not-kept": PROSE.predictionFeedback["not-kept"],
-      w3: PROSE.predictionFeedback.w3,
-    });
     expect(feedbackOf("predict-no-ret")).toEqual({
       "232": PROSE.failureFeedback["232"],
       "147": undefined,
@@ -95,11 +87,11 @@ describe("the closed notes and the wrong-answer sentences", () => {
     });
   });
 
-  it("close the last section with the question's answer as its closed note, titled Answer", () => {
+  it("closes with a synthesis takeaway rather than repeating the single-operation quiz", () => {
     const last = lesson.sections.at(-1)!;
-    expect(last.details).toEqual({ summary: "Answer", prose: PROSE.reflectionAnswer });
-    expect(last.prose).not.toContain(PROSE.reflectionAnswer);
-    expect(last.title).toBe("What you now know");
+    expect(last.details).toBeUndefined();
+    expect(last.prose).toBe(PROSE.reflection);
+    expect(last.prose).not.toContain("Before `sub w1, w2, w1`");
   });
 
   it("give the stepper the file's sentence for the end of the run, and the other steppers none", () => {
@@ -116,10 +108,6 @@ describe("the closed notes and the wrong-answer sentences", () => {
     const flatInvitation = flat(PROSE.failureInvitation);
     expect(flatInvitation).not.toContain("fuel_used");
     expect(flatInvitation).not.toContain("147");
-    // The ordinary prediction keeps the shared workflow.
-    const total = figure("predict-total").props;
-    expect(total["intro"]).toBeUndefined();
-    expect(total["commitLabel"]).toBeUndefined();
   });
 
   it("give the construction challenge's three cases the sentence for the reversed subtraction", () => {
@@ -170,29 +158,14 @@ describe("the lesson's words", () => {
     walk(PROSE);
     walk(LABELS.objectives);
     // An option's value is the machine's name for it; its label is the file's words.
-    walk([...LABELS.options.total, ...LABELS.options.noRet].map((o) => o.label));
+    walk(LABELS.options.noRet.map((o) => o.label));
     walk(LABELS.challenges);
     const chunks = strings.flatMap((s) => s.split("\n").map((c) => c.replace(/^- /, "")));
     expect(chunks.filter((c) => c.trim() !== "" && !fileFlat.includes(flat(c)))).toEqual([]);
   });
 
-  it("have the captions the file gives, and only five captions of their own, each drafted by Haiku", () => {
-    expect(fileFlat).toContain(flat(LABELS.captions.listing));
-    expect(fileFlat).toContain(flat(LABELS.captions.stepper));
-    expect(fileFlat).toContain(flat(LABELS.captions.predictTotal));
-    expect(fileFlat).toContain(flat(LABELS.captions.argRegisters));
-    const own = [
-      LABELS.captions.predictNoRet,
-      LABELS.captions.noRet,
-      LABELS.captions.fix,
-      LABELS.captions.trace,
-    ];
-    expect(Object.keys(LABELS.captions)).toHaveLength(4 + own.length);
-    for (const caption of own) expect(fileFlat, caption).not.toContain(flat(caption));
-    const source = readFileSync(new URL("./meet-the-machine.labels.ts", import.meta.url), "utf8");
-    // Each of the four went through the prose process (16 October 2026); a new caption arrives
-    // marked DRAFT, and this count fails until it has been through it too.
-    expect(source.match(/\/\/ DRAFT/g) ?? []).toHaveLength(1);
+  it("records every retained caption in the canonical prose", () => {
+    for (const caption of Object.values(LABELS.captions)) expect(fileFlat).toContain(flat(caption));
   });
 
   it("keep the figures' captions as plain text, and the objectives as the file has them", () => {
