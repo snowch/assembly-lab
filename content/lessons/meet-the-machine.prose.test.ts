@@ -119,7 +119,7 @@ describe("the closed notes and the wrong-answer sentences", () => {
 });
 
 describe("the lesson's words", () => {
-  it("makes all earlier Fundamentals lessons discoverable from the preserved bookmark", () => {
+  it("follows the Fundamentals lessons without repeating their primitive activities", () => {
     expect(lesson.title).toBe("Putting it together");
     expect(lesson.order).toBe(4);
     expect(
@@ -131,7 +131,6 @@ describe("the lesson's words", () => {
       "subtraction-and-reuse",
       "instructions-in-sequence",
     ]) {
-      expect(PROSE.motivation).toContain(`](#/lesson/${id})`);
       expect(LESSONS.find((l) => l.id === id)?.order).toBeLessThan(lesson.order);
     }
   });

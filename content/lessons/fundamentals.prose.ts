@@ -180,7 +180,7 @@ export const SYNTHESIS_COPY = {
   question:
     "How do individual instructions perform a complete C function? Follow a trip calculation, then repair another function.",
   motivation:
-    "You have practised addition, a function call and return, subtraction, and instructions in sequence. Now combine those mechanics.\n\nIf you arrived here directly, start with the earlier Fundamentals lessons:\n\n- [One addition](#/lesson/one-addition)\n- [A tiny function](#/lesson/tiny-function)\n- [Subtraction and reuse](#/lesson/subtraction-and-reuse)\n- [Instructions in sequence](#/lesson/instructions-in-sequence)",
+    "You have practised addition, a function call and return, subtraction, and instructions in sequence. Now combine those mechanics.",
   motivationTitle: "From instructions to a function",
   listingNavigation:
     "On a narrow screen, swipe sideways within the listing to move between the C and instructions.",

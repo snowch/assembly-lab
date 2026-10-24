@@ -690,13 +690,6 @@ How do individual instructions perform a complete C function? Follow a trip calc
 
 You have practised addition, a function call and return, subtraction, and instructions in sequence. Now combine those mechanics.
 
-If you arrived here directly, start with the earlier Fundamentals lessons:
-
-- [One addition](#/lesson/one-addition)
-- [A tiny function](#/lesson/tiny-function)
-- [Subtraction and reuse](#/lesson/subtraction-and-reuse)
-- [Instructions in sequence](#/lesson/instructions-in-sequence)
-
 ### synthesis / motivationTitle
 
 From instructions to a function

@@ -64,10 +64,6 @@ for (const theme of ["light", "dark"] as const) {
         }
         await page.goto("#/");
       }
-      // Readers arriving through an old bookmark can see the prerequisite links, too.
-      await openLesson(page, "meet-the-machine");
-      for (const id of IDS.slice(0, 4))
-        await expect(page.locator(`section.lesson-section a[href="#/lesson/${id}"]`)).toBeVisible();
       expect(errors).toEqual([]);
     });
 
