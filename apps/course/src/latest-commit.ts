@@ -18,6 +18,31 @@ export interface PublishedRelease {
 }
 export type VersionState = "checking" | "current" | "available" | "offline" | "error";
 const hex = /^[a-f0-9]{64}$/;
+// GitHub Pages can ignore query strings and request cache directives in its CDN
+// cache key. An equivalent escaped path gives a cached response one fresh attempt.
+// Escape only the filename's unreserved characters: Pages project routing needs
+// the base path unchanged. Redundant separators add cache-key entropy; Pages and
+// ordinary static servers resolve these aliases to the same resource.
+function releaseAlias(url: URL): URL {
+  const alias = new URL(url);
+  const separator = url.pathname.lastIndexOf("/") + 1;
+  const directory = url.pathname.slice(0, separator);
+  const filename = url.pathname.slice(separator);
+  const random = crypto.getRandomValues(new Uint8Array(filename.length + 1));
+  let first = true;
+  let index = 1;
+  const escaped = filename.replace(/%[\da-f]{2}|[a-z\d._~-]/gi, (token) => {
+    if (token.length > 1) return token;
+    const bits = random[index++]!;
+    const escape = first || (bits & 1) !== 0;
+    first = false;
+    if (!escape) return token;
+    const code = token.charCodeAt(0).toString(16);
+    return `%${bits & 2 ? code.toUpperCase() : code}`;
+  });
+  alias.pathname = directory + "/".repeat(random[0]!) + escaped;
+  return alias;
+}
 const asset = (value: unknown): value is ReleaseAsset => {
   if (!value || typeof value !== "object") return false;
   const a = value as ReleaseAsset;
@@ -94,12 +119,15 @@ export function usePublishedRelease(running: string | null = RUNNING_BUILD) {
       try {
         const url = new URL("release.json", new URL(import.meta.env.BASE_URL, location.href));
         url.searchParams.set("check", crypto.randomUUID());
-        const response = await fetch(url, {
+        const options: RequestInit = {
           cache: "no-store",
           credentials: "same-origin",
           signal: controller.signal,
           headers: { "Cache-Control": "no-cache" },
-        });
+        };
+        let response = await fetch(url, options);
+        if (response.ok && Number(response.headers.get("Age") ?? 0) > 0)
+          response = await fetch(releaseAlias(url), options);
         if (!response.ok || Number(response.headers.get("Age") ?? 0) > 0)
           throw new Error("Release unavailable");
         const next = parseRelease(await response.json());

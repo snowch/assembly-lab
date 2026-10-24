@@ -38,11 +38,13 @@ export async function deployment() {
   let delayedPath: string | undefined;
   let delay = 0;
   let metadata: "valid" | "malformed" | "failure" | "timeout" = "valid";
+  let cdnCache: "canonical" | "all" | null = null;
   const requests: string[] = [];
   const requestHeaders: { path: string; cacheControl?: string }[] = [];
   const server = createServer((request, response) => {
-    const path = new URL(request.url ?? "/", "http://localhost").pathname;
-    requests.push(`${request.method} ${path}`);
+    const requestedPath = new URL(request.url ?? "/", "http://localhost").pathname;
+    const path = decodeURIComponent(requestedPath).replace(/\/+/g, "/");
+    requests.push(`${request.method} ${requestedPath}`);
     // Page-level offline emulation does not reliably stop service-worker fetches.
     // Refuse the real HTTP connection as well when a test disconnects this site.
     if (!networkAvailable) {
@@ -77,7 +79,10 @@ export async function deployment() {
         .end(corruptResponse ? "Bytes from the wrong release" : "Temporarily unavailable");
       return;
     }
-    const bytes = files.get(name);
+    const cachedMetadata =
+      name === "release.json" && cdnCache && (cdnCache === "all" || requestedPath === path);
+    if (cachedMetadata) response.setHeader("Age", "300");
+    const bytes = cachedMetadata ? original.get(name) : files.get(name);
     if (!bytes) {
       response.writeHead(404).end("Unknown resource");
       return;
@@ -152,6 +157,9 @@ export async function deployment() {
     },
     metadata(mode: typeof metadata) {
       metadata = mode;
+    },
+    cdnCache(mode: typeof cdnCache) {
+      cdnCache = mode;
     },
     async close() {
       server.closeAllConnections();

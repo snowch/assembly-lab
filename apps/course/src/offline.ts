@@ -55,6 +55,7 @@ export interface OfflineStatus {
   state: OfflineState;
   updateWaiting: boolean;
   runtimeMismatch?: boolean;
+  canDownloadSelected?: boolean;
   completedBytes?: number;
   totalBytes?: number;
 }
@@ -141,6 +142,10 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
           !!controller &&
           !!snapshot &&
           (!snapshot.version || (!!RUNNING_BUILD && snapshot.runtimeVersion !== RUNNING_BUILD)),
+        canDownloadSelected:
+          !!RUNNING_BUILD &&
+          snapshot?.version === RUNNING_BUILD &&
+          snapshot?.runtimeVersion === RUNNING_BUILD,
       });
       setPreparedVersion(snapshot?.pendingPrepared ? (snapshot.pendingVersion ?? null) : null);
     };
@@ -217,6 +222,15 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
         if (!worker) return;
         setStatus((previous) => previous && { ...previous, state: "saving" });
         try {
+          if (!release) {
+            const selected = await workerRequest(worker, "OFFLINE_STATUS");
+            if (
+              !RUNNING_BUILD ||
+              selected.version !== RUNNING_BUILD ||
+              selected.runtimeVersion !== RUNNING_BUILD
+            )
+              throw new Error("Selected release does not match this document");
+          }
           await transferFiles(worker, "DOWNLOAD_OFFLINE", { release });
         } catch {
           setDownloadError(true);

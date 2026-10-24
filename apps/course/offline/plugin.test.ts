@@ -456,6 +456,20 @@ describe("offline worker", () => {
       expect(w.dispatch("fetch", { request })).toBeUndefined();
   });
 
+  it("bypasses saved metadata at equivalent CDN cache-busting paths", async () => {
+    const w = worker();
+    const alias = `${w.scope}////%72elease%2Ejson?check=fresh`;
+    w.entries.set(alias, new Response("stale metadata"));
+    const response = (await w.dispatch("fetch", {
+      request: new Request(alias),
+    })) as Response;
+    expect(await response.text()).toBe("network");
+    expect(w.fetch).toHaveBeenCalledTimes(1);
+    expect(w.fetch.mock.calls[0]?.[0].cache).toBe("no-store");
+    expect(w.caches.open).not.toHaveBeenCalled();
+    expect(w.put).not.toHaveBeenCalled();
+  });
+
   it("resumes partial downloads without losing the previous release on failure", async () => {
     const w = worker();
     w.fetch.mockRejectedValueOnce(new Error("network"));
