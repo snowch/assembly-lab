@@ -61,19 +61,16 @@ describe("the lesson", () => {
     expect(Object.keys(book.timeModelNotes)).toEqual([STEPS]);
   });
 
-  it("gates the stepper behind the prediction before it, in the same lesson", () => {
-    const ids = lesson.sections.flatMap((s) => s.interactives.map((x) => x.id));
-    for (const x of lesson.sections.flatMap((s) => s.interactives)) {
-      const after = x.props["after"];
-      if (typeof after !== "string") continue;
-      // A figure that stays shut waits for a prediction above it. The arguments figure is the one
-      // exception the lesson means: it draws the mapping first and reveals the first instruction's
-      // result only after the prediction below it has been checked, so the diagram is on the page
-      // before the learner answers and nothing of the result is.
-      if (x.id === "arg-registers") continue;
-      expect(ids.indexOf(after), x.id).toBeLessThan(ids.indexOf(x.id));
-    }
-    expect(ids.indexOf("predict-total")).toBeGreaterThan(ids.indexOf("arg-registers"));
+  it("opens the synthesis walkthrough directly and preserves the new failure experiment gate", () => {
+    const figures = lesson.sections.flatMap((s) => s.interactives);
+    const ids = figures.map((x) => x.id);
+    expect(ids).not.toContain("predict-total");
+    expect(ids).not.toContain("trip-listing");
+    expect(ids).not.toContain("arg-registers");
+    expect(figures.find((x) => x.id === "step-trip")?.props["after"]).toBeUndefined();
+    expect(figures.find((x) => x.id === "step-no-ret")?.props["after"]).toBe("predict-no-ret");
+    expect(ids.indexOf("predict-no-ret")).toBeLessThan(ids.indexOf("step-no-ret"));
+    expect(lesson.sections.at(-1)?.details).toBeUndefined();
   });
 
   it("gives the construction challenge the gate add, sub and ret, and the registers w0 to w3", () => {
@@ -160,8 +157,10 @@ describe("the page", () => {
     expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
-    // Both steppers wait for their predictions; the operand diagram is revealed only after stepping.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
+    // Only the new failure experiment waits for a prediction; the complete walkthrough is open.
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(1);
+    expect(container.querySelector("#ix-step-trip .al-listing")).not.toBeNull();
+    expect(container.querySelector("#ix-step-no-ret .al-locked")).not.toBeNull();
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
   });

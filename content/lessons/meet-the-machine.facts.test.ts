@@ -328,23 +328,6 @@ describe("fuel_used", () => {
   });
 });
 
-describe("the question that closes the lesson", () => {
-  // `sub w1, w2, w1` with w1 holding 5 and w2 holding 9, then a `ret` to end the run.
-  const result = call(build("sub w1, w2, w1\nret"), 0x400000, [0, 5, 9]);
-
-  it("changes w1 to 9 minus 5, which is 4, and leaves w2 at 9", () => {
-    expect([w(stateAfter(result, -1), 1), w(stateAfter(result, -1), 2)]).toEqual([5, 9]);
-    expect([w(result.final, 1), w(result.final, 2)]).toEqual([4, 9]);
-    expect(result.steps[0]!.writes.map((x) => x.reg)).toEqual([1]);
-  });
-
-  it("is what the lesson's words state", () => {
-    const text = learnerText(lesson).join("\n");
-    expect(text).toContain("`w1` holds 5 and `w2` holds 9");
-    expect(text).toContain("It becomes 9 minus 5, which is 4. `w2` still holds 9.");
-  });
-});
-
 describe("the reversed subtraction the construction challenge answers", () => {
   const cases = () => {
     const c = lesson.challenges.find((x) => x.id === "fix-fuel-used")!;

@@ -94,54 +94,6 @@ export const meetTheMachine: LessonInput = {
       kind: "prediction",
       title: LABELS.titles.prediction,
       prose: PROSE.prediction,
-      interactives: [
-        {
-          id: "trip-listing",
-          kind: "listing",
-          timeModel: "none",
-          caption: LABELS.captions.listing,
-          props: {
-            program: TRIP_DISTANCE,
-            showCompilerLines: true,
-            notes: [PROSE.compilerNote, PROSE.lineNote],
-          },
-        },
-        {
-          id: "arg-registers",
-          kind: "arg-registers",
-          timeModel: "none",
-          caption: LABELS.captions.argRegisters,
-          props: {
-            params: ["leg1", "leg2", "leg3", "detour"],
-            program: TRIP_DISTANCE,
-            call: TRIP_CALL,
-            after: "predict-total",
-            says: PROSE.argsSay,
-            question: PROSE.argsQuestion,
-            reveal: {
-              register: 0,
-              before: "leg1",
-              after: "leg1 + leg2",
-              explain: PROSE.argsExplain,
-            },
-          },
-        },
-        {
-          id: "predict-total",
-          kind: "trace-prediction",
-          timeModel: STEPS,
-          role: "prediction",
-          caption: LABELS.captions.predictTotal,
-          props: {
-            question: PROSE.predictionQuestion,
-            options: LABELS.options.total.map((o) => withFeedback(o, PROSE.predictionFeedback)),
-            explain: PROSE.predictionExplain,
-            program: TRIP_DISTANCE,
-            call: TRIP_CALL,
-            measure: { kind: "first-write" },
-          },
-        },
-      ],
     },
     {
       kind: "investigation",
@@ -157,11 +109,12 @@ export const meetTheMachine: LessonInput = {
             program: TRIP_DISTANCE,
             call: TRIP_CALL,
             registers: [0, 1, 2, 3],
-            after: "predict-total",
-            // Module 0 shows what each step read and wrote, and each register as a decimal number.
+            showCompilerLines: true,
+            notes: [PROSE.compilerNote, PROSE.lineNote],
+            // Reuse the introductory operand rules in one complete function.
             flow: false,
             decimal: true,
-            // The first step teaches the operand rule; later arithmetic steps ask learners to apply it.
+            // This synthesis walkthrough adds no repeated per-instruction quiz.
             expect: false,
             compact: false,
             endNote: PROSE.investigationEnd,
@@ -249,8 +202,6 @@ export const meetTheMachine: LessonInput = {
       kind: "reflection",
       title: LABELS.titles.reflection,
       prose: PROSE.reflection,
-      // The answer to the closing question, shut until the learner opens it.
-      details: { summary: LABELS.details.reflection, prose: PROSE.reflectionAnswer },
     },
   ],
   challenges: [

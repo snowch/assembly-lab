@@ -1,8 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
-// Module 0's prose: the paragraphs, hints, tasks and notes of the lesson, as drafted by Haiku from
-// checked facts and kept word for word from docs/notes/module-0/prose.md. meet-the-machine.prose.test.ts
-// holds every string here to that file, so a change of wording is made there first.
+// Synthesis prose and retained hints/tasks/notes. Drafted separately from checked facts;
+// canonical copy: docs/notes/module-0/prose.md. The prose test holds both directions.
 
 import { SYNTHESIS_COPY } from "./fundamentals.prose";
 
@@ -31,30 +30,10 @@ export const PROSE = {
   motivation: SYNTHESIS_COPY.motivation,
 
   prediction:
-    "Now combine those operations. The trip computer logs three distances, called legs, with a private detour removed. The C function `trip_distance` adds the three legs and subtracts the detour.\n\nGCC translated this function into four instructions for a 64-bit Arm processor. The complete C and its related instructions appear together below.\n\nFor the `int` arguments here, the first arrives in `w0`, the second in `w1`, and so on. As in `increment_int`, the function leaves its `int` result in `w0`.\n\nThe C names a variable, `total`. The instructions name registers. Use the operand rule you practised to decide where the first value of `total` goes.\n\n" +
-    SYNTHESIS_COPY.listingNavigation,
-  argsSay: "The first instruction is `add w0, w0, w1`.",
-  argsQuestion:
-    "It adds two register values and stores the result. Where will the C variable `total` be kept?",
-  argsExplain:
-    "The `add` instruction overwrites `w0` with the sum. The C variable `total` does not need a separate register.",
-  predictionQuestion: "**After the first instruction runs, where is the value of `total` kept?**",
-  predictionExplain:
-    "Before the first instruction, `w0` holds `leg1`. The first instruction, `add w0, w0, w1`, replaces that value with `leg1 + leg2`, the first value of `total`. In this function, the next two arithmetic instructions update `w0` again as `total` changes.",
-  // For a wrong choice, by the option's value. The right option has none.
-  predictionFeedback: {
-    "new-place":
-      "The instructions name only registers, never variables. Look at the first instruction, `add w0, w0, w1`. Which register does it write to, and what does that register hold before it runs?",
-    "not-kept":
-      "Look at line 6 of the C, `return total;`. What does the function still need when it reaches that line, and where must the processor keep it?",
-    w3: "`w3` holds `detour`. The third instruction, `sub w0, w0, w3`, still needs it. What happens to a value when another value is written into the same register?",
-  },
+    "`trip_distance` adds three trip distances, called legs, then subtracts a detour. Its `int` arguments `leg1`, `leg2`, `leg3` and `detour` arrive in `w0`, `w1`, `w2` and `w3`, in that order.\n\nGCC 16.1.0 at `-O1`, an optimisation setting, made the four instructions below for 64-bit Arm. Follow the C variable `total` through the calculation: the instructions update `w0`, then `ret` returns with the result already there.",
 
   investigation:
-    "The simulator is a JavaScript program that loads with this page and runs in your browser. It imitates the processor, one instruction at a time. The instructions are GCC's real output. Only the running is imitated. The course calls the simulator its model of the processor.\n\n" +
-    "The stepper figure runs `trip_distance(120, 85, 42, 15)`. Each register is shown as a decimal number. Press Show the bits to see all four registers as 32-bit patterns. The `w` in `w0` says this instruction works on those 32 bits. A register is wider than that. Module 1 shows the rest of each register.\n\n" +
-    "The marker ▸ shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`.\n\n" +
-    "Press Next to run one instruction. The status names what ran and what runs next. The outlined register was written by the last instruction. Apply the operand rule you practised to follow each result. Back undoes a step; Reset starts again.",
+    "Run `trip_distance(120, 85, 42, 15)` with Next. The C statement and instruction that just ran are highlighted together; ▸ marks the next instruction. An outlined register was written by the last instruction. Back undoes a step; Reset starts again.\n\nOn a narrow screen, swipe sideways within the listing to see the C and instructions. Show the bits changes the register display to 32-bit patterns.",
   // Shown by the stepper once the run has ended.
   investigationEnd:
     "`ret` returns to the code that called this function. The function's result is whatever `w0` holds at that moment.",
@@ -96,14 +75,9 @@ export const PROSE = {
   },
 
   explanation:
-    "The instructions are kept one after another in memory. The program counter tracks which one runs next. After most instructions, it moves on to the next one. `ret`, and the instructions of later modules, can send it to a different instruction.\n\n" +
-    "So far, `add` and `sub` read registers and write one register. The names `leg1` and `total` are not in the instructions.\n\n" +
-    "For the functions in this lesson, the `int` arguments arrive in order in `w0`, `w1` and so on. Each function leaves its `int` result in `w0`. `ret` returns to the code that called the function.",
-
+    "A function name does not make the processor stop. In this example, execution advances through instructions in memory until `ret` returns to the caller. Removing that return lets the next function's instructions run with the values left in the registers.",
   generalisation:
-    "Later modules add instructions that change which instruction runs next, and instructions that read and write memory. You will follow their effects in the same way.\n\n" +
-    "The compiler chooses the registers and the instructions. `-O0` and `-O1` are two of GCC's optimisation settings. You choose a setting when you compile the C.\n\nAt `-O0`, which means no optimisation, GCC 16.1 makes twenty instructions from `trip_distance`. It stores the variables in memory, loads their values into registers for arithmetic, and stores the results back in memory. At `-O1`, the setting used here, GCC produces four instructions and keeps this function's values in registers. The compiler version and settings matter when you compare listings.",
-
+    "The compiler chooses the registers and instructions. GCC 16.1 at `-O1` keeps this function's values in registers and produces four instructions. At `-O0`, which means no optimisation, it produces twenty instructions, storing variables in memory and reading them back for arithmetic. Compare listings with the compiler version and settings in mind.",
   challenge:
     "The car's odometer records the total distance it has travelled. The car needs a service when that reading reaches `service_at`. The `odometer` argument is the reading recorded before the current trip began. It does not include `trip_so_far`.\n\n`km_to_service` returns the kilometres left before the service, after allowing for the current trip and a planned trip. It also keeps 50 km spare. Its arguments are `service_at`, `odometer`, `trip_so_far` and `planned`, in `w0` to `w3`.\n\nGCC made the five instructions shown below. The `#50` in the last `sub` is the number 50 written inside the instruction.",
   traceTask: "Without running the call `km_to_service(30000, 28750, 140, 390)`, give two values.",
@@ -119,13 +93,7 @@ export const PROSE = {
   traceFeedbackW0: "Take each `sub` in turn, and write down `w0` after each one.",
 
   reflection:
-    "- `add` and `sub` read values from registers and write their result to a register.\n" +
-    "- The processor runs instructions, not C variable names. A register does not keep the name of the C variable whose value it holds.\n" +
-    "- Instructions run one after another unless an instruction changes that.\n" +
-    "- `ret` returns to the code that called the function.\n\n" +
-    "Before `sub w1, w2, w1` runs, `w1` holds 5 and `w2` holds 9. Which register changes, and what do `w1` and `w2` hold afterwards?",
-  // The section's closed note, titled by `LABELS.details.reflection`.
-  reflectionAnswer: "`w1` changes. It becomes 9 minus 5, which is 4. `w2` still holds 9.",
+    "Trace the whole path: incoming arguments, each instruction's writes, and the return. A correct calculation is not enough if execution continues beyond the intended function.",
 
   modelVsReality:
     "The simulator runs one instruction per step. A real processor works on many instructions at once, and it may run them out of order. It still guarantees the same results as running them one at a time. That guarantee is all this lesson relies on.",

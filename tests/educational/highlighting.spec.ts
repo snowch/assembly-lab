@@ -12,8 +12,6 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { STRINGS } from "../../apps/course/src/strings";
 
-import { LABELS } from "../../content/lessons/meet-the-machine.labels";
-
 const LESSON_ID = "meet-the-machine";
 
 async function openLesson(page: Page): Promise<void> {
@@ -22,19 +20,6 @@ async function openLesson(page: Page): Promise<void> {
   await page.evaluate(async () => {
     await document.fonts.ready;
   });
-}
-
-/** Chooses an option and checks the prediction. */
-async function commit(page: Page, id: string, option: string | RegExp): Promise<Locator> {
-  const figure = page.locator(`#ix-${id}`);
-  await figure.scrollIntoViewIfNeeded();
-  await figure.getByRole("radio", { name: option }).check();
-  await figure
-    .getByRole("button", {
-      name: id === "predict-no-ret" ? LABELS.commit.noRet : V.prediction.commit,
-    })
-    .click();
-  return figure;
 }
 
 /** The page's pointer: a tap on a touch screen, a click with a mouse. */
@@ -82,7 +67,6 @@ for (const theme of themes) {
       await openLesson(page);
       await page.getByLabel(STRINGS.theme).selectOption({ label: theme.label });
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme.value);
-      await commit(page, "predict-total", /^In w0/);
     });
 
     test("the C line and the instruction that ran share one treatment, and next is different", async ({

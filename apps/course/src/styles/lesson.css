@@ -530,3 +530,9 @@ figure.interactive > .figure-after {
     margin-top: 0;
   }
 }
+
+/* This synthesis context replaces the former register prediction; its descriptive heading
+   remains, while the authoring schema retains the original section position. */
+.lesson[data-lesson="meet-the-machine"] .lesson-section[data-kind="prediction"] > h2 .section-kind {
+  display: none;
+}
