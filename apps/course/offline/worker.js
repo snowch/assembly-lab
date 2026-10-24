@@ -275,8 +275,17 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
+  let resourcePath = url.pathname;
+  try {
+    resourcePath = decodeURI(resourcePath).replace(/\/+/g, "/");
+  } catch {
+    // A malformed escape cannot be a release-check alias.
+  }
   // Release checks are network-only even when an old cached app is still running.
-  if (url.origin === new URL(scope).origin && url.pathname === new URL(releaseUrl).pathname) {
+  if (
+    url.origin === new URL(scope).origin &&
+    resourcePath === decodeURI(new URL(releaseUrl).pathname)
+  ) {
     event.respondWith(fetch(new Request(event.request, { cache: "no-store" })));
     return;
   }

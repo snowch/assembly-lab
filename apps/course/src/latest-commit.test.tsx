@@ -59,6 +59,34 @@ it.each([
 ])("rejects invalid release metadata %j", (value) => {
   expect(() => parseRelease(value)).toThrow();
 });
+it("retries cached CDN metadata at an equivalent uncached path without trusting the snapshot", async () => {
+  const fetcher = vi
+    .fn()
+    .mockResolvedValueOnce({ ...response(), headers: new Headers({ Age: "300" }) })
+    .mockResolvedValue(response({ ...release, buildId: "c".repeat(64) }));
+  vi.stubGlobal("fetch", fetcher);
+  const { result } = renderHook(() => usePublishedRelease(buildId));
+  await waitFor(() => expect(result.current.state).toBe("available"));
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  const [original, options] = fetcher.mock.calls[0]!;
+  const [alias, retryOptions] = fetcher.mock.calls[1]!;
+  expect(alias.origin).toBe(original.origin);
+  expect(alias.pathname).not.toBe(original.pathname);
+  expect(decodeURIComponent(alias.pathname).replace(/\/+/g, "/")).toBe(
+    decodeURIComponent(original.pathname),
+  );
+  expect(
+    alias.pathname.startsWith(original.pathname.slice(0, original.pathname.lastIndexOf("/") + 1)),
+  ).toBe(true);
+  expect(alias.search).toBe(original.search);
+  expect(retryOptions).toBe(options);
+  expect(result.current.release?.buildId).toBe("c".repeat(64));
+
+  fetcher.mockResolvedValue({ ...response(), headers: new Headers({ Age: "1" }) });
+  await act(() => result.current.check());
+  expect(fetcher).toHaveBeenCalledTimes(4);
+  expect(result.current.state).toBe("error");
+});
 it("separates offline, cached and failed checks from verified currency", async () => {
   const fetcher = vi.fn().mockResolvedValue(response());
   vi.stubGlobal("fetch", fetcher);
@@ -96,6 +124,34 @@ it("times out, allows retry and ignores late responses and aborted offline reque
   expect(result.current.state).toBe("available");
   await act(async () => finish(response()));
   expect(result.current.state).toBe("available");
+});
+it("keeps the same timeout and stale-response guard across a CDN fallback", async () => {
+  vi.useFakeTimers();
+  let finish!: (value: unknown) => void;
+  const fetcher = vi
+    .fn()
+    .mockResolvedValueOnce({ ...response(), headers: new Headers({ Age: "300" }) })
+    .mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+  vi.stubGlobal("fetch", fetcher);
+  const { result } = renderHook(() => usePublishedRelease(buildId));
+  await act(async () => {});
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  const signal = fetcher.mock.calls[1]![1].signal as AbortSignal;
+  await act(async () => {
+    vi.advanceTimersByTime(5000);
+  });
+  expect(signal.aborted).toBe(true);
+  expect(result.current.state).toBe("error");
+  fetcher.mockResolvedValue(response());
+  await act(() => result.current.check());
+  expect(result.current.state).toBe("current");
+  await act(async () => finish(response({ ...release, buildId: "c".repeat(64) })));
+  expect(result.current.state).toBe("current");
 });
 it("throttles focus events and polls only while visible and connected", async () => {
   vi.useFakeTimers();

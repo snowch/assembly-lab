@@ -77,6 +77,45 @@ test("checking the published release never downloads the course or reads GitHub 
   }
 });
 
+test("cached CDN discovery retries an equivalent network path and never trusts cached metadata", async ({
+  context,
+}) => {
+  const site = await deployment();
+  site.cdnCache("canonical");
+  try {
+    const page = await context.newPage();
+    await controlled(page, site.url);
+    const panel = await checkForUpdates(page);
+    await expect(panel.locator('[data-version="current"]')).toBeVisible();
+    expect(site.requests.some((path) => path.includes("%"))).toBe(true);
+    site.publish("cdn-new-release");
+    await checkForUpdates(page);
+    await expect(panel.locator('[data-version="available"]')).toBeVisible();
+    expect(await currentBuild(page)).toBe(site.initial.buildId);
+    expect(site.requests).not.toContain(`GET ${base}native/Makefile`);
+    site.cdnCache("all");
+    await checkForUpdates(page);
+    await expect(panel.locator('[data-version="error"]')).toBeVisible();
+    site.cdnCache(null);
+    await panel.getByRole("button", { name: "Retry", exact: true }).click();
+    await expect(panel.locator('[data-version="available"]')).toBeVisible();
+    const cachedUrls = await page.evaluate(async () => {
+      const urls: string[] = [];
+      for (const name of await caches.keys()) {
+        const cache = await caches.open(name);
+        urls.push(...(await cache.keys()).map((request) => request.url));
+      }
+      return urls;
+    });
+    expect(
+      cachedUrls.some((url) => decodeURIComponent(new URL(url).pathname).endsWith("release.json")),
+    ).toBe(false);
+  } finally {
+    await context.close();
+    await site.close();
+  }
+});
+
 test("detect, download, defer and explicit restart reload every app tab while preserving work", async ({
   context,
 }) => {
