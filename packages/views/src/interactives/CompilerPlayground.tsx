@@ -1,4 +1,6 @@
 // Copyright © 2026 Christopher Snow
+
+import { useHandoffState } from "../update-handoff";
 import { useRef, useState } from "react";
 import { z } from "zod";
 import { compileC } from "@al/compiler";
@@ -34,13 +36,26 @@ export const CompilerPlayground = withProps(
       args = saved?.args ?? data.args.map(String);
     const sourceRef = useRef(source);
     sourceRef.current = source;
-    const [program, setProgram] = useState<RecordedProgram | null>(null),
-      [result, setResult] = useState<CRun | null>(null),
-      [diagnostic, setDiagnostic] = useState(""),
-      [k, setK] = useState(0),
-      [gcc, setGcc] = useState<{ listing: string; cached: boolean } | null>(null),
+    const [program, setProgram] = useHandoffState<RecordedProgram | null>(
+        "CompilerPlayground.program",
+        null,
+      ),
+      [result, setResult] = useHandoffState<CRun | null>("CompilerPlayground.result", null, {
+        encode: (value) => (value === null ? null : { source, args: args.map(Number) }),
+        decode: (value) => {
+          if (value === null) return null;
+          const call = value as { source: string; args: number[] };
+          return runC(call.source, call.args);
+        },
+      }),
+      [diagnostic, setDiagnostic] = useHandoffState("CompilerPlayground.diagnostic", ""),
+      [k, setK] = useHandoffState("CompilerPlayground.k", 0),
+      [gcc, setGcc] = useHandoffState<{ listing: string; cached: boolean } | null>(
+        "CompilerPlayground.gcc",
+        null,
+      ),
       [loading, setLoading] = useState(false),
-      [gccError, setGccError] = useState(false);
+      [gccError, setGccError] = useHandoffState("CompilerPlayground.gccError", false);
     const unlocked = data.after === undefined || prediction !== undefined;
     if (!unlocked)
       return (
@@ -249,7 +264,7 @@ export const CompilerPlayground = withProps(
             </div>
           </div>
         )}
-        <details>
+        <details aria-busy={loading}>
           <summary>{C.playground.compare}</summary>
           <p>
             {C.playground.privacy}{" "}

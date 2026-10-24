@@ -7,7 +7,8 @@
 // 32 characters of bits, so a grader reads the same answer whichever way the learner set it. The
 // box never fills in an answer: it starts as the bits are, and changes only as the learner acts.
 
-import { useId, useState } from "react";
+import { useHandoffState } from "./update-handoff";
+import { useId } from "react";
 
 import { parseHexEntry, readingsOfPattern } from "./readings";
 import { MODULE1_STRINGS as M1 } from "./strings.module1";
@@ -15,14 +16,16 @@ import { MODULE1_STRINGS as M1 } from "./strings.module1";
 export function HexEntry({
   bits,
   onBits,
+  handoffKey = "hex",
 }: {
   /** The 32 bits the buttons hold now. */
   bits: string;
+  handoffKey?: string;
   /** Called with 32 characters when the typed digits are valid. */
   onBits: (bits: string) => void;
 }) {
   const id = useId();
-  const [typed, setTyped] = useState<string | null>(null);
+  const [typed, setTyped] = useHandoffState<string | null>(`HexEntry.${handoffKey}`, null);
   const entry = typed === null ? null : parseHexEntry(typed);
   // What the learner typed stays in the box while it is not yet digits or is not valid, or while it
   // names the bits that are set. Once a button changes the bits, the box shows the bits' own digits.

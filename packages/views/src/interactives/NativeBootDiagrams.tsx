@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
-import { useId, useState } from "react";
+
+import { useHandoffState } from "../update-handoff";
+import { useId } from "react";
 import { z } from "zod";
 import { Prose } from "@platform/lesson-runtime";
 
@@ -92,8 +94,8 @@ const range = (address: number, size: number) => `${hex(address)}–${hex(addres
 
 export function NativeBootDiagrams({ kind, evidence, labels }: Props) {
   const id = useId();
-  const [stage, setStage] = useState("loader");
-  const [sectionName, setSectionName] = useState(".text");
+  const [stage, setStage] = useHandoffState("NativeBootDiagrams.stage", "loader");
+  const [sectionName, setSectionName] = useHandoffState("NativeBootDiagrams.sectionName", ".text");
   const f = labels.flow;
   const m = labels.memory;
   const pcs: Record<string, number> = {

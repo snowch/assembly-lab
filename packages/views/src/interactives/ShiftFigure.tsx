@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // One word, shifted by the instruction the learner chooses, by an amount the learner chooses. The
 // figure runs `<instruction> w0, w0, <amount>` and `ret` on the simulator for the word the learner
 // types, and draws the word before and after: a line that says which way every bit moves and what
@@ -11,7 +13,7 @@
 // A word that cannot be read (empty, unfinished, too large, not a number) gets its message and no
 // result: nothing is run, and nothing is drawn, until the word is valid.
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { z } from "zod";
 
 import { useSlot } from "@platform/lesson-runtime";
@@ -54,9 +56,9 @@ export const shiftProgram = (op: Shift, amount: number) => ({
 });
 
 export const ShiftFigure = withProps(Props, function ShiftFigure({ data, store }) {
-  const [op, setOp] = useState<Shift>(data.ops[0] ?? "lsl");
-  const [amount, setAmount] = useState(data.amounts[0] ?? 1);
-  const [text, setText] = useState(() => hex(data.word));
+  const [op, setOp] = useHandoffState<Shift>("ShiftFigure.op", data.ops[0] ?? "lsl");
+  const [amount, setAmount] = useHandoffState("ShiftFigure.amount", data.amounts[0] ?? 1);
+  const [text, setText] = useHandoffState("ShiftFigure.text", () => hex(data.word));
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const typed = parseWord(text);
   const trace = useMemo(

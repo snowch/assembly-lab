@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // One register read three ways. The learner sets the 32 bits one at a time; the page puts the
 // pattern in the register by running `mov` and `movk` on the model, and the three readings are what
 // the register then holds: its hexadecimal digits, its unsigned reading and its signed reading.
@@ -14,7 +16,7 @@
 // reading, and keeps the sum of every bit in a closed part. It also adds a button that clears the
 // bits.
 
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useMemo } from "react";
 import { z } from "zod";
 
 import { BitToggles } from "../BitToggles";
@@ -77,7 +79,7 @@ export const RegisterReader = withProps(Props, function RegisterReader({ data })
     if (data.start === undefined) return NO_BITS;
     return patternAfterRun(data.start.program, data.start.call, Number(data.register.slice(1)));
   }, [data.start, data.register]);
-  const [bits, setBits] = useState(first);
+  const [bits, setBits] = useHandoffState("RegisterReader.bits", first);
   const readings = useMemo(() => readingsOfPattern(bits), [bits]);
   const table = useMemo(() => (data.topBit ? topBitTable(bits) : null), [data.topBit, bits]);
 

@@ -24,14 +24,20 @@ import { offlineApp } from "./offline/plugin";
 import { MANIFEST_FILE, webManifest } from "./src/web-manifest";
 import type { BuildVersion } from "./src/build-version";
 
-const [sha, committedAt] = execFileSync("git", ["log", "-1", "--format=%H%n%cI"], {
-  cwd: fileURLToPath(new URL("../..", import.meta.url)),
-  encoding: "utf8",
-})
-  .trim()
-  .split("\n");
-if (!sha || !committedAt) throw new Error("Cannot determine the source commit and date.");
-const version: BuildVersion = { sha, committedAt: new Date(committedAt).toISOString() };
+let version: BuildVersion | null = null;
+try {
+  const [sha, committedAt] = execFileSync("git", ["log", "-1", "--format=%H%n%cI"], {
+    cwd: fileURLToPath(new URL("../..", import.meta.url)),
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  })
+    .trim()
+    .split("\n");
+  if (sha && /^[a-f0-9]{40}$/.test(sha) && committedAt && Number.isFinite(Date.parse(committedAt)))
+    version = { sha, committedAt: new Date(committedAt).toISOString() };
+} catch {
+  /* A source archive has no commit identity. */
+}
 
 type StaticPage = typeof import("./src/static-page");
 
@@ -86,7 +92,7 @@ function coverWords(): Plugin {
 export default defineConfig({
   define: { __COURSE_VERSION__: JSON.stringify(version) },
   base: process.env.BASE_PATH ?? "/assembly-lab/",
-  plugins: [react(), coverWords(), offlineApp()],
+  plugins: [react(), coverWords(), offlineApp(version)],
   build: {
     outDir: "dist",
     sourcemap: true,

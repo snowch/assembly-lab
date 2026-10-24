@@ -1,6 +1,8 @@
 // Copyright © 2026 Christopher Snow
 
-import { useMemo, useState, type CSSProperties } from "react";
+import { useHandoffState } from "../update-handoff";
+
+import { useMemo, type CSSProperties } from "react";
 import { z } from "zod";
 
 import { useSlot } from "@platform/lesson-runtime";
@@ -67,12 +69,12 @@ const Props = z.object({
 });
 
 export const MemoryStepper = withProps(Props, function MemoryStepper({ data: supplied, store }) {
-  const [selectedCase, setSelectedCase] = useState(0);
+  const [selectedCase, setSelectedCase] = useHandoffState("MemoryStepper.selectedCase", 0);
   const data = supplied.cases?.[selectedCase]
     ? { ...supplied, ...supplied.cases[selectedCase]! }
     : supplied;
-  const [k, setK] = useState(0);
-  const [showBits, setShowBits] = useState(false);
+  const [k, setK] = useHandoffState("MemoryStepper.k", 0);
+  const [showBits, setShowBits] = useHandoffState("MemoryStepper.showBits", false);
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const unlocked = data.after === undefined || prediction !== undefined;
   const trace = useMemo(

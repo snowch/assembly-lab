@@ -13,6 +13,7 @@
 import { LESSONS } from "@al/content";
 import { PLAN, statusOf } from "@al/content/plan";
 
+import { STATUS_STRINGS as S } from "./strings.status";
 import { COMPANION_LINKS, STRINGS } from "./strings";
 import { commitHref, type BuildVersion } from "./build-version";
 import { BACKGROUND, ICONS, MANIFEST_FILE, shortName } from "./web-manifest";
@@ -81,6 +82,7 @@ export function staticPage(html: string, base = "/", version: BuildVersion | nul
   ];
   // The stylesheet is linked from the head, so it applies without scripts: the page gets the
   // app's gutter and width from the same classes.
+  const initialHeader = `<header class="shell-header"><strong>${escape(title)}</strong><details class="app-status"><summary>${escape(S.title)} · ${version ? escape(version.sha.slice(0, 7)) : escape(S.unknownBuild)}</summary><div class="app-status-panel"><h2>${escape(S.versionHeading)}</h2><p>${escape(S.running)}: ${version ? `<a href="${escape(commitHref(version.sha))}">${escape(version.sha.slice(0, 7))}</a>` : escape(S.unknownBuild)}</p><h2>${escape(S.offlineHeading)}</h2><p>${escape(S.noScript)}</p></div></details></header>`;
   const noScript = [
     "<noscript>",
     `<div class="noscript-page">`,
@@ -96,5 +98,8 @@ export function staticPage(html: string, base = "/", version: BuildVersion | nul
   ];
   return html
     .replace("</title>", `</title>${head.map((t) => `\n    ${t}`).join("")}`)
-    .replace(`<div id="root"></div>`, `<div id="root"></div>\n    ${noScript.join("\n    ")}`);
+    .replace(
+      `<div id="root"></div>`,
+      `<div id="root">${initialHeader}</div>\n    ${noScript.join("\n    ")}`,
+    );
 }

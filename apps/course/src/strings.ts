@@ -18,8 +18,6 @@ export const STRINGS = {
     commit: "Commit",
     committed: "committed",
     utc: "(UTC)",
-    latest: "Up to date ✓",
-    latestNote: "Matches the latest commit on GitHub’s main branch at the last check.",
   },
   title: "Assembly Lab",
   subtitle: "From a line of C to the bits in a register",
@@ -100,37 +98,6 @@ export const STRINGS = {
   previousLesson: "Previous lesson",
   // DRAFT
   nextLesson: "Next lesson",
-
-  // Separate prose passes: docs/notes/offline/brief.md and offline-clarity/brief.md.
-  offline: {
-    preparing:
-      "Preparing the course for offline use. Keep this page open and stay connected until it is ready.",
-    ready: "Ready to use offline in this browser.",
-    detailsLabel: "How offline use works",
-    downloadExplanation:
-      "When you first open the course online, your browser automatically downloads the whole course. You do not need to open each lesson.",
-    readinessExplanation:
-      "Wait until the message above says “Ready to use offline in this browser.” You can then return to the course in this browser without an internet connection.",
-    unavailable:
-      "The course could not be saved for offline use. Reopen it with an internet connection to try again.",
-    unsupported:
-      "This browser cannot save the course for offline use. You can use it while connected to the internet.",
-    updateWaiting:
-      "An update is ready. Update now checks that changes are saved, then reloads all open Assembly Lab tabs and app windows.",
-    updateNow: "Update now",
-    updating: "Preparing the update. Checking saved exercise edits in every open tab.",
-    updateErrors: {
-      unsaved:
-        "Some changes could not be saved. Copy your exercise work somewhere safe. Close every Assembly Lab tab and app window, then reopen Assembly Lab to use the update.",
-      tabs: "Another Assembly Lab tab did not respond. Copy your work from the other tabs, close them, then try again.",
-      download: "The downloaded update is unavailable. Reconnect to the internet, then try again.",
-      changed: "A newer update arrived. You can continue working. Select Update now to try again.",
-    },
-    limitations:
-      "Links to other websites and the optional “Compare with GCC” feature need an internet connection.",
-    storage:
-      "Clearing this site's browser data removes the saved course. Your browser may also remove it to free space.",
-  },
 
   // the cover's live figure: the name a screen reader gives it, and what it says as it runs.
   cover: {

@@ -164,7 +164,7 @@ export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
                   label={plain(f.label)}
                 />
                 {hexFields.success && hexFields.data.includes(f.id) && (
-                  <HexEntry bits={bits} onBits={(next) => set(f.id, next)} />
+                  <HexEntry handoffKey={f.id} bits={bits} onBits={(next) => set(f.id, next)} />
                 )}
               </div>
             );

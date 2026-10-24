@@ -169,47 +169,10 @@ svg {
   max-width: 62ch;
   margin: 0 auto var(--space-2);
 }
-.latest-commit {
-  white-space: nowrap;
-}
-.offline-status {
-  margin: 0 0 var(--space-5);
-  padding: var(--space-3) var(--space-4);
-  border-left: 3px solid var(--border-strong);
-  background: var(--bg-inset);
-  font-size: var(--text-sm);
-}
-.offline-status p {
-  max-width: 62ch;
-  margin: 0;
-}
-.offline-status button {
-  min-height: 44px;
-  margin: var(--space-2) 0;
-  padding: var(--space-1) var(--space-3);
-  font: inherit;
-  color: var(--fg);
-  background: var(--bg-inset);
-  border: 1px solid var(--border-strong);
-  border-radius: 4px;
-  cursor: pointer;
-}
 .update-progress {
   padding: var(--space-3) var(--gutter);
   color: var(--fg);
   background: var(--bg-inset);
-}
-.offline-status p + p {
-  margin-top: var(--space-2);
-}
-.offline-current {
-  font-weight: 600;
-}
-.offline-status summary {
-  min-height: 44px;
-  padding: var(--space-2) 0;
-  cursor: pointer;
-  color: var(--accent);
 }
 .footer-links {
   list-style: none;
@@ -655,4 +618,111 @@ ol {
     justify-items: start;
     text-align: left;
   }
+}
+
+/* Version and offline readiness are independent, available on every route. */
+.app-status {
+  position: relative;
+  margin-left: auto;
+  max-width: 100%;
+}
+.app-status > summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.7rem;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+}
+.app-status-compact {
+  font-size: 0.85rem;
+}
+.app-status-panel {
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  width: min(36rem, calc(100vw - 2rem));
+  max-height: 75vh;
+  overflow-y: auto;
+  padding: 1rem;
+  background: var(--bg-raised);
+  color: var(--fg);
+  border: 2px solid var(--border-strong);
+  box-shadow: 0 0.5rem 1.5rem #0003;
+}
+.app-status-panel section + section {
+  border-top: 1px solid var(--border);
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+.app-status-panel h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.25rem;
+}
+.app-status-panel p {
+  margin: 0.65rem 0;
+}
+.status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.app-status progress {
+  display: block;
+  width: 100%;
+  min-height: 1rem;
+  margin: 0.6rem 0;
+}
+@media (max-width: 640px) {
+  .shell-header {
+    flex-wrap: wrap;
+  }
+  .app-status {
+    order: 3;
+    width: 100%;
+  }
+  .app-status-panel {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+.app-status button {
+  min-height: 44px;
+  padding: 0.4rem 0.8rem;
+  color: var(--fg);
+  background: var(--bg-inset);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.app-status button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.app-status summary:focus-visible,
+.app-status button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.status-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.app-status-panel a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }

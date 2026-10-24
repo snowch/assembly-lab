@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // A listing with an arrow from each branch to the label it names, for a run the learner chooses. The
 // model runs the listing for the chosen value. Each arrow is drawn from the program the model
 // assembled (which instruction names which label) and the steps it recorded (whether the branch ran,
@@ -11,7 +13,7 @@
 // what the function returned: all from the run. The figure stays shut until the prediction it names
 // has been checked.
 
-import { useId, useMemo, useState, type CSSProperties } from "react";
+import { useId, useMemo, type CSSProperties } from "react";
 import { z } from "zod";
 
 import { useSlot } from "@platform/lesson-runtime";
@@ -184,7 +186,7 @@ function PathList({ path }: { path: readonly PathItem[] }) {
 
 export const BranchListing = withProps(Props, function BranchListing({ data, store }) {
   const inputId = useId();
-  const [text, setText] = useState(String(data.start));
+  const [text, setText] = useHandoffState("BranchListing.text", String(data.start));
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const value = parseInt32(text);
   const trace = useMemo(

@@ -6,11 +6,13 @@
 
 import { useCallback, useEffect, useMemo } from "react";
 
+import { prepareViewHandoff, clearViewHandoff } from "@al/views";
 import { LessonView } from "@platform/lesson-runtime";
 
 import { createBook } from "./book";
 import { BUILD_VERSION, commitHref } from "./build-version";
-import { useLatestCommit } from "./latest-commit";
+import { AppStatus } from "./AppStatus";
+import { STATUS_STRINGS } from "./strings.status";
 import { useOffline } from "./offline";
 import { updateStorage } from "./update-storage";
 import { FrontPage } from "./pages/FrontPage";
@@ -30,18 +32,21 @@ function skipToContent(e: React.MouseEvent<HTMLAnchorElement>) {
 }
 
 export function App() {
-  const latestCommit = useLatestCommit(
-    BUILD_VERSION?.sha ?? null,
-    location.hostname === "snowch.github.io",
-  );
   const persistence = useMemo(updateStorage, []);
   const route = useRoute();
   const [theme, setTheme] = useTheme();
   const canReload = useCallback(
-    () => persistence.saved() && saveThemeForUpdate(theme),
+    () =>
+      !document.querySelector('[aria-busy="true"], [data-app-busy="true"]') &&
+      persistence.saved() &&
+      prepareViewHandoff() &&
+      saveThemeForUpdate(theme),
     [persistence, theme],
   );
-  const offline = useOffline(canReload, clearThemeUpdate);
+  const offline = useOffline(canReload, () => {
+    clearThemeUpdate();
+    clearViewHandoff();
+  });
   const storage = persistence.storage;
   const book = useMemo(() => createBook(), []);
   // The tab names the page, so a reader with several pages open can tell them apart.
@@ -124,13 +129,14 @@ export function App() {
       </a>
       {offline?.updating && (
         <p className="update-progress" role="status">
-          {STRINGS.offline.updating}
+          {STATUS_STRINGS.restarting}
         </p>
       )}
       <header className="shell-header" inert={offline?.updating}>
         <a className="brand" href="#/">
           {STRINGS.title}
         </a>
+        <AppStatus offline={offline} />
         <label className="theme-picker">
           <span>{STRINGS.theme}</span>
           <select value={theme} onChange={(e) => setTheme(e.target.value as Theme)}>
@@ -141,33 +147,6 @@ export function App() {
         </label>
       </header>
       <main id="main" className="shell-main" tabIndex={-1} inert={offline?.updating}>
-        {offline && (
-          <div className="offline-status" data-offline={offline.state}>
-            <p className="offline-current" role="status">
-              {STRINGS.offline[offline.state]}
-            </p>
-            {offline.updateWaiting && (
-              <>
-                <p>{STRINGS.offline.updateWaiting}</p>
-                <button type="button" onClick={offline.updateNow} disabled={offline.updating}>
-                  {STRINGS.offline.updateNow}
-                </button>
-              </>
-            )}
-            {offline.updateError && (
-              <p role="alert">{STRINGS.offline.updateErrors[offline.updateError]}</p>
-            )}
-            {offline.state !== "unsupported" && (
-              <details>
-                <summary>{STRINGS.offline.detailsLabel}</summary>
-                <p>{STRINGS.offline.downloadExplanation}</p>
-                <p>{STRINGS.offline.readinessExplanation}</p>
-                <p>{STRINGS.offline.limitations}</p>
-                <p>{STRINGS.offline.storage}</p>
-              </details>
-            )}
-          </div>
-        )}
         {page}
       </main>
       <footer className="shell-footer" inert={offline?.updating}>
@@ -200,12 +179,6 @@ export function App() {
               {BUILD_VERSION.committedAt.slice(0, 10)}
             </time>{" "}
             {STRINGS.version.utc}
-            {latestCommit && (
-              <span className="latest-commit" role="status" title={STRINGS.version.latestNote}>
-                {" · "}
-                {STRINGS.version.latest}
-              </span>
-            )}
           </p>
         )}
       </footer>

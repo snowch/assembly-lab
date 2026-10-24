@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // The learner's own instructions for a written challenge, stepped on one of the challenge's test
 // calls, once the challenge has been run (their work is saved and has been graded once). After each
 // instruction the figure draws the register it wrote: its low byte large and its 32 bits one press
@@ -11,7 +13,7 @@
 //
 // The stepper's pieces are the word stepper's: its controls and its status line.
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { z } from "zod";
 
 import type { Instruction, MachineState, ParsedOperand, Step } from "@al/machine";
@@ -135,8 +137,8 @@ type Made = { readonly trace: Trace } | { readonly error: true };
 const text = (v: number) => `${hex(v)} (${unsignedOf(v)})`;
 
 export const SolutionStepper = withProps(Props, function SolutionStepper({ data, store, lesson }) {
-  const [k, setK] = useState(0);
-  const [which, setWhich] = useState(0);
+  const [k, setK] = useHandoffState("SolutionStepper.k", 0);
+  const [which, setWhich] = useHandoffState("SolutionStepper.which", 0);
   const stored = useStored(store);
   const challenge = challengeOf(lesson, data.afterRun);
   const saved = ranText(stored, data.afterRun);

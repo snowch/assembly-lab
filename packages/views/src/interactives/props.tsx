@@ -9,6 +9,7 @@ import { useMemo, type ComponentType } from "react";
 import { z, type ZodType } from "zod";
 
 import type { InteractiveProps } from "@platform/lesson-runtime";
+import { ViewHandoffScope } from "../update-handoff";
 import { ArgumentSchema, MemorySchema } from "../call";
 
 /** A program as a lesson records it: its C and the compiler's listing. */
@@ -99,6 +100,13 @@ export function withProps<T>(
         </p>
       );
     }
-    return <Inner {...props} data={parsed.data} />;
+    return (
+      <ViewHandoffScope
+        id={`${props.store.bookId}:${props.store.lessonId}:figure:${props.interactive.id}`}
+        signature={JSON.stringify(raw)}
+      >
+        <Inner {...props} data={parsed.data} />
+      </ViewHandoffScope>
+    );
   };
 }

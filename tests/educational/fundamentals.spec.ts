@@ -146,10 +146,7 @@ for (const theme of ["light", "dark"] as const) {
     }) => {
       const errors = watchErrors(page);
       await openLesson(page, "tiny-function");
-      // Measure local scrolling after the asynchronous offline notice has settled.
-      await expect(page.locator(".offline-status")).toHaveAttribute("data-offline", "ready", {
-        timeout: 30_000,
-      });
+      // App status remains in the header; no automatic offline banner moves the listing.
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       const fn = figure(page, "worked-function");
       await expect(fn.locator(".al-cline .al-src")).toHaveText(INCREMENT_INT.c.split("\n"));

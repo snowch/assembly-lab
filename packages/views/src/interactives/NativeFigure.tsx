@@ -1,8 +1,10 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // Native stops are recorded by scripts/native/check.py. The adjacent browser values are
 // independently computed by the course machine, never copied from those stops.
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { z } from "zod";
 import { Prose, useSlot } from "@platform/lesson-runtime";
 import { RegisterSummary } from "../parts";
@@ -58,8 +60,8 @@ const Props = z.object({
 });
 
 export const NativeFigure = withProps(Props, function NativeFigure({ data, store }) {
-  const [k, setK] = useState(0);
-  const [bootStop, setBootStop] = useState(0);
+  const [k, setK] = useHandoffState("NativeFigure.k", 0);
+  const [bootStop, setBootStop] = useHandoffState("NativeFigure.bootStop", 0);
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const trace = useMemo(
     () => (data.program && data.call ? traceOf(data.program, data.call) : null),

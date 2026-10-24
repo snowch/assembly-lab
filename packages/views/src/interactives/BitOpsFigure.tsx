@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { useHandoffState } from "../update-handoff";
+
 // A recorded function that works on the bits of a word, run on a word the learner types. The
 // figure draws the word, the constant the instruction carries (its mask) under it, and the answer,
 // one column to a bit, with the bits that changed outlined and marked, a field's bits underlined,
@@ -12,7 +14,7 @@
 // A word that cannot be read (empty, unfinished, too large, not a number) gets its message and no
 // result: nothing is run, and nothing is drawn, until the word is valid.
 
-import { useMemo, useState, type KeyboardEvent } from "react";
+import { useMemo, type KeyboardEvent } from "react";
 import { z } from "zod";
 
 import { useSlot } from "@platform/lesson-runtime";
@@ -70,15 +72,17 @@ export function problemSentence(text: string): string | null {
 }
 
 export const BitOpsFigure = withProps(Props, function BitOpsFigure({ data, store }) {
-  const [which, setWhich] = useState(() =>
+  const [which, setWhich] = useHandoffState("BitOpsFigure.which", () =>
     Math.max(
       0,
       data.functions.findIndex((f) => f.entry === data.start),
     ),
   );
-  const [wordText, setWordText] = useState(() => hex(data.word));
-  const [secondText, setSecondText] = useState(() => hex(data.secondValue));
-  const [picked, setPicked] = useState<number | null>(null);
+  const [wordText, setWordText] = useHandoffState("BitOpsFigure.wordText", () => hex(data.word));
+  const [secondText, setSecondText] = useHandoffState("BitOpsFigure.secondText", () =>
+    hex(data.secondValue),
+  );
+  const [picked, setPicked] = useHandoffState<number | null>("BitOpsFigure.picked", null);
   const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
   const fn = data.functions[which] ?? data.functions[0]!;
   const typedWord = parseWord(wordText);
