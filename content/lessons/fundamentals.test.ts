@@ -127,6 +127,9 @@ describe("visible Fundamentals lessons", () => {
     const text = lessons
       .flatMap(learnerText)
       .join("\n")
+      // Reference URL issue dates are document identities, not arithmetic claims.
+      // Exact checked destinations remain covered by the browser link assertions.
+      .replace(/https?:\/\/[^\s)]+/g, " ")
       .replace(/[A-Za-z_][A-Za-z_0-9]*/g, " ");
     expect(
       [...text.matchAll(/\d+(?:\.\d+)?/g)]

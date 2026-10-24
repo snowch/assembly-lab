@@ -98,7 +98,10 @@ for (const theme of ["light", "dark"] as const) {
       await expect(references).toHaveAttribute("open");
       await expect(
         references.getByRole("link", { name: "Arm’s instruction reference" }),
-      ).toHaveAttribute("href", "https://developer.arm.com/documentation/ddi0602/latest/");
+      ).toHaveAttribute(
+        "href",
+        "https://support.arm.com/documentation/ddi0602/2026-09/Base-Instructions/ADD--shifted-register---Add-optionally-shifted-register-",
+      );
       await expect(
         references.getByRole("link", { name: "architecture reference manual" }),
       ).toHaveAttribute("href", "https://developer.arm.com/documentation/ddi0487/latest/");
