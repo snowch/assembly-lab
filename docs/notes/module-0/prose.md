@@ -29,13 +29,6 @@ How do individual instructions perform a complete C function? Follow a trip calc
 
 You have practised addition, a function call and return, subtraction, and instructions in sequence. Now combine those mechanics.
 
-If you arrived here directly, start with the earlier Fundamentals lessons:
-
-- [One addition](#/lesson/one-addition)
-- [A tiny function](#/lesson/tiny-function)
-- [Subtraction and reuse](#/lesson/subtraction-and-reuse)
-- [Instructions in sequence](#/lesson/instructions-in-sequence)
-
 ## 3. Connect the operations to a function
 
 `trip_distance` adds three trip distances, called legs, then subtracts a detour. Its `int` arguments `leg1`, `leg2`, `leg3` and `detour` arrive in `w0`, `w1`, `w2` and `w3`, in that order.
