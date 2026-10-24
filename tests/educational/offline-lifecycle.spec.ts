@@ -97,7 +97,7 @@ test("cached CDN discovery retries an equivalent network path and never trusts c
     await checkForUpdates(page);
     await expect(panel.locator('[data-version="error"]')).toBeVisible();
     site.cdnCache(null);
-    await panel.getByRole("button", { name: "Retry", exact: true }).click();
+    await checkForUpdates(page);
     await expect(panel.locator('[data-version="available"]')).toBeVisible();
     const cachedUrls = await page.evaluate(async () => {
       const urls: string[] = [];
@@ -178,7 +178,7 @@ test("a retained older selection cannot be saved as the freshly loaded release w
       refreshedPanel.getByRole("button", { name: "Download for offline use", exact: true }),
     ).toBeDisabled();
     site.metadata("valid");
-    await refreshedPanel.getByRole("button", { name: "Retry", exact: true }).click();
+    await checkForUpdates(reopened);
     await expect(refreshedPanel.locator('[data-version="current"]')).toBeVisible();
     await downloadOffline(reopened);
     site.connected(false);
@@ -624,8 +624,21 @@ test("evicted prepared bytes block restart and repairing the update permits a sa
       if (!file) throw new Error("Missing prepared downloadable asset");
       await cache.delete(file);
     }, next.buildId);
-    await restartUpdate(page);
-    await expect(page.getByRole("alert")).toContainText(/incomplete|prepare/i);
+    const panel = await openStatus(page);
+    const restart = panel.getByRole("button", { name: "Restart to update", exact: true });
+    let requestedRestart = false;
+    try {
+      await restart.click({ timeout: 2000 });
+      requestedRestart = true;
+    } catch (error) {
+      if (!(error instanceof Error) || error.name !== "TimeoutError") throw error;
+      // A concurrent inventory refresh can withdraw the unsafe action before
+      // the click. It must disappear, rather than remain blocked or inert.
+      await expect(restart).toHaveCount(0);
+      await expect(panel.locator('[data-version="ready"]')).toHaveCount(0);
+    }
+    if (requestedRestart)
+      await expect(page.getByRole("alert")).toContainText(/incomplete|prepare/i);
     await expect(page.locator("main")).not.toHaveAttribute("inert");
     expect(await currentBuild(page)).toBe(site.initial.buildId);
     await prepareUpdate(page);

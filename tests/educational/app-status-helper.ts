@@ -29,7 +29,7 @@ export async function offlineReady(page: Page) {
 
 export async function checkForUpdates(page: Page) {
   const status = await openStatus(page);
-  await status.getByRole("button", { name: "Check for updates", exact: true }).click();
+  await status.getByRole("button", { name: /^(Check for updates|Retry)$/ }).click();
   return status;
 }
 
