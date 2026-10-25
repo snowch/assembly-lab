@@ -21,6 +21,13 @@ export const STATUS_STRINGS = {
     incomplete: "Offline download incomplete",
     unsupported: "Offline access unavailable",
   },
+  compactOfflineStates: {
+    idle: "Not saved offline",
+    saving: "Saving offline copy",
+    ready: "Saved offline",
+    incomplete: "Offline copy incomplete",
+    unsupported: "Offline unavailable",
+  },
   actions: {
     check: "Check for updates",
     retry: "Retry",
@@ -43,8 +50,7 @@ export const STATUS_STRINGS = {
     "Restart reloads all open Assembly Lab tabs and app windows. Your saved work, theme and current lesson are kept.",
   restarting:
     "Checking saved work in all open Assembly Lab tabs and app windows before restarting.",
-  offlineRequiresUpdate:
-    "Select Update, then Restart to update. You can then select Download for offline use to save the course.",
+  offlineRequiresUpdate: "Finish updating the app before saving the course offline.",
   offlineExplanation:
     "Save the whole course, including its browser tools and example downloads. You can then reopen it in this browser without an internet connection.",
   incompleteExplanation:

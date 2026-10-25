@@ -35,7 +35,9 @@ export async function checkForUpdates(page: Page) {
 
 export async function prepareUpdate(page: Page) {
   const status = await checkForUpdates(page);
-  await expect(status.getByText("Update available", { exact: true })).toBeVisible();
+  await expect(
+    status.locator('[data-version="available"]').getByText("Update available", { exact: true }),
+  ).toBeVisible();
   await status.getByRole("button", { name: "Update", exact: true }).click();
   await expect(status.getByRole("button", { name: "Restart to update", exact: true })).toBeVisible({
     timeout: 30_000,

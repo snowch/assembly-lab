@@ -14,6 +14,32 @@ export function AppStatus({ offline }: { offline: Offline }) {
   const [removed, setRemoved] = useState(false);
   const [removeError, setRemoveError] = useState(false);
   const downloadButton = useRef<HTMLButtonElement>(null);
+  const details = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    const element = details.current;
+    const header = element?.closest("header");
+    if (!element || !header) return;
+    const resize = () => {
+      const viewport = window.visualViewport;
+      const bottom = (viewport?.height ?? innerHeight) + (viewport?.offsetTop ?? 0);
+      const available = Math.max(0, bottom - header.getBoundingClientRect().bottom - 8);
+      element.style.setProperty("--status-panel-space", `${available}px`);
+    };
+    resize();
+    const observer = typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(resize);
+    observer?.observe(header);
+    window.addEventListener("resize", resize);
+    window.addEventListener("scroll", resize, { passive: true });
+    window.visualViewport?.addEventListener("resize", resize);
+    window.visualViewport?.addEventListener("scroll", resize);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("scroll", resize);
+      window.visualViewport?.removeEventListener("resize", resize);
+      window.visualViewport?.removeEventListener("scroll", resize);
+    };
+  }, []);
   useEffect(() => {
     if (removed) downloadButton.current?.focus();
   }, [removed]);
@@ -37,6 +63,7 @@ export function AppStatus({ offline }: { offline: Offline }) {
           : ""}
       </span>
       <details
+        ref={details}
         onKeyDown={(event) => {
           if (event.key === "Escape") {
             event.currentTarget.open = false;
@@ -53,11 +80,22 @@ export function AppStatus({ offline }: { offline: Offline }) {
         }}
       >
         <summary>
-          <span>{S.title}</span>
+          <span className="app-status-title">
+            {S.title}{" "}
+            <span className="status-chevron" aria-hidden="true">
+              ▾
+            </span>
+          </span>
           <span className="app-status-compact">
-            {identity}
-            {RUNNING_BUILD ? ` · ${S.build} ${RUNNING_BUILD.slice(0, 7)}` : ""} ·{" "}
-            {S.versionStates[version]}
+            <span className="status-indicator" data-version-status={version}>
+              {S.versionStates[version]}
+            </span>
+            <span
+              className="status-indicator"
+              data-offline-status={offline?.state ?? "unsupported"}
+            >
+              {S.compactOfflineStates[offline?.state ?? "unsupported"]}
+            </span>
           </span>
         </summary>
         <div className="app-status-panel">
