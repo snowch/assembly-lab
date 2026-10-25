@@ -40,7 +40,7 @@ test("the whole course reopens offline, including lessons never visited online",
       );
       expect(response?.fromServiceWorker()).toBe(true);
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
-      await expect(page.locator("section.lesson-section")).toHaveCount(10);
+      await expect(page.locator("section.lesson-section")).toHaveCount(lesson.sections.length);
       await offlineReady(page);
       await expect(page.locator(".app-status > summary")).toBeVisible();
     }

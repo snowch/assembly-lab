@@ -37,7 +37,7 @@ describe("visible Fundamentals lessons", () => {
     ]);
     expect(lessons.map((lesson) => lesson.order)).toEqual([0, 1, 2, 3]);
     for (const lesson of lessons) {
-      expect(lesson.sections).toHaveLength(10);
+      expect(lesson.sections).toHaveLength(lesson.id === "one-addition" ? 9 : 10);
       for (const figure of lesson.sections
         .flatMap((section) => section.interactives)
         .filter((figure) => figure.kind === "primitive-operation")) {

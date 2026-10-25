@@ -19,7 +19,6 @@ export const FUNDAMENTALS_PROSE = {
       generalisation:
         "The destination can be a different register. Apply the same operand rule below.",
       challenge: "Trace a new addition without running it.",
-      reflection: "Before calculating, identify the inputs and the destination.",
     },
     figure: {
       title: "One addition",
@@ -47,8 +46,7 @@ export const FUNDAMENTALS_PROSE = {
         "`w1` holds 19 and `w0` still holds 14.",
       ],
     },
-    modelVsReality:
-      "The figure runs one instruction and shows its effect on the selected registers. It leaves out the surrounding program. A real processor runs instructions as part of a program; the next lessons build up that context.",
+    modelVsReality: "",
     originalityNote: {
       textbookExample:
         "A first assembly example often loads constants and adds them inside a complete program.",

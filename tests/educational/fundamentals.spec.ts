@@ -114,6 +114,33 @@ for (const theme of ["light", "dark"] as const) {
       expect(errors).toEqual([]);
     });
 
+    test("one addition ends with its exercise and omits generic closing notes", async ({
+      page,
+    }) => {
+      const errors = watchErrors(page);
+      await openLesson(page, "one-addition");
+      const article = page.locator('article[data-lesson="one-addition"]');
+      await expect(article.locator(".lesson-section")).toHaveCount(9);
+      await expect(article.locator(".lesson-section").last()).toHaveAttribute(
+        "data-kind",
+        "challenge",
+      );
+      await expect(article.locator('[data-kind="reflection"]')).toHaveCount(0);
+      await expect(article.locator(".lesson-model-note, .lesson-model-vs-reality")).toHaveCount(0);
+      const worked = figure(page, "worked-addition");
+      await expect(worked.locator(".time-model-toggle, .time-model-note")).toHaveCount(0);
+      await expect(worked.locator(".badge.time-model")).toHaveText("Step by step");
+      await expect(worked.getByRole("button", { name: P.run, exact: true })).toBeVisible();
+      await page.locator('.lesson-nav a[href="#/lesson/tiny-function"]').click();
+      await expect(
+        page.locator('article[data-lesson="tiny-function"] .lesson-model-note'),
+      ).toHaveCount(1);
+      await expect(
+        page.locator('article[data-lesson="tiny-function"] .lesson-model-vs-reality'),
+      ).toHaveCount(1);
+      expect(errors).toEqual([]);
+    });
+
     test("one addition starts with only its inputs, preserves its result and resets locally", async ({
       page,
       isMobile,

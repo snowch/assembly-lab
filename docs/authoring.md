@@ -91,10 +91,16 @@ can understand the mechanism and apply it, alongside technical accuracy.
 ## What is copied unchanged
 
 The lesson data format is the learning platform's (`platform/lesson-schema`, its contract in
-`snowch/learning-platform`, `contract/README.md`): ten sections in a fixed order, interactives by
+`snowch/learning-platform`, `contract/README.md`): ten sections in a fixed order by default, interactives by
 kind, challenges with tests, five hints in ladder order and a reference solution, an
 `originalityNote`, `introduces` and the term gate. digital-design's `docs/authoring.md` describes
 it in full; follow it, reading "the simulator" as this course's assembler and simulator.
+
+A short introductory lesson can opt into `sectionLayout: "selected"` and supply an ordered
+subset of those sections. It can set `showTimeModelNotes: false` when its activity already explains
+the simulator controls, and use an empty `modelVsReality` when no qualification changes what
+the learner should conclude. Omitted blocks are not rendered. Other lessons keep the full
+template and their model notes; challenge, term and source checks still apply.
 
 Keep the words out of the structure file: `<lesson>.prose.ts` holds every paragraph and
 `<lesson>.labels.ts` every title, objective, caption and label, as digital-design does.

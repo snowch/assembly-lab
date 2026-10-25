@@ -2,7 +2,7 @@
 
 // Each introductory mechanism is a separate, directly linked lesson. Figures have one fixed
 // program each; navigation belongs to the course plan and ordinary next-lesson links.
-import { SECTION_KINDS, type LessonInput } from "@platform/lesson-schema";
+import { SECTION_KINDS, type LessonInput, type SectionKind } from "@platform/lesson-schema";
 import { traceOf, viewAt, wValue } from "@al/views";
 import { FUNDAMENTALS_PROSE as P } from "./fundamentals.prose";
 import { FUNDAMENTALS_LABELS as L } from "./fundamentals.labels";
@@ -91,6 +91,8 @@ export const fundamentalsLessons: LessonInput[] = CONFIG.map((config, order) => 
   const key: Key = config.key;
   const prose = P[key];
   const labels = L[key];
+  const sectionProse: Partial<Record<SectionKind, string>> = prose.sections;
+  const sectionTitles: Partial<Record<SectionKind, string>> = labels.titles;
   const item = PRIMITIVE_PROGRAMS[config.test]!;
   const program = primitiveProgram(item);
   const challengeId = CHALLENGE_IDS[order]!;
@@ -106,6 +108,8 @@ export const fundamentalsLessons: LessonInput[] = CONFIG.map((config, order) => 
     module: 0,
     order,
     objectives: [...labels.objectives],
+    sectionLayout: key === "addition" ? "selected" : "full",
+    showTimeModelNotes: key !== "addition",
     introduces: [...config.introduces],
     termExemptions:
       key === "addition"
@@ -122,61 +126,63 @@ export const fundamentalsLessons: LessonInput[] = CONFIG.map((config, order) => 
             },
           ]
         : [],
-    sections: SECTION_KINDS.map((kind) => ({
-      kind,
-      title: labels.titles[kind],
-      prose: prose.sections[kind],
-      ...(kind === "motivation" && key === "addition"
-        ? {
-            details: P.addition.references,
-            interactives: [
-              {
-                id: "register-views",
-                kind: "register-views",
-                timeModel: "none",
-                caption: P.addition.registerViews.caption,
-                after: P.addition.registerViews.after,
-                props: { register: 0 },
-              },
-            ],
-          }
-        : {}),
-      ...(kind === "investigation"
-        ? {
-            interactives: [
-              figure(
-                config.worked,
-                FIGURE_IDS[order]!,
-                key === "subtraction" ? P.subtraction.secondFigure : prose.figure,
-                key === "subtraction"
-                  ? L.subtraction.captions.secondFigure
-                  : labels.captions.figure,
-              ),
-            ],
-          }
-        : {}),
-      ...(kind === "prediction" && key === "subtraction"
-        ? {
-            interactives: [
-              figure(3, "worked-reuse", P.subtraction.figure, L.subtraction.captions.figure),
-            ],
-          }
-        : {}),
-      ...(kind === "challenge"
-        ? {
-            interactives: [
-              {
-                id: "practice",
-                kind: "challenge",
-                timeModel: "steps",
-                role: "exercise" as const,
-                caption: labels.captions.challenge,
-                props: { challengeId },
-              },
-            ],
-          }
-        : {}),
-    })),
+    sections: SECTION_KINDS.filter((kind) => key !== "addition" || kind !== "reflection").map(
+      (kind) => ({
+        kind,
+        title: sectionTitles[kind]!,
+        prose: sectionProse[kind]!,
+        ...(kind === "motivation" && key === "addition"
+          ? {
+              details: P.addition.references,
+              interactives: [
+                {
+                  id: "register-views",
+                  kind: "register-views",
+                  timeModel: "none",
+                  caption: P.addition.registerViews.caption,
+                  after: P.addition.registerViews.after,
+                  props: { register: 0 },
+                },
+              ],
+            }
+          : {}),
+        ...(kind === "investigation"
+          ? {
+              interactives: [
+                figure(
+                  config.worked,
+                  FIGURE_IDS[order]!,
+                  key === "subtraction" ? P.subtraction.secondFigure : prose.figure,
+                  key === "subtraction"
+                    ? L.subtraction.captions.secondFigure
+                    : labels.captions.figure,
+                ),
+              ],
+            }
+          : {}),
+        ...(kind === "prediction" && key === "subtraction"
+          ? {
+              interactives: [
+                figure(3, "worked-reuse", P.subtraction.figure, L.subtraction.captions.figure),
+              ],
+            }
+          : {}),
+        ...(kind === "challenge"
+          ? {
+              interactives: [
+                {
+                  id: "practice",
+                  kind: "challenge",
+                  timeModel: "steps",
+                  role: "exercise" as const,
+                  caption: labels.captions.challenge,
+                  props: { challengeId },
+                },
+              ],
+            }
+          : {}),
+      }),
+    ),
     challenges: [
       {
         id: challengeId,

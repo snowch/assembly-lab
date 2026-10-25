@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 
 import { lessonJsonSchema } from "./jsonSchema";
-import { NO_MODEL, SECTION_KINDS, type LessonInput } from "./schema";
+import { Lesson, NO_MODEL, SECTION_KINDS, type LessonInput } from "./schema";
 import { checkLesson, modelProblems, parseLesson, testCount, timeModelsUsed } from "./validate";
 import { termProblems } from "./vocabulary";
 
@@ -58,6 +58,8 @@ describe("the lesson schema", () => {
 
   it("accepts a minimal lesson and fills defaults", () => {
     const lesson = parseLesson(minimalLesson());
+    expect(lesson.sectionLayout).toBe("full");
+    expect(lesson.showTimeModelNotes).toBe(true);
     expect(lesson.prerequisites).toEqual([]);
     expect(lesson.challenges[0]?.initial).toEqual({});
     expect(lesson.challenges[0]?.interface.inputs[0]?.width).toBe(1);
@@ -95,6 +97,59 @@ describe("the lesson schema", () => {
     [s[0], s[1]] = [s[1]!, s[0]!];
     expect(() => parseLesson(swapped)).toThrow(
       /section 1 is motivation; the course's order puts question here/,
+    );
+  });
+
+  it("keeps the default full layout strict in raw schema and lesson validation", () => {
+    const base = minimalLesson();
+    const withoutReflection = base.sections.filter((section) => section.kind !== "reflection");
+    for (const sectionLayout of [undefined, "full"] as const) {
+      const short = { ...base, sectionLayout, sections: withoutReflection };
+      const blank = { ...base, sectionLayout, modelVsReality: "" };
+      expect(Lesson.safeParse(short).success).toBe(false);
+      expect(Lesson.safeParse(blank).success).toBe(false);
+      expect(() => parseLesson(short)).toThrow(/sections/);
+      expect(() => parseLesson(blank)).toThrow(/modelVsReality/);
+    }
+  });
+
+  it("accepts an explicit ordered selection and permits an omitted model aside", () => {
+    const base = minimalLesson();
+    const input = {
+      ...base,
+      sectionLayout: "selected" as const,
+      sections: base.sections.filter((section) => section.kind !== "reflection"),
+      modelVsReality: "",
+      showTimeModelNotes: false,
+    };
+    expect(Lesson.safeParse(input).success).toBe(true);
+    const selected = parseLesson(input);
+    expect(selected.sections).toHaveLength(9);
+    expect(selected.sections.at(-1)?.kind).toBe("challenge");
+    expect(selected.modelVsReality).toBe("");
+    expect(selected.showTimeModelNotes).toBe(false);
+    expect(checkLesson(selected)).toEqual([]);
+    // A shorter selection need not include a challenge when the lesson has none.
+    expect(
+      parseLesson({ ...input, challenges: [], sections: [base.sections[0]!] }).sections,
+    ).toHaveLength(1);
+  });
+
+  it("refuses duplicate, out-of-order and empty selected sections", () => {
+    const base = minimalLesson();
+    const input = { ...base, sectionLayout: "selected" as const, challenges: [] };
+    const question = base.sections[0]!;
+    const motivation = base.sections[1]!;
+    expect(() => parseLesson({ ...input, sections: [question, question] })).toThrow(
+      /two sections are called question/,
+    );
+    expect(() => parseLesson({ ...input, sections: [motivation, question] })).toThrow(
+      /selected sections must follow the course's order/,
+    );
+    expect(Lesson.safeParse({ ...input, sections: [] }).success).toBe(false);
+    expect(() => parseLesson({ ...input, sections: [] })).toThrow(/sections/);
+    expect(Lesson.safeParse({ ...input, sections: [...base.sections, question] }).success).toBe(
+      false,
     );
   });
 
@@ -200,10 +255,30 @@ describe("the lesson schema", () => {
 
   it("exports JSON Schema another toolchain can use", () => {
     const schema = lessonJsonSchema();
-    expect(schema["type"]).toBe("object");
-    const props = schema["properties"] as Record<string, unknown>;
-    expect(Object.keys(props)).toContain("originalityNote");
-    expect(Object.keys(props)).toContain("sections");
+    const alternatives = schema["oneOf"] as {
+      type: string;
+      properties: Record<string, Record<string, unknown>>;
+      required: string[];
+    }[];
+    expect(alternatives).toHaveLength(2);
+    const full = alternatives.find(
+      (branch) => branch.properties["sectionLayout"]?.["const"] === "full",
+    )!;
+    const selected = alternatives.find(
+      (branch) => branch.properties["sectionLayout"]?.["const"] === "selected",
+    )!;
+    for (const branch of alternatives) {
+      expect(branch.type).toBe("object");
+      expect(Object.keys(branch.properties)).toContain("originalityNote");
+      expect(branch.properties["showTimeModelNotes"]?.["default"]).toBe(true);
+    }
+    expect(full.properties["sectionLayout"]?.["default"]).toBe("full");
+    expect(full.required).not.toContain("sectionLayout");
+    expect(full.properties["sections"]).toMatchObject({ minItems: 10, maxItems: 10 });
+    expect(full.properties["modelVsReality"]).toMatchObject({ type: "string", minLength: 1 });
+    expect(selected.required).toContain("sectionLayout");
+    expect(selected.properties["sections"]).toMatchObject({ minItems: 1, maxItems: 10 });
+    expect(selected.properties["modelVsReality"]).toEqual({ type: "string" });
   });
 });
 
