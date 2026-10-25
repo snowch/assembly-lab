@@ -31,13 +31,16 @@ describe("visible Fundamentals lessons", () => {
   it("gives each mechanism a stable lesson and mounts both reuse and subtraction", () => {
     expect(lessons.map((lesson) => lesson.id)).toEqual([
       "one-addition",
+      "adding-a-constant",
       "tiny-function",
       "subtraction-and-reuse",
       "instructions-in-sequence",
     ]);
-    expect(lessons.map((lesson) => lesson.order)).toEqual([0, 1, 2, 3]);
+    expect(lessons.map((lesson) => lesson.order)).toEqual([0, 1, 2, 3, 4]);
     for (const lesson of lessons) {
-      expect(lesson.sections).toHaveLength(lesson.id === "one-addition" ? 9 : 10);
+      expect(lesson.sections).toHaveLength(
+        lesson.id === "one-addition" ? 9 : lesson.id === "adding-a-constant" ? 3 : 10,
+      );
       for (const figure of lesson.sections
         .flatMap((section) => section.interactives)
         .filter((figure) => figure.kind === "primitive-operation")) {
@@ -46,8 +49,9 @@ describe("visible Fundamentals lessons", () => {
       }
     }
     expect(
-      lessons[2]!.sections
-        .flatMap((section) => section.interactives)
+      lessons
+        .find((lesson) => lesson.id === "subtraction-and-reuse")!
+        .sections.flatMap((section) => section.interactives)
         .filter((figure) => figure.kind === "primitive-operation"),
     ).toHaveLength(2);
   });
@@ -68,6 +72,7 @@ describe("visible Fundamentals lessons", () => {
   it("pins every fresh challenge result and the wrapper return's lack of register writes", () => {
     expect(lessons.map((lesson) => lesson.challenges[0]!.reference.answers)).toEqual([
       { w1: "19", w0: "14" },
+      { w1: "13", w0: "10" },
       { w0: "1" },
       { w1: "13", w0: "18" },
       { w2: "10", w1: "4" },

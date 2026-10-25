@@ -2,7 +2,10 @@
 
 // Drafted from checked primitive traces and the recorded increment_int listing.
 // Canonical copy: docs/notes/fundamentals/prose.md.
+import { CONSTANT_ADDITION_PROSE } from "./constant-addition.prose";
+
 export const FUNDAMENTALS_PROSE = {
+  constant: CONSTANT_ADDITION_PROSE,
   addition: {
     sections: {
       question: "How does a processor add two values?",
@@ -60,7 +63,7 @@ export const FUNDAMENTALS_PROSE = {
       motivation:
         "`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C below into an assembly **listing**, a written sequence of instructions. `increment_int:` names the function.\n\nCode that calls a function is its **caller**. The input it supplies is an **argument**. For this function, the argument arrives in `w0` and the integer result is left in `w0` too.",
       prediction:
-        "In `add w0, w0, 1`, the last operand is the number one written inside the instruction. After the addition, can the caller continue yet?",
+        "The addition is the one you just practised: `add w0, w0, 1`. After it runs, can the caller continue yet?",
       investigation:
         "On a narrow screen, scroll sideways within the listing to see the C and instructions.",
       construction:
@@ -204,7 +207,7 @@ export const SYNTHESIS_COPY = {
     textbookExample:
       "A first assembly program often combines loading constants, arithmetic and output before the individual mechanics are established.",
     howThisDiffers:
-      "This lesson combines mechanics already practised in four visible Fundamentals lessons. Its trip calculation, operand-order repair and experiment removing a return connect those mechanics to complete compiler output.",
+      "This lesson combines mechanics already practised in the earlier Fundamentals lessons. Its trip calculation, operand-order repair and experiment removing a return connect those mechanics to complete compiler output.",
   },
 } as const;
 

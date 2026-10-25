@@ -15,6 +15,7 @@ export const PRIMITIVE_STRINGS = {
   correct: "Your prediction matched.",
   incorrect: "Compare your prediction with the result.",
   input: "Input",
+  constant: "Constant",
   output: "Destination written",
   outputPending: "Destination",
   unchanged: (names: string) =>

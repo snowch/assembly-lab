@@ -12,6 +12,7 @@ import { challenge, openLesson, passing, press, run, status, watchErrors } from 
 
 const IDS = [
   "one-addition",
+  "adding-a-constant",
   "tiny-function",
   "subtraction-and-reuse",
   "instructions-in-sequence",
@@ -131,6 +132,8 @@ for (const theme of ["light", "dark"] as const) {
       await expect(worked.locator(".time-model-toggle, .time-model-note")).toHaveCount(0);
       await expect(worked.locator(".badge.time-model")).toHaveText("Step by step");
       await expect(worked.getByRole("button", { name: P.run, exact: true })).toBeVisible();
+      await page.locator('.lesson-nav a[href="#/lesson/adding-a-constant"]').click();
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText("Adding a constant");
       await page.locator('.lesson-nav a[href="#/lesson/tiny-function"]').click();
       await expect(
         page.locator('article[data-lesson="tiny-function"] .lesson-model-note'),
@@ -167,6 +170,47 @@ for (const theme of ["light", "dark"] as const) {
       await page.reload();
       await expect(addition.locator(".al-primitive-result")).toHaveCount(0);
       expect(await designProblems(page, isMobile)).toEqual([]);
+      expect(errors).toEqual([]);
+    });
+
+    test("constant addition shows a literal, then independent register reuse, before the function", async ({
+      page,
+      isMobile,
+    }) => {
+      const errors = watchErrors(page);
+      await openLesson(page, "adding-a-constant");
+      const article = page.locator('article[data-lesson="adding-a-constant"]');
+      await expect(article.locator(".lesson-section")).toHaveCount(3);
+      await expect(article.locator(".lesson-model-note, .lesson-model-vs-reality")).toHaveCount(0);
+      await expect(article).not.toContainText(/\b13\b/);
+      await expect(article).not.toContainText(/\bret\b/);
+      const separate = figure(page, "worked-constant");
+      const reuse = figure(page, "worked-constant-reuse");
+      await expect(separate.locator(".al-primitive-preview")).toContainText("Constant 1");
+      await expect(separate.locator(".al-primitive-preview")).toContainText("w2 = ?");
+      await expect(separate.locator(".al-primitive-preview")).not.toContainText("#1 = 1");
+      await expect(reuse.locator(".al-primitive-result")).toHaveCount(0);
+      await expect(current(reuse, "w0")).toHaveText("7");
+      await press(page, separate.getByRole("button", { name: P.run, exact: true }));
+      await expect(separate.getByRole("status")).toContainText("w2 = 8");
+      await expect(separate.getByRole("status")).toContainText("w0 keeps its value");
+      await expect(reuse.locator(".al-primitive-result")).toHaveCount(0);
+      await page.reload();
+      await expect(separate.getByRole("status")).toContainText("w2 = 8");
+      await press(page, reuse.getByRole("button", { name: P.run, exact: true }));
+      await expect(reuse.getByRole("status")).toContainText("w0 = 8");
+      await expect(reuse.getByRole("status")).toContainText(P.reused("w0"));
+      await resetExample(page, reuse);
+      await expect(separate.getByRole("status")).toContainText("w2 = 8");
+      await page.reload();
+      await expect(reuse.locator(".al-primitive-result")).toHaveCount(0);
+      await resetExample(page, separate);
+      expect(await designProblems(page, isMobile)).toEqual([]);
+      await page.locator('.lesson-nav a[href="#/lesson/tiny-function"]').click();
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText("A tiny function");
+      await expect(page.locator('.lesson-section[data-kind="prediction"]')).toContainText(
+        "the one you just practised",
+      );
       expect(errors).toEqual([]);
     });
 
@@ -310,7 +354,7 @@ for (const theme of ["light", "dark"] as const) {
       expect(await designProblems(page, isMobile)).toEqual([]);
     });
 
-    for (const lesson of lessons.slice(0, 4)) {
+    for (const lesson of lessons.filter((lesson) => lesson.id !== "meet-the-machine")) {
       test(`${lesson.title}: practice starts blank, rejects a wrong answer and preserves checked work`, async ({
         page,
         isMobile,

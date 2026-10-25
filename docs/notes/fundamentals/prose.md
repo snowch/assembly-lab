@@ -2,7 +2,7 @@
 
 Copyright © 2026 Christopher Snow
 
-Drafted from the checked facts for the existing primitive programs and the recorded increment_int listing. The four fresh exercise calls are independently checked against GNU/QEMU. Each lesson has its own visible course-plan entry; each worked example remains visible within its lesson.
+Drafted from the checked facts for the existing primitive programs and the recorded increment_int listing. The fresh exercise calls are independently checked against GNU/QEMU. Each lesson has its own visible course-plan entry; each worked example remains visible within its lesson.
 
 ## One addition
 
@@ -181,6 +181,130 @@ w1 after the instruction
 
 w0 after the instruction
 
+## Adding a constant
+
+### constant / sections / motivation
+
+The third operand of `add` can be a number written inside the instruction. That fixed number is a **constant**.
+
+In `add w2, w0, 1`, the instruction reads `w0` and adds the constant 1. The first operand still names the destination, `w2`.
+
+### constant / sections / investigation
+
+The next example starts again with `w0` holding 7. In `add w0, w0, 1`, both appearances of `w0` name the same register. The instruction reads its old value before writing the result there.
+
+### constant / sections / challenge
+
+Use a different constant and destination. Work out the result without running the instruction.
+
+### constant / firstFigure / title
+
+Add into w2
+
+### constant / firstFigure / prose
+
+Run `add w2, w0, 1` with the starting values shown.
+
+### constant / figure / title
+
+Add back into w0
+
+### constant / figure / prose
+
+Run `add w0, w0, 1`. This example starts afresh.
+
+### constant / challenge / task
+
+Before `add w1, w0, 3` runs, `w0` holds 10 and `w1` holds 0. What do `w1` and `w0` hold after this instruction?
+
+### constant / challenge / hints / 1
+
+A constant supplies its value directly; it does not name a register.
+
+### constant / challenge / hints / 2
+
+The 3 is an input value, not a register number. The first operand still names the destination.
+
+### constant / challenge / hints / 3
+
+In the worked example, `add w2, w0, 1` starts with 7 in `w0` and writes 8 to `w2`. The input `w0` keeps 7.
+
+### constant / challenge / hints / 4
+
+Add the value in `w0` to 3. Write the result to `w1`; `w0` is not written.
+
+### constant / challenge / hints / 5
+
+`w1` holds 13 and `w0` still holds 10.
+
+### constant / modelVsReality
+
+
+
+### constant / originalityNote / textbookExample
+
+A constant is often introduced while loading registers inside a complete program.
+
+### constant / originalityNote / howThisDiffers
+
+This lesson introduces a number inside an addition before the first function. Two independent examples show a separate destination and reuse of the input register. The exercise changes the constant and destination.
+
+### constant labels / title
+
+Adding a constant
+
+### constant labels / objectives / 1
+
+Identify a constant supplied by an instruction.
+
+### constant labels / objectives / 2
+
+Trace an addition that reads and writes the same register.
+
+### constant labels / titles / motivation
+
+A number in the instruction
+
+### constant labels / titles / investigation
+
+Read and replace w0
+
+### constant labels / titles / challenge
+
+Use a different constant
+
+### constant labels / captions / firstFigure
+
+An addition with a register input and a constant.
+
+### constant labels / captions / figure
+
+A separate addition that reads and writes w0.
+
+### constant labels / captions / challenge
+
+A fresh constant and destination to trace.
+
+### constant labels / challenge / title
+
+Follow the constant
+
+### constant labels / challenge / fields / w1
+
+`w1` after the instruction
+
+### constant labels / challenge / fields / w0
+
+`w0` after the instruction
+
+### constant labels / challenge / tests / w1
+
+w1 after the instruction
+
+### constant labels / challenge / tests / w0
+
+w0 after the instruction
+
 ## A tiny function
 
 ### function / sections / question
@@ -195,7 +319,7 @@ Code that calls a function is its **caller**. The input it supplies is an **argu
 
 ### function / sections / prediction
 
-In `add w0, w0, 1`, the last operand is the number one written inside the instruction. After the addition, can the caller continue yet?
+The addition is the one you just practised: `add w0, w0, 1`. After it runs, can the caller continue yet?
 
 ### function / sections / investigation
 
@@ -725,7 +849,7 @@ A first assembly program often combines loading constants, arithmetic and output
 
 ### synthesis / originalityNote / howThisDiffers
 
-This lesson combines mechanics already practised in four visible Fundamentals lessons. Its trip calculation, operand-order repair and experiment removing a return connect those mechanics to complete compiler output.
+This lesson combines mechanics already practised in the earlier Fundamentals lessons. Its trip calculation, operand-order repair and experiment removing a return connect those mechanics to complete compiler output.
 
 ## Course plan
 

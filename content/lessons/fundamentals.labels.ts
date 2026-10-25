@@ -1,7 +1,10 @@
 // Copyright © 2026 Christopher Snow
 
 // Canonical copy: docs/notes/fundamentals/prose.md.
+import { CONSTANT_ADDITION_LABELS } from "./constant-addition.labels";
+
 export const FUNDAMENTALS_LABELS = {
+  constant: CONSTANT_ADDITION_LABELS,
   addition: {
     title: "One addition",
     objectives: [

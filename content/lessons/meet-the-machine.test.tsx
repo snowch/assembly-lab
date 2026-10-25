@@ -34,7 +34,7 @@ describe("the lesson", () => {
     expect(() => parseLesson(meetTheMachine)).not.toThrow();
     expect(checkLesson(lesson)).toEqual([]);
     expect(lesson.sections.map((s) => s.kind)).toEqual([...SECTION_KINDS]);
-    expect([lesson.module, lesson.order]).toEqual([0, 4]);
+    expect([lesson.module, lesson.order]).toEqual([0, 5]);
   });
 
   it("introduces the opening terms, including the small function call, and passes the term gate", () => {
@@ -50,7 +50,7 @@ describe("the lesson", () => {
 
   it("carries an originality note, as the plan states it", () => {
     expect(lesson.originalityNote.textbookExample).toContain("individual mechanics");
-    expect(lesson.originalityNote.howThisDiffers).toContain("four visible Fundamentals lessons");
+    expect(lesson.originalityNote.howThisDiffers).toContain("earlier Fundamentals lessons");
   });
 
   it("names only figures the book has, and only the model the book has a note for", () => {

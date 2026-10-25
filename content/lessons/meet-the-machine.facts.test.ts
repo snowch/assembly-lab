@@ -43,7 +43,17 @@ describe("the first arithmetic applications", () => {
       const view = viewAt(trace, item.instructions.length);
       return item.registers.map((register) => wValue(view.state, register));
     });
-    expect(outcomes).toEqual([[12, 7, 19], [8], [14, 19, 5], [13, 4], [20, 14], [8, 3, 8]]);
+    expect(outcomes).toEqual([
+      [12, 7, 19],
+      [8],
+      [14, 19, 5],
+      [13, 4],
+      [20, 14],
+      [8, 3, 8],
+      [7, 8],
+      [8],
+      [10, 13],
+    ]);
   });
 
   it("keeps every displayed arithmetic snippet in the real-tool corpus", () => {

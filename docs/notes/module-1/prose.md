@@ -189,7 +189,7 @@ The listings in this lesson are from GCC 16.1 with `-O1`, as in Module 0.
 
 ## 2. Numbers inside instructions
 
-`mov` puts a fixed number in a register: `mov w0, 30000` puts 30000 in `w0`. A number written inside an instruction is a **constant**.
+`mov` puts a constant in a register: `mov w0, 30000` puts 30000 in `w0`.
 
 An instruction is 32 bits long. Some bits identify the operation and the destination register, leaving fewer than 32 for the constant. So one instruction cannot hold every 32-bit constant.
 

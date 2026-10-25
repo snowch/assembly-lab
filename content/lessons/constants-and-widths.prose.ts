@@ -13,7 +13,7 @@ export const PROSE = {
   questionDetails: "The listings in this lesson are from GCC 16.1 with `-O1`, as in Module 0.",
 
   motivation:
-    "`mov` puts a fixed number in a register: `mov w0, 30000` puts 30000 in `w0`. A number written inside an instruction is a **constant**.\n\n" +
+    "`mov` puts a constant in a register: `mov w0, 30000` puts 30000 in `w0`.\n\n" +
     "An instruction is 32 bits long. Some bits identify the operation and the destination register, leaving fewer than 32 for the constant. So one instruction cannot hold every 32-bit constant.\n\n" +
     "Split a register's 32 bits into two halves. The upper half is the left 16 bits. The lower half is the right 16 bits.\n\n" +
     "30000 is `0x00007530`. Its upper half is `0000`, so all its set bits are in the lower half.\n\n" +

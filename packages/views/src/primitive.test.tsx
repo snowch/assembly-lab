@@ -41,6 +41,29 @@ function setup(index = 0, predict = false) {
 }
 
 describe("a visible single arithmetic activity", () => {
+  it("distinguishes a constant from a register and keeps the result hidden until Run", async () => {
+    const { container, user } = setup(6);
+    const preview = container.querySelector(".al-primitive-preview")!;
+    expect(preview).toHaveTextContent("w0 = 7");
+    expect(preview.querySelectorAll(".al-primitive-inputs > span")[1]).toHaveTextContent(
+      "Constant 1",
+    );
+    expect(preview).not.toHaveTextContent("#1 = 1");
+    expect(preview).toHaveTextContent("w2 = ?");
+    expect(preview).not.toHaveTextContent("8");
+    await user.click(screen.getByRole("button", { name: S.run }));
+    expect(screen.getByRole("status")).toHaveTextContent("w2 = 8");
+    expect(screen.getByRole("status")).toHaveTextContent("w0 keeps its value");
+    expect(screen.getByRole("status")).not.toHaveTextContent("#1 = 1");
+  });
+
+  it("reads the old register input before writing it in the constant reuse example", async () => {
+    const { container, user } = setup(7);
+    await user.click(screen.getByRole("button", { name: S.run }));
+    expect(screen.getByRole("status")).toHaveTextContent("w0 = 8");
+    expect(screen.getByRole("status")).toHaveTextContent(S.reused("w0"));
+    expect(container.querySelector('[data-register="w0"] .al-dreg-value')).toHaveTextContent("7");
+  });
   it("reveals a computed addition without a hidden next activity", async () => {
     const { container, user } = setup();
     expect(container.querySelector(".al-primitive-result")).toBeNull();
