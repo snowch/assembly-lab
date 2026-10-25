@@ -195,6 +195,8 @@ The next example starts again with `w0` holding 7. In `add w0, w0, 1`, both appe
 
 ### constant / sections / challenge
 
+Arm calls a constant written inside an instruction an **immediate**. Any whole number from 0 to 4095, inclusive, fits the form of `add` used here. Larger constants may need a different form of `add` or extra instructions. See [Arm’s ADD (immediate) reference](https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ADD--immediate---Add-immediate-value-).
+
 Use a different constant and destination. Work out the result without running the instruction.
 
 ### constant / firstFigure / title
