@@ -2,8 +2,8 @@
 
 // The lesson data format: the platform contract.
 //
-// A lesson is data, not a page. It declares what it teaches, the ten sections in the course's
-// fixed order, the interactives each section mounts (by kind, so the runtime looks each up in a
+// A lesson is data, not a page. It declares what it teaches, the full ten sections or an ordered
+// selection, the interactives each section mounts (by kind, so the runtime looks each up in a
 // registry a book supplies), the challenges with their tests, hints and reference solutions, the
 // model-versus-reality note, and the originality note. The runtime renders it; a book supplies
 // its own interactives, editor and grader and renders its own lessons with the same runtime.
@@ -20,7 +20,7 @@
 
 import { z } from "zod";
 
-/** The ten sections, in the order every lesson has them. */
+/** The ten section kinds, in the order full and selected lessons follow. */
 export const SECTION_KINDS = [
   "question",
   "motivation",
@@ -352,7 +352,7 @@ export const OriginalityNote = z.object({
   howThisDiffers: z.string().min(1),
 });
 
-export const Lesson = z.object({
+const LessonBase = z.object({
   /** The slug: identity everywhere. Never a number. */
   id: z.string().regex(/^[a-z][a-z0-9-]*$/, "a lesson id is a lowercase slug"),
   title: z.string().min(1),
@@ -372,11 +372,25 @@ export const Lesson = z.object({
   introduces: z.array(z.string().min(1)).default([]),
   /** Words that look like rationed terms but are used in another sense here, with the reason. */
   termExemptions: z.array(z.object({ term: z.string(), reason: z.string() })).default([]),
-  sections: z.array(Section).length(SECTION_KINDS.length),
   challenges: z.array(Challenge).default([]),
-  /** Markdown: what the book's model does and how the real thing differs. */
-  modelVsReality: z.string().min(1),
+  /** Whether automatic model notes appear in figure badges and at the lesson foot. */
+  showTimeModelNotes: z.boolean().default(true),
   originalityNote: OriginalityNote,
 });
+/** Full lessons retain the original contract; selected lessons opt in to an ordered subset. */
+export const Lesson = z.discriminatedUnion("sectionLayout", [
+  LessonBase.extend({
+    sectionLayout: z.literal("full").default("full"),
+    sections: z.array(Section).length(SECTION_KINDS.length),
+    /** Markdown: what the book's model does and how the real thing differs. */
+    modelVsReality: z.string().min(1),
+  }),
+  LessonBase.extend({
+    sectionLayout: z.literal("selected"),
+    sections: z.array(Section).min(1).max(SECTION_KINDS.length),
+    /** Empty text deliberately omits the model-versus-reality aside. */
+    modelVsReality: z.string(),
+  }),
+]);
 export type Lesson = z.infer<typeof Lesson>;
 export type LessonInput = z.input<typeof Lesson>;

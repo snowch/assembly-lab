@@ -5,6 +5,7 @@
 // figures stay inside the boxes that hold them.
 
 import { expect, type Locator, type Page } from "@playwright/test";
+import { LESSONS } from "@al/content";
 
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { DEFAULT_STRINGS as S, format } from "../../platform/lesson-runtime/src/strings";
@@ -21,7 +22,9 @@ export function watchErrors(page: Page): string[] {
 
 export async function openLesson(page: Page, id: string): Promise<void> {
   await page.goto(`#/lesson/${id}`);
-  await expect(page.locator("section.lesson-section")).toHaveCount(10);
+  const lesson = LESSONS.find((lesson) => lesson.id === id);
+  expect(lesson).toBeDefined();
+  await expect(page.locator("section.lesson-section")).toHaveCount(lesson!.sections.length);
   await page.evaluate(async () => {
     await document.fonts.ready;
   });

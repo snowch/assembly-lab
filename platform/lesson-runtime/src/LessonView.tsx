@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-// A lesson, rendered from its data: the header, the ten sections with their interactives, the
+// A lesson, rendered from its data: the header, its sections with their interactives, the
 // model note and the model-versus-reality note. Interactives come from the book's registry by
 // kind; the `challenge` kind is the runtime's own.
 
@@ -74,7 +74,7 @@ function InteractiveFigure({
   const note =
     (role !== undefined
       ? book.roleNotes?.[role]
-      : simulated
+      : simulated && lesson.showTimeModelNotes !== false
         ? book.timeModelNotes[interactive.timeModel as keyof Book["timeModelNotes"]]
         : undefined) || undefined;
   const badged = simulated || role !== undefined;
@@ -140,10 +140,13 @@ function LessonBody({ book, lesson, storage, lessonHref }: Omit<LessonViewProps,
   const models = timeModelsUsed(lesson);
   // The note on each model the lesson's figures run, once, at its foot. A book that explains its
   // model in the lessons' own prose gives no note for it, and then the heading goes too.
-  const modelNotes = models.flatMap((model) => {
-    const note = book.timeModelNotes[model as keyof Book["timeModelNotes"]];
-    return note ? [{ model, note }] : [];
-  });
+  const modelNotes =
+    lesson.showTimeModelNotes !== false
+      ? models.flatMap((model) => {
+          const note = book.timeModelNotes[model as keyof Book["timeModelNotes"]];
+          return note ? [{ model, note }] : [];
+        })
+      : [];
   const byId = new Map(book.lessons.map((l) => [l.id, l]));
   return (
     <article className="lesson" aria-labelledby="lesson-title" data-lesson={lesson.id}>
@@ -216,14 +219,16 @@ function LessonBody({ book, lesson, storage, lessonHref }: Omit<LessonViewProps,
           ))}
         </aside>
       )}
-      <aside className="lesson-model-vs-reality" aria-labelledby="lesson-model-vs-reality">
-        <h2 id="lesson-model-vs-reality">
-          {models.length > 0
-            ? strings.lesson.modelVsReality
-            : strings.lesson.modelVsRealityNoSimulator}
-        </h2>
-        <Prose markdown={lesson.modelVsReality} />
-      </aside>
+      {lesson.modelVsReality && (
+        <aside className="lesson-model-vs-reality" aria-labelledby="lesson-model-vs-reality">
+          <h2 id="lesson-model-vs-reality">
+            {models.length > 0
+              ? strings.lesson.modelVsReality
+              : strings.lesson.modelVsRealityNoSimulator}
+          </h2>
+          <Prose markdown={lesson.modelVsReality} />
+        </aside>
+      )}
     </article>
   );
 }

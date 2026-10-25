@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-// Checks a lesson beyond its shape: the ten sections in order, challenge ids unique and
+// Checks a lesson beyond its shape: the declared sections in order, challenge ids unique and
 // referenced, hints complete, each challenge's tests consistent with what it grades, and the
 // words each lesson is allowed to introduce.
 //
@@ -58,11 +58,26 @@ export function checkLesson(lesson: LessonType): LessonProblem[] {
   const problems: LessonProblem[] = [];
   const problem = (text: string) => problems.push({ lesson: lesson.id, text });
 
-  lesson.sections.forEach((s, i) => {
-    const want = SECTION_KINDS[i];
-    if (s.kind !== want)
-      problem(`section ${i + 1} is ${s.kind}; the course's order puts ${want} here`);
-  });
+  if (lesson.sectionLayout !== "selected") {
+    lesson.sections.forEach((s, i) => {
+      const want = SECTION_KINDS[i];
+      if (s.kind !== want)
+        problem(`section ${i + 1} is ${s.kind}; the course's order puts ${want} here`);
+    });
+  } else {
+    const kinds = new Set<string>();
+    let previous = -1;
+    lesson.sections.forEach((section, i) => {
+      const position = SECTION_KINDS.indexOf(section.kind);
+      if (kinds.has(section.kind)) problem(`two sections are called ${section.kind}`);
+      else if (position <= previous)
+        problem(
+          `section ${i + 1} is ${section.kind}; selected sections must follow the course's order`,
+        );
+      kinds.add(section.kind);
+      previous = position;
+    });
+  }
 
   const challengeIds = new Set<string>();
   for (const c of lesson.challenges) {
@@ -191,7 +206,7 @@ export function limitCount(c: ChallengeType): number {
   return (l.gates !== undefined ? 1 : 0) + (l.depth !== undefined ? 1 : 0) + (l.only ? 1 : 0);
 }
 
-/** The models a lesson's interactives run, for the note every lesson states. */
+/** The models a lesson's interactives run, whether or not it displays automatic model notes. */
 export function timeModelsUsed(lesson: LessonType): string[] {
   const models = new Set<string>();
   for (const s of lesson.sections)

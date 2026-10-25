@@ -129,6 +129,71 @@ describe("LessonView", () => {
     expect(loop.querySelector(".time-model-toggle")).toBeNull();
   });
 
+  it("renders selected sections without a blank aside or automatic model notes, while keeping roles and challenges", async () => {
+    const user = userEvent.setup();
+    const roleNote = "Run the challenge, then inspect its verdict.";
+    const selected = fixtureLesson({
+      sectionLayout: "selected",
+      sections: lesson.sections
+        .filter((section) => section.kind !== "reflection")
+        .map((section) => ({
+          ...section,
+          interactives: section.interactives.map((interactive) =>
+            interactive.id === "ch1" ? { ...interactive, role: "exercise" } : interactive,
+          ),
+        })),
+      modelVsReality: "",
+      showTimeModelNotes: false,
+    });
+    const quietBook = { ...fixtureBook([selected]), roleNotes: { exercise: roleNote } };
+    render(<LessonView book={quietBook} lesson={selected} storage={memoryStorage()} />);
+    expect(document.querySelectorAll("section.lesson-section")).toHaveLength(9);
+    expect(document.querySelector('[data-kind="reflection"]')).toBeNull();
+    expect(document.querySelector(".lesson-model-vs-reality")).toBeNull();
+    expect(document.querySelector(".lesson-model-note")).toBeNull();
+    const loop = document.getElementById("ix-loop") as HTMLElement;
+    expect(within(loop).getByTestId("demo")).toBeVisible();
+    expect(within(loop).getByText(DEFAULT_STRINGS.lesson.timeModel["settle"]!)).toBeVisible();
+    expect(loop.querySelector(".time-model-toggle")).toBeNull();
+    expect(loop.querySelector(".time-model-note")).toBeNull();
+    expect(screen.queryByText(quietBook.timeModelNotes.settle!)).toBeNull();
+    // Only the role note remains interactive; the opt-out does not hide the challenge.
+    const challenge = document.getElementById("ix-ch1") as HTMLElement;
+    expect(within(challenge).getByRole("heading", { name: /Remember a press/ })).toBeVisible();
+    expect(
+      within(challenge).getByRole("button", { name: DEFAULT_STRINGS.challenge.run }),
+    ).toBeVisible();
+    const roleBadge = within(challenge).getByRole("button", {
+      name: format(DEFAULT_STRINGS.lesson.roleBadgeLabel, { role: "exercise" }),
+    });
+    expect(roleBadge).toHaveAttribute("aria-expanded", "false");
+    await user.click(roleBadge);
+    expect(roleBadge).toHaveAttribute("aria-expanded", "true");
+    expect(within(challenge).getByText(roleNote)).toBeVisible();
+  });
+
+  it("keeps the model aside and automatic time-model notes independent", () => {
+    const noAside = fixtureLesson({ sectionLayout: "selected", modelVsReality: "" });
+    const view = render(
+      <LessonView book={fixtureBook([noAside])} lesson={noAside} storage={memoryStorage()} />,
+    );
+    expect(document.querySelector(".lesson-model-vs-reality")).toBeNull();
+    expect(document.querySelector(".lesson-model-note")).not.toBeNull();
+    expect(document.querySelector("#ix-loop .time-model-toggle")).not.toBeNull();
+    const noTimeNotes = fixtureLesson({ showTimeModelNotes: false });
+    view.rerender(
+      <LessonView
+        book={fixtureBook([noTimeNotes])}
+        lesson={noTimeNotes}
+        storage={memoryStorage()}
+      />,
+    );
+    expect(document.querySelector(".lesson-model-note")).toBeNull();
+    expect(document.querySelector("#ix-loop .time-model-toggle")).toBeNull();
+    expect(document.querySelector(".lesson-model-vs-reality")).not.toBeNull();
+    expect(screen.getByText(noTimeNotes.modelVsReality)).toBeVisible();
+  });
+
   it("shows a section's details closed, after its prose and before its figures", async () => {
     const user = userEvent.setup();
     const detailed = {

@@ -46,10 +46,6 @@ The destination can be a different register. Apply the same operand rule below.
 
 Trace a new addition without running it.
 
-### addition / sections / reflection
-
-Before calculating, identify the inputs and the destination.
-
 ### addition / figure / title
 
 One addition
@@ -100,10 +96,6 @@ This instruction reads `w0` and `w2`. It writes `w1`; it does not write `w0`.
 ### addition / challenge / hints 5
 
 `w1` holds 19 and `w0` still holds 14.
-
-### addition / modelVsReality
-
-The figure runs one instruction and shows its effect on the selected registers. It leaves out the surrounding program. A real processor runs instructions as part of a program; the next lessons build up that context.
 
 ### addition / originalityNote / textbookExample
 
@@ -160,10 +152,6 @@ A different destination
 ### addition labels / titles / challenge
 
 Trace a new addition
-
-### addition labels / titles / reflection
-
-Read before calculating
 
 ### addition labels / captions / figure
 

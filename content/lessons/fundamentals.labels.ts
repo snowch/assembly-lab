@@ -18,7 +18,6 @@ export const FUNDAMENTALS_LABELS = {
       explanation: "Inputs and result",
       generalisation: "A different destination",
       challenge: "Trace a new addition",
-      reflection: "Read before calculating",
     },
     captions: {
       figure: "Press Run the instruction to see the result written to w2.",
