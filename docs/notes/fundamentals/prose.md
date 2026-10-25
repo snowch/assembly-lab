@@ -20,7 +20,7 @@ An **instruction** tells the processor to perform an operation. Assembly languag
 
 ### addition / sections / prediction
 
-In `add w2, w0, w1`, `w0` and `w1` are the **inputs**: the instruction reads the values stored there. It adds those values and writes the result into `w2`. The register that receives the result is the **destination**, named first in this instruction.
+In `add w2, w0, w1`, the **inputs** are `w0` and `w1`: the instruction reads the values stored there. It adds those values and writes the result into `w2`. The register that receives the result is the **destination**, named first in this instruction.
 
 ### addition / sections / investigation
 
@@ -72,7 +72,8 @@ Arm’s reference manuals
 
 ### addition / references / prose
 
-[Arm’s instruction reference](https://support.arm.com/documentation/ddi0602/2026-09/Base-Instructions/ADD--shifted-register---Add-optionally-shifted-register-) opens at the entry for `add`. The [architecture reference manual](https://developer.arm.com/documentation/ddi0487/latest/) describes the registers and wider processor rules.
+- [Arm’s instruction reference](https://support.arm.com/documentation/ddi0602/2026-09/Base-Instructions/ADD--shifted-register---Add-optionally-shifted-register-) opens at the entry for `add`.
+- The [architecture reference manual](https://developer.arm.com/documentation/ddi0487/latest/) describes the registers and wider processor rules.
 
 Both references are free to read without an account. If an Arm ID sign-in panel opens, close it to read the documentation.
 

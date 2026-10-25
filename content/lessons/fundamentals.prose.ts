@@ -9,7 +9,7 @@ export const FUNDAMENTALS_PROSE = {
       motivation:
         "A **register** is a small, fast store inside the processor. This course uses AArch64, Arm’s 64-bit mode. It has 31 general-purpose integer registers, used for ordinary calculations, named `x0` to `x30`. Other registers have special jobs.\n\nAn **instruction** tells the processor to perform an operation. Assembly language writes instructions with names such as `add`. The parts after the name are its **operands**.\n\n**Memory** holds the program’s instructions and much more data than the registers can hold. For `add`, a value held in memory must first be brought into a register. A result can be written back.",
       prediction:
-        "In `add w2, w0, w1`, `w0` and `w1` are the **inputs**: the instruction reads the values stored there. It adds those values and writes the result into `w2`. The register that receives the result is the **destination**, named first in this instruction.",
+        "In `add w2, w0, w1`, the **inputs** are `w0` and `w1`: the instruction reads the values stored there. It adds those values and writes the result into `w2`. The register that receives the result is the **destination**, named first in this instruction.",
       investigation:
         "Press Run the instruction. The figure runs a **simulator** in your browser: a program that imitates the processor. The course calls it the model.",
       construction:
@@ -35,7 +35,7 @@ export const FUNDAMENTALS_PROSE = {
     references: {
       summary: "Arm’s reference manuals",
       prose:
-        "[Arm’s instruction reference](https://support.arm.com/documentation/ddi0602/2026-09/Base-Instructions/ADD--shifted-register---Add-optionally-shifted-register-) opens at the entry for `add`. The [architecture reference manual](https://developer.arm.com/documentation/ddi0487/latest/) describes the registers and wider processor rules.\n\nBoth references are free to read without an account. If an Arm ID sign-in panel opens, close it to read the documentation.",
+        "- [Arm’s instruction reference](https://support.arm.com/documentation/ddi0602/2026-09/Base-Instructions/ADD--shifted-register---Add-optionally-shifted-register-) opens at the entry for `add`.\n- The [architecture reference manual](https://developer.arm.com/documentation/ddi0487/latest/) describes the registers and wider processor rules.\n\nBoth references are free to read without an account. If an Arm ID sign-in panel opens, close it to read the documentation.",
     },
     challenge: {
       task: "Before `add w1, w0, w2` runs, `w0` holds 14, `w1` holds 0 and `w2` holds 5. What do `w1` and `w0` hold after this instruction?",
