@@ -71,7 +71,7 @@ describe("the lesson", () => {
   });
 
   it("introduces its terms, and passes the term gate with every other lesson", () => {
-    expect(lesson.introduces).toEqual(["constant", "w register", "x register", "remainder"]);
+    expect(lesson.introduces).toEqual(["w register", "x register", "remainder"]);
     expect(termProblems(LESSONS)).toEqual([]);
   });
 

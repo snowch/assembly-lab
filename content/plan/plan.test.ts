@@ -92,6 +92,7 @@ describe("the course's plan", () => {
     const meet = moduleByNumber(0)!;
     expect(lessonsOf(meet, LESSONS).map((l) => l.id)).toEqual([
       "one-addition",
+      "adding-a-constant",
       "tiny-function",
       "subtraction-and-reuse",
       "instructions-in-sequence",

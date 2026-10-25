@@ -15,6 +15,7 @@ import type { LessonInput } from "@platform/lesson-schema";
 /** The instructions each lesson teaches, by lesson id: what a lesson adds to the earlier ones. */
 export const TAUGHT: Readonly<Record<string, readonly string[]>> = {
   "one-addition": ["add"],
+  "adding-a-constant": [],
   "tiny-function": ["ret"],
   "subtraction-and-reuse": ["sub"],
   "instructions-in-sequence": [],
