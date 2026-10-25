@@ -132,8 +132,10 @@ describe("visible Fundamentals lessons", () => {
   it("pins stated numeric inputs and results to the checked primitive traces", () => {
     // Existing primitive facts check all worked calls; fresh challenge traces are checked above.
     // Width and compiler/version values are pinned by the recorded increment listing facts.
+    // The unshifted immediate limit is Arm DDI0602 ADD (immediate)'s imm12 range;
+    // arith.test.ts also checks 4095 and the larger, shifted 4096 encoding.
     const pinned = new Set([
-      0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 18, 19, 20, 31, 32, 64, 16.1,
+      0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 18, 19, 20, 31, 32, 64, 16.1, 4095,
     ]);
     const text = lessons
       .flatMap(learnerText)

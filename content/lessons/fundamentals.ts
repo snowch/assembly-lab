@@ -28,7 +28,7 @@ const CONFIG = [
     test: 8,
     args: [10, 0],
     fields: [1, 0],
-    introduces: ["constant"],
+    introduces: ["constant", "immediate"],
   },
   {
     key: "function",

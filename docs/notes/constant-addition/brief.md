@@ -1,5 +1,13 @@
 # Adding a constant before the first function
 
+## Follow-up: constant limits and the reference
+
+The user subsequently requested a short visible limit note and direct Arm reference link, then merging. This supersedes the original deferral of range/reference/immediate terminology below. Scope: one local paragraph after the worked examples, before the fresh exercise, its canonical record, and the vocabulary declaration; no new activity or encoding lesson.
+
+Checked against the official DDI0602/2025-12 ADD (immediate) entry: the unshifted immediate field accepts whole numbers 0 through 4095 inclusive; an optional shift permits certain larger values. GNU as and the course assembler can select that larger encoding automatically, so do not claim all larger literals are rejected. Negative add literals may also be assembler aliases; avoid calling this a universal syntax restriction. State the range for the form used in the examples and acknowledge other forms/extra instructions without teaching shift syntax. Define Arm's term immediate beside the direct reference link. New terminology belongs to Adding a constant.
+
+Official document re-fetched successfully through documentation-service.arm.com on 2026-10-25; evidence /tmp/add-limits-arm.html. The first fetch harness lacked Python requests, then standard-library urllib succeeded; this was not a source or product failure. The existing arithmetic tests cover the 4095 boundary and a larger shifted encoding. Independent learner and technical reviewers will check final production text/link at phone and desktop widths in both themes.
+
 The user approved a visible Adding a constant lesson between One addition and A tiny function, followed by merging after checks. Prior knowledge: basic C/binary prerequisites and the first lesson's registers, input/destination/operand rule, one-instruction Run/reset, and a simulator as a browser model. No compiler, caller, argument, ret or # syntax has yet been taught.
 
 Checked program/model facts (meet-the-machine.facts.test.ts passed30 tests):
