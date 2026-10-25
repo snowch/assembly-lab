@@ -146,9 +146,9 @@ export const PrimitiveOperation = withProps(
             <div className="al-primitive-inputs">
               {nextFlow.sources.map((source, index) => (
                 <span key={index}>
-                  <small>{S.input}</small>{" "}
+                  <small>{source.isRegister ? S.input : S.constant}</small>{" "}
                   <code>
-                    {source.name} = {source.value}
+                    {source.isRegister ? `${source.name} = ${source.value}` : source.value}
                   </code>
                   {index === 0 && (
                     <b aria-hidden="true">{nextFlow.operation === "add" ? "+" : "−"}</b>
@@ -181,9 +181,9 @@ export const PrimitiveOperation = withProps(
               <div className="al-primitive-inputs">
                 {flow.sources.map((source, index) => (
                   <span key={index}>
-                    <small>{S.input}</small>{" "}
+                    <small>{source.isRegister ? S.input : S.constant}</small>{" "}
                     <code>
-                      {source.name} = {source.value}
+                      {source.isRegister ? `${source.name} = ${source.value}` : source.value}
                     </code>
                     {index === 0 && (
                       <b aria-hidden="true">{flow.operation === "add" ? "+" : "−"}</b>

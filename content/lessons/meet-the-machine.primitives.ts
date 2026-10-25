@@ -47,6 +47,27 @@ export const PRIMITIVE_PROGRAMS = [
     args: [8, 3, 0],
     registers: [0, 1, 2],
   },
+  {
+    kind: "operation",
+    entry: "primitive_constant",
+    instructions: ["add w2, w0, 1"],
+    args: [7, 0, 0],
+    registers: [0, 2],
+  },
+  {
+    kind: "operation",
+    entry: "primitive_constant_reuse",
+    instructions: ["add w0, w0, 1"],
+    args: [7],
+    registers: [0],
+  },
+  {
+    kind: "operation",
+    entry: "primitive_constant_practice",
+    instructions: ["add w1, w0, 3"],
+    args: [10, 0],
+    registers: [0, 1],
+  },
 ] as const;
 
 export function primitiveProgram(item: (typeof PRIMITIVE_PROGRAMS)[number]) {

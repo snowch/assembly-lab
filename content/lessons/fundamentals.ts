@@ -12,12 +12,23 @@ type Key = keyof typeof P;
 const CONFIG = [
   {
     key: "addition",
+    sectionKinds: SECTION_KINDS.filter((kind) => kind !== "reflection"),
     id: "one-addition",
     worked: 0,
     test: 2,
     args: [14, 0, 5],
     fields: [1, 0],
     introduces: ["instruction", "register", "assembly language", "operand", "memory", "AArch64"],
+  },
+  {
+    key: "constant",
+    id: "adding-a-constant",
+    sectionKinds: ["motivation", "investigation", "challenge"],
+    worked: 7,
+    test: 8,
+    args: [10, 0],
+    fields: [1, 0],
+    introduces: ["constant"],
   },
   {
     key: "function",
@@ -49,12 +60,14 @@ const CONFIG = [
 ] as const;
 const CHALLENGE_IDS = [
   "trace-addition",
+  "trace-constant",
   "trace-increment",
   "trace-subtraction",
   "trace-sequence",
 ] as const;
 const FIGURE_IDS = [
   "worked-addition",
+  "worked-constant-reuse",
   "worked-function",
   "worked-subtraction",
   "worked-sequence",
@@ -108,8 +121,8 @@ export const fundamentalsLessons: LessonInput[] = CONFIG.map((config, order) => 
     module: 0,
     order,
     objectives: [...labels.objectives],
-    sectionLayout: key === "addition" ? "selected" : "full",
-    showTimeModelNotes: key !== "addition",
+    sectionLayout: "sectionKinds" in config ? "selected" : "full",
+    showTimeModelNotes: !("sectionKinds" in config),
     introduces: [...config.introduces],
     termExemptions:
       key === "addition"
@@ -126,63 +139,68 @@ export const fundamentalsLessons: LessonInput[] = CONFIG.map((config, order) => 
             },
           ]
         : [],
-    sections: SECTION_KINDS.filter((kind) => key !== "addition" || kind !== "reflection").map(
-      (kind) => ({
-        kind,
-        title: sectionTitles[kind]!,
-        prose: sectionProse[kind]!,
-        ...(kind === "motivation" && key === "addition"
-          ? {
-              details: P.addition.references,
-              interactives: [
-                {
-                  id: "register-views",
-                  kind: "register-views",
-                  timeModel: "none",
-                  caption: P.addition.registerViews.caption,
-                  after: P.addition.registerViews.after,
-                  props: { register: 0 },
-                },
-              ],
-            }
-          : {}),
-        ...(kind === "investigation"
-          ? {
-              interactives: [
-                figure(
-                  config.worked,
-                  FIGURE_IDS[order]!,
-                  key === "subtraction" ? P.subtraction.secondFigure : prose.figure,
-                  key === "subtraction"
-                    ? L.subtraction.captions.secondFigure
-                    : labels.captions.figure,
-                ),
-              ],
-            }
-          : {}),
-        ...(kind === "prediction" && key === "subtraction"
-          ? {
-              interactives: [
-                figure(3, "worked-reuse", P.subtraction.figure, L.subtraction.captions.figure),
-              ],
-            }
-          : {}),
-        ...(kind === "challenge"
-          ? {
-              interactives: [
-                {
-                  id: "practice",
-                  kind: "challenge",
-                  timeModel: "steps",
-                  role: "exercise" as const,
-                  caption: labels.captions.challenge,
-                  props: { challengeId },
-                },
-              ],
-            }
-          : {}),
-      }),
-    ),
+    sections: ("sectionKinds" in config ? config.sectionKinds : SECTION_KINDS).map((kind) => ({
+      kind,
+      title: sectionTitles[kind]!,
+      prose: sectionProse[kind]!,
+      ...(kind === "motivation" && key === "addition"
+        ? {
+            details: P.addition.references,
+            interactives: [
+              {
+                id: "register-views",
+                kind: "register-views",
+                timeModel: "none",
+                caption: P.addition.registerViews.caption,
+                after: P.addition.registerViews.after,
+                props: { register: 0 },
+              },
+            ],
+          }
+        : {}),
+      ...(kind === "motivation" && key === "constant"
+        ? {
+            interactives: [
+              figure(6, "worked-constant", P.constant.firstFigure, L.constant.captions.firstFigure),
+            ],
+          }
+        : {}),
+      ...(kind === "investigation"
+        ? {
+            interactives: [
+              figure(
+                config.worked,
+                FIGURE_IDS[order]!,
+                key === "subtraction" ? P.subtraction.secondFigure : prose.figure,
+                key === "subtraction"
+                  ? L.subtraction.captions.secondFigure
+                  : labels.captions.figure,
+              ),
+            ],
+          }
+        : {}),
+      ...(kind === "prediction" && key === "subtraction"
+        ? {
+            interactives: [
+              figure(3, "worked-reuse", P.subtraction.figure, L.subtraction.captions.figure),
+            ],
+          }
+        : {}),
+      ...(kind === "challenge"
+        ? {
+            interactives: [
+              {
+                id: "practice",
+                kind: "challenge",
+                timeModel: "steps",
+                role: "exercise" as const,
+                caption: labels.captions.challenge,
+                props: { challengeId },
+              },
+            ],
+          }
+        : {}),
+    })),
     challenges: [
       {
         id: challengeId,
