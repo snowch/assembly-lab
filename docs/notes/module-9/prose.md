@@ -20,7 +20,7 @@ The function making a call is the **caller**; the function receiving it is the *
 
 *Closed note: The recorded compiler output*
 
-These listings use GCC 16.1 with `-O1 -fno-inline` for little-endian AArch64 Linux. The extra setting prevents inlining: replacing a call with a copy of the called function's body. Keeping the call makes the return mechanism visible.
+The listings paired with C use GCC 16.1 with `-O1 -fno-inline` for little-endian AArch64 Linux. The extra setting prevents inlining: replacing a call with a copy of the called function's body. Keeping the call makes the return mechanism visible.
 
 *End of closed note.*
 
@@ -34,6 +34,14 @@ The **stack** is memory used to hold values needed by active calls. Its current 
 
 The shared register and stack rules form a **calling convention**. This course follows AAPCS64, the procedure-call standard for this target. These rules let separately written functions call one another.
 
+**A caller that returns the helper’s result**
+
+Follow the handwritten `relay_distance` below. It calls `half_distance` and returns the helper’s result unchanged. Press Next to follow each instruction.
+
+The space reserved for one active call is its **stack frame**. `stp` stores a pair: `stp x29, x30, [sp, #-16]!` decreases `sp` by 16, then stores two 64-bit values. The saved `x29` starts at `sp`; `x30` starts at `sp + 8`. AAPCS64 requires `sp` to be a multiple of 16 for stack accesses through it. This is 16-byte alignment. Reserving 16 bytes keeps that alignment.
+
+Here `x29` is a **frame pointer**, identifying this call’s frame. `mov x29, sp` sets it after saving its old value. `ldp` loads a pair: `ldp x29, x30, [sp], #16` restores both values, then releases the frame by increasing `sp` by 16. The final `ret` uses the restored return address.
+
 ## 3. Call the distance helper
 
 The report receives distance 128 and reserve 9. The helper halves the unsigned distance, then the report adds the reserve.
@@ -46,13 +54,11 @@ It returns 73, or `0x00000049`. The helper returns 64 in `w0`; the report then a
 
 ## 4. Inspect the saved values on the stack
 
-Step through the call and watch the active stack bytes. The space reserved for one function invocation is its **stack frame**. The recorded report reserves 32 bytes.
+Now follow `trip_report`, which keeps a reserve across the helper call. Its stack frame reserves 32 bytes. The saved pair has the same layout as before: `x29` at `sp`, then `x30` at `sp + 8`. `stp x29, x30, [sp, #-32]!` reserves this larger frame; `ldp x29, x30, [sp], #32` restores the pair and releases it.
 
-`stp x29, x30, [sp, #-32]!` decreases `sp` by 32, then stores the two 64-bit values in adjacent eight-byte regions. The saved `x29` starts at the new `sp`; the saved `x30` starts eight bytes later, at `sp + 8`. `stp` means store pair. `ldp x29, x30, [sp], #32` loads the pair, then increases `sp` by 32. `ldp` means load pair. The `!` and the offset outside the brackets use the pre-index and post-index rules from Module 7.
+GCC also saves `x19` at `sp + 16`, then uses `w19` to keep the reserve across the helper call. On return, it restores all three saved registers.
 
-GCC uses `x29` as a **frame pointer**, a register that identifies this function's frame. It saves the old value before setting `x29` to the new `sp`. It also saves `x19`, then uses `w19` to keep the reserve across the helper call. On return, it restores all three saved registers.
-
-AAPCS64 requires a callee to preserve `x19` through `x29` and restore `sp`. Preserve all 64 bits, even if your own calculation uses only a `w` view. When accessing stack memory through `sp`, keep `sp` aligned to 16 bytes: its address must be a multiple of 16. The same alignment is required at public call boundaries, where separately compiled functions meet.
+AAPCS64 requires a callee to preserve `x19` through `x29` and restore `sp`. Preserve all 64 bits, even if your own calculation uses only a `w` view. The stack must also be aligned to 16 bytes at public call boundaries, where separately compiled functions meet.
 
 ## 5. Call a helper and resume
 
@@ -171,6 +177,8 @@ AAPCS64 permits platform-specific frame-pointer policies, so this GCC frame is n
 ## Figure captions and labels
 
 trip_report and its helper in C and recorded GCC assembly.
+
+A handwritten caller saves its return address, calls the helper and restores the saved values.
 
 Predict the report returned after the helper call.
 

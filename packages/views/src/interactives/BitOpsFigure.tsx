@@ -17,7 +17,7 @@ import { useHandoffState } from "../update-handoff";
 import { useMemo, type KeyboardEvent } from "react";
 import { z } from "zod";
 
-import { useSlot } from "@platform/lesson-runtime";
+import { Prose, useSlot } from "@platform/lesson-runtime";
 
 import {
   BitCells,
@@ -53,6 +53,8 @@ const FunctionSchema = z.object({
 });
 
 const Props = z.object({
+  title: z.string().optional(),
+  intro: z.string().optional(),
   functions: z.array(FunctionSchema).min(1),
   /** The function the figure starts with (the first, if none is named). */
   start: z.string().optional(),
@@ -71,7 +73,7 @@ export function problemSentence(text: string): string | null {
   return problem === "range" ? S.bitOps.inputRange : S.bitOps.inputProblem;
 }
 
-export const BitOpsFigure = withProps(Props, function BitOpsFigure({ data, store }) {
+export const BitOpsFigure = withProps(Props, function BitOpsFigure({ data, store, interactive }) {
   const [which, setWhich] = useHandoffState("BitOpsFigure.which", () =>
     Math.max(
       0,
@@ -98,8 +100,8 @@ export const BitOpsFigure = withProps(Props, function BitOpsFigure({ data, store
         : null,
     [valid, fn, word, second],
   );
-  // The function's first instruction does not depend on the word: it is read from a run that is
-  // not drawn, so the instruction and its mask can be shown while the word is being typed.
+  // Read the instruction's form separately; a register mask below comes from this call's
+  // initial state, rather than the zero-valued call used only to find the instruction.
   const base = useMemo(
     () => traceOf(fn.program, { entry: fn.entry, args: fn.second ? [0, 0] : [0] }),
     [fn],
@@ -112,13 +114,16 @@ export const BitOpsFigure = withProps(Props, function BitOpsFigure({ data, store
     );
   }
   const first = firstInstruction(base, fn.entry);
-  const shape: Shape = first ? shapeOf(first) : { kind: "other" };
+  const shape: Shape = first ? shapeOf(first, trace?.result.initial) : { kind: "other" };
+  const registerMask = shape.kind === "logic" && first?.operands[2]?.kind === "reg";
+  const wordId = `${interactive.id}-bitops-word`;
+  const secondId = `${interactive.id}-bitops-second`;
   const inputs = (
     <div className="al-inputs">
-      <label className="al-input" htmlFor="bitops-word">
+      <label className="al-input" htmlFor={wordId}>
         <span>{S.bitOps.inputLabel("w0")}</span>
         <input
-          id="bitops-word"
+          id={wordId}
           type="text"
           inputMode="text"
           autoComplete="off"
@@ -131,10 +136,10 @@ export const BitOpsFigure = withProps(Props, function BitOpsFigure({ data, store
         />
       </label>
       {fn.second && (
-        <label className="al-input" htmlFor="bitops-second">
+        <label className="al-input" htmlFor={secondId}>
           <span>{S.bitOps.inputLabel("w1")}</span>
           <input
-            id="bitops-second"
+            id={secondId}
             type="text"
             inputMode="text"
             autoComplete="off"
@@ -151,27 +156,33 @@ export const BitOpsFigure = withProps(Props, function BitOpsFigure({ data, store
   );
   const head = (
     <>
-      <div className="asm-field" role="group" aria-label={S.bitOps.functions}>
-        <span className="asm-field-label">{S.bitOps.functions}</span>
-        <div className="asm-chips">
-          {data.functions.map((f, i) => (
-            <button
-              key={f.entry}
-              type="button"
-              className="chip"
-              aria-pressed={i === which}
-              onClick={() => setWhich(i)}
-            >
-              {f.entry}
-            </button>
-          ))}
+      {data.title && <h4>{data.title}</h4>}
+      {data.intro && <Prose markdown={data.intro} />}
+      {data.functions.length > 1 && (
+        <div className="asm-field" role="group" aria-label={S.bitOps.functions}>
+          <span className="asm-field-label">{S.bitOps.functions}</span>
+          <div className="asm-chips">
+            {data.functions.map((f, i) => (
+              <button
+                key={f.entry}
+                type="button"
+                className="chip"
+                aria-pressed={i === which}
+                onClick={() => setWhich(i)}
+              >
+                {f.entry}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
       <div className="al-code-lines">
-        <div className="al-code-line">
-          <span className="al-code-label">{S.bitOps.cLabel}</span>
-          <code className="al-code-c">{fn.program.c}</code>
-        </div>
+        {fn.program.c.trim() !== "" && (
+          <div className="al-code-line">
+            <span className="al-code-label">{S.bitOps.cLabel}</span>
+            <code className="al-code-c">{fn.program.c}</code>
+          </div>
+        )}
         <div className="al-code-line">
           <span className="al-code-label">{S.bitOps.instructionLabel}</span>
           <code className="al-code-ins">{first?.text ?? ""}</code>
@@ -271,7 +282,7 @@ export const BitOpsFigure = withProps(Props, function BitOpsFigure({ data, store
             marks={secondMarks}
           />
         )}
-        {shape.kind === "logic" && (
+        {shape.kind === "logic" && !registerMask && (
           <BitCells
             row="detail-mask"
             name={S.bitOps.rowMask}
@@ -312,7 +323,7 @@ export const BitOpsFigure = withProps(Props, function BitOpsFigure({ data, store
               pick={{ onPick: pick }}
             />
           )}
-          {shape.kind === "logic" && (
+          {shape.kind === "logic" && !registerMask && (
             <BitRow
               row="mask"
               name={S.bitOps.rowMask}

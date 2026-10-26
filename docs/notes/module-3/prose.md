@@ -71,6 +71,14 @@ The figure combines a word and a mask with the instruction you choose. It marks 
 
 *A word and a mask, combined bit by bit.*
 
+**OR with a register input**
+
+In `orr w0, w0, w1`, the instruction reads both registers and writes their OR to `w0`. It leaves `w1` unchanged. Change either starting value below to compare the input bits with the result.
+
+Immediate masks for `and`, `orr` and `eor` must fit particular bit patterns; not every 32-bit value fits. A mask that does not fit can be loaded into a register, using `mov` and `movk` as needed, then supplied through a register input. See [Arm’s ORR (immediate) reference](https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ORR--immediate---Bitwise-OR--immediate--).
+
+*OR of two register values; w0 is written and w1 is kept.*
+
 A run of bits that together hold one number is called a **field**. The gear is a field, in bits 4 to 6.
 
 `lsl` moves every bit towards the top by a number of places. `lsl w1, w1, 4` moves each bit of `w1` up four places. Zeros fill the four lowest bits. Bits moved past bit 31 are lost. So bits 0 to 2 move to bits 4 to 6. The `lsl 16` in `movk`, from Module 1, moved a number into the upper half the same way.

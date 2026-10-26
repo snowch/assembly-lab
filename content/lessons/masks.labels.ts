@@ -30,6 +30,7 @@ export const LABELS = {
   captions: {
     warningWord: "The warning word's 32 bits. The table beside it gives each bit's meaning.",
     maskBits: "A word and a mask, combined bit by bit.",
+    registerOr: "OR of two register values; w0 is written and w1 is kept.",
     fieldPlan: "Replace an in-range gear before writing the general function.",
   },
   options: {

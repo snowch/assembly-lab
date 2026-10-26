@@ -19,17 +19,35 @@ describe("Module 9 lesson contracts", () => {
     expect(lesson.sections.map((s) => s.kind)).toEqual([...SECTION_KINDS]);
     expect(lesson.challenges).toHaveLength(2);
     const figures = lesson.sections.flatMap((s) => s.interactives);
+    const ungated = figures.filter(
+      (f) => f.kind === "stack-stepper" && f.props["after"] === undefined,
+    );
+    expect(ungated.map((f) => f.id)).toEqual(
+      lesson.id === "calls-and-returns" ? ["step-small-returning-call"] : [],
+    );
     for (const challenge of lesson.challenges) {
       expect(figures.some((f) => f.props["challengeId"] === challenge.id)).toBe(true);
       expect(challenge.hints).toHaveLength(5);
     }
     for (const [i, figure] of figures.entries())
       if (figure.kind === "stack-stepper") {
+        if (figure.id === "step-small-returning-call") continue;
         const gate = figures.findIndex((f) => f.id === figure.props["after"]);
         expect(gate).toBeGreaterThanOrEqual(0);
         expect(gate).toBeLessThan(i);
         expect(["memory-prediction", "loop-prediction"]).toContain(figures[gate]!.kind);
       }
+  });
+  it("shows the smaller caller before the full recorded function and its prediction", () => {
+    const figures = lessons[0]!.sections.flatMap((s) => s.interactives);
+    const positions = [
+      "step-small-returning-call",
+      "calls-and-returns-listing",
+      "predict-calls-and-returns",
+    ].map((id) => figures.findIndex((figure) => figure.id === id));
+    expect(positions.every((position) => position >= 0)).toBe(true);
+    expect(positions[0]).toBeLessThan(positions[1]!);
+    expect(positions[1]).toBeLessThan(positions[2]!);
   });
   it.each(challenges)("$id reference passes and starter fails", (challenge) => {
     expect(grade(challenge, challenge.reference)).toEqual({

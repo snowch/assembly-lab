@@ -1,0 +1,29 @@
+{
+  "entry": "join_warnings",
+  "calls": [
+    {
+      "entry": "join_warnings",
+      "args": [
+        ["5", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "join_warnings",
+      "args": [
+        ["0", 32],
+        ["257", 32]
+      ]
+    },
+    {
+      "entry": "join_warnings",
+      "args": [
+        ["4294967295", 32],
+        ["0", 32]
+      ]
+    },
+    { "entry": "relay_distance", "args": [["0", 32]] },
+    { "entry": "relay_distance", "args": [["128", 32]] },
+    { "entry": "relay_distance", "args": [["4294967295", 32]] }
+  ]
+}
