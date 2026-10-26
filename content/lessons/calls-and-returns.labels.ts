@@ -22,6 +22,8 @@ export const LABELS = {
   },
   captions: {
     listing: "trip_report and its helper in C and recorded GCC assembly.",
+    smallCall:
+      "A handwritten caller saves its return address, calls the helper and restores the saved values.",
     predict: "Predict the report returned after the helper call.",
     step: "Follow the call, the saved registers and the return.",
     investigate: "Inspect the active stack space as the report runs.",

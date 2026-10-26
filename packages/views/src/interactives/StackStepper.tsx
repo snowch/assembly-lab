@@ -4,7 +4,7 @@ import { useHandoffState } from "../update-handoff";
 
 import { useMemo } from "react";
 import { z } from "zod";
-import { useSlot } from "@platform/lesson-runtime";
+import { Prose, useSlot } from "@platform/lesson-runtime";
 import { cLinesOf } from "../listing";
 import { hexAddress, hexByte, memoryRegister } from "../memoryFigure";
 import { stopSentence } from "../messages";
@@ -22,6 +22,8 @@ import { traceOf, viewAt } from "../trace";
 import { MemoryCallSchema, RecordedSchema, withProps } from "./props";
 
 const Props = z.object({
+  title: z.string().optional(),
+  intro: z.string().optional(),
   program: RecordedSchema,
   call: MemoryCallSchema,
   registers: z
@@ -94,6 +96,8 @@ export const StackStepper = withProps(Props, function StackStepper({ data, store
           .join(" ");
   return (
     <div className="al-figure al-stepper al-stack" data-figure="stack-stepper" data-k={view.k}>
+      {data.title && <h4>{data.title}</h4>}
+      {data.intro && <Prose markdown={data.intro} />}
       <ListingView
         cLines={cLinesOf(data.program.c)}
         lines={trace.lines}

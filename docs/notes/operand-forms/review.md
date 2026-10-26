@@ -39,3 +39,7 @@ The early survey covered 16 IDs: `one-addition`, `adding-a-constant`, `tiny-func
 The late survey covered 15 IDs: `memory-and-addresses`, `loading-widths`, `array-addresses`, `zero-terminated-strings`, `products-and-widths`, `division-and-remainders`, `calls-and-returns`, `recursive-calls`, `from-c-to-instructions`, `compile-a-loop`, `c-and-overflow`, `checked-arithmetic`, `from-function-to-executable`, `debug-native-instructions`, `same-c-on-a32`. The initial late scope was the 14 lessons of Modules 6–12; optional A32 (numeric module 13) was then separately audited before claiming complete published coverage.
 
 Evidence: independent source inventories `/tmp/operand-gaps-early.md` and `/tmp/operand-gaps-late.md`, plus `/tmp/operand-technical-final-review.md`. Read-only source coverage cannot establish phone discoverability or learner comprehension across all 31 lessons. Remaining findings need focused implementation and independent built-page checking; this review does not certify that the whole course is gap-free.
+
+## Follow-up implementation
+
+The user subsequently authorised all four remaining findings. Their implementation and verification record is [Four prerequisite follow-ups](../prerequisite-followups/validation.md). The original findings above are retained as the dated source-review evidence; final build/CI/deployment outcomes are recorded on the follow-up pull request.

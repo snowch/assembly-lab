@@ -13,6 +13,7 @@ import type { LessonInput } from "@platform/lesson-schema";
 
 import { LABELS } from "./masks.labels";
 import { PROSE } from "./masks.prose";
+import { REGISTER_OR } from "./prerequisite-bridges";
 import {
   CLEAR_DOOR,
   GEAR_OF,
@@ -121,6 +122,23 @@ export const masks: LessonInput = {
             word: 0xf,
             entries: LABELS.drafts.keyEntries,
             after: "predict-minus-five",
+          },
+        },
+        {
+          id: "register-source-or",
+          kind: "bit-ops",
+          timeModel: STEPS,
+          role: "experiment",
+          caption: LABELS.captions.registerOr,
+          props: {
+            title: PROSE.registerOr.title,
+            intro: PROSE.registerOr.prose,
+            functions: [
+              { entry: "join_warnings", program: REGISTER_OR, returns: "word", second: true },
+            ],
+            word: 5,
+            secondValue: 8,
+            entries: LABELS.drafts.keyEntries,
           },
         },
         {

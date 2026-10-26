@@ -4,6 +4,7 @@ import type { LessonInput } from "@platform/lesson-schema";
 import { STACK_TOP } from "@al/machine";
 import { LABELS } from "./calls-and-returns.labels";
 import { PROSE } from "./calls-and-returns.prose";
+import { SMALL_CALL } from "./prerequisite-bridges";
 import {
   REPORT,
   WRONG_LINK,
@@ -85,6 +86,31 @@ export const callsAndReturns: LessonInput = {
       title: LABELS.titles.question,
       prose: PROSE.question,
       details: { summary: PROSE.questionNoteSummary, prose: PROSE.questionNote },
+    },
+    {
+      kind: "motivation",
+      title: LABELS.titles.motivation,
+      prose: PROSE.motivation,
+      interactives: [
+        {
+          id: "step-small-returning-call",
+          kind: "stack-stepper",
+          timeModel: "steps",
+          caption: LABELS.captions.smallCall,
+          props: {
+            title: PROSE.smallCall.title,
+            intro: PROSE.smallCall.prose,
+            program: SMALL_CALL,
+            call: { entry: "relay_distance", args: [128] },
+            registers: ["w0", "x29", "x30"],
+          },
+        },
+      ],
+    },
+    {
+      kind: "prediction",
+      title: LABELS.titles.prediction,
+      prose: PROSE.prediction,
       interactives: [
         {
           id: "calls-and-returns-listing",
@@ -94,14 +120,6 @@ export const callsAndReturns: LessonInput = {
           caption: LABELS.captions.listing,
           props: { program: REPORT },
         },
-      ],
-    },
-    { kind: "motivation", title: LABELS.titles.motivation, prose: PROSE.motivation },
-    {
-      kind: "prediction",
-      title: LABELS.titles.prediction,
-      prose: PROSE.prediction,
-      interactives: [
         {
           id: "predict-calls-and-returns",
           kind: "memory-prediction",

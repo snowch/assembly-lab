@@ -1,11 +1,10 @@
 // Copyright © 2026 Christopher Snow
 
-// What the bit figures read from a recorded function's first instruction, as the assembler parsed
-// it: the mask a logic instruction carries, the field a bit-field instruction names. Nothing here
-// is typed by a lesson. The figures draw these with the word the model ran the function on and the
-// word it left.
+// What the bit figures read from a function's first instruction, as the assembler parsed it:
+// a literal mask, a register mask from the call's initial state, or a named bit field. Nothing
+// here is typed by a lesson. Figures combine these with the model's input and result.
 
-import type { Instruction } from "@al/machine";
+import type { Instruction, MachineState } from "@al/machine";
 
 import { bitOf } from "./bits";
 import type { Trace } from "./trace";
@@ -23,10 +22,15 @@ type Operands = Pick<Instruction, "mnemonic" | "operands">;
 const imm = (operand: { kind: string; value?: bigint } | undefined): number | null =>
   operand?.kind === "imm" && operand.value !== undefined ? Number(operand.value) : null;
 
-export function shapeOf(ins: Operands): Shape {
+export function shapeOf(ins: Operands, before?: MachineState): Shape {
   const [, , third, fourth] = ins.operands;
   if (ins.mnemonic === "and" || ins.mnemonic === "orr" || ins.mnemonic === "eor") {
-    const value = third?.kind === "imm" && third.value !== undefined ? third.value : null;
+    const value =
+      third?.kind === "imm" && third.value !== undefined
+        ? third.value
+        : before && third?.kind === "reg" && third.width === 32 && fourth === undefined
+          ? BigInt(wValue(before, third.n))
+          : null;
     return value === null
       ? { kind: "other" }
       : { kind: "logic", op: ins.mnemonic, mask: Number(BigInt.asUintN(32, value)) };

@@ -318,7 +318,8 @@ describe("every number the lesson states", () => {
   );
 
   const stated = statedNumbers([
-    ...learnerText(lesson),
+    // Reference issue dates identify the document, rather than arithmetic values.
+    ...learnerText(lesson).map((text) => text.replace(/https?:\/\/[^\s)]+/g, " ")),
     ...lesson.challenges.flatMap((c) => c.fields.map((f) => f.label)),
   ]);
 
