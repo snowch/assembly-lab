@@ -10,7 +10,8 @@ export const PROSE = {
     "For `return 30000;`, GCC loads the result with one instruction: `mov w0, 30000`. For `return 1000000;`, it needs two instructions to load the result. In both cases, `ret` then returns to the code that called the function.\n\n" +
     "The C listing uses `int service_interval(void)`. The `void` inside the brackets means the function takes no arguments.",
   questionDetailsSummary: "Which compiler?",
-  questionDetails: "The listings in this lesson are from GCC 16.1 with `-O1`, as in Module 0.",
+  questionDetails:
+    "The instruction listings shown beside C are from GCC 16.1 with `-O1`, as in Module 0.",
 
   motivation:
     "`mov` puts a constant in a register: `mov w0, 30000` puts 30000 in `w0`.\n\n" +
@@ -67,6 +68,12 @@ export const PROSE = {
 
   explanation:
     "A constant that does not fit in one `mov` is built half by half, with `mov` then `movk`.",
+
+  immediateAdd: {
+    title: "Multiply the constant before adding",
+    prose:
+      "`lsl #12` multiplies the constant `#1` by 4096 before the addition. The instruction writes `w2` and leaves `w0` unchanged.\n\nIn this form of `add`, the constant before `lsl` ranges from 0 to 4095. The only optional `lsl` amounts are 0 and 12; omitting `lsl` uses the constant unchanged. These options differ from those of `mov` and `movk`.\n\nSee [Arm’s ADD (immediate) reference](https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ADD--immediate---Add-immediate-value-).",
+  },
 
   generalisation:
     "A `long` in C is an integer type. It is 64 bits on the system GCC compiles for here.\n\n" +

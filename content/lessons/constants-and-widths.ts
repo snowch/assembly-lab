@@ -13,6 +13,7 @@ import type { LessonInput } from "@platform/lesson-schema";
 
 import { LABELS } from "./constants-and-widths.labels";
 import { PROSE } from "./constants-and-widths.prose";
+import { SHIFTED_IMMEDIATE_ADD } from "./operand-additions";
 import {
   FOUR_INSTRUCTIONS,
   MOVK_EXAMPLE,
@@ -181,7 +182,27 @@ export const constantsAndWidths: LessonInput = {
         },
       ],
     },
-    { kind: "explanation", title: LABELS.titles.explanation, prose: PROSE.explanation },
+    {
+      kind: "explanation",
+      title: LABELS.titles.explanation,
+      prose: PROSE.explanation,
+      interactives: [
+        {
+          id: "add-shifted-immediate",
+          kind: "primitive-operation",
+          timeModel: STEPS,
+          caption: LABELS.captions.immediateAdd,
+          props: {
+            stage: {
+              ...PROSE.immediateAdd,
+              program: SHIFTED_IMMEDIATE_ADD,
+              call: { entry: "add_scaled_constant", args: [7, 0, 0] },
+              registers: [0, 2],
+            },
+          },
+        },
+      ],
+    },
     { kind: "generalisation", title: LABELS.titles.generalisation, prose: PROSE.generalisation },
     {
       kind: "challenge",

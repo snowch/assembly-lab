@@ -42,10 +42,10 @@ export const PrimitiveOperation = withProps(
     const trace = useMemo(() => traceOf(stage.program, stage.call), [stage.program, stage.call]);
     const position = Math.max(0, Math.min(stage.steps, stored?.step ?? 0));
     const view = viewAt(trace, position);
-    const flow = flowAt(trace, position);
+    const flow = flowAt(trace, position, { shiftedOperands: true });
     const complete = position === stage.steps;
     const returned = isFunction && view.stop?.kind === "returned";
-    const nextFlow = flowAt(trace, position + 1);
+    const nextFlow = flowAt(trace, position + 1, { shiftedOperands: true });
     const target = nextFlow?.kind === "arith" ? nextFlow.destination.name : "";
     const matches =
       flow?.kind === "arith" && stored?.prediction !== undefined
@@ -148,8 +148,16 @@ export const PrimitiveOperation = withProps(
                 <span key={index}>
                   <small>{source.isRegister ? S.input : S.constant}</small>{" "}
                   <code>
-                    {source.isRegister ? `${source.name} = ${source.value}` : source.value}
+                    {source.isRegister
+                      ? `${source.name} = ${source.transform?.input ?? source.value}`
+                      : (source.transform?.input ?? source.value)}
                   </code>
+                  {source.transform && (
+                    <span className="al-primitive-transform">
+                      <span aria-hidden="true">→</span> <code>{source.transform.text}</code>
+                      <span aria-hidden="true">→</span> <code>{source.value}</code>
+                    </span>
+                  )}
                   {index === 0 && (
                     <b aria-hidden="true">{nextFlow.operation === "add" ? "+" : "−"}</b>
                   )}
@@ -183,8 +191,16 @@ export const PrimitiveOperation = withProps(
                   <span key={index}>
                     <small>{source.isRegister ? S.input : S.constant}</small>{" "}
                     <code>
-                      {source.isRegister ? `${source.name} = ${source.value}` : source.value}
+                      {source.isRegister
+                        ? `${source.name} = ${source.transform?.input ?? source.value}`
+                        : (source.transform?.input ?? source.value)}
                     </code>
+                    {source.transform && (
+                      <span className="al-primitive-transform">
+                        <span aria-hidden="true">→</span> <code>{source.transform.text}</code>
+                        <span aria-hidden="true">→</span> <code>{source.value}</code>
+                      </span>
+                    )}
                     {index === 0 && (
                       <b aria-hidden="true">{flow.operation === "add" ? "+" : "−"}</b>
                     )}

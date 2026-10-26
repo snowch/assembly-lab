@@ -249,7 +249,8 @@ describe("every number the lesson states", () => {
   const hexes = new Set(["0xfffffff9", "0xfffffffc", "0x7ffffffc", "0xf"]);
 
   const stated = statedNumbers([
-    ...learnerText(lesson),
+    // Reference issue dates identify documents, rather than arithmetic values.
+    ...learnerText(lesson).map((text) => text.replace(/https?:\/\/[^\s)]+/g, " ")),
     ...lesson.challenges.flatMap((c) => c.fields.map((f) => f.label)),
   ]);
 

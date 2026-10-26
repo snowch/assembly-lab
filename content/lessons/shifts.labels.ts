@@ -27,6 +27,7 @@ export const LABELS = {
     reflection: "What you now know",
   },
   captions: {
+    shiftedAdd: "One addition with its w1 input shifted before use.",
     shiftWord:
       "One word, shifted by the instruction you choose; the bits that fall off, and what fills the gap.",
   },

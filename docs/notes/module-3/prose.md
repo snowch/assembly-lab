@@ -254,6 +254,14 @@ For either right shift, repeat that halving once for each place moved. A shift b
 
 *One word, shifted by the instruction you choose; the bits that fall off, and what fills the gap.*
 
+**Shift an input before adding**
+
+`lsl #1` shifts the value read from `w1` one bit left before the addition. It does not write `w1`. The sum goes to `w2`; both input registers keep their values.
+
+See [Arm’s ADD (shifted register) reference](https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ADD--shifted-register---Add-optionally-shifted-register-).
+
+*One addition with its w1 input shifted before use.*
+
 ## 5. Division and shifting
 
 C's `/` divides, and a shift can seem to do the same job. This challenge compares them for a positive value and for a negative one.

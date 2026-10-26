@@ -37,6 +37,12 @@ export const PROSE = {
     "- `asr`, an **arithmetic shift**, moves bits right and fills the gap on the left with copies of the old top bit. A shift by one place halves the signed reading and rounds down to the next whole number if needed.\n\n" +
     "For either right shift, repeat that halving once for each place moved. A shift by two places divides by 4, with the same rounding rule. The figure shifts a word by the instruction and distance you choose. Arrows show the direction, the bits lost and the bits filled.",
 
+  shiftedAdd: {
+    title: "Shift an input before adding",
+    prose:
+      "`lsl #1` shifts the value read from `w1` one bit left before the addition. It does not write `w1`. The sum goes to `w2`; both input registers keep their values.\n\nSee [Arm’s ADD (shifted register) reference](https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ADD--shifted-register---Add-optionally-shifted-register-).",
+  },
+
   construction:
     "C's `/` divides, and a shift can seem to do the same job. This challenge compares them for a positive value and for a negative one.",
   compareTask:

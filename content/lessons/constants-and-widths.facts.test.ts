@@ -471,9 +471,15 @@ describe("every number the lesson states", () => {
     1048575,
     // Module 0, by its number, and its #50, a constant in Module 0's recorded listing.
     0,
+    // ADD immediate's imm12 field and optional scaling, checked against Arm DDI0602;
+    // operand-additions.facts.test.ts pins the shown computation and accepted forms.
+    4095, 4096, 12,
   ]);
 
-  const text = learnerText(lesson).join("\n");
+  // Reference issue dates identify documents; they are not numeric claims about the program.
+  const text = learnerText(lesson)
+    .join("\n")
+    .replace(/https?:\/\/[^\s)]+/g, " ");
   // A number written with a space between its halves (`0x0001 1170`) is one number.
   const HEX = /0x[0-9a-f]{4} [0-9a-f]{4}|0x[0-9a-f]+/g;
   const hexes = [...text.matchAll(HEX)].map((m) => m[0].replace(" ", ""));

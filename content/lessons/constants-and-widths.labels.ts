@@ -25,6 +25,7 @@ export const LABELS = {
     reflection: "What you now know",
   },
   captions: {
+    immediateAdd: "One addition with its constant multiplied before use.",
     listing: "service_interval in C and the instructions GCC produces for it.",
     tester: "Type a number; the figure shows whether one mov can hold it, and what w0 then holds.",
     halves: "x3 drawn as two halves of 32 bits, with w3 its lower half.",
