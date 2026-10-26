@@ -50,7 +50,12 @@ goes first.
 Module 12 may compare model states with explicitly labelled, recorded GNU/QEMU/GDB output.
 Its assembly-only startup and UART capstone, and optional Linux syscall comparison, run outside
 the browser model and must pass
-`scripts/native/check.py`; they do not extend the browser ISA. Supported arithmetic functions
+`scripts/native/check.py`; they do not extend the browser ISA. Module 13 adds a Pi 5-only
+physical-board extension. Its boot and wiring diagrams are
+source-checked schematics, not simulated or recorded board states. Its native sources must pass
+`scripts/pi5/check.py` for assembly, linked/raw image layout and source consistency. These checks
+do not establish firmware handoff, UART operation or physical boot success; those require the
+lesson's recorded hardware test. Supported arithmetic functions
 retain the ordinary GNU/QEMU simulator differential check. Never present a recording as a live
 native process running in the page.
 

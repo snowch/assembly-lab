@@ -1,4 +1,68 @@
 /* Copyright © 2026 Christopher Snow */
+.al-board-schematic {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-3);
+}
+.al-board-schematic > * {
+  min-width: 0;
+  margin: 0;
+}
+.al-board-route {
+  display: grid;
+  min-width: 0;
+}
+.al-board-node {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  overflow-wrap: anywhere;
+}
+.al-board-node p {
+  margin: 0;
+}
+.al-board-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  color: var(--fg);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.al-board-link svg {
+  display: block;
+  width: 1.5rem;
+  height: 3rem;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.al-board-link[data-forward="false"] svg {
+  transform: rotate(180deg);
+}
+@media (min-width: 56rem) {
+  [data-board-schematic="serial"] .al-board-route {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    align-items: center;
+  }
+  [data-board-schematic="serial"] .al-board-link svg {
+    transform: rotate(-90deg);
+  }
+  [data-board-schematic="serial"] .al-board-link[data-forward="false"] svg {
+    transform: rotate(90deg);
+  }
+}
 .al-boot-diagram {
   display: grid;
   min-width: 0;

@@ -75,7 +75,7 @@ describe("final core native module", () => {
       "debug-native-instructions",
     ]);
     expect(LESSONS.at(-1)?.id).toBe("same-c-on-a32");
-    expect(LESSONS.at(-1)?.module).toBe(13);
+    expect(LESSONS.at(-1)?.module).toBe(14);
     expect(termProblems(LESSONS)).toEqual([]);
   });
   it.each(lessons)(

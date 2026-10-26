@@ -181,6 +181,8 @@ the list from the listings its lessons show.
 | 11 Where C and the machine disagree | undefined behaviour against what the hardware does; the check the optimiser deletes; narrowing; `%d` and `%u`; sanitizers and checked arithmetic | the notes' ten C scenarios, run on this machine at 32 bits | find and fix the overflow in a given function, with tests that probe the edges | `-fwrapv`, `-fsanitize=undefined`, `ckd_add` |
 | 12 Running ARM64 outside Assembly Lab | GNU assembler and linker, ELF load segments and entry, direct QEMU system boot, startup stack and zeroed storage, MMIO UART, GDB; board firmware boundaries | recorded startup PC, stack and memory; linked memory regions; native instruction stops beside model states | assemble a bootable trip computer without C or Linux, then change its contract and pass browser/native cases | assembly-only startup and caller; Linux and C runtime comparison is optional |
 
+| 13 Running on Raspberry Pi 5 | Pi 5 ROM and EEPROM boot path, raw image placement, dedicated UART10, board-specific startup and serial diagnosis | source-checked boot path and connector schematics, clearly separated from hardware evidence | build, boot, deliberately break and restore the same assembly trip function on a spare SD card | assembly-only; no Linux or C runtime |
+
 ### Optional, after the parts
 
 | Chapter | What it shows |

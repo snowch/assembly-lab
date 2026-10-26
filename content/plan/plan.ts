@@ -13,11 +13,11 @@ export const STATUSES = ["planned", "drafting", "published"] as const;
 export type ModuleStatus = (typeof STATUSES)[number];
 
 export interface PlannedModule {
-  /** Numeric lesson-schema key; the optional chapter uses 13 while displaying A. */
+  /** Numeric lesson-schema key; the optional chapter uses 14 while displaying A. */
   readonly lessonModule: number;
   /** Unique, lower-case, and the stem a lesson's id may start with. */
   readonly id: string;
-  /** What the module is called in the course: "0" to "12", and "A" for the optional chapter. */
+  /** What the module is called in the course: "0" to "13", and "A" for the optional chapter. */
   readonly label: string;
   readonly title: string;
   /** One line on what the learner does in the module. */
@@ -31,7 +31,7 @@ export interface PlanPart {
 }
 
 const M = (label: string, id: string, title: string, line: string): PlannedModule => ({
-  lessonModule: label === "A" ? 13 : Number(label),
+  lessonModule: label === "A" ? 14 : Number(label),
   id,
   label,
   title,
@@ -129,6 +129,12 @@ export const PARTS: readonly PlanPart[] = [
         "running-arm64-outside-assembly-lab",
         "Running ARM64 outside Assembly Lab",
         "Assemble a bootable ARM64 program, trace its startup and debug it with GNU tools and QEMU.",
+      ),
+      M(
+        "13",
+        "running-on-raspberry-pi-5",
+        "Running on Raspberry Pi 5",
+        "Boot the assembly trip computer on a Raspberry Pi 5 and test it through its serial connector.",
       ),
     ],
   },

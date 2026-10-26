@@ -7,6 +7,7 @@ import type { ComponentType } from "react";
 import type { InteractiveProps } from "@platform/lesson-runtime";
 
 import { NativeFigure } from "./NativeFigure";
+import { BoardSchematic } from "./BoardSchematic";
 import { AdderFigure } from "./AdderFigure";
 import { ArgsFigure } from "./ArgsFigure";
 import { OperandRoles } from "./OperandRoles";
@@ -54,6 +55,7 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   "primitive-operation": PrimitiveOperation,
   "register-views": RegisterViews,
   "native-tools": NativeFigure,
+  "board-schematic": BoardSchematic,
   listing: ListingFigure,
   "listing-compare": ListingCompare,
   "model-prediction": ModelPrediction,

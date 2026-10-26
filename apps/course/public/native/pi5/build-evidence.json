@@ -1,0 +1,57 @@
+{
+  "verification": "Build and file-layout checks only; no Pi 5 hardware or firmware execution.",
+  "loadAddress": 2097152,
+  "rawSize": 4100,
+  "rawSha256": "4fd6f58017c2fce2c462af72a50a6c561ea9d7d63ef12b5a457a20addd44041e",
+  "sections": [
+    {
+      "name": ".text",
+      "address": 2097152,
+      "size": 368,
+      "fileSize": 368
+    },
+    {
+      "name": ".rodata",
+      "address": 2097520,
+      "size": 109,
+      "fileSize": 109
+    },
+    {
+      "name": ".data",
+      "address": 2101248,
+      "size": 4,
+      "fileSize": 4
+    },
+    {
+      "name": ".bss",
+      "address": 2101256,
+      "size": 16,
+      "fileSize": 0
+    },
+    {
+      "name": ".stack",
+      "address": 2101272,
+      "size": 4104,
+      "fileSize": 0
+    }
+  ],
+  "uartAddress": 70816632832,
+  "uartClockHz": 9216000,
+  "baud": 115200,
+  "integerDivisor": 5,
+  "fractionalDivisor": 0,
+  "cardFiles": ["config.txt", "assembly-lab-pi5.img"],
+  "arithmeticOnlyQemu": {
+    "originalExit": 0,
+    "brokenExit": 1
+  },
+  "versions": {
+    "aarch64-linux-gnu-as": "GNU assembler (GNU Binutils for Debian) 2.44",
+    "aarch64-linux-gnu-ld": "GNU ld (GNU Binutils for Debian) 2.44",
+    "aarch64-linux-gnu-objcopy": "GNU objcopy (GNU Binutils for Debian) 2.44",
+    "aarch64-linux-gnu-objdump": "GNU objdump (GNU Binutils for Debian) 2.44",
+    "aarch64-linux-gnu-nm": "GNU nm (GNU Binutils for Debian) 2.44",
+    "aarch64-linux-gnu-readelf": "GNU readelf (GNU Binutils for Debian) 2.44",
+    "qemu-aarch64": "qemu-aarch64 version 10.0.13 (Debian 1:10.0.13+ds-0+deb13u1)"
+  }
+}

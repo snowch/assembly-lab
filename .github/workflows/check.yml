@@ -64,3 +64,6 @@ jobs:
           sudo apt-get install -y binutils-aarch64-linux-gnu qemu-user gdb-multiarch qemu-system-arm file python3
       - name: Assembly boot, startup, debugger stops and native challenges
         run: python3 scripts/native/check.py
+
+      - name: Raspberry Pi 5 assembly and raw-image layout (no physical-board claim)
+        run: python3 scripts/pi5/check.py

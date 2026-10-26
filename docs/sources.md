@@ -66,3 +66,10 @@ AAPCS64, PL011 references and sources for the optional Linux comparison. [Native
 checks from source claims. The reference output and exact observed tool versions are in
 `content/lessons/module-12.evidence.json`; this is emulation evidence, not physical hardware
 measurement. The ordinary arithmetic examples retain the simulator differential checks.
+
+## Raspberry Pi 5 (Module 13)
+
+The [Pi 5 source and validation brief](notes/module-13/facts.md) records the selected firmware,
+boot configuration, debug connector and UART sources. The course ships its own assembly
+program and an explicit raw-image configuration, not Raspberry Pi firmware binaries.
+Build/layout checks are separate from physical verification on the selected Pi 5 board.
