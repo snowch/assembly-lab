@@ -46,8 +46,13 @@ describe("the lesson", () => {
 
   it("uses none of the terms the lesson withholds", () => {
     // Lesson 2's terms are its own; the rest wait for later modules.
+    // Immediate is already defined in the earlier visible constant lesson.
+    const immediateHome = LESSONS.findIndex((l) => l.id === "adding-a-constant");
+    expect(immediateHome).toBeGreaterThanOrEqual(0);
+    expect(LESSONS[immediateHome]!.introduces).toContain("immediate");
+    expect(immediateHome).toBeLessThan(LESSONS.findIndex((l) => l.id === lesson.id));
     const withheld =
-      /\b(shift\w*|sign extension|condition\w*|branch\w*|two's complement|encoding|opcode|mnemonic|immediate|barrel)\b/i;
+      /\b(shift\w*|sign extension|condition\w*|branch\w*|two's complement|encoding|opcode|mnemonic|barrel)\b/i;
     expect(learnerText(lesson).filter((t) => withheld.test(t))).toEqual([]);
   });
 
