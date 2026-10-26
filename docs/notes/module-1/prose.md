@@ -183,7 +183,7 @@ The C listing uses `int service_interval(void)`. The `void` inside the brackets 
 
 **Which compiler?**
 
-The listings in this lesson are from GCC 16.1 with `-O1`, as in Module 0.
+The instruction listings shown beside C are from GCC 16.1 with `-O1`, as in Module 0.
 
 *service_interval in C and the instructions GCC produces for it.*
 
@@ -288,6 +288,16 @@ The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x0000000
 ## 7. Constants in halves
 
 A constant that does not fit in one `mov` is built half by half, with `mov` then `movk`.
+
+**Multiply the constant before adding**
+
+`lsl #12` multiplies the constant `#1` by 4096 before the addition. The instruction writes `w2` and leaves `w0` unchanged.
+
+In this form of `add`, the constant before `lsl` ranges from 0 to 4095. The only optional `lsl` amounts are 0 and 12; omitting `lsl` uses the constant unchanged. These options differ from those of `mov` and `movk`.
+
+See [Arm’s ADD (immediate) reference](https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ADD--immediate---Add-immediate-value-).
+
+*One addition with its constant multiplied before use.*
 
 ## 8. Constants and C types
 

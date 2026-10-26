@@ -4,8 +4,9 @@
 // held before it ran, the destination with its old and new value, which registers changed and
 // which were only read. Nothing here is typed in; every value is a register's contents in the
 // state before or after the step, rebuilt by `stateAfter` from the simulator's trace. Only
-// `add` and `sub` (a register or a number as the last operand) and `ret` are described, because
-// those are the instructions Module 0 steps; any other instruction gives null.
+// `add`, `sub` and `ret` are described. The introductory stepper retains its plain-operand
+// scope; the single-operation figures opt into input modifiers for the later ADD examples.
+// Any other instruction gives null.
 
 import { stateAfter, type MachineState } from "@al/machine";
 
@@ -19,6 +20,8 @@ export interface FlowSource {
   /** The decimal value. */
   readonly value: string;
   readonly isRegister: boolean;
+  /** Optional operand formation: keep the original input distinct from its effective value. */
+  readonly transform?: { readonly input: string; readonly text: string };
 }
 
 export interface ArithFlow {
@@ -54,7 +57,11 @@ function valueOf(state: MachineState, n: number, width: 32 | 64): string {
 }
 
 /** What the `k`-th instruction of the run (the last one that has run, once `k` have) did; null before the first. */
-export function flowAt(trace: Trace, k: number): Flow | null {
+export function flowAt(
+  trace: Trace,
+  k: number,
+  options?: { shiftedOperands?: boolean },
+): Flow | null {
   const step = k >= 1 ? trace.result.steps[k - 1] : undefined;
   if (!step) return null;
   const instruction = trace.program.instructions.find((i) => i.address === step.address);
@@ -76,8 +83,26 @@ export function flowAt(trace: Trace, k: number): Flow | null {
   let second: FlowSource;
   if (op.src.t === "imm") {
     second = { name: `#${op.src.v}`, value: String(op.src.v), isRegister: false };
+    const modifier = instruction.operands.at(-1)?.text ?? "";
+    const shift = /^lsl\s+#?(12)$/i.exec(modifier);
+    if (options?.shiftedOperands && shift && op.src.v >= 0n) {
+      const input = String(op.src.v >> BigInt(shift[1]!));
+      second = { ...second, name: `#${input}`, transform: { input, text: modifier } };
+    }
   } else if (op.src.t === "shifted" && op.src.amount === 0 && op.src.rm !== 31) {
     second = register(op.src.rm);
+  } else if (options?.shiftedOperands && op.src.t === "shifted" && op.src.rm !== 31) {
+    const input = register(op.src.rm);
+    // Derive the effective second operand from the executed arithmetic, at its actual width.
+    // Keep the original register value alongside it; forming an operand never writes that register.
+    const a = BigInt(valueOf(before, op.rn, width));
+    const result = BigInt(valueOf(after, op.rd, width));
+    const effective = BigInt.asUintN(width, op.sub ? a - result : result - a);
+    second = {
+      ...input,
+      value: String(effective),
+      transform: { input: input.value, text: instruction.operands.at(-1)!.text },
+    };
   } else {
     return null;
   }

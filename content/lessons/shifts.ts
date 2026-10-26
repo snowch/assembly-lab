@@ -22,6 +22,7 @@ import {
 } from "./logic-shifts-masks.listings";
 import { LABELS } from "./shifts.labels";
 import { PROSE } from "./shifts.prose";
+import { SHIFTED_REGISTER_ADD } from "./operand-additions";
 
 /** The model the lesson's figures run: one instruction to a step (the book's note names it). */
 const STEPS = "steps";
@@ -104,6 +105,20 @@ export const shifts: LessonInput = {
             amounts: [...SHIFT_AMOUNTS],
             word: -7,
             after: "predict-fill",
+          },
+        },
+        {
+          id: "add-shifted-register",
+          kind: "primitive-operation",
+          timeModel: STEPS,
+          caption: LABELS.captions.shiftedAdd,
+          props: {
+            stage: {
+              ...PROSE.shiftedAdd,
+              program: SHIFTED_REGISTER_ADD,
+              call: { entry: "add_scaled_register", args: [12, 7, 0] },
+              registers: [0, 1, 2],
+            },
           },
         },
       ],

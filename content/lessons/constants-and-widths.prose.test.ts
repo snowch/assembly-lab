@@ -74,6 +74,7 @@ describe("the lesson's words", () => {
     expect(fileFlat).toContain(flat(LABELS.captions.listing));
     expect(fileFlat).toContain(flat(LABELS.captions.tester));
     expect(fileFlat).toContain(flat(LABELS.captions.halves));
+    expect(fileFlat).toContain(flat(LABELS.captions.immediateAdd));
     const own = [
       LABELS.captions.predictFits,
       LABELS.captions.build,
@@ -86,7 +87,7 @@ describe("the lesson's words", () => {
       LABELS.captions.workedHalves,
       LABELS.captions.solutionHalves,
     ];
-    expect(Object.keys(LABELS.captions)).toHaveLength(3 + own.length + draft.length);
+    expect(Object.keys(LABELS.captions)).toHaveLength(4 + own.length + draft.length);
     for (const caption of draft) expect(fileFlat, caption).not.toContain(flat(caption));
     for (const caption of own) expect(fileFlat, caption).not.toContain(flat(caption));
     const source = readFileSync(

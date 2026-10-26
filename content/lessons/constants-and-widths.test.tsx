@@ -83,7 +83,7 @@ describe("the lesson", () => {
 
   it("shows only instructions the lessons so far have introduced: add, sub and ret, then mov and movk", () => {
     const shown = programsOf(lesson).flatMap(mnemonics);
-    expect([...new Set(shown)].sort()).toEqual(["mov", "movk", "ret"]);
+    expect([...new Set(shown)].sort()).toEqual(["add", "mov", "movk", "ret"]);
     const written = challenge("build-1000000");
     expect(written.allowedConstructs).toEqual(["mov", "movk", "ret"]);
     expect(written.palette).toEqual(["w0"]);
