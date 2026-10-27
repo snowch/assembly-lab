@@ -35,7 +35,7 @@ export const FUNDAMENTALS_LABELS = {
   function: {
     title: "A tiny function",
     objectives: [
-      "Follow an integer argument into a function and its result back to the caller.",
+      "Follow integer arguments into a function and its result back to the caller.",
       "Explain how preparing a result differs from returning to the caller.",
     ],
     titles: {
@@ -43,7 +43,7 @@ export const FUNDAMENTALS_LABELS = {
       motivation: "A function and its listing",
       prediction: "Preparing the result",
       investigation: "Follow the call",
-      construction: "Argument to result",
+      construction: "Two arguments, one result",
       failureExperiment: "Ready to return",
       explanation: "What ret does",
       generalisation: "Calling rules and operand rules",
@@ -52,7 +52,9 @@ export const FUNDAMENTALS_LABELS = {
     },
     captions: {
       figure: "The complete increment_int function and its caller, one instruction at a time.",
-      challenge: "The same function called with a new argument.",
+      twoArgumentFigure:
+        "The complete add_ints function, with its two incoming arguments and returned result.",
+      challenge: "Call increment_int with a new argument.",
     },
     challenge: {
       title: "Trace increment_int",

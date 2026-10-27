@@ -1,0 +1,13 @@
+{
+  "source": "// Copyright © 2026 Christopher Snow\nint add_ints(int a, int b)\n{\n    return a + b;\n}\n",
+  "options": {
+    "userArguments": "-g -O1 -fno-verbose-asm",
+    "filters": {
+      "directives": true,
+      "labels": true,
+      "commentOnly": true,
+      "intel": false,
+      "demangle": false
+    }
+  }
+}

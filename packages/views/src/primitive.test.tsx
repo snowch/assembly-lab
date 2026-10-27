@@ -142,6 +142,35 @@ describe("a visible single arithmetic activity", () => {
     ).toHaveTextContent("7");
   });
 
+  it("shows both arguments, freezes the caller inputs and returns only after ret", async () => {
+    const { container, user } = setup(9);
+    const caller = () => container.querySelector(".al-primitive-caller")!;
+    const register = (name: string) => container.querySelector(`[data-register="${name}"]`)!;
+    const value = (name: string) => register(name).querySelector(".al-dreg-value")!;
+    expect(caller()).toHaveTextContent("add_ints(7, 5)");
+    expect(value("w0")).toHaveTextContent("7");
+    expect(value("w1")).toHaveTextContent("5");
+    expect(register("w1").parentElement).toHaveTextContent(S.argumentPathAt(1));
+    await user.click(screen.getByRole("button", { name: S.run }));
+    expect(caller()).toHaveTextContent("add_ints(7, 5)");
+    expect(caller()).toHaveTextContent(S.callerWaiting);
+    expect(value("w0")).toHaveTextContent("12");
+    expect(value("w1")).toHaveTextContent("5");
+    expect(register("w0")).toHaveAttribute("data-changed", "true");
+    expect(register("w1")).toHaveAttribute("data-changed", "false");
+    expect(register("w0").parentElement).toHaveTextContent(S.resultReady);
+    expect(register("w1").parentElement).toHaveTextContent(S.argumentPathAt(1));
+    await user.click(screen.getByRole("button", { name: S.run }));
+    expect(caller()).toHaveTextContent(S.callerReturned(12));
+    expect(caller()).toHaveTextContent("add_ints(7, 5)");
+    expect(value("w1")).toHaveTextContent("5");
+    expect(register("w0")).toHaveAttribute("data-changed", "false");
+    await user.click(screen.getByRole("button", { name: S.restart }));
+    expect(value("w0")).toHaveTextContent("7");
+    expect(value("w1")).toHaveTextContent("5");
+    expect(caller()).toHaveTextContent(S.callerWaiting);
+  });
+
   it("requires a prediction and restores submitted feedback", async () => {
     const { props, storage, unmount, user } = setup(2, true);
     expect(screen.getByRole("button", { name: S.check })).toBeDisabled();
