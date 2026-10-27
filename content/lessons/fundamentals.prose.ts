@@ -67,20 +67,25 @@ export const FUNDAMENTALS_PROSE = {
       investigation:
         "On a narrow screen, scroll sideways within the listing to see the C and instructions.",
       construction:
-        "Match `n` in the C to the incoming value in `w0`. Which instruction prepares the result?",
+        "`add_ints` takes two integer arguments. For this function, the first arrives in `w0` and the second in `w1`. The C names those inputs `a` and `b`.\n\nThe figure starts a separate call, `add_ints(7, 5)`. Its integer result is left in `w0`, just as for `increment_int`.",
       failureExperiment:
         "After `add`, the result was ready but the caller was waiting. Which instruction let it continue?",
       explanation:
         "`ret` returns to the caller without moving the result. The caller uses the value already in `w0`.",
       generalisation:
-        "The calling rule puts this integer argument and result in `w0`. The operand rule still makes `add` write its first operand.",
-      challenge: "Trace the same function with a different argument, without running it.",
+        "These `int` arguments arrive in order in `w0`, then `w1`. The integer result is left in `w0`. The operand rule still makes `add` write its first operand.",
+      challenge:
+        "Return to `increment_int`. Trace it with a different argument, without running it.",
       reflection:
         "Describe the two jobs separately: what does the addition do, and what does `ret` do?",
     },
     figure: {
       title: "A call and its return",
       prose: "Run the addition, then the return. Watch `w0` and the caller.",
+    },
+    twoArgumentFigure: {
+      title: "A call with two arguments",
+      prose: "Run the addition, then the return. Watch both registers and the caller.",
     },
     challenge: {
       task: "For `increment_int(0)`, the argument arrives in `w0`. The function runs `add w0, w0, 1`, then `ret`. What value does the caller receive?",
@@ -93,12 +98,12 @@ export const FUNDAMENTALS_PROSE = {
       ],
     },
     modelVsReality:
-      "The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call. Later lessons examine calls in more detail. GCC 16.1.0 made this recorded listing for 64-bit Arm using `-O1`, an optimisation setting that asks it to make code shorter and faster.",
+      "The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call. Later lessons examine calls in more detail. GCC 16.1.0 made these recorded listings for 64-bit Arm using `-O1`, an optimisation setting that asks it to make code shorter and faster.",
     originalityNote: {
       textbookExample:
         "An introductory function example often combines several arithmetic operations or introduces call machinery immediately.",
       howThisDiffers:
-        "This complete function adds one to a single input. The figure separates preparing its result from returning it, before the course combines more operations.",
+        "Two small complete functions separate preparing a result from returning it. The second extends the incoming argument map without adding call machinery or another operation.",
     },
   },
   subtraction: {

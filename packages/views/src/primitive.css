@@ -129,6 +129,12 @@
   justify-items: center;
   gap: var(--space-1);
 }
+.al-primitive-call-registers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
 .al-primitive-call-register > span,
 .al-primitive-call-path > span:first-child:not(.al-primitive-call-arrow) {
   font-size: var(--text-sm);

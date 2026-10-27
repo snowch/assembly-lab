@@ -2,7 +2,7 @@
 
 Copyright © 2026 Christopher Snow
 
-Drafted from the checked facts for the existing primitive programs and the recorded increment_int listing. The fresh exercise calls are independently checked against GNU/QEMU. Each lesson has its own visible course-plan entry; each worked example remains visible within its lesson.
+Drafted from the checked facts for the existing primitive programs and the recorded increment_int and add_ints listings. The fresh exercise calls are independently checked against GNU/QEMU. Each lesson has its own visible course-plan entry; each worked example remains visible within its lesson.
 
 ## One addition
 
@@ -329,7 +329,9 @@ On a narrow screen, scroll sideways within the listing to see the C and instruct
 
 ### function / sections / construction
 
-Match `n` in the C to the incoming value in `w0`. Which instruction prepares the result?
+`add_ints` takes two integer arguments. For this function, the first arrives in `w0` and the second in `w1`. The C names those inputs `a` and `b`.
+
+The figure starts a separate call, `add_ints(7, 5)`. Its integer result is left in `w0`, just as for `increment_int`.
 
 ### function / sections / failureExperiment
 
@@ -341,11 +343,11 @@ After `add`, the result was ready but the caller was waiting. Which instruction 
 
 ### function / sections / generalisation
 
-The calling rule puts this integer argument and result in `w0`. The operand rule still makes `add` write its first operand.
+These `int` arguments arrive in order in `w0`, then `w1`. The integer result is left in `w0`. The operand rule still makes `add` write its first operand.
 
 ### function / sections / challenge
 
-Trace the same function with a different argument, without running it.
+Return to `increment_int`. Trace it with a different argument, without running it.
 
 ### function / sections / reflection
 
@@ -358,6 +360,14 @@ A call and its return
 ### function / figure / prose
 
 Run the addition, then the return. Watch `w0` and the caller.
+
+### function / twoArgumentFigure / title
+
+A call with two arguments
+
+### function / twoArgumentFigure / prose
+
+Run the addition, then the return. Watch both registers and the caller.
 
 ### function / challenge / task
 
@@ -385,7 +395,7 @@ The caller receives 1.
 
 ### function / modelVsReality
 
-The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call. Later lessons examine calls in more detail. GCC 16.1.0 made this recorded listing for 64-bit Arm using `-O1`, an optimisation setting that asks it to make code shorter and faster.
+The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call. Later lessons examine calls in more detail. GCC 16.1.0 made these recorded listings for 64-bit Arm using `-O1`, an optimisation setting that asks it to make code shorter and faster.
 
 ### function / originalityNote / textbookExample
 
@@ -393,7 +403,7 @@ An introductory function example often combines several arithmetic operations or
 
 ### function / originalityNote / howThisDiffers
 
-This complete function adds one to a single input. The figure separates preparing its result from returning it, before the course combines more operations.
+Two small complete functions separate preparing a result from returning it. The second extends the incoming argument map without adding call machinery or another operation.
 
 ### function labels / title
 
@@ -401,7 +411,7 @@ A tiny function
 
 ### function labels / objectives 1
 
-Follow an integer argument into a function and its result back to the caller.
+Follow integer arguments into a function and its result back to the caller.
 
 ### function labels / objectives 2
 
@@ -425,7 +435,7 @@ Follow the call
 
 ### function labels / titles / construction
 
-Argument to result
+Two arguments, one result
 
 ### function labels / titles / failureExperiment
 
@@ -451,9 +461,13 @@ Calculation and return
 
 The complete increment_int function and its caller, one instruction at a time.
 
+### function labels / captions / twoArgumentFigure
+
+The complete add_ints function, with its two incoming arguments and returned result.
+
 ### function labels / captions / challenge
 
-The same function called with a new argument.
+Call increment_int with a new argument.
 
 ### function labels / challenge / title
 

@@ -53,12 +53,18 @@ describe("the first arithmetic applications", () => {
       [7, 8],
       [8],
       [10, 13],
+      [12, 5],
     ]);
   });
 
   it("keeps every displayed arithmetic snippet in the real-tool corpus", () => {
     for (const item of PRIMITIVE_PROGRAMS) {
-      const name = item.entry === "increment_int" ? "module0-increment" : "module0-primitives";
+      const name =
+        item.entry === "increment_int"
+          ? "module0-increment"
+          : item.entry === "add_ints"
+            ? "module0-add-ints"
+            : "module0-primitives";
       const source = readFileSync(
         new URL(`../../scripts/real-tools/corpus/${name}.s`, import.meta.url),
         "utf8",
@@ -80,7 +86,7 @@ describe("the first arithmetic applications", () => {
         ),
       ).toContain(assemblyOf(parseListing(primitiveProgram(item).listing)).trim());
       expect(calls.calls).toContainEqual({
-        ...(item.entry === "increment_int" ? {} : { entry: item.entry }),
+        ...(item.kind === "function" ? {} : { entry: item.entry }),
         args: item.args.map((value) => [String(value), 32]),
       });
     }

@@ -94,7 +94,7 @@ function figure(
         registers: [...item.registers],
         steps: item.instructions.length,
         predict: false,
-        showCompilerLines: item.kind === "function",
+        showCompilerLines: item.entry === "increment_int",
       },
     },
   };
@@ -183,6 +183,18 @@ export const fundamentalsLessons: LessonInput[] = CONFIG.map((config, order) => 
         ? {
             interactives: [
               figure(3, "worked-reuse", P.subtraction.figure, L.subtraction.captions.figure),
+            ],
+          }
+        : {}),
+      ...(kind === "construction" && key === "function"
+        ? {
+            interactives: [
+              figure(
+                9,
+                "worked-two-argument-function",
+                P.function.twoArgumentFigure,
+                L.function.captions.twoArgumentFigure,
+              ),
             ],
           }
         : {}),

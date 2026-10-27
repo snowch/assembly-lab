@@ -3,6 +3,7 @@
 // Course-written arithmetic snippets. The figure exposes only the arithmetic prefix; ret is
 // the execution wrapper, not an operation the learner needs for this first activity.
 import { INCREMENT_INT } from "./meet-the-machine.listings";
+import { ADD_INTS } from "./two-argument-function.listings";
 
 export const PRIMITIVE_PROGRAMS = [
   {
@@ -68,9 +69,16 @@ export const PRIMITIVE_PROGRAMS = [
     args: [10, 0],
     registers: [0, 1],
   },
+  {
+    kind: "function",
+    entry: "add_ints",
+    instructions: ["add w0, w0, w1", "ret"],
+    args: [7, 5],
+    registers: [0, 1],
+  },
 ] as const;
 
 export function primitiveProgram(item: (typeof PRIMITIVE_PROGRAMS)[number]) {
-  if (item.kind === "function") return INCREMENT_INT;
+  if (item.kind === "function") return item.entry === "add_ints" ? ADD_INTS : INCREMENT_INT;
   return { c: "", listing: [item.entry + ":", ...item.instructions, "ret"].join("\n") };
 }

@@ -40,6 +40,7 @@ export const PrimitiveOperation = withProps(
     const stage = data.stage;
     const isFunction = stage.kind === "function";
     const trace = useMemo(() => traceOf(stage.program, stage.call), [stage.program, stage.call]);
+    const callInputs = stage.call.args.map((_, index) => wValue(viewAt(trace, 0).state, index));
     const position = Math.max(0, Math.min(stage.steps, stored?.step ?? 0));
     const view = viewAt(trace, position);
     const flow = flowAt(trace, position, { shiftedOperands: true });
@@ -79,20 +80,32 @@ export const PrimitiveOperation = withProps(
           >
             <div className="al-primitive-caller" data-caller-returned={returned}>
               <strong>{S.caller}</strong>
-              <code>{S.callerCall(stage.call.entry, wValue(viewAt(trace, 0).state, 0))}</code>
+              <code>{S.callerCall(stage.call.entry, callInputs)}</code>
               <span>{returned ? S.callerReturned(wValue(view.state, 0)) : S.callerWaiting}</span>
             </div>
             <div className="al-primitive-call-path" data-active={position === 0 || returned}>
               {returned && <span>{S.returnPath}</span>}
               <span className="al-primitive-call-arrow" aria-hidden="true" />
             </div>
-            <div className="al-primitive-call-register">
-              <span>{returned ? S.result : position > 0 ? S.resultReady : S.argumentPath}</span>
-              <DecimalRegister
-                name="w0"
-                value={wValue(view.state, 0)}
-                changed={view.written.has(0)}
-              />
+            <div className="al-primitive-call-registers">
+              {stage.registers.map((n) => (
+                <div className="al-primitive-call-register" key={n}>
+                  <span>
+                    {n === 0 && position > 0
+                      ? returned
+                        ? S.result
+                        : S.resultReady
+                      : callInputs.length === 1
+                        ? S.argumentPath
+                        : S.argumentPathAt(n)}
+                  </span>
+                  <DecimalRegister
+                    name={`w${n}`}
+                    value={wValue(view.state, n)}
+                    changed={view.written.has(n)}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         ) : (
@@ -174,7 +187,13 @@ export const PrimitiveOperation = withProps(
         )}
         {isFunction && (
           <p className="al-primitive-function-status" role="status">
-            {returned ? S.functionReturned : position === 0 ? S.functionEntry : S.functionAfterAdd}
+            {returned
+              ? S.functionReturned
+              : position === 0
+                ? callInputs.length === 1
+                  ? S.functionEntry
+                  : S.functionEntryMany(stage.registers.map((n) => `w${n}`).join(" and "))
+                : S.functionAfterAdd}
           </p>
         )}
         {!isFunction && position > 0 && flow?.kind === "arith" && (
