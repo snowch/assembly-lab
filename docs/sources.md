@@ -73,3 +73,12 @@ The [Pi 5 source and validation brief](notes/module-13/facts.md) records the sel
 boot configuration, debug connector and UART sources. The course ships its own assembly
 program and an explicit raw-image configuration, not Raspberry Pi firmware binaries.
 Build/layout checks are separate from physical verification on the selected Pi 5 board.
+
+## Independent practice (Where next)
+
+The optional [Where next source record](notes/where-next/facts.md) checks the AArch64 Playground
+README and actual import/step/run/check behaviour at phone and desktop widths. The course's
+plain-assembly starter is checked separately against its model and GNU/QEMU. The external
+runtime is another emulator with its own supported instructions, library emulation and limits;
+these checks do not establish hardware boot support or general emulator equivalence. Linking
+the project does not include its implementation in Assembly Lab.

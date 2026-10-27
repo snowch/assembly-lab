@@ -10,7 +10,7 @@
 // also names the course's icon, for a tab and a phone's home screen, and the manifest a browser
 // installs the course from (web-manifest.ts), each under the site's base path.
 
-import { LESSONS } from "@al/content";
+import { LESSONS, WHERE_NEXT } from "@al/content";
 import { PLAN, statusOf } from "@al/content/plan";
 
 import { STATUS_STRINGS as S } from "./strings.status";
@@ -64,6 +64,7 @@ export function staticPage(html: string, base = "/", version: BuildVersion | nul
   // The footer the app draws, with the classes the stylesheet gives it, so the two look alike.
   const footer = [
     `<footer class="shell-footer">`,
+    `<p class="footer-next"><a href="#where-next">${escape(WHERE_NEXT.linkLabel)}</a></p>`,
     `<p class="footer-intro">${intro.join("")}</p>`,
     `<nav aria-label="${escape(STRINGS.companions.label)}">`,
     `<ul class="footer-links">`,
@@ -91,6 +92,9 @@ export function staticPage(html: string, base = "/", version: BuildVersion | nul
     `<p>${escape(STRINGS.intro)}</p>`,
     `<p>${escape(STRINGS.statusNote)}</p>`,
     ...plan,
+    `<section id="where-next"><h2>${escape(WHERE_NEXT.title)}</h2><p>${escape(WHERE_NEXT.lead)}</p>`,
+    `<p><a class="button primary" href="https://aarch64-playground.com/playground" target="_blank" rel="noopener noreferrer">${escape(WHERE_NEXT.playground.openLabel)}</a></p>`,
+    `<p><a class="button secondary" href="${base}examples/trip-playground.s" download>${escape(WHERE_NEXT.playground.downloadLabel)}</a></p></section>`,
     `<p>${escape(STRINGS.noScript)}</p>`,
     `</div>`,
     ...footer,

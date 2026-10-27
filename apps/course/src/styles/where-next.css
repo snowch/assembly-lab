@@ -1,0 +1,55 @@
+/* Copyright © 2026 Christopher Snow */
+
+.where-next-page {
+  max-width: var(--page);
+  margin-inline: auto;
+  min-width: 0;
+}
+.where-next-page h1,
+.where-next-page h2,
+.where-next-discovery h2 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+}
+.where-next-page section {
+  margin-top: var(--space-5);
+}
+.where-next-starter {
+  max-width: 100%;
+  font-size: var(--text-sm);
+  margin-block: var(--space-3);
+}
+.where-next-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.where-next-steps {
+  max-width: var(--measure);
+  padding-inline-start: var(--space-4);
+}
+.where-next-steps li {
+  padding-inline-start: var(--space-1);
+  margin-block: var(--space-3);
+}
+.where-next-discovery,
+.where-next-after-calls {
+  margin-top: var(--space-5);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-3);
+}
+
+.footer-next a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+.where-next-discovery h2 a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
+.where-next-discovery p {
+  max-width: var(--measure);
+}

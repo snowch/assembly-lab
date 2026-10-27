@@ -9,7 +9,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 
-import { LESSONS } from "@al/content";
+import { LESSONS, WHERE_NEXT } from "@al/content";
 import { MODULES, PLAN, lessonsOf, statusOf } from "@al/content/plan";
 
 import { VIEW_STRINGS } from "../../packages/views/src/strings";
@@ -373,7 +373,14 @@ test("the footer carries the copyright and links to the companion courses", asyn
   const footer = page.locator("footer.shell-footer");
   await expect(footer.locator(".copyright")).toHaveText(STRINGS.copyright);
   const links = footer.getByRole("link");
-  await expect(links).toHaveCount(4);
+  await expect(links).toHaveCount(5);
+  await expect(
+    footer.getByRole("navigation", { name: STRINGS.companions.label }).getByRole("link"),
+  ).toHaveCount(3);
+  await expect(footer.getByRole("link", { name: WHERE_NEXT.linkLabel })).toHaveAttribute(
+    "href",
+    "#/where-next",
+  );
   await expectSourceVersion(page);
   await expect(
     footer.getByRole("link", { name: STRINGS.companions.digitalDesign }),
@@ -505,7 +512,16 @@ test.describe("with scripts off", () => {
     await expect(page.locator(".noscript-page h1")).toBeVisible();
     const heading = await page.locator(".noscript-page h1").boundingBox();
     expect(heading!.x).toBeGreaterThanOrEqual(gutter);
-    await expect(page.locator("footer.shell-footer").getByRole("link")).toHaveCount(4);
+    await expect(page.locator("footer.shell-footer").getByRole("link")).toHaveCount(5);
+    await page
+      .locator("footer.shell-footer")
+      .getByRole("link", { name: WHERE_NEXT.linkLabel })
+      .click();
+    await expect(page).toHaveURL(/#where-next$/);
+    await expect(page.locator("#where-next h2")).toHaveText(WHERE_NEXT.title);
+    await expect(
+      page.locator("#where-next").getByRole("link", { name: WHERE_NEXT.playground.downloadLabel }),
+    ).toHaveAttribute("href", /examples\/trip-playground\.s$/);
     await expectSourceVersion(page);
     await expect(page.locator("footer.shell-footer em")).toHaveText([
       STRINGS.companions.digitalDesign,
