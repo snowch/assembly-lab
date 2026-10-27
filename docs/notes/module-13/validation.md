@@ -66,3 +66,28 @@ bare-metal path. The final card contains only config and the program image.
 Hardware wiring, actual card formatting, EEPROM handoff, clock/routing and serial bytes were
 not executed here. Complete `native/pi5/HARDWARE-TEST.md` with the user's actual board and
 probe before describing this extension as physically verified.
+
+## First full CI run on 79e2510
+
+PR workflow 40420479448: native-lessons and real-tools passed. Full app check passed its
+unit/build stages, then finished with **1,203 browser tests passed, 2 failed and 23 skipped**
+in 29.1 minutes. Both failures were the shared phone/desktop navigation test's obsolete
+expectation that the optional A32 chapter immediately followed `debug-native-instructions`.
+The new learner-facing navigation correctly followed the two Pi lessons. The sibling push
+workflow 40420425419 independently finished with the same two stale assertions: **1,203 passed,
+2 failed and 23 skipped**, in 20.2 minutes. Its native and real-tools jobs also passed.
+
+The test now pins the complete four-lesson tail and follows each next link from QEMU through
+both Pi lessons to optional A32. It retains the first-lesson previous/next checks, A32's absent
+next link and its working previous link. No product source, prose or assertion tolerance was
+changed. Original CI failure is retained separately from the following focused/full reruns.
+
+Focused navigation/shell rerun after that correction: **43 passed, 1 intentional skip**, in
+57.5 seconds (`/tmp/pi5-shell-final.log`). Strict TypeScript passed. Independent technical
+review approved the stronger assertion and confirmed the learner-facing navigation already
+matches the requested order. The following full CI run is a separate result.
+
+Additional committed-build checks on the unchanged product: both whole-course offline tests
+passed (59.0 seconds), including never-visited lessons and every native file's bytes/hash.
+The release-identity script passed eight committed-artifact contexts and verified all six Pi
+downloads byte for byte. These do not supply physical-board evidence.

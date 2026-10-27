@@ -183,9 +183,20 @@ test("each lesson foot names the lesson before it and the one after, in course o
   await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
     LESSONS[0]!.title,
   );
-  // Optional A32 follows the final native lesson, and still has no next.
-  expect(LESSONS.at(-2)!.id).toBe("debug-native-instructions");
-  await page.goto("#/lesson/same-c-on-a32");
+  // The Pi extension follows QEMU; optional A32 remains last and has no next.
+  const tail = LESSONS.slice(-4);
+  expect(tail.map((lesson) => lesson.id)).toEqual([
+    "debug-native-instructions",
+    "raspberry-pi-5",
+    "raspberry-pi-boot",
+    "same-c-on-a32",
+  ]);
+  await page.goto(`#/lesson/${tail[0]!.id}`);
+  for (const lesson of tail.slice(1)) {
+    await expect(nav.locator('[data-direction="next"] .lesson-nav-title')).toHaveText(lesson.title);
+    await page.getByRole("link", { name: new RegExp(STRINGS.nextLesson) }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
+  }
   await expect(nav.locator('[data-direction="next"]')).toHaveCount(0);
   await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
     LESSONS.at(-2)!.title,
