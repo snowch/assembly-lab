@@ -22,7 +22,7 @@ The figure starts just before `bl`, with the argument already in `w0`. Press Run
 
 The caller can use the other general-purpose registers too. It looks in `w0` for this `int` result because caller and function follow an agreed set of rules, a **calling convention**. `ret` does not select the result register.
 
-The rules also say which register values a function must preserve. The [later calls lesson](#/lesson/calls-and-returns) develops those rules.
+The rules also say which register values a function must preserve. This caller is only part of a program. A caller that must itself return would need its own return address, but `bl` just overwrote `x30`. The [later calls lesson](#/lesson/calls-and-returns) shows how that address is kept and develops the rules.
 
 ### prose / sections / challenge
 
@@ -40,7 +40,7 @@ Check Arm’s references
 
 ### prose / challenge / task
 
-Start a fresh call, `increment_int(4)`, with `w0` holding 4 and `w1` holding 0. The caller runs `bl increment_int`. The function runs `add w0, w0, 1`, then `ret`. The caller continues with `add w1, w0, w0`. What does `w0` hold immediately after `ret`, and what does the caller’s addition write to `w1`?
+Start a fresh call, `increment_int(4)`, with `w0` holding 4 and `w1` holding 0. The caller runs `bl increment_int`. The function runs `add w0, w0, 1`, then `ret`. The caller continues with `add w1, w1, w0`. What does `w0` hold immediately after `ret`, and what does the caller’s addition write to `w1`?
 
 ### prose / challenge / hints / 0
 
