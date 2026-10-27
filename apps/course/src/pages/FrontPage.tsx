@@ -4,7 +4,7 @@
 // plan itself, listed from content/plan/plan.ts: each part with its modules, each module with its
 // number, its title, one line on what the learner does, and its status.
 
-import { LESSONS } from "@al/content";
+import { LESSONS, WHERE_NEXT } from "@al/content";
 import { PLAN, lessonsOf, statusOf } from "@al/content/plan";
 
 import { lessonHref } from "../route";
@@ -148,6 +148,14 @@ export function FrontPage() {
           </ul>
         </section>
       ))}
+      <section className="where-next-discovery" aria-labelledby="where-next-title">
+        <h2 id="where-next-title">
+          <a href="#/where-next">{WHERE_NEXT.linkLabel}</a>
+        </h2>
+        <p>
+          <Marked text={WHERE_NEXT.directoryText} />
+        </p>
+      </section>
     </div>
   );
 }

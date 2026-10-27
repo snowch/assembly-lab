@@ -8,7 +8,7 @@ import { resolve } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { LESSONS } from "@al/content";
+import { LESSONS, WHERE_NEXT } from "@al/content";
 import { MODULES, PLAN, statusOf } from "@al/content/plan";
 
 import { pageTitle, parseRoute } from "./route";
@@ -98,7 +98,7 @@ describe("the page before any script runs", () => {
     expect(written.has("3")).toBe(true);
   });
 
-  it("shows the footer: the sentence with its two titles in italics, the three links and the copyright", () => {
+  it("shows the footer: companion links, optional next page and copyright", () => {
     const footer = /<footer[^>]*>([\s\S]*)<\/footer>/.exec(noscript)?.[1] ?? "";
     const sentence = STRINGS.companions.intro.map((p) => (typeof p === "string" ? p : p.title));
     expect(text(footer)).toContain(sentence.join(""));
@@ -110,6 +110,10 @@ describe("the page before any script runs", () => {
     }
     expect(footer).toContain(`aria-label="${STRINGS.companions.label}"`);
     expect(text(footer)).toContain(STRINGS.copyright);
+    expect(footer).toContain(`<a href="#where-next">${WHERE_NEXT.linkLabel}</a>`);
+    const nav = /<nav[^>]*>([\s\S]*?)<\/nav>/.exec(footer)?.[1] ?? "";
+    expect(nav).not.toContain("#where-next");
+    expect(noscript).toContain(`<section id="where-next"><h2>${WHERE_NEXT.title}</h2>`);
   });
 
   it("puts the plan in the page's gutter, as the app's main content is", () => {

@@ -7,7 +7,8 @@
 import { useCallback, useEffect, useMemo } from "react";
 
 import { prepareViewHandoff, clearViewHandoff } from "@al/views";
-import { LessonView } from "@platform/lesson-runtime";
+import { WHERE_NEXT } from "@al/content";
+import { LessonView, Prose } from "@platform/lesson-runtime";
 
 import { createBook } from "./book";
 import { BUILD_VERSION, commitHref } from "./build-version";
@@ -15,6 +16,7 @@ import { AppStatus } from "./AppStatus";
 import { STATUS_STRINGS } from "./strings.status";
 import { useOffline } from "./offline";
 import { updateStorage } from "./update-storage";
+import { WhereNextPage } from "./pages/WhereNextPage";
 import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
 import { RUNTIME_STRINGS } from "./runtime-strings";
@@ -60,6 +62,7 @@ export function App() {
 
   let page: React.ReactNode;
   if (route.kind === "front") page = <FrontPage />;
+  else if (route.kind === "where-next") page = <WhereNextPage />;
   else if (route.kind === "lesson") {
     const lesson = book.lessons.find((l) => l.id === route.id);
     // The lessons in course order: module first, then the module's own order.
@@ -82,6 +85,11 @@ export function App() {
           lessonHref={lessonHref}
           strings={RUNTIME_STRINGS}
         />
+        {lesson.module === 9 && next?.module !== 9 && (
+          <aside className="where-next-after-calls">
+            <Prose markdown={WHERE_NEXT.afterCalls} />
+          </aside>
+        )}
         <nav className="lesson-nav" aria-label={STRINGS.lessonNav}>
           {previous ? (
             <a className="lesson-nav-link" data-direction="previous" href={lessonHref(previous.id)}>
@@ -150,6 +158,9 @@ export function App() {
         {page}
       </main>
       <footer className="shell-footer" inert={offline?.updating}>
+        <p className="footer-next">
+          <a href="#/where-next">{WHERE_NEXT.linkLabel}</a>
+        </p>
         <p className="footer-intro">
           {STRINGS.companions.intro.map((part, i) =>
             typeof part === "string" ? part : <em key={i}>{part.title}</em>,

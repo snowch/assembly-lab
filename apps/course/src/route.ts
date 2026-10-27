@@ -5,14 +5,20 @@
 
 import { useEffect, useState } from "react";
 
+import { WHERE_NEXT } from "@al/content";
+
 import { STRINGS } from "./strings";
 
 export type Route =
-  { kind: "front" } | { kind: "lesson"; id: string } | { kind: "missing"; path: string };
+  | { kind: "front" }
+  | { kind: "where-next" }
+  | { kind: "lesson"; id: string }
+  | { kind: "missing"; path: string };
 
 export function parseRoute(hash: string): Route {
   const path = hash.replace(/^#/, "") || "/";
   if (path === "/") return { kind: "front" };
+  if (path === "/where-next" || path === "/where-next/") return { kind: "where-next" };
   const m = /^\/lesson\/([a-z][a-z0-9-]*)\/?$/.exec(path);
   if (m) return { kind: "lesson", id: m[1] as string };
   return { kind: "missing", path };
@@ -33,6 +39,7 @@ export function pageTitle(
   lessonTitle: (id: string) => string | undefined,
 ): string {
   if (route.kind === "front") return courseTitle;
+  if (route.kind === "where-next") return STRINGS.pageTitle(WHERE_NEXT.title);
   if (route.kind === "lesson")
     return STRINGS.pageTitle(lessonTitle(route.id) ?? STRINGS.noLesson(route.id));
   return STRINGS.pageTitle(STRINGS.missing(route.path));

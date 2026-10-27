@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 import { expect, test } from "@playwright/test";
-import { LESSONS } from "@al/content";
+import { LESSONS, WHERE_NEXT, PLAYGROUND_STARTER } from "@al/content";
 import { STRINGS } from "../../apps/course/src/strings";
 import { COMPILER_STRINGS as C } from "../../packages/views/src/strings.compiler";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
@@ -23,15 +23,18 @@ test("the whole course reopens offline, including lessons never visited online",
     await session.send("Network.setCacheDisabled", { cacheDisabled: true });
     await page.goto(site.url);
     await downloadOffline(page);
-    const nativeFiles = await page.evaluate(async () => {
+    const downloadFiles = await page.evaluate(async () => {
       const release = (await (
         await fetch(new URL("release.json", location.href), { cache: "no-store" })
       ).json()) as {
         assets: { path: string; bytes: number; integrity: string }[];
       };
-      return release.assets.filter((file) => file.path.startsWith("native/"));
+      return release.assets.filter(
+        (file) => file.path.startsWith("native/") || file.path === "examples/trip-playground.s",
+      );
     });
-    expect(nativeFiles.length).toBeGreaterThan(0);
+    expect(downloadFiles.length).toBeGreaterThan(0);
+    expect(downloadFiles.some((file) => file.path === "examples/trip-playground.s")).toBe(true);
     site.connected(false);
     await context.setOffline(true);
     for (const lesson of LESSONS) {
@@ -44,7 +47,13 @@ test("the whole course reopens offline, including lessons never visited online",
       await offlineReady(page);
       await expect(page.locator(".app-status > summary")).toBeVisible();
     }
-    const nativeResults = await page.evaluate(async (files) => {
+    const nextResponse = await page.goto(
+      new URL("./?offline-check=where-next#/where-next", site.url).href,
+    );
+    expect(nextResponse?.fromServiceWorker()).toBe(true);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(WHERE_NEXT.title);
+    await expect(page.locator(".where-next-starter code")).toHaveText(PLAYGROUND_STARTER);
+    const downloadResults = await page.evaluate(async (files) => {
       const results = [];
       for (const file of files) {
         const response = await fetch(new URL(file.path, location.href));
@@ -59,8 +68,8 @@ test("the whole course reopens offline, including lessons never visited online",
       }
       await document.fonts.ready;
       return results;
-    }, nativeFiles);
-    expect(nativeResults).toEqual(nativeFiles.map((file) => ({ ...file, ok: true })));
+    }, downloadFiles);
+    expect(downloadResults).toEqual(downloadFiles.map((file) => ({ ...file, ok: true })));
     expect(errors).toEqual([]);
   } finally {
     await context.close();
