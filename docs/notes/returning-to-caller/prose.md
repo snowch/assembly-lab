@@ -6,15 +6,15 @@ Separately drafted from brief.md and the checked facts in facts.md. Tiny-functio
 
 ### prose / sections / motivation
 
-The caller and `increment_int` use the same registers. A function does not get a separate set. When `increment_int` writes its result into `w0`, that value is available to the caller too.
-
-`ret` tells the processor where to continue. The caller can then run its next instruction using the result already in `w0`.
+In the previous lesson, `increment_int` left its result in `w0`. The caller and `increment_int` use the same registers, so the caller can read that value when the function returns. Follow the call below to see where execution goes and how the caller uses the result.
 
 ### prose / sections / investigation
 
-An instruction’s address identifies its place in memory. The **return address** is the address where the caller should continue. Here, `x30` holds that address. Plain `ret` uses it to choose the next instruction.
+An instruction’s address identifies its place in memory. A **branch** changes where execution continues. On AArch64, `bl` means branch with link: `bl increment_int` starts executing `increment_int` and saves the address of the instruction after `bl` in `x30`. That saved address is the **return address**. Register `x30` is also called the **link register**.
 
-The figure starts after the call has entered `increment_int(7)`. Press Run the instruction for each step. Watch the marker ▸ return to the caller, then run the caller’s addition. The marker names the instruction that runs next; the highlighted instruction is the one that just ran. On a narrow screen, scroll sideways within the function listing to see the C and instructions.
+Plain `ret` continues execution at the address held in `x30`. These are AArch64 instruction rules, whether the instructions came from C or were written in assembly. Here, the instruction after `bl` is the caller’s addition.
+
+The figure starts just before `bl`, with the argument already in `w0`. Press Run the instruction to follow the call, the function’s addition, its return and the caller’s addition. The marker ▸ names the instruction that runs next; the highlight marks the instruction that just ran. On a narrow screen, scroll sideways within the function listing to see the C and instructions.
 
 ### prose / sections / explanation
 
@@ -34,12 +34,13 @@ Check Arm’s references
 
 ### prose / references / prose
 
+- [BL: branch with link](https://support.arm.com/documentation/ddi0602/2025-12/Base-Instructions/BL--Branch-with-Link-) describes how the call saves the return address in `x30`.
 - [RET: return from subroutine](https://support.arm.com/documentation/ddi0602/2025-12/Base-Instructions/RET--Return-from-subroutine-) describes the instruction. Its optional register operand defaults to `x30`.
 - [Arm’s procedure call standard](https://github.com/ARM-software/abi-aa/blob/2025Q4/aapcs64/aapcs64.rst) describes argument registers, result registers and the values a function must preserve.
 
 ### prose / challenge / task
 
-Start a fresh call, `increment_int(4)`, with `w0` holding 4 and `w1` holding 0. The function runs `add w0, w0, 1`, then `ret`. The caller continues with `add w1, w0, w0`. What does `w0` hold immediately after `ret`, and what does the caller’s addition write to `w1`?
+Start a fresh call, `increment_int(4)`, with `w0` holding 4 and `w1` holding 0. The caller runs `bl increment_int`. The function runs `add w0, w0, 1`, then `ret`. The caller continues with `add w1, w0, w0`. What does `w0` hold immediately after `ret`, and what does the caller’s addition write to `w1`?
 
 ### prose / challenge / hints / 0
 
@@ -63,7 +64,7 @@ Immediately after `ret`, `w0` holds 5. The caller’s addition writes 10 to `w1`
 
 ### prose / modelVsReality
 
-The model has already run the call setup when the figure opens. The activity stops after the caller’s shown addition; it omits the setup and the caller’s remaining instructions. The caller instruction was written for this course. The paired increment_int listing is the recorded GCC output from A tiny function.
+The figure begins after the caller’s preparation and shows `bl`, the function’s addition and `ret`, then the caller’s addition. It stops before the caller’s remaining instructions. The caller instructions were written for this course. The paired increment_int listing is the recorded GCC output from A tiny function.
 
 ### prose / originalityNote / textbookExample
 
@@ -71,7 +72,7 @@ A return is often introduced with a complete calling sequence and instructions t
 
 ### prose / originalityNote / howThisDiffers
 
-The activity begins inside a familiar one-addition function. One shared register display and a visible caller continuation separate preparing a result, returning and using the result without introducing nested calls.
+A call to the familiar one-addition function shows where its return address comes from. One shared register display separates preparing a result, returning and using the result without introducing nested calls.
 
 ### labels / title
 
@@ -79,7 +80,7 @@ Returning to the caller
 
 ### labels / objectives / 0
 
-Follow ret back to an instruction in the caller.
+Follow bl into a function and ret back to the caller.
 
 ### labels / objectives / 1
 
@@ -91,7 +92,7 @@ One set of registers
 
 ### labels / titles / investigation
 
-Follow the return
+Follow the call and return
 
 ### labels / titles / explanation
 
@@ -103,7 +104,7 @@ Return, then use the result
 
 ### labels / captions / figure
 
-Start inside increment_int, return to the caller, then run its next instruction.
+Call increment_int, return to the caller, then run its next instruction.
 
 ### labels / captions / challenge
 
@@ -139,7 +140,15 @@ Registers shared by caller and function
 
 ### figure strings / returnAddress
 
-Return address in x30
+Link register
+
+### figure strings / beforeCallTarget
+
+Not yet set for this call
+
+### figure strings / written
+
+Written
 
 ### figure strings / returnTarget
 
@@ -171,20 +180,24 @@ The activity stops after this caller instruction.
 
 ### figure strings / callerProse
 
-The caller continues with this course-written instruction.
+These caller instructions were written for this course.
 
 ### figure strings / status / 0
 
-The call has entered increment_int. Run its addition.
+Run bl to call increment_int with the argument already in w0.
 
 ### figure strings / status / 1
 
-The function wrote 8 to w0. Its ret runs next.
+bl saved the caller’s addition address in x30 and entered increment_int. Run the function’s addition.
 
 ### figure strings / status / 2
 
-ret returned to the caller. w0 still holds 8. Run the caller’s addition.
+The function wrote 8 to w0. Its ret runs next.
 
 ### figure strings / status / 3
+
+ret returned to the caller. w0 still holds 8. Run the caller’s addition.
+
+### figure strings / status / 4
 
 The caller read 8 from w0 and wrote 16 to w1.

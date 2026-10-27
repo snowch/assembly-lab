@@ -6,7 +6,9 @@ export const RETURNING_STRINGS = {
   caller: "Caller",
   functionName: "increment_int",
   sharedRegisters: "Registers shared by caller and function",
-  returnAddress: "Return address in x30",
+  returnAddress: "Link register",
+  beforeCallTarget: "Not yet set for this call",
+  written: "Written",
   returnTarget: "Caller’s addition",
   run: "Run the instruction",
   back: "Back",
@@ -15,12 +17,14 @@ export const RETURNING_STRINGS = {
   ran: "Just ran",
   status: (step: number, w0: number, w1: number) =>
     step === 0
-      ? "The call has entered increment_int. Run its addition."
+      ? "Run bl to call increment_int with the argument already in w0."
       : step === 1
-        ? `The function wrote ${w0} to w0. Its ret runs next.`
+        ? "bl saved the caller’s addition address in x30 and entered increment_int. Run the function’s addition."
         : step === 2
-          ? `ret returned to the caller. w0 still holds ${w0}. Run the caller’s addition.`
-          : `The caller read ${w0} from w0 and wrote ${w1} to w1.`,
+          ? `The function wrote ${w0} to w0. Its ret runs next.`
+          : step === 3
+            ? `ret returned to the caller. w0 still holds ${w0}. Run the caller’s addition.`
+            : `The caller read ${w0} from w0 and wrote ${w1} to w1.`,
   complete: "The activity stops after this caller instruction.",
-  callerProse: "The caller continues with this course-written instruction.",
+  callerProse: "These caller instructions were written for this course.",
 } as const;

@@ -5,10 +5,10 @@ Copyright © 2026 Christopher Snow. All rights reserved.
 ## Scope and prior knowledge
 
 The learner has practised register and constant addition and seen one- and two-argument
-integer functions. This lesson isolates the change of execution position caused by `ret`.
+integer functions. This lesson shows the call with `bl` and the change of execution position caused by `ret`.
 It shows one shared set of registers before and after return and the caller using the result.
-The caller setup and cleanup execute in the model but are outside the visible activity.
-Detailed call setup, stack use and register-preservation rules remain in Module 9.
+The earlier save and final cleanup execute in the model but are outside the visible activity.
+Stack use and register-preservation rules remain in Module 9.
 
 ## Sources checked on 27 October 2026
 
@@ -41,7 +41,7 @@ the caller continuation is assembly-only.
 
 The full wrapper saves X29/X30, calls `increment_int`, performs `add w1, w0, w0` at
 `caller_continues`, restores X29/X30 and returns to the harness. The displayed activity starts
-after the first two instructions, so the call has already entered `increment_int`. It stops
+after the first instruction, immediately before `bl increment_int`. It stops
 after the caller addition. This is a view of actual model states, not a simulated handoff
 between separate register banks.
 
@@ -49,11 +49,13 @@ Exported API:
 
 - `RETURNING_PROGRAM`: complete model assembly, empty C string.
 - `RETURNING_CALL`: entry `caller`, arguments `[7, 0]`.
-- `RETURNING_START_STEP = 2`, `RETURNING_END_STEP = 5`.
+- `RETURNING_START_STEP = 1`, `RETURNING_END_STEP = 5`.
 - `RETURNING_CALLER_LABEL = "caller_continues"`; the actual address comes from
   `trace.program.symbols[RETURNING_CALLER_LABEL].address`.
 
-At the activity's start W0 is 7, W1 is 0, and X30 points to the caller continuation.
+At the activity's start W0 is 7 and W1 is 0. X30 still holds the harness return sentinel,
+which the learner view labels as not yet set for this call rather than displaying its numeric
+value. BL writes the address of the following caller addition into X30 and enters increment_int.
 The first visible addition writes 8 to W0. RET changes the next instruction to the caller
 addition without changing any general-purpose register, including W0 and X30. The caller
 addition reads W0 twice and writes 16 to W1, leaving W0 equal to 8. The actual trace's written
@@ -90,3 +92,18 @@ so these machine semantics checks do not depend on unrelated interactive registr
 complete. It checks the exact native source/case identity, unchanged recorded function body,
 real X30 continuation address, all general-purpose registers across RET, caller writes and
 fresh arguments. Formatting and whitespace checks passed for the owned files.
+
+## Visible BL follow-up
+
+Checked Arm Guide D2.35 BL, page D2-705, in the same downloaded primary reference:
+BL branches to the label and sets X30 to PC+4. The model facts now assert the exact saved
+address, branch target, unchanged X0–X29 and X30-only write. The complete GNU/QEMU program
+and call corpus are unchanged. Four visible instructions now run: BL, function ADD, RET,
+caller ADD. Saved pre-change positions migrate by their original start offset to preserve the
+same trace state; newly saved positions record their start offset. Reset begins before BL.
+
+Follow-up primary-source retrieval: modern BL entry returned HTTP 200 on 27 October 2026.
+Like the RET entry, it is an application shell; D2.35 in the downloaded primary PDF and
+GNU/QEMU establish semantics, not the HTTP status. Focused rerun: four calls, 32 instruction
+states, zero differences (0.1 s), /tmp/bl-native.log. Focused content and gate tests:
+30 passed across four files (4.76 s), /tmp/bl-focused.log.

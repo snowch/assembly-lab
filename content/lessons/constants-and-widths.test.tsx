@@ -276,7 +276,7 @@ describe("the challenges", () => {
 
   it("build-1000000: the editor shows the same sentence against the line", () => {
     const c = challenge("build-1000000");
-    expect(introducedOf(c)).toEqual(new Set(["add", "sub", "ret", "mov", "movk"]));
+    expect(introducedOf(c)).toEqual(new Set(["add", "sub", "ret", "bl", "mov", "movk"]));
     const errors = assemble("mov w0, 1\nadd w0, w0, 15\nret", {
       allowed: new Set(c.allowedConstructs),
       introduced: introducedOf(c),

@@ -113,6 +113,9 @@ describe("what each lesson teaches", () => {
           LESSONS.findIndex((l) => l.id === id),
         ),
       );
+    expect(at("tiny-function").has("bl")).toBe(false);
+    expect(at("returning-to-caller").has("bl")).toBe(true);
+    expect(at("returning-to-caller").has("stp")).toBe(false);
     expect(at("masks").has("bfi")).toBe(true);
     expect(at("masks").has("lsr")).toBe(false);
     expect(at("shifts").has("lsr")).toBe(true);
