@@ -44,6 +44,8 @@ export const TAUGHT: Readonly<Record<string, readonly string[]>> = {
   "checked-arithmetic": [],
   "from-function-to-executable": [],
   "debug-native-instructions": [],
+  "raspberry-pi-5": [],
+  "raspberry-pi-boot": [],
   "same-c-on-a32": [],
 };
 

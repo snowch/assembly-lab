@@ -25,6 +25,8 @@ import { cAndOverflow } from "./c-and-overflow";
 import { checkedArithmetic } from "./checked-arithmetic";
 import { fromFunctionToExecutable } from "./from-function-to-executable";
 import { debugNativeInstructions } from "./debug-native-instructions";
+import { raspberryPi5 } from "./raspberry-pi-5";
+import { raspberryPiBoot } from "./raspberry-pi-boot";
 import { sameCOnA32 } from "./same-c-on-a32";
 import { zeroTerminatedStrings } from "./zero-terminated-strings";
 import { masks } from "./masks";
@@ -63,6 +65,8 @@ export const LESSONS: readonly Lesson[] = [
   checkedArithmetic,
   fromFunctionToExecutable,
   debugNativeInstructions,
+  raspberryPi5,
+  raspberryPiBoot,
   sameCOnA32,
 ]
   .map(withIntroduced)

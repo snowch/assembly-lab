@@ -1,0 +1,12 @@
+# Copyright © 2026 Christopher Snow
+# Raspberry Pi 5 only. Use a spare FAT32 SD card, not the normal OS card.
+[pi5]
+kernel=assembly-lab-pi5.img
+kernel_address=0x200000
+# Permit this assembly-only image instead of requiring an OS-compatible DT.
+os_check=0
+# The program does not consume a Linux Device Tree.
+device_tree=
+# Use the Pi 5 dedicated UART connector, plugged in before power-on.
+uart_2ndstage=1
+# No RP1 UART, GPIO pin routing, Linux, initramfs or EEPROM update is required.
