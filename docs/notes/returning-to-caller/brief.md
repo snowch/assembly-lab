@@ -45,3 +45,24 @@ The narrow-screen listing needs its own local sideways-scroll cue. The x30 targe
 the caller’s addition, which remains the target address after that instruction has run. It must
 not call that fixed target the next instruction in every state. The declared vocabulary now
 includes address, matching its existing local definition.
+
+## Follow-up: make the call visible
+
+The user could not see where x30 acquired the return address, and asked whether the rule
+was C-specific or an example choice. Show the existing model's BL as a fourth visible
+instruction, starting at trace step 1 rather than 2; retain the whole native-tested wrapper.
+Arm Instruction Set Reference Guide 100076_0100_00_en D2.35 (BL) specifies that BL writes
+PC+4 into X30 and branches to its label; D2.130 (RET) specifies default X30. These are
+AArch64 instruction semantics regardless of source language. The W0 integer result location
+is the calling convention. Before BL the existing X30 value is not the return address for
+this call: label that state without presenting the harness's sentinel as a meaningful address.
+After BL derive the caller-addition target from the actual trace. Show both caller instructions
+in order, with the same next/ran markings used for the function. Keep the shared W0/W1 bank,
+X30 target and operation cue beside the controls. Reset must return to before BL; saved old
+positions must not silently acquire a different meaning. Preserve original exercise semantics.
+
+Draft from these checked facts: connect the opening to the previous lesson's W0 result;
+define BL and the link register beside the figure; distinguish AArch64 instruction behaviour
+from the convention; update scope, captions and step messages for four visible instructions.
+Do not introduce stack mechanics here. Declare BL and link register as taught here and keep
+the later calls lesson's stack/preservation development. Add the BL primary-reference link.

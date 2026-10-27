@@ -44,27 +44,33 @@ describe("returning to the visible caller", () => {
     );
   });
 
-  it("begins after a real call has supplied x30 with the caller continuation", () => {
+  it("BL saves the following instruction's address and enters the function", () => {
     const t = trace();
     const initial = viewAt(t, RETURNING_START_STEP);
+    const called = viewAt(t, RETURNING_START_STEP + 1);
     expect(wValue(initial.state, 0)).toBe(7);
     expect(wValue(initial.state, 1)).toBe(0);
-    const continuation = t.program.symbols[RETURNING_CALLER_LABEL]?.address;
-    expect(continuation).toBeDefined();
-    expect(initial.state.x[30]).toBe(BigInt(continuation!));
-    expect(t.result.steps[RETURNING_START_STEP]!.text).toBe("add w0, w0, 1");
+    expect(initial.state.x[30]).toBe(BigInt(RETURN_ADDRESS));
+    expect(t.result.steps[RETURNING_START_STEP]!.text).toBe("bl increment_int");
+    const continuation = t.program.symbols[RETURNING_CALLER_LABEL]!.address;
+    expect(continuation).toBe(initial.state.pc + 4);
+    expect(called.state.x[30]).toBe(BigInt(continuation));
+    expect(called.state.pc).toBe(t.program.symbols["increment_int"]!.address);
+    expect(called.state.x.slice(0, 30)).toEqual(initial.state.x.slice(0, 30));
+    expect([...called.written]).toEqual([30]);
+    expect(t.result.steps[RETURNING_START_STEP + 1]!.text).toBe("add w0, w0, 1");
   });
 
   it("ret selects the caller continuation without writing a general-purpose register", () => {
     const t = trace();
-    const before = viewAt(t, RETURNING_START_STEP + 1);
-    const after = viewAt(t, RETURNING_START_STEP + 2);
+    const before = viewAt(t, RETURNING_START_STEP + 2);
+    const after = viewAt(t, RETURNING_START_STEP + 3);
     expect(wValue(before.state, 0)).toBe(8);
     expect(after.state.x).toEqual(before.state.x);
     expect(after.state.pc).toBe(Number(before.state.x[30]));
     expect(after.written.size).toBe(0);
-    expect(t.result.steps[RETURNING_START_STEP + 1]!.text).toBe("ret");
-    expect(t.result.steps[RETURNING_START_STEP + 2]!.text).toBe("add w1, w0, w0");
+    expect(t.result.steps[RETURNING_START_STEP + 2]!.text).toBe("ret");
+    expect(t.result.steps[RETURNING_START_STEP + 3]!.text).toBe("add w1, w0, w0");
   });
 
   it("the caller uses the same w0 and writes another register", () => {
@@ -80,7 +86,7 @@ describe("returning to the visible caller", () => {
 
   it.each([0, 3, 4])("supports a fresh argument %i through the same caller", (argument) => {
     const t = traceOf(RETURNING_PROGRAM, { entry: RETURNING_CALL.entry, args: [argument, 0] });
-    const returned = viewAt(t, RETURNING_START_STEP + 2);
+    const returned = viewAt(t, RETURNING_START_STEP + 3);
     const used = viewAt(t, RETURNING_END_STEP);
     expect(wValue(returned.state, 0)).toBe(argument + 1);
     expect(wValue(used.state, 0)).toBe(argument + 1);

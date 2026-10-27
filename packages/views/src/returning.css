@@ -52,3 +52,8 @@
 .al-returning > section {
   max-width: 100%;
 }
+
+.al-returning-target[data-written="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}

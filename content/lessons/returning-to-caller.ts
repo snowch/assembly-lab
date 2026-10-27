@@ -26,7 +26,7 @@ export const returningToCaller: LessonInput = {
   objectives: [...L.objectives],
   sectionLayout: "selected",
   showTimeModelNotes: false,
-  introduces: ["address", "return address", "calling convention"],
+  introduces: ["address", "branch", "return address", "link register", "calling convention"],
   sections: [
     { kind: "motivation", title: L.titles.motivation, prose: P.sections.motivation },
     {

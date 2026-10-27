@@ -19,7 +19,7 @@ it("keeps lesson and figure wording in the separately reviewed canonical record"
     ...strings(RETURNING_PROSE),
     ...strings(RETURNING_LABELS),
     ...strings(S),
-    ...[0, 1, 2, 3].map((step) => S.status(step, 8, 16)),
+    ...[0, 1, 2, 3, 4].map((step) => S.status(step, 8, 16)),
   ])
     expect(canonical).toContain(flat(value));
 });
