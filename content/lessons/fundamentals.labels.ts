@@ -35,31 +35,25 @@ export const FUNDAMENTALS_LABELS = {
   function: {
     title: "A tiny function",
     objectives: [
-      "Follow integer arguments into a function and its result back to the caller.",
-      "Explain how preparing a result differs from returning to the caller.",
+      "Identify the registers holding one or two integer arguments.",
+      "Trace a function’s result and an input register that keeps its value.",
     ],
     titles: {
-      question: "Return an increased value",
       motivation: "A function and its listing",
-      prediction: "Preparing the result",
-      investigation: "Follow the call",
+      investigation: "One argument",
       construction: "Two arguments, one result",
-      failureExperiment: "Ready to return",
-      explanation: "What ret does",
-      generalisation: "Calling rules and operand rules",
-      challenge: "A different argument",
-      reflection: "Calculation and return",
+      challenge: "Fresh arguments",
     },
     captions: {
-      figure: "The complete increment_int function and its caller, one instruction at a time.",
+      figure: "The complete increment_int function, with its incoming argument and result.",
       twoArgumentFigure:
         "The complete add_ints function, with its two incoming arguments and returned result.",
-      challenge: "Call increment_int with a new argument.",
+      challenge: "A fresh call to add_ints, traced through both registers.",
     },
     challenge: {
-      title: "Trace increment_int",
-      fields: { w0: "Value received by the caller" },
-      tests: { w0: "Value received by the caller" },
+      title: "Trace add_ints",
+      fields: { w0: "`w0` when the function returns", w1: "`w1` when the function returns" },
+      tests: { w0: "w0 when the function returns", w1: "w1 when the function returns" },
     },
   },
   subtraction: {

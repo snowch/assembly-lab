@@ -82,3 +82,14 @@ plain-assembly starter is checked separately against its model and GNU/QEMU. The
 runtime is another emulator with its own supported instructions, library emulation and limits;
 these checks do not establish hardware boot support or general emulator equivalence. Linking
 the project does not include its implementation in Assembly Lab.
+
+## Returning to the caller
+
+The Fundamentals return lesson checks RET against Arm’s Instruction Set Reference
+Guide (100076_0100_00_en, D2.130) and the argument/result and register-preservation
+rules against AAPCS64 2025Q4. It links the modern DDI0602 RET entry (2025-12);
+that entry’s page reachability was checked separately from the semantics. Its course-written caller
+wraps the unchanged recorded increment_int body. The browser and GNU/QEMU execute
+the same complete wrapper; the teaching view starts after setup and stops after
+the caller uses the result. See [the checked facts](notes/returning-to-caller/facts.md)
+for primary references, step boundaries and differential results.

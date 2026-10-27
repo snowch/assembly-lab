@@ -8,6 +8,8 @@ import { FUNDAMENTALS_PROSE as P } from "./fundamentals.prose";
 import { FUNDAMENTALS_LABELS as L } from "./fundamentals.labels";
 import { PRIMITIVE_PROGRAMS, primitiveProgram } from "./meet-the-machine.primitives";
 
+import { returningToCaller } from "./returning-to-caller";
+
 type Key = keyof typeof P;
 const CONFIG = [
   {
@@ -33,10 +35,11 @@ const CONFIG = [
   {
     key: "function",
     id: "tiny-function",
+    sectionKinds: ["motivation", "investigation", "construction", "challenge"],
     worked: 1,
-    test: 1,
-    args: [0],
-    fields: [0],
+    test: 9,
+    args: [6, 4],
+    fields: [0, 1],
     introduces: ["listing", "caller", "argument"],
   },
   {
@@ -61,7 +64,7 @@ const CONFIG = [
 const CHALLENGE_IDS = [
   "trace-addition",
   "trace-constant",
-  "trace-increment",
+  "trace-two-arguments",
   "trace-subtraction",
   "trace-sequence",
 ] as const;
@@ -100,7 +103,7 @@ function figure(
   };
 }
 
-export const fundamentalsLessons: LessonInput[] = CONFIG.map((config, order) => {
+const primitiveLessons: LessonInput[] = CONFIG.map((config, order) => {
   const key: Key = config.key;
   const prose = P[key];
   const labels = L[key];
@@ -246,3 +249,9 @@ export const fundamentalsLessons: LessonInput[] = CONFIG.map((config, order) => 
     originalityNote: prose.originalityNote,
   };
 });
+
+export const fundamentalsLessons: LessonInput[] = [
+  ...primitiveLessons.slice(0, 3),
+  returningToCaller,
+  ...primitiveLessons.slice(3),
+].map((lesson, order) => ({ ...lesson, order }));
