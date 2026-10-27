@@ -34,7 +34,7 @@ describe("the lesson", () => {
     expect(() => parseLesson(meetTheMachine)).not.toThrow();
     expect(checkLesson(lesson)).toEqual([]);
     expect(lesson.sections.map((s) => s.kind)).toEqual([...SECTION_KINDS]);
-    expect([lesson.module, lesson.order]).toEqual([0, 5]);
+    expect([lesson.module, lesson.order]).toEqual([0, 6]);
   });
 
   it("introduces the opening terms, including the small function call, and passes the term gate", () => {

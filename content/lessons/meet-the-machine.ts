@@ -76,7 +76,7 @@ export const meetTheMachine: LessonInput = {
   id: "meet-the-machine",
   title: SYNTHESIS_COPY.title,
   module: 0,
-  order: 5,
+  order: 6,
   objectives: [...LABELS.objectives],
   introduces: [],
   sections: [

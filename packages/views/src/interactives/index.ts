@@ -49,10 +49,12 @@ import { CompilerPlayground } from "./CompilerPlayground";
 import { RecordedPrediction } from "./RecordedPrediction";
 import { StackStepper } from "./StackStepper";
 import { RegisterViews } from "./RegisterViews";
+import { ReturningToCaller } from "./ReturningToCaller";
 import { PrimitiveOperation } from "./PrimitiveOperation";
 
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
   "primitive-operation": PrimitiveOperation,
+  "returning-to-caller": ReturningToCaller,
   "register-views": RegisterViews,
   "native-tools": NativeFigure,
   "board-schematic": BoardSchematic,

@@ -59,51 +59,40 @@ export const FUNDAMENTALS_PROSE = {
   },
   function: {
     sections: {
-      question: "How does a function give its result back to the code that called it?",
       motivation:
-        "`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C below into an assembly **listing**, a written sequence of instructions. `increment_int:` names the function.\n\nCode that calls a function is its **caller**. The input it supplies is an **argument**. For this function, the argument arrives in `w0` and the integer result is left in `w0` too.",
-      prediction:
-        "The addition is the one you just practised: `add w0, w0, 1`. After it runs, can the caller continue yet?",
+        "`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C below into an assembly **listing**, a written sequence of instructions. `increment_int:` names the function.\n\nCode that calls a function is its **caller**. The input it supplies is an **argument**. For this function, the argument arrives in `w0` and the integer result is left in `w0` too.\n\nThe function adds one, then `ret` returns to its caller. The next lesson follows execution back into the caller.",
       investigation:
-        "On a narrow screen, scroll sideways within the listing to see the C and instructions.",
+        "Run the function one instruction at a time. Watch where the argument arrives and where the result is left. On a narrow screen, scroll sideways within the listing to see the C and instructions.",
       construction:
         "`add_ints` takes two integer arguments. For this function, the first arrives in `w0` and the second in `w1`. The C names those inputs `a` and `b`.\n\nThe figure starts a separate call, `add_ints(7, 5)`. Its integer result is left in `w0`, just as for `increment_int`.",
-      failureExperiment:
-        "After `add`, the result was ready but the caller was waiting. Which instruction let it continue?",
-      explanation:
-        "`ret` returns to the caller without moving the result. The caller uses the value already in `w0`.",
-      generalisation:
-        "These `int` arguments arrive in order in `w0`, then `w1`. The integer result is left in `w0`. The operand rule still makes `add` write its first operand.",
       challenge:
-        "Return to `increment_int`. Trace it with a different argument, without running it.",
-      reflection:
-        "Describe the two jobs separately: what does the addition do, and what does `ret` do?",
+        "Trace `add_ints` with fresh arguments. Identify the result register and the input register that keeps its value.",
     },
     figure: {
-      title: "A call and its return",
-      prose: "Run the addition, then the return. Watch `w0` and the caller.",
+      title: "One argument, one result",
+      prose: "Run the addition, then the return. Watch the value in `w0`.",
     },
     twoArgumentFigure: {
-      title: "A call with two arguments",
-      prose: "Run the addition, then the return. Watch both registers and the caller.",
+      title: "Two arguments, one result",
+      prose: "Run the addition, then the return. Watch both registers.",
     },
     challenge: {
-      task: "For `increment_int(0)`, the argument arrives in `w0`. The function runs `add w0, w0, 1`, then `ret`. What value does the caller receive?",
+      task: "For `add_ints(6, 4)`, the arguments arrive in `w0` and `w1`, in that order. The function runs `add w0, w0, w1`, then `ret`. What do `w0` and `w1` hold when the function returns?",
       hints: [
-        "Follow the addition before considering the return.",
-        "The last operand of `add w0, w0, 1` is a number, not another register.",
-        "For `increment_int(7)`, the addition writes 8 to `w0`. Then `ret` returns without changing that value.",
-        "Start with the new argument in `w0`. Add one; `ret` leaves that result in place.",
-        "The caller receives 1.",
+        "Place each argument in its incoming register before tracing the addition.",
+        "The first operand names the register written. Reading the other input does not replace it.",
+        "In the worked call, `add_ints(7, 5)` leaves 12 in `w0` and keeps 5 in `w1`.",
+        "Add the two fresh arguments into `w0`. The addition does not write `w1`.",
+        "The function leaves 10 in `w0` and keeps 4 in `w1`.",
       ],
     },
     modelVsReality:
-      "The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call. Later lessons examine calls in more detail. GCC 16.1.0 made these recorded listings for 64-bit Arm using `-O1`, an optimisation setting that asks it to make code shorter and faster.",
+      "The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call. GCC 16.1.0 made these recorded listings for 64-bit Arm using `-O1`, an optimisation setting that asks it to make code shorter and faster.",
     originalityNote: {
       textbookExample:
         "An introductory function example often combines several arithmetic operations or introduces call machinery immediately.",
       howThisDiffers:
-        "Two small complete functions separate preparing a result from returning it. The second extends the incoming argument map without adding call machinery or another operation.",
+        "Two small complete functions connect incoming arguments and an integer result to their registers. A fresh two-argument call checks the result and the preserved input before the next lesson follows execution back into the caller.",
     },
   },
   subtraction: {

@@ -121,13 +121,14 @@ describe("the closed notes and the wrong-answer sentences", () => {
 describe("the lesson's words", () => {
   it("follows the Fundamentals lessons without repeating their primitive activities", () => {
     expect(lesson.title).toBe("Putting it together");
-    expect(lesson.order).toBe(5);
+    expect(lesson.order).toBe(6);
     expect(
       lesson.sections.flatMap((s) => s.interactives).some((x) => x.kind === "primitive-operation"),
     ).toBe(false);
     for (const id of [
       "one-addition",
       "tiny-function",
+      "returning-to-caller",
       "subtraction-and-reuse",
       "instructions-in-sequence",
     ]) {

@@ -494,6 +494,7 @@ figure.interactive > .figure-after {
 .lesson:is(
   [data-lesson="one-addition"],
   [data-lesson="tiny-function"],
+  [data-lesson="returning-to-caller"],
   [data-lesson="subtraction-and-reuse"],
   [data-lesson="instructions-in-sequence"]
 ) {

@@ -17,6 +17,7 @@ export const TAUGHT: Readonly<Record<string, readonly string[]>> = {
   "one-addition": ["add"],
   "adding-a-constant": [],
   "tiny-function": ["ret"],
+  "returning-to-caller": [],
   "subtraction-and-reuse": ["sub"],
   "instructions-in-sequence": [],
   "meet-the-machine": [],

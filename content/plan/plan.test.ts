@@ -94,6 +94,7 @@ describe("the course's plan", () => {
       "one-addition",
       "adding-a-constant",
       "tiny-function",
+      "returning-to-caller",
       "subtraction-and-reuse",
       "instructions-in-sequence",
       "meet-the-machine",

@@ -14,6 +14,7 @@ const IDS = [
   "one-addition",
   "adding-a-constant",
   "tiny-function",
+  "returning-to-caller",
   "subtraction-and-reuse",
   "instructions-in-sequence",
   "meet-the-machine",
@@ -137,7 +138,7 @@ for (const theme of ["light", "dark"] as const) {
       await page.locator('.lesson-nav a[href="#/lesson/tiny-function"]').click();
       await expect(
         page.locator('article[data-lesson="tiny-function"] .lesson-model-note'),
-      ).toHaveCount(1);
+      ).toHaveCount(0);
       await expect(
         page.locator('article[data-lesson="tiny-function"] .lesson-model-vs-reality'),
       ).toHaveCount(1);
@@ -208,8 +209,8 @@ for (const theme of ["light", "dark"] as const) {
       expect(await designProblems(page, isMobile)).toEqual([]);
       await page.locator('.lesson-nav a[href="#/lesson/tiny-function"]').click();
       await expect(page.getByRole("heading", { level: 1 })).toHaveText("A tiny function");
-      await expect(page.locator('.lesson-section[data-kind="prediction"]')).toContainText(
-        "the one you just practised",
+      await expect(page.locator('.lesson-section[data-kind="motivation"]')).toContainText(
+        "argument",
       );
       expect(errors).toEqual([]);
     });

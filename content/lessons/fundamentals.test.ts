@@ -33,13 +33,20 @@ describe("visible Fundamentals lessons", () => {
       "one-addition",
       "adding-a-constant",
       "tiny-function",
+      "returning-to-caller",
       "subtraction-and-reuse",
       "instructions-in-sequence",
     ]);
-    expect(lessons.map((lesson) => lesson.order)).toEqual([0, 1, 2, 3, 4]);
+    expect(lessons.map((lesson) => lesson.order)).toEqual([0, 1, 2, 3, 4, 5]);
     for (const lesson of lessons) {
       expect(lesson.sections).toHaveLength(
-        lesson.id === "one-addition" ? 9 : lesson.id === "adding-a-constant" ? 3 : 10,
+        lesson.id === "one-addition"
+          ? 9
+          : lesson.id === "adding-a-constant"
+            ? 3
+            : ["tiny-function", "returning-to-caller"].includes(lesson.id)
+              ? 4
+              : 10,
       );
       for (const figure of lesson.sections
         .flatMap((section) => section.interactives)
@@ -73,7 +80,8 @@ describe("visible Fundamentals lessons", () => {
     expect(lessons.map((lesson) => lesson.challenges[0]!.reference.answers)).toEqual([
       { w1: "19", w0: "14" },
       { w1: "13", w0: "10" },
-      { w0: "1" },
+      { w0: "10", w1: "4" },
+      { w0: "5", w1: "10" },
       { w1: "13", w0: "18" },
       { w2: "10", w1: "4" },
     ]);
@@ -135,7 +143,7 @@ describe("visible Fundamentals lessons", () => {
     // The unshifted immediate limit is Arm DDI0602 ADD (immediate)'s imm12 range;
     // arith.test.ts also checks 4095 and the larger, shifted 4096 encoding.
     const pinned = new Set([
-      0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 18, 19, 20, 31, 32, 64, 16.1, 4095,
+      0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 19, 20, 31, 32, 64, 16.1, 4095,
     ]);
     const text = lessons
       .flatMap(learnerText)
@@ -174,7 +182,7 @@ describe("visible Fundamentals lessons", () => {
     const shown = flat(
       [...lessons.flatMap(learnerText), ...strings(FUNDAMENTALS_LABELS)].join("\n"),
     );
-    expect(shown).toContain("increment_int(0)");
+    expect(shown).toContain("add_ints(6, 4)");
     expect(shown).not.toContain("Next activity");
   });
 });
