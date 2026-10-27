@@ -188,4 +188,3 @@ ret returned to the caller. w0 still holds 8. Run the caller’s addition.
 ### figure strings / status / 3
 
 The caller read 8 from w0 and wrote 16 to w1.
-
