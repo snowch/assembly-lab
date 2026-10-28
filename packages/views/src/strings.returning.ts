@@ -26,5 +26,5 @@ export const RETURNING_STRINGS = {
             ? `ret returned to the caller. w0 still holds ${w0}. Run the caller’s addition.`
             : `The caller read ${w0} from w0 and wrote ${w1} to w1.`,
   complete: "The activity stops after this caller instruction.",
-  callerProse: "These caller instructions were written for this course.",
+  callerProse: "The caller’s assembly was written by hand.",
 } as const;
