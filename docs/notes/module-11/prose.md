@@ -132,14 +132,6 @@ Use a comparison before the addition to follow the C-safe approach shown above. 
 - A documented option such as `-fwrapv` changes some of those rules.
 - Check signed arithmetic bounds before performing the operation.
 
-Why can the ordinary compilation return true without adding, while the `-fwrapv` compilation needs to distinguish the maximum input?
-
-*Closed note: Answer*
-
-In standard C, every defined case of this expression makes the comparison true. The overflowing case places no requirements on the result. With `-fwrapv`, that boundary case has a specified wrapped result and must make the comparison false.
-
-*End of closed note.*
-
 
 ## Figure captions and labels
 
@@ -304,7 +296,6 @@ Choose the check from the property you need. A bounds check before narrowing pro
 The next exercise applies checked addition to signed 32-bit inputs and a signed 32-bit destination. C23 checked arithmetic also supports other integer types; this exercise covers one case. Keep the stored sum bits separate from the returned overflow report. Formatting and run-time checks are further topics in the reflection detail after the exercise.
 
 
-
 ## 9. Write a checked trip adjustment
 
 ### Write checked_trip
@@ -329,11 +320,7 @@ Leave the four bytes following the result slot unchanged. Store the sum before r
 - Checked addition reports whether the mathematical sum fits its destination.
 - Test the report before treating stored result bits as a valid sum.
 
-How do C types affect machine code beyond choosing signed or unsigned instructions?
-
-*Closed note: Answer, formatting and run-time checks*
-
-Types also determine conversions and which source operations are defined. A compiler can use those rules to transform or remove calculations before it selects instructions. The registers hold bits, but the source-language rules shape the program that reaches them.
+*Closed note: Formatting and run-time checks*
 
 The C function `printf` prints formatted text. Its first argument is a format string: text containing codes that describe how to print the following arguments. The code `%d` expects an `int`, and `%u` expects an `unsigned int`. They are not switches for interpreting an arbitrary argument's bits. Use a deliberate conversion when the argument type needs to change. For example, `printf("%u", (unsigned)gradient)` passes an unsigned value; a negative gradient is converted by the unsigned conversion rule.
 

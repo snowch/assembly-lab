@@ -65,11 +65,7 @@ export const PROSE = {
     "Under `read_sensors:`, use `ldrsb w1, [x0, #4]`, `ldrb w2, [x0, #5]`, `ldrh w3, [x0, #6]`, `ldr w0, [x0]` and `ret`.",
   ] as const,
   reflection:
-    "- A memory byte has bits, but no signed or unsigned label.\n- Zero extension fills added bits with zeros.\n- Sign extension copies the source's sign bit into the added bits.\n- A write through a `w` register name still clears the upper half of the `x` register.\n- A record can need different load widths for different fields.\n\n" +
-    "Why does `ldrsb w0, [x0]` produce a different full `x0` value from `ldrsb x0, [x0]` for a negative byte?",
-  reflectionNoteSummary: "Answer",
-  reflectionNote:
-    "The `w0` form sign-extends only to 32 bits, then clears the upper half of `x0`. The `x0` form sign-extends through all 64 bits. Their low 32 bits agree, but their upper 32 bits differ for a negative byte.",
+    "- A memory byte has bits, but no signed or unsigned label.\n- Zero extension fills added bits with zeros.\n- Sign extension copies the source's sign bit into the added bits.\n- A write through a `w` register name still clears the upper half of the `x` register.\n- A record can need different load widths for different fields.",
   modelVsReality: "",
   originalityNote: {
     textbookExample: "Loading the same byte as a signed and unsigned integer in isolation.",

@@ -141,14 +141,6 @@ ret
 - Pre-index updates the pointer before an access; post-index updates it afterwards.
 - A loop must stop before it reads beyond the array.
 
-Why does `p + 1` move by four bytes when `p` points to an `unsigned` on this target?
-
-*Closed note: Answer*
-
-C pointer arithmetic advances by elements of the pointed-to type. An `unsigned` occupies four bytes on this target, so moving to the next element adds four to the byte address.
-
-*End of closed note.*
-
 
 ## Figure captions and labels
 
@@ -372,14 +364,6 @@ ret
 - ASCII `0` is a text character, not a terminator.
 - A bounded scan checks its capacity before reading another byte.
 - A byte count need not equal a displayed-character count.
-
-Why is the capacity still necessary when a byte array is expected to contain text?
-
-*Closed note: Answer*
-
-The readable region might not contain a zero byte. A valid capacity gives the loop a stopping point even when the expected terminator is missing.
-
-*End of closed note.*
 
 
 ## Figure captions and labels

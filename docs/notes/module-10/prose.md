@@ -124,16 +124,6 @@ In the function body, write `unsigned charge = distance * rate;`, then `if (char
 - Different instruction sequences can implement the same calculation.
 - Unsigned wrapping occurs at the arithmetic operation, before a later cap.
 
-Why can two compilers produce different assembly for this function without disagreeing about its result?
-
-## reflectionNoteSummary
-
-Answer
-
-## reflectionNote
-
-The C source specifies the result for each defined input, not one mandatory instruction sequence. The course compiler uses inspectable fixed patterns; GCC can transform those patterns while preserving the required behaviour.
-
 
 ## originalityNote
 
@@ -356,16 +346,6 @@ Write `while (count != 0) { value = value >> 1; count--; }`, followed by `return
 - Source lines and instructions do not have a one-to-one relationship.
 - Check both zero iterations and the final permitted counter value.
 - Repeated valid operations need not equal one operation with a larger operand.
-
-Why can shifting right by one 32 times be valid C when shifting a 32-bit value right by 32 once is not?
-
-## reflectionNoteSummary
-
-Answer
-
-## reflectionNote
-
-The C shift-count rule applies to each operation. Every repeated shift has count one, which is below the value's 32-bit width. The single shift has count 32, which is outside the permitted range.
 
 
 ## originalityNote

@@ -274,7 +274,6 @@ export const countingDown: LessonInput = {
       kind: "reflection",
       title: LABELS.titles.reflection,
       prose: PROSE.reflection,
-      details: { summary: PROSE.reflectionNoteSummary, prose: PROSE.reflectionNote },
     },
   ],
   challenges: [

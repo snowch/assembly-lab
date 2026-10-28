@@ -15,9 +15,6 @@ export const FUNDAMENTALS_PROSE = {
         "In `add w2, w0, w1`, the **inputs** are `w0` and `w1`: the instruction reads the values stored there. It adds those values and writes the result into `w2`. The register that receives the result is the **destination**, named first in this instruction.",
       investigation:
         "Press Run the instruction. The figure runs a **simulator** in your browser: a program that imitates the processor. The course calls it the model.",
-      construction:
-        "Read the result back through the instruction: which operand names the register that was written?",
-      failureExperiment: "Did either input register lose its value when the instruction read it?",
       explanation: "Reading preserves the inputs. Only the destination is written.",
       generalisation:
         "The destination can be a different register. Apply the same operand rule below.",
@@ -107,8 +104,6 @@ export const FUNDAMENTALS_PROSE = {
       prediction: "Predict what the addition writes to `w0`, then run it.",
       investigation:
         "`sub` subtracts its third operand from its second, then writes its first operand. The next figure starts a separate example. Predict the result before running it.",
-      construction: "In the subtraction, which old value was read before being replaced?",
-      failureExperiment: "Would swapping the subtraction inputs give the same result?",
       explanation:
         "Repeating a register name does not create another register. Read its old value before replacing it.",
       generalisation:
@@ -145,12 +140,8 @@ export const FUNDAMENTALS_PROSE = {
     sections: {
       question: "What does the second instruction read after the first writes a result?",
       motivation: "The next example adds into `w2`, then subtracts from that result.",
-      prediction:
-        "Which register does the first instruction write? Which instruction will read that result?",
       investigation:
         "The marker ▸ shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`. Run the two instructions one at a time. This figure stops after the subtraction.",
-      construction: "After the addition, pause. Which value will the subtraction read from `w2`?",
-      failureExperiment: "Using the starting value of `w2` again would lose the addition's result.",
       explanation:
         "An arithmetic instruction writes its destination, then execution moves to the next instruction. That instruction uses the values now in the registers.",
       challenge:

@@ -14,7 +14,9 @@ type Key = keyof typeof P;
 const CONFIG = [
   {
     key: "addition",
-    sectionKinds: SECTION_KINDS.filter((kind) => kind !== "reflection"),
+    sectionKinds: SECTION_KINDS.filter(
+      (kind) => kind !== "reflection" && kind !== "construction" && kind !== "failureExperiment",
+    ),
     id: "one-addition",
     worked: 0,
     test: 2,
@@ -44,7 +46,9 @@ const CONFIG = [
   },
   {
     key: "subtraction",
-    sectionKinds: SECTION_KINDS.filter((kind) => kind !== "reflection"),
+    sectionKinds: SECTION_KINDS.filter(
+      (kind) => kind !== "reflection" && kind !== "construction" && kind !== "failureExperiment",
+    ),
     id: "subtraction-and-reuse",
     worked: 4,
     test: 4,
@@ -55,7 +59,12 @@ const CONFIG = [
   {
     key: "sequence",
     sectionKinds: SECTION_KINDS.filter(
-      (kind) => kind !== "reflection" && kind !== "generalisation",
+      (kind) =>
+        kind !== "reflection" &&
+        kind !== "generalisation" &&
+        kind !== "prediction" &&
+        kind !== "construction" &&
+        kind !== "failureExperiment",
     ),
     id: "instructions-in-sequence",
     worked: 5,

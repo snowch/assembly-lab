@@ -26,14 +26,6 @@ In `add w2, w0, w1`, the **inputs** are `w0` and `w1`: the instruction reads the
 
 Press Run the instruction. The figure runs a **simulator** in your browser: a program that imitates the processor. The course calls it the model.
 
-### addition / sections / construction
-
-Read the result back through the instruction: which operand names the register that was written?
-
-### addition / sections / failureExperiment
-
-Did either input register lose its value when the instruction read it?
-
 ### addition / sections / explanation
 
 Reading preserves the inputs. Only the destination is written.
@@ -140,14 +132,6 @@ Reading add
 ### addition labels / titles / investigation
 
 Run one addition
-
-### addition labels / titles / construction
-
-Identify the destination
-
-### addition labels / titles / failureExperiment
-
-Reading keeps the input
 
 ### addition labels / titles / explanation
 
@@ -463,14 +447,6 @@ Predict what the addition writes to `w0`, then run it.
 
 `sub` subtracts its third operand from its second, then writes its first operand. The next figure starts a separate example. Predict the result before running it.
 
-### subtraction / sections / construction
-
-In the subtraction, which old value was read before being replaced?
-
-### subtraction / sections / failureExperiment
-
-Would swapping the subtraction inputs give the same result?
-
 ### subtraction / sections / explanation
 
 Repeating a register name does not create another register. Read its old value before replacing it.
@@ -559,14 +535,6 @@ Reuse in addition
 
 Subtraction
 
-### subtraction labels / titles / construction
-
-Read the subtraction
-
-### subtraction labels / titles / failureExperiment
-
-Input order matters
-
 ### subtraction labels / titles / explanation
 
 Old value and new value
@@ -621,21 +589,9 @@ What does the second instruction read after the first writes a result?
 
 The next example adds into `w2`, then subtracts from that result.
 
-### sequence / sections / prediction
-
-Which register does the first instruction write? Which instruction will read that result?
-
 ### sequence / sections / investigation
 
 The marker ▸ shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`. Run the two instructions one at a time. This figure stops after the subtraction.
-
-### sequence / sections / construction
-
-After the addition, pause. Which value will the subtraction read from `w2`?
-
-### sequence / sections / failureExperiment
-
-Using the starting value of `w2` again would lose the addition's result.
 
 ### sequence / sections / explanation
 
@@ -705,21 +661,9 @@ Use the previous result
 
 One changing state
 
-### sequence labels / titles / prediction
-
-Find the connection
-
 ### sequence labels / titles / investigation
 
 Follow the marker
-
-### sequence labels / titles / construction
-
-Pause between instructions
-
-### sequence labels / titles / failureExperiment
-
-Keep the intermediate result
 
 ### sequence labels / titles / explanation
 

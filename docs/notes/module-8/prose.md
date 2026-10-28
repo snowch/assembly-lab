@@ -117,14 +117,6 @@ Write `wide_product`. `w0` and `w1` hold unsigned 32-bit values. Return their fu
 - `umull` and `smull` preserve the full product of two 32-bit inputs.
 - `umulh` and `smulh` supply the high half of a 64-by-64-bit multiplication.
 
-Why must a C cast appear before a multiplication when its purpose is to preserve a wider result?
-
-*Closed note: Answer*
-
-The operand types determine the width used for the multiplication. A conversion afterwards can widen only the result that remains; it cannot reconstruct bits already discarded.
-
-*End of closed note.*
-
 
 ## Figure captions and labels
 
@@ -316,14 +308,6 @@ If the distance is zero, return zero. The tests include fuel values whose produc
 - Choose `sdiv` or `udiv` from the inputs' interpretation.
 - A64 division results do not define otherwise undefined C expressions.
 - Widen a product before dividing when its higher bits are needed.
-
-Why can an average be wrong even when its final value would fit in the return register?
-
-*Closed note: Answer*
-
-An intermediate multiplication can discard bits before the division runs. Dividing the truncated product gives a different quotient. Preserve the full intermediate product before dividing it.
-
-*End of closed note.*
 
 
 ## Figure captions and labels

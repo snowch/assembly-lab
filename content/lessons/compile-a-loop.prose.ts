@@ -46,10 +46,7 @@ export const PROSE = {
     "Write `while (count != 0) { value = value >> 1; count--; }`, followed by `return value;`.",
   ],
   reflection:
-    "- A compiled loop has instructions for its condition, body and update.\n- A backward branch connects one iteration to the next condition test.\n- Source lines and instructions do not have a one-to-one relationship.\n- Check both zero iterations and the final permitted counter value.\n- Repeated valid operations need not equal one operation with a larger operand.\n\nWhy can shifting right by one 32 times be valid C when shifting a 32-bit value right by 32 once is not?",
-  reflectionNoteSummary: "Answer",
-  reflectionNote:
-    "The C shift-count rule applies to each operation. Every repeated shift has count one, which is below the value's 32-bit width. The single shift has count 32, which is outside the permitted range.",
+    "- A compiled loop has instructions for its condition, body and update.\n- A backward branch connects one iteration to the next condition test.\n- Source lines and instructions do not have a one-to-one relationship.\n- Check both zero iterations and the final permitted counter value.\n- Repeated valid operations need not equal one operation with a larger operand.",
   modelVsReality: "",
   originalityNote: {
     textbookExample: "A loop compiled once into a static listing with no editable source.",

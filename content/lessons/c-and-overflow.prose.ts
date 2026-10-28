@@ -49,10 +49,7 @@ export const PROSE = {
     "Write `mov w1, #2147483647`, `cmp w0, w1`, `b.eq done` and `add w0, w0, #1`. Put `ret` under `done:`.",
   ],
   reflection:
-    "- A64 defines instruction results that signed C overflow does not promise.\n- Undefined behaviour gives no required result for the affected C case.\n- A compiler can use the rules for defined inputs to remove a calculation.\n- A documented option such as `-fwrapv` changes some of those rules.\n- Check signed arithmetic bounds before performing the operation.\n\nWhy can the ordinary compilation return true without adding, while the `-fwrapv` compilation needs to distinguish the maximum input?",
-  reflectionNoteSummary: "Answer",
-  reflectionNote:
-    "In standard C, every defined case of this expression makes the comparison true. The overflowing case places no requirements on the result. With `-fwrapv`, that boundary case has a specified wrapped result and must make the comparison false.",
+    "- A64 defines instruction results that signed C overflow does not promise.\n- Undefined behaviour gives no required result for the affected C case.\n- A compiler can use the rules for defined inputs to remove a calculation.\n- A documented option such as `-fwrapv` changes some of those rules.\n- Check signed arithmetic bounds before performing the operation.",
   modelVsReality: "",
   originalityNote: {
     textbookExample: "A signed-overflow puzzle presented as surprising compiler behaviour.",

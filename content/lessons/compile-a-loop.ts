@@ -155,7 +155,6 @@ export const compileALoop: LessonInput = {
       kind: "reflection",
       title: L.titles.reflection,
       prose: P.reflection,
-      details: { summary: P.reflectionNoteSummary, prose: P.reflectionNote },
     },
   ],
   challenges: [

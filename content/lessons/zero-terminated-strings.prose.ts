@@ -46,10 +46,7 @@ export const PROSE = {
     "One complete solution is:\n\n```asm\nmov x2, x0\nmov w0, #0\nloop:\nldrb w3, [x2], #1\ncbz w3, done\ncmp w3, w1\nb.ne next\nadd w0, w0, #1\nnext:\nb loop\ndone:\nret\n```",
   ],
   reflection:
-    "- A zero byte ends a C string and is excluded from its length.\n- A byte array can contain more data after that terminator.\n- ASCII `0` is a text character, not a terminator.\n- A bounded scan checks its capacity before reading another byte.\n- A byte count need not equal a displayed-character count.\n\nWhy is the capacity still necessary when a byte array is expected to contain text?",
-  reflectionNoteSummary: "Answer",
-  reflectionNote:
-    "The readable region might not contain a zero byte. A valid capacity gives the loop a stopping point even when the expected terminator is missing.",
+    "- A zero byte ends a C string and is excluded from its length.\n- A byte array can contain more data after that terminator.\n- ASCII `0` is a text character, not a terminator.\n- A bounded scan checks its capacity before reading another byte.\n- A byte count need not equal a displayed-character count.",
   modelVsReality: "",
   originalityNote: {
     textbookExample: "An unbounded strlen implementation over a greeting.",

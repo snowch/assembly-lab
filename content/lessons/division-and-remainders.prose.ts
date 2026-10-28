@@ -48,10 +48,7 @@ export const PROSE = {
     "One complete approach is: `cbz w1, zero`; `mov w2, #100`; `umull x0, w0, w2`; `mov w1, w1`; `udiv x0, x0, x1`; `ret`. Under `zero:`, write `mov x0, #0` and `ret`.",
   ],
   reflection:
-    "- Signed integer division rounds towards zero.\n- Compute a remainder as dividend minus quotient times divisor.\n- Choose `sdiv` or `udiv` from the inputs' interpretation.\n- A64 division results do not define otherwise undefined C expressions.\n- Widen a product before dividing when its higher bits are needed.\n\nWhy can an average be wrong even when its final value would fit in the return register?",
-  reflectionNoteSummary: "Answer",
-  reflectionNote:
-    "An intermediate multiplication can discard bits before the division runs. Dividing the truncated product gives a different quotient. Preserve the full intermediate product before dividing it.",
+    "- Signed integer division rounds towards zero.\n- Compute a remainder as dividend minus quotient times divisor.\n- Choose `sdiv` or `udiv` from the inputs' interpretation.\n- A64 division results do not define otherwise undefined C expressions.\n- Widen a product before dividing when its higher bits are needed.",
   modelVsReality: "",
   originalityNote: {
     textbookExample: "Quotient and remainder from positive small integers.",

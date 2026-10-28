@@ -74,11 +74,7 @@ export const PROSE = {
   finalFeedback:
     "Check both stopping conditions. A zero tick count preserves the brightness; zero brightness needs no further shifts.",
   reflection:
-    "- `subs` can change a count and set the flags needed by a branch.\n- A `while` loop can skip its body; a `do` loop runs it at least once.\n- An unsigned value is always at or above zero.\n- Reaching the simulator's instruction limit does not prove that a loop runs forever.\n- A loop can stop early when further work cannot change its result.\n\n" +
-    "Why does `dim_until_dark` need its initial check for a zero tick count even though it also checks for zero brightness?",
-  reflectionNoteSummary: "Answer",
-  reflectionNote:
-    "A zero tick count requests no dimming, even when the brightness is not zero. Without the count check, the loop would shift that brightness and subtract from zero. The brightness check answers a different question: whether any further dimming could change the result.",
+    "- `subs` can change a count and set the flags needed by a branch.\n- A `while` loop can skip its body; a `do` loop runs it at least once.\n- An unsigned value is always at or above zero.\n- Reaching the simulator's instruction limit does not prove that a loop runs forever.\n- A loop can stop early when further work cannot change its result.",
   modelVsReality: "",
   originalityNote: {
     textbookExample: "A factorial countdown or an unsigned loop that prints decreasing integers.",

@@ -45,8 +45,8 @@ describe("visible Fundamentals lessons", () => {
           : ["tiny-function", "returning-to-caller"].includes(lesson.id)
             ? 4
             : lesson.id === "instructions-in-sequence"
-              ? 8
-              : 9,
+              ? 5
+              : 7,
       );
       for (const figure of lesson.sections
         .flatMap((section) => section.interactives)

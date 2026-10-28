@@ -64,11 +64,7 @@ export const PROSE = {
   finalFeedback:
     "Follow the initial test first. Count each instruction that runs, including every branch and `ret`.",
   reflection:
-    "- A loop repeats its body. Each execution of the body is one iteration.\n- A branch to an earlier instruction can repeat the same work.\n- A test before the body can skip all iterations.\n- The count of iterations differs from the count of instructions.\n\n" +
-    "Why does GCC test for inequality at the bottom of `dim_up`, even though the C tests whether `tick` is below `end`?",
-  reflectionNoteSummary: "Answer",
-  reflectionNote:
-    "The first test establishes that `tick` starts below `end`. Each iteration increases it by 1, so it reaches `end` without passing it. Repeating until the values are equal gives the same stopping point.",
+    "- A loop repeats its body. Each execution of the body is one iteration.\n- A branch to an earlier instruction can repeat the same work.\n- A test before the body can skip all iterations.\n- The count of iterations differs from the count of instructions.",
   modelVsReality: "",
   originalityNote: {
     textbookExample: "Adding consecutive integers or computing a factorial with a counting loop.",

@@ -46,10 +46,7 @@ export const PROSE = {
     "One complete solution is:\n\n```asm\nmov x2, x0\nmov w0, #0\ncbz w1, done\nloop:\nldr w3, [x2], #4\nadd w0, w0, w3\nsubs w1, w1, #1\nb.ne loop\ndone:\nret\n```",
   ],
   reflection:
-    "- An array index counts elements, starting at zero.\n- Scale the index by the element's size to obtain a byte offset.\n- An offset can select an address without changing the pointer.\n- Pre-index updates the pointer before an access; post-index updates it afterwards.\n- A loop must stop before it reads beyond the array.\n\nWhy does `p + 1` move by four bytes when `p` points to an `unsigned` on this target?",
-  reflectionNoteSummary: "Answer",
-  reflectionNote:
-    "C pointer arithmetic advances by elements of the pointed-to type. An `unsigned` occupies four bytes on this target, so moving to the next element adds four to the byte address.",
+    "- An array index counts elements, starting at zero.\n- Scale the index by the element's size to obtain a byte offset.\n- An offset can select an address without changing the pointer.\n- Pre-index updates the pointer before an access; post-index updates it afterwards.\n- A loop must stop before it reads beyond the array.",
   modelVsReality: "",
   originalityNote: {
     textbookExample: "Summing an anonymous integer array with an index.",
