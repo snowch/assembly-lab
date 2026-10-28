@@ -316,6 +316,7 @@ export const memoryAndAddresses: LessonInput = {
       reference: { text: COPY_DISTANCE_TEXT },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: PROSE.originalityNote,
 };

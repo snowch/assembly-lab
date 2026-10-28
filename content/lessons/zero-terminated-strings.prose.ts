@@ -8,7 +8,7 @@ export const PROSE = {
   questionNote:
     "The recorded listing uses GCC 16.1 with `-O1` for little-endian AArch64 Linux. `label_length` accepts a pointer to bytes and a capacity: the maximum number of bytes it may read.\n\nThe function returns the number of bytes before the first zero, or the capacity if it finds no zero within that limit. A byte array without a zero in the readable region is not a complete C string.",
   motivation:
-    "Each element here occupies one byte, so its index is already a byte offset. `ldrb w2, [x3, x0]` reads the byte whose index is in `x0`, starting from the address in `x3`. No scaling shift is needed.\n\nAfter a load, `cbz` can test whether the byte is zero. The loop counts a byte only if it is nonzero. It must also stop at the capacity, even if no terminator has appeared.\n\nThe code that calls `label_length` must supply a capacity no larger than the readable byte array. A bound protects the scan only when that bound is valid.",
+    "Each element here occupies one byte, so its index is already a byte offset. `ldrb w2, [x3, x0]` reads the byte whose index is in `x0`, starting from the address in `x3`. No scaling shift is needed.\n\nAfter a load, `cbz` can test whether the byte is zero. The loop counts a byte only if it is nonzero. It must also stop at the capacity, even if no terminator has appeared.\n\nThe code that calls `label_length` must supply a capacity no larger than the readable byte array. A bound protects the scan only when that bound is valid.\n\nThe simulator checks access to its prepared memory. It does not check that the supplied capacity matches the array or that a terminator exists.",
   prediction:
     "The prepared bytes are `65, 45, 66, 45, 67, 0, 88, 0`. The capacity is 8. The bytes hold the label `A-B-C`, its zero terminator and more bytes after it.",
   predictionQuestion: "**What length does `label_length` return in `x0`?**",
@@ -50,8 +50,7 @@ export const PROSE = {
   reflectionNoteSummary: "Answer",
   reflectionNote:
     "The readable region might not contain a zero byte. A valid capacity gives the loop a stopping point even when the expected terminator is missing.",
-  modelVsReality:
-    "The figures show prepared ASCII bytes in ordinary memory. The bounded function relies on a valid capacity; the moving-pointer examples rely on a valid terminator. The simulator checks whether each memory access stays within its prepared memory. It does not check that the supplied capacity or terminator meets the function’s requirements.\n\nThe course does not decode multi-byte text encodings or model the time needed to read memory.",
+  modelVsReality: "",
   originalityNote: {
     textbookExample: "An unbounded strlen implementation over a greeting.",
     howThisDiffers:

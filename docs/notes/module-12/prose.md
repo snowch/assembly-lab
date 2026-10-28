@@ -42,6 +42,8 @@ Open [boot.s](native/boot.s), [trip_distance.s](native/trip_distance.s) and [boo
 
 At `boot_ready`, the assembly caller places 120, 85, 42 and 15 in `w0` to `w3`, then calls `trip_distance`. The function adds the three distances, subtracts the correction and returns, as in Module 0.
 
+The browser runs only this arithmetic function. Use the external tools for startup and device output; the browser does not execute that part of the boot image.
+
 ## PROSE.predictionQuestion
 
 **What signed value does the function return in `w0`?**
@@ -84,7 +86,7 @@ qemu-system-aarch64 -M virt -cpu cortex-a53 -m 128M -nographic -kernel boot.elf
 
 `-M virt` selects QEMU's machine design. `-cpu cortex-a53` selects the emulated processor and `-m 128M` its RAM size. `-kernel` supplies the image to load; this option's name does not make the image a Linux kernel. `-nographic` connects the serial console and QEMU's control interface to this terminal.
 
-Expected serial output:
+The reference GNU/QEMU build produces this serial output:
 
 ```text
 Assembly Lab: trip check passed
@@ -130,7 +132,7 @@ Inspect the supplied device and exception setup
 
 `msr daifset, #0xf` sets the mask bits for debug, SError, IRQ and FIQ exceptions. SError is a system-error exception; IRQ and FIQ are interrupt requests. A handler is code that responds to an exception. Masking prevents the selected exceptions from being taken while their mask bits are set. This small program supplies no interrupt handlers. It uses **polling**: repeatedly reading device status to decide when to act.
 
-The PL011 UART's device registers appear at memory addresses on this machine. This is **memory-mapped input/output**: a load or store at a device address talks to the device. The base address here is `0x09000000`. The setup stores configure the UART: offset `0x30` is its control register, written with zero while configuring and `0x301` to enable the UART, transmitter and receiver. Offsets `0x24` and `0x28` hold the integer and fractional baud-rate divisors; this source writes 1 and 0. A divisor sets the serial bit rate from the device’s clock. This QEMU run does not verify physical clock settings or serial timing. Offset `0x2c` controls the line format; `0x60` selects eight data bits. These values describe this experiment, not a board-independent serial-speed recipe. `adr` obtains the address of a nearby message label. `ldrb` reads each message byte; `cbz` detects its zero terminator. The output loop reads the UART flag register at offset `0x18`. `tbnz` tests bit 5 and branches while the transmit buffer is full. `strb` writes an available byte to the data register at offset zero.
+The PL011 UART's device registers appear at memory addresses on this machine. This is **memory-mapped input/output**: a load or store at a device address talks to the device. The base address here is `0x09000000`. The setup stores configure the UART: offset `0x30` is its control register, written with zero while configuring and `0x301` to enable the UART, transmitter and receiver. Offsets `0x24` and `0x28` hold the integer and fractional baud-rate divisors; this source writes 1 and 0. A divisor sets the serial bit rate from the device’s clock. This QEMU run does not verify physical clock settings, serial timing or realistic transmit-buffer pressure. Offset `0x2c` controls the line format; `0x60` selects eight data bits. These values describe this experiment, not a board-independent serial-speed recipe. `adr` obtains the address of a nearby message label. `ldrb` reads each message byte; `cbz` detects its zero terminator. The output loop reads the UART flag register at offset `0x18`. `tbnz` tests bit 5 and branches while the transmit buffer is full. `strb` writes an available byte to the data register at offset zero.
 
 `uart_puts` uses `stp` and `ldp` to save and restore its frame pointer and return address. Startup prepares the aligned stack before calling code that uses it.
 
@@ -198,11 +200,6 @@ Answer
 
 Assemble `trip_distance.s` again to replace `trip_distance.o`, then link again to replace `boot.elf`. The unchanged `boot.o` can be reused. Stop the old QEMU machine and boot the new executable.
 
-## PROSE.modelVsReality
-
-The browser executes its A64 instruction model for the arithmetic function. The external tools assemble and link the whole image; QEMU system mode supplies its emulated machine. The browser does not execute the native startup, exception-control instructions or UART accesses.
-
-The recorded output comes from the reference GNU/QEMU build. QEMU does not establish physical-board clock settings, serial speed or realistic transmit-buffer pressure. The UART polling code belongs to this device model and memory map. Different boards require their own startup and device setup.
 
 ## PROSE.originalityNote.textbookExample
 
@@ -480,7 +477,7 @@ x/i $pc
 
 Repeat this group through the two additions, subtraction and `ret`. Use instruction stepping here; GDB's `step` follows source-level rules and need not stop after each instruction.
 
-Compare each stop with the browser model and the recorded GDB stops below. GDB prints the 64-bit `x` views. This function calculates with their low 32-bit `w` views. The assembly caller explicitly supplies the inputs; later writes follow the executed instruction.
+Compare each stop with the browser model and the recorded GDB stops below. The recording does not control your QEMU machine; use GDB in the terminal to step that machine. GDB prints the 64-bit `x` views. This function calculates with their low 32-bit `w` views. The assembly caller explicitly supplies the inputs; later writes follow the executed instruction.
 
 Before `ret`, the program counter points at `ret`. After it, the program counter points at `after_trip`, back in the assembly caller. The `bl` instruction supplied that return address in `x30`. Returning does not write a new value into `w0`.
 
@@ -615,11 +612,6 @@ Answer
 
 Check the board's reset and firmware handoff, the way it loads an image, available RAM, entry address and processor state. Check stack and storage setup, the UART's address and its clock and configuration requirements. The trip function's instruction meanings carry across; this QEMU machine's memory map and loading path are not a board specification.
 
-## PROSE.modelVsReality
-
-The comparison combines browser-model states with recorded stops from a GNU/QEMU/GDB run. Stepping that recording on this page does not start a native machine. Use the terminal commands to inspect the machine you boot.
-
-The browser does not model the complete boot path, exception handling, firmware or devices. QEMU supplies a system emulation, not physical Arm hardware. Its UART output checks this example's emulated path without establishing physical clock setup, serial timing or transmit-buffer pressure.
 
 ## PROSE.originalityNote.textbookExample
 

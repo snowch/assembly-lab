@@ -159,10 +159,6 @@ Field labels, in order: "unsigned reading of `0x0000002a`"; "signed reading of `
 
 Unsigned 2147483649: the top bit, 2147483648, plus 1. Signed −2147483647: minus 2147483648, plus 1.
 
-## 11. The model and the real processor
-
-A real processor's registers hold bits with no type, as the simulator's do. Each register holds 64 bits; this lesson's figures show only the lower 32, which the `w` names use. Lesson 2 shows the rest.
-
 # Lesson 2: Constants and widths
 
 ## 0. Objectives
@@ -341,7 +337,3 @@ Field labels: "`x1` at the end"; "`w2` at the end".
 **Answer**
 
 `x5` holds 7. Writing `w5` put 7 in the lower 32 bits and cleared the upper 32.
-
-## 11. The model and the real processor
-
-The course does not show how an instruction's bits hold its constant. The course takes which constants fit from the GNU assembler, and tests its own assembler against that one line by line.

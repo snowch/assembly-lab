@@ -6,7 +6,7 @@ export const PROSE = {
     "The display repeatedly halves its brightness until it becomes dark. The trip computer can add all the nonzero brightness levels by asking the same function to handle the remaining levels. **What must each call remember while the next call runs?**\n\nA function that calls itself uses **recursion**. It needs a **base case**: an input it can answer without making another call. In `fade_sum`, zero brightness is the base case. Every other call halves the brightness, calls `fade_sum` again, then adds its own original brightness.",
   questionNoteSummary: "The recorded recursive function",
   questionNote:
-    "The listing uses GCC 16.1 with `-O1 -fno-inline` for little-endian AArch64 Linux. Each call follows the same register-preservation rules as a call to a different function.\n\nThe brightness and sum are unsigned 32-bit values. The sum wraps if it exceeds that range. A recursive call must finish before the pending addition can use its returned value.",
+    "The listing uses GCC 16.1 with `-O1 -fno-inline` for little-endian AArch64 Linux. Each call follows the same register-preservation rules as a call to a different function.\n\nThe brightness and sum are unsigned 32-bit values. The sum wraps if it exceeds that range. A recursive call must finish before the pending addition can use its returned value.\n\nThe displayed frames belong to this recorded compilation. Other compiler versions or settings may choose a different implementation.",
   motivation:
     "Each call saves its incoming `x19` and return address in its own stack frame. It then puts its brightness in `w19` and halves the argument in `w0` before calling itself.\n\nThe next call saves that `x19` value in its own frame before reusing the register. When it returns, it restores `x19`, so the earlier call has its brightness back in `w19`. The earlier call adds that brightness to the sum returned in `w0`.\n\nThe zero case returns without making another call. The listing still allocates and restores a frame for that invocation; a base case need not mean that no stack instructions run.",
   prediction:
@@ -28,7 +28,7 @@ export const PROSE = {
     "One complete solution is:\n\n```asm\nfade_sum:\nstp     x29, x30, [sp, -32]!\nmov     x29, sp\nstr     x19, [sp, 16]\nmov     w19, w0\ncbnz    w0, .L4\n.L2:\nmov     w0, w19\nldr     x19, [sp, 16]\nldp     x29, x30, [sp], 32\nret\n.L4:\nlsr     w0, w0, 1\nbl      fade_sum\nadd     w19, w19, w0\nb       .L2\n```",
   ],
   failureExperiment:
-    "The changed function passes the same brightness into its next recursive call. It replaces the right shift with `mov w0, w0`. The starting brightness is 7, and this recording is limited to 32 instructions.",
+    "The changed function passes the same brightness into its next recursive call. It replaces the right shift with `mov w0, w0`. The starting brightness is 7, and this recording is limited to 32 instructions.\n\nThe simulator uses a fixed, prepared stack. It does not reproduce a real system’s response when stack space runs out.",
   failureQuestion: "**Does the changed function return before the recording limit?**",
   failureExplain:
     "It reaches the recording limit. Every recursive call receives the same nonzero brightness, so no call reaches the zero base case. More calls allocate more stack frames.\n\nThe limit ends this recording, not the recursive calculation. A real finite stack would eventually run out of available space; this is not a claim that the machine can make an infinite number of calls.",
@@ -50,8 +50,7 @@ export const PROSE = {
   reflectionNoteSummary: "Answer",
   reflectionNote:
     "After its recursive call, `lit_count` needs only the returned count and the constant one. `fade_sum` also needs the original brightness, so it keeps that value across the call.",
-  modelVsReality:
-    "The stack diagram is computed from executed instructions and memory writes. Its recording has a finite instruction limit. A program running on a real computer also has limited stack space. The course uses a fixed, prepared stack. It does not reproduce what a real computer does when a program runs out of stack space.\n\nThe displayed frames belong to this recorded GCC output. Other compiler versions and settings may choose a different implementation.",
+  modelVsReality: "",
   originalityNote: {
     textbookExample: "Recursive factorial or Fibonacci with a call-tree drawing.",
     howThisDiffers:

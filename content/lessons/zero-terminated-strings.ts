@@ -260,6 +260,7 @@ export const zeroTerminatedStrings: LessonInput = {
       reference: { text: A.COUNT_MARKER_TEXT },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: P.modelVsReality,
   originalityNote: P.originalityNote,
 };

@@ -199,6 +199,7 @@ export const fromCToInstructions: LessonInput = {
       reference: { text: C.CAP_SOURCE },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: P.modelVsReality,
   originalityNote: P.originalityNote,
 };

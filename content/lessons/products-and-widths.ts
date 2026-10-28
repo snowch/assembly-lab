@@ -278,6 +278,7 @@ export const productsAndWidths: LessonInput = {
       reference: { text: R.WIDE_PRODUCT_TEXT },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: P.modelVsReality,
   originalityNote: P.originalityNote,
 };

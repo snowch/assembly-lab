@@ -161,9 +161,9 @@ This course teaches a real instruction set, so every claim about it is checkable
   different sources.
 - **A definition is a technical claim**, and must hold for every case the course will meet, not
   only for the lesson's example.
-- **Where the course simplifies, it says so**, in the lesson's model-versus-reality note: what the
+- **Where the course simplifies, it says so beside the relevant activity**: what the
   simulator leaves out (pipelines, caches, exceptions, most of the instruction set), and what
-  that changes.
+  that changes. Keep qualifications that affect the result visible before the learner uses it.
 
 ## Draft and review in separate passes
 

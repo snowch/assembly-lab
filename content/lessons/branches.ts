@@ -337,6 +337,7 @@ export const branches: LessonInput = {
       },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: {
     textbookExample:

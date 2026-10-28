@@ -28,6 +28,11 @@ export const FUNDAMENTALS_PROSE = {
       prose:
         "The diagram shows the input values and where the result will go. Run `add w2, w0, w1` once.",
     },
+    simulationNote: {
+      summary: "What the simulator shows",
+      prose:
+        "The simulator shows each instruction’s completed effect. Real processors can work on several instructions at once. For these examples, the required results are the same. The simulator does not show how long a processor takes.",
+    },
     registerViews: {
       caption:
         "Each x name selects all 64 bits; its matching w name selects the lower 32 bits of the same register.",
@@ -60,9 +65,9 @@ export const FUNDAMENTALS_PROSE = {
   function: {
     sections: {
       motivation:
-        "`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C below into an assembly **listing**, a written sequence of instructions. `increment_int:` names the function.\n\nCode that calls a function is its **caller**. The input it supplies is an **argument**. For this function, the argument arrives in `w0` and the integer result is left in `w0` too.\n\nThe function adds one, then `ret` returns to its caller. The next lesson follows execution back into the caller.",
+        "`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C below into an assembly **listing**, a written sequence of instructions. GCC 16.1.0 made these listings for 64-bit Arm using `-O1`, an optimisation setting that asks it to make code shorter and faster. `increment_int:` names the function.\n\nCode that calls a function is its **caller**. The input it supplies is an **argument**. For this function, the argument arrives in `w0` and the integer result is left in `w0` too.\n\nThe function adds one, then `ret` returns to its caller. The next lesson follows execution back into the caller.",
       investigation:
-        "Run the function one instruction at a time. Watch where the argument arrives and where the result is left. On a narrow screen, scroll sideways within the listing to see the C and instructions.",
+        "The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call.\n\nRun the function one instruction at a time. Watch where the argument arrives and where the result is left. On a narrow screen, scroll sideways within the listing to see the C and instructions.",
       construction:
         "`add_ints` takes two integer arguments. For this function, the first arrives in `w0` and the second in `w1`. The C names those inputs `a` and `b`.\n\nThe figure starts a separate call, `add_ints(7, 5)`. Its integer result is left in `w0`, just as for `increment_int`.",
       challenge:
@@ -86,8 +91,7 @@ export const FUNDAMENTALS_PROSE = {
         "The function leaves 10 in `w0` and keeps 4 in `w1`.",
       ],
     },
-    modelVsReality:
-      "The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call. GCC 16.1.0 made these recorded listings for 64-bit Arm using `-O1`, an optimisation setting that asks it to make code shorter and faster.",
+    modelVsReality: "",
     originalityNote: {
       textbookExample:
         "An introductory function example often combines several arithmetic operations or introduces call machinery immediately.",
@@ -110,7 +114,6 @@ export const FUNDAMENTALS_PROSE = {
       generalisation:
         "Both instructions write their first operand. Subtraction keeps the input order: second minus third.",
       challenge: "Trace a fresh subtraction without running it.",
-      reflection: "Distinguish the old input value from the result written afterwards.",
     },
     figure: {
       title: "Read and replace",
@@ -130,8 +133,7 @@ export const FUNDAMENTALS_PROSE = {
         "`w1` holds 13 and `w0` still holds 18.",
       ],
     },
-    modelVsReality:
-      "Each figure starts with its own inputs and runs one arithmetic instruction. The figures do not pass values to each other. The simulator reads the old values before writing the destination, as these instructions require.",
+    modelVsReality: "",
     originalityNote: {
       textbookExample:
         "Subtraction is often introduced as another instruction in a longer arithmetic program.",
@@ -146,16 +148,13 @@ export const FUNDAMENTALS_PROSE = {
       prediction:
         "Which register does the first instruction write? Which instruction will read that result?",
       investigation:
-        "The marker ▸ shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`. Run the two instructions one at a time.",
+        "The marker ▸ shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`. Run the two instructions one at a time. This figure stops after the subtraction.",
       construction: "After the addition, pause. Which value will the subtraction read from `w2`?",
       failureExperiment: "Using the starting value of `w2` again would lose the addition's result.",
       explanation:
         "An arithmetic instruction writes its destination, then execution moves to the next instruction. That instruction uses the values now in the registers.",
-      generalisation:
-        "This figure stops after two arithmetic instructions. The earlier function continued with `ret` to return to its caller.",
       challenge:
         "Trace the sequence with fresh inputs. Use the first result when running the second instruction.",
-      reflection: "At each step, ask: what was written, and which instruction runs next?",
     },
     figure: {
       title: "Two instructions",
@@ -171,8 +170,7 @@ export const FUNDAMENTALS_PROSE = {
         "After both instructions, `w2` holds 10 and `w1` still holds 4.",
       ],
     },
-    modelVsReality:
-      "The figure runs one instruction per step and stops after the two shown arithmetic instructions. A real processor can work on several instructions at once, but must preserve the results required by their order for this example.",
+    modelVsReality: "",
     originalityNote: {
       textbookExample:
         "An instruction sequence is often introduced through a complete multi-operation function.",

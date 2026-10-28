@@ -99,8 +99,17 @@ it in full; follow it, reading "the simulator" as this course's assembler and si
 A short introductory lesson can opt into `sectionLayout: "selected"` and supply an ordered
 subset of those sections. It can set `showTimeModelNotes: false` when its activity already explains
 the simulator controls, and use an empty `modelVsReality` when no qualification changes what
-the learner should conclude. Omitted blocks are not rendered. Other lessons keep the full
-template and their model notes; challenge, term and source checks still apply.
+the learner should conclude, or when the qualification is already explained beside the activity.
+Omitted blocks are not rendered. The platform’s full layout requires a footer qualification,
+so select the sections explicitly when the qualification is local, even if all ten sections remain.
+Challenge, term and source checks apply to both layouts.
+
+Assembly Lab explains instruction stepping beside its first activity and leaves the book's
+`timeModelNotes` empty. Do not add a general stepping reminder or hardware disclaimer to every
+lesson. Keep a qualification when it changes what the learner can conclude from the activity,
+and place it beside that activity. A figure's starting inputs, stopping point and evidence source
+must remain clear. Arithmetic-column controls still need their separate calculation-role note:
+revealing a column is not executing another instruction.
 
 Keep the words out of the structure file: `<lesson>.prose.ts` holds every paragraph and
 `<lesson>.labels.ts` every title, objective, caption and label, as digital-design does.

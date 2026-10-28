@@ -6,9 +6,9 @@ export const PROSE = {
     "The trip computer converts sensor pulses into a distance by multiplying by a scale. **Where do the extra bits go when the product is wider than the destination register?**\n\nThe result of a multiplication is its **product**. Two 32-bit inputs can need more than 32 bits for their product. Choosing a destination width determines how much of that result survives.",
   questionNoteSummary: "The compiler and integer widths",
   questionNote:
-    "These listings use GCC 16.1 with `-O1` for little-endian AArch64 Linux. Here, `int` and `unsigned` are 32 bits; `long` and `unsigned long` are 64 bits.\n\nUnsigned C multiplication wraps to the result type's range. A signed multiplication whose result cannot be represented has undefined behaviour. C places no requirements on what the program does in that case. The hardware's low-bit result does not make that C operation defined.",
+    "These listings use GCC 16.1 with `-O1` for little-endian AArch64 Linux. Here, `int` and `unsigned` are 32 bits; `long` and `unsigned long` are 64 bits.",
   motivation:
-    "`mul w0, w0, w1` multiplies the inputs in `w0` and `w1`, then keeps the low 32 bits in `w0`. Any higher product bits are discarded. Writing `w0` also clears the upper half of `x0`.\n\nThe low product bits are the same whether you interpret the inputs as signed or unsigned. There is one `mul` for both. With `x` registers, `mul` keeps the low 64 bits instead. The destination width still limits the result.",
+    "`mul w0, w0, w1` multiplies the inputs in `w0` and `w1`, then keeps the low 32 bits in `w0`. Any higher product bits are discarded. Writing `w0` also clears the upper half of `x0`.\n\nThe low product bits are the same whether you interpret the inputs as signed or unsigned. There is one `mul` for both. With `x` registers, `mul` keeps the low 64 bits instead. The destination width still limits the result.\n\nUnsigned C multiplication wraps to the result type’s range. A signed multiplication whose result cannot be represented has undefined behaviour: C places no requirements on that case. A hardware result containing only the low bits does not make the C operation valid.",
   prediction:
     "`scale_pulses` receives 2147483648 pulses and a scale of 2. Its multiplication writes `w0`.",
   predictionQuestion: "**What hexadecimal result does `w0` hold?**",
@@ -35,7 +35,7 @@ export const PROSE = {
   explanation:
     "`umull x0, w0, w1` multiplies two unsigned 32-bit values and writes their full 64-bit product. `smull` does the same for signed 32-bit values. The input interpretation matters because the result now includes the higher bits.\n\nThe C expression `(unsigned long)pulses * scale` converts an operand before multiplying. On this target, that makes the multiplication 64-bit unsigned. GCC uses `umull` for the recorded function. Converting the result of an already completed 32-bit multiplication would be too late.\n\nCompare the signed and unsigned examples. The 32-bit pattern with every bit set represents −1 when signed, and 4294967295 when unsigned. Multiplying each interpretation by 2 needs different 64-bit results.\n\n`msub` combines multiplication and subtraction. `msub w0, w1, w2, w0` subtracts the product of `w1` and `w2` from the old value in `w0`. The fourth operand supplies the value being reduced. Like the other multiplication instructions here, it leaves the flags unchanged.",
   generalisation:
-    "A product of two 64-bit inputs can need 128 bits. Split that product into a **low half**, bits 0 to 63, and a **high half**, bits 64 to 127. `mul` supplies the low half. `umulh` supplies the high half for unsigned inputs; `smulh` supplies it for signed inputs.\n\nThe diagram uses the same input bits for both interpretations. Follow how the low half stays the same while the high half changes. The high half comes from the full multiplication; it is not found by sign-extending the low half.\n\nChoose the multiplication from both the input interpretation and the result width you need. A wide destination helps only if the instruction computes the needed bits.",
+    "A product of two 64-bit inputs can need 128 bits. Split that product into a **low half**, bits 0 to 63, and a **high half**, bits 64 to 127. `mul` supplies the low half. `umulh` supplies the high half for unsigned inputs; `smulh` supplies it for signed inputs.\n\nThis diagram runs course-written assembly; the earlier C listings are recorded GCC output. It uses the same input bits for both interpretations. Follow how the low half stays the same while the high half changes. The high half comes from the full multiplication; it is not found by sign-extending the low half.\n\nChoose the multiplication from both the input interpretation and the result width you need. A wide destination helps only if the instruction computes the needed bits.",
   finalTask:
     "Write `wide_product`. `w0` and `w1` hold unsigned 32-bit values. Return their full unsigned product in `x0`. The tests include products that do not fit in 32 bits.",
   finalHints: [
@@ -50,8 +50,7 @@ export const PROSE = {
   reflectionNoteSummary: "Answer",
   reflectionNote:
     "The operand types determine the width used for the multiplication. A conversion afterwards can widen only the result that remains; it cannot reconstruct bits already discarded.",
-  modelVsReality:
-    "The diagrams combine register values produced by the simulator. The product-halves example is course-written assembly, while the C listings identify recorded GCC output. These views show completed instruction results and do not compare execution speed.\n\nThe instruction results are not a substitute for C's rules about signed overflow.",
+  modelVsReality: "",
   originalityNote: {
     textbookExample: "Multiplying small constants that fit in every destination width.",
     howThisDiffers:

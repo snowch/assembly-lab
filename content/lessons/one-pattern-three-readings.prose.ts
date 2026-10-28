@@ -83,6 +83,5 @@ export const PROSE = {
   reflectionDetails:
     "Unsigned 2147483649: the top bit, 2147483648, plus 1. Signed −2147483647: minus 2147483648, plus 1.",
 
-  modelVsReality:
-    "A real processor's registers hold bits with no type, as the simulator's do. Each register holds 64 bits; this lesson's figures show only the lower 32, which the `w` names use. Lesson 2 shows the rest.",
+  modelVsReality: "",
 } as const;

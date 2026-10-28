@@ -279,6 +279,7 @@ export const countingUp: LessonInput = {
       },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: PROSE.originalityNote,
 };

@@ -26,6 +26,8 @@ You already know how an unsigned comparison selects a result and how a function 
 
 A32's `lr` names its link register, also called `r14`. In this leaf function, `bx lr` returns to the saved address. The A64 listing uses `ret` for its return. Similar purposes do not imply identical register names or instruction spellings.
 
+The A32 listings are static compiler records. Interactive execution uses A64 only; the course does not execute A32 or compare instruction timing.
+
 ## PROSE.prediction
 
 Predict the result for distance 80 and limit 50 from the C function and its comparison. After checking your prediction, run the A64 version in the stepper below.
@@ -81,6 +83,8 @@ The answers are checked against instruction tokens in the recorded compiler outp
 ## PROSE.failureExperiment
 
 Take the conditional-move line from the A32 record and give it to the course's A64 assembler. The source still belongs to the A32 listing.
+
+This checks whether the assembler accepts the line; it does not execute it.
 
 ## PROSE.failureQuestion
 
@@ -160,11 +164,6 @@ Instruction and helper names are checked against the records. The numerical answ
 
 When reading another architecture, begin with the values, the branches and the call boundaries you understand. Check its register rules and instruction syntax before treating familiar names as interchangeable.
 
-## PROSE.modelVsReality
-
-A32 figures are static compiler records. The interactive execution and numerical predictions use only A64, which is the course simulator's instruction set. The A32 syntax experiment asks the existing A64 assembler whether it accepts one recorded line. It does not simulate that line.
-
-This chapter does not compare instruction timing, run the A32 division library or claim that all Armv7-A implementations lack hardware divide.
 
 ## PROSE.originalityNote.textbookExample
 

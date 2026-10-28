@@ -388,6 +388,7 @@ export const shifts: LessonInput = {
       reference: { answers: { shr_int: "asr", shr_unsigned: "lsr", shl: "lsl" } },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: {
     textbookExample:

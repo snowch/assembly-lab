@@ -20,7 +20,7 @@ An **array** stores values of one type in consecutive memory locations. Each val
 
 *Closed note: The compiler and valid array accesses*
 
-These listings use GCC 16.1 with `-O1` for little-endian AArch64 Linux. An `unsigned` element occupies four bytes on this target. The examples supply valid array indices. In C, an address being readable does not by itself make an array access valid: the access must stay within the array object.
+These listings use GCC 16.1 with `-O1` for little-endian AArch64 Linux. An `unsigned` element occupies four bytes on this target.
 
 *End of closed note.*
 
@@ -31,6 +31,8 @@ The log contains the unsigned values `12, 25, 7, 40`. Index zero selects the fir
 In `ldr w0, [x0, x1, lsl #2]`, `x0` holds the array's starting address and `x1` holds the index. The load shifts the index left by two places, which multiplies it by four, then adds it to the starting address. It reads four bytes from that address.
 
 The shift is part of calculating the address. It does not change `x1`. The load replaces register 0 with the value it reads, so `x0` no longer holds the array's starting address afterwards.
+
+The examples supply valid array indices. The simulator checks accesses against its prepared memory, not C array boundaries. A successful simulated load does not establish that the corresponding C access is valid; it must stay within the array object.
 
 ## 3. Read the third journey
 
@@ -147,11 +149,6 @@ C pointer arithmetic advances by elements of the pointed-to type. An `unsigned` 
 
 *End of closed note.*
 
-## Model and reality
-
-The byte diagrams come from the simulator's memory accesses. The simulator checks whether an address lies in its prepared memory, but it does not track C array objects or enforce C pointer rules. A simulated load succeeding is not proof that the corresponding C expression is valid.
-
-The examples use ordinary memory and omit caches, access timing and operating-system permissions.
 
 ## Figure captions and labels
 
@@ -258,6 +255,8 @@ Each element here occupies one byte, so its index is already a byte offset. `ldr
 After a load, `cbz` can test whether the byte is zero. The loop counts a byte only if it is nonzero. It must also stop at the capacity, even if no terminator has appeared.
 
 The code that calls `label_length` must supply a capacity no larger than the readable byte array. A bound protects the scan only when that bound is valid.
+
+The simulator checks access to its prepared memory. It does not check that the supplied capacity matches the array or that a terminator exists.
 
 ## 3. Find the first zero
 
@@ -382,11 +381,6 @@ The readable region might not contain a zero byte. A valid capacity gives the lo
 
 *End of closed note.*
 
-## Model and reality
-
-The figures show prepared ASCII bytes in ordinary memory. The bounded function relies on a valid capacity; the moving-pointer examples rely on a valid terminator. The simulator checks whether each memory access stays within its prepared memory. It does not check that the supplied capacity or terminator meets the function’s requirements.
-
-The course does not decode multi-byte text encodings or model the time needed to read memory.
 
 ## Figure captions and labels
 

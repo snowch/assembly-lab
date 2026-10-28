@@ -67,7 +67,7 @@ describe("the lesson", () => {
       for (const x of s.interactives)
         if (x.kind !== "challenge") expect(Object.keys(INTERACTIVES)).toContain(x.kind);
     expect(modelProblems(LESSONS, [STEPS])).toEqual([]);
-    expect(Object.keys(book.timeModelNotes)).toEqual([STEPS]);
+    expect(book.timeModelNotes).toEqual({});
   });
 
   it("gates the bit figure and the stepper behind the prediction before each, in the same lesson", () => {

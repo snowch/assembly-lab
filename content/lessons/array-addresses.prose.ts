@@ -6,9 +6,9 @@ export const PROSE = {
     "The trip computer keeps its completed journeys in a log. Each journey occupies the same amount of memory. **How can a load find one journey from its position in the log?**\n\nAn **array** stores values of one type in consecutive memory locations. Each value is an **element**. Its position is its **index**, counted from zero. In C, `trips[index]` reads the element at that index.",
   questionNoteSummary: "The compiler and valid array accesses",
   questionNote:
-    "These listings use GCC 16.1 with `-O1` for little-endian AArch64 Linux. An `unsigned` element occupies four bytes on this target. The examples supply valid array indices. In C, an address being readable does not by itself make an array access valid: the access must stay within the array object.",
+    "These listings use GCC 16.1 with `-O1` for little-endian AArch64 Linux. An `unsigned` element occupies four bytes on this target.",
   motivation:
-    "The log contains the unsigned values `12, 25, 7, 40`. Index zero selects the first value. Each element occupies four bytes, so each increase in the index moves the address forward by four bytes.\n\nIn `ldr w0, [x0, x1, lsl #2]`, `x0` holds the array's starting address and `x1` holds the index. The load shifts the index left by two places, which multiplies it by four, then adds it to the starting address. It reads four bytes from that address.\n\nThe shift is part of calculating the address. It does not change `x1`. The load replaces register 0 with the value it reads, so `x0` no longer holds the array's starting address afterwards.",
+    "The log contains the unsigned values `12, 25, 7, 40`. Index zero selects the first value. Each element occupies four bytes, so each increase in the index moves the address forward by four bytes.\n\nIn `ldr w0, [x0, x1, lsl #2]`, `x0` holds the array's starting address and `x1` holds the index. The load shifts the index left by two places, which multiplies it by four, then adds it to the starting address. It reads four bytes from that address.\n\nThe shift is part of calculating the address. It does not change `x1`. The load replaces register 0 with the value it reads, so `x0` no longer holds the array's starting address afterwards.\n\nThe examples supply valid array indices. The simulator checks accesses against its prepared memory, not C array boundaries. A successful simulated load does not establish that the corresponding C access is valid; it must stay within the array object.",
   prediction:
     "The log still contains `12, 25, 7, 40`. `x0` points to its first element, and `x1` holds index 2.",
   predictionQuestion: "**What does `read_trip` return in `w0`?**",
@@ -50,8 +50,7 @@ export const PROSE = {
   reflectionNoteSummary: "Answer",
   reflectionNote:
     "C pointer arithmetic advances by elements of the pointed-to type. An `unsigned` occupies four bytes on this target, so moving to the next element adds four to the byte address.",
-  modelVsReality:
-    "The byte diagrams come from the simulator's memory accesses. The simulator checks whether an address lies in its prepared memory, but it does not track C array objects or enforce C pointer rules. A simulated load succeeding is not proof that the corresponding C expression is valid.\n\nThe examples use ordinary memory and omit caches, access timing and operating-system permissions.",
+  modelVsReality: "",
   originalityNote: {
     textbookExample: "Summing an anonymous integer array with an index.",
     howThisDiffers:

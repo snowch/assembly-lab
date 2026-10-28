@@ -319,6 +319,7 @@ export const countingDown: LessonInput = {
       reference: { text: DIM_UNTIL_DARK_TEXT },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: PROSE.originalityNote,
 };

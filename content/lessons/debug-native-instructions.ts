@@ -184,6 +184,7 @@ export const debugNativeInstructions: LessonInput = {
       reference: { text: TWICE_TEXT },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: PROSE.originalityNote,
 };

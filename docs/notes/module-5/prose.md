@@ -38,6 +38,8 @@ These endpoints use ordinary unsigned ordering. They do not describe elapsed tim
 
 The stepper runs `dim_up(128, 2, 5)` on GCC's listing. Count only the instructions that execute, including `ret`.
 
+These counts measure executed instructions, not elapsed time. A **trace** records the instructions that ran. The simulator limits its length; reaching that limit does not establish whether the function would eventually return.
+
 **How many instructions run before the function returns?**
 
 *After committing the prediction:*
@@ -141,11 +143,6 @@ The first test establishes that `tick` starts below `end`. Each iteration increa
 
 *End of closed note.*
 
-## Model and reality
-
-The diagram follows the instructions the simulator runs. Its counts describe this listing, not elapsed time on a processor. A real processor's timing also depends on work the simulator does not model.
-
-A **trace** is the recorded sequence of instructions the simulator ran. The simulator limits the length of each trace. Reaching that limit stops the simulated run; it does not establish whether the program would eventually return.
 
 ## Figure captions and labels
 
@@ -379,11 +376,6 @@ A zero tick count requests no dimming, even when the brightness is not zero. Wit
 
 *End of closed note.*
 
-## Model and reality
-
-The figures count instructions and dimming operations from the simulator's trace. Neither count gives a processor's elapsed running time.
-
-A trace has an instruction limit so a long or broken loop cannot keep the page busy indefinitely. A stopped trace gives only the part of the run that the simulator observed.
 
 ## Figure captions and labels
 

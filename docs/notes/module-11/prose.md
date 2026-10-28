@@ -32,6 +32,8 @@ Adding one to `INT_MAX` overflows signed `int`. C describes this as **undefined 
 
 Whenever this signed addition is defined, adding one makes the value larger. GCC can therefore replace the comparison with true. It has no obligation to preserve a particular result for the overflowing input. The processor executes the resulting instructions; it does not know that a C expression was signed.
 
+Module 10’s small compiler checks its own supported language. It is not a general detector of undefined C behaviour.
+
 ## 3. Add at the signed limit in A64
 
 Now run a separate assembly experiment: `adds w0, w0, #1` with `w0` initially holding 2147483647. This executes A64 directly. It is not an execution of the original C expression.
@@ -138,11 +140,6 @@ In standard C, every defined case of this expression makes the comparison true. 
 
 *End of closed note.*
 
-## Model and reality
-
-The steppers execute recorded or course-written A64. They cannot establish the guarantees of every possible C compilation from one machine trace. The small compiler from Module 10 checks its own deliberately limited language; it is not a general detector of undefined C behaviour.
-
-Compiler options and source-language rules are recorded alongside the listings so their claims can be checked separately.
 
 ## Figure captions and labels
 
@@ -304,7 +301,7 @@ For the signed 32-bit destination here, GCC can use `adds` to obtain both the lo
 
 Choose the check from the property you need. A bounds check before narrowing protects a required range. Checked arithmetic reports whether a mathematical result fits.
 
-The next exercise applies checked addition. Keep the stored sum bits separate from the returned overflow report. Formatting and run-time checks are further topics in the reflection detail after the exercise.
+The next exercise applies checked addition to signed 32-bit inputs and a signed 32-bit destination. C23 checked arithmetic also supports other integer types; this exercise covers one case. Keep the stored sum bits separate from the returned overflow report. Formatting and run-time checks are further topics in the reflection detail after the exercise.
 
 
 
@@ -350,11 +347,6 @@ A sanitizer checks only paths that execute. Ordinary unsigned wrapping is define
 
 *End of closed note.*
 
-## Model and reality
-
-The steppers execute A64 examples and show their registers, flags and memory. The format warning and sanitizer discussion come from separate recorded compiler evidence. The simulator does not run an output library or sanitizer runtime.
-
-The checked-add exercise is fixed to signed 32-bit inputs and a signed 32-bit destination. C23 checked arithmetic supports other integer types; its full rules are broader than this one implementation.
 
 ## Figure captions and labels
 

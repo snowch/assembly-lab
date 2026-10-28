@@ -31,11 +31,7 @@ export const PROSE = {
     "`lsr w0, w0, 1` fills the top with 0 instead. The result is `0x7ffffffc`, which is 2147483644. The prediction figure shows the `asr` result and marks the bits that changed. In the next section, you can choose either shift and see which bits fill the gap.",
 
   investigation:
-    "Moving every bit along by a number of places is a **shift**. Bits that move past the end are lost.\n\n" +
-    "- `lsl` moves bits left and fills the gap on the right with zeros.\n" +
-    "- `lsr`, a **logical shift**, moves bits right and fills the gap on the left with zeros. A shift by one place halves the unsigned reading and drops any remainder.\n" +
-    "- `asr`, an **arithmetic shift**, moves bits right and fills the gap on the left with copies of the old top bit. A shift by one place halves the signed reading and rounds down to the next whole number if needed.\n\n" +
-    "For either right shift, repeat that halving once for each place moved. A shift by two places divides by 4, with the same rounding rule. The figure shifts a word by the instruction and distance you choose. Arrows show the direction, the bits lost and the bits filled.",
+    "Moving every bit along by a number of places is a **shift**. Bits that move past the end are lost.\n\n- `lsl` moves bits left and fills the gap on the right with zeros.\n- `lsr`, a **logical shift**, moves bits right and fills the gap on the left with zeros. A shift by one place halves the unsigned reading and drops any remainder.\n- `asr`, an **arithmetic shift**, moves bits right and fills the gap on the left with copies of the old top bit. A shift by one place halves the signed reading and rounds down to the next whole number if needed.\n\nFor either right shift, repeat that halving once for each place moved. A shift by two places divides by 4, with the same rounding rule. The figure shifts a word by the instruction and distance you choose. Arrows show the direction, the bits lost and the bits filled.\n\nWith a constant, `lsl`, `lsr` and `asr` are names for more general instructions. The course uses the names GCC prints.",
 
   shiftedAdd: {
     title: "Shift an input before adding",
@@ -107,6 +103,5 @@ export const PROSE = {
       "`g / 2` is −4, rounding towards zero. `asr` by 1 gives −5, rounding down. GCC's extra `add` of 1 makes −8 first, and `asr` of −8 by 1 is −4.",
   },
 
-  modelVsReality:
-    "The simulator's shifts follow the architecture's results, checked against QEMU. `lsl`, `lsr` and `asr` with a constant are names for more general instructions. The course uses the names GCC prints.",
+  modelVsReality: "",
 } as const;

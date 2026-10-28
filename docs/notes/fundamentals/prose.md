@@ -54,6 +54,14 @@ One addition
 
 The diagram shows the input values and where the result will go. Run `add w2, w0, w1` once.
 
+### addition / simulationNote / summary
+
+What the simulator shows
+
+### addition / simulationNote / prose
+
+The simulator shows each instruction’s completed effect. Real processors can work on several instructions at once. For these examples, the required results are the same. The simulator does not show how long a processor takes.
+
 ### addition / registerViews / caption
 
 Each x name selects all 64 bits; its matching w name selects the lower 32 bits of the same register.
@@ -239,10 +247,6 @@ Add the value in `w0` to 3. Write the result to `w1`; `w0` is not written.
 
 `w1` holds 13 and `w0` still holds 10.
 
-### constant / modelVsReality
-
-
-
 ### constant / originalityNote / textbookExample
 
 A constant is often introduced while loading registers inside a complete program.
@@ -311,13 +315,15 @@ w0 after the instruction
 
 ### function / sections / motivation
 
-`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C below into an assembly **listing**, a written sequence of instructions. `increment_int:` names the function.
+`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C below into an assembly **listing**, a written sequence of instructions. GCC 16.1.0 made these listings for 64-bit Arm using `-O1`, an optimisation setting that asks it to make code shorter and faster. `increment_int:` names the function.
 
 Code that calls a function is its **caller**. The input it supplies is an **argument**. For this function, the argument arrives in `w0` and the integer result is left in `w0` too.
 
 The function adds one, then `ret` returns to its caller. The next lesson follows execution back into the caller.
 
 ### function / sections / investigation
+
+The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call.
 
 Run the function one instruction at a time. Watch where the argument arrives and where the result is left. On a narrow screen, scroll sideways within the listing to see the C and instructions.
 
@@ -370,10 +376,6 @@ Add the two fresh arguments into `w0`. The addition does not write `w1`.
 ### function / challenge / hints / 4
 
 The function leaves 10 in `w0` and keeps 4 in `w1`.
-
-### function / modelVsReality
-
-The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call. GCC 16.1.0 made these recorded listings for 64-bit Arm using `-O1`, an optimisation setting that asks it to make code shorter and faster.
 
 ### function / originalityNote / textbookExample
 
@@ -481,10 +483,6 @@ Both instructions write their first operand. Subtraction keeps the input order: 
 
 Trace a fresh subtraction without running it.
 
-### subtraction / sections / reflection
-
-Distinguish the old input value from the result written afterwards.
-
 ### subtraction / figure / title
 
 Read and replace
@@ -524,10 +522,6 @@ The calculation uses 18 minus 5. Only `w1` is written.
 ### subtraction / challenge / hints 5
 
 `w1` holds 13 and `w0` still holds 18.
-
-### subtraction / modelVsReality
-
-Each figure starts with its own inputs and runs one arithmetic instruction. The figures do not pass values to each other. The simulator reads the old values before writing the destination, as these instructions require.
 
 ### subtraction / originalityNote / textbookExample
 
@@ -585,10 +579,6 @@ The shared operand rule
 
 Subtract with new inputs
 
-### subtraction labels / titles / reflection
-
-Track the old value
-
 ### subtraction labels / captions / figure
 
 An addition that reads w0 and writes its result there.
@@ -637,7 +627,7 @@ Which register does the first instruction write? Which instruction will read tha
 
 ### sequence / sections / investigation
 
-The marker ▸ shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`. Run the two instructions one at a time.
+The marker ▸ shows which instruction runs next. The processor tracks that position in its **program counter**, a special register. Ordinary instructions do not name it the way they name `w0`. Run the two instructions one at a time. This figure stops after the subtraction.
 
 ### sequence / sections / construction
 
@@ -651,17 +641,9 @@ Using the starting value of `w2` again would lose the addition's result.
 
 An arithmetic instruction writes its destination, then execution moves to the next instruction. That instruction uses the values now in the registers.
 
-### sequence / sections / generalisation
-
-This figure stops after two arithmetic instructions. The earlier function continued with `ret` to return to its caller.
-
 ### sequence / sections / challenge
 
 Trace the sequence with fresh inputs. Use the first result when running the second instruction.
-
-### sequence / sections / reflection
-
-At each step, ask: what was written, and which instruction runs next?
 
 ### sequence / figure / title
 
@@ -694,10 +676,6 @@ Both instructions write `w2`. Neither writes `w1`.
 ### sequence / challenge / hints 5
 
 After both instructions, `w2` holds 10 and `w1` still holds 4.
-
-### sequence / modelVsReality
-
-The figure runs one instruction per step and stops after the two shown arithmetic instructions. A real processor can work on several instructions at once, but must preserve the results required by their order for this example.
 
 ### sequence / originalityNote / textbookExample
 
@@ -749,15 +727,11 @@ Values and position
 
 ### sequence labels / titles / generalisation
 
-Continue or return
+Values and position
 
 ### sequence labels / titles / challenge
 
 Trace both instructions
-
-### sequence labels / titles / reflection
-
-Follow the state
 
 ### sequence labels / captions / figure
 

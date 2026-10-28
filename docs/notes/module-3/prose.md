@@ -131,6 +131,8 @@ Only the low 3 bits of `g` may land in the field. A value larger than 7 must not
 
 GCC writes the field in one instruction, `bfi w0, w1, 4, 3`, then returns with `ret`. `w0` holds the word, and `w1` holds the new gear. The 4 is the first bit of the field, and the 3 is its width. The instruction puts the low 3 bits of `w1` into bits 4 to 6 of `w0`, and keeps every other bit. Your code and GCC's both return `0x55` for `set_gear(0x35, 5)`.
 
+`ubfx` and `bfi` are Arm’s names for two cases of more general instructions. The course uses the names GCC prints.
+
 ## 6. Leaving out the clear
 
 The figure runs `set_gear` without the step that clears the field: `and w1, w1, 7`, `lsl w1, w1, 4`, `orr w0, w0, w1`, `ret`, on `set_gear(0x35, 5)`.
@@ -203,10 +205,6 @@ The warning word is `0x47`. Start with that value separately for each instructio
 
 `0x47` is `0100 0111`. Bits 6 to 4 are `100`, so the gear is 4. `eor` with 4 flips bit 2 from 1 to 0, giving `0x43`.
 
-## 11. The model and the real processor
-
-`ubfx` and `bfi` are Arm's names for two cases of more general instructions. The course uses the two names GCC prints.
-
 # Lesson 2: Shifts, and the type that picks one
 
 ## 0. Objectives
@@ -259,6 +257,8 @@ Moving every bit along by a number of places is a **shift**. Bits that move past
 - `asr`, an **arithmetic shift**, moves bits right and fills the gap on the left with copies of the old top bit. A shift by one place halves the signed reading and rounds down to the next whole number if needed.
 
 For either right shift, repeat that halving once for each place moved. A shift by two places divides by 4, with the same rounding rule. The figure shifts a word by the instruction and distance you choose. Arrows show the direction, the bits lost and the bits filled.
+
+With a constant, `lsl`, `lsr` and `asr` are names for more general instructions. The course uses the names GCC prints.
 
 *One word, shifted by the instruction you choose; the bits that fall off, and what fills the gap.*
 
@@ -360,7 +360,3 @@ For `int g = -9`, what do `g / 2` and `asr` by 1 give?
 *Closed note: Answer*
 
 `g / 2` is −4, rounding towards zero. `asr` by 1 gives −5, rounding down. GCC's extra `add` of 1 makes −8 first, and `asr` of −8 by 1 is −4.
-
-## 11. The model and the real processor
-
-The simulator's shifts follow the architecture's results, checked against QEMU. `lsl`, `lsr` and `asr` with a constant are names for more general instructions. The course uses the names GCC prints.

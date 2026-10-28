@@ -95,6 +95,5 @@ export const PROSE = {
   reflection:
     "Trace the whole path: incoming arguments, each instruction's writes, and the return. A correct calculation is not enough if execution continues beyond the intended function.",
 
-  modelVsReality:
-    "The simulator runs one instruction per step. A real processor works on many instructions at once, and it may run them out of order. It still guarantees the same results as running them one at a time. That guarantee is all this lesson relies on.",
+  modelVsReality: "",
 } as const;

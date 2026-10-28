@@ -52,8 +52,7 @@ export const PROSE = {
   reflectionNoteSummary: "Answer",
   reflectionNote:
     "An intermediate multiplication can discard bits before the division runs. Dividing the truncated product gives a different quotient. Preserve the full intermediate product before dividing it.",
-  modelVsReality:
-    "The division and product diagrams use simulator results. Exceptional division examples are assembly-only experiments checked against A64 behaviour. They do not model a C compiler's freedom when a source expression has undefined behaviour.\n\nThe recorded division-by-ten sequence is tied to one GCC version and optimisation setting. The course does not model the time instructions take or claim that one sequence is faster.",
+  modelVsReality: "",
   originalityNote: {
     textbookExample: "Quotient and remainder from positive small integers.",
     howThisDiffers:

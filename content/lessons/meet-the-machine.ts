@@ -262,6 +262,7 @@ export const meetTheMachine: LessonInput = {
       reference: { answers: { w0: "670", w1: "28750" } },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: SYNTHESIS_COPY.originalityNote,
 };

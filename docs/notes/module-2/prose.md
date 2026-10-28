@@ -41,7 +41,7 @@ The answer is `0x80000000`. Unsigned, it reads 2147483648, which is right. Signe
 
 ## 4. Carries and the four flags
 
-The part of the processor that adds is the **adder**. The figure works the addition column by column, from the right, as on paper. A column adds its two bits and the 1 carried in from the right, if there is one. The total is 0, 1, 2 or 3.
+The part of the processor that adds is the **adder**. The figure works the addition column by column, from the right, as on paper. It explains the arithmetic, not a processor’s circuit. A column adds its two bits and the 1 carried in from the right, if there is one. The total is 0, 1, 2 or 3.
 
 The column keeps the total's lowest bit as its result bit. It passes the total's other bit, the **carry**, to the next column on the left.
 
@@ -174,10 +174,6 @@ Enter the number in decimal.
 
 The result is `0x80000000`. A carry goes into bit 31 and a carry comes out, so C is 1 and V is 0. The unsigned result does not fit, but the signed one does: −1073741824 plus −1073741824 is −2147483648.
 
-## 11. The model and the real processor
-
-The architecture is Arm's published definition of what each instruction does. The simulator works out the flags as the architecture defines them. The course checks its simulator against QEMU, a widely used program that imitates Arm processors. A real processor need not add column by column. The drawing shows the arithmetic, not the circuit. The digital-design course builds the circuit.
-
 # Lesson 2: Subtracting, and the tick counter
 
 ## 0. Objectives
@@ -231,7 +227,7 @@ Two readings close together sit at almost one spot on a ring of 4294967296 value
 
 *The counter as a ring: `then`, `now`, and the distance between them.*
 
-The processor subtracts by adding. To work out `a - b`, it changes every bit of `b`: each 1 becomes 0, and each 0 becomes 1. It adds the result to `a`, and adds 1 more as the carry into the first column.
+Subtraction can be worked out as addition. To calculate `a - b`, change every bit of `b`: each 1 becomes 0, and each 0 becomes 1. Add those changed bits to `a`, with 1 more as the carry into the first column.
 
 The example uses four bits only, to show the method. The real instruction uses 32. 5 is `0101`. 3 is `0011`, and with every bit changed it is `1100`.
 
@@ -247,7 +243,7 @@ The example uses four bits only, to show the method. The real instruction uses 3
 
 For 32 bits, changing every bit of `b` gives 4294967295 minus `b`. The adder adds that value to `a`, then adds 1. The full sum is `a + 4294967296 - b`, before keeping only the low 32 bits. When `b` is 0, the full sum is `a + 4294967296`: the low 32 bits hold `a`, and a carry leaves the top bit.
 
-The figures below show the same steps for the real 32-bit `subs`: the input being subtracted, its bits changed, the carry in of 1, the result and the carry out.
+The figures below use this calculation to explain the result and flags of 32-bit `subs`: the input being subtracted, its bits changed, the carry in of 1, the result and the carry out.
 
 A carry leaves the top exactly when `a` is at least `b`, so C = 1 also means no borrow was needed.
 
@@ -346,10 +342,6 @@ Enter the result in decimal, and C as 0 or 1.
 **Answer**
 
 592, and C is 0. 296 ticks reach the wrap, 296 more reach 296, and a borrow was needed.
-
-## 11. The model and the real processor
-
-As in lesson 1, the flags follow the architecture's definition, checked against QEMU. The drawing shows the arithmetic, not the circuit.
 
 # Interface strings
 

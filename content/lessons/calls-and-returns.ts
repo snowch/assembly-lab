@@ -286,6 +286,7 @@ export const callsAndReturns: LessonInput = {
       reference: { text: RESERVE_TEXT },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: PROSE.originalityNote,
 };

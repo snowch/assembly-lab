@@ -14,7 +14,9 @@ An instruction’s address identifies its place in memory. A **branch** changes 
 
 Plain `ret` continues execution at the address held in `x30`. These are AArch64 instruction rules, whether the instructions came from C or were written in assembly. Here, the instruction after `bl` is the caller’s addition.
 
-The figure starts just before `bl`, with the argument already in `w0`. Press Run the instruction to follow the call, the function’s addition, its return and the caller’s addition. The marker ▸ names the instruction that runs next; the highlight marks the instruction that just ran. On a narrow screen, scroll sideways within the function listing to see the C and instructions.
+The figure starts just before `bl`, with the argument already in `w0`. It stops after the caller’s addition, before the caller’s remaining instructions. Press Run the instruction to follow the call, the function’s addition, its return and the caller’s addition. The marker ▸ names the instruction that runs next; the highlight marks the instruction that just ran. On a narrow screen, scroll sideways within the function listing to see the C and instructions.
+
+The caller instructions were written for this course. The paired increment_int listing is the recorded GCC output from A tiny function.
 
 ### prose / sections / explanation
 
@@ -40,7 +42,7 @@ Check Arm’s references
 
 ### prose / challenge / task
 
-Start a fresh call, `increment_int(4)`, with `w0` holding 4 and `w1` holding 0. The caller runs `bl increment_int`. The function runs `add w0, w0, 1`, then `ret`. The caller continues with `add w1, w1, w0`. What does `w0` hold immediately after `ret`, and what does the caller’s addition write to `w1`?
+Start a fresh call, `increment_int(4)`, with `w0` holding 4 and `w1` holding 0. The caller runs `bl increment_int`. The function runs `add w0, w0, 1`, then `ret`. The caller continues with `add w1, w0, w0`. What does `w0` hold immediately after `ret`, and what does the caller’s addition write to `w1`?
 
 ### prose / challenge / hints / 0
 
@@ -61,10 +63,6 @@ First add one to the fresh argument. Keep that result in `w0` through the return
 ### prose / challenge / hints / 4
 
 Immediately after `ret`, `w0` holds 5. The caller’s addition writes 10 to `w1`.
-
-### prose / modelVsReality
-
-The figure begins after the caller’s preparation and shows `bl`, the function’s addition and `ret`, then the caller’s addition. It stops before the caller’s remaining instructions. The caller instructions were written for this course. The paired increment_int listing is the recorded GCC output from A tiny function.
 
 ### prose / originalityNote / textbookExample
 

@@ -384,6 +384,7 @@ export const loadingWidths: LessonInput = {
       reference: { text: READ_SENSORS_TEXT },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: PROSE.originalityNote,
 };

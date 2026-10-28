@@ -4,7 +4,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { STRINGS } from "../../apps/course/src/strings";
-import { VIEW_STRINGS } from "../../packages/views/src/strings";
 import { MEMORY_STRINGS } from "../../packages/views/src/strings.memory";
 import { MEMORY_RUNTIME_STRINGS } from "../../packages/views/src/strings.memory-runtime";
 import { LABELS as FIRST_LABELS } from "./memory-and-addresses.labels";
@@ -82,7 +81,7 @@ it("keeps figure, grader and shared course wording in the review copy", () => {
         throw new Error(`No review-copy samples for ${key}`);
     }
   });
-  samples.push(...strings(MEMORY_RUNTIME_STRINGS), VIEW_STRINGS.modelNote, STRINGS.prereqs.cNot);
+  samples.push(...strings(MEMORY_RUNTIME_STRINGS), STRINGS.prereqs.cNot);
   const body = canonical.slice(canonical.indexOf("# Memory figure interface"));
   for (const text of samples) expect(flat(body), text).toContain(flat(text));
   const source = flat(samples.join("\n"));

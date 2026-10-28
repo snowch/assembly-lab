@@ -22,8 +22,6 @@ The result of a multiplication is its **product**. Two 32-bit inputs can need mo
 
 These listings use GCC 16.1 with `-O1` for little-endian AArch64 Linux. Here, `int` and `unsigned` are 32 bits; `long` and `unsigned long` are 64 bits.
 
-Unsigned C multiplication wraps to the result type's range. A signed multiplication whose result cannot be represented has undefined behaviour. C places no requirements on what the program does in that case. The hardware's low-bit result does not make that C operation defined.
-
 *End of closed note.*
 
 ## 2. The destination limits the result
@@ -31,6 +29,8 @@ Unsigned C multiplication wraps to the result type's range. A signed multiplicat
 `mul w0, w0, w1` multiplies the inputs in `w0` and `w1`, then keeps the low 32 bits in `w0`. Any higher product bits are discarded. Writing `w0` also clears the upper half of `x0`.
 
 The low product bits are the same whether you interpret the inputs as signed or unsigned. There is one `mul` for both. With `x` registers, `mul` keeps the low 64 bits instead. The destination width still limits the result.
+
+Unsigned C multiplication wraps to the result type’s range. A signed multiplication whose result cannot be represented has undefined behaviour: C places no requirements on that case. A hardware result containing only the low bits does not make the C operation valid.
 
 ## 3. Multiply across the 32-bit boundary
 
@@ -92,7 +92,7 @@ Compare the signed and unsigned examples. The 32-bit pattern with every bit set 
 
 A product of two 64-bit inputs can need 128 bits. Split that product into a **low half**, bits 0 to 63, and a **high half**, bits 64 to 127. `mul` supplies the low half. `umulh` supplies the high half for unsigned inputs; `smulh` supplies it for signed inputs.
 
-The diagram uses the same input bits for both interpretations. Follow how the low half stays the same while the high half changes. The high half comes from the full multiplication; it is not found by sign-extending the low half.
+This diagram runs course-written assembly; the earlier C listings are recorded GCC output. It uses the same input bits for both interpretations. Follow how the low half stays the same while the high half changes. The high half comes from the full multiplication; it is not found by sign-extending the low half.
 
 Choose the multiplication from both the input interpretation and the result width you need. A wide destination helps only if the instruction computes the needed bits.
 
@@ -125,11 +125,6 @@ The operand types determine the width used for the multiplication. A conversion 
 
 *End of closed note.*
 
-## Model and reality
-
-The diagrams combine register values produced by the simulator. The product-halves example is course-written assembly, while the C listings identify recorded GCC output. These views show completed instruction results and do not compare execution speed.
-
-The instruction results are not a substitute for C's rules about signed overflow.
 
 ## Figure captions and labels
 
@@ -330,11 +325,6 @@ An intermediate multiplication can discard bits before the division runs. Dividi
 
 *End of closed note.*
 
-## Model and reality
-
-The division and product diagrams use simulator results. Exceptional division examples are assembly-only experiments checked against A64 behaviour. They do not model a C compiler's freedom when a source expression has undefined behaviour.
-
-The recorded division-by-ten sequence is tied to one GCC version and optimisation setting. The course does not model the time instructions take or claim that one sequence is faster.
 
 ## Figure captions and labels
 

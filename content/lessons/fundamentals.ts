@@ -44,6 +44,7 @@ const CONFIG = [
   },
   {
     key: "subtraction",
+    sectionKinds: SECTION_KINDS.filter((kind) => kind !== "reflection"),
     id: "subtraction-and-reuse",
     worked: 4,
     test: 4,
@@ -53,6 +54,9 @@ const CONFIG = [
   },
   {
     key: "sequence",
+    sectionKinds: SECTION_KINDS.filter(
+      (kind) => kind !== "reflection" && kind !== "generalisation",
+    ),
     id: "instructions-in-sequence",
     worked: 5,
     test: 5,
@@ -167,6 +171,9 @@ const primitiveLessons: LessonInput[] = CONFIG.map((config, order) => {
               figure(6, "worked-constant", P.constant.firstFigure, L.constant.captions.firstFigure),
             ],
           }
+        : {}),
+      ...(kind === "investigation" && key === "addition"
+        ? { details: P.addition.simulationNote }
         : {}),
       ...(kind === "investigation"
         ? {

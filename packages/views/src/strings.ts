@@ -6,12 +6,8 @@
 // Haiku and checked for meaning (16 October 2026); a new one is marked DRAFT until it has been. A `code` span is written between backticks.
 
 export const VIEW_STRINGS = {
-  /** The note for the simulator (the book's `steps` model), shown on figures without a role badge. */
-  modelNote:
-    "Each step runs one instruction in the simulator. Between steps, the simulated processor stays as the last instruction left it.",
   /** Steps can be simulated execution or explicitly labelled recorded output. */
   modelBadge: "Step by step",
-  modelHeading: "How the simulator steps",
   figureRoles: {
     prediction: "Prediction",
     calculation: "Calculation",

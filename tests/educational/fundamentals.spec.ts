@@ -141,7 +141,7 @@ for (const theme of ["light", "dark"] as const) {
       ).toHaveCount(0);
       await expect(
         page.locator('article[data-lesson="tiny-function"] .lesson-model-vs-reality'),
-      ).toHaveCount(1);
+      ).toHaveCount(0);
       expect(errors).toEqual([]);
     });
 

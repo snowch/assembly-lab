@@ -196,6 +196,7 @@ export const compileALoop: LessonInput = {
       reference: { text: C.DIM_SOURCE },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: P.modelVsReality,
   originalityNote: P.originalityNote,
 };
