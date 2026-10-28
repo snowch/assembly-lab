@@ -5,8 +5,14 @@
   flex-wrap: wrap;
   gap: var(--space-3);
 }
-.al-returning-registers > strong {
+.al-returning-registers > strong,
+.al-returning-registers > .al-returning-moment,
+.al-returning-registers > .al-returning-target {
   flex-basis: 100%;
+}
+.al-returning-moment {
+  margin: 0;
+  color: var(--fg-muted);
 }
 .al-returning-target {
   display: flex;

@@ -51,6 +51,28 @@ export const ReturningToCaller = withProps(
     return (
       <div className="al-figure al-returning" data-figure="returning-to-caller" data-k={position}>
         <h4>{S.title}</h4>
+        <div className="al-returning-registers" role="group" aria-label={S.sharedRegisters}>
+          <strong>{S.sharedRegisters}</strong>
+          <p className="al-returning-moment">{position === 0 ? S.beforeCall : S.registersNow}</p>
+          {[0, 1].map((n) => (
+            <DecimalRegister
+              key={n}
+              name={`w${n}`}
+              value={wValue(view.state, n)}
+              changed={position > 0 && view.written.has(n)}
+            />
+          ))}
+          <div className="al-returning-target" data-written={position > 0 && view.written.has(30)}>
+            <code>x30</code>
+            <span>{S.returnAddress}</span>
+            {pointsToCaller && (
+              <code className="al-returning-saved-address">{String(view.state.x[30])}</code>
+            )}
+            {pointsToCaller && <span aria-hidden="true">→</span>}
+            <span>{pointsToCaller ? S.returnTarget : S.beforeCallTarget}</span>
+            {position > 0 && view.written.has(30) && <strong>{S.written}</strong>}
+          </div>
+        </div>
         <section className="al-returning-caller" aria-label={S.caller}>
           <h5>{S.caller}</h5>
           <Prose markdown={S.callerProse} />
@@ -91,27 +113,6 @@ export const ReturningToCaller = withProps(
             next={complete ? null : localIndex(view.next)}
           />
         </section>
-        <div className="al-returning-registers" role="group" aria-label={S.sharedRegisters}>
-          <strong>{S.sharedRegisters}</strong>
-          {[0, 1].map((n) => (
-            <DecimalRegister
-              key={n}
-              name={`w${n}`}
-              value={wValue(view.state, n)}
-              changed={position > 0 && view.written.has(n)}
-            />
-          ))}
-        </div>
-        <div className="al-returning-target" data-written={position > 0 && view.written.has(30)}>
-          <code>x30</code>
-          <span>{S.returnAddress}</span>
-          {pointsToCaller && (
-            <code className="al-returning-saved-address">{String(view.state.x[30])}</code>
-          )}
-          {pointsToCaller && <span aria-hidden="true">→</span>}
-          <span>{pointsToCaller ? S.returnTarget : S.beforeCallTarget}</span>
-          {position > 0 && view.written.has(30) && <strong>{S.written}</strong>}
-        </div>
         <p className="al-returning-current">
           <span>{complete ? S.ran : S.next}</span>{" "}
           <code>{trace.lines[(complete ? view.ran : view.next) ?? -1]?.text}</code>

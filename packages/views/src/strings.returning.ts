@@ -8,6 +8,8 @@ export const RETURNING_STRINGS = {
   instruction: "Instruction",
   functionName: "increment_int",
   sharedRegisters: "Registers shared by caller and function",
+  beforeCall: "Before the call",
+  registersNow: "Registers now",
   returnAddress: "Link register",
   beforeCallTarget: "Not yet set for this call",
   written: "Written",
