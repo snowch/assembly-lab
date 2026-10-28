@@ -46,10 +46,7 @@ export const PROSE = {
     "Write `umull x0, w0, w1`, then `ret`.",
   ],
   reflection:
-    "- `mul` keeps the low product bits selected by its register width.\n- `madd` adds a fourth operand to a product; `msub` subtracts the product from that operand.\n- `umull` and `smull` preserve the full product of two 32-bit inputs.\n- `umulh` and `smulh` supply the high half of a 64-by-64-bit multiplication.\n\nWhy must a C cast appear before a multiplication when its purpose is to preserve a wider result?",
-  reflectionNoteSummary: "Answer",
-  reflectionNote:
-    "The operand types determine the width used for the multiplication. A conversion afterwards can widen only the result that remains; it cannot reconstruct bits already discarded.",
+    "- `mul` keeps the low product bits selected by its register width.\n- `madd` adds a fourth operand to a product; `msub` subtracts the product from that operand.\n- `umull` and `smull` preserve the full product of two 32-bit inputs.\n- `umulh` and `smulh` supply the high half of a 64-by-64-bit multiplication.",
   modelVsReality: "",
   originalityNote: {
     textbookExample: "Multiplying small constants that fit in every destination width.",

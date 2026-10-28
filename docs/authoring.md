@@ -96,13 +96,20 @@ kind, challenges with tests, five hints in ladder order and a reference solution
 `originalityNote`, `introduces` and the term gate. digital-design's `docs/authoring.md` describes
 it in full; follow it, reading "the simulator" as this course's assembler and simulator.
 
-A short introductory lesson can opt into `sectionLayout: "selected"` and supply an ordered
+A lesson can opt into `sectionLayout: "selected"` and supply an ordered
 subset of those sections. It can set `showTimeModelNotes: false` when its activity already explains
 the simulator controls, and use an empty `modelVsReality` when no qualification changes what
 the learner should conclude, or when the qualification is already explained beside the activity.
 Omitted blocks are not rendered. The platform’s full layout requires a footer qualification,
 so select the sections explicitly when the qualification is local, even if all ten sections remain.
 Challenge, term and source checks apply to both layouts.
+
+A section needs a teaching job beyond filling the template. Omit prose-only follow-up questions
+that repeat an activity's result or an explanation already on the page. A closed Answer does
+not by itself make a repeated question useful. Keep questions that ask for a fresh application,
+a distinct comparison or a practical decision, with feedback or a clear way to check the answer.
+Opening questions can frame what the lesson demonstrates; predictions and prompts that drive an
+actual activity remain useful. Remove an empty section's heading as well as its prose.
 
 Assembly Lab explains instruction stepping beside its first activity and leaves the book's
 `timeModelNotes` empty. Do not add a general stepping reminder or hardware disclaimer to every

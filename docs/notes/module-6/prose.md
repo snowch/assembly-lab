@@ -128,14 +128,6 @@ Leave the source bytes unchanged. Write the copied value into the destination's 
 - Little-endian order puts the lowest byte of a value at the lowest address.
 - `w0` and `x0` name parts of the same register.
 
-Why does `strb w1, [x0]` need an `x` register even though it writes only one byte?
-
-*Closed note: Answer*
-
-`x0` holds the address, which uses 64 bits on this target. The `b` in `strb` chooses the transfer width: one byte from the low end of `w1`.
-
-*End of closed note.*
-
 
 ## Figure captions and labels
 
@@ -343,14 +335,6 @@ This exercise checks all four registers. Only `w0` is the ordinary C return-valu
 - Sign extension copies the source's sign bit into the added bits.
 - A write through a `w` register name still clears the upper half of the `x` register.
 - A record can need different load widths for different fields.
-
-Why does `ldrsb w0, [x0]` produce a different full `x0` value from `ldrsb x0, [x0]` for a negative byte?
-
-*Closed note: Answer*
-
-The `w0` form sign-extends only to 32 bits, then clears the upper half of `x0`. The `x0` form sign-extends through all 64 bits. Their low 32 bits agree, but their upper 32 bits differ for a negative byte.
-
-*End of closed note.*
 
 
 ## Figure captions and labels

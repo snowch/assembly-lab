@@ -162,14 +162,6 @@ half_distance:
 - A caller protects values it needs after a call.
 - A callee restores registers the calling convention requires it to preserve.
 
-Why is saving only `w19` insufficient when your function changes register 19?
-
-*Closed note: Answer*
-
-The calling convention requires preservation of all 64 bits of `x19`. Saving only its low 32 bits loses any incoming upper bits; writing or restoring through `w19` clears those upper bits.
-
-*End of closed note.*
-
 
 ## Figure captions and labels
 
@@ -380,14 +372,6 @@ lit_count:
 - Each recursive argument must make progress towards the base case.
 - A call finishes before its caller uses the returned value.
 - Every invocation must restore the state required by the calling convention.
-
-Why can `lit_count` use less saved state than `fade_sum`?
-
-*Closed note: Answer*
-
-After its recursive call, `lit_count` needs only the returned count and the constant one. `fade_sum` also needs the original brightness, so it keeps that value across the call.
-
-*End of closed note.*
 
 
 ## Figure captions and labels

@@ -242,8 +242,8 @@ the lesson that introduces a term is the first allowed to use it. The assembler 
 instructions the lessons so far have introduced, and rejects any other with a plain message, as
 digital-design's HDL subset does.
 
-**Length follows the material.** The default template has ten sections. A short introductory
-lesson may explicitly select an ordered subset when the full template adds repetition. Omit
+**Length follows the material.** The default template has ten sections. A lesson may explicitly
+select an ordered subset when the full template adds repetition. Omit
 generic model notes only when the activity already explains the interaction; keep limitations
 where they affect what the learner can conclude.
 

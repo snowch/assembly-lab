@@ -46,10 +46,7 @@ export const PROSE = {
     "In the function body, write `unsigned charge = distance * rate;`, then `if (charge > limit) { charge = limit; }`, then `return charge;`.",
   ],
   reflection:
-    "- The course compiler maps variables and intermediate values to registers.\n- One source expression can produce several instructions.\n- Compiling again reflects changes to the actual C source.\n- Different instruction sequences can implement the same calculation.\n- Unsigned wrapping occurs at the arithmetic operation, before a later cap.\n\nWhy can two compilers produce different assembly for this function without disagreeing about its result?",
-  reflectionNoteSummary: "Answer",
-  reflectionNote:
-    "The C source specifies the result for each defined input, not one mandatory instruction sequence. The course compiler uses inspectable fixed patterns; GCC can transform those patterns while preserving the required behaviour.",
+    "- The course compiler maps variables and intermediate values to registers.\n- One source expression can produce several instructions.\n- Compiling again reflects changes to the actual C source.\n- Different instruction sequences can implement the same calculation.\n- Unsigned wrapping occurs at the arithmetic operation, before a later cap.",
   modelVsReality: "",
   originalityNote: {
     textbookExample:

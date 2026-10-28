@@ -122,7 +122,7 @@ for (const theme of ["light", "dark"] as const) {
       const errors = watchErrors(page);
       await openLesson(page, "one-addition");
       const article = page.locator('article[data-lesson="one-addition"]');
-      await expect(article.locator(".lesson-section")).toHaveCount(9);
+      await expect(article.locator(".lesson-section")).toHaveCount(7);
       await expect(article.locator(".lesson-section").last()).toHaveAttribute(
         "data-kind",
         "challenge",

@@ -61,11 +61,7 @@ export const PROSE = {
     "Under `copy_distance:`, write `ldr w0, [x0]`, `str w0, [x1]` and `ret`.",
   ] as const,
   reflection:
-    "- An address identifies a byte in memory.\n- A load reads memory; a store writes it.\n- The transfer width decides how many consecutive bytes are accessed.\n- Little-endian order puts the lowest byte of a value at the lowest address.\n- `w0` and `x0` name parts of the same register.\n\n" +
-    "Why does `strb w1, [x0]` need an `x` register even though it writes only one byte?",
-  reflectionNoteSummary: "Answer",
-  reflectionNote:
-    "`x0` holds the address, which uses 64 bits on this target. The `b` in `strb` chooses the transfer width: one byte from the low end of `w1`.",
+    "- An address identifies a byte in memory.\n- A load reads memory; a store writes it.\n- The transfer width decides how many consecutive bytes are accessed.\n- Little-endian order puts the lowest byte of a value at the lowest address.\n- `w0` and `x0` name parts of the same register.",
   modelVsReality: "",
   originalityNote: {
     textbookExample: "Copying an integer between anonymous memory locations.",

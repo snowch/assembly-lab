@@ -135,14 +135,6 @@ Follow the initial test first. Count each instruction that runs, including every
 - A test before the body can skip all iterations.
 - The count of iterations differs from the count of instructions.
 
-Why does GCC test for inequality at the bottom of `dim_up`, even though the C tests whether `tick` is below `end`?
-
-*Closed note: Answer*
-
-The first test establishes that `tick` starts below `end`. Each iteration increases it by 1, so it reaches `end` without passing it. Repeating until the values are equal gives the same stopping point.
-
-*End of closed note.*
-
 
 ## Figure captions and labels
 
@@ -367,14 +359,6 @@ Check both stopping conditions. A zero tick count preserves the brightness; zero
 - An unsigned value is always at or above zero.
 - Reaching the simulator's instruction limit does not prove that a loop runs forever.
 - A loop can stop early when further work cannot change its result.
-
-Why does `dim_until_dark` need its initial check for a zero tick count even though it also checks for zero brightness?
-
-*Closed note: Answer*
-
-A zero tick count requests no dimming, even when the brightness is not zero. Without the count check, the loop would shift that brightness and subtract from zero. The brightness check answers a different question: whether any further dimming could change the result.
-
-*End of closed note.*
 
 
 ## Figure captions and labels

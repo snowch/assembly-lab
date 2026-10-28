@@ -51,10 +51,7 @@ export const PROSE = {
     "One complete solution is:\n\n```asm\ntrip_report:\n stp x29, x30, [sp, #-32]!\n mov x29, sp\n str x19, [sp, #16]\n mov w19, w1\n bl half_distance\n add w0, w0, w19\n ldr x19, [sp, #16]\n ldp x29, x30, [sp], #32\n ret\nhalf_distance:\n lsr w0, w0, #1\n mov w1, #0\n ret\n```",
   ],
   reflection:
-    "- `bl` writes a return address into `x30` and branches to the callee.\n- `ret` normally branches to the address in `x30`.\n- Saving and restoring the return address requires instructions.\n- A caller protects values it needs after a call.\n- A callee restores registers the calling convention requires it to preserve.\n\nWhy is saving only `w19` insufficient when your function changes register 19?",
-  reflectionNoteSummary: "Answer",
-  reflectionNote:
-    "The calling convention requires preservation of all 64 bits of `x19`. Saving only its low 32 bits loses any incoming upper bits; writing or restoring through `w19` clears those upper bits.",
+    "- `bl` writes a return address into `x30` and branches to the callee.\n- `ret` normally branches to the address in `x30`.\n- Saving and restoring the return address requires instructions.\n- A caller protects values it needs after a call.\n- A callee restores registers the calling convention requires it to preserve.",
   modelVsReality: "",
   originalityNote: {
     textbookExample: "A function call presented only as a jump followed by a return.",

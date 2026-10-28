@@ -46,10 +46,7 @@ export const PROSE = {
     "One complete solution is:\n\n```asm\nlit_count:\n cbz w0, .Ldone\n stp x29, x30, [sp, #-16]!\n mov x29, sp\n lsr w0, w0, #1\n bl lit_count\n add w0, w0, #1\n ldp x29, x30, [sp], #16\n.Ldone:\n ret\n```",
   ],
   reflection:
-    "- Each active recursive call has its own saved values and return address.\n- The base case returns without making another recursive call.\n- Each recursive argument must make progress towards the base case.\n- A call finishes before its caller uses the returned value.\n- Every invocation must restore the state required by the calling convention.\n\nWhy can `lit_count` use less saved state than `fade_sum`?",
-  reflectionNoteSummary: "Answer",
-  reflectionNote:
-    "After its recursive call, `lit_count` needs only the returned count and the constant one. `fade_sum` also needs the original brightness, so it keeps that value across the call.",
+    "- Each active recursive call has its own saved values and return address.\n- The base case returns without making another recursive call.\n- Each recursive argument must make progress towards the base case.\n- A call finishes before its caller uses the returned value.\n- Every invocation must restore the state required by the calling convention.",
   modelVsReality: "",
   originalityNote: {
     textbookExample: "Recursive factorial or Fibonacci with a call-tree drawing.",
