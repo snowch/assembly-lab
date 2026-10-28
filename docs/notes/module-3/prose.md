@@ -93,7 +93,12 @@ The listing names `x0`, the 64-bit name of the register. The gear lies in its lo
 
 Writing a field changes only its own bits and leaves the rest as they were. The challenge below writes a new gear into a word.
 
-Start with a gear that already fits its three bits. The warning word is `0x35`, and the new gear is 2. Clear the old gear, place the new gear in bits 4 to 6, and keep every warning bit.
+Start with a gear that already fits its three bits:
+
+- The warning word is `0x35`.
+- The new gear is 2.
+
+Clear the old gear, place the new gear in bits 4 to 6, and keep every warning bit.
 
 *Replace an in-range gear before writing the general function.*
 
@@ -111,7 +116,12 @@ The writing exercise adds one more requirement: when the new value is larger tha
 
 **Write `set_gear`**
 
-Write `set_gear(w, g)`. It puts the low 3 bits of `g` into bits 4 to 6 of `w`, and returns the word. `w` arrives in `w0`, and `g` arrives in `w1`. Put the result in `w0`.
+Write `set_gear(w, g)`. It puts the low 3 bits of `g` into bits 4 to 6 of `w`, and returns the word.
+
+- `w` arrives in `w0`.
+- `g` arrives in `w1`.
+
+Put the result in `w0`.
 
 Use only `and`, `lsl`, `orr` and `ret`. Four calls test your code. In one of them, `g` is 13, which is larger than 7. Only its low 3 bits may land in the field. Every bit outside bits 4 to 6 must stay unchanged.
 
@@ -276,7 +286,13 @@ C's `/` divides, and a shift can seem to do the same job. This challenge compare
 
 **Compare shifts with division**
 
-Give the results of three operations for two inputs: `asr` by 2, `lsr` by 2, and C's `/ 4`. The inputs are 21 and −21. Give each answer as a decimal number in its signed reading. The answer boxes are grouped by input.
+For each input, 21 and −21, give the results of these separate operations:
+
+- `asr` by 2
+- `lsr` by 2
+- C's `/ 4`
+
+Start each operation with the original input. Give each answer as a decimal number in its signed reading. The answer boxes are grouped by input.
 
 For two `int` values, C's `/` gives a whole number and rounds towards zero. For example, `7 / 2` is 3, and `-7 / 2` is −3.
 
@@ -336,7 +352,11 @@ This challenge uses the type alone to pick the instruction.
 
 **Pick the instruction**
 
-Say which instruction GCC uses for each: `x >> 3` with `int x`; `x >> 3` with `unsigned x`; `x << 3` with either.
+Say which instruction GCC uses for each:
+
+- `x >> 3` with `int x`
+- `x >> 3` with `unsigned x`
+- `x << 3` with either
 
 Field labels: "`int x >> 3`"; "`unsigned x >> 3`"; "`x << 3`".
 

@@ -42,7 +42,7 @@ export const PROSE = {
   construction:
     "C's `/` divides, and a shift can seem to do the same job. This challenge compares them for a positive value and for a negative one.",
   compareTask:
-    "Give the results of three operations for two inputs: `asr` by 2, `lsr` by 2, and C's `/ 4`. The inputs are 21 and −21. Give each answer as a decimal number in its signed reading. The answer boxes are grouped by input.\n\n" +
+    "For each input, 21 and −21, give the results of these separate operations:\n\n- `asr` by 2\n- `lsr` by 2\n- C's `/ 4`\n\nStart each operation with the original input. Give each answer as a decimal number in its signed reading. The answer boxes are grouped by input.\n\n" +
     "For two `int` values, C's `/` gives a whole number and rounds towards zero. For example, `7 / 2` is 3, and `-7 / 2` is −3.",
   compareHints: [
     "For a positive value all three agree; for a negative value they do not.",
@@ -80,7 +80,7 @@ export const PROSE = {
 
   challenge: "This challenge uses the type alone to pick the instruction.",
   pickTask:
-    "Say which instruction GCC uses for each: `x >> 3` with `int x`; `x >> 3` with `unsigned x`; `x << 3` with either.",
+    "Say which instruction GCC uses for each:\n\n- `x >> 3` with `int x`\n- `x >> 3` with `unsigned x`\n- `x << 3` with either",
   pickHints: [
     "On a right shift, the fill depends on the reading. A left shift fills with zeros either way.",
     "Do not choose a different left shift for each type. Both use `lsl` for the C expressions here.",

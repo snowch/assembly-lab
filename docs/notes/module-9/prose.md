@@ -44,7 +44,12 @@ Here `x29` is a **frame pointer**, identifying this call’s frame. `mov x29, sp
 
 ## 3. Call the distance helper
 
-The report receives distance 128 and reserve 9. The helper halves the unsigned distance, then the report adds the reserve.
+The report receives:
+
+- Distance 128.
+- Reserve 9.
+
+The helper halves the unsigned distance, then the report adds the reserve.
 
 **What does `trip_report` return in `w0`?**
 
@@ -125,7 +130,12 @@ The final exercise's helper also writes `w1`. That is allowed by the calling con
 
 ### Preserve the reserve
 
-Complete `trip_report` using the supplied helper. `w0` holds an unsigned distance and `w1` an unsigned reserve. Return half the distance plus the original reserve in `w0`, with unsigned 32-bit wrapping.
+Complete `trip_report` using the supplied helper.
+
+- `w0` holds an unsigned distance.
+- `w1` holds an unsigned reserve.
+
+ Return half the distance plus the original reserve in `w0`, with unsigned 32-bit wrapping.
 
 The helper overwrites `w1`. Keep the reserve across the call, and preserve the incoming values of `x19`, `x29` and `sp`. Keep the helper unchanged.
 

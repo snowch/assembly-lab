@@ -111,6 +111,13 @@ a distinct comparison or a practical decision, with feedback or a clear way to c
 Opening questions can frame what the lesson demonstrates; predictions and prompts that drive an
 actual activity remain useful. Remove an empty section's heading as well as its prose.
 
+When an exercise supplies several starting values or register roles, put parallel facts in a
+short bullet list. State when those facts hold, then keep the operation and requested result
+separate. Use ordered steps when execution order matters; distinguish independent calls from
+instructions that share state. Keep widths, signedness, preconditions and result timing explicit.
+A short single-fact prompt can remain a sentence. Add a setup sentence between a takeaway list
+and a fresh exercise's inputs so Markdown does not join them into one list.
+
 Assembly Lab explains instruction stepping beside its first activity and leaves the book's
 `timeModelNotes` empty. Do not add a general stepping reminder or hardware disclaimer to every
 lesson. Keep a qualification when it changes what the learner can conclude from the activity,

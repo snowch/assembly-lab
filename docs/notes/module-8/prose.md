@@ -34,7 +34,12 @@ Unsigned C multiplication wraps to the result type’s range. A signed multiplic
 
 ## 3. Multiply across the 32-bit boundary
 
-`scale_pulses` receives 2147483648 pulses and a scale of 2. Its multiplication writes `w0`.
+`scale_pulses` receives:
+
+- 2147483648 pulses.
+- A scale of 2.
+
+Its multiplication writes `w0`.
 
 **What hexadecimal result does `w0` hold?**
 
@@ -56,7 +61,13 @@ Add a scaled pulse reading to an unsigned running total. The result follows the 
 
 ### Write scaled_total
 
-Write `scaled_total`. `w0` holds an unsigned pulse count, `w1` its unsigned scale, and `w2` the existing unsigned total. Return `total + pulses * scale` in `w0`, keeping the low 32 bits.
+Write `scaled_total`.
+
+- `w0` holds an unsigned pulse count.
+- `w1` holds its unsigned scale.
+- `w2` holds the existing unsigned total.
+
+ Return `total + pulses * scale` in `w0`, keeping the low 32 bits.
 
 *Hints, in order:*
 
@@ -219,7 +230,10 @@ For a negative signed result, rounding towards zero discards the fraction withou
 
 ## 3. Divide a negative total
 
-The signed dividend is −17 and the divisor is 5. The function uses `sdiv` and returns the quotient in `w0`.
+- The signed dividend is −17.
+- The divisor is 5.
+
+The function uses `sdiv` and returns the quotient in `w0`.
 
 **Which hexadecimal quotient does it return?**
 
@@ -243,7 +257,12 @@ Compute a signed remainder from the quotient and the original inputs. Preserve t
 
 ### Write remainder_signed
 
-Write `remainder_signed`. `w0` holds a signed dividend and `w1` a signed divisor. Return the signed remainder in `w0`.
+Write `remainder_signed`.
+
+- `w0` holds a signed dividend.
+- `w1` holds a signed divisor.
+
+ Return the signed remainder in `w0`.
 
 The divisor is nonzero. The tests exclude the unrepresentable quotient from dividing the minimum signed value by −1.
 
@@ -289,7 +308,12 @@ The exercise defines a zero-distance result as zero. That is a rule of this func
 
 The input contract guarantees only the distance in the low 32 bits, `w1`. It makes no promise about the incoming upper half of `x1`. Naming `w1` as the input does not mean an instruction has written it. Before dividing with `x` registers, clear that upper half: a write to `w1`, even one that copies `w1` to itself, does this.
 
-Write `consumption`. `w0` holds unsigned fuel in millilitres and `w1` holds unsigned distance in metres. Return whole millilitres per 100 metres in `x0`: `fuel * 100 / distance`, rounded down. Preserve the full product before dividing.
+Write `consumption`.
+
+- `w0` holds unsigned fuel in millilitres.
+- `w1` holds unsigned distance in metres.
+
+ Return whole millilitres per 100 metres in `x0`: `fuel * 100 / distance`, rounded down. Preserve the full product before dividing.
 
 If the distance is zero, return zero. The tests include fuel values whose product with 100 does not fit in 32 bits.
 

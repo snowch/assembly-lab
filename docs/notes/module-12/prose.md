@@ -40,7 +40,14 @@ Open [boot.s](native/boot.s), [trip_distance.s](native/trip_distance.s) and [boo
 
 ## PROSE.prediction
 
-At `boot_ready`, the assembly caller places 120, 85, 42 and 15 in `w0` to `w3`, then calls `trip_distance`. The function adds the three distances, subtracts the correction and returns, as in Module 0.
+At `boot_ready`, the assembly caller supplies:
+
+- 120 in `w0`.
+- 85 in `w1`.
+- 42 in `w2`.
+- 15 in `w3`.
+
+It then calls `trip_distance`. The function adds the three distances, subtracts the correction and returns, as in Module 0.
 
 The browser runs only this arithmetic function. Use the external tools for startup and device output; the browser does not execute that part of the boot image.
 
@@ -158,7 +165,14 @@ On a physical board, reset begins at an address determined by that processor and
 
 ## PROSE.finalTask
 
-Repair `trip_distance`. Four signed 32-bit values arrive in `w0`, `w1`, `w2` and `w3`: three distances and a correction. Return the sum of the distances minus the correction in `w0`, then return to the assembly caller. The supplied tests stay within the signed 32-bit range.
+Repair `trip_distance`. Four signed 32-bit values arrive in registers:
+
+- The first distance in `w0`.
+- The second distance in `w1`.
+- The third distance in `w2`.
+- The correction in `w3`.
+
+Return the sum of the distances minus the correction in `w0`, then return to the assembly caller. The supplied tests stay within the signed 32-bit range.
 
 The browser tests check several input sets and accept any permitted instruction sequence with the required behaviour. Copy your function body into `trip_distance.s`, keeping the label and surrounding directives. Assemble it again, link `boot.elf` again and boot it. The native caller checks the original trip inputs and chooses a serial message. The next lesson inspects the stored value and instruction stops.
 
@@ -455,7 +469,14 @@ This breakpoint stops at `trip_distance`, after startup supplies its arguments. 
 
 ## PROSE.prediction
 
-At the function breakpoint, the low 32 bits of `x0` to `x3` hold the four inputs: 120, 85, 42 and 15. The next instruction is `add w0, w0, w1`. GDB’s `stepi` command executes one machine instruction.
+At the function breakpoint, the low 32 bits hold the four inputs:
+
+- `x0`: 120.
+- `x1`: 85.
+- `x2`: 42.
+- `x3`: 15.
+
+The next instruction is `add w0, w0, w1`. GDB’s `stepi` command executes one machine instruction.
 
 ## PROSE.predictionQuestion
 
@@ -555,7 +576,14 @@ No Linux or C example is needed to build, boot or debug the core image. Use the 
 
 ## PROSE.finalTask
 
-Revise `trip_distance` to subtract the correction twice. Signed 32-bit inputs arrive in `w0` to `w3`: three distances and one correction. Return their sum minus twice the correction in `w0`, then return normally. The supplied inputs and intermediate values fit in signed 32 bits.
+Revise `trip_distance` to subtract the correction twice. Signed 32-bit inputs arrive in registers:
+
+- The first distance in `w0`.
+- The second distance in `w1`.
+- The third distance in `w2`.
+- The correction in `w3`.
+
+Return the sum of the three distances minus twice the correction in `w0`, then return normally. The supplied inputs and intermediate values fit in signed 32 bits.
 
 First inspect the original single-correction function in GDB. Restore it in `trip_distance.s`, rebuild `boot.elf` and follow one call through the subtraction. Identify the instruction that writes the result and compare its calculation with the revised contract. Close the session before rebuilding.
 

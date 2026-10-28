@@ -43,7 +43,7 @@ export const PROSE = {
 
   lessFuelTask:
     "Write `less_fuel(a, b)`. It returns the smaller of two `unsigned` litres values. Use only `cmp`, `csel` and `ret`.\n\n" +
-    "`a` arrives in `w0`, and `b` arrives in `w1`. The answer leaves in `w0`. A comment starts with `//`.\n\n" +
+    "- `a` arrives in `w0`.\n- `b` arrives in `w1`.\n\nThe answer leaves in `w0`. A comment starts with `//`.\n\n" +
     "Five calls test it. In two of them, one value has the top bit set.",
 
   lessFuelHints: [
@@ -117,7 +117,7 @@ export const PROSE = {
     "`ands w1, w0, 2` writes the AND result to `w1` as well. With `0x2a`, `w1` is 2 and NZCV is 0000. `and` alone leaves the flags as they were.",
 
   holdsTask:
-    "`w0` holds `0xfffffffb` and `w1` holds 2. After `cmp w0, w1`, which of `ge`, `cs`, `lt` and `cc` are yes? Enter 1 for yes and 0 for no.",
+    "- `w0` holds `0xfffffffb`.\n- `w1` holds 2.\n\nAfter `cmp w0, w1`, which of `ge`, `cs`, `lt` and `cc` are yes? Enter 1 for yes and 0 for no.",
 
   holdsHints: [
     "`cmp w0, w1` sets the flags of `w0` minus `w1`.",
@@ -129,7 +129,7 @@ export const PROSE = {
 
   reflection:
     "- `cmp` sets the flags as a subtraction would, and keeps no result.\n- The order of its operands matters.\n- A condition reads the flags.\n- Signed and unsigned comparisons use different conditions.\n- `csel` chooses one of two register values without skipping any instruction.\n- `cset` writes 0 or 1 from a condition.\n\n" +
-    "Question: `w0` holds 2, and `w1` holds `0xfffffffe`. After `cmp w0, w1`, what does `csel w0, w0, w1, gt` leave in `w0`? What would `hi` in place of `gt` leave?",
+    "Before `cmp w0, w1` runs:\n\n- `w0` holds 2.\n- `w1` holds `0xfffffffe`.\n\nQuestion: After `cmp w0, w1`, what does `csel w0, w0, w1, gt` leave in `w0`? What would `hi` in place of `gt` leave?",
 
   reflectionNoteSummary: "Answer",
   reflectionNote:

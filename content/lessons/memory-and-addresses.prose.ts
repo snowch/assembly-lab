@@ -26,7 +26,7 @@ export const PROSE = {
   construction:
     "Store a new distance reading without changing the bytes that follow it. The address tells you where to start; the instruction's width tells you where to stop.",
   writeTask:
-    "Write `save_distance`. `x0` holds the address of a four-byte unsigned distance reading. `w1` holds its replacement value. Write that value into the first four bytes and leave the following four bytes unchanged. Then return.\n\n" +
+    "Write `save_distance`.\n\n- `x0` holds the address of a four-byte unsigned distance reading.\n- `w1` holds its replacement value.\n\nWrite that value into the first four bytes and leave the following four bytes unchanged. Then return.\n\n" +
     "The exercise supplies the memory bytes. Write instructions only; you do not need to declare memory. The function has no return value.",
   writeHints: [
     "You need to change memory, so choose a store.",
@@ -36,7 +36,7 @@ export const PROSE = {
     "Under `save_distance:`, write `str w1, [x0]` and then `ret`.",
   ] as const,
   failureExperiment:
-    "A different field needs only one byte. Its original byte and the three bytes after it are `aa bb cc dd`. `w1` holds `0x12345678`. The program below uses `str w1, [x0]` to update the field.",
+    "A different field needs only one byte.\n\n- Its original byte and the three bytes after it are `aa bb cc dd`.\n- `w1` holds `0x12345678`.\n\nThe program below uses `str w1, [x0]` to update the field.",
   failureQuestion:
     "**Which four bytes will memory contain afterwards, in increasing address order?**",
   failureExplain:
@@ -51,7 +51,7 @@ export const PROSE = {
     "Read a memory instruction in three parts: which register holds the value, which register holds the address, and how many bytes the instruction transfers.\n\n" +
     "The load and store instructions shown here leave their address register unchanged unless it is also the load's destination. In `ldr w0, [x0]`, the destination overlaps the address register. Keep the address elsewhere if you will need it again.",
   finalTask:
-    "Copy a four-byte distance reading to a second location. `x0` holds the source address and `x1` holds the destination address. The destination starts immediately after the source's four bytes.\n\n" +
+    "Copy a four-byte distance reading to a second location.\n\n- `x0` holds the source address.\n- `x1` holds the destination address, immediately after the source's four bytes.\n\n" +
     "Leave the source bytes unchanged. Write the copied value into the destination's four bytes, and return that value in `w0`. The exercise supplies both locations.",
   finalHints: [
     "A copy needs a load followed by a store.",

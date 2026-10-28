@@ -36,7 +36,10 @@ The examples supply valid array indices. The simulator checks accesses against i
 
 ## 3. Read the third journey
 
-The log still contains `12, 25, 7, 40`. `x0` points to its first element, and `x1` holds index 2.
+The log still contains `12, 25, 7, 40`.
+
+- `x0` points to its first element.
+- `x1` holds index 2.
 
 **What does `read_trip` return in `w0`?**
 
@@ -60,7 +63,12 @@ Choose an element by scaling its index to a byte offset. The element's size deci
 
 ### Write read_trip
 
-Write `read_trip`. `x0` holds the starting address of an array of four-byte unsigned values. `x1` holds a valid index into that array. Return the selected value in `w0`, leaving memory unchanged.
+Write `read_trip`.
+
+- `x0` holds the starting address of an array of four-byte unsigned values.
+- `x1` holds a valid index into that array.
+
+ Return the selected value in `w0`, leaving memory unchanged.
 
 *Hints, in order:*
 
@@ -108,7 +116,12 @@ The sum in this example is unsigned. Like the additions in earlier modules, it w
 
 ### Write sum_trips
 
-Write `sum_trips`. `x0` holds the start of an array of four-byte unsigned distances, and `w1` holds the number of elements to add. Return their unsigned 32-bit sum in `w0`. Leave memory unchanged.
+Write `sum_trips`.
+
+- `x0` holds the start of an array of four-byte unsigned distances.
+- `w1` holds the number of elements to add.
+
+ Return their unsigned 32-bit sum in `w0`. Leave memory unchanged.
 
 A zero count must return zero without reading memory. For a nonzero count, the exercise supplies at least that many elements. The tests include a sum that wraps.
 
@@ -252,7 +265,10 @@ The simulator checks access to its prepared memory. It does not check that the s
 
 ## 3. Find the first zero
 
-The prepared bytes are `65, 45, 66, 45, 67, 0, 88, 0`. The capacity is 8. The bytes hold the label `A-B-C`, its zero terminator and more bytes after it.
+- The prepared bytes are `65, 45, 66, 45, 67, 0, 88, 0`.
+- The capacity is 8.
+
+The bytes hold the label `A-B-C`, its zero terminator and more bytes after it.
 
 **What length does `label_length` return in `x0`?**
 
@@ -274,7 +290,12 @@ Write a scan that stops at either the first zero or the supplied capacity. Both 
 
 ### Write label_length
 
-Write `label_length`. `x0` holds the starting address of a byte array, and `x1` holds its capacity. Return the number of bytes before the first zero in `x0`. If every byte within the capacity is nonzero, return the capacity.
+Write `label_length`.
+
+- `x0` holds the starting address of a byte array.
+- `x1` holds its capacity.
+
+ Return the number of bytes before the first zero in `x0`. If every byte within the capacity is nonzero, return the capacity.
 
 A zero capacity must return zero without reading memory. The supplied capacity never exceeds the readable array. Leave memory unchanged.
 
@@ -330,7 +351,12 @@ You can inspect each nonzero byte for another purpose, such as counting separato
 
 ### Write count_marker
 
-Write `count_marker`. `x0` points to a valid zero-terminated ASCII label. `w1` holds a nonzero ASCII byte to count. Return its number of occurrences before the first zero in `w0`. Leave memory unchanged.
+Write `count_marker`.
+
+- `x0` points to a valid zero-terminated ASCII label.
+- `w1` holds a nonzero ASCII byte to count.
+
+ Return its number of occurrences before the first zero in `w0`. Leave memory unchanged.
 
 The exercise supplies a terminator within readable memory. Do not count any matching byte after that terminator. The tests include an empty label and the ASCII character `0`.
 

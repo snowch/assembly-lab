@@ -64,7 +64,12 @@ Store a new distance reading without changing the bytes that follow it. The addr
 
 ### Write save_distance
 
-Write `save_distance`. `x0` holds the address of a four-byte unsigned distance reading. `w1` holds its replacement value. Write that value into the first four bytes and leave the following four bytes unchanged. Then return.
+Write `save_distance`.
+
+- `x0` holds the address of a four-byte unsigned distance reading.
+- `w1` holds its replacement value.
+
+ Write that value into the first four bytes and leave the following four bytes unchanged. Then return.
 
 The exercise supplies the memory bytes. Write instructions only; you do not need to declare memory. The function has no return value.
 
@@ -78,7 +83,12 @@ The exercise supplies the memory bytes. Write instructions only; you do not need
 
 ## 6. A store that writes too many bytes
 
-A different field needs only one byte. Its original byte and the three bytes after it are `aa bb cc dd`. `w1` holds `0x12345678`. The program below uses `str w1, [x0]` to update the field.
+A different field needs only one byte.
+
+- Its original byte and the three bytes after it are `aa bb cc dd`.
+- `w1` holds `0x12345678`.
+
+The program below uses `str w1, [x0]` to update the field.
 
 **Which four bytes will memory contain afterwards, in increasing address order?**
 
@@ -108,7 +118,10 @@ The load and store instructions shown here leave their address register unchange
 
 ### Write copy_distance
 
-Copy a four-byte distance reading to a second location. `x0` holds the source address and `x1` holds the destination address. The destination starts immediately after the source's four bytes.
+Copy a four-byte distance reading to a second location.
+
+- `x0` holds the source address.
+- `x1` holds the destination address, immediately after the source's four bytes.
 
 Leave the source bytes unchanged. Write the copied value into the destination's four bytes, and return that value in `w0`. The exercise supplies both locations.
 
@@ -255,7 +268,12 @@ A gradient correction must treat the stored byte as signed before adding. Otherw
 
 ### Write adjust_gradient
 
-Write `adjust_gradient`. `x0` holds the address of a signed one-byte gradient. `w1` holds a signed 32-bit correction. Load the gradient, add the correction, and return the signed 32-bit result in `w0`. Leave memory unchanged.
+Write `adjust_gradient`.
+
+- `x0` holds the address of a signed one-byte gradient.
+- `w1` holds a signed 32-bit correction.
+
+ Load the gradient, add the correction, and return the signed 32-bit result in `w0`. Leave memory unchanged.
 
 All test results fit in a signed 32-bit value. The tests include positive and negative gradients and corrections.
 
@@ -269,7 +287,12 @@ All test results fit in a signed 32-bit value. The tests include positive and ne
 
 ## 6. Using an unsigned load for a signed reading
 
-The changed program uses `ldrb` where `ldrsb` was needed. Memory contains `f9`, and the correction in `w1` is 10. The addition is unchanged.
+The changed program uses `ldrb` where `ldrsb` was needed.
+
+- Memory contains `f9`.
+- The correction in `w1` is 10.
+
+The addition is unchanged.
 
 **What hexadecimal result does the changed program return in `w0`?**
 
@@ -316,7 +339,14 @@ Read the trip computer's eight-byte sensor record. `x0` holds its starting addre
 - Byte 5: an unsigned 8-bit fuel level.
 - Bytes 6 to 7: an unsigned 16-bit pulse count.
 
-Put the distance in `w0`, the sign-extended gradient in `w1`, the fuel level in `w2`, and the pulse count in `w3`. Leave every memory byte unchanged. Then return.
+Put the fields in these registers:
+
+- The distance in `w0`.
+- The sign-extended gradient in `w1`.
+- The fuel level in `w2`.
+- The pulse count in `w3`.
+
+Leave every memory byte unchanged. Then return.
 
 This exercise checks all four registers. Only `w0` is the ordinary C return-value register. Plan the order of your loads so that the starting address remains available until the last memory access.
 

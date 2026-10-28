@@ -509,9 +509,11 @@ test.describe("lesson 2, the ring's strip and the subtraction figures", () => {
       "C = 0: a borrow was needed",
     );
     // The task shown next to the editor says where the operands arrive, and not the answer.
-    await expect(c.locator(".challenge-task")).toContainText(
-      "now arrives in w0, then arrives in w1, and the result goes back in w0.",
-    );
+    await expect(c.locator(".challenge-task li")).toHaveText([
+      "now arrives in w0.",
+      "then arrives in w1.",
+    ]);
+    await expect(c.locator(".challenge-task")).toContainText("Return the result in w0.");
     expect(lesson(TWO).challenges.find((x) => x.id === "write-elapsed")!.task).not.toContain(
       "sub w0, w0, w1",
     );

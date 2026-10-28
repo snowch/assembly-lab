@@ -42,7 +42,7 @@ export const FUNDAMENTALS_PROSE = {
         "- [Arm’s instruction reference](https://support.arm.com/documentation/ddi0602/2026-09/Base-Instructions/ADD--shifted-register---Add-optionally-shifted-register-) opens at the entry for `add`.\n- The [architecture reference manual](https://developer.arm.com/documentation/ddi0487/latest/) describes the registers and wider processor rules.\n\nBoth references are free to read without an account. If an Arm ID sign-in panel opens, close it to read the documentation.",
     },
     challenge: {
-      task: "Before `add w1, w0, w2` runs, `w0` holds 14, `w1` holds 0 and `w2` holds 5. What do `w1` and `w0` hold after this instruction?",
+      task: "Before `add w1, w0, w2` runs:\n\n- `w0` holds 14.\n- `w1` holds 0.\n- `w2` holds 5.\n\nWhat do `w1` and `w0` hold after this instruction?",
       hints: [
         "The first operand names the register written.",
         "Use the starting values of the second and third operands for the addition.",
@@ -79,7 +79,7 @@ export const FUNDAMENTALS_PROSE = {
       prose: "Run the addition, then the return. Watch both registers.",
     },
     challenge: {
-      task: "For `add_ints(6, 4)`, the arguments arrive in `w0` and `w1`, in that order. The function runs `add w0, w0, w1`, then `ret`. What do `w0` and `w1` hold when the function returns?",
+      task: "For a fresh call, `add_ints(6, 4)`:\n\n- The first argument, 6, arrives in `w0`.\n- The second argument, 4, arrives in `w1`.\n\nThe function runs `add w0, w0, w1`, then `ret`.\n\nWhat do `w0` and `w1` hold when the function returns?",
       hints: [
         "Place each argument in its incoming register before tracing the addition.",
         "The first operand names the register written. Reading the other input does not replace it.",
@@ -119,7 +119,7 @@ export const FUNDAMENTALS_PROSE = {
       prose: "This example starts afresh. Predict what `sub w1, w0, w1` writes.",
     },
     challenge: {
-      task: "Before `sub w1, w0, w1` runs, `w0` holds 18 and `w1` holds 5. What do `w1` and `w0` hold after this instruction?",
+      task: "Before `sub w1, w0, w1` runs:\n\n- `w0` holds 18.\n- `w1` holds 5.\n\nWhat do `w1` and `w0` hold after this instruction?",
       hints: [
         "First identify the destination.",
         "Subtract the third operand's old value from the second operand's old value.",
@@ -152,7 +152,7 @@ export const FUNDAMENTALS_PROSE = {
       prose: "Run the addition, then the subtraction. The second uses the state left by the first.",
     },
     challenge: {
-      task: "Start with `w0` holding 10, `w1` holding 4 and `w2` holding 0. Run `add w2, w0, w1`, then `sub w2, w2, w1`, in that order. What do `w2` and `w1` hold after both instructions?",
+      task: "Start with:\n\n- `w0` holding 10.\n- `w1` holding 4.\n- `w2` holding 0.\n\nRun `add w2, w0, w1`, then `sub w2, w2, w1`, in that order.\n\nWhat do `w2` and `w1` hold after both instructions?",
       hints: [
         "Write down the registers after the first instruction before tracing the second.",
         "The subtraction reads the value the addition left in `w2`.",

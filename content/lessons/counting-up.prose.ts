@@ -28,7 +28,7 @@ export const PROSE = {
     "Build the same dimming function from instructions you already know. The first test matters as much as the branch that repeats the body.",
   writeTask:
     "Write `dim_up(brightness, start, end)`. All arguments are unsigned. For each tick from `start` up to, but not including, `end`, halve the brightness and drop any remainder. Return the final brightness. If `start` is at or above `end`, return the original brightness.\n\n" +
-    "`brightness` arrives in `w0`, `start` in `w1`, and `end` in `w2`. Return the result in `w0`. Use `cmp`, branches, `lsr`, `add` and `ret`.\n\n" +
+    "- `brightness` arrives in `w0`.\n- `start` arrives in `w1`.\n- `end` arrives in `w2`.\n\nReturn the result in `w0`. Use `cmp`, branches, `lsr`, `add` and `ret`.\n\n" +
     "The tests include equal and descending endpoints, and an interval that ends at the largest unsigned value.",
   writeHints: [
     "Decide whether any work is needed before the first shift.",
@@ -52,7 +52,7 @@ export const PROSE = {
     "A branch can go to an earlier instruction just as it can go to a later one. Returning to an earlier instruction lets a small listing do repeated work.\n\n" +
     "To understand a loop, first check whether it tests before the first iteration. Find the instructions that do the work and the change that lets the loop stop. Then follow the branch that decides whether to repeat.",
   finalTask:
-    "For GCC's original `dim_up` listing, give the returned brightness and the number of instructions that run for each call: `dim_up(128, 7, 7)`, `dim_up(128, 7, 8)` and `dim_up(128, 7, 9)`. Enter decimal numbers.\n\n" +
+    "For GCC's original `dim_up` listing, give the returned brightness and the number of instructions that run for each separate call:\n\n- `dim_up(128, 7, 7)`\n- `dim_up(128, 7, 8)`\n- `dim_up(128, 7, 9)`\n\nEnter decimal numbers.\n\n" +
     "Count every executed instruction, including `ret`. Do not count labels.",
   finalHints: [
     "Work out how many times the body runs for each pair of endpoints.",

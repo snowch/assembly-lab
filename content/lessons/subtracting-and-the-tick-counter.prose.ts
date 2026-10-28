@@ -18,7 +18,7 @@ export const PROSE = {
     "It is easy to assume that a later reading is always larger than an earlier one. After a wrap, `now` can be less than `then`. Tests that never cross the wrap will not catch a mistake based on that assumption. Include readings on both sides of the wrap.",
 
   prediction:
-    "`then` is 4294966296, the count just before the wrap; `now` is 1000, the count just after it.",
+    "- `then` is 4294966296, the count just before the wrap.\n- `now` is 1000, the count just after it.",
   predictionQuestion: "**What does `elapsed(1000, 4294966296)` return?**",
   predictionExplain:
     "The answer is 2000. Counting forward from 4294966296, 1000 ticks reach the wrap to 0, and 1000 more reach 1000.",
@@ -48,7 +48,7 @@ export const PROSE = {
 
   construction: "Earlier, GCC wrote `elapsed` for you. Here you write it yourself.",
   elapsedTask:
-    "Write `elapsed(now, then)`. It returns the ticks from `then` to `now`. `now` arrives in `w0`, `then` arrives in `w1`, and the result goes back in `w0`.\n\n" +
+    "Write `elapsed(now, then)`. It returns the ticks from `then` to `now`.\n\n- `now` arrives in `w0`.\n- `then` arrives in `w1`.\n\nReturn the result in `w0`.\n\n" +
     "Assume the counter advances normally and less than one full turn passes between readings. Your function must work whether or not the counter wrapped. Four calls test it, two of them across the wrap.\n\n" +
     "You may use `add`, `sub`, `adds`, `subs` and `ret`.",
   elapsedHints: [
@@ -105,7 +105,7 @@ export const PROSE = {
     "- For a counter advancing normally, one 32-bit subtraction gives the elapsed ticks if less than a full turn has passed.\n" +
     "- The readings alone cannot show how many full turns passed.\n" +
     "- `negs` can set V even when the 32 bits come back unchanged.\n\n" +
-    "**Question:** `then` is 4294967000 and `now` is 296. What does `elapsed(now, then)` return, and what does `subs` set C to?",
+    "Use this pair of counter readings:\n\n- `then` is 4294967000.\n- `now` is 296.\n\n**Question:** What does `elapsed(now, then)` return, and what does `subs` set C to?",
   reflectionAnswerSummary: "Answer",
   reflectionAnswer:
     "592, and C is 0. 296 ticks reach the wrap, 296 more reach 296, and a borrow was needed.",

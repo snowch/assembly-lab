@@ -108,7 +108,11 @@ C and V are separate tests, one for each reading, so either can be 1 without the
 
 ## 6. Running add instead of adds
 
-The figure runs `sum_flags` with `w0` = `0x7fffffff`, `w1` = 1 and `w2` = `0xffffffff`.
+The figure runs `sum_flags` with:
+
+- `w0` = `0x7fffffff`.
+- `w1` = 1.
+- `w2` = `0xffffffff`.
 
 It runs `adds w3, w2, w2` first, which adds `0xffffffff` to itself. Then it runs `add w0, w0, w1`, which adds `0x7fffffff` and 1. After each step, the figure marks the registers that were written and the flags whose values changed.
 
@@ -202,7 +206,8 @@ It is easy to assume that a later reading is always larger than an earlier one. 
 
 ## 3. Elapsed across the wrap
 
-`then` is 4294966296, the count just before the wrap; `now` is 1000, the count just after it.
+- `then` is 4294966296, the count just before the wrap.
+- `now` is 1000, the count just after it.
 
 **What does `elapsed(1000, 4294966296)` return?**
 
@@ -255,7 +260,12 @@ Earlier, GCC wrote `elapsed` for you. Here you write it yourself.
 
 **Write `elapsed`**
 
-Write `elapsed(now, then)`. It returns the ticks from `then` to `now`. `now` arrives in `w0`, `then` arrives in `w1`, and the result goes back in `w0`.
+Write `elapsed(now, then)`. It returns the ticks from `then` to `now`.
+
+- `now` arrives in `w0`.
+- `then` arrives in `w1`.
+
+Return the result in `w0`.
 
 Assume the counter advances normally and less than one full turn passes between readings. Your function must work whether or not the counter wrapped. Four calls test it, two of them across the wrap.
 
@@ -337,7 +347,12 @@ Enter the result in decimal, and C as 0 or 1.
 - The readings alone cannot show how many full turns passed.
 - `negs` can set V even when the 32 bits come back unchanged.
 
-**Question:** `then` is 4294967000 and `now` is 296. What does `elapsed(now, then)` return, and what does `subs` set C to?
+Use this pair of counter readings:
+
+- `then` is 4294967000.
+- `now` is 296.
+
+**Question:** What does `elapsed(now, then)` return, and what does `subs` set C to?
 
 **Answer**
 

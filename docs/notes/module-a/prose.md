@@ -126,7 +126,17 @@ Do not carry A64's 16-byte stack-alignment rule over to this A32 convention.
 
 ## PROSE.finalTask
 
-Open the recorded service-marker and average functions beside this exercise, then run the A64 average with distance 95 and trip count 4. Enter the A32 instruction used for the marker constant, the A32 division helper's name, the A64 division instruction, and the A64 result.
+Open the recorded service-marker and average functions beside this exercise, then run the A64 average with:
+
+- Distance 95.
+- Trip count 4.
+
+Enter:
+
+- The A32 instruction used for the marker constant.
+- The A32 division helper's name.
+- The A64 division instruction.
+- The A64 result.
 
 For instruction fields, enter only the mnemonic. For the helper, enter the function name shown after the call instruction.
 

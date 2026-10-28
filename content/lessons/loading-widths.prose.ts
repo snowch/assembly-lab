@@ -27,7 +27,7 @@ export const PROSE = {
   construction:
     "A gradient correction must treat the stored byte as signed before adding. Otherwise, a negative reading becomes a large positive input to the addition.",
   writeTask:
-    "Write `adjust_gradient`. `x0` holds the address of a signed one-byte gradient. `w1` holds a signed 32-bit correction. Load the gradient, add the correction, and return the signed 32-bit result in `w0`. Leave memory unchanged.\n\n" +
+    "Write `adjust_gradient`.\n\n- `x0` holds the address of a signed one-byte gradient.\n- `w1` holds a signed 32-bit correction.\n\nLoad the gradient, add the correction, and return the signed 32-bit result in `w0`. Leave memory unchanged.\n\n" +
     "All test results fit in a signed 32-bit value. The tests include positive and negative gradients and corrections.",
   writeHints: [
     "The byte is signed, so its sign must survive the load.",
@@ -37,7 +37,7 @@ export const PROSE = {
     "Under `adjust_gradient:`, write `ldrsb w2, [x0]`, `add w0, w2, w1` and `ret`.",
   ] as const,
   failureExperiment:
-    "The changed program uses `ldrb` where `ldrsb` was needed. Memory contains `f9`, and the correction in `w1` is 10. The addition is unchanged.",
+    "The changed program uses `ldrb` where `ldrsb` was needed.\n\n- Memory contains `f9`.\n- The correction in `w1` is 10.\n\nThe addition is unchanged.",
   failureQuestion: "**What hexadecimal result does the changed program return in `w0`?**",
   failureExplain:
     "The changed program returns `0x00000103`, or 259. `ldrb` zero-extends `f9` to 249, then the addition adds 10. The signed load would have produced −7, giving a result of 3.\n\n" +
@@ -55,7 +55,7 @@ export const PROSE = {
   finalTask:
     "Read the trip computer's eight-byte sensor record. `x0` holds its starting address. The record contains these fields:\n\n" +
     "- Bytes 0 to 3: an unsigned 32-bit distance.\n- Byte 4: a signed 8-bit gradient.\n- Byte 5: an unsigned 8-bit fuel level.\n- Bytes 6 to 7: an unsigned 16-bit pulse count.\n\n" +
-    "Put the distance in `w0`, the sign-extended gradient in `w1`, the fuel level in `w2`, and the pulse count in `w3`. Leave every memory byte unchanged. Then return.\n\n" +
+    "Put the fields in these registers:\n\n- The distance in `w0`.\n- The sign-extended gradient in `w1`.\n- The fuel level in `w2`.\n- The pulse count in `w3`.\n\nLeave every memory byte unchanged. Then return.\n\n" +
     "This exercise checks all four registers. Only `w0` is the ordinary C return-value register. Plan the order of your loads so that the starting address remains available until the last memory access.",
   finalHints: [
     "Choose each load from the field's width and whether it is signed.",

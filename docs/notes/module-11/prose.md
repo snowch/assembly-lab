@@ -300,7 +300,13 @@ The next exercise applies checked addition to signed 32-bit inputs and a signed 
 
 ### Write checked_trip
 
-Write `checked_trip`. Signed distance and adjustment arrive in `w0` and `w1`. `x2` holds the address of a four-byte result slot. Store the low 32 bits of their sum there. Return 1 in `w0` if the signed mathematical sum does not fit in 32 bits, or 0 if it does.
+Write `checked_trip`.
+
+- The signed distance arrives in `w0`.
+- The signed adjustment arrives in `w1`.
+- `x2` holds the address of a four-byte result slot.
+
+ Store the low 32 bits of the sum of distance and adjustment in the result slot. Return 1 in `w0` if the signed mathematical sum does not fit in 32 bits, or 0 if it does.
 
 Leave the four bytes following the result slot unchanged. Store the sum before replacing `w0` with the overflow report. This assembly exercise implements the checked-add contract; it deliberately preserves the low result bits even when overflow is reported.
 

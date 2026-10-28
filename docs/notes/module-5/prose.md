@@ -68,7 +68,11 @@ Build the same dimming function from instructions you already know. The first te
 
 Write `dim_up(brightness, start, end)`. All arguments are unsigned. For each tick from `start` up to, but not including, `end`, halve the brightness and drop any remainder. Return the final brightness. If `start` is at or above `end`, return the original brightness.
 
-`brightness` arrives in `w0`, `start` in `w1`, and `end` in `w2`. Return the result in `w0`. Use `cmp`, branches, `lsr`, `add` and `ret`.
+- `brightness` arrives in `w0`.
+- `start` arrives in `w1`.
+- `end` arrives in `w2`.
+
+Return the result in `w0`. Use `cmp`, branches, `lsr`, `add` and `ret`.
 
 The tests include equal and descending endpoints, and an interval that ends at the largest unsigned value.
 
@@ -112,7 +116,13 @@ To understand a loop, first check whether it tests before the first iteration. F
 
 ### Count three runs of dim_up
 
-For GCC's original `dim_up` listing, give the returned brightness and the number of instructions that run for each call: `dim_up(128, 7, 7)`, `dim_up(128, 7, 8)` and `dim_up(128, 7, 9)`. Enter decimal numbers.
+For GCC's original `dim_up` listing, give the returned brightness and the number of instructions that run for each separate call:
+
+- `dim_up(128, 7, 7)`
+- `dim_up(128, 7, 8)`
+- `dim_up(128, 7, 9)`
+
+Enter decimal numbers.
 
 Count every executed instruction, including `ret`. Do not count labels.
 
@@ -270,7 +280,10 @@ Write a countdown loop that uses the flags from subtraction. Preserve the initia
 
 Write `dim_down(brightness, ticks)`. Both arguments are unsigned. Halve the brightness once for each tick, dropping any remainder, then return the final brightness. If `ticks` is zero, return the original brightness.
 
-`brightness` arrives in `w0`, and `ticks` in `w1`. Return the result in `w0`. Use `cbz`, `lsr`, `subs`, branches and `ret`. A separate `cmp` is not available: use the flags from `subs`.
+- `brightness` arrives in `w0`.
+- `ticks` arrives in `w1`.
+
+Return the result in `w0`. Use `cbz`, `lsr`, `subs`, branches and `ret`. A separate `cmp` is not available: use the flags from `subs`.
 
 *Hints, in order:*
 
@@ -334,7 +347,12 @@ C23 draft N3096, section 6.8.5 paragraph 4, lets a compiler assume termination f
 
 Write `dim_until_dark(brightness, ticks)`. Return the same brightness as `dim_down`, but stop as soon as either the count or the brightness is zero. Shifting zero again cannot change the result.
 
-Both arguments are unsigned. They arrive in `w0` and `w1`; return the brightness in `w0`. Use `cbz`, `lsr`, `subs`, branches and `ret`.
+Both arguments are unsigned:
+
+- `brightness` arrives in `w0`.
+- `ticks` arrives in `w1`.
+
+Return the brightness in `w0`. Use `cbz`, `lsr`, `subs`, branches and `ret`.
 
 The tests include the largest unsigned tick count. Your function must finish within the simulator's instruction limit, so it must stop when further shifts would do no work.
 
