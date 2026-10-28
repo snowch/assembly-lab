@@ -24,8 +24,6 @@ Each warning is on or off on its own. How can the program change one warning wit
 
 *The warning word's 32 bits. The table beside it gives each bit's meaning.*
 
-## 2. Why one bit at a time
-
 `add` and `sub` change a whole number. A carry can run from one bit into the next and reach any bit. So an `add` or a `sub` can change warnings it was not meant to touch.
 
 `and`, `orr` and `eor` work on each bit separately. Bit 5 of the result depends only on bit 5 of the two inputs.
@@ -166,8 +164,6 @@ OR can set bits, but it cannot clear bits that were already 1. The old gear must
 
 No carry runs from one bit into the next. So, for `and`, `orr` and `eor`, each bit of the result depends only on the same bit of the two inputs. That is why a mask can change one warning and leave the rest.
 
-## 8. Fields in real code
-
 A colour can keep its red, green and blue amounts in separate fields of one word. As with the gear, `ubfx` can pick out one field and move it to the lowest bits so the program can use its value.
 
 ## 9. Three results from one word
@@ -236,8 +232,6 @@ What does each instruction do differently?
 For a negative `int`, the C standard lets the compiler choose and document the result of `>>`. Another C compiler may make a different choice.
 
 For some signed left shifts, C gives no guarantee about the program's behaviour. This includes shifting a negative `int` left. GCC supports left shifts of negative signed values as an extension to C, but code that relies on that extension is not guaranteed to work the same way with another compiler. This lesson's C left-shift examples avoid those cases. The compiler is GCC 16.1 with `-O1`, as in Module 0.
-
-## 2. Why moving bits matters
 
 Moving every bit one place left doubles an `unsigned` value, as long as no 1 moves past the top. Moving every bit one place right halves it, and drops any remainder. GCC turns `n * 8` into `lsl w0, w0, 3`.
 

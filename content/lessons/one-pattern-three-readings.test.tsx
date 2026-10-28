@@ -60,10 +60,12 @@ const mnemonics = (listing: string) => [
 ];
 
 describe("the lesson", () => {
-  it("parses and passes the schema's checks: ten sections in order, every challenge mounted", () => {
+  it("parses and passes the schema's checks: selected sections in order, every challenge mounted", () => {
     expect(() => parseLesson(onePatternThreeReadings)).not.toThrow();
     expect(checkLesson(lesson)).toEqual([]);
-    expect(lesson.sections.map((s) => s.kind)).toEqual([...SECTION_KINDS]);
+    expect(lesson.sections.map((s) => s.kind)).toEqual(
+      SECTION_KINDS.filter((kind) => !["motivation", "generalisation"].includes(kind)),
+    );
     expect([lesson.module, lesson.order]).toEqual([1, 0]);
   });
 
@@ -137,7 +139,7 @@ describe("the improvement pass", () => {
   });
 
   it("closes with what you now know, a question, and its answer in a closed note", () => {
-    const last = lesson.sections[9]!;
+    const last = lesson.sections.find((section) => section.kind === "reflection")!;
     expect(last.title).toBe("What you now know");
     expect(last.prose).toContain("`0x80000001`");
     expect(last.details?.summary).toBe("Answer");
@@ -148,7 +150,7 @@ describe("the improvement pass", () => {
   });
 
   it("has the compiler note as the comparison's closed note, and the explanation only after the check", () => {
-    const section = lesson.sections[5]!;
+    const section = lesson.sections.find((section) => section.kind === "failureExperiment")!;
     expect(section.details?.summary).toBe("Which compiler?");
     expect(section.details?.prose).toContain("GCC 16.1");
     expect(section.prose).not.toContain("GCC 16.1");
@@ -158,7 +160,8 @@ describe("the improvement pass", () => {
   });
 
   it("starts the register to read at the model's pattern, with the top bit's table, and a hexadecimal box for Make −1", () => {
-    const reader = lesson.sections[3]!.interactives[0]!;
+    const reader = lesson.sections.find((section) => section.kind === "investigation")!
+      .interactives[0]!;
     expect(reader.kind).toBe("register-reader");
     expect(reader.props["topBit"]).toBe(true);
     expect(challenge("make-minus-one").initial.data).toEqual({ hexEntry: ["bits"] });
@@ -304,7 +307,9 @@ describe("the page", () => {
     const { container } = render(
       <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
     );
-    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
+    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(
+      lesson.sections.length,
+    );
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
     // The stepper that adds 12 waits for its prediction; the comparison waits for its own.

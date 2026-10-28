@@ -16,7 +16,6 @@ export const LABELS = {
   ],
   titles: {
     question: "Why does the C type change the instruction?",
-    motivation: "Why moving bits matters",
     prediction: "What fills the top bit",
     investigation: "Left and right shifts",
     construction: "Division and shifting",

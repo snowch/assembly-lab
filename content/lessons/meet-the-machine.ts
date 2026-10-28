@@ -81,24 +81,9 @@ export const meetTheMachine: LessonInput = {
   introduces: [],
   sections: [
     {
-      kind: "question",
-      title: LABELS.titles.question,
-      prose: PROSE.question,
-    },
-    {
-      kind: "motivation",
-      title: LABELS.titles.motivation,
-      prose: PROSE.motivation,
-    },
-    {
-      kind: "prediction",
-      title: LABELS.titles.prediction,
-      prose: PROSE.prediction,
-    },
-    {
       kind: "investigation",
       title: LABELS.titles.investigation,
-      prose: PROSE.investigation,
+      prose: [PROSE.prediction, PROSE.investigation].join("\n\n"),
       interactives: [
         {
           id: "step-trip",
@@ -164,6 +149,7 @@ export const meetTheMachine: LessonInput = {
           },
         },
         {
+          after: PROSE.explanation,
           id: "step-no-ret",
           kind: "stepper",
           timeModel: STEPS,
@@ -181,14 +167,13 @@ export const meetTheMachine: LessonInput = {
         },
       ],
     },
-    { kind: "explanation", title: LABELS.titles.explanation, prose: PROSE.explanation },
-    { kind: "generalisation", title: LABELS.titles.generalisation, prose: PROSE.generalisation },
     {
       kind: "challenge",
       title: LABELS.titles.challenge,
       prose: PROSE.challenge,
       interactives: [
         {
+          after: PROSE.reflection,
           id: "trace-km",
           kind: "challenge",
           timeModel: STEPS,
@@ -197,11 +182,6 @@ export const meetTheMachine: LessonInput = {
           props: { challengeId: "trace-the-call" },
         },
       ],
-    },
-    {
-      kind: "reflection",
-      title: LABELS.titles.reflection,
-      prose: PROSE.reflection,
     },
   ],
   challenges: [

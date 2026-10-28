@@ -3,10 +3,7 @@
 // Synthesis prose and retained hints/tasks/notes. Drafted separately from checked facts;
 // canonical copy: docs/notes/module-0/prose.md. The prose test holds both directions.
 
-import { SYNTHESIS_COPY } from "./fundamentals.prose";
-
 export const PROSE = {
-  question: SYNTHESIS_COPY.question,
   // Two notes under the listing, each shut until the learner opens it.
   compilerNote: {
     summary: "Which compiler made these instructions?",
@@ -26,8 +23,6 @@ export const PROSE = {
       "The arithmetic has already calculated the result. `ret` returns control to the code that called the function; it does not calculate or move the result.\n\n" +
       "GCC's original line references are kept in the compiler details. GCC 16.1 at `-O1` records both instructions against line 7, the closing brace. These references help debugging tools locate C code. They do not always identify the statement an instruction carries out.",
   },
-
-  motivation: SYNTHESIS_COPY.motivation,
 
   prediction:
     "`trip_distance` adds three trip distances, called legs, then subtracts a detour. Its `int` arguments arrive in registers:\n\n- `leg1` arrives in `w0`.\n- `leg2` arrives in `w1`.\n- `leg3` arrives in `w2`.\n- `detour` arrives in `w3`.\n\nGCC 16.1.0 at `-O1`, an optimisation setting, made the four instructions below for 64-bit Arm. Follow the C variable `total` through the calculation: the instructions update `w0`, then `ret` returns with the result already there.",
@@ -76,8 +71,6 @@ export const PROSE = {
 
   explanation:
     "A function name does not make the processor stop. In this example, execution advances through instructions in memory until `ret` returns to the caller. Removing that return lets the next function's instructions run with the values left in the registers.",
-  generalisation:
-    "The compiler chooses the registers and instructions. GCC 16.1 at `-O1` keeps this function's values in registers and produces four instructions. At `-O0`, which means no optimisation, it produces twenty instructions, storing variables in memory and reading them back for arithmetic. Compare listings with the compiler version and settings in mind.",
   challenge:
     "The car's odometer records the total distance it has travelled. The car needs a service when that reading reaches `service_at`. The `odometer` argument is the reading recorded before the current trip began. It does not include `trip_so_far`.\n\n`km_to_service` returns the kilometres left before the service, after allowing for the current trip and a planned trip. It also keeps 50 km spare. Its arguments are `service_at`, `odometer`, `trip_so_far` and `planned`, in `w0` to `w3`.\n\nGCC made the five instructions shown below. The `#50` in the last `sub` is the number 50 written inside the instruction.",
   traceTask: "Without running the call `km_to_service(30000, 28750, 140, 390)`, give two values.",

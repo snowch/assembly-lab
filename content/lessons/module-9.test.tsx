@@ -14,9 +14,11 @@ const lessons = [callsAndReturns, recursiveCalls].map((l) => Lesson.parse(l));
 const challenges = lessons.flatMap((l) => l.challenges);
 
 describe("Module 9 lesson contracts", () => {
-  it.each(lessons)("$id has ten sections and two mounted exercises", (lesson) => {
+  it.each(lessons)("$id has ordered sections and two mounted exercises", (lesson) => {
     expect(checkLesson(lesson)).toEqual([]);
-    expect(lesson.sections.map((s) => s.kind)).toEqual([...SECTION_KINDS]);
+    expect(lesson.sections.map((s) => s.kind)).toEqual(
+      SECTION_KINDS.filter((kind) => lesson.id !== "calls-and-returns" || kind !== "question"),
+    );
     expect(lesson.challenges).toHaveLength(2);
     const figures = lesson.sections.flatMap((s) => s.interactives);
     const ungated = figures.filter(

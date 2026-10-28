@@ -7,16 +7,10 @@ import { SYNTHESIS_COPY } from "./fundamentals.prose";
 export const LABELS = {
   objectives: SYNTHESIS_COPY.objectives,
   titles: {
-    question: "What does the processor do?",
-    motivation: SYNTHESIS_COPY.motivationTitle,
-    prediction: "Connect the operations to a function",
-    investigation: "Stepping through",
+    investigation: "Trace trip_distance",
     construction: "Fixing fuel_used",
     failureExperiment: "Removing ret",
-    explanation: "How a program runs",
-    generalisation: "Other functions",
     challenge: "Kilometres to service",
-    reflection: "What you now know",
   },
   captions: {
     stepper: "trip_distance(120, 85, 42, 15), from incoming arguments to the returned result.",

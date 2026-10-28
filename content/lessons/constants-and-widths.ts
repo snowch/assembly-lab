@@ -185,7 +185,7 @@ export const constantsAndWidths: LessonInput = {
     {
       kind: "explanation",
       title: LABELS.titles.explanation,
-      prose: PROSE.explanation,
+      prose: "",
       interactives: [
         {
           id: "add-shifted-immediate",

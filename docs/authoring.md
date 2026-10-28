@@ -111,6 +111,15 @@ a distinct comparison or a practical decision, with feedback or a clear way to c
 Opening questions can frame what the lesson demonstrates; predictions and prompts that drive an
 actual activity remain useful. Remove an empty section's heading as well as its prose.
 
+Choose section boundaries around a distinct concept, activity or useful reference. Short setup
+and motivation paragraphs normally belong with the activity they prepare; a short explanation
+of an observed result normally belongs after that figure. Use figure `lead` and `after` prose
+when joining sections would otherwise move text across a figure. Preserve definitions before
+use, prediction gates and the order in which results become available. Do not add a heading
+just to name a teaching stage, or hide surplus section headings with CSS while retaining the
+fragmented outline. A short but distinct activity may still deserve its own heading. Keep
+substantial explanations and practical procedures easy to find.
+
 When an exercise supplies several starting values or register roles, put parallel facts in a
 short bullet list. State when those facts hold, then keep the operation and requested result
 separate. Use ordered steps when execution order matters; distinguish independent calls from

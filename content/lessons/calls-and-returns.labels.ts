@@ -9,7 +9,6 @@ export const LABELS = {
     "preserve values according to the calling convention.",
   ],
   titles: {
-    question: "How does a function find its way back?",
     motivation: "Save the return address before a call",
     prediction: "Call the distance helper",
     investigation: "Inspect the saved values on the stack",

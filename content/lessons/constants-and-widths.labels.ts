@@ -19,7 +19,7 @@ export const LABELS = {
     investigation: "Trying a number",
     construction: "Building 1000000",
     failureExperiment: "Two names, one register",
-    explanation: "Constants in halves",
+    explanation: "Multiply a constant before adding",
     generalisation: "Constants and C types",
     challenge: "Four instructions",
     reflection: "What you now know",

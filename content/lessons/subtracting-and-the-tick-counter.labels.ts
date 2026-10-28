@@ -13,8 +13,7 @@ export const LABELS = {
     "Write `elapsed` and pass tests across the wrap.",
   ],
   titles: {
-    question: "Is the answer still right after a wrap?",
-    motivation: "Why tests need to cross a wrap",
+    motivation: "Elapsed time across a wrap",
     prediction: "Elapsed across the wrap",
     investigation: "Subtraction as addition, and borrows",
     construction: "Writing elapsed yourself",

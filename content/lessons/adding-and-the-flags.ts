@@ -56,8 +56,11 @@ export const addingAndTheFlags: LessonInput = {
   objectives: [...LABELS.objectives],
   introduces: ["carry", "flag", "overflow"],
   sections: [
-    { kind: "question", title: LABELS.titles.question, prose: PROSE.question },
-    { kind: "motivation", title: LABELS.titles.motivation, prose: PROSE.motivation },
+    {
+      kind: "motivation",
+      title: LABELS.titles.motivation,
+      prose: [PROSE.question, PROSE.motivation].join("\n\n"),
+    },
     {
       kind: "prediction",
       title: LABELS.titles.prediction,
@@ -167,8 +170,11 @@ export const addingAndTheFlags: LessonInput = {
         },
       ],
     },
-    { kind: "explanation", title: LABELS.titles.explanation, prose: PROSE.explanation },
-    { kind: "generalisation", title: LABELS.titles.generalisation, prose: PROSE.generalisation },
+    {
+      kind: "explanation",
+      title: LABELS.titles.explanation,
+      prose: [PROSE.explanation, PROSE.generalisation].join("\n\n"),
+    },
     {
       kind: "challenge",
       title: LABELS.titles.challenge,

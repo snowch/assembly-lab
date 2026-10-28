@@ -56,7 +56,7 @@ const model = (name: keyof typeof RECORDED_FUNCTIONS, ...args: number[]) =>
   wValue(traceOf(RECORDED_FUNCTIONS[name], { entry: name, args }).result.final, 0);
 const hexOf = (n: number) => `0x${(n >>> 0).toString(16)}`;
 
-test("the lesson loads with no console error, ten sections, and its two challenges", async ({
+test("the lesson loads with no console error, selected sections, and its two challenges", async ({
   page,
 }) => {
   const errors = watchErrors(page);

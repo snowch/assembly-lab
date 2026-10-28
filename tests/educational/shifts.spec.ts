@@ -54,7 +54,7 @@ const stored = (page: Page) =>
 const hexOf = (n: number) => `0x${(n >>> 0).toString(16)}`;
 const FILL = /^A copy of the old top bit/;
 
-test("the lesson loads with no console error, ten sections, and its two challenges", async ({
+test("the lesson loads with no console error, selected sections, and its two challenges", async ({
   page,
 }) => {
   const errors = watchErrors(page);

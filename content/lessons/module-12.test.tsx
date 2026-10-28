@@ -79,16 +79,18 @@ describe("final core native module", () => {
     expect(termProblems(LESSONS)).toEqual([]);
   });
   it.each(lessons)(
-    "$id: renders ten sections, a mounted challenge, and no broken figures",
+    "$id: renders selected sections, a mounted challenge, and no broken figures",
     (lesson) => {
       expect(checkLesson(lesson)).toEqual([]);
-      expect(lesson.sections.map((s) => s.kind)).toEqual([...SECTION_KINDS]);
+      expect(lesson.sections.map((s) => s.kind)).toEqual(
+        SECTION_KINDS.filter((kind) => kind !== "question"),
+      );
       const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
       const { container } = render(
         <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
       );
       expect(container.querySelector(".al-problem")).toBeNull();
-      expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
+      expect(container.querySelectorAll("section.lesson-section")).toHaveLength(9);
       expect(container.querySelectorAll("section.challenge")).toHaveLength(1);
       for (const challenge of lesson.challenges) {
         expect(gradeWritten(challenge, challenge.initial).passed).toBe(false);

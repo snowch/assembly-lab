@@ -49,8 +49,11 @@ export const subtractingAndTheTickCounter: LessonInput = {
   objectives: [...LABELS.objectives],
   introduces: ["borrow", "wrap"],
   sections: [
-    { kind: "question", title: LABELS.titles.question, prose: PROSE.question },
-    { kind: "motivation", title: LABELS.titles.motivation, prose: PROSE.motivation },
+    {
+      kind: "motivation",
+      title: LABELS.titles.motivation,
+      prose: [PROSE.question, PROSE.motivation].join("\n\n"),
+    },
     {
       kind: "prediction",
       title: LABELS.titles.prediction,

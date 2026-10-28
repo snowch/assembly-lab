@@ -1,5 +1,7 @@
 # Fundamentals: canonical prose
 
+The section-flow revision keeps these property-path records as the canonical strings. The lesson data explicitly joins related opening strings and places short explanations after the worked figure. The rendered heading order is recorded in `../section-flow/audit.md`.
+
 Copyright © 2026 Christopher Snow
 
 Drafted from the checked facts for the existing primitive programs and the recorded increment_int and add_ints listings. The fresh exercise calls are independently checked against GNU/QEMU. Each lesson has its own visible course-plan entry; each worked example remains visible within its lesson.
@@ -741,18 +743,6 @@ w1 after both instructions
 ### synthesis / title
 
 Putting it together
-
-### synthesis / question
-
-How do individual instructions perform a complete C function? Follow a trip calculation, then repair another function.
-
-### synthesis / motivation
-
-You have practised addition, a function call and return, subtraction, and instructions in sequence. Now combine those mechanics.
-
-### synthesis / motivationTitle
-
-From instructions to a function
 
 ### synthesis / objectives 1
 

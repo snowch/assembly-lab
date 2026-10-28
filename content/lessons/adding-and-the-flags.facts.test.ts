@@ -449,7 +449,7 @@ describe("the numbers the improved text states", () => {
     ...learnerText(lesson),
     ...lesson.challenges.flatMap((c) => c.fields.map((f) => f.label)),
   ]);
-  const reflection = lesson.sections[9]!;
+  const reflection = lesson.sections.find((section) => section.kind === "reflection")!;
 
   it("are each a result of the model, an argument of a call, a count of bits or the recorded compiler's version", () => {
     const decimal = new Map<number, string>([

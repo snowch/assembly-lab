@@ -16,7 +16,7 @@ const LESSON_ID = "meet-the-machine";
 
 async function openLesson(page: Page): Promise<void> {
   await page.goto(`#/lesson/${LESSON_ID}`);
-  await expect(page.locator("section.lesson-section")).toHaveCount(10);
+  await expect(page.locator(`#ix-step-trip .al-listing`)).toBeVisible();
   await page.evaluate(async () => {
     await document.fonts.ready;
   });

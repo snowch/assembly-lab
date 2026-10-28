@@ -20,11 +20,10 @@ export const debugNativeInstructions: LessonInput = {
   objectives: [...LABELS.objectives],
   introduces: [],
   sections: [
-    { kind: "question", title: LABELS.titles.question, prose: PROSE.question },
     {
       kind: "motivation",
       title: LABELS.titles.motivation,
-      prose: PROSE.motivation + "\n\n" + PROSE.connection,
+      prose: [PROSE.question, PROSE.motivation + "\n\n" + PROSE.connection].join("\n\n"),
       interactives: [
         {
           id: "native-debug-startup",

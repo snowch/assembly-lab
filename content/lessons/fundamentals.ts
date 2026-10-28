@@ -2,7 +2,7 @@
 
 // Each introductory mechanism is a separate, directly linked lesson. Figures have one fixed
 // program each; navigation belongs to the course plan and ordinary next-lesson links.
-import { SECTION_KINDS, type LessonInput, type SectionKind } from "@platform/lesson-schema";
+import type { LessonInput, SectionKind } from "@platform/lesson-schema";
 import { traceOf, viewAt, wValue } from "@al/views";
 import { FUNDAMENTALS_PROSE as P } from "./fundamentals.prose";
 import { FUNDAMENTALS_LABELS as L } from "./fundamentals.labels";
@@ -14,9 +14,7 @@ type Key = keyof typeof P;
 const CONFIG = [
   {
     key: "addition",
-    sectionKinds: SECTION_KINDS.filter(
-      (kind) => kind !== "reflection" && kind !== "construction" && kind !== "failureExperiment",
-    ),
+    sectionKinds: ["motivation", "investigation", "challenge"],
     id: "one-addition",
     worked: 0,
     test: 2,
@@ -37,7 +35,7 @@ const CONFIG = [
   {
     key: "function",
     id: "tiny-function",
-    sectionKinds: ["motivation", "investigation", "construction", "challenge"],
+    sectionKinds: ["investigation", "construction", "challenge"],
     worked: 1,
     test: 9,
     args: [6, 4],
@@ -46,9 +44,7 @@ const CONFIG = [
   },
   {
     key: "subtraction",
-    sectionKinds: SECTION_KINDS.filter(
-      (kind) => kind !== "reflection" && kind !== "construction" && kind !== "failureExperiment",
-    ),
+    sectionKinds: ["prediction", "investigation", "challenge"],
     id: "subtraction-and-reuse",
     worked: 4,
     test: 4,
@@ -58,14 +54,7 @@ const CONFIG = [
   },
   {
     key: "sequence",
-    sectionKinds: SECTION_KINDS.filter(
-      (kind) =>
-        kind !== "reflection" &&
-        kind !== "generalisation" &&
-        kind !== "prediction" &&
-        kind !== "construction" &&
-        kind !== "failureExperiment",
-    ),
+    sectionKinds: ["investigation", "challenge"],
     id: "instructions-in-sequence",
     worked: 5,
     test: 5,
@@ -120,7 +109,50 @@ const primitiveLessons: LessonInput[] = CONFIG.map((config, order) => {
   const key: Key = config.key;
   const prose = P[key];
   const labels = L[key];
-  const sectionProse: Partial<Record<SectionKind, string>> = prose.sections;
+  const sectionProse: Partial<Record<SectionKind, string>> = {
+    ...prose.sections,
+    ...(key === "addition"
+      ? {
+          motivation: [P.addition.sections.question, P.addition.sections.motivation].join("\n\n"),
+          investigation: [P.addition.sections.prediction, P.addition.sections.investigation].join(
+            "\n\n",
+          ),
+        }
+      : {}),
+    ...(key === "function"
+      ? {
+          investigation: [P.function.sections.motivation, P.function.sections.investigation].join(
+            "\n\n",
+          ),
+        }
+      : {}),
+    ...(key === "subtraction"
+      ? {
+          prediction: [
+            P.subtraction.sections.question,
+            P.subtraction.sections.motivation,
+            P.subtraction.sections.prediction,
+          ].join("\n\n"),
+        }
+      : {}),
+    ...(key === "sequence"
+      ? {
+          investigation: [
+            P.sequence.sections.question,
+            P.sequence.sections.motivation,
+            P.sequence.sections.investigation,
+          ].join("\n\n"),
+        }
+      : {}),
+  };
+  const workedAfter =
+    key === "addition"
+      ? [P.addition.sections.explanation, P.addition.sections.generalisation].join("\n\n")
+      : key === "subtraction"
+        ? [P.subtraction.sections.explanation, P.subtraction.sections.generalisation].join("\n\n")
+        : key === "sequence"
+          ? P.sequence.sections.explanation
+          : undefined;
   const sectionTitles: Partial<Record<SectionKind, string>> = labels.titles;
   const item = PRIMITIVE_PROGRAMS[config.test]!;
   const program = primitiveProgram(item);
@@ -137,8 +169,8 @@ const primitiveLessons: LessonInput[] = CONFIG.map((config, order) => {
     module: 0,
     order,
     objectives: [...labels.objectives],
-    sectionLayout: "sectionKinds" in config ? "selected" : "full",
-    showTimeModelNotes: !("sectionKinds" in config),
+    sectionLayout: "selected",
+    showTimeModelNotes: false,
     introduces: [...config.introduces],
     termExemptions:
       key === "addition"
@@ -155,7 +187,7 @@ const primitiveLessons: LessonInput[] = CONFIG.map((config, order) => {
             },
           ]
         : [],
-    sections: ("sectionKinds" in config ? config.sectionKinds : SECTION_KINDS).map((kind) => ({
+    sections: config.sectionKinds.map((kind) => ({
       kind,
       title: sectionTitles[kind]!,
       prose: sectionProse[kind]!,
@@ -187,14 +219,17 @@ const primitiveLessons: LessonInput[] = CONFIG.map((config, order) => {
       ...(kind === "investigation"
         ? {
             interactives: [
-              figure(
-                config.worked,
-                FIGURE_IDS[order]!,
-                key === "subtraction" ? P.subtraction.secondFigure : prose.figure,
-                key === "subtraction"
-                  ? L.subtraction.captions.secondFigure
-                  : labels.captions.figure,
-              ),
+              {
+                ...figure(
+                  config.worked,
+                  FIGURE_IDS[order]!,
+                  key === "subtraction" ? P.subtraction.secondFigure : prose.figure,
+                  key === "subtraction"
+                    ? L.subtraction.captions.secondFigure
+                    : labels.captions.figure,
+                ),
+                ...(workedAfter ? { after: workedAfter } : {}),
+              },
             ],
           }
         : {}),

@@ -52,6 +52,7 @@ export const shifts: LessonInput = {
       details: { summary: PROSE.questionNote.summary, prose: PROSE.questionNote.prose },
       interactives: [
         {
+          after: PROSE.motivation,
           id: "halve-compare",
           kind: "listing-pair",
           timeModel: "none",
@@ -65,7 +66,6 @@ export const shifts: LessonInput = {
         },
       ],
     },
-    { kind: "motivation", title: LABELS.titles.motivation, prose: PROSE.motivation },
     {
       kind: "prediction",
       title: LABELS.titles.prediction,

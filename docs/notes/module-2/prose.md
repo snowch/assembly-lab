@@ -12,11 +12,9 @@ Drafted by Haiku from the fact brief in `docs/notes/module-2/brief.md`, a part a
 - Say what each of the four flags records after `adds`.
 - Explain why one adder serves both readings, and how C and V report whether each sum fits.
 
-## 1. How can the processor say when an answer does not fit?
+## 2. When an addition does not fit
 
 In Module 1, the same 32 bits could represent different signed and unsigned numbers. The processor adds these bits without knowing which reading the program uses. The sum may not fit that reading's range. How can the processor tell us when that happens?
-
-## 2. When an addition does not fit
 
 Every addition in this lesson uses a `w` name, so it keeps 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.
 
@@ -141,8 +139,6 @@ V reports signed **overflow**: the sum of the signed numbers is outside the sign
 
 C and V are separate tests.
 
-## 8. Flags keep their values
-
 Every `adds` writes all four flags. The flags keep their values until another instruction writes them. `add` and `sub` do not write the flags.
 
 To check whether an addition fits, a program reads C for unsigned numbers or V for signed numbers. Later modules show instructions that read the flags.
@@ -186,7 +182,7 @@ The result is `0x80000000`. A carry goes into bit 31 and a carry comes out, so C
 - Say what C records after `subs`.
 - Write `elapsed` and pass tests across the wrap.
 
-## 1. Is the answer still right after a wrap?
+## 1. Elapsed time across a wrap
 
 The trip computer counts milliseconds using a 32-bit unsigned counter. After 4294967295, the next value is 0.
 
@@ -199,8 +195,6 @@ One full turn of the counter, 4294967296 ticks, is about 49.71 days.
 Throughout this lesson, assume the counter advances one tick per millisecond without being reset. Fewer than 4294967296 ticks pass between the two readings.
 
 How can you work out the elapsed time if the counter wraps between the two readings?
-
-## 2. Why tests need to cross a wrap
 
 It is easy to assume that a later reading is always larger than an earlier one. After a wrap, `now` can be less than `then`. Tests that never cross the wrap will not catch a mistake based on that assumption. Include readings on both sides of the wrap.
 
