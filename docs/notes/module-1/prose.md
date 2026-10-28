@@ -256,8 +256,6 @@ Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The start
 
 Step through your solution below to see the two halves of `w0` after each instruction. Watch which half changes and which is kept.
 
-A constant that does not fit in one `mov` is built half by half, with `mov` then `movk`.
-
 ## 6. Two names, one register
 
 The `w` names in the earlier arithmetic examples selected 32 bits. Each register holds 64 bits, and it has two names.

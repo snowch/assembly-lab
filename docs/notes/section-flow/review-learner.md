@@ -64,7 +64,9 @@ section join was found in this source pass.
   the distinct activity contained here. Direction: identify the shifted-constant addition
   in the retained heading and place the small recap with the earlier build explanation.
   Final source reread: the heading now says “Multiply a constant before adding”, and
-  the recap is attached to the earlier build figure. Browser confirmed in both widths and actual themes.
+  the recap was initially attached to the earlier build figure. The later gate correction
+  below removes that redundant recap; the construction explanation already teaches the
+  mechanism. The corrected heading remains verified in both widths and actual themes.
 
 ## Final source confirmation
 
@@ -116,4 +118,46 @@ This review did not submit every later exercise, run external GNU/QEMU/GDB comma
 perform a physical Pi test. Full-page screenshots were collected, but a pixel-by-pixel
 visual audit of every diagram at every scroll position is not claimed.
 
-Verdict: no unresolved learner section-flow finding on the frozen build.
+Initial review verdict: no unresolved learner section-flow finding within the checks above.
+The solution-gate issue subsequently found by CI was outside that focused state coverage.
+The corrected build was checked separately below.
+
+## Follow-up: solution-stepper gate correction
+
+The managing session reported the initial full CI browser result as **1,225 passed,
+2 failed, 23 skipped**. Both failures concerned the Constants and widths solution stepper
+at desktop and phone widths. That original run failed; subsequent focused passes do not
+change its result. This reviewer did not run or independently recount that full CI suite.
+
+L3, medium, source and CI evidence: “A constant that does not fit in one `mov` is built
+half by half, with `mov` then `movk`.” was placed in the solution figure's outer `after`
+prose, which rendered while the figure was locked. This contradicted the figure's intended
+solution gate and its existing regression check. Direction: remove the redundant recap
+rather than adding ungated solution-related text to that figure.
+
+Independently inspected the minimal correction: remove the outer `after`, its now-unused
+`PROSE.explanation` field and the corresponding canonical sentence. The construction
+explanation still defines `movk`, explains how it preserves the other half and gives the
+small worked example before the exercise. The shifted-immediate addition keeps its own
+accurate heading. No section or heading was added or removed by this correction.
+
+Checked the rebuilt production preview on port 4399 at **1280 × 812** and **375 × 812**,
+in both actual light and dark themes. Four fresh browser contexts, each covering initial
+locked, passed/open, fully stepped, cleared and cleared-after-reload states. Visually
+inspected the initial, passed and cleared screenshots in each context.
+
+- Initially, the solution figure shows the lock notice. It contains no instruction listing,
+  recap or gated solution-introduction paragraph.
+- Passing the exercise opens the figure and its introduction. The learner's solution runs
+  to completion in the stepper.
+- Clear work restores the lock, removes the instructions and introduction, and leaves the
+  recap absent. That state survives reload.
+- All ten section headings keep their exact titles in every checked state. The actual
+  theme remains correct; there is no horizontal page overflow or browser error.
+
+The focused browser script exited 0. Evidence: `/tmp/section-flow-reader-solution-gate/`,
+including `evidence.json`, state screenshots and four visual comparison sheets. No product
+file was edited by the reviewer. This is focused verification of the minimal correction;
+it is not a new full-course browser run or a claim that all CI checks passed.
+
+Final verdict after correction: L3 resolved; no unresolved learner section-flow finding.

@@ -66,9 +66,6 @@ export const PROSE = {
   failureExplain:
     "The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x00000000ffffffff`. Writing a `w` name always clears the upper 32 bits of the `x` register.",
 
-  explanation:
-    "A constant that does not fit in one `mov` is built half by half, with `mov` then `movk`.",
-
   immediateAdd: {
     title: "Multiply the constant before adding",
     prose:

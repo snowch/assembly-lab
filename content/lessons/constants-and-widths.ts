@@ -148,7 +148,6 @@ export const constantsAndWidths: LessonInput = {
           // The learner's own saved solution, assembled and traced, a step at a time. Nothing of
           // it shows until the saved work passes the challenge's tests.
           id: "solution-halves",
-          after: PROSE.explanation,
           kind: "wide-stepper",
           timeModel: STEPS,
           caption: LABELS.captions.solutionHalves,

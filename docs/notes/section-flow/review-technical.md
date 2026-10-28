@@ -45,3 +45,28 @@ Artifacts: `/tmp/section-flow-technical-browser/results.json`, `/tmp/section-flo
 No supported technical finding. No new unexplained prerequisite was introduced by these moves. The current CSS, authoring guidance and test changes also have no supported technical finding after independent source and built-page review. No finding needs a rewrite or correction direction.
 
 This review did not run the full CI suite, GNU/QEMU differential checks, native tool procedures, external GCC requests or a physical Pi test. Existing correctness payloads are unchanged; full-suite outcomes belong in the managing session's validation record, with any initial failures and subsequent reruns reported separately. Browser activity coverage is the focused scope above, not every challenge and every state on all 34 pages.
+
+## Final source and validation follow-up
+
+Independently reviewed the final root diff and validation record. The latest Fundamentals browser assertion requires the three observed descriptive headings, and its tiny-function selector checks the same argument explanation in the retained investigation section. No meaningful behaviour assertion was removed. Re-parsing all 34 lessons before the CI correction confirmed complete data identical to the frozen review snapshot after the unused-label cleanup.
+
+The validation record's content, unit, canonical and build totals/durations match their logs. A minor documentation finding was raised because wording described pending CI, merge and deployment outcomes as recorded. The requested direction was to mark those outcomes pending until evidence existed. Independently verified the correction to “will be recorded” and explicit pending status. That note correction required no product change.
+
+## CI gate correction review
+
+The first full CI run subsequently found a real presentation invariant that this review missed. The Constants and widths solution figure had the outer `after` sentence “A constant that does not fit in one `mov` is built half by half, with `mov` then `movk`.” `LessonView` renders that prose even when `WideStepper` returns its locked placeholder. The unchanged browser assertion requires the locked solution figure to contain no solution instruction words. The initial review exercised prediction-dependent gates but did not exercise this `fromChallenge` gate. Its earlier no-finding conclusion did not establish that this state was correct.
+
+The accepted correction removes the duplicate outer recap and its unused prose/canonical record. This is the smallest correction: the construction still explains the `mov`/`movk` rule before the challenge. The shifted-constant ADD heading and activity remain. No gate, test assertion, program, challenge or expected result changes.
+
+Independently checked the corrected production build on port 4399 at 1280 × 800 and 375 × 812, in actual light and dark themes. All four combinations passed these checks:
+
+- Initial solution figure: locked placeholder, no instruction rows, halves, Next control, solution-introduction words, outer recap or solution instruction words.
+- Passing learner work: introduction and the learner's instruction listing/halves appear; Next advances and Reset returns to the first state. Reload restores and regrades the passing work.
+- Editing the passing work to an invalid result: the solution figure closes immediately, before running tests, and remains closed after running tests and reloading. Introduction and solution content are absent throughout.
+- Passing again, then Clear work and Discard work: the figure closes and stays closed after reload. No page overflow or console/page error occurred in any checked state.
+
+Screenshots were inspected for desktop/phone, light/dark locked, passing and invalid states. Results and screenshots are in `/tmp/section-flow-technical-constants/`; the script and log are alongside that directory. All states above pass in `results.json`, with no harness errors.
+
+Expanded the source audit to every outer `lead` and `after` in all 34 parsed lessons, checking prediction gates, `fromChallenge`, `afterChallenge`, and primitive-operation result hiding. After the correction, eight new outer `after` fields remain: three Fundamentals operand/state explanations; Putting it together's generic execution explanation and final tracing advice; the signed/unsigned definition; warning-word motivation; and unsigned shift motivation. None contains a learner-specific solution, solution-introduction wording, or the computed answer to its associated question. The generic explanation under the gated Removing ret figure names no predicted value and occupied the same reading position as a separate section before this change. No remaining new outer prose is attached to a challenge-derived gate. The pre-existing register-view `after` and subtraction-calculation `lead` are unchanged. The complete inventory is `/tmp/section-flow-technical-prose-gates.json`.
+
+Reviewed the added validation history against the correction, build and focused logs: 81 tests in three files, 12 unchanged solution-stepper browser tests, build/type checks and their stated durations agree. The original CI failures and skips remain recorded separately; corrected exact-head CI and deployment are still marked pending. The correction closes the CI finding, and the expanded audit found no further issue. Review notes are frozen at this point for the correction commit.

@@ -40,3 +40,26 @@ reviews record source and built-browser coverage separately in this directory.
 
 Exact-head CI, merge and live deployment verification are pending. Their results will be recorded
 in the pull request. A focused pass is not described as a full-suite pass.
+
+## First full CI and locked-solution correction
+
+The first exact-head CI run (40764516668, bfa7c5e) passed its unit checks, real-tools and
+native-lessons jobs. The browser suite reported 1,225 passed, 23 existing skips and two failures
+(desktop/phone, 30.2 minutes, exit 1). The moved mov/movk recap used the outer figure `after`
+slot, which remains visible when the solution figure's `fromChallenge` body is locked. That
+violated the existing locked-solution text assertion. The earlier reviews missed this specific
+challenge-derived gate when checking prediction gates.
+
+Removed the duplicate recap, its unused prose property and canonical sentence. The construction
+already teaches the same mov/movk rule before the challenge, so no prerequisite is lost. The
+corrected shifted-constant ADD heading remains. No test assertion or gate was changed.
+
+- Corrected production build passed (13.54 seconds).
+- Three affected unit/content/facts files passed all 81 tests (9.83 seconds).
+- The unchanged solution-stepper browser group passed all 12 tests on desktop and phone
+  (32.9 seconds), including initial lock, alternative valid solutions, invalid edits, reload
+  and clear-work states.
+- The independent reviewers recheck the correction and other moved outer prose against all
+  gate forms; their follow-up evidence is recorded in the review files.
+
+The corrected exact-head CI run and merge/deployment remain pending.
