@@ -41,7 +41,7 @@ export const PROSE = {
     "Write `fuel_warning(litres, reserve)`. Both are `unsigned`. Its rules, in order:\n\n" +
     "- If `litres` is 0, return 2.\n- Otherwise, if `litres` is below `reserve`, return 1.\n- Otherwise, return 0.\n\n" +
     "Use only `cmp`, a branch with a condition, `cbz`, `b`, `mov` and `ret`. Five calls test it. One has `litres` equal to `reserve`. One has the top bit of `litres` set.\n\n" +
-    "`litres` arrives in `w0`, and `reserve` arrives in `w1`. The answer leaves in `w0`.\n\n" +
+    "- `litres` arrives in `w0`.\n- `reserve` arrives in `w1`.\n\nThe answer leaves in `w0`.\n\n" +
     "`cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags.\n\n" +
     "Choose a different name for each label. A simple convention is to use letters and underscores, starting with a letter. Do not use a register name. You can also use GCC's `.L` prefix, but it is not required.\n\n" +
     "A label goes on its own line, followed by a colon, before the instruction it names.",

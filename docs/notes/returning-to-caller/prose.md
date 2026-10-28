@@ -42,7 +42,14 @@ Check Arm’s references
 
 ### prose / challenge / task
 
-Start a fresh call, `increment_int(4)`, with `w0` holding 4 and `w1` holding 0. The caller runs `bl increment_int`. The function runs `add w0, w0, 1`, then `ret`. The caller continues with `add w1, w0, w0`. What does `w0` hold immediately after `ret`, and what does the caller’s addition write to `w1`?
+Start a fresh call, `increment_int(4)`, with:
+
+- `w0` holding 4.
+- `w1` holding 0.
+
+The caller runs `bl increment_int`. The function runs `add w0, w0, 1`, then `ret`. The caller continues with `add w1, w0, w0`.
+
+What does `w0` hold immediately after `ret`, and what does the caller’s addition write to `w1`?
 
 ### prose / challenge / hints / 0
 

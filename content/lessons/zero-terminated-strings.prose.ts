@@ -10,7 +10,7 @@ export const PROSE = {
   motivation:
     "Each element here occupies one byte, so its index is already a byte offset. `ldrb w2, [x3, x0]` reads the byte whose index is in `x0`, starting from the address in `x3`. No scaling shift is needed.\n\nAfter a load, `cbz` can test whether the byte is zero. The loop counts a byte only if it is nonzero. It must also stop at the capacity, even if no terminator has appeared.\n\nThe code that calls `label_length` must supply a capacity no larger than the readable byte array. A bound protects the scan only when that bound is valid.\n\nThe simulator checks access to its prepared memory. It does not check that the supplied capacity matches the array or that a terminator exists.",
   prediction:
-    "The prepared bytes are `65, 45, 66, 45, 67, 0, 88, 0`. The capacity is 8. The bytes hold the label `A-B-C`, its zero terminator and more bytes after it.",
+    "- The prepared bytes are `65, 45, 66, 45, 67, 0, 88, 0`.\n- The capacity is 8.\n\nThe bytes hold the label `A-B-C`, its zero terminator and more bytes after it.",
   predictionQuestion: "**What length does `label_length` return in `x0`?**",
   predictionExplain:
     "It returns `0x0000000000000005`, or 5. The loop counts the five bytes before the first zero. It excludes the zero itself and does not count the later byte `88`.",
@@ -19,7 +19,7 @@ export const PROSE = {
   construction:
     "Write a scan that stops at either the first zero or the supplied capacity. Both stopping rules matter.",
   writeTask:
-    "Write `label_length`. `x0` holds the starting address of a byte array, and `x1` holds its capacity. Return the number of bytes before the first zero in `x0`. If every byte within the capacity is nonzero, return the capacity.\n\nA zero capacity must return zero without reading memory. The supplied capacity never exceeds the readable array. Leave memory unchanged.",
+    "Write `label_length`.\n\n- `x0` holds the starting address of a byte array.\n- `x1` holds its capacity.\n\nReturn the number of bytes before the first zero in `x0`. If every byte within the capacity is nonzero, return the capacity.\n\nA zero capacity must return zero without reading memory. The supplied capacity never exceeds the readable array. Leave memory unchanged.",
   writeHints: [
     "Keep the starting address in another register before using `x0` for the length.",
     "A zero capacity permits no read, even to check for a terminator. Test the capacity before loading.",
@@ -37,7 +37,7 @@ export const PROSE = {
   generalisation:
     "A scan needs a stopping rule that matches the data. A valid terminated string ends at its zero byte. A bounded scan must also stop before its next read would reach the capacity.\n\nIf a bounded scan reaches the capacity, its return value tells you that no zero occurred within that region. It does not establish where a terminator might occur later.\n\nYou can inspect each nonzero byte for another purpose, such as counting separators. Keep the end-of-string test separate from the test for the byte you want to count.",
   finalTask:
-    "Write `count_marker`. `x0` points to a valid zero-terminated ASCII label. `w1` holds a nonzero ASCII byte to count. Return its number of occurrences before the first zero in `w0`. Leave memory unchanged.\n\nThe exercise supplies a terminator within readable memory. Do not count any matching byte after that terminator. The tests include an empty label and the ASCII character `0`.",
+    "Write `count_marker`.\n\n- `x0` points to a valid zero-terminated ASCII label.\n- `w1` holds a nonzero ASCII byte to count.\n\nReturn its number of occurrences before the first zero in `w0`. Leave memory unchanged.\n\nThe exercise supplies a terminator within readable memory. Do not count any matching byte after that terminator. The tests include an empty label and the ASCII character `0`.",
   finalHints: [
     "Keep a pointer to the current byte and a separate count of matches.",
     "Do not compare or count bytes after the zero terminator, even if they match the marker.",

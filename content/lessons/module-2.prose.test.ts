@@ -236,7 +236,13 @@ describe("module 2, the improved text: closed notes, gated texts and the last se
       const last = lesson.sections[9]!;
       expect(last.title).toBe("What you now know");
       expect(last.prose).toBe(prose.reflection);
-      expect(last.prose.split("\n").filter((l) => l.startsWith("- "))).toHaveLength(6);
+      // Count the takeaways separately from any fresh inputs supplied for the question.
+      expect(
+        last.prose
+          .split("\n\n")[0]!
+          .split("\n")
+          .filter((l) => l.startsWith("- ")),
+      ).toHaveLength(6);
       expect(last.prose).toMatch(/\n\n\*\*Question:\*\* .*\?$/);
       expect(last.details?.summary).toBe("Answer");
       expect(last.details?.prose).toBe(prose.reflectionAnswer);
@@ -291,9 +297,8 @@ describe("module 2, the improved text: closed notes, gated texts and the last se
     const task = LESSONS.find((l) => l.id === "subtracting-and-the-tick-counter")!.challenges.find(
       (c) => c.id === "write-elapsed",
     )!.task;
-    expect(flat(task)).toContain(
-      "now arrives in w0, then arrives in w1, and the result goes back in w0.",
-    );
+    for (const fact of ["now arrives in w0.", "then arrives in w1.", "Return the result in w0."])
+      expect(flat(task)).toContain(fact);
     expect(task).not.toMatch(/sub w0, w0, w1/);
     expect(flat(task)).toContain("Four calls test it, two of them across the wrap.");
   });

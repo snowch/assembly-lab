@@ -31,7 +31,12 @@ You have practised addition, a function call and return, subtraction, and instru
 
 ## 3. Connect the operations to a function
 
-`trip_distance` adds three trip distances, called legs, then subtracts a detour. Its `int` arguments `leg1`, `leg2`, `leg3` and `detour` arrive in `w0`, `w1`, `w2` and `w3`, in that order.
+`trip_distance` adds three trip distances, called legs, then subtracts a detour. Its `int` arguments arrive in registers:
+
+- `leg1` arrives in `w0`.
+- `leg2` arrives in `w1`.
+- `leg3` arrives in `w2`.
+- `detour` arrives in `w3`.
 
 GCC 16.1.0 at `-O1`, an optimisation setting, made the four instructions below for 64-bit Arm. Follow the C variable `total` through the calculation: the instructions update `w0`, then `ret` returns with the result already there.
 

@@ -111,7 +111,10 @@ The signed names are *greater* and *less*. The unsigned names are *higher* and *
 
 Write `less_fuel(a, b)`. It returns the smaller of two `unsigned` litres values. Use only `cmp`, `csel` and `ret`.
 
-`a` arrives in `w0`, and `b` arrives in `w1`. The answer leaves in `w0`. A comment starts with `//`.
+- `a` arrives in `w0`.
+- `b` arrives in `w1`.
+
+The answer leaves in `w0`. A comment starts with `//`.
 
 Five calls test it. In two of them, one value has the top bit set.
 
@@ -265,7 +268,10 @@ There is no compare. The signed reading of a number is negative exactly when its
 
 **Read four conditions after one `cmp`**
 
-`w0` holds `0xfffffffb` and `w1` holds 2. After `cmp w0, w1`, which of `ge`, `cs`, `lt` and `cc` are yes? Enter 1 for yes and 0 for no.
+- `w0` holds `0xfffffffb`.
+- `w1` holds 2.
+
+After `cmp w0, w1`, which of `ge`, `cs`, `lt` and `cc` are yes? Enter 1 for yes and 0 for no.
 
 Field labels: "`ge`"; "`cs`"; "`lt`"; "`cc`".
 
@@ -284,7 +290,12 @@ Field labels: "`ge`"; "`cs`"; "`lt`"; "`cc`".
 - `csel` chooses one of two register values without skipping any instruction.
 - `cset` writes 0 or 1 from a condition.
 
-Question: `w0` holds 2, and `w1` holds `0xfffffffe`. After `cmp w0, w1`, what does `csel w0, w0, w1, gt` leave in `w0`? What would `hi` in place of `gt` leave?
+Before `cmp w0, w1` runs:
+
+- `w0` holds 2.
+- `w1` holds `0xfffffffe`.
+
+Question: After `cmp w0, w1`, what does `csel w0, w0, w1, gt` leave in `w0`? What would `hi` in place of `gt` leave?
 
 *Closed note: Answer*
 
@@ -392,7 +403,10 @@ Write `fuel_warning(litres, reserve)`. Both are `unsigned`. Its rules, in order:
 
 Use only `cmp`, a branch with a condition, `cbz`, `b`, `mov` and `ret`. Five calls test it. One has `litres` equal to `reserve`. One has the top bit of `litres` set.
 
-`litres` arrives in `w0`, and `reserve` arrives in `w1`. The answer leaves in `w0`.
+- `litres` arrives in `w0`.
+- `reserve` arrives in `w1`.
+
+The answer leaves in `w0`.
 
 `cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags.
 

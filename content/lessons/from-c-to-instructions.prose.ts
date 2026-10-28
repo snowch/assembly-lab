@@ -10,7 +10,7 @@ export const PROSE = {
   motivation:
     "The course compiler assigns registers to the parameters and local variables. In this function, distance uses `w0`, rate uses `w1`, and charge uses `w2`. Extra registers such as `w8` and `w9` hold intermediate working values. These are temporary values needed while evaluating an expression.\n\nThe generated instructions copy inputs into working registers, perform the multiplication, and copy the product into the local variable's register. The return calculation adds the fixed charge and puts the answer in `w0`. Register 0 then holds the return value, not the original distance.\n\nThe compiler builds constants with `movz` and, when needed, `movk`. An **immediate** is a constant written in an instruction. `movz` places a 16-bit immediate in a selected part of the destination and clears the other bits. `movk`, introduced in Module 1, replaces a selected part while keeping the other bits. For some constants, `mov` is a shorter way to write `movz`. Both forms produce the same instruction bit pattern for the processor. This compiler writes `movz` explicitly.\n\nThis compiler accepts one function with unsigned parameters and initialised unsigned locals: at most eight declared variables in total. It supports the arithmetic and control-flow statements taught here, with limits on source size, nesting and execution.",
   prediction:
-    "The distance is 6 and the rate is 4. The function multiplies them, then adds its fixed charge of 7.",
+    "- The distance is 6.\n- The rate is 4.\n\nThe function multiplies them, then adds its fixed charge of 7.",
   predictionQuestion: "**What does `trip_charge(6, 4)` return?**",
   predictionExplain:
     "It returns 31. The product is 24, stored as charge, and the return expression adds 7. Follow that value from the expression's working registers through the local variable and into `w0`.",
@@ -19,7 +19,7 @@ export const PROSE = {
   construction:
     "Write the same calculation directly in assembly. Your instructions can be shorter than the course compiler's fixed sequence while producing the required result.",
   writeTask:
-    "Write `trip_charge` in assembly. The unsigned distance arrives in `w0` and rate in `w1`. Return `distance * rate + 7` in `w0`, keeping the low 32 bits as unsigned arithmetic requires.",
+    "Write `trip_charge` in assembly.\n\n- The unsigned distance arrives in `w0`.\n- The unsigned rate arrives in `w1`.\n\nReturn `distance * rate + 7` in `w0`, keeping the low 32 bits as unsigned arithmetic requires.",
   writeHints: [
     "Multiply the distance by the rate before adding the fixed charge.",
     "Do not expect either operation to preserve bits above bit 31. Both results use unsigned 32-bit wrapping.",

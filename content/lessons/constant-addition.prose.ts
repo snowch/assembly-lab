@@ -20,7 +20,7 @@ export const CONSTANT_ADDITION_PROSE = {
     prose: "Run `add w0, w0, 1`. This example starts afresh.",
   },
   challenge: {
-    task: "Before `add w1, w0, 3` runs, `w0` holds 10 and `w1` holds 0. What do `w1` and `w0` hold after this instruction?",
+    task: "Before `add w1, w0, 3` runs:\n\n- `w0` holds 10.\n- `w1` holds 0.\n\nWhat do `w1` and `w0` hold after this instruction?",
     hints: [
       "A constant supplies its value directly; it does not name a register.",
       "The 3 is an input value, not a register number. The first operand still names the destination.",

@@ -32,7 +32,10 @@ This compiler accepts one function with unsigned parameters and initialised unsi
 
 ## prediction
 
-The distance is 6 and the rate is 4. The function multiplies them, then adds its fixed charge of 7.
+- The distance is 6.
+- The rate is 4.
+
+The function multiplies them, then adds its fixed charge of 7.
 
 ## predictionQuestion
 
@@ -56,7 +59,12 @@ Write the same calculation directly in assembly. Your instructions can be shorte
 
 ## writeTask
 
-Write `trip_charge` in assembly. The unsigned distance arrives in `w0` and rate in `w1`. Return `distance * rate + 7` in `w0`, keeping the low 32 bits as unsigned arithmetic requires.
+Write `trip_charge` in assembly.
+
+- The unsigned distance arrives in `w0`.
+- The unsigned rate arrives in `w1`.
+
+Return `distance * rate + 7` in `w0`, keeping the low 32 bits as unsigned arithmetic requires.
 
 ## writeHints
 
@@ -237,7 +245,10 @@ A single `for` line can correspond to several parts of the listing. Source highl
 
 ## prediction
 
-The count is 3 and the rate is 4. The loop begins with a zero total and adds the rate once per iteration.
+- The count is 3.
+- The rate is 4.
+
+The loop begins with a zero total and adds the rate once per iteration.
 
 ## predictionQuestion
 
@@ -263,7 +274,12 @@ Write the repeated addition directly in assembly. You may count remaining iterat
 
 ## writeTask
 
-Write `accumulated_charge` in assembly. `w0` holds an unsigned count and `w1` an unsigned rate. Add the rate to an initially zero total once for each counted iteration. Return the unsigned 32-bit total in `w0`.
+Write `accumulated_charge` in assembly.
+
+- `w0` holds an unsigned count.
+- `w1` holds an unsigned rate.
+
+ Add the rate to an initially zero total once for each counted iteration. Return the unsigned 32-bit total in `w0`.
 
 A zero count must return zero. The tests include a total that wraps.
 

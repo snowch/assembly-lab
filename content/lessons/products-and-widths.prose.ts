@@ -10,7 +10,7 @@ export const PROSE = {
   motivation:
     "`mul w0, w0, w1` multiplies the inputs in `w0` and `w1`, then keeps the low 32 bits in `w0`. Any higher product bits are discarded. Writing `w0` also clears the upper half of `x0`.\n\nThe low product bits are the same whether you interpret the inputs as signed or unsigned. There is one `mul` for both. With `x` registers, `mul` keeps the low 64 bits instead. The destination width still limits the result.\n\nUnsigned C multiplication wraps to the result type’s range. A signed multiplication whose result cannot be represented has undefined behaviour: C places no requirements on that case. A hardware result containing only the low bits does not make the C operation valid.",
   prediction:
-    "`scale_pulses` receives 2147483648 pulses and a scale of 2. Its multiplication writes `w0`.",
+    "`scale_pulses` receives:\n\n- 2147483648 pulses.\n- A scale of 2.\n\nIts multiplication writes `w0`.",
   predictionQuestion: "**What hexadecimal result does `w0` hold?**",
   predictionExplain:
     "It holds `0x00000000`. The full product is 4294967296, which needs a bit above the low 32. Those low 32 bits are all zero, so the 32-bit result wraps to zero.",
@@ -19,7 +19,7 @@ export const PROSE = {
   construction:
     "Add a scaled pulse reading to an unsigned running total. The result follows the same 32-bit wrapping rule as earlier unsigned additions.",
   writeTask:
-    "Write `scaled_total`. `w0` holds an unsigned pulse count, `w1` its unsigned scale, and `w2` the existing unsigned total. Return `total + pulses * scale` in `w0`, keeping the low 32 bits.",
+    "Write `scaled_total`.\n\n- `w0` holds an unsigned pulse count.\n- `w1` holds its unsigned scale.\n- `w2` holds the existing unsigned total.\n\nReturn `total + pulses * scale` in `w0`, keeping the low 32 bits.",
   writeHints: [
     "Multiply the pulse count by its scale, then add the existing total.",
     "The total is in `w2`; it is not a third factor in the multiplication.",

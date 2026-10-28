@@ -15,7 +15,7 @@ export const PROSE = {
       "Follow the handwritten `relay_distance` below. It calls `half_distance` and returns the helper’s result unchanged. Press Next to follow each instruction. The simulator supplies an aligned stack and a return address that ends the outer call; startup is not part of this example.\n\nThe space reserved for one active call is its **stack frame**. `stp` stores a pair: `stp x29, x30, [sp, #-16]!` decreases `sp` by 16, then stores two 64-bit values. The saved `x29` starts at `sp`; `x30` starts at `sp + 8`. AAPCS64 requires `sp` to be a multiple of 16 for stack accesses through it. This is 16-byte alignment. Reserving 16 bytes keeps that alignment.\n\nHere `x29` is a **frame pointer**, identifying this call’s frame. `mov x29, sp` sets it after saving its old value. `ldp` loads a pair: `ldp x29, x30, [sp], #16` restores both values, then releases the frame by increasing `sp` by 16. The final `ret` uses the restored return address.",
   },
   prediction:
-    "The report receives distance 128 and reserve 9. The helper halves the unsigned distance, then the report adds the reserve.",
+    "The report receives:\n\n- Distance 128.\n- Reserve 9.\n\nThe helper halves the unsigned distance, then the report adds the reserve.",
   predictionQuestion: "**What does `trip_report` return in `w0`?**",
   predictionExplain:
     "It returns 73, or `0x00000049`. The helper returns 64 in `w0`; the report then adds the saved reserve, 9. The helper's `ret` resumes the report, whose own `ret` returns to its caller.",
@@ -42,7 +42,7 @@ export const PROSE = {
   generalisation:
     "Before each call, identify the values needed afterwards. Protect the return address and any other live values. After the call, use the returned value, restore saved registers, and release the stack space.\n\nA **leaf function** calls no other function. It can often return using the incoming link register directly. A function that makes another call needs to account for the link register being overwritten.\n\nThe final exercise's helper also writes `w1`. That is allowed by the calling convention. The caller must preserve its reserve deliberately, even if an earlier version of the helper happened to leave `w1` unchanged.",
   finalTask:
-    "Complete `trip_report` using the supplied helper. `w0` holds an unsigned distance and `w1` an unsigned reserve. Return half the distance plus the original reserve in `w0`, with unsigned 32-bit wrapping.\n\nThe helper overwrites `w1`. Keep the reserve across the call, and preserve the incoming values of `x19`, `x29` and `sp`. Keep the helper unchanged.",
+    "Complete `trip_report` using the supplied helper.\n\n- `w0` holds an unsigned distance.\n- `w1` holds an unsigned reserve.\n\nReturn half the distance plus the original reserve in `w0`, with unsigned 32-bit wrapping.\n\nThe helper overwrites `w1`. Keep the reserve across the call, and preserve the incoming values of `x19`, `x29` and `sp`. Keep the helper unchanged.",
   finalHints: [
     "Do not rely on `w1` still holding the reserve after the call.",
     "Using `w19` without saving the incoming `x19` loses a value the caller expects to keep. Save all 64 bits before reusing the register.",

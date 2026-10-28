@@ -10,7 +10,7 @@ export const PROSE = {
   motivation:
     "A `for` statement supplies an initialisation, a condition and an update. The compiler places instructions for these operations around the body. A backward branch returns to the condition so it can decide whether another iteration should run.\n\nIn this example, count and rate arrive in `w0` and `w1`. The compiler keeps total in `w2` and the counter in `w3`. Its working registers evaluate the comparison and addition. The final return copies the total into `w0`.\n\nA single `for` line can correspond to several parts of the listing. Source highlighting identifies the associated line; it does not mean one C line runs as one instruction.",
   prediction:
-    "The count is 3 and the rate is 4. The loop begins with a zero total and adds the rate once per iteration.",
+    "- The count is 3.\n- The rate is 4.\n\nThe loop begins with a zero total and adds the rate once per iteration.",
   predictionQuestion: "**What does `accumulated_charge(3, 4)` return?**",
   predictionExplain:
     "It returns 12. Three iterations each add 4 to the total. Follow the counter's update and the comparison that prevents a fourth iteration.",
@@ -19,7 +19,7 @@ export const PROSE = {
   construction:
     "Write the repeated addition directly in assembly. You may count remaining iterations down instead of reproducing the compiler's increasing counter.",
   writeTask:
-    "Write `accumulated_charge` in assembly. `w0` holds an unsigned count and `w1` an unsigned rate. Add the rate to an initially zero total once for each counted iteration. Return the unsigned 32-bit total in `w0`.\n\nA zero count must return zero. The tests include a total that wraps.",
+    "Write `accumulated_charge` in assembly.\n\n- `w0` holds an unsigned count.\n- `w1` holds an unsigned rate.\n\nAdd the rate to an initially zero total once for each counted iteration. Return the unsigned 32-bit total in `w0`.\n\nA zero count must return zero. The tests include a total that wraps.",
   writeHints: [
     "Keep the count somewhere safe before making `w0` the total.",
     "Entering the body before checking a zero count would add a rate when no iteration should run.",

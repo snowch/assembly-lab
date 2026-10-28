@@ -56,7 +56,7 @@ export const PROSE = {
     "C and V are separate tests, one for each reading, so either can be 1 without the other. `0xffffffff` plus 1 carries into bit 31 and out of it, so C is 1 and V is 0; `0x7fffffff` plus 1 carries into bit 31 but not out, so C is 0 and V is 1. `0x80000000` plus `0x80000000` makes C and V both 1.",
 
   failureExperiment:
-    "The figure runs `sum_flags` with `w0` = `0x7fffffff`, `w1` = 1 and `w2` = `0xffffffff`.\n\n" +
+    "The figure runs `sum_flags` with:\n\n- `w0` = `0x7fffffff`.\n- `w1` = 1.\n- `w2` = `0xffffffff`.\n\n" +
     "It runs `adds w3, w2, w2` first, which adds `0xffffffff` to itself. Then it runs `add w0, w0, w1`, which adds `0x7fffffff` and 1. After each step, the figure marks the registers that were written and the flags whose values changed.",
   failureQuestion: "**After `add`, what do the flags show?**",
   failureExplain:

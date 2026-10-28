@@ -19,7 +19,7 @@ export const RETURNING_PROSE = {
       "- [BL: branch with link](https://support.arm.com/documentation/ddi0602/2025-12/Base-Instructions/BL--Branch-with-Link-) describes how the call saves the return address in `x30`.\n- [RET: return from subroutine](https://support.arm.com/documentation/ddi0602/2025-12/Base-Instructions/RET--Return-from-subroutine-) describes the instruction. Its optional register operand defaults to `x30`.\n- [Arm’s procedure call standard](https://github.com/ARM-software/abi-aa/blob/2025Q4/aapcs64/aapcs64.rst) describes argument registers, result registers and the values a function must preserve.",
   },
   challenge: {
-    task: "Start a fresh call, `increment_int(4)`, with `w0` holding 4 and `w1` holding 0. The caller runs `bl increment_int`. The function runs `add w0, w0, 1`, then `ret`. The caller continues with `add w1, w0, w0`. What does `w0` hold immediately after `ret`, and what does the caller’s addition write to `w1`?",
+    task: "Start a fresh call, `increment_int(4)`, with:\n\n- `w0` holding 4.\n- `w1` holding 0.\n\nThe caller runs `bl increment_int`. The function runs `add w0, w0, 1`, then `ret`. The caller continues with `add w1, w0, w0`.\n\nWhat does `w0` hold immediately after `ret`, and what does the caller’s addition write to `w1`?",
     hints: [
       "Follow the function’s addition, its return, then the caller’s addition.",
       "Returning changes where execution continues. It does not remove the value from `w0`.",

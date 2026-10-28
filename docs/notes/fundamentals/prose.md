@@ -75,7 +75,13 @@ Both references are free to read without an account. If an Arm ID sign-in panel 
 
 ### addition / challenge / task
 
-Before `add w1, w0, w2` runs, `w0` holds 14, `w1` holds 0 and `w2` holds 5. What do `w1` and `w0` hold after this instruction?
+Before `add w1, w0, w2` runs:
+
+- `w0` holds 14.
+- `w1` holds 0.
+- `w2` holds 5.
+
+What do `w1` and `w0` hold after this instruction?
 
 ### addition / challenge / hints 1
 
@@ -209,7 +215,12 @@ Run `add w0, w0, 1`. This example starts afresh.
 
 ### constant / challenge / task
 
-Before `add w1, w0, 3` runs, `w0` holds 10 and `w1` holds 0. What do `w1` and `w0` hold after this instruction?
+Before `add w1, w0, 3` runs:
+
+- `w0` holds 10.
+- `w1` holds 0.
+
+What do `w1` and `w0` hold after this instruction?
 
 ### constant / challenge / hints / 1
 
@@ -339,7 +350,14 @@ Run the addition, then the return. Watch both registers.
 
 ### function / challenge / task
 
-For `add_ints(6, 4)`, the arguments arrive in `w0` and `w1`, in that order. The function runs `add w0, w0, w1`, then `ret`. What do `w0` and `w1` hold when the function returns?
+For a fresh call, `add_ints(6, 4)`:
+
+- The first argument, 6, arrives in `w0`.
+- The second argument, 4, arrives in `w1`.
+
+The function runs `add w0, w0, w1`, then `ret`.
+
+What do `w0` and `w1` hold when the function returns?
 
 ### function / challenge / hints / 0
 
@@ -477,7 +495,12 @@ This example starts afresh. Predict what `sub w1, w0, w1` writes.
 
 ### subtraction / challenge / task
 
-Before `sub w1, w0, w1` runs, `w0` holds 18 and `w1` holds 5. What do `w1` and `w0` hold after this instruction?
+Before `sub w1, w0, w1` runs:
+
+- `w0` holds 18.
+- `w1` holds 5.
+
+What do `w1` and `w0` hold after this instruction?
 
 ### subtraction / challenge / hints 1
 
@@ -611,7 +634,15 @@ Run the addition, then the subtraction. The second uses the state left by the fi
 
 ### sequence / challenge / task
 
-Start with `w0` holding 10, `w1` holding 4 and `w2` holding 0. Run `add w2, w0, w1`, then `sub w2, w2, w1`, in that order. What do `w2` and `w1` hold after both instructions?
+Start with:
+
+- `w0` holding 10.
+- `w1` holding 4.
+- `w2` holding 0.
+
+Run `add w2, w0, w1`, then `sub w2, w2, w1`, in that order.
+
+What do `w2` and `w1` hold after both instructions?
 
 ### sequence / challenge / hints 1
 

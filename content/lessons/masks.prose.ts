@@ -49,12 +49,12 @@ export const PROSE = {
   construction:
     "Writing a field changes only its own bits and leaves the rest as they were. The challenge below writes a new gear into a word.",
   fieldPlanQuestion:
-    "Start with a gear that already fits its three bits. The warning word is `0x35`, and the new gear is 2. Clear the old gear, place the new gear in bits 4 to 6, and keep every warning bit.\n\n**What word should this field replacement return?**",
+    "Start with a gear that already fits its three bits:\n\n- The warning word is `0x35`.\n- The new gear is 2.\n\nClear the old gear, place the new gear in bits 4 to 6, and keep every warning bit.\n\n**What word should this field replacement return?**",
   fieldPlanExplain:
     "The result is `0x25`. Clearing bits 4 to 6 keeps the warnings in the low four bits. Placing gear 2 in the cleared field gives `0010 0101`. OR joins the prepared word and the positioned gear.\n\nThe writing exercise adds one more requirement: when the new value is larger than the field can hold, keep only its low three bits before positioning it.",
 
   setGearTask:
-    "Write `set_gear(w, g)`. It puts the low 3 bits of `g` into bits 4 to 6 of `w`, and returns the word. `w` arrives in `w0`, and `g` arrives in `w1`. Put the result in `w0`.\n\n" +
+    "Write `set_gear(w, g)`. It puts the low 3 bits of `g` into bits 4 to 6 of `w`, and returns the word.\n\n- `w` arrives in `w0`.\n- `g` arrives in `w1`.\n\nPut the result in `w0`.\n\n" +
     "Use only `and`, `lsl`, `orr` and `ret`. Four calls test your code. In one of them, `g` is 13, which is larger than 7. Only its low 3 bits may land in the field. Every bit outside bits 4 to 6 must stay unchanged.",
   setGearHints: [
     "Clear the field in the word, move the new gear into place, then join the two.",

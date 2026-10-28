@@ -10,7 +10,7 @@ export const PROSE = {
   motivation:
     "`sdiv w0, w0, w1` divides the signed value in `w0` by the signed value in `w1`. `udiv` interprets both inputs as unsigned. Both instructions write the quotient and leave the flags unchanged.\n\nFor a negative signed result, rounding towards zero discards the fraction without making the integer more negative. The remainder can therefore be negative. When C division is defined, the relation is `dividend = quotient * divisor + remainder`.",
   prediction:
-    "The signed dividend is −17 and the divisor is 5. The function uses `sdiv` and returns the quotient in `w0`.",
+    "- The signed dividend is −17.\n- The divisor is 5.\n\nThe function uses `sdiv` and returns the quotient in `w0`.",
   predictionQuestion: "**Which hexadecimal quotient does it return?**",
   predictionExplain:
     "It returns `0xfffffffd`, which represents −3 as a signed 32-bit value. Dividing −17 by 5 gives −3 with a fraction left over; discarding that fraction rounds towards zero.\n\nThe remainder is −2, because `−17 = (−3 × 5) + (−2)`.",
@@ -19,7 +19,7 @@ export const PROSE = {
   construction:
     "Compute a signed remainder from the quotient and the original inputs. Preserve the dividend until the subtraction uses it.",
   writeTask:
-    "Write `remainder_signed`. `w0` holds a signed dividend and `w1` a signed divisor. Return the signed remainder in `w0`.\n\nThe divisor is nonzero. The tests exclude the unrepresentable quotient from dividing the minimum signed value by −1.",
+    "Write `remainder_signed`.\n\n- `w0` holds a signed dividend.\n- `w1` holds a signed divisor.\n\nReturn the signed remainder in `w0`.\n\nThe divisor is nonzero. The tests exclude the unrepresentable quotient from dividing the minimum signed value by −1.",
   writeHints: [
     "Calculate the signed quotient first.",
     "Overwriting the dividend with the quotient loses an input needed for the final subtraction.",
@@ -39,7 +39,7 @@ export const PROSE = {
   challengeIntro:
     "An average can overflow before its division, even if the final quotient fits. Choose a wide enough product first, then divide. A wide result type alone does not widen an earlier narrow multiplication.\n\nThe final calculation uses fuel in millilitres and distance in metres. Multiplying the fuel by 100 before dividing by distance gives whole millilitres per 100 metres. Both inputs are unsigned 32-bit values, and their scaled product fits in 64 bits.\n\nThe exercise defines a zero-distance result as zero. That is a rule of this function. A branch can handle that case before division. In assembly, a correctly widened `udiv` also produces the required zero directly.\n\nThe input contract guarantees only the distance in the low 32 bits, `w1`. It makes no promise about the incoming upper half of `x1`. Naming `w1` as the input does not mean an instruction has written it. Before dividing with `x` registers, clear that upper half: a write to `w1`, even one that copies `w1` to itself, does this.",
   finalTask:
-    "Write `consumption`. `w0` holds unsigned fuel in millilitres and `w1` holds unsigned distance in metres. Return whole millilitres per 100 metres in `x0`: `fuel * 100 / distance`, rounded down. Preserve the full product before dividing.\n\nIf the distance is zero, return zero. The tests include fuel values whose product with 100 does not fit in 32 bits.",
+    "Write `consumption`.\n\n- `w0` holds unsigned fuel in millilitres.\n- `w1` holds unsigned distance in metres.\n\nReturn whole millilitres per 100 metres in `x0`: `fuel * 100 / distance`, rounded down. Preserve the full product before dividing.\n\nIf the distance is zero, return zero. The tests include fuel values whose product with 100 does not fit in 32 bits.",
   finalHints: [
     "Handle zero distance before the calculation.",
     "Multiplying in a 32-bit destination loses any higher product bits before division.",

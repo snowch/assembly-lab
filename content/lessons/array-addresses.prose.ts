@@ -10,7 +10,7 @@ export const PROSE = {
   motivation:
     "The log contains the unsigned values `12, 25, 7, 40`. Index zero selects the first value. Each element occupies four bytes, so each increase in the index moves the address forward by four bytes.\n\nIn `ldr w0, [x0, x1, lsl #2]`, `x0` holds the array's starting address and `x1` holds the index. The load shifts the index left by two places, which multiplies it by four, then adds it to the starting address. It reads four bytes from that address.\n\nThe shift is part of calculating the address. It does not change `x1`. The load replaces register 0 with the value it reads, so `x0` no longer holds the array's starting address afterwards.\n\nThe examples supply valid array indices. The simulator checks accesses against its prepared memory, not C array boundaries. A successful simulated load does not establish that the corresponding C access is valid; it must stay within the array object.",
   prediction:
-    "The log still contains `12, 25, 7, 40`. `x0` points to its first element, and `x1` holds index 2.",
+    "The log still contains `12, 25, 7, 40`.\n\n- `x0` points to its first element.\n- `x1` holds index 2.",
   predictionQuestion: "**What does `read_trip` return in `w0`?**",
   predictionExplain:
     "It returns `0x00000007`, or 7. Index 2 selects the third element. The scaled index is eight bytes, so the load starts eight bytes after the beginning of the array.",
@@ -19,7 +19,7 @@ export const PROSE = {
   construction:
     "Choose an element by scaling its index to a byte offset. The element's size decides the scale.",
   writeTask:
-    "Write `read_trip`. `x0` holds the starting address of an array of four-byte unsigned values. `x1` holds a valid index into that array. Return the selected value in `w0`, leaving memory unchanged.",
+    "Write `read_trip`.\n\n- `x0` holds the starting address of an array of four-byte unsigned values.\n- `x1` holds a valid index into that array.\n\nReturn the selected value in `w0`, leaving memory unchanged.",
   writeHints: [
     "An index counts elements. A memory address counts bytes.",
     "Using the index without scaling treats an element count as a byte count. Each element here occupies four bytes.",
@@ -37,7 +37,7 @@ export const PROSE = {
   generalisation:
     "A loop over an array needs a position and a stopping rule. You can count down the remaining elements, or compare the moving pointer with an end address. Check the empty case before the first load.\n\nC allows a pointer to reach the position immediately after an array. That position is useful as a stopping point, but you must not read an element there. The element count must describe memory the function is allowed to read.\n\nThe sum in this example is unsigned. Like the additions in earlier modules, it wraps modulo 2³² if the total exceeds the range of `unsigned` on this target.",
   finalTask:
-    "Write `sum_trips`. `x0` holds the start of an array of four-byte unsigned distances, and `w1` holds the number of elements to add. Return their unsigned 32-bit sum in `w0`. Leave memory unchanged.\n\nA zero count must return zero without reading memory. For a nonzero count, the exercise supplies at least that many elements. The tests include a sum that wraps.",
+    "Write `sum_trips`.\n\n- `x0` holds the start of an array of four-byte unsigned distances.\n- `w1` holds the number of elements to add.\n\nReturn their unsigned 32-bit sum in `w0`. Leave memory unchanged.\n\nA zero count must return zero without reading memory. For a nonzero count, the exercise supplies at least that many elements. The tests include a sum that wraps.",
   finalHints: [
     "Keep the pointer in another register before using `w0` for the total.",
     "Do not read the first element when the count is zero. Return the initial total of zero.",

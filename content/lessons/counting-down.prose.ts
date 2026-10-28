@@ -25,7 +25,7 @@ export const PROSE = {
     "Write a countdown loop that uses the flags from subtraction. Preserve the initial test so a zero count leaves the brightness unchanged.",
   writeTask:
     "Write `dim_down(brightness, ticks)`. Both arguments are unsigned. Halve the brightness once for each tick, dropping any remainder, then return the final brightness. If `ticks` is zero, return the original brightness.\n\n" +
-    "`brightness` arrives in `w0`, and `ticks` in `w1`. Return the result in `w0`. Use `cbz`, `lsr`, `subs`, branches and `ret`. A separate `cmp` is not available: use the flags from `subs`.",
+    "- `brightness` arrives in `w0`.\n- `ticks` arrives in `w1`.\n\nReturn the result in `w0`. Use `cbz`, `lsr`, `subs`, branches and `ret`. A separate `cmp` is not available: use the flags from `subs`.",
   writeHints: [
     "Handle a count of zero before running the first shift.",
     "A branch to the instruction after the shift would skip dimming on later iterations. The repeat label must include the shift.",
@@ -61,7 +61,7 @@ export const PROSE = {
     "`dim_wrong` changes only local variables, so it meets these conditions. For example, a compiler may remove this loop instead of emitting instructions that repeat forever. The recorded GCC listing shows one compiler's choice; the C source does not guarantee that choice.",
   finalTask:
     "Write `dim_until_dark(brightness, ticks)`. Return the same brightness as `dim_down`, but stop as soon as either the count or the brightness is zero. Shifting zero again cannot change the result.\n\n" +
-    "Both arguments are unsigned. They arrive in `w0` and `w1`; return the brightness in `w0`. Use `cbz`, `lsr`, `subs`, branches and `ret`.\n\n" +
+    "Both arguments are unsigned:\n\n- `brightness` arrives in `w0`.\n- `ticks` arrives in `w1`.\n\nReturn the brightness in `w0`. Use `cbz`, `lsr`, `subs`, branches and `ret`.\n\n" +
     "The tests include the largest unsigned tick count. Your function must finish within the simulator's instruction limit, so it must stop when further shifts would do no work.\n\n" +
     "A 32-bit value becomes zero after at most 32 logical right shifts by one place. Each shift moves every remaining bit towards the bottom, and bits that pass the bottom are lost.",
   finalHints: [
