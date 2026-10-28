@@ -153,6 +153,14 @@ increment_int
 
 Registers shared by caller and function
 
+### figure strings / beforeCall
+
+Before the call
+
+### figure strings / registersNow
+
+Registers now
+
 ### figure strings / returnAddress
 
 Link register

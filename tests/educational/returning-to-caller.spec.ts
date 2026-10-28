@@ -21,6 +21,22 @@ for (const theme of ["light", "dark"]) {
     const figure = page.locator('[data-figure="returning-to-caller"]');
     const value = (name: string) => figure.locator(`[data-register="${name}"] .al-dreg-value`);
     const step = figure.getByRole("button", { name: S.run, exact: true });
+    const bank = figure.getByRole("group", { name: S.sharedRegisters, exact: true });
+    const moment = bank.locator(".al-returning-moment");
+    await expect(bank).toHaveCount(1);
+    await expect(bank.locator(".al-returning-target")).toHaveCount(1);
+    await expect(moment).toHaveText(S.beforeCall);
+    const assertRegisterOrder = async () => {
+      const bankBox = await bank.boundingBox();
+      const callerBox = await figure.locator(".al-returning-caller").boundingBox();
+      const functionBox = await figure.locator(".al-returning-function").boundingBox();
+      expect(bankBox).not.toBeNull();
+      expect(callerBox).not.toBeNull();
+      expect(functionBox).not.toBeNull();
+      expect(bankBox!.y + bankBox!.height).toBeLessThanOrEqual(callerBox!.y);
+      expect(callerBox!.y + callerBox!.height).toBeLessThanOrEqual(functionBox!.y);
+    };
+    await assertRegisterOrder();
     await expect(value("w0")).toHaveText("7");
     await expect(value("w1")).toHaveText("0");
     await expect(figure.locator('.al-returning-instruction[data-next="true"]')).toContainText(
@@ -37,6 +53,7 @@ for (const theme of ["light", "dark"]) {
     const savedAddress = figure.locator(".al-returning-saved-address");
     await expect(savedAddress).toHaveCount(0);
     await step.click();
+    await expect(moment).toHaveText(S.registersNow);
     await expect(value("w0")).toHaveText("7");
     await expect(value("w1")).toHaveText("0");
     await expect(figure.locator(".al-returning-target")).toContainText(S.returnTarget);
@@ -55,13 +72,11 @@ for (const theme of ["light", "dark"]) {
     );
     await expect(figure.locator('.al-dreg[data-changed="true"]')).toHaveCount(0);
     await expect(savedAddress).toHaveText(String(numbers[1]));
-    const bank = await figure.locator(".al-returning-registers").boundingBox();
-    expect(bank).not.toBeNull();
-    expect(bank!.y).toBeGreaterThanOrEqual(0);
-    expect(bank!.y + bank!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+    await assertRegisterOrder();
     await expect(figure.locator(".al-returning-current")).toContainText("add w1, w0, w0");
     await page.reload();
     await expect(figure).toHaveAttribute("data-k", "3");
+    await expect(moment).toHaveText(S.registersNow);
     await expect(savedAddress).toHaveText(String(numbers[1]));
     await step.click();
     await expect(value("w0")).toHaveText("8");
@@ -72,6 +87,7 @@ for (const theme of ["light", "dark"]) {
     await figure.getByRole("button", { name: S.reset, exact: true }).click();
     await expect(value("w0")).toHaveText("7");
     await expect(figure).toHaveAttribute("data-k", "0");
+    await expect(moment).toHaveText(S.beforeCall);
     await expect(figure.locator('.al-returning-instruction[data-next="true"]')).toContainText(
       "bl increment_int",
     );
@@ -81,6 +97,7 @@ for (const theme of ["light", "dark"]) {
     await expect(savedAddress).toHaveText(String(numbers[1]));
     await figure.getByRole("button", { name: S.back, exact: true }).click();
     await expect(savedAddress).toHaveCount(0);
+    await expect(moment).toHaveText(S.beforeCall);
     expect(await designProblems(page, isMobile)).toEqual([]);
     expect(errors).toEqual([]);
   });
@@ -102,6 +119,7 @@ test("keeps the same machine state when restoring progress from before the call 
   await openLesson(page, "returning-to-caller");
   const figure = page.locator('[data-figure="returning-to-caller"]');
   await expect(figure).toHaveAttribute("data-k", "3");
+  await expect(figure.locator(".al-returning-moment")).toHaveText(S.registersNow);
   await expect(figure.locator('.al-returning-instruction[data-next="true"]')).toContainText(
     "add w1, w0, w0",
   );
