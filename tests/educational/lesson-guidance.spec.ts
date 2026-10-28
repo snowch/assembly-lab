@@ -27,6 +27,15 @@ for (const theme of ["light", "dark"]) {
       await expect(page.locator(".lesson")).not.toContainText(
         "Between steps, the simulated processor stays as the last instruction left it.",
       );
+      // Descriptive headings are the navigation outline, visible to all readers. Authoring
+      // stages add no second label, and surplus sections must be removed from data, not hidden.
+      const headings = page.locator(".lesson-section > h2");
+      await expect(headings).toHaveCount(lesson.sections.length);
+      for (const heading of await headings.all()) {
+        await expect(heading.locator(".section-title")).toBeVisible();
+        await expect(heading.locator(".section-kind")).toBeHidden();
+        expect(await heading.evaluate((el) => getComputedStyle(el).position)).not.toBe("absolute");
+      }
       // Removing a note must remove its disclosure, not leave an inert Step by step button.
       await expect(
         page.locator('figure:not([data-role="calculation"]) .time-model-toggle'),

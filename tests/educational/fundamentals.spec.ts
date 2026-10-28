@@ -122,7 +122,11 @@ for (const theme of ["light", "dark"] as const) {
       const errors = watchErrors(page);
       await openLesson(page, "one-addition");
       const article = page.locator('article[data-lesson="one-addition"]');
-      await expect(article.locator(".lesson-section")).toHaveCount(7);
+      await expect(article.locator(".lesson-section > h2 .section-title")).toHaveText([
+        "Registers and instructions",
+        "Run one addition",
+        "Trace a new addition",
+      ]);
       await expect(article.locator(".lesson-section").last()).toHaveAttribute(
         "data-kind",
         "challenge",
@@ -209,9 +213,9 @@ for (const theme of ["light", "dark"] as const) {
       expect(await designProblems(page, isMobile)).toEqual([]);
       await page.locator('.lesson-nav a[href="#/lesson/tiny-function"]').click();
       await expect(page.getByRole("heading", { level: 1 })).toHaveText("A tiny function");
-      await expect(page.locator('.lesson-section[data-kind="motivation"]')).toContainText(
-        "argument",
-      );
+      await expect(
+        page.locator('.lesson-section[data-kind="investigation"] > .prose'),
+      ).toContainText("argument");
       expect(errors).toEqual([]);
     });
 

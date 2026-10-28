@@ -12,19 +12,11 @@ This file contains learner-facing prose, hints and labels word for word. Passage
 - save and restore a function’s stack frame;
 - preserve values according to the calling convention.
 
-## 1. How does a function find its way back?
+## 2. Save the return address before a call
 
 The trip computer's report reuses a function that halves a distance. The report must resume after that helper finishes. **How does a function remember where to return?**
 
 The function making a call is the **caller**; the function receiving it is the **callee**. The recorded `trip_report` calls `half_distance`, then adds the reserve to the returned value.
-
-*Closed note: The recorded compiler output*
-
-The listings paired with C use GCC 16.1 with `-O1 -fno-inline` for little-endian AArch64 Linux. The extra setting prevents inlining: replacing a call with a copy of the called function's body. Keeping the call makes the return mechanism visible.
-
-*End of closed note.*
-
-## 2. Save the return address before a call
 
 `bl half_distance` branches to the helper and puts the address of the following instruction in `x30`. Register `x30` is the **link register**. By default, `ret` branches to the address in `x30`; it does not necessarily end the whole program.
 
@@ -33,6 +25,12 @@ A function that calls another function must protect its own return address. `bl`
 The **stack** is memory used to hold values needed by active calls. Its current boundary is the **stack pointer**, `sp`. A function reserves space by decreasing `sp` and releases it by increasing `sp` again. This stack grows towards lower addresses.
 
 The shared register and stack rules form a **calling convention**. This course follows AAPCS64, the procedure-call standard for this target. These rules let separately written functions call one another.
+
+*Closed note: The recorded compiler output*
+
+The listings paired with C use GCC 16.1 with `-O1 -fno-inline` for little-endian AArch64 Linux. The extra setting prevents inlining: replacing a call with a copy of the called function's body. Keeping the call makes the return mechanism visible.
+
+*End of closed note.*
 
 **A caller that returns the helper’s result**
 

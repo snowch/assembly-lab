@@ -21,11 +21,10 @@ export const fromFunctionToExecutable: LessonInput = {
   objectives: [...LABELS.objectives],
   introduces: [],
   sections: [
-    { kind: "question", title: LABELS.titles.question, prose: PROSE.question },
     {
       kind: "motivation",
       title: LABELS.titles.motivation,
-      prose: PROSE.motivation + "\n\n" + PROSE.setup,
+      prose: [PROSE.question, PROSE.motivation + "\n\n" + PROSE.setup].join("\n\n"),
       interactives: [
         {
           id: "native-build-pipeline",

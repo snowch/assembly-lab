@@ -4,6 +4,7 @@
 // the bits of a row read back from the page, and the verdict's pieces.
 
 import { expect, type Locator, type Page } from "@playwright/test";
+import { LESSONS } from "@al/content";
 
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { DEFAULT_STRINGS as S, format } from "../../platform/lesson-runtime/src/strings";
@@ -20,7 +21,9 @@ export function watchErrors(page: Page): string[] {
 
 export async function openLesson(page: Page, id: string): Promise<void> {
   await page.goto(`#/lesson/${id}`);
-  await expect(page.locator("section.lesson-section")).toHaveCount(10);
+  await expect(page.locator("section.lesson-section")).toHaveCount(
+    LESSONS.find((lesson) => lesson.id === id)!.sections.length,
+  );
   await page.evaluate(async () => {
     await document.fonts.ready;
   });

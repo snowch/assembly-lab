@@ -122,7 +122,8 @@ describe("the counter", () => {
 describe("elapsed(1000, 4294966296)", () => {
   it("returns 2000, and none of the other three options", () => {
     expect(elapsed(1000, 4294966296).w0).toBe(2000);
-    const options = lesson.sections[2]!.interactives[0]!.props["options"] as { label: string }[];
+    const options = lesson.sections.find((section) => section.kind === "prediction")!
+      .interactives[0]!.props["options"] as { label: string }[];
     // The right option is not first.
     expect(options.map((o) => o.label)).toEqual(["−4294965296", "4294965296", "2000", "0"]);
     // The other options are what a subtraction without the wrap would say, and the wrong turns.

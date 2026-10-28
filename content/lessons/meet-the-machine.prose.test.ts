@@ -90,8 +90,10 @@ describe("the closed notes and the wrong-answer sentences", () => {
   it("closes with a synthesis takeaway rather than repeating the single-operation quiz", () => {
     const last = lesson.sections.at(-1)!;
     expect(last.details).toBeUndefined();
-    expect(last.prose).toBe(PROSE.reflection);
-    expect(last.prose).not.toContain("Before `sub w1, w2, w1`");
+    expect(last.kind).toBe("challenge");
+    expect(last.interactives.at(-1)?.id).toBe("trace-km");
+    expect(last.interactives.at(-1)?.after).toBe(PROSE.reflection);
+    expect(last.interactives.at(-1)?.after).not.toContain("Before `sub w1, w2, w1`");
   });
 
   it("give the stepper the file's sentence for the end of the run, and the other steppers none", () => {

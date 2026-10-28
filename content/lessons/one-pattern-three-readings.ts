@@ -55,6 +55,7 @@ export const onePatternThreeReadings: LessonInput = {
       prose: PROSE.question,
       interactives: [
         {
+          after: PROSE.motivation,
           id: "run-fuel-used",
           kind: "stepper",
           timeModel: STEPS,
@@ -68,7 +69,6 @@ export const onePatternThreeReadings: LessonInput = {
         },
       ],
     },
-    { kind: "motivation", title: LABELS.titles.motivation, prose: PROSE.motivation },
     {
       kind: "prediction",
       title: LABELS.titles.prediction,
@@ -177,8 +177,11 @@ export const onePatternThreeReadings: LessonInput = {
         },
       ],
     },
-    { kind: "explanation", title: LABELS.titles.explanation, prose: PROSE.explanation },
-    { kind: "generalisation", title: LABELS.titles.generalisation, prose: PROSE.generalisation },
+    {
+      kind: "explanation",
+      title: LABELS.titles.explanation,
+      prose: [PROSE.explanation, PROSE.generalisation].join("\n\n"),
+    },
     {
       kind: "challenge",
       title: LABELS.titles.challenge,

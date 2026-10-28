@@ -20,8 +20,6 @@ The figure starts before the subtraction. Press Next to see which values it read
 
 *fuel_used_wrong(50, 38). Initially before the subtraction; press Next to run it.*
 
-## 2. Why the readings matter
-
 The **signed reading** allows negative numbers and is the reading C's `int` uses here. The **unsigned reading** counts every bit as a positive amount. The simulator shows register numbers in unsigned decimal.
 
 Nothing in the register changes when we change how we read its bits.
@@ -121,8 +119,6 @@ A register has no type.
 An addition or a subtraction gives the same bits, whichever reading the program uses later. That is why one `sub` serves both `int` and `unsigned` here.
 
 Both −12 and 4294967284 are readings of the same 32 bits. The C type says which reading the program means: `fuel_used_wrong` returns an `int`, so it means −12.
-
-## 8. Every 32-bit pattern
 
 Every 32-bit pattern has an unsigned reading from 0 to 4294967295, and a signed reading from −2147483648 to 2147483647.
 
@@ -260,6 +256,8 @@ Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The start
 
 Step through your solution below to see the two halves of `w0` after each instruction. Watch which half changes and which is kept.
 
+A constant that does not fit in one `mov` is built half by half, with `mov` then `movk`.
+
 ## 6. Two names, one register
 
 The `w` names in the earlier arithmetic examples selected 32 bits. Each register holds 64 bits, and it has two names.
@@ -281,9 +279,7 @@ The figure runs `mov x3, -1`, which sets all 64 bits, then `mov w3, -1`.
 
 The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x00000000ffffffff`. Writing a `w` name always clears the upper 32 bits of the `x` register.
 
-## 7. Constants in halves
-
-A constant that does not fit in one `mov` is built half by half, with `mov` then `movk`.
+## 7. Multiply a constant before adding
 
 **Multiply the constant before adding**
 

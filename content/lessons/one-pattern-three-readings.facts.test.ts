@@ -100,7 +100,8 @@ describe("adding 12 to that pattern", () => {
 
   it("does not stop with an error, so the prediction's right option is 0", () => {
     expect(result.stop.kind).not.toBe("fault");
-    const options = lesson.sections[2]!.interactives[0]!.props["options"] as {
+    const options = lesson.sections.find((section) => section.kind === "prediction")!
+      .interactives[0]!.props["options"] as {
       value: string;
       label: string;
     }[];

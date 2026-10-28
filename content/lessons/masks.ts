@@ -62,6 +62,7 @@ export const masks: LessonInput = {
       prose: PROSE.question,
       interactives: [
         {
+          after: PROSE.motivation,
           id: "warning-word",
           kind: "warning-word",
           timeModel: STEPS,
@@ -75,7 +76,6 @@ export const masks: LessonInput = {
         },
       ],
     },
-    { kind: "motivation", title: LABELS.titles.motivation, prose: PROSE.motivation },
     {
       kind: "prediction",
       title: LABELS.titles.prediction,
@@ -263,8 +263,11 @@ export const masks: LessonInput = {
         },
       ],
     },
-    { kind: "explanation", title: LABELS.titles.explanation, prose: PROSE.explanation },
-    { kind: "generalisation", title: LABELS.titles.generalisation, prose: PROSE.generalisation },
+    {
+      kind: "explanation",
+      title: LABELS.titles.explanation,
+      prose: [PROSE.explanation, PROSE.generalisation].join("\n\n"),
+    },
     {
       kind: "challenge",
       title: LABELS.titles.challenge,

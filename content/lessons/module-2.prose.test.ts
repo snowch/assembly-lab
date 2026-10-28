@@ -233,7 +233,7 @@ describe("module 2, the improved text: closed notes, gated texts and the last se
     "$id: the last section is What you now know, a list and a question, and a closed Answer",
     ({ id, prose }) => {
       const lesson = LESSONS.find((l) => l.id === id)!;
-      const last = lesson.sections[9]!;
+      const last = lesson.sections.find((section) => section.kind === "reflection")!;
       expect(last.title).toBe("What you now know");
       expect(last.prose).toBe(prose.reflection);
       // Count the takeaways separately from any fresh inputs supplied for the question.

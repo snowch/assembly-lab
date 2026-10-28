@@ -34,10 +34,12 @@ const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
 vi.setConfig({ testTimeout: 30_000 });
 
 describe("the lesson", () => {
-  it("parses and passes the schema's checks: ten sections in order, every challenge mounted", () => {
+  it("parses and passes the schema's checks: selected sections in order, every challenge mounted", () => {
     expect(() => parseLesson(subtractingAndTheTickCounter)).not.toThrow();
     expect(checkLesson(lesson)).toEqual([]);
-    expect(lesson.sections.map((s) => s.kind)).toEqual([...SECTION_KINDS]);
+    expect(lesson.sections.map((s) => s.kind)).toEqual(
+      SECTION_KINDS.filter((kind) => !["question"].includes(kind)),
+    );
     expect([lesson.module, lesson.order]).toEqual([2, 1]);
   });
 
@@ -223,7 +225,9 @@ describe("the page", () => {
     const { container } = render(
       <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
     );
-    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
+    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(
+      lesson.sections.length,
+    );
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
     // The ring, the two adders and the stepper wait for their predictions; nothing of any run is

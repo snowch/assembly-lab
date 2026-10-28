@@ -1,5 +1,7 @@
 # Returning to the caller: canonical prose
 
+The section-flow revision joins the motivation and investigation strings under Follow the call and return. These property-path records retain both strings verbatim; see `../section-flow/audit.md` for the rendered heading order.
+
 Copyright © 2026 Christopher Snow
 
 Separately drafted from brief.md and the checked facts in facts.md. Tiny-function copy changes are retained in ../fundamentals/prose.md.

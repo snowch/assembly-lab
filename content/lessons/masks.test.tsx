@@ -32,10 +32,12 @@ const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
 const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
 
 describe("the lesson", () => {
-  it("parses and passes the schema's checks: ten sections in order, every challenge mounted", () => {
+  it("parses and passes the schema's checks: selected sections in order, every challenge mounted", () => {
     expect(() => parseLesson(masks)).not.toThrow();
     expect(checkLesson(lesson)).toEqual([]);
-    expect(lesson.sections.map((s) => s.kind)).toEqual([...SECTION_KINDS]);
+    expect(lesson.sections.map((s) => s.kind)).toEqual(
+      SECTION_KINDS.filter((kind) => !["motivation", "generalisation"].includes(kind)),
+    );
     expect([lesson.module, lesson.order]).toEqual([3, 0]);
   });
 
@@ -246,7 +248,9 @@ describe("the page", () => {
     const { container } = render(
       <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
     );
-    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
+    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(
+      lesson.sections.length,
+    );
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
     // The bit figure, the stepper and the comparison wait for their predictions, and the solution

@@ -17,13 +17,11 @@ export const LABELS = {
   ],
   titles: {
     question: "How do you change one warning?",
-    motivation: "Why one bit at a time",
     prediction: "The constant that clears bit 2",
     investigation: "Masks, fields and the three rules", // DRAFT: the old title counted four operations
     construction: "Writing a field",
     failureExperiment: "Leaving out the clear",
     explanation: "What each operation does",
-    generalisation: "Fields in real code",
     challenge: "Three results from one word",
     reflection: "What you now know",
   },

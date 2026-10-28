@@ -46,7 +46,7 @@ function watchErrors(page: Page): string[] {
 
 async function openLesson(page: Page, id: string): Promise<void> {
   await page.goto(`#/lesson/${id}`);
-  await expect(page.locator("section.lesson-section")).toHaveCount(10);
+  await expect(page.locator("section.lesson-section")).toHaveCount(lesson(id).sections.length);
   await page.evaluate(async () => {
     await document.fonts.ready;
   });
@@ -108,7 +108,7 @@ async function predictionCommitsBeforeItReveals(
 // Lesson 1
 
 test.describe("lesson 1, Adding, and the four flags", () => {
-  test("loads with no console error, ten sections, two challenges and a closed note", async ({
+  test("loads with no console error, selected sections, two challenges and a closed note", async ({
     page,
   }) => {
     const errors = watchErrors(page);
@@ -611,7 +611,7 @@ const WRITE = "write-elapsed";
 const STEP = "one-step-past";
 
 test.describe("lesson 2, Subtracting, and the tick counter", () => {
-  test("loads with no console error, ten sections and two challenges", async ({ page }) => {
+  test("loads with no console error, selected sections and two challenges", async ({ page }) => {
     const errors = watchErrors(page);
     await openLesson(page, TWO);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson(TWO).title);

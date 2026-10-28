@@ -62,7 +62,7 @@ const openLesson = (page: Page) => open(page, LESSON_ID);
 const ONES = "1".repeat(32);
 const MINUS_12 = patternOf(-12);
 
-test("the lesson loads with no console error, ten sections, and its two challenges", async ({
+test("the lesson loads with no console error, selected sections, and its two challenges", async ({
   page,
 }) => {
   const errors = watchErrors(page);

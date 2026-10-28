@@ -28,11 +28,10 @@ export const returningToCaller: LessonInput = {
   showTimeModelNotes: false,
   introduces: ["address", "branch", "return address", "link register", "calling convention"],
   sections: [
-    { kind: "motivation", title: L.titles.motivation, prose: P.sections.motivation },
     {
       kind: "investigation",
       title: L.titles.investigation,
-      prose: P.sections.investigation,
+      prose: [P.sections.motivation, P.sections.investigation].join("\n\n"),
       interactives: [
         {
           id: "follow-return",

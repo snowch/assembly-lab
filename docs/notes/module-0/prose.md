@@ -21,15 +21,7 @@ A separate Codex drafting agent streamlined the synthesis lesson on 24 October 2
 - Repair a subtraction whose inputs are reversed.
 - Explain what happens when a function's `ret` is removed.
 
-## 1. What does the processor do?
-
-How do individual instructions perform a complete C function? Follow a trip calculation, then repair another function.
-
-## 2. From instructions to a function
-
-You have practised addition, a function call and return, subtraction, and instructions in sequence. Now combine those mechanics.
-
-## 3. Connect the operations to a function
+## 1. Trace trip_distance
 
 `trip_distance` adds three trip distances, called legs, then subtracts a detour. Its `int` arguments arrive in registers:
 
@@ -39,8 +31,6 @@ You have practised addition, a function call and return, subtraction, and instru
 - `detour` arrives in `w3`.
 
 GCC 16.1.0 at `-O1`, an optimisation setting, made the four instructions below for 64-bit Arm. Follow the C variable `total` through the calculation: the instructions update `w0`, then `ret` returns with the result already there.
-
-## 4. Stepping through
 
 Run `trip_distance(120, 85, 42, 15)` with Next. The C statement and instruction that just ran are highlighted together; ▸ marks the next instruction. An outlined register was written by the last instruction. Back undoes a step; Reset starts again.
 
@@ -89,7 +79,7 @@ GCC's original line references are kept in the compiler details. GCC 16.1 at `-O
 
 `ret` returns to the code that called this function. The function's result is whatever `w0` holds at that moment.
 
-## 5. Fixing `fuel_used`
+## 2. Fixing `fuel_used`
 
 A second function, `fuel_used`, should return the litres used on a trip. That is the fuel at the start minus the fuel at the end. Its C was written the wrong way round: `return at_end - at_start;`. GCC turned it into `sub w0, w1, w0` and `ret`.
 
@@ -114,7 +104,7 @@ Change the instructions so the function returns `at_start` minus `at_end`. Three
 
 *Feedback for the reversed subtraction:* Your function subtracts the two values in the wrong order. `sub` writes its first operand. It subtracts its third operand from its second. Which value should come second?
 
-## 6. Removing `ret`
+## 3. Removing `ret`
 
 The processor keeps a program's instructions and values outside its registers, in a place called **memory**. In this example, `fuel_used`'s instructions come straight after `trip_distance`'s in memory.
 
@@ -145,15 +135,9 @@ The processor does not stop just because it reaches the next function. Without `
 
 *trip_distance(120, 85, 42, 15) again, with a switch that deletes ret. In memory, fuel_used comes after trip_distance.*
 
-## 7. How a program runs
-
 A function name does not make the processor stop. In this example, execution advances through instructions in memory until `ret` returns to the caller. Removing that return lets the next function's instructions run with the values left in the registers.
 
-## 8. Other functions
-
-The compiler chooses the registers and instructions. GCC 16.1 at `-O1` keeps this function's values in registers and produces four instructions. At `-O0`, which means no optimisation, it produces twenty instructions, storing variables in memory and reading them back for arithmetic. Compare listings with the compiler version and settings in mind.
-
-## 9. Kilometres to service
+## 4. Kilometres to service
 
 The car's odometer records the total distance it has travelled. The car needs a service when that reading reaches `service_at`. The `odometer` argument is the reading recorded before the current trip began. It does not include `trip_so_far`.
 
@@ -179,7 +163,5 @@ Without running the call `km_to_service(30000, 28750, 140, 390)`, give two value
 *Feedback for a wrong `w1`:* A `sub` writes its first operand only, so ask which instruction, if any, writes `w1`.
 
 *Feedback for a wrong `w0`:* Take each `sub` in turn, and write down `w0` after each one.
-
-## 10. What you now know
 
 Trace the whole path: incoming arguments, each instruction's writes, and the return. A correct calculation is not enough if execution continues beyond the intended function.

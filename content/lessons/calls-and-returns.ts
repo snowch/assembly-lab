@@ -82,15 +82,10 @@ export const callsAndReturns: LessonInput = {
   ],
   sections: [
     {
-      kind: "question",
-      title: LABELS.titles.question,
-      prose: PROSE.question,
-      details: { summary: PROSE.questionNoteSummary, prose: PROSE.questionNote },
-    },
-    {
       kind: "motivation",
       title: LABELS.titles.motivation,
-      prose: PROSE.motivation,
+      prose: [PROSE.question, PROSE.motivation].join("\n\n"),
+      details: { summary: PROSE.questionNoteSummary, prose: PROSE.questionNote },
       interactives: [
         {
           id: "step-small-returning-call",

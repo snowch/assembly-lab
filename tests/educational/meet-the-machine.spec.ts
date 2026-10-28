@@ -41,7 +41,7 @@ function watchErrors(page: Page): string[] {
 
 async function openLesson(page: Page): Promise<void> {
   await page.goto(`#/lesson/${LESSON_ID}`);
-  await expect(page.locator("section.lesson-section")).toHaveCount(10);
+  await expect(page.locator("section.lesson-section")).toHaveCount(lesson.sections.length);
   await page.evaluate(async () => {
     await document.fonts.ready;
   });
@@ -90,7 +90,7 @@ const flowText = async (figure: Locator) => {
 const stored = (page: Page) =>
   page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? "null"), STORAGE_KEY);
 
-test("the lesson loads with no console error, ten sections, and its two challenges", async ({
+test("the lesson loads with no console error, selected sections, and its two challenges", async ({
   page,
 }) => {
   const errors = watchErrors(page);

@@ -26,7 +26,7 @@ const lesson = (id: string) => LESSONS.find((l) => l.id === id)!;
 
 async function openLesson(page: Page, id: string): Promise<void> {
   await page.goto(`#/lesson/${id}`);
-  await expect(page.locator("section.lesson-section")).toHaveCount(10);
+  await expect(page.locator("section.lesson-section")).toHaveCount(lesson(id).sections.length);
   await page.evaluate(async () => {
     await document.fonts.ready;
   });

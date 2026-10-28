@@ -2,6 +2,8 @@
 
 Drafted separately from the checked native assets and source brief. This record contains the current learner-facing prose and labels verbatim. Native execution and independent reviews are recorded separately.
 
+The section-flow revision joins each lesson’s question and motivation under its tool/setup heading. Property-path headings below index the original strings, which remain unchanged. See `../section-flow/audit.md`.
+
 # Build and boot an assembly program
 
 ## PROSE.question

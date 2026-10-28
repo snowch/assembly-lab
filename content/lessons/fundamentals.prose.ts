@@ -173,11 +173,6 @@ export const FUNDAMENTALS_PROSE = {
 
 export const SYNTHESIS_COPY = {
   title: "Putting it together",
-  question:
-    "How do individual instructions perform a complete C function? Follow a trip calculation, then repair another function.",
-  motivation:
-    "You have practised addition, a function call and return, subtraction, and instructions in sequence. Now combine those mechanics.",
-  motivationTitle: "From instructions to a function",
   listingNavigation:
     "On a narrow screen, swipe sideways within the listing to move between the C and instructions.",
   objectives: [
