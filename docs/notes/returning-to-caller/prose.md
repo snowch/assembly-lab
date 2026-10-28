@@ -137,6 +137,14 @@ A result stays in the register
 
 Caller
 
+### figure strings / address
+
+Address
+
+### figure strings / instruction
+
+Instruction
+
 ### figure strings / functionName
 
 increment_int
@@ -187,7 +195,7 @@ The activity stops after this caller instruction.
 
 ### figure strings / callerProse
 
-The caller’s assembly was written by hand.
+The caller’s assembly was written by hand. The Address column shows each instruction’s address in this simulator run.
 
 ### figure strings / status / 0
 

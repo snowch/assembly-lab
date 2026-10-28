@@ -21,14 +21,36 @@
   font-size: inherit;
   margin-block: var(--space-3) var(--space-2);
 }
-.al-returning-instruction {
-  display: flex;
-  flex-wrap: wrap;
+.al-returning-instruction,
+.al-returning-instruction-head {
+  display: grid;
+  grid-template-columns: 7ch 1ch minmax(0, 1fr);
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3);
+  column-gap: var(--space-2);
+  padding: var(--space-2);
   border-inline-start: 3px solid transparent;
+}
+.al-returning-instruction-head > :last-child {
+  grid-column: 3;
+}
+.al-returning-instruction {
   background: var(--bg-raised);
+}
+.al-returning-instruction-status {
+  grid-column: 3;
+}
+.al-returning-code,
+.al-returning-address,
+.al-returning-saved-address {
+  white-space: nowrap;
+}
+.al-returning-address,
+.al-returning-saved-address {
+  font-variant-numeric: tabular-nums;
+}
+.al-returning-address {
+  padding: 0;
+  background: none;
 }
 .al-returning-instruction[data-next="true"] {
   border-inline-start: 3px dotted var(--accent);
@@ -37,7 +59,7 @@
   border-inline-start-color: var(--accent);
   background: var(--accent-soft);
 }
-.al-returning-instruction > span:first-child {
+.al-returning-marker {
   min-width: 1ch;
   color: var(--accent);
 }

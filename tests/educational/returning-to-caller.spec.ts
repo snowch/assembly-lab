@@ -27,15 +27,26 @@ for (const theme of ["light", "dark"]) {
       "bl increment_int",
     );
     await expect(figure.locator(".al-returning-target")).toContainText(S.beforeCallTarget);
+    const addresses = figure.locator(".al-returning-address");
+    await expect(addresses).toHaveCount(2);
+    const numbers = (await addresses.allTextContents()).map((text) =>
+      Number(text.replace(S.address, "").trim()),
+    );
+    expect(numbers.every(Number.isSafeInteger)).toBe(true);
+    expect(numbers[1]).toBe(numbers[0]! + 4);
+    const savedAddress = figure.locator(".al-returning-saved-address");
+    await expect(savedAddress).toHaveCount(0);
     await step.click();
     await expect(value("w0")).toHaveText("7");
     await expect(value("w1")).toHaveText("0");
     await expect(figure.locator(".al-returning-target")).toContainText(S.returnTarget);
     await expect(figure.locator(".al-returning-target")).toHaveAttribute("data-written", "true");
+    await expect(savedAddress).toHaveText(String(numbers[1]));
     await expect(figure.locator('.al-insn[data-next="true"]')).toContainText("add w0, w0, 1");
     await step.click();
     await expect(value("w0")).toHaveText("8");
     await expect(figure.locator('.al-insn[data-next="true"]')).toContainText("ret");
+    await expect(savedAddress).toHaveText(String(numbers[1]));
     await step.click();
     await expect(value("w0")).toHaveText("8");
     await expect(value("w1")).toHaveText("0");
@@ -43,6 +54,7 @@ for (const theme of ["light", "dark"]) {
       "add w1, w0, w0",
     );
     await expect(figure.locator('.al-dreg[data-changed="true"]')).toHaveCount(0);
+    await expect(savedAddress).toHaveText(String(numbers[1]));
     const bank = await figure.locator(".al-returning-registers").boundingBox();
     expect(bank).not.toBeNull();
     expect(bank!.y).toBeGreaterThanOrEqual(0);
@@ -50,6 +62,7 @@ for (const theme of ["light", "dark"]) {
     await expect(figure.locator(".al-returning-current")).toContainText("add w1, w0, w0");
     await page.reload();
     await expect(figure).toHaveAttribute("data-k", "3");
+    await expect(savedAddress).toHaveText(String(numbers[1]));
     await step.click();
     await expect(value("w0")).toHaveText("8");
     await expect(value("w1")).toHaveText("16");
@@ -63,6 +76,11 @@ for (const theme of ["light", "dark"]) {
       "bl increment_int",
     );
     await expect(figure.locator(".al-returning-target")).toContainText(S.beforeCallTarget);
+    await expect(savedAddress).toHaveCount(0);
+    await step.click();
+    await expect(savedAddress).toHaveText(String(numbers[1]));
+    await figure.getByRole("button", { name: S.back, exact: true }).click();
+    await expect(savedAddress).toHaveCount(0);
     expect(await designProblems(page, isMobile)).toEqual([]);
     expect(errors).toEqual([]);
   });
