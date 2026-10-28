@@ -18,7 +18,7 @@ Plain `ret` continues execution at the address held in `x30`. These are AArch64 
 
 The figure starts just before `bl`, with the argument already in `w0`. It stops after the caller’s addition, before the caller’s remaining instructions. Press Run the instruction to follow the call, the function’s addition, its return and the caller’s addition. The marker ▸ names the instruction that runs next; the highlight marks the instruction that just ran. On a narrow screen, scroll sideways within the function listing to see the C and instructions.
 
-The caller instructions were written for this course. The paired increment_int listing is the recorded GCC output from A tiny function.
+The caller’s assembly was written by hand. GCC generated `increment_int`’s instructions from the C shown beside them.
 
 ### prose / sections / explanation
 
@@ -137,6 +137,14 @@ A result stays in the register
 
 Caller
 
+### figure strings / address
+
+Address
+
+### figure strings / instruction
+
+Instruction
+
 ### figure strings / functionName
 
 increment_int
@@ -187,7 +195,7 @@ The activity stops after this caller instruction.
 
 ### figure strings / callerProse
 
-These caller instructions were written for this course.
+The caller’s assembly was written by hand. The Address column shows each instruction’s address in this simulator run.
 
 ### figure strings / status / 0
 

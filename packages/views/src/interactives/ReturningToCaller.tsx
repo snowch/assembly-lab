@@ -43,6 +43,7 @@ export const ReturningToCaller = withProps(
         ? index - functionIndex
         : null;
     const callIndex = trace.lineAt.get(trace.result.steps[data.startStep]!.address)!;
+    const addressAtLine = new Map([...trace.lineAt].map(([address, index]) => [index, address]));
     const callerAddress = [...trace.lineAt].find(([, index]) => index === callerIndex)?.[0];
     const pointsToCaller =
       callerAddress !== undefined && view.state.x[30] === BigInt(callerAddress);
@@ -53,6 +54,10 @@ export const ReturningToCaller = withProps(
         <section className="al-returning-caller" aria-label={S.caller}>
           <h5>{S.caller}</h5>
           <Prose markdown={S.callerProse} />
+          <div className="al-returning-instruction-head" aria-hidden="true">
+            <span>{S.address}</span>
+            <span>{S.instruction}</span>
+          </div>
           {[callIndex, callerIndex].map((index) => (
             <div
               key={index}
@@ -60,10 +65,20 @@ export const ReturningToCaller = withProps(
               data-next={!complete && view.next === index}
               data-ran={position > 0 && view.ran === index}
             >
-              <span aria-hidden="true">{!complete && view.next === index ? "▸" : ""}</span>
-              <code>{trace.lines[index]?.text}</code>
-              {!complete && view.next === index && <span>{S.next}</span>}
-              {position > 0 && view.ran === index && <span>{S.ran}</span>}
+              <code className="al-returning-address">
+                <span className="visually-hidden">{S.address} </span>
+                {addressAtLine.get(index)}
+              </code>
+              <span className="al-returning-marker" aria-hidden="true">
+                {!complete && view.next === index ? "▸" : ""}
+              </span>
+              <code className="al-returning-code">{trace.lines[index]?.text}</code>
+              {!complete && view.next === index && (
+                <span className="al-returning-instruction-status">{S.next}</span>
+              )}
+              {position > 0 && view.ran === index && (
+                <span className="al-returning-instruction-status">{S.ran}</span>
+              )}
             </div>
           ))}
         </section>
@@ -90,6 +105,9 @@ export const ReturningToCaller = withProps(
         <div className="al-returning-target" data-written={position > 0 && view.written.has(30)}>
           <code>x30</code>
           <span>{S.returnAddress}</span>
+          {pointsToCaller && (
+            <code className="al-returning-saved-address">{String(view.state.x[30])}</code>
+          )}
           {pointsToCaller && <span aria-hidden="true">→</span>}
           <span>{pointsToCaller ? S.returnTarget : S.beforeCallTarget}</span>
           {position > 0 && view.written.has(30) && <strong>{S.written}</strong>}
