@@ -51,9 +51,7 @@ export const PROSE = {
     "The recorded GCC listing shows this compiler's choice. Do not treat that choice as a guarantee for every C implementation.\n\n" +
     "Conversion to an unsigned integer type follows the unsigned range's wrapping rule. The unsigned-byte cast keeps a result in the range 0 to 255.",
   generalisation:
-    "Choose extension from the source value's interpretation and the width you need next. `sxtw x0, w0` sign-extends a 32-bit value to 64 bits. It can turn a signed `int` result into the matching `long` value on this target.\n\n" +
-    "An instruction can combine extension with arithmetic. In `add x0, x0, w1, sxtw`, the processor sign-extends `w1` to 64 bits before adding it to `x0`. It does not change `w1`. The recorded C function uses this form to add an `int` adjustment to a `long` total.\n\n" +
-    "For a record containing several fields, choose the right load for each field. `[x0, #4]` means memory four bytes after the address in `x0`. The number after `#` is a byte offset; it does not change `x0`.",
+    "Choose extension from the source value's interpretation and the width you need next. `sxtw x0, w0` sign-extends a 32-bit value to 64 bits. It can turn a signed `int` result into the matching `long` value on this target.\n\nAn instruction can combine extension with arithmetic. In `add x0, x0, w1, sxtw`, the processor sign-extends `w1` to 64 bits before adding it to `x0`. It does not change `w1`. The recorded C function uses this form to add an `int` adjustment to a `long` total.\n\nFor a record containing several fields, choose the right load for each field. `[x0, #4]` means memory four bytes after the address in `x0`. The number after `#` is a byte offset; it does not change `x0`.\n\nThe next exercise supplies a sensor record with a chosen byte layout. Its bytes are already in memory; no hardware sensor is connected. A compiler may lay out a C record differently.",
   finalTask:
     "Read the trip computer's eight-byte sensor record. `x0` holds its starting address. The record contains these fields:\n\n" +
     "- Bytes 0 to 3: an unsigned 32-bit distance.\n- Byte 4: a signed 8-bit gradient.\n- Byte 5: an unsigned 8-bit fuel level.\n- Bytes 6 to 7: an unsigned 16-bit pulse count.\n\n" +
@@ -72,9 +70,7 @@ export const PROSE = {
   reflectionNoteSummary: "Answer",
   reflectionNote:
     "The `w0` form sign-extends only to 32 bits, then clears the upper half of `x0`. The `x0` form sign-extends through all 64 bits. Their low 32 bits agree, but their upper 32 bits differ for a negative byte.",
-  modelVsReality:
-    "The diagrams show the simulator copying and extending bits. These operations describe the instruction's result, not the order of internal steps in a processor.\n\n" +
-    "The sensor record has a byte layout defined for this exercise. A compiler may arrange the fields of a C record differently. The exercise supplies the bytes and addresses, so you can study loads without first obtaining storage or communicating with a hardware sensor.",
+  modelVsReality: "",
   originalityNote: {
     textbookExample: "Loading the same byte as a signed and unsigned integer in isolation.",
     howThisDiffers:

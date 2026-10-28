@@ -13,14 +13,11 @@ export const PROSE = {
   questionNote: "GCC 16.1 with `-O1`, as in Module 0.",
 
   motivation:
-    "A decision often needs only the flags, not the result. `cmp w1, w0` sets the flags exactly as `subs` would for `w1` minus `w0`. It writes no register, because no result is kept. This is a **compare**.\n\n" +
-    "The order matters. `cmp w1, w0` is `w1` minus `w0`. `cmp w0, w1` is the other way round, and its flags can differ.\n\n" +
-    "`cmp` also takes a constant, as `subs` does: `cmp w0, 10`.\n\n" +
-    "The flags keep their values until another instruction writes them.",
+    "A decision often needs only the flags, not the result. `cmp` is Arm’s name for `subs` with its result discarded. `cmp w1, w0` sets the flags for `w1` minus `w0` and writes no register. This is a **compare**.\n\nThe order matters. `cmp w1, w0` is `w1` minus `w0`. `cmp w0, w1` is the other way round, and its flags can differ.\n\n`cmp` also takes a constant, as `subs` does: `cmp w0, 10`.\n\nThe flags keep their values until another instruction writes them.",
 
   motivationNoteSummary: "cmn",
   motivationNote:
-    "`cmn w0, w1` sets the flags as `adds` would for `w0` plus `w1`, with no result. Module 2's `add_overflows` used it.",
+    "`cmn` is Arm’s name for `adds` with its result discarded. `cmn w0, w1` sets the flags for `w0` plus `w1` and writes no register. Module 2's `add_overflows` used it.",
 
   prediction:
     "The figure shows `steeper_s`'s three instructions from above, and runs `steeper_u` and `steeper_s` on `0xffffffff` and 1.",
@@ -138,6 +135,5 @@ export const PROSE = {
   reflectionNote:
     "The flags are NZCV 0000. `gt` (Z is 0 and N equals V) is yes: as signed, 2 is greater than −2, so `w0` keeps 2. `hi` (C is 1 and Z is 0) is no, because C is 0: as unsigned, 2 is lower than 4294967294, so `w0` gets `0xfffffffe`.",
 
-  modelVsReality:
-    "The simulator's conditions follow the architecture's, and its tests hold each one at all sixteen settings of the flags, checked against QEMU. `cmp` and `cmn` are names for `subs` and `adds` with the result thrown away. The course uses the names GCC prints. The simulator runs one instruction at a time.",
+  modelVsReality: "",
 } as const;

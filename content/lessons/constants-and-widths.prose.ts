@@ -104,6 +104,5 @@ export const PROSE = {
   reflectionDetails:
     "`x5` holds 7. Writing `w5` put 7 in the lower 32 bits and cleared the upper 32.",
 
-  modelVsReality:
-    "The course does not show how an instruction's bits hold its constant. The course takes which constants fit from the GNU assembler, and tests its own assembler against that one line by line.",
+  modelVsReality: "",
 } as const;

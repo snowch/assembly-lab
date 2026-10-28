@@ -35,7 +35,7 @@ These commands read identification and settings; do not add update or edit flags
 
 With the Pi and probe disconnected from power, connect the supplied three-pin cable between the probe's **U** socket and the Pi 5 connector labelled **UART**. This dedicated connector is separate from the large GPIO header. The probe's **D** socket is for a different debugging connection.
 
-Match the keyed plugs to their sockets and do not force them. Use the [official probe picture and cable guide](https://www.raspberrypi.com/documentation/microcontrollers/debug-probe.html#about-the-debug-probe) to identify them. The schematic shows the connection and output direction; it is not a pin-orientation drawing. Leave the Pi powered off until the next lesson's terminal is ready.
+Match the keyed plugs to their sockets and do not force them. Use the [official probe picture and cable guide](https://www.raspberrypi.com/documentation/microcontrollers/debug-probe.html#about-the-debug-probe) to identify them. The schematic shows the connection and output direction; it is not a pin-orientation drawing or a recording of a Pi run. Leave the Pi powered off until the next lesson's terminal is ready.
 
 ## PI_PREP_PROSE.explanation
 
@@ -49,9 +49,6 @@ The Pi's firmware and devices belong to this board. Reusing QEMU's UART address 
 
 Open the two `trip_distance.s` files, from Module 12 and the Pi bundle in the next lesson. The arithmetic instructions stay the same. Identify the files that instead choose the load address, prepare startup and send the report. Those are the parts to inspect when moving this function to another board.
 
-## PI_PREP_PROSE.modelVsReality
-
-These are source-checked connection and boot-path schematics. They do not simulate or record a Pi boot. No physical Pi result has been recorded for this extension yet. The existing browser arithmetic model and QEMU reference remain separate from the hardware test.
 
 ## PI_PREP_PROSE.originalityNote.textbookExample
 
@@ -411,9 +408,6 @@ Record your Pi model, EEPROM version, source revision, image checksum, terminal 
 
 Which observation shows that our code ran? Which shows that the arithmetic check rejected the deliberate error? If a stage is still unobserved, record it as unverified. Your hardware test completes the evidence that a build alone cannot provide.
 
-## PI_BOOT_PROSE.modelVsReality
-
-The automated checks assemble the native source and inspect its ELF and raw-image layout. They cannot verify the physical board's bootloader, UART clock, cable, power or serial output. The program records its actual entry exception level when it reaches output; this course does not substitute QEMU's entry state for that measurement. The browser does not run the Pi or its devices.
 
 ## PI_BOOT_PROSE.originalityNote.textbookExample
 

@@ -317,6 +317,7 @@ export const compareAndChoose: LessonInput = {
       reference: { answers: { ge: "0", cs: "1", lt: "1", cc: "0" } },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: {
     textbookExample:

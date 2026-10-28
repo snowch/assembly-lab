@@ -43,7 +43,7 @@ GCC 16.1 with `-O1`, as in Module 0.
 
 ## 2. Why a decision needs the flags
 
-A decision often needs only the flags, not the result. `cmp w1, w0` sets the flags exactly as `subs` would for `w1` minus `w0`. It writes no register, because no result is kept. This is a **compare**.
+A decision often needs only the flags, not the result. `cmp` is Arm’s name for `subs` with its result discarded. `cmp w1, w0` sets the flags for `w1` minus `w0` and writes no register. This is a **compare**.
 
 The order matters. `cmp w1, w0` is `w1` minus `w0`. `cmp w0, w1` is the other way round, and its flags can differ.
 
@@ -53,7 +53,7 @@ The flags keep their values until another instruction writes them.
 
 *Closed note: cmn*
 
-`cmn w0, w1` sets the flags as `adds` would for `w0` plus `w1`, with no result. Module 2's `add_overflows` used it.
+`cmn` is Arm’s name for `adds` with its result discarded. `cmn w0, w1` sets the flags for `w0` plus `w1` and writes no register. Module 2's `add_overflows` used it.
 
 *End of closed note.*
 
@@ -292,10 +292,6 @@ The flags are NZCV 0000. `gt` (Z is 0 and N equals V) is yes: as signed, 2 is gr
 
 *End of closed note.*
 
-## 11. The model and the real processor
-
-The simulator's conditions follow the architecture's, and its tests hold each one at all sixteen settings of the flags, checked against QEMU. `cmp` and `cmn` are names for `subs` and `adds` with the result thrown away. The course uses the names GCC prints. The simulator runs one instruction at a time.
-
 # Lesson 2: Branches, and the run that skips
 
 ## 0. Objectives
@@ -311,7 +307,7 @@ The trip computer classifies a gradient as steep uphill, steep downhill or neith
 
 `wzr` is a register name that always reads as 0. A write to it is thrown away.
 
-Every listing so far ran from its first instruction to its `ret`, in order. This one has two lines that end in a colon, `.L7:` and `.L9:`. Two instructions name them.
+The earlier arithmetic examples ran their calculations in order. This listing has two lines that end in a colon, `.L7:` and `.L9:`. Two instructions name them.
 
 **How does the processor execute only the instructions needed for that result?**
 
@@ -356,7 +352,7 @@ The answer is 5. For `describe(15)`, the run is `cmp w0, 10`, `bgt .L9` (taken),
 
 ## 4. How a branch chooses its path
 
-Different gradients run different instructions, so the run can have a different length. The figure runs `describe` on the gradient you choose: above 10, exactly 10, below −10, or between. It draws the path the run took, marks each branch as taken, not taken or not reached, and counts the instructions that ran.
+Different gradients run different instructions, so the run can have a different length. The figure runs `describe` on the gradient you choose: above 10, exactly 10, below −10, or between. It draws the path the run took, marks each branch as taken, not taken or not reached, and counts the instructions that ran. The arrows show the program’s path, not the processor’s timing.
 
 GCC writes `bgt`. Arm writes `b.gt`. It is the same instruction, and the course's assembler accepts both.
 
@@ -532,9 +528,3 @@ Question: `service` is given `0x29`. Is `tbz` taken, what does `service` return,
 `0x29` is `0010 1001`. Bit 1 is 0, so `tbz` is taken. The run is `tbz`, `mov w0, 0` and `ret`: three instructions. (`.Lno:` is a label, not counted.) `service` returns 0.
 
 *End of closed note.*
-
-## 11. The model and the real processor
-
-Many real processors start on later instructions before a branch is decided. The results are still those of one instruction at a time. The simulator runs one instruction at a time and gives the same results.
-
-The arrows in the figure show the program's path, not the processor's timing.

@@ -68,8 +68,7 @@ export const PROSE = {
     "Step through your own instructions below. When an instruction writes a register, the figure shows its bits before and after. This may be the new gear in `w1` or the warning word in `w0`.",
   /** With the comparison with GCC's `bfi`; shown once the challenge passes. */
   afterPass:
-    "Only the low 3 bits of `g` may land in the field. A value larger than 7 must not spill out of it. 13 is `1101` in its low four bits. Without keeping only the low 3 bits, its bit 3 would land in bit 7 of the word, outside the field.\n\n" +
-    "GCC writes the field in one instruction, `bfi w0, w1, 4, 3`, then returns with `ret`. `w0` holds the word, and `w1` holds the new gear. The 4 is the first bit of the field, and the 3 is its width. The instruction puts the low 3 bits of `w1` into bits 4 to 6 of `w0`, and keeps every other bit. Your code and GCC's both return `0x55` for `set_gear(0x35, 5)`.",
+    "Only the low 3 bits of `g` may land in the field. A value larger than 7 must not spill out of it. 13 is `1101` in its low four bits. Without keeping only the low 3 bits, its bit 3 would land in bit 7 of the word, outside the field.\n\nGCC writes the field in one instruction, `bfi w0, w1, 4, 3`, then returns with `ret`. `w0` holds the word, and `w1` holds the new gear. The 4 is the first bit of the field, and the 3 is its width. The instruction puts the low 3 bits of `w1` into bits 4 to 6 of `w0`, and keeps every other bit. Your code and GCC's both return `0x55` for `set_gear(0x35, 5)`.\n\n`ubfx` and `bfi` are Arm’s names for two cases of more general instructions. The course uses the names GCC prints.",
 
   failureExperiment:
     "The figure runs `set_gear` without the step that clears the field: `and w1, w1, 7`, `lsl w1, w1, 4`, `orr w0, w0, w1`, `ret`, on `set_gear(0x35, 5)`.",
@@ -122,6 +121,5 @@ export const PROSE = {
       "`0x47` is `0100 0111`. Bits 6 to 4 are `100`, so the gear is 4. `eor` with 4 flips bit 2 from 1 to 0, giving `0x43`.",
   },
 
-  modelVsReality:
-    "`ubfx` and `bfi` are Arm's names for two cases of more general instructions. The course uses the two names GCC prints.",
+  modelVsReality: "",
 } as const;

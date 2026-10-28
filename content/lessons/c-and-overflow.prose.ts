@@ -8,7 +8,7 @@ export const PROSE = {
   questionNote:
     "These records use GCC 16.1 for little-endian AArch64 Linux. Unless a figure says otherwise, the settings are `-O1 -std=c23`: the same optimisation level used earlier, with C23 language rules selected.\n\nThe course cites the public C draft N3096. A recorded instruction sequence shows what this compiler produced. The C rules determine which source-program behaviours an implementation must support.",
   motivation:
-    "On this target, a signed `int` ranges from −2147483648 to 2147483647. C's `<limits.h>` header provides the names `INT_MIN` and `INT_MAX` for these bounds. `#include <limits.h>` makes those names available to the source.\n\nAdding one to `INT_MAX` overflows signed `int`. C describes this as **undefined behaviour**: the language places no requirements on what the program does in that case. It does not promise a wrapped value, a random value or an error message.\n\nWhenever this signed addition is defined, adding one makes the value larger. GCC can therefore replace the comparison with true. It has no obligation to preserve a particular result for the overflowing input. The processor executes the resulting instructions; it does not know that a C expression was signed.",
+    "On this target, a signed `int` ranges from −2147483648 to 2147483647. C's `<limits.h>` header provides the names `INT_MIN` and `INT_MAX` for these bounds. `#include <limits.h>` makes those names available to the source.\n\nAdding one to `INT_MAX` overflows signed `int`. C describes this as **undefined behaviour**: the language places no requirements on what the program does in that case. It does not promise a wrapped value, a random value or an error message.\n\nWhenever this signed addition is defined, adding one makes the value larger. GCC can therefore replace the comparison with true. It has no obligation to preserve a particular result for the overflowing input. The processor executes the resulting instructions; it does not know that a C expression was signed.\n\nModule 10’s small compiler checks its own supported language. It is not a general detector of undefined C behaviour.",
   prediction:
     "Now run a separate assembly experiment: `adds w0, w0, #1` with `w0` initially holding 2147483647. This executes A64 directly. It is not an execution of the original C expression.",
   predictionQuestion: "**What bit pattern does the addition leave in `w0`?**",
@@ -53,8 +53,7 @@ export const PROSE = {
   reflectionNoteSummary: "Answer",
   reflectionNote:
     "In standard C, every defined case of this expression makes the comparison true. The overflowing case places no requirements on the result. With `-fwrapv`, that boundary case has a specified wrapped result and must make the comparison false.",
-  modelVsReality:
-    "The steppers execute recorded or course-written A64. They cannot establish the guarantees of every possible C compilation from one machine trace. The small compiler from Module 10 checks its own deliberately limited language; it is not a general detector of undefined C behaviour.\n\nCompiler options and source-language rules are recorded alongside the listings so their claims can be checked separately.",
+  modelVsReality: "",
   originalityNote: {
     textbookExample: "A signed-overflow puzzle presented as surprising compiler behaviour.",
     howThisDiffers:

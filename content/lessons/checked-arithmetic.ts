@@ -257,6 +257,7 @@ export const checkedArithmetic: LessonInput = {
       reference: { text: CHECKED_TRIP_TEXT },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: PROSE.originalityNote,
 };

@@ -291,6 +291,7 @@ export const divisionAndRemainders: LessonInput = {
       reference: { text: R.CONSUMPTION_TEXT },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: P.modelVsReality,
   originalityNote: P.originalityNote,
 };

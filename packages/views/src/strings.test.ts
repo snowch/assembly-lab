@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 
 import { LESSONS } from "@al/content";
 
-import { STEPS, createBook } from "./book";
+import { createBook } from "./book";
 import { INTERACTIVES } from "./interactives";
 import { VIEW_STRINGS } from "./strings";
 
@@ -46,8 +46,8 @@ describe("the book", () => {
     expect(book.interactives).toBe(INTERACTIVES);
   });
 
-  it("gives a note for the one model its figures run", () => {
-    expect(Object.keys(book.timeModelNotes)).toEqual([STEPS]);
-    expect(book.timeModelNotes[STEPS]).toBe(VIEW_STRINGS.modelNote);
+  it("leaves stepping guidance to lessons and retains the distinct calculation guidance", () => {
+    expect(book.timeModelNotes).toEqual({});
+    expect(book.roleNotes?.calculation).toBe(VIEW_STRINGS.figureRoleNotes.calculation);
   });
 });

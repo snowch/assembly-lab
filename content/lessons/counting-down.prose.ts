@@ -79,9 +79,7 @@ export const PROSE = {
   reflectionNoteSummary: "Answer",
   reflectionNote:
     "A zero tick count requests no dimming, even when the brightness is not zero. Without the count check, the loop would shift that brightness and subtract from zero. The brightness check answers a different question: whether any further dimming could change the result.",
-  modelVsReality:
-    "The figures count instructions and dimming operations from the simulator's trace. Neither count gives a processor's elapsed running time.\n\n" +
-    "A trace has an instruction limit so a long or broken loop cannot keep the page busy indefinitely. A stopped trace gives only the part of the run that the simulator observed.",
+  modelVsReality: "",
   originalityNote: {
     textbookExample: "A factorial countdown or an unsigned loop that prints decreasing integers.",
     howThisDiffers:

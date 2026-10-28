@@ -30,7 +30,7 @@ export const PROSE = {
     "Two readings close together sit at almost one spot on a ring of 4294967296 values. So the strip under the ring enlarges the stretch round the wrap. The strip shows `then`, the wrap from 4294967295 to 0, `now`, the ticks before the wrap, the ticks after it, and their total.",
 
   subtractionInvestigation:
-    "The processor subtracts by adding. To work out `a - b`, it changes every bit of `b`: each 1 becomes 0, and each 0 becomes 1. It adds the result to `a`, and adds 1 more as the carry into the first column.\n\n" +
+    "Subtraction can be worked out as addition. To calculate `a - b`, change every bit of `b`: each 1 becomes 0, and each 0 becomes 1. Add those changed bits to `a`, with 1 more as the carry into the first column.\n\n" +
     "The example uses four bits only, to show the method. The real instruction uses 32. 5 is `0101`. 3 is `0011`, and with every bit changed it is `1100`.\n\n" +
     "```\n" +
     "   0101     5\n" +
@@ -42,7 +42,7 @@ export const PROSE = {
     "  1         carry out of the top\n" +
     "```\n\n" +
     "For 32 bits, changing every bit of `b` gives 4294967295 minus `b`. The adder adds that value to `a`, then adds 1. The full sum is `a + 4294967296 - b`, before keeping only the low 32 bits. When `b` is 0, the full sum is `a + 4294967296`: the low 32 bits hold `a`, and a carry leaves the top bit.\n\n" +
-    "The figures below show the same steps for the real 32-bit `subs`: the input being subtracted, its bits changed, the carry in of 1, the result and the carry out.\n\n" +
+    "The figures below use this calculation to explain the result and flags of 32-bit `subs`: the input being subtracted, its bits changed, the carry in of 1, the result and the carry out.\n\n" +
     "A carry leaves the top exactly when `a` is at least `b`, so C = 1 also means no borrow was needed.\n\n" +
     "The two figures below show the final states of two subtractions, each of which can be stepped column by column. One needs a borrow: 1000 minus 4294966296 leaves C 0. The other does not: 9000 minus 2500 leaves C 1 and the result 6500.",
 
@@ -110,6 +110,5 @@ export const PROSE = {
   reflectionAnswer:
     "592, and C is 0. 296 ticks reach the wrap, 296 more reach 296, and a borrow was needed.",
 
-  modelVsReality:
-    "As in lesson 1, the flags follow the architecture's definition, checked against QEMU. The drawing shows the arithmetic, not the circuit.",
+  modelVsReality: "",
 } as const;

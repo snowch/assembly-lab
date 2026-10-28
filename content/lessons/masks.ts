@@ -382,6 +382,7 @@ export const masks: LessonInput = {
       reference: { answers: { after_orr: "0x2b", after_and: "0x22", the_gear: "0x2" } },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: {
     textbookExample:

@@ -2,7 +2,7 @@
 
 // The course's Book: the contract between the platform's runtime and this course
 // (platform/lesson-runtime/src/book.ts). The lessons, the figures they name by kind, the editor for
-// a challenge's artifact, the grader, and a note for the one model the figures run.
+// a challenge's artifact, the grader, and the notes for distinct figure interactions.
 
 import type { Book, ChallengeEditorProps } from "@platform/lesson-runtime";
 import type { Lesson } from "@platform/lesson-schema";
@@ -49,7 +49,8 @@ export function createBook(options: { title: string; lessons: readonly Lesson[] 
     interactives: INTERACTIVES,
     ChallengeEditor,
     grade,
-    timeModelNotes: { [STEPS]: S.modelNote },
+    // Explain stepping in the introductory lesson, not in every figure and footer.
+    timeModelNotes: {},
     roleNotes: S.figureRoleNotes,
   };
 }

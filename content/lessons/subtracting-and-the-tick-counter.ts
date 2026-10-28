@@ -290,6 +290,7 @@ export const subtractingAndTheTickCounter: LessonInput = {
       reference: { answers: { result: "1", c: "0" } },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: {
     textbookExample:

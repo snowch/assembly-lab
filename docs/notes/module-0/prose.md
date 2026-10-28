@@ -178,7 +178,3 @@ Without running the call `km_to_service(30000, 28750, 140, 390)`, give two value
 ## 10. What you now know
 
 Trace the whole path: incoming arguments, each instruction's writes, and the return. A correct calculation is not enough if execution continues beyond the intended function.
-
-## 11. The model and the real processor
-
-The simulator runs one instruction per step. A real processor works on many instructions at once, and it may run them out of order. It still guarantees the same results as running them one at a time. That guarantee is all this lesson relies on.

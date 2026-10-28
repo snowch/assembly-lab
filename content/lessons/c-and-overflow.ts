@@ -231,6 +231,7 @@ export const cAndOverflow: LessonInput = {
       reference: { text: SAFE_INCREMENT_TEXT },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: PROSE.originalityNote,
 };

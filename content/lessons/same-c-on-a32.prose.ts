@@ -8,7 +8,7 @@ export const PROSE = {
   compilerNote:
     "The A32 records use GCC 15.2 with `-O1 -marm -march=armv7-a`. `-marm` selects A32 rather than Thumb, another Arm instruction set. `-march=armv7-a` tells GCC which Armv7-A processor features it can assume are available.\n\nThe A64 records use GCC 16.1 with `-O1`. A64 uses Arm's 64-bit execution state even when an instruction operates on `w` registers. These are two particular compilations, not promises about the output of every compiler or setting.",
   motivation:
-    "You already know how an unsigned comparison selects a result and how a function returns. Use those ideas to read the new syntax. In these A32 functions, the first arguments arrive in `r0` and `r1`, and the result leaves in `r0`. These are 32-bit registers, not `w` views of wider A64 `x` registers.\n\nA32's `lr` names its link register, also called `r14`. In this leaf function, `bx lr` returns to the saved address. The A64 listing uses `ret` for its return. Similar purposes do not imply identical register names or instruction spellings.",
+    "You already know how an unsigned comparison selects a result and how a function returns. Use those ideas to read the new syntax. In these A32 functions, the first arguments arrive in `r0` and `r1`, and the result leaves in `r0`. These are 32-bit registers, not `w` views of wider A64 `x` registers.\n\nA32's `lr` names its link register, also called `r14`. In this leaf function, `bx lr` returns to the saved address. The A64 listing uses `ret` for its return. Similar purposes do not imply identical register names or instruction spellings.\n\nThe A32 listings are static compiler records. Interactive execution uses A64 only; the course does not execute A32 or compare instruction timing.",
   prediction:
     "Predict the result for distance 80 and limit 50 from the C function and its comparison. After checking your prediction, run the A64 version in the stepper below.",
   predictionQuestion: "**What does `limit_trip(80, 50)` return?**",
@@ -30,7 +30,7 @@ export const PROSE = {
   readFeedback:
     "The answers are checked against instruction tokens in the recorded compiler output.",
   failureExperiment:
-    "Take the conditional-move line from the A32 record and give it to the course's A64 assembler. The source still belongs to the A32 listing.",
+    "Take the conditional-move line from the A32 record and give it to the course's A64 assembler. The source still belongs to the A32 listing.\n\nThis checks whether the assembler accepts the line; it does not execute it.",
   failureQuestion: "**Will the course A64 assembler accept this recorded line?**",
   failureExplain:
     "It rejects the line. The course assembler accepts the taught A64 subset, including its register names and instruction syntax. It does not accept A32 source.\n\nChanging the register spelling alone would not add A32's conditional-move form to that subset. This experiment checks the course assembler's language; it is not a test of every instruction in the complete A64 architecture.",
@@ -54,8 +54,7 @@ export const PROSE = {
     "Instruction and helper names are checked against the records. The numerical answer is checked against the A64 simulator.",
   reflection:
     "- The same C calculation can use different instruction forms on different targets.\n- A32 register names are not narrower views of A64 registers.\n- An A32 condition suffix can control an instruction such as a move.\n- Target features can decide whether division uses an instruction or a helper call.\n- A recorded listing is evidence of one compiler configuration.\n\nWhen reading another architecture, begin with the values, the branches and the call boundaries you understand. Check its register rules and instruction syntax before treating familiar names as interchangeable.",
-  modelVsReality:
-    "A32 figures are static compiler records. The interactive execution and numerical predictions use only A64, which is the course simulator's instruction set. The A32 syntax experiment asks the existing A64 assembler whether it accepts one recorded line. It does not simulate that line.\n\nThis chapter does not compare instruction timing, run the A32 division library or claim that all Armv7-A implementations lack hardware divide.",
+  modelVsReality: "",
   originalityNote: {
     textbookExample: "A general A32 instruction catalogue or a second introduction to assembly.",
     howThisDiffers:

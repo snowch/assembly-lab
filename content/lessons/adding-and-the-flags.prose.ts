@@ -21,15 +21,7 @@ export const PROSE = {
     "The answer is `0x80000000`. Unsigned, it reads 2147483648, which is right. Signed, it reads −2147483648, which is wrong. 2147483647 plus 1 should be 2147483648. The signed reading cannot hold that number. The largest signed reading is 2147483647 (Module 1).",
 
   investigation:
-    "The part of the processor that adds is the **adder**. The figure works the addition column by column, from the right, as on paper. A column adds its two bits and the 1 carried in from the right, if there is one. The total is 0, 1, 2 or 3.\n\n" +
-    "The column keeps the total's lowest bit as its result bit. It passes the total's other bit, the **carry**, to the next column on the left.\n\n" +
-    "You can step through the figure one column at a time, jump over a group of columns, or show them all.\n\n" +
-    "After `adds`, four flags record facts about the answer:\n\n" +
-    "- N is the top bit of the result.\n" +
-    "- Z is 1 when all 32 result bits are 0.\n" +
-    "- C is the carry out of bit 31, for an addition.\n" +
-    "- V is 1 when the carry into bit 31 differs from the carry out of it.\n\n" +
-    "The figure's last column, bit 31, shows the carry into bit 31 and the carry out of it. Those two carries give C and V.",
+    "The part of the processor that adds is the **adder**. The figure works the addition column by column, from the right, as on paper. It explains the arithmetic, not a processor’s circuit. A column adds its two bits and the 1 carried in from the right, if there is one. The total is 0, 1, 2 or 3.\n\nThe column keeps the total's lowest bit as its result bit. It passes the total's other bit, the **carry**, to the next column on the left.\n\nYou can step through the figure one column at a time, jump over a group of columns, or show them all.\n\nAfter `adds`, four flags record facts about the answer:\n\n- N is the top bit of the result.\n- Z is 1 when all 32 result bits are 0.\n- C is the carry out of bit 31, for an addition.\n- V is 1 when the carry into bit 31 differs from the carry out of it.\n\nThe figure's last column, bit 31, shows the carry into bit 31 and the carry out of it. Those two carries give C and V.",
   investigationDetailsSummary: "How GCC checks for overflow",
   investigationDetails:
     "`__builtin_add_overflow` is a function built into GCC. It adds two numbers and reports whether the result did not fit. For two `int`s, GCC 16.1 with `-O1`, as in Module 0, compiles a call to it into this:\n\n" +
@@ -106,6 +98,5 @@ export const PROSE = {
   reflectionAnswer:
     "The result is `0x80000000`. A carry goes into bit 31 and a carry comes out, so C is 1 and V is 0. The unsigned result does not fit, but the signed one does: −1073741824 plus −1073741824 is −2147483648.",
 
-  modelVsReality:
-    "The architecture is Arm's published definition of what each instruction does. The simulator works out the flags as the architecture defines them. The course checks its simulator against QEMU, a widely used program that imitates Arm processors. A real processor need not add column by column. The drawing shows the arithmetic, not the circuit. The digital-design course builds the circuit.",
+  modelVsReality: "",
 } as const;

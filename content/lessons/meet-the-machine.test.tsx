@@ -58,7 +58,7 @@ describe("the lesson", () => {
       for (const x of s.interactives)
         if (x.kind !== "challenge") expect(Object.keys(INTERACTIVES)).toContain(x.kind);
     expect(modelProblems(LESSONS, [STEPS])).toEqual([]);
-    expect(Object.keys(book.timeModelNotes)).toEqual([STEPS]);
+    expect(book.timeModelNotes).toEqual({});
   });
 
   it("opens the synthesis walkthrough directly and preserves the new failure experiment gate", () => {

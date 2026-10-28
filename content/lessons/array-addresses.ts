@@ -285,6 +285,7 @@ export const arrayAddresses: LessonInput = {
       reference: { text: A.SUM_TRIPS_TEXT },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: P.modelVsReality,
   originalityNote: P.originalityNote,
 };

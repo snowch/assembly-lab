@@ -15,7 +15,7 @@ export const PROSE = {
     "`ldr w0, [x0]` reads four bytes from memory, starting at the address held in `x0`. It places their bits in `w0`. The brackets mean access memory at that address. They do not mean copy the address into `w0`.\n\n" +
     "This course uses **little-endian** byte order: the byte at the lowest address supplies the lowest 8 bits of a multi-byte value. The next byte supplies the next 8 bits. A hexadecimal number is written with its highest bits on the left, so its displayed byte order runs the other way.",
   prediction:
-    "The four bytes starting at the address in `x0` are `78 56 34 12`, in increasing address order. Each pair of digits is one hexadecimal byte.",
+    "The four bytes starting at the address in `x0` are `78 56 34 12`, in increasing address order. Each pair of digits is one hexadecimal byte.\n\nThe figure supplies ordinary memory at prepared addresses. It does not model a sensor device or every fault a processor can report. A real program needs permission to access memory; its C pointer must also refer to storage for the declared type. A readable address alone is not enough.",
   predictionQuestion: "**What hexadecimal value does `ldr w0, [x0]` put in `w0`?**",
   predictionExplain:
     "`w0` becomes `0x12345678`. The byte `78` supplies the lowest 8 bits, followed by `56`, `34` and `12`. The load reads memory without changing those bytes.\n\n" +
@@ -66,9 +66,7 @@ export const PROSE = {
   reflectionNoteSummary: "Answer",
   reflectionNote:
     "`x0` holds the address, which uses 64 bits on this target. The `b` in `strb` chooses the transfer width: one byte from the low end of `w1`.",
-  modelVsReality:
-    "The figures use prepared memory bytes at valid addresses. Only the prepared memory regions are available to these examples. They show ordinary memory, not a sensor's hardware interface. Real programs must also have permission to access memory. For these C functions, the pointer must refer to storage for a value of the declared type, such as an `unsigned` distance. A readable address alone is not enough.\n\n" +
-    "The simulator shows little-endian memory and the completed effect of each instruction. It does not model memory access timing or all faults a real processor can report.",
+  modelVsReality: "",
   originalityNote: {
     textbookExample: "Copying an integer between anonymous memory locations.",
     howThisDiffers:

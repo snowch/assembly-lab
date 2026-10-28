@@ -7,7 +7,7 @@
 
 export const PROSE = {
   question:
-    "The trip computer classifies a gradient as steep uphill, steep downhill or neither. The result depends on how the gradient compares with 10 and −10.\n\n`describe` returns 2 when the gradient is above 10, −2 when it is below −10, and 0 otherwise. The paired listing below shows its C and GCC's eight instructions.\n\n`wzr` is a register name that always reads as 0. A write to it is thrown away.\n\nEvery listing so far ran from its first instruction to its `ret`, in order. This one has two lines that end in a colon, `.L7:` and `.L9:`. Two instructions name them.\n\n**How does the processor execute only the instructions needed for that result?**",
+    "The trip computer classifies a gradient as steep uphill, steep downhill or neither. The result depends on how the gradient compares with 10 and −10.\n\n`describe` returns 2 when the gradient is above 10, −2 when it is below −10, and 0 otherwise. The paired listing below shows its C and GCC's eight instructions.\n\n`wzr` is a register name that always reads as 0. A write to it is thrown away.\n\nThe earlier arithmetic examples ran their calculations in order. This listing has two lines that end in a colon, `.L7:` and `.L9:`. Two instructions name them.\n\n**How does the processor execute only the instructions needed for that result?**",
 
   questionNoteSummary: "Which compiler?",
   questionNote:
@@ -29,11 +29,7 @@ export const PROSE = {
     "`cmn`, `mov w0, -2` and `csel` were skipped. `describe(15)` returns 2.",
 
   investigation:
-    "Different gradients run different instructions, so the run can have a different length. The figure runs `describe` on the gradient you choose: above 10, exactly 10, below −10, or between. It draws the path the run took, marks each branch as taken, not taken or not reached, and counts the instructions that ran.\n\n" +
-    "GCC writes `bgt`. Arm writes `b.gt`. It is the same instruction, and the course's assembler accepts both.\n\n" +
-    "`cmn w0, #10` sets the flags from adding 10 to the gradient. Adding 10 is the same calculation as subtracting −10, so these flags compare the gradient with −10. The signed `lt` condition is therefore yes when the gradient is below −10.\n\n" +
-    "`mov w0, -2` sits between `cmn` and `csel`. It leaves the flags alone, so `csel` still reads `cmn`'s flags. `csel w0, w0, wzr, lt` gives −2 when `lt` is yes, and 0 when it is no.\n\n" +
-    "Both paths end at the one `ret` under `.L7`.",
+    "Different gradients run different instructions, so the run can have a different length. The figure runs `describe` on the gradient you choose: above 10, exactly 10, below −10, or between. It draws the path the run took, marks each branch as taken, not taken or not reached, and counts the instructions that ran. The arrows show the program’s path, not the processor’s timing.\n\nGCC writes `bgt`. Arm writes `b.gt`. It is the same instruction, and the course's assembler accepts both.\n\n`cmn w0, #10` sets the flags from adding 10 to the gradient. Adding 10 is the same calculation as subtracting −10, so these flags compare the gradient with −10. The signed `lt` condition is therefore yes when the gradient is below −10.\n\n`mov w0, -2` sits between `cmn` and `csel`. It leaves the flags alone, so `csel` still reads `cmn`'s flags. `csel w0, w0, wzr, lt` gives −2 when `lt` is yes, and 0 when it is no.\n\nBoth paths end at the one `ret` under `.L7`.",
 
   investigationNoteSummary: "cmp with a negative number",
   investigationNote:
@@ -125,7 +121,5 @@ export const PROSE = {
   reflectionNote:
     "`0x29` is `0010 1001`. Bit 1 is 0, so `tbz` is taken. The run is `tbz`, `mov w0, 0` and `ret`: three instructions. (`.Lno:` is a label, not counted.) `service` returns 0.",
 
-  modelVsReality:
-    "Many real processors start on later instructions before a branch is decided. The results are still those of one instruction at a time. The simulator runs one instruction at a time and gives the same results.\n\n" +
-    "The arrows in the figure show the program's path, not the processor's timing.",
+  modelVsReality: "",
 } as const;

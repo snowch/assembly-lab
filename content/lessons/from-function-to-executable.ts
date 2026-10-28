@@ -235,6 +235,7 @@ export const fromFunctionToExecutable: LessonInput = {
       reference: { text: TRIP_TEXT },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: PROSE.originalityNote,
 };

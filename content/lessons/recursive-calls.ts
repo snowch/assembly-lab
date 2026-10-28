@@ -265,6 +265,7 @@ export const recursiveCalls: LessonInput = {
       reference: { text: COUNT_TEXT },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: PROSE.originalityNote,
 };

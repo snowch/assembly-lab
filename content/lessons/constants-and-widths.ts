@@ -281,6 +281,7 @@ export const constantsAndWidths: LessonInput = {
       reference: { answers: { x1: "5", w2: "1000000" } },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: {
     textbookExample:

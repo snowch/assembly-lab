@@ -13,7 +13,7 @@ export const PROSE = {
     "The `for` first sets `tick` to `start`. It tests `tick < end` before running the body. After the body, `tick++` adds 1 to `tick`. It repeats the test before each later iteration. If the first test is false, the body never runs.\n\n" +
     "These endpoints use ordinary unsigned ordering. They do not describe elapsed time across a counter wrap: if `start` is at or above `end`, there is no dimming to do.",
   prediction:
-    "The stepper runs `dim_up(128, 2, 5)` on GCC's listing. Count only the instructions that execute, including `ret`.",
+    "The stepper runs `dim_up(128, 2, 5)` on GCC's listing. Count only the instructions that execute, including `ret`.\n\nThese counts measure executed instructions, not elapsed time. A **trace** records the instructions that ran. The simulator limits its length; reaching that limit does not establish whether the function would eventually return.",
   predictionQuestion: "**How many instructions run before the function returns?**",
   predictionExplain:
     "The run executes 15 instructions. The first `cmp` and `bcs` run once. Then the four instructions under `.L3` run three times, as `tick` advances from 2 to 5. Finally, `ret` runs.\n\n" +
@@ -69,9 +69,7 @@ export const PROSE = {
   reflectionNoteSummary: "Answer",
   reflectionNote:
     "The first test establishes that `tick` starts below `end`. Each iteration increases it by 1, so it reaches `end` without passing it. Repeating until the values are equal gives the same stopping point.",
-  modelVsReality:
-    "The diagram follows the instructions the simulator runs. Its counts describe this listing, not elapsed time on a processor. A real processor's timing also depends on work the simulator does not model.\n\n" +
-    "A **trace** is the recorded sequence of instructions the simulator ran. The simulator limits the length of each trace. Reaching that limit stops the simulated run; it does not establish whether the program would eventually return.",
+  modelVsReality: "",
   originalityNote: {
     textbookExample: "Adding consecutive integers or computing a factorial with a counting loop.",
     howThisDiffers:

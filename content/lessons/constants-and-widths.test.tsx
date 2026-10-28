@@ -99,7 +99,7 @@ describe("the lesson", () => {
       for (const x of s.interactives)
         if (x.kind !== "challenge") expect(Object.keys(INTERACTIVES)).toContain(x.kind);
     expect(modelProblems(LESSONS, [STEPS])).toEqual([]);
-    expect(Object.keys(book.timeModelNotes)).toEqual([STEPS]);
+    expect(book.timeModelNotes).toEqual({});
   });
 
   it("gates the tester and the halves behind the predictions before them, in the same lesson", () => {

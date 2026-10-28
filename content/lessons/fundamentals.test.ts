@@ -40,13 +40,13 @@ describe("visible Fundamentals lessons", () => {
     expect(lessons.map((lesson) => lesson.order)).toEqual([0, 1, 2, 3, 4, 5]);
     for (const lesson of lessons) {
       expect(lesson.sections).toHaveLength(
-        lesson.id === "one-addition"
-          ? 9
-          : lesson.id === "adding-a-constant"
-            ? 3
-            : ["tiny-function", "returning-to-caller"].includes(lesson.id)
-              ? 4
-              : 10,
+        lesson.id === "adding-a-constant"
+          ? 3
+          : ["tiny-function", "returning-to-caller"].includes(lesson.id)
+            ? 4
+            : lesson.id === "instructions-in-sequence"
+              ? 8
+              : 9,
       );
       for (const figure of lesson.sections
         .flatMap((section) => section.interactives)

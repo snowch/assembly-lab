@@ -275,6 +275,7 @@ export const addingAndTheFlags: LessonInput = {
       reference: { answers: { number: "2" } },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: {
     textbookExample:

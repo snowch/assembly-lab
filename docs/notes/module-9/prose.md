@@ -36,7 +36,7 @@ The shared register and stack rules form a **calling convention**. This course f
 
 **A caller that returns the helper’s result**
 
-Follow the handwritten `relay_distance` below. It calls `half_distance` and returns the helper’s result unchanged. Press Next to follow each instruction.
+Follow the handwritten `relay_distance` below. It calls `half_distance` and returns the helper’s result unchanged. Press Next to follow each instruction. The simulator supplies an aligned stack and a return address that ends the outer call; startup is not part of this example.
 
 The space reserved for one active call is its **stack frame**. `stp` stores a pair: `stp x29, x30, [sp, #-16]!` decreases `sp` by 16, then stores two 64-bit values. The saved `x29` starts at `sp`; `x30` starts at `sp + 8`. AAPCS64 requires `sp` to be a multiple of 16 for stack accesses through it. This is 16-byte alignment. Reserving 16 bytes keeps that alignment.
 
@@ -59,6 +59,8 @@ Now follow `trip_report`, which keeps a reserve across the helper call. Its stac
 GCC also saves `x19` at `sp + 16`, then uses `w19` to keep the reserve across the helper call. On return, it restores all three saved registers.
 
 AAPCS64 requires a callee to preserve `x19` through `x29` and restore `sp`. Preserve all 64 bits, even if your own calculation uses only a `w` view. The stack must also be aligned to 16 bytes at public call boundaries, where separately compiled functions meet.
+
+This is one GCC frame layout. AAPCS64 permits platform-specific frame-pointer policies, so other functions can use different layouts. We avoid `x18`, whose use also depends on the platform.
 
 ## 5. Call a helper and resume
 
@@ -168,11 +170,6 @@ The calling convention requires preservation of all 64 bits of `x19`. Saving onl
 
 *End of closed note.*
 
-## Model and reality
-
-The diagram shows stack space and bytes allocated by the simulated functions. The course starts them with a prepared, aligned stack and a return address that ends the outer call. It does not show operating-system startup, operating-system protections or every rule for calls between compiled functions.
-
-AAPCS64 permits platform-specific frame-pointer policies, so this GCC frame is not a template every function must use. Register `x18` also has platform-specific uses and is avoided here.
 
 ## Figure captions and labels
 
@@ -250,6 +247,8 @@ The listing uses GCC 16.1 with `-O1 -fno-inline` for little-endian AArch64 Linux
 
 The brightness and sum are unsigned 32-bit values. The sum wraps if it exceeds that range. A recursive call must finish before the pending addition can use its returned value.
 
+The displayed frames belong to this recorded compilation. Other compiler versions or settings may choose a different implementation.
+
 *End of closed note.*
 
 ## 2. Save the current brightness
@@ -318,6 +317,8 @@ b       .L2
 ## 6. A recursive call that makes no progress
 
 The changed function passes the same brightness into its next recursive call. It replaces the right shift with `mov w0, w0`. The starting brightness is 7, and this recording is limited to 32 instructions.
+
+The simulator uses a fixed, prepared stack. It does not reproduce a real system’s response when stack space runs out.
 
 **Does the changed function return before the recording limit?**
 
@@ -388,11 +389,6 @@ After its recursive call, `lit_count` needs only the returned count and the cons
 
 *End of closed note.*
 
-## Model and reality
-
-The stack diagram is computed from executed instructions and memory writes. Its recording has a finite instruction limit. A program running on a real computer also has limited stack space. The course uses a fixed, prepared stack. It does not reproduce what a real computer does when a program runs out of stack space.
-
-The displayed frames belong to this recorded GCC output. Other compiler versions and settings may choose a different implementation.
 
 ## Figure captions and labels
 

@@ -40,6 +40,8 @@ This course uses **little-endian** byte order: the byte at the lowest address su
 
 The four bytes starting at the address in `x0` are `78 56 34 12`, in increasing address order. Each pair of digits is one hexadecimal byte.
 
+The figure supplies ordinary memory at prepared addresses. It does not model a sensor device or every fault a processor can report. A real program needs permission to access memory; its C pointer must also refer to storage for the declared type. A readable address alone is not enough.
+
 **What hexadecimal value does `ldr w0, [x0]` put in `w0`?**
 
 *After committing the prediction:*
@@ -134,11 +136,6 @@ Why does `strb w1, [x0]` need an `x` register even though it writes only one byt
 
 *End of closed note.*
 
-## Model and reality
-
-The figures use prepared memory bytes at valid addresses. Only the prepared memory regions are available to these examples. They show ordinary memory, not a sensor's hardware interface. Real programs must also have permission to access memory. For these C functions, the pointer must refer to storage for a value of the declared type, such as an `unsigned` distance. A readable address alone is not enough.
-
-The simulator shows little-endian memory and the completed effect of each instruction. It does not model memory access timing or all faults a real processor can report.
 
 ## Figure captions and labels
 
@@ -314,6 +311,8 @@ An instruction can combine extension with arithmetic. In `add x0, x0, w1, sxtw`,
 
 For a record containing several fields, choose the right load for each field. `[x0, #4]` means memory four bytes after the address in `x0`. The number after `#` is a byte offset; it does not change `x0`.
 
+The next exercise supplies a sensor record with a chosen byte layout. Its bytes are already in memory; no hardware sensor is connected. A compiler may lay out a C record differently.
+
 ## 9. Read the sensor record
 
 ### Write read_sensors
@@ -353,11 +352,6 @@ The `w0` form sign-extends only to 32 bits, then clears the upper half of `x0`. 
 
 *End of closed note.*
 
-## Model and reality
-
-The diagrams show the simulator copying and extending bits. These operations describe the instruction's result, not the order of internal steps in a processor.
-
-The sensor record has a byte layout defined for this exercise. A compiler may arrange the fields of a C record differently. The exercise supplies the bytes and addresses, so you can study loads without first obtaining storage or communicating with a hardware sensor.
 
 ## Figure captions and labels
 
@@ -624,10 +618,6 @@ Element {index}
 This exercise supplies the memory bytes. Remove data declarations and section directives from your code, then try again.
 
 # Shared course copy
-
-## Simulator model note
-
-Each step runs one instruction in the simulator. Between steps, the simulated processor stays as the last instruction left it.
 
 ## Before you start: C prerequisites
 

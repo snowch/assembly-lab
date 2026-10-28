@@ -280,6 +280,7 @@ export const onePatternThreeReadings: LessonInput = {
       },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: {
     textbookExample:

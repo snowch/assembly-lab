@@ -72,7 +72,6 @@ export const FUNDAMENTALS_LABELS = {
       explanation: "Old value and new value",
       generalisation: "The shared operand rule",
       challenge: "Subtract with new inputs",
-      reflection: "Track the old value",
     },
     captions: {
       figure: "An addition that reads w0 and writes its result there.",
@@ -99,9 +98,7 @@ export const FUNDAMENTALS_LABELS = {
       construction: "Pause between instructions",
       failureExperiment: "Keep the intermediate result",
       explanation: "Values and position",
-      generalisation: "Continue or return",
       challenge: "Trace both instructions",
-      reflection: "Follow the state",
     },
     captions: {
       figure: "Two instructions sharing one set of registers.",

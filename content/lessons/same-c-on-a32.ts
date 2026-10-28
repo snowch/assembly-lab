@@ -283,6 +283,7 @@ export const sameCOnA32: LessonInput = {
       },
     },
   ],
+  sectionLayout: "selected",
   modelVsReality: PROSE.modelVsReality,
   originalityNote: PROSE.originalityNote,
 };

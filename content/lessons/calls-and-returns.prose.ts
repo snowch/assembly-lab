@@ -12,7 +12,7 @@ export const PROSE = {
   smallCall: {
     title: "A caller that returns the helper’s result",
     prose:
-      "Follow the handwritten `relay_distance` below. It calls `half_distance` and returns the helper’s result unchanged. Press Next to follow each instruction.\n\nThe space reserved for one active call is its **stack frame**. `stp` stores a pair: `stp x29, x30, [sp, #-16]!` decreases `sp` by 16, then stores two 64-bit values. The saved `x29` starts at `sp`; `x30` starts at `sp + 8`. AAPCS64 requires `sp` to be a multiple of 16 for stack accesses through it. This is 16-byte alignment. Reserving 16 bytes keeps that alignment.\n\nHere `x29` is a **frame pointer**, identifying this call’s frame. `mov x29, sp` sets it after saving its old value. `ldp` loads a pair: `ldp x29, x30, [sp], #16` restores both values, then releases the frame by increasing `sp` by 16. The final `ret` uses the restored return address.",
+      "Follow the handwritten `relay_distance` below. It calls `half_distance` and returns the helper’s result unchanged. Press Next to follow each instruction. The simulator supplies an aligned stack and a return address that ends the outer call; startup is not part of this example.\n\nThe space reserved for one active call is its **stack frame**. `stp` stores a pair: `stp x29, x30, [sp, #-16]!` decreases `sp` by 16, then stores two 64-bit values. The saved `x29` starts at `sp`; `x30` starts at `sp + 8`. AAPCS64 requires `sp` to be a multiple of 16 for stack accesses through it. This is 16-byte alignment. Reserving 16 bytes keeps that alignment.\n\nHere `x29` is a **frame pointer**, identifying this call’s frame. `mov x29, sp` sets it after saving its old value. `ldp` loads a pair: `ldp x29, x30, [sp], #16` restores both values, then releases the frame by increasing `sp` by 16. The final `ret` uses the restored return address.",
   },
   prediction:
     "The report receives distance 128 and reserve 9. The helper halves the unsigned distance, then the report adds the reserve.",
@@ -20,7 +20,7 @@ export const PROSE = {
   predictionExplain:
     "It returns 73, or `0x00000049`. The helper returns 64 in `w0`; the report then adds the saved reserve, 9. The helper's `ret` resumes the report, whose own `ret` returns to its caller.",
   investigation:
-    "Now follow `trip_report`, which keeps a reserve across the helper call. Its stack frame reserves 32 bytes. The saved pair has the same layout as before: `x29` at `sp`, then `x30` at `sp + 8`. `stp x29, x30, [sp, #-32]!` reserves this larger frame; `ldp x29, x30, [sp], #32` restores the pair and releases it.\n\nGCC also saves `x19` at `sp + 16`, then uses `w19` to keep the reserve across the helper call. On return, it restores all three saved registers.\n\nAAPCS64 requires a callee to preserve `x19` through `x29` and restore `sp`. Preserve all 64 bits, even if your own calculation uses only a `w` view. The stack must also be aligned to 16 bytes at public call boundaries, where separately compiled functions meet.",
+    "Now follow `trip_report`, which keeps a reserve across the helper call. Its stack frame reserves 32 bytes. The saved pair has the same layout as before: `x29` at `sp`, then `x30` at `sp + 8`. `stp x29, x30, [sp, #-32]!` reserves this larger frame; `ldp x29, x30, [sp], #32` restores the pair and releases it.\n\nGCC also saves `x19` at `sp + 16`, then uses `w19` to keep the reserve across the helper call. On return, it restores all three saved registers.\n\nAAPCS64 requires a callee to preserve `x19` through `x29` and restore `sp`. Preserve all 64 bits, even if your own calculation uses only a `w` view. The stack must also be aligned to 16 bytes at public call boundaries, where separately compiled functions meet.\n\nThis is one GCC frame layout. AAPCS64 permits platform-specific frame-pointer policies, so other functions can use different layouts. We avoid `x18`, whose use also depends on the platform.",
   construction:
     "Write a function that calls the helper and then adds one. Saving the link register lets the final `ret` reach the original caller.",
   writeTask:
@@ -55,8 +55,7 @@ export const PROSE = {
   reflectionNoteSummary: "Answer",
   reflectionNote:
     "The calling convention requires preservation of all 64 bits of `x19`. Saving only its low 32 bits loses any incoming upper bits; writing or restoring through `w19` clears those upper bits.",
-  modelVsReality:
-    "The diagram shows stack space and bytes allocated by the simulated functions. The course starts them with a prepared, aligned stack and a return address that ends the outer call. It does not show operating-system startup, operating-system protections or every rule for calls between compiled functions.\n\nAAPCS64 permits platform-specific frame-pointer policies, so this GCC frame is not a template every function must use. Register `x18` also has platform-specific uses and is avoided here.",
+  modelVsReality: "",
   originalityNote: {
     textbookExample: "A function call presented only as a jump followed by a return.",
     howThisDiffers:
