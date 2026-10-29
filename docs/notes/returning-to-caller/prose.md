@@ -22,7 +22,7 @@ The caller’s assembly was written by hand. GCC generated `increment_int`’s i
 
 ### prose / sections / explanation
 
-`ret` left `w0` and `w1` unchanged. Execution continued in the caller, whose addition read `w0` and wrote `w1`. Both pieces of code used the same register values.
+In our example, `ret` left `w0` and `w1` unchanged. Execution continued in the caller, whose addition read `w0` and wrote `w1`. Both pieces of code used the same register values.
 
 The caller can use the other general-purpose registers too. It looks in `w0` for this `int` result because caller and function follow an agreed set of rules, a **calling convention**. `ret` does not select the result register.
 

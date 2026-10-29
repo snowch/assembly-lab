@@ -94,6 +94,17 @@ screen-reader session. Other lessons/model facts were source-reviewed. The revie
 did not rerun the full educational or GNU/QEMU suites or verify deployment. The
 final focused results below were received before completing this note.
 
+**Final wording addendum.** Independently reviewed the later user-approved prefix
+“In our example, ” in learner and technical passes, using the same reviewer/model
+and effort. It scopes the observation to the worked call without introducing new
+knowledge; the existing RET trace assertion confirms the unchanged register values.
+The source and canonical prose match. After the final 12.18s rebuild, checked the
+complete rendered paragraph and inline code at 375/1280px in actual light/dark,
+with fonts loaded; inspected all four screenshots. The exact prefix is visible,
+the paragraph reads clearly and there is no page overflow. No finding. This was a
+text-only follow-up; the figure implementation from the review above is unchanged.
+Screenshots: /tmp/return-format-independent-review/scope-{light,dark}-{375,1280}.png.
+
 ## Validation
 
 The first focused browser run reproduced connector clipping on narrow viewports:
@@ -102,4 +113,8 @@ The fixed pixel inset assumed desktop padding; the correction measures the actua
 frame-to-content inset. The final separate run passed all 6 browser tests in 52.7s,
 including resized, stepped, restored and reset states. Production build (10.58s),
 strict TypeScript and changed-file formatting passed. CI and deployment evidence
-will be recorded in the PR. No model or learner text changes.
+will be recorded in the PR. The model is unchanged.
+
+The later user-approved prefix “In our example,” scopes the existing observation.
+The corresponding canonical/facts tests passed (9 tests), formatting passed and
+the final production build passed in 12.18s.
