@@ -30,13 +30,37 @@ for (const theme of ["light", "dark"]) {
       const bankBox = await bank.boundingBox();
       const callerBox = await figure.locator(".al-returning-caller").boundingBox();
       const functionBox = await figure.locator(".al-returning-function").boundingBox();
+      const momentBox = await moment.boundingBox();
+      const w0Box = await bank.locator('[data-register="w0"]').boundingBox();
+      const w1Box = await bank.locator('[data-register="w1"]').boundingBox();
+      const linkBox = await bank.locator(".al-returning-target").boundingBox();
       expect(bankBox).not.toBeNull();
       expect(callerBox).not.toBeNull();
       expect(functionBox).not.toBeNull();
+      expect(momentBox).not.toBeNull();
+      expect(w0Box).not.toBeNull();
+      expect(w1Box).not.toBeNull();
+      expect(linkBox).not.toBeNull();
+      expect(w0Box!.x).toBe(bankBox!.x);
+      expect(w0Box!.y).toBe(w1Box!.y);
+      expect(w0Box!.x + w0Box!.width).toBeLessThan(w1Box!.x);
+      expect(momentBox!.y + momentBox!.height).toBeLessThanOrEqual(w0Box!.y);
+      expect(Math.max(w0Box!.y + w0Box!.height, w1Box!.y + w1Box!.height)).toBeLessThanOrEqual(
+        linkBox!.y,
+      );
       expect(bankBox!.y + bankBox!.height).toBeLessThanOrEqual(callerBox!.y);
       expect(callerBox!.y + callerBox!.height).toBeLessThanOrEqual(functionBox!.y);
     };
-    await assertRegisterOrder();
+    await page.evaluate(() => document.fonts.ready);
+    const viewport = page.viewportSize()!;
+    for (const width of new Set([viewport.width, 640, 768, 960, 1024, 1280])) {
+      await page.setViewportSize({ ...viewport, width });
+      await assertRegisterOrder();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+        width,
+      );
+    }
+    await page.setViewportSize(viewport);
     await expect(value("w0")).toHaveText("7");
     await expect(value("w1")).toHaveText("0");
     await expect(figure.locator('.al-returning-instruction[data-next="true"]')).toContainText(
@@ -63,6 +87,7 @@ for (const theme of ["light", "dark"]) {
     await step.click();
     await expect(value("w0")).toHaveText("8");
     await expect(figure.locator('.al-insn[data-next="true"]')).toContainText("ret");
+    await assertRegisterOrder();
     await expect(savedAddress).toHaveText(String(numbers[1]));
     await step.click();
     await expect(value("w0")).toHaveText("8");
@@ -81,6 +106,7 @@ for (const theme of ["light", "dark"]) {
     await step.click();
     await expect(value("w0")).toHaveText("8");
     await expect(value("w1")).toHaveText("16");
+    await assertRegisterOrder();
     await expect(step).toBeDisabled();
     await figure.getByRole("button", { name: S.back, exact: true }).click();
     await expect(value("w1")).toHaveText("0");

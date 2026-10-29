@@ -1,14 +1,16 @@
 /* Copyright © 2026 Christopher Snow */
 .al-returning-registers {
+  display: grid;
+  gap: var(--space-3);
+}
+.al-returning-register-values {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: var(--space-3);
 }
-.al-returning-registers > strong,
-.al-returning-registers > .al-returning-moment,
 .al-returning-registers > .al-returning-target {
-  flex-basis: 100%;
+  margin-block: 0;
 }
 .al-returning-moment {
   margin: 0;
