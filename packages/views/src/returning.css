@@ -1,4 +1,14 @@
 /* Copyright © 2026 Christopher Snow */
+.al-returning-flow {
+  position: relative;
+  display: grid;
+  gap: 2.5rem;
+  padding-inline-start: 1.5rem;
+  min-width: 0;
+}
+.al-returning-flow > section {
+  min-width: 0;
+}
 .al-returning-registers {
   display: grid;
   gap: var(--space-3);
@@ -9,21 +19,45 @@
   flex-wrap: wrap;
   gap: var(--space-3);
 }
-.al-returning-registers > .al-returning-target {
-  margin-block: 0;
-}
 .al-returning-moment {
   margin: 0;
   color: var(--fg-muted);
 }
 .al-returning-target {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-block: var(--space-3);
-  padding: var(--space-2);
-  border: 2px solid var(--border-strong);
+  flex: 0 0 8rem;
+  width: 8rem;
+}
+.al-returning-link-name,
+.al-returning-unset {
+  font-size: var(--text-xs);
+}
+.al-returning-connector {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  color: var(--accent-strong);
+}
+.al-returning-connector path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.al-returning-connector-line {
+  stroke-dasharray: 6 4;
+}
+.al-returning-connector-label {
+  position: absolute;
+  left: 20px;
+  transform: translateY(-50%);
+  padding-inline: var(--space-1);
+  background: var(--bg-raised);
+  color: var(--accent-strong);
+  font-size: var(--text-xs);
+  line-height: 1.4;
 }
 .al-returning h5 {
   font-size: inherit;

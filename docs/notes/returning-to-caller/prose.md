@@ -165,6 +165,10 @@ Registers now
 
 Link register
 
+### figure strings / connection
+
+Return address
+
 ### figure strings / beforeCallTarget
 
 Not yet set for this call
