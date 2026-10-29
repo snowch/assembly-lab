@@ -45,9 +45,8 @@ for (const theme of ["light", "dark"]) {
       expect(w0Box!.y).toBe(w1Box!.y);
       expect(w0Box!.x + w0Box!.width).toBeLessThan(w1Box!.x);
       expect(momentBox!.y + momentBox!.height).toBeLessThanOrEqual(w0Box!.y);
-      expect(Math.max(w0Box!.y + w0Box!.height, w1Box!.y + w1Box!.height)).toBeLessThanOrEqual(
-        linkBox!.y,
-      );
+      expect(linkBox!.y).toBe(w0Box!.y);
+      expect(w1Box!.x + w1Box!.width).toBeLessThan(linkBox!.x);
       expect(bankBox!.y + bankBox!.height).toBeLessThanOrEqual(callerBox!.y);
       expect(callerBox!.y + callerBox!.height).toBeLessThanOrEqual(functionBox!.y);
     };
@@ -75,19 +74,52 @@ for (const theme of ["light", "dark"]) {
     expect(numbers.every(Number.isSafeInteger)).toBe(true);
     expect(numbers[1]).toBe(numbers[0]! + 4);
     const savedAddress = figure.locator(".al-returning-saved-address");
+    const connector = figure.locator(".al-returning-connector-line");
+    const assertConnector = async () => {
+      await expect(connector).toBeVisible();
+      await expect(figure.locator(".al-returning-target")).toHaveAccessibleDescription(
+        new RegExp(`^${S.connection}\\s*: ${numbers[1]}, ${S.returnTarget}$`),
+      );
+      await expect(async () => {
+        const points = await connector.evaluate((element) => {
+          const path = element as SVGPathElement;
+          const matrix = path.getScreenCTM()!;
+          const first = path.getPointAtLength(0).matrixTransform(matrix);
+          const last = path.getPointAtLength(path.getTotalLength()).matrixTransform(matrix);
+          return { first: { x: first.x, y: first.y }, last: { x: last.x, y: last.y } };
+        });
+        const link = (await figure.locator(".al-returning-target").boundingBox())!;
+        const destination = (await addresses.nth(1).boundingBox())!;
+        // SVG coordinates round independently of CSS layout; allow at most one pixel.
+        expect(Math.abs(points.first.x - (link.x + link.width / 2))).toBeLessThanOrEqual(1);
+        expect(Math.abs(points.first.y - (link.y + link.height))).toBeLessThanOrEqual(1);
+        expect(Math.abs(points.last.x - (destination.x - 4))).toBeLessThanOrEqual(1);
+        expect(
+          Math.abs(points.last.y - (destination.y + destination.height / 2)),
+        ).toBeLessThanOrEqual(1);
+      }).toPass();
+    };
     await expect(savedAddress).toHaveCount(0);
+    await expect(connector).toHaveCount(0);
     await step.click();
     await expect(moment).toHaveText(S.registersNow);
     await expect(value("w0")).toHaveText("7");
     await expect(value("w1")).toHaveText("0");
-    await expect(figure.locator(".al-returning-target")).toContainText(S.returnTarget);
+    await assertConnector();
     await expect(figure.locator(".al-returning-target")).toHaveAttribute("data-written", "true");
     await expect(savedAddress).toHaveText(String(numbers[1]));
+    for (const width of new Set([viewport.width, 640, 768, 960, 1024, 1280])) {
+      await page.setViewportSize({ ...viewport, width });
+      await assertRegisterOrder();
+      await assertConnector();
+    }
+    await page.setViewportSize(viewport);
     await expect(figure.locator('.al-insn[data-next="true"]')).toContainText("add w0, w0, 1");
     await step.click();
     await expect(value("w0")).toHaveText("8");
     await expect(figure.locator('.al-insn[data-next="true"]')).toContainText("ret");
     await assertRegisterOrder();
+    await assertConnector();
     await expect(savedAddress).toHaveText(String(numbers[1]));
     await step.click();
     await expect(value("w0")).toHaveText("8");
@@ -96,16 +128,19 @@ for (const theme of ["light", "dark"]) {
       "add w1, w0, w0",
     );
     await expect(figure.locator('.al-dreg[data-changed="true"]')).toHaveCount(0);
+    await assertConnector();
     await expect(savedAddress).toHaveText(String(numbers[1]));
     await assertRegisterOrder();
     await expect(figure.locator(".al-returning-current")).toContainText("add w1, w0, w0");
     await page.reload();
     await expect(figure).toHaveAttribute("data-k", "3");
+    await assertConnector();
     await expect(moment).toHaveText(S.registersNow);
     await expect(savedAddress).toHaveText(String(numbers[1]));
     await step.click();
     await expect(value("w0")).toHaveText("8");
     await expect(value("w1")).toHaveText("16");
+    await assertConnector();
     await assertRegisterOrder();
     await expect(step).toBeDisabled();
     await figure.getByRole("button", { name: S.back, exact: true }).click();
@@ -113,6 +148,7 @@ for (const theme of ["light", "dark"]) {
     await figure.getByRole("button", { name: S.reset, exact: true }).click();
     await expect(value("w0")).toHaveText("7");
     await expect(figure).toHaveAttribute("data-k", "0");
+    await expect(connector).toHaveCount(0);
     await expect(moment).toHaveText(S.beforeCall);
     await expect(figure.locator('.al-returning-instruction[data-next="true"]')).toContainText(
       "bl increment_int",
@@ -124,6 +160,7 @@ for (const theme of ["light", "dark"]) {
     await figure.getByRole("button", { name: S.back, exact: true }).click();
     await expect(savedAddress).toHaveCount(0);
     await expect(moment).toHaveText(S.beforeCall);
+    await expect(connector).toHaveCount(0);
     expect(await designProblems(page, isMobile)).toEqual([]);
     expect(errors).toEqual([]);
   });

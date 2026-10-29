@@ -11,6 +11,7 @@ export const RETURNING_STRINGS = {
   beforeCall: "Before the call",
   registersNow: "Registers now",
   returnAddress: "Link register",
+  connection: "Return address",
   beforeCallTarget: "Not yet set for this call",
   written: "Written",
   returnTarget: "Caller’s addition",
