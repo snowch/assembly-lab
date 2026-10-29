@@ -54,3 +54,23 @@ results are recorded separately below.
 Changed-file formatting, the existing canonical/facts tests (2 files, 9 tests) and
 the production build (11.59s) passed. No model, interaction or layout changes.
 Full CI and deployment results will be recorded in the PR.
+
+## Approved wording follow-up
+
+The user approved removing the reference to unseen remaining instructions and
+emphasising **how**, to distinguish this lesson's demonstration from the later
+lesson's mechanism. Apply the same removal in the investigation and explanation;
+synchronise the canonical text. No new prose draft is needed for this exact
+user-approved wording. Independent rendered verification follows below.
+
+Independently verified by GPT-6.1 Sol (`gpt-6.1-sol`), High effort, after the final
+22.48s build. Source and canonical diff contain the approved removal in both places
+and `**how**` in the forward reference. Learner pass: both stopping statements read
+clearly, and the emphasis distinguishes the later explanation of the mechanism.
+Technical pass: at 375/1280px in actual light/dark with fonts loaded, asserted both
+shortened statements, absence of the unseen-instructions phrase, and a rendered
+`strong` element containing “how” with bold computed weight. Followed the unchanged
+link to “Calls, returns and the stack”. Inspected all eight paragraph screenshots;
+no overflow or finding. Evidence: /tmp/return-how-independent-review/review.mjs and
+PNGs. No product/test edits or new figure-state sweep; this follow-up changes only
+the exact approved prose.
