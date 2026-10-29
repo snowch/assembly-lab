@@ -41,6 +41,10 @@ for (const theme of ["light", "dark"]) {
       expect(w0Box).not.toBeNull();
       expect(w1Box).not.toBeNull();
       expect(linkBox).not.toBeNull();
+      const titleBox = (await figure.locator(":scope > h4").boundingBox())!;
+      expect(bankBox!.x).toBe(titleBox.x);
+      expect(callerBox!.x).toBe(titleBox.x);
+      expect(functionBox!.x).toBe(titleBox.x);
       expect(w0Box!.x).toBe(bankBox!.x);
       expect(w0Box!.y).toBe(w1Box!.y);
       expect(w0Box!.x + w0Box!.width).toBeLessThan(w1Box!.x);
@@ -49,6 +53,19 @@ for (const theme of ["light", "dark"]) {
       expect(w1Box!.x + w1Box!.width).toBeLessThan(linkBox!.x);
       expect(bankBox!.y + bankBox!.height).toBeLessThanOrEqual(callerBox!.y);
       expect(callerBox!.y + callerBox!.height).toBeLessThanOrEqual(functionBox!.y);
+      // Execution markings must not cross the saved-address connector at the row edge.
+      for (const row of await figure.locator(".al-returning-instruction").all()) {
+        await expect(row).toHaveCSS("border-left-color", "rgba(0, 0, 0, 0)");
+        const next = (await row.getAttribute("data-next")) === "true";
+        const ran = (await row.getAttribute("data-ran")) === "true";
+        if (next || ran) {
+          const code = row.locator(".al-returning-code");
+          await expect(code).toHaveCSS("border-left-style", next ? "dotted" : "solid");
+          const codeBox = (await code.boundingBox())!;
+          const addressBox = (await row.locator(".al-returning-address").boundingBox())!;
+          expect(codeBox.x).toBeGreaterThan(addressBox.x + addressBox.width);
+        }
+      }
     };
     await page.evaluate(() => document.fonts.ready);
     const viewport = page.viewportSize()!;
@@ -86,10 +103,20 @@ for (const theme of ["light", "dark"]) {
           const matrix = path.getScreenCTM()!;
           const first = path.getPointAtLength(0).matrixTransform(matrix);
           const last = path.getPointAtLength(path.getTotalLength()).matrixTransform(matrix);
-          return { first: { x: first.x, y: first.y }, last: { x: last.x, y: last.y } };
+          const samples = Array.from({ length: Math.ceil(path.getTotalLength()) + 1 }, (_, n) =>
+            path.getPointAtLength(Math.min(n, path.getTotalLength())).matrixTransform(matrix),
+          );
+          return {
+            first: { x: first.x, y: first.y },
+            last: { x: last.x, y: last.y },
+            left: Math.min(...samples.map((point) => point.x)),
+          };
         });
         const link = (await figure.locator(".al-returning-target").boundingBox())!;
         const destination = (await addresses.nth(1).boundingBox())!;
+        const frame = (await figure.boundingBox())!;
+        expect(points.left).toBeGreaterThan(frame.x);
+        expect(points.left).toBeLessThan((await bank.boundingBox())!.x);
         // SVG coordinates round independently of CSS layout; allow at most one pixel.
         expect(Math.abs(points.first.x - (link.x + link.width / 2))).toBeLessThanOrEqual(1);
         expect(Math.abs(points.first.y - (link.y + link.height))).toBeLessThanOrEqual(1);
