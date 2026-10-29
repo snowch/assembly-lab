@@ -59,7 +59,7 @@ describe("the page before any script runs", () => {
     expect(shown).toContain(STRINGS.title);
     expect(shown).toContain(STRINGS.subtitle);
     expect(shown).toContain(STRINGS.intro);
-    expect(shown).toContain(STRINGS.statusNote);
+    expect(shown).not.toContain("Published draft");
     expect(shown).toContain(STRINGS.noScript);
     expect(shown).toContain(STRINGS.copyright);
   });
@@ -74,12 +74,13 @@ describe("the page before any script runs", () => {
     }
   });
 
-  it("shows each module's status label beside it, worked out from the lessons that are written", () => {
+  it("shows a status label only for modules without available lessons", () => {
     const items = noscript.split("<li>").filter((i) => i.startsWith("<strong>"));
     expect(items).toHaveLength(MODULES.length);
     MODULES.forEach((m, i) => {
       const status = statusOf(m, LESSONS);
-      expect(text(items[i]!), m.title).toContain(`${m.line} (${STRINGS.status[status]})`);
+      const suffix = status === "published" ? "" : ` (${STRINGS.status[status]})`;
+      expect(text(items[i]!), m.title).toContain(`${m.line}${suffix}`);
     });
   });
 
@@ -89,7 +90,7 @@ describe("the page before any script runs", () => {
     const written = new Set(LESSONS.map((l) => String(l.module)));
     expect(labels).toEqual(
       MODULES.map((m) =>
-        written.has(String(m.lessonModule)) ? STRINGS.status.published : STRINGS.status.planned,
+        written.has(String(m.lessonModule)) ? undefined : STRINGS.status.planned,
       ),
     );
     expect(written.has("0")).toBe(true);

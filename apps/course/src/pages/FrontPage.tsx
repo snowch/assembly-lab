@@ -103,9 +103,6 @@ export function FrontPage() {
   return (
     <div className="front-column">
       <Cover />
-      <div className="plan-status" role="note">
-        <p>{STRINGS.statusNote}</p>
-      </div>
       <BeforeYouStart />
       {PLAN.map((part) => (
         <section key={part.id} className="plan-part" aria-labelledby={`part-${part.id}`}>
@@ -139,9 +136,11 @@ export function FrontPage() {
                       ))}
                     </ol>
                   )}
-                  <span className="module-status" data-status={status}>
-                    {STRINGS.status[status]}
-                  </span>
+                  {status !== "published" && (
+                    <span className="module-status" data-status={status}>
+                      {STRINGS.status[status]}
+                    </span>
+                  )}
                 </li>
               );
             })}

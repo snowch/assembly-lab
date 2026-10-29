@@ -59,7 +59,7 @@ test("the front page lists the plan, every part and every module", async ({ page
   await expect(page.locator(".cover-subtitle")).toHaveText(STRINGS.subtitle);
   await expect(page.locator(".cover-intro")).toHaveText(STRINGS.intro);
   await expect(page.locator(".cover-help")).toHaveText(STRINGS.cover.help);
-  await expect(page.locator(".plan-status")).toHaveText(STRINGS.statusNote);
+  await expect(page.locator(".plan-status")).toHaveCount(0);
   await expect(page.locator("section.plan-part > h2")).toHaveText(PLAN.map((p) => p.title));
   await expect(page.locator(".plan-module")).toHaveCount(MODULES.length);
   for (const m of MODULES) {
@@ -68,7 +68,9 @@ test("the front page lists the plan, every part and every module", async ({ page
     await expect(item.locator("h3")).toContainText(STRINGS.module(m.label));
     await expect(item.locator(".module-line")).toHaveText(m.line);
     // The status is worked out from the lessons: a module with a lesson is published.
-    await expect(item.locator(".module-status")).toHaveText(STRINGS.status[statusOf(m, LESSONS)]);
+    const status = statusOf(m, LESSONS);
+    if (status === "published") await expect(item.locator(".module-status")).toHaveCount(0);
+    else await expect(item.locator(".module-status")).toHaveText(STRINGS.status[status]);
   }
   expect(errors).toEqual([]);
   await page.getByRole("link", { name: STRINGS.start }).click();
@@ -82,11 +84,11 @@ test("a module with a lesson is published; with one lesson its title links to it
   await ready(page);
   const written = MODULES.filter((m) => lessonsOf(m, LESSONS).length > 0);
   const published = page.locator(".plan-module .module-status[data-status='published']");
-  await expect(published).toHaveCount(written.length);
+  await expect(published).toHaveCount(0);
   for (const m of written) {
     const lessons = lessonsOf(m, LESSONS);
     const entry = page.locator(`.plan-module[data-module="${m.id}"]`);
-    await expect(entry.locator(".module-status")).toHaveText(STRINGS.status.published);
+    await expect(entry.locator(".module-status")).toHaveCount(0);
     if (lessons.length === 1) {
       const link = entry.locator("h3 a");
       await expect(link).toHaveText(m.title);
@@ -138,7 +140,7 @@ test("Module 3 is published and lists its two lessons in order", async ({ page }
   await page.goto("#/");
   await ready(page);
   const module3 = page.locator('.plan-module[data-module="logic-shifts-masks"]');
-  await expect(module3.locator(".module-status")).toHaveText(STRINGS.status.published);
+  await expect(module3.locator(".module-status")).toHaveCount(0);
   await expect(module3.locator("h3 a")).toHaveCount(0);
   const ids = await module3
     .locator(".module-lessons li")
@@ -477,30 +479,15 @@ test("on a desk the cover and the plan share one centred column as wide as the p
     };
     return {
       cover: box(".cover-hero"),
-      note: box(".plan-status"),
       list: box(".plan-modules"),
       width: document.documentElement.clientWidth,
     };
   });
-  expect(edges.note).toEqual(edges.cover);
   expect(edges.list).toEqual(edges.cover);
   // It uses the page's width, as digital-design's front page does, not the reading measure.
   expect(edges.cover.right - edges.cover.left).toBeGreaterThan(900);
   // The column is centred.
   expect(edges.cover.left).toBe(edges.width - edges.cover.right);
-});
-
-test("a status is a plain label: no border, no fill", async ({ page }) => {
-  await page.goto("#/");
-  await ready(page);
-  const style = await page
-    .locator(".module-status")
-    .first()
-    .evaluate((el) => {
-      const cs = getComputedStyle(el);
-      return { border: cs.borderTopWidth, background: cs.backgroundColor };
-    });
-  expect(style).toEqual({ border: "0px", background: "rgba(0, 0, 0, 0)" });
 });
 
 test.describe("with scripts off", () => {

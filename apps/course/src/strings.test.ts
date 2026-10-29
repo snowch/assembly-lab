@@ -35,9 +35,6 @@ describe("the course's words", () => {
   it("give the title, the subtitle and the status as the plan's author wrote them", () => {
     expect(STRINGS.title).toBe("Assembly Lab");
     expect(STRINGS.subtitle).toBe("From a line of C to the bits in a register");
-    expect(STRINGS.statusNote).toBe(
-      'Modules labelled "Published draft" have lessons you can use now. These lessons may change.',
-    );
     expect(STRINGS.status.planned).toBe("Planned");
   });
 

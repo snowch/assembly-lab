@@ -50,11 +50,11 @@ export function staticPage(html: string, base = "/", version: BuildVersion | nul
     `<meta name="theme-color" content="${BACKGROUND.dark}" media="(prefers-color-scheme: dark)" />`,
   ];
   const plan = PLAN.map((part) => {
-    const modules = part.modules.map(
-      (m) =>
-        `<li><strong>${escape(m.title)}</strong> (${escape(STRINGS.module(m.label))}): ` +
-        `${escape(m.line)} (${escape(STRINGS.status[statusOf(m, LESSONS)])})</li>`,
-    );
+    const modules = part.modules.map((m) => {
+      const status = statusOf(m, LESSONS);
+      const label = status === "published" ? "" : ` (${escape(STRINGS.status[status])})`;
+      return `<li><strong>${escape(m.title)}</strong> (${escape(STRINGS.module(m.label))}): ${escape(m.line)}${label}</li>`;
+    });
     return `<h2>${escape(part.title)}</h2>\n    <ul>${modules.join("")}</ul>`;
   });
   const intro = STRINGS.companions.intro.map((part) =>
@@ -90,7 +90,6 @@ export function staticPage(html: string, base = "/", version: BuildVersion | nul
     `<h1>${escape(title)}</h1>`,
     `<p><strong>${escape(STRINGS.subtitle)}</strong></p>`,
     `<p>${escape(STRINGS.intro)}</p>`,
-    `<p>${escape(STRINGS.statusNote)}</p>`,
     ...plan,
     `<section id="where-next"><h2>${escape(WHERE_NEXT.title)}</h2><p>${escape(WHERE_NEXT.lead)}</p>`,
     `<p><a class="button primary" href="https://aarch64-playground.com/playground" target="_blank" rel="noopener noreferrer">${escape(WHERE_NEXT.playground.openLabel)}</a></p>`,
