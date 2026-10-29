@@ -24,8 +24,6 @@ export const STRINGS = {
   intro:
     "Learn assembly by running instructions one at a time in your browser. The simulator supports a subset of 64-bit Arm instructions. In the lessons, you see C code beside its assembly instructions. After each instruction, you can inspect the register values and their bits, the flags and memory. You predict what will happen and write small assembly programs. Automatic checks test your answers and programs.",
   start: "Start with Module 0",
-  statusNote:
-    'Modules labelled "Published draft" have lessons you can use now. These lessons may change.',
   /** "Before you start", between the status note and the plan: what the course assumes. */
   prereqs: {
     heading: "Before you start",
@@ -62,7 +60,6 @@ export const STRINGS = {
   status: {
     planned: "Planned",
     drafting: "Being written",
-    published: "Published draft",
   },
 
   // what a search result and a shared link's preview show under the title (at most 155
