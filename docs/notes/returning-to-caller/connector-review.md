@@ -79,7 +79,10 @@ legacy progress restores the same machine state with a correctly measured route.
 The connector persists through RET and the caller addition without becoming a
 next-instruction marker. Its SVG is hidden from assistive technology and the x30
 card's described-by target resolves to Return address, the actual saved numeric
-address and Caller’s addition. Source review confirms the register/role naming,
+address and Caller’s addition. A further twelve focused browser checks restored
+the saved BL state and passed Playwright's actual accessible-name and complete
+accessible-description assertions at every width/theme, allowing the browser's
+whitespace before the hidden span's colon. Source review confirms the register/role naming,
 theme tokens, lack of animation, observer cleanup, font/resize measurement and
 unchanged trace/progression/migration logic.
 
@@ -88,8 +91,7 @@ assertion is correctly replaced by same-row third-card ordering for the requeste
 design. The old destination text inside the wide bar is replaced by a complete
 accessible-description check containing the saved address and destination; its
 anchored pattern permits only whitespace before the colon where the hidden span
-starts. New
-SVG endpoint assertions use actual card/address geometry, exercise visible resize
+starts. New SVG endpoint assertions use actual card/address geometry, exercise visible resize
 and stepped/restored states, and check connector absence before BL/reset. The
 1px tolerance is bounded; this review measured 0px error. Existing value, write,
 instruction, address, Back/reset/reload and legacy-progress checks remain. The
