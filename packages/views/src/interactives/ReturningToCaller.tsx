@@ -54,14 +54,16 @@ export const ReturningToCaller = withProps(
         <div className="al-returning-registers" role="group" aria-label={S.sharedRegisters}>
           <strong>{S.sharedRegisters}</strong>
           <p className="al-returning-moment">{position === 0 ? S.beforeCall : S.registersNow}</p>
-          {[0, 1].map((n) => (
-            <DecimalRegister
-              key={n}
-              name={`w${n}`}
-              value={wValue(view.state, n)}
-              changed={position > 0 && view.written.has(n)}
-            />
-          ))}
+          <div className="al-returning-register-values">
+            {[0, 1].map((n) => (
+              <DecimalRegister
+                key={n}
+                name={`w${n}`}
+                value={wValue(view.state, n)}
+                changed={position > 0 && view.written.has(n)}
+              />
+            ))}
+          </div>
           <div className="al-returning-target" data-written={position > 0 && view.written.has(30)}>
             <code>x30</code>
             <span>{S.returnAddress}</span>
