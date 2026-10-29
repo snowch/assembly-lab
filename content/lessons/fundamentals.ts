@@ -91,6 +91,7 @@ function figure(
     timeModel: "steps",
     caption,
     props: {
+      ...(item.entry === "increment_int" ? { notes: P.function.compilerNotes } : {}),
       stage: {
         ...copy,
         kind: item.kind,

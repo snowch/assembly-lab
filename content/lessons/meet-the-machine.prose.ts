@@ -4,28 +4,8 @@
 // canonical copy: docs/notes/module-0/prose.md. The prose test holds both directions.
 
 export const PROSE = {
-  // Two notes under the listing, each shut until the learner opens it.
-  compilerNote: {
-    summary: "Which compiler made these instructions?",
-    body:
-      "Compiler Explorer, an online compiler service, ran GCC version 16.1.0 for 64-bit Arm Linux to make these instructions. It used the optimisation setting `-O1`, which asks GCC to make the code shorter and faster.\n\n" +
-      "To use the same settings locally, save the C shown above as `trip.c`. With GCC 16.1.0 for 64-bit Arm Linux installed as `aarch64-linux-gnu-gcc`, the equivalent command is:\n\n" +
-      "```sh\naarch64-linux-gnu-gcc \\\n  -g \\\n  -o trip.s \\\n  -fno-verbose-asm \\\n  -S \\\n  -fdiagnostics-color=always \\\n  -O1 \\\n  trip.c\n```\n\n" +
-      "Each backslash continues the command on the next line. This command includes every option Compiler Explorer used. The local filenames `trip.c` and `trip.s` replace the service's temporary paths `/app/example.c` and `/app/output.s`.\n\n" +
-      "`-S` produces assembly text, and `-o trip.s` names the output file. `-g` includes the C line references shown in the compiler details. `-fno-verbose-asm` suppresses extra assembly comments. `-fdiagnostics-color=always` colours compiler messages; it does not change the instructions.\n\n" +
-      "The assembly file also contains compiler and debugging information that this page filters out.\n\n" +
-      "With `-O0`, which means no optimisation, the same GCC makes twenty instructions from this C. The course uses `-O1` because its listings are short enough to follow.",
-  },
-  lineNote: {
-    summary: "How are C statements matched to instructions?",
-    body:
-      "The course pairs instructions with the C operations they perform. Here, `sub w0, w0, w3` does the subtraction on line 5. The `ret` instruction returns from the function, as line 6 requires.\n\n" +
-      "The arithmetic has already calculated the result. `ret` returns control to the code that called the function; it does not calculate or move the result.\n\n" +
-      "GCC's original line references are kept in the compiler details. GCC 16.1 at `-O1` records both instructions against line 7, the closing brace. These references help debugging tools locate C code. They do not always identify the statement an instruction carries out.",
-  },
-
   prediction:
-    "`trip_distance` adds three trip distances, called legs, then subtracts a detour. Its `int` arguments arrive in registers:\n\n- `leg1` arrives in `w0`.\n- `leg2` arrives in `w1`.\n- `leg3` arrives in `w2`.\n- `detour` arrives in `w3`.\n\nGCC 16.1.0 at `-O1`, an optimisation setting, made the four instructions below for 64-bit Arm. Follow the C variable `total` through the calculation: the instructions update `w0`, then `ret` returns with the result already there.",
+    "`trip_distance` adds three trip distances, called legs, then subtracts a detour. Its `int` arguments arrive in registers:\n\n- `leg1` arrives in `w0`.\n- `leg2` arrives in `w1`.\n- `leg3` arrives in `w2`.\n- `detour` arrives in `w3`.\n\nGCC 16.1.0 at `-O1` made the four instructions below for 64-bit Arm. Follow the C variable `total` through the calculation: the instructions update `w0`, then `ret` returns with the result already there.",
 
   investigation:
     "Run `trip_distance(120, 85, 42, 15)` with Next. The C statement and instruction that just ran are highlighted together; ▸ marks the next instruction. An outlined register was written by the last instruction. Back undoes a step; Reset starts again.\n\nOn a narrow screen, swipe sideways within the listing to see the C and instructions. Show the bits changes the register display to 32-bit patterns.",

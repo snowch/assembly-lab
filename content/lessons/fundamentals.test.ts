@@ -22,6 +22,27 @@ const strings = (value: unknown): string[] =>
         : [];
 
 describe("visible Fundamentals lessons", () => {
+  it("introduces compiler notes and original references only at the first function", () => {
+    const figures = lessons.flatMap((lesson) => lesson.sections.flatMap((s) => s.interactives));
+    const first = figures.find((f) => f.id === "worked-function")!;
+    expect(first.props["notes"]).toEqual(FUNDAMENTALS_PROSE.function.compilerNotes);
+    expect((first.props["stage"] as { showCompilerLines: boolean }).showCompilerLines).toBe(true);
+    for (const figure of figures.filter((f) => f.id !== "worked-function"))
+      expect(figure.props["notes"]).toBeUndefined();
+    const request = JSON.parse(
+      readFileSync(
+        new URL("../../docs/notes/module-0/increment/request.json", import.meta.url),
+        "utf8",
+      ),
+    );
+    expect(FUNDAMENTALS_PROSE.function.compilerNotes[0].body).toContain(
+      request.options.userArguments,
+    );
+    expect(FUNDAMENTALS_PROSE.function.compilerNotes[1].body).toContain(
+      "line 4, the closing brace",
+    );
+  });
+
   it("keeps shifting out of the visible addition text while linking the official reference", () => {
     const visible = learnerText(lessons[0]!)
       .join("\n")
