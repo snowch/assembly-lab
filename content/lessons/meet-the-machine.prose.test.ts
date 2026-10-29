@@ -63,11 +63,9 @@ const figure = (id: string) =>
   lesson.sections.flatMap((s) => s.interactives).find((x) => x.id === id)!;
 
 describe("the closed notes and the wrong-answer sentences", () => {
-  it("hang two closed notes under the listing, with the file's titles and words", () => {
-    expect(figure("step-trip").props["notes"]).toEqual([PROSE.compilerNote, PROSE.lineNote]);
-    const titles = [...body.matchAll(/^\*Closed note under the listing[^\n]*\n\n\*\*(.*)\*\*$/gm)];
-    expect(titles.map((m) => m[1])).toEqual([PROSE.compilerNote.summary, PROSE.lineNote.summary]);
-    // The notes replace the open paragraph that used to sit under the listing.
+  it("leaves the introductory compiler notes with the earlier tiny function", () => {
+    expect(figure("step-trip").props["notes"]).toBeUndefined();
+    expect(figure("step-trip").props["showCompilerLines"]).toBeUndefined();
     expect(figure("step-trip").after).toBeUndefined();
   });
 

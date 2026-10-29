@@ -94,8 +94,6 @@ export const meetTheMachine: LessonInput = {
             program: TRIP_DISTANCE,
             call: TRIP_CALL,
             registers: [0, 1, 2, 3],
-            showCompilerLines: true,
-            notes: [PROSE.compilerNote, PROSE.lineNote],
             // Reuse the introductory operand rules in one complete function.
             flow: false,
             decimal: true,

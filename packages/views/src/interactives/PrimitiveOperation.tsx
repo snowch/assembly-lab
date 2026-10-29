@@ -26,7 +26,10 @@ const Stage = z.object({
   predict: z.boolean().default(false),
   showCompilerLines: z.boolean().default(false),
 });
-const Props = z.object({ stage: Stage });
+const Props = z.object({
+  stage: Stage,
+  notes: z.array(z.object({ summary: z.string().min(1), body: z.string().min(1) })).default([]),
+});
 interface Stored {
   step: number;
   prediction?: string;
@@ -183,6 +186,16 @@ export const PrimitiveOperation = withProps(
             <div className="al-primitive-output" data-pending="true">
               <small>{S.outputPending}</small> <code>{nextFlow.destination.name} = ?</code>
             </div>
+          </div>
+        )}
+        {data.notes.length > 0 && (
+          <div className="al-notes">
+            {data.notes.map((note) => (
+              <details className="lesson-details" key={note.summary}>
+                <summary>{note.summary}</summary>
+                <Prose markdown={note.body} />
+              </details>
+            ))}
           </div>
         )}
         {isFunction && (

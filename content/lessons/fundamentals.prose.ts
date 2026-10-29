@@ -2,6 +2,7 @@
 
 // Drafted from checked primitive traces and the recorded increment_int listing.
 // Canonical copy: docs/notes/fundamentals/prose.md.
+import { FUNCTION_COMPILER_NOTES } from "./function-compiler-notes.prose";
 import { CONSTANT_ADDITION_PROSE } from "./constant-addition.prose";
 
 export const FUNDAMENTALS_PROSE = {
@@ -60,6 +61,7 @@ export const FUNDAMENTALS_PROSE = {
     },
   },
   function: {
+    compilerNotes: FUNCTION_COMPILER_NOTES,
     sections: {
       motivation:
         "`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C below into an assembly **listing**, a written sequence of instructions. GCC 16.1.0 made these listings for 64-bit Arm using `-O1`, an optimisation setting that asks it to make code shorter and faster. `increment_int:` names the function.\n\nCode that calls a function is its **caller**. The input it supplies is an **argument**. For this function, the argument arrives in `w0` and the integer result is left in `w0` too.\n\nThe function adds one, then `ret` returns to its caller. The next lesson follows execution back into the caller.",

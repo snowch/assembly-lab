@@ -25,6 +25,13 @@
   gap: var(--space-4);
 }
 
+/* Long reproduction commands scroll inside their note, not the figure's grid track. */
+.al-notes {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  max-width: 100%;
+}
+
 /* The C beside the instructions: two panes side by side at every width. On a narrow screen the
    listing scrolls sideways as one contained piece, so an instruction stays to the right of the C
    it came from and the page never scrolls sideways. The outer element only clips and scrolls; an

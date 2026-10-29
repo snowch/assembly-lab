@@ -18,6 +18,7 @@ import { traceOf, viewAt, wValue } from "../../packages/views/src/trace";
 import { DEFAULT_STRINGS as S, format } from "../../platform/lesson-runtime/src/strings";
 
 import { MODULE0_STRINGS as M0 } from "../../packages/views/src/strings.module0";
+import { FUNCTION_COMPILER_NOTES as NOTES } from "../../content/lessons/function-compiler-notes.prose";
 import { PROSE } from "../../content/lessons/meet-the-machine.prose";
 import { LABELS } from "../../content/lessons/meet-the-machine.labels";
 import { TRIP_DISTANCE } from "../../content/lessons/meet-the-machine.listings";
@@ -110,7 +111,7 @@ test("the way back leads to the front page", async ({ page }) => {
 });
 
 test.describe("the listing figure", () => {
-  test("keeps the C beside its instructions at every width, tags checked lines, and keeps compiler references in details", async ({
+  test("keeps the synthesis C beside its instructions and checked lines without introductory details", async ({
     page,
   }) => {
     await openLesson(page);
@@ -125,7 +126,7 @@ test.describe("the listing figure", () => {
     // The tag beside each instruction names the C line the pane shows, not the compiler's record.
     await expect(figure.locator(".al-insn .al-ctag")).toHaveText(["3", "4", "5", "6"]);
     const details = figure.locator(".al-compiler-lines");
-    await expect(details).not.toHaveAttribute("open");
+    await expect(details).toHaveCount(0);
     // The two panes sit side by side whatever the width: the listing scrolls as one piece, so
     // the instructions stay to the right of the C and the page does not overflow.
     const [c, asm, overflow] = await figure.locator(".al-listing").evaluate((listing) => {
@@ -143,21 +144,17 @@ test.describe("the listing figure", () => {
     expect(asm.x).toBeGreaterThanOrEqual(c.x + c.width - 1);
     expect(Math.abs(asm.y - c.y)).toBeLessThan(1);
     expect(overflow.page).toBe(false);
-    await press(page, details.locator("summary"));
-    await expect(details.locator(".al-ctag")).toHaveText(["3", "4", "7", "7"]);
   });
 
-  test("hangs two closed notes directly under the listing, in place of an open paragraph", async ({
+  test("puts the two closed compiler notes under the first tiny-function listing", async ({
     page,
   }) => {
-    await openLesson(page);
-    const figure = page.locator("#ix-step-trip");
+    await page.goto("#/lesson/tiny-function");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("A tiny function");
+    const figure = page.locator("#ix-worked-function");
     const notes = figure.locator("details.lesson-details");
     await expect(notes).toHaveCount(2);
-    await expect(notes.locator("summary")).toHaveText([
-      PROSE.compilerNote.summary,
-      PROSE.lineNote.summary,
-    ]);
+    await expect(notes.locator("summary")).toHaveText([NOTES[0].summary, NOTES[1].summary]);
     // Closed by default: the words inside are not on show.
     for (const open of await notes.evaluateAll((els) =>
       els.map((e) => (e as HTMLDetailsElement).open),
@@ -179,23 +176,32 @@ test.describe("the listing figure", () => {
   test("opens a note from the keyboard, with Enter or Space, and shows its words", async ({
     page,
   }) => {
-    await openLesson(page);
-    const figure = page.locator("#ix-step-trip");
+    await page.goto("#/lesson/tiny-function");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("A tiny function");
+    const figure = page.locator("#ix-worked-function");
     const notes = figure.locator("details.lesson-details");
     const summary = (n: number) => notes.nth(n).locator("summary");
     await summary(0).focus();
     await expect(summary(0)).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(notes.nth(0)).toHaveJSProperty("open", true);
-    await expect(notes.nth(0)).toContainText("GCC version 16.1");
-    await expect(notes.nth(0)).toContainText("makes twenty instructions");
+    await expect(notes.nth(0)).toContainText("GCC 16.1");
+    await expect(notes.nth(0)).toContainText("increment_int.s");
     await expect(notes.nth(1)).toHaveJSProperty("open", false);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      page.viewportSize()!.width,
+    );
+    await page.keyboard.press("Tab");
+    // Chromium gives the horizontally scrollable command a keyboard stop.
+    await expect(notes.nth(0).locator("pre")).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(summary(1)).toBeFocused();
     await page.keyboard.press("Space");
     await expect(notes.nth(1)).toHaveJSProperty("open", true);
-    await expect(notes.nth(1)).toContainText("sub w0, w0, w3 does the subtraction on line 5");
-    await expect(notes.nth(1)).toContainText("records both instructions against line 7");
+    await expect(notes.nth(1)).toContainText(
+      "add w0, w0, 1 calculates n + 1 on displayed C line 3",
+    );
+    await expect(notes.nth(1)).toContainText("records both instructions against line 4");
     await page.keyboard.press("Enter");
     await expect(notes.nth(1)).toHaveJSProperty("open", false);
   });
