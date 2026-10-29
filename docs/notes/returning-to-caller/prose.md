@@ -16,7 +16,7 @@ An instruction’s address identifies its place in memory. A **branch** changes 
 
 Plain `ret` continues execution at the address held in `x30`. These are AArch64 instruction rules, whether the instructions came from C or were written in assembly. Here, the instruction after `bl` is the caller’s addition.
 
-The figure starts just before `bl`, with the argument already in `w0`. It stops after the caller’s addition, before the caller’s remaining instructions. Press Run the instruction to follow the call, the function’s addition, its return and the caller’s addition. The marker ▸ names the instruction that runs next; the highlight marks the instruction that just ran. On a narrow screen, scroll sideways within the function listing to see the C and instructions.
+The figure starts just before `bl`, with the argument already in `w0`. It stops after the caller’s addition. Press Run the instruction to follow the call, the function’s addition, its return and the caller’s addition. The marker ▸ names the instruction that runs next; the highlight marks the instruction that just ran. On a narrow screen, scroll sideways within the function listing to see the C and instructions.
 
 The caller’s assembly was written by hand. GCC generated `increment_int`’s instructions from the C shown beside them.
 
@@ -26,7 +26,7 @@ In our example, `ret` left `w0` and `w1` unchanged. Execution continued in the c
 
 The caller can use the other general-purpose registers too. It looks in `w0` for this `int` result because caller and function follow an agreed set of rules, a **calling convention**. `ret` does not select the result register.
 
-The rules also say which register values a function must preserve. This example stops after the caller’s addition, before the caller’s remaining instructions. [Calls and returns](#/lesson/calls-and-returns) shows how a function keeps its return address when it calls another function.
+The rules also say which register values a function must preserve. This example stops after the caller’s addition. [Calls and returns](#/lesson/calls-and-returns) shows **how** a function keeps its return address when it calls another function.
 
 ### prose / sections / challenge
 
