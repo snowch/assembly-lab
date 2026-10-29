@@ -57,6 +57,7 @@ export const ReturningToCaller = withProps(
       x: number;
       y: number;
       bend: number;
+      gutter: number;
       endX: number;
       endY: number;
     } | null>(null);
@@ -83,6 +84,8 @@ export const ReturningToCaller = withProps(
           x: link.x + link.width / 2 - flow.x,
           y: link.bottom - flow.y,
           bend: bank.bottom - flow.y + 20,
+          // Figure padding is narrower on phones. Keep the whole route inside its frame.
+          gutter: (flowRef.current.parentElement!.getBoundingClientRect().x - flow.x) / 2,
           endX: address.x - flow.x - 4,
           endY: address.y + address.height / 2 - flow.y,
         };
@@ -196,7 +199,7 @@ export const ReturningToCaller = withProps(
               <svg className="al-returning-connector" aria-hidden="true">
                 <path
                   className="al-returning-connector-line"
-                  d={`M ${connector.x} ${connector.y} V ${connector.bend} H 8 V ${connector.endY} H ${connector.endX}`}
+                  d={`M ${connector.x} ${connector.y} V ${connector.bend} H ${connector.gutter} V ${connector.endY} H ${connector.endX}`}
                 />
                 <path
                   className="al-returning-connector-tip"
