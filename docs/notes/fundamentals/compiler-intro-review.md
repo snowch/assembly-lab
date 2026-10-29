@@ -130,3 +130,20 @@ branches mismatch example; unexpected additional opt-ins still fail. Existing
 per-program association and compiler-record checks are untouched. The separate
 focused run passed all 77 tests (4.26s); this does not change the earlier CI failure.
 No finding. No product/browser recheck was needed for this assertion-only change.
+
+## Browser CI follow-up
+
+The next full CI passed all unit tests and had 1,223 browser tests pass, 4 fail
+and 23 skip. All four failures were the course-wide disclosure browser test still
+expecting the old trip disclosure. Remove meet-the-machine from that exception
+set, retaining tiny-function and the branches mismatch example. Keep all rendered
+count, default-closed, opening, source-association, theme and overflow checks.
+No product changes.
+
+Independently checked the one-line diff against the final lesson data and rendered
+placement review. Removing only meet-the-machine correctly enforces zero trip
+disclosures while retaining tiny-function and branches. All other assertions,
+including unchanged teaching associations, actual themes, default-closed/opening
+behaviour, errors and whole-course overflow at desktop/360px phone widths, remain intact.
+The separate focused run passed all four tests in 31.3s; the earlier full-browser
+failures/skips remain recorded above. No finding or additional product recheck.
