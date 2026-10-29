@@ -49,12 +49,17 @@ it("shows compiler references only in the introduction and the lesson discussing
   const optedIn = LESSONS.flatMap((lesson) =>
     lesson.sections.flatMap((section) =>
       section.interactives
-        .filter((figure) => figure.props["showCompilerLines"] === true)
+        .filter(
+          (figure) =>
+            figure.props["showCompilerLines"] === true ||
+            (figure.props["stage"] as { showCompilerLines?: boolean } | undefined)
+              ?.showCompilerLines === true,
+        )
         .map((figure) => [lesson.id, figure.id, figure.kind]),
     ),
   );
   expect(optedIn).toEqual([
-    ["meet-the-machine", "step-trip", "stepper"],
+    ["tiny-function", "worked-function", "primitive-operation"],
     ["branches", "describe-listing", "listing"],
   ]);
 });

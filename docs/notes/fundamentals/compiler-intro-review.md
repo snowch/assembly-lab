@@ -112,3 +112,21 @@ First CSS correction constrained its container but not the track; the separate
 16-test focused run had 15 passed and 1 phone-overflow failure. The final grid-track
 correction passed all 16 focused browser tests in 50.0s. Final build (10.84s), types
 and formatting passed. Full CI/deployment evidence follows in the PR.
+
+## CI follow-up
+
+Initial full CI: 2,946 unit tests passed and 1 failed. The course-wide compiler
+reference placement assertion still named the old introduction and inspected only
+top-level properties. Update it to inspect the primitive figure's stage as well,
+expect the tiny-function opt-in, and retain the branches mismatch opt-in. This
+changes the assertion to enforce the approved placement without weakening coverage.
+Product code and final built-page review are unchanged.
+
+Independent verification by GPT-6.1 Sol (`gpt-6.1-sol`), High effort: checked the
+test diff against the actual fundamentals, trip and branches data. The filter now
+covers both supported property locations and still requires an explicit true.
+The exact expected list enforces tiny-function/worked-function and retains the
+branches mismatch example; unexpected additional opt-ins still fail. Existing
+per-program association and compiler-record checks are untouched. The separate
+focused run passed all 77 tests (4.26s); this does not change the earlier CI failure.
+No finding. No product/browser recheck was needed for this assertion-only change.
