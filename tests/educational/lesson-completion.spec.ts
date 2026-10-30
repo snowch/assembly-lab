@@ -12,6 +12,48 @@ const mark = "Mark lesson complete";
 const undo = "Mark lesson incomplete";
 
 for (const theme of ["light", "dark"]) {
+  test(`completion stays compact beside the lesson cards and hexadecimal digits use code in ${theme}`, async ({
+    page,
+    isMobile,
+  }) => {
+    await page.goto("#/lesson/one-pattern-three-readings");
+    await page.locator(".theme-picker select").selectOption(theme);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    await page.evaluate(() => document.fonts.ready);
+
+    const digits = page.locator(".lesson-section p").filter({
+      hasText: "Each group of four bits becomes one digit",
+    });
+    for (const digit of ["0", "9", "a", "f"])
+      await expect(
+        digits
+          .locator("code")
+          .filter({ hasText: new RegExp(`^${digit}$`) })
+          .first(),
+      ).toBeVisible();
+
+    const button = page.locator(".lesson-completion button");
+    const clear = page.getByRole("button", { name: "Clear bits", exact: true });
+    const next = page.locator('.lesson-nav-link[data-direction="next"]');
+    for (const complete of [false, true, false]) {
+      await expect(button).toHaveAttribute("data-complete", String(complete));
+      const buttonBox = await button.boundingBox();
+      const clearBox = await clear.boundingBox();
+      const nextBox = await next.boundingBox();
+      expect(buttonBox!.height).toBeGreaterThanOrEqual(44);
+      expect(buttonBox!.height).toBeCloseTo(clearBox!.height, 1);
+      if (!isMobile) {
+        expect(buttonBox!.height).toBeLessThan(nextBox!.height);
+        expect(buttonBox!.y + buttonBox!.height / 2).toBeCloseTo(
+          nextBox!.y + nextBox!.height / 2,
+          1,
+        );
+      }
+      await button.click();
+    }
+    expect(await designProblems(page, isMobile)).toEqual([]);
+  });
+
   test(`manual marks guide the next lesson and can be undone in ${theme}`, async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
