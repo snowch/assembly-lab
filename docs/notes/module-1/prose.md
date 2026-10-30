@@ -14,7 +14,7 @@ The improvement pass (the title of Lesson 1, the top-bit table, the halves of si
 
 ## 1. Which is right, −12 or 4294967284?
 
-Run `fuel_used_wrong(50, 38)`, the subtraction written the wrong way round in Module 0.
+Fuel used is the amount at the start minus the amount at the end. The function `fuel_used_wrong` reverses that subtraction. Run `fuel_used_wrong(50, 38)`.
 
 The figure starts before the subtraction. Press Next to see which values it reads and what it writes.
 
@@ -245,6 +245,8 @@ Writing `#` before a number is optional. `mov w0, 30000` and `mov w0, #30000` ar
 **Build 1000000**
 
 Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The starting text, `mov w0, 1000000` then `ret`, does not assemble.
+
+Choose Text to type one instruction per line. Choose Tap to select a line and edit it with buttons. Press Run tests to check your program.
 
 1. One `mov` holds a number whose bits fall in one 16-bit half. `movk` writes the other half without touching the first.
 2. A second `mov` replaces the whole register. Only `movk` keeps the other half.

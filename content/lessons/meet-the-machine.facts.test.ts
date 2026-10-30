@@ -332,36 +332,6 @@ describe("fuel_used", () => {
     const got = calls.map(([a, b]) => wValueAsInt(call(fixed, 0x400000, [a, b]).final, 0));
     expect(got).toEqual([12, 0, 55]);
   });
-
-  it("is what the challenge's three cases expect", () => {
-    const cases = lesson.challenges.find((c) => c.id === "fix-fuel-used")!.tests;
-    if (cases.kind !== "answers") throw new Error("the challenge has answer tests");
-    expect(cases.cases.map((c) => [c.given["w0"], c.given["w1"], c.expect["w0"]])).toEqual([
-      [50, 38, 12],
-      [45, 45, 0],
-      [60, 5, 55],
-    ]);
-  });
-});
-
-describe("the reversed subtraction the construction challenge answers", () => {
-  const cases = () => {
-    const c = lesson.challenges.find((x) => x.id === "fix-fuel-used")!;
-    if (c.tests.kind !== "answers") throw new Error("answer tests");
-    return c.tests.cases;
-  };
-
-  it("is what the mistaken fuel_used gives: at_end minus at_start, for each call", () => {
-    expect(cases().map((t) => t.given["misconception.value"])).toEqual([38 - 50, 45 - 45, 5 - 60]);
-    const mistaken = build(FUEL_USED_MISTAKEN_TEXT);
-    for (const t of cases()) {
-      const got = wValueAsInt(
-        call(mistaken, 0x400000, [Number(t.given["w0"]), Number(t.given["w1"])]).final,
-        0,
-      );
-      expect(got, String(t.label)).toBe(t.given["misconception.value"]);
-    }
-  });
 });
 
 describe("km_to_service(30000, 28750, 140, 390)", () => {

@@ -6,7 +6,7 @@
 
 export const PROSE = {
   question:
-    "Run `fuel_used_wrong(50, 38)`, the subtraction written the wrong way round in Module 0.\n\n" +
+    "Fuel used is the amount at the start minus the amount at the end. The function `fuel_used_wrong` reverses that subtraction. Run `fuel_used_wrong(50, 38)`.\n\n" +
     "The figure starts before the subtraction. Press Next to see which values it reads and what it writes.",
 
   motivation:

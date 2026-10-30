@@ -18,7 +18,6 @@ A separate Codex drafting agent streamlined the synthesis lesson on 24 October 2
 
 - Trace a complete compiled function using the operand rules.
 - Connect C arguments and results to the registers that hold them.
-- Repair a subtraction whose inputs are reversed.
 - Explain what happens when a function's `ret` is removed.
 
 ## 1. Trace trip_distance
@@ -42,36 +41,11 @@ On a narrow screen, swipe sideways within the listing to see the C and instructi
 
 `ret` returns to the code that called this function. The function's result is whatever `w0` holds at that moment.
 
-## 2. Fixing `fuel_used`
+## 2. Removing `ret`
 
-A second function, `fuel_used`, should return the litres used on a trip. That is the fuel at the start minus the fuel at the end. Its C was written the wrong way round: `return at_end - at_start;`. GCC turned it into `sub w0, w1, w0` and `ret`.
+The processor keeps instructions in **memory**, outside its registers. Here, `fuel_used` follows `trip_distance` in memory. `fuel_used` contains `sub w0, w0, w1`, then `ret`.
 
-The two arguments arrive in registers:
-
-- `at_start` arrives in `w0`.
-- `at_end` arrives in `w1`.
-
-In a real project you would correct the C and compile it again; here you fix the instructions directly, to practise reading and changing assembly.
-
-*The editor shows the instructions GCC made for fuel_used from the mistaken C.*
-
-**Fix the subtraction**
-
-Change the instructions so the function returns `at_start` minus `at_end`. Three calls test it. You can type the instructions, or tap a line to change it.
-
-1. `sub` writes its first operand as its second operand minus its third.
-2. In the code you start with, the registers are right. Their order is not.
-3. `sub w0, w2, w3` puts `w2` minus `w3` into `w0`.
-4. The result must still go into `w0`. The second operand must be `at_start`, which is in `w0`.
-5. The whole answer is `sub w0, w0, w1`, then `ret`.
-
-*Feedback for the reversed subtraction:* Your function subtracts the two values in the wrong order. `sub` writes its first operand. It subtracts its third operand from its second. Which value should come second?
-
-## 3. Removing `ret`
-
-The processor keeps a program's instructions and values outside its registers, in a place called **memory**. In this example, `fuel_used`'s instructions come straight after `trip_distance`'s in memory.
-
-The experiment's figure uses GCC's output from correct C, so `fuel_used` is `sub w0, w0, w1`, then `ret`. Its switch deletes `ret` from `trip_distance`, then runs `trip_distance(120, 85, 42, 15)` again.
+Make your prediction, then use the switch to delete `trip_distance`’s `ret` and run `trip_distance(120, 85, 42, 15)` again.
 
 *A prediction about what w0 holds when the run ends without ret.*
 
@@ -98,9 +72,7 @@ The processor does not stop just because it reaches the next function. Without `
 
 *trip_distance(120, 85, 42, 15) again, with a switch that deletes ret. In memory, fuel_used comes after trip_distance.*
 
-A function name does not make the processor stop. In this example, execution advances through instructions in memory until `ret` returns to the caller. Removing that return lets the next function's instructions run with the values left in the registers.
-
-## 4. Kilometres to service
+## 3. Kilometres to service
 
 The car's odometer records the total distance it has travelled. The car needs a service when that reading reaches `service_at`. The `odometer` argument is the reading recorded before the current trip began. It does not include `trip_so_far`.
 

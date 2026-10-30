@@ -63,10 +63,10 @@ export const KM_TO_SERVICE = {
   sourceLines: [[3], [4], [5], [6], [6]],
 } as const;
 
-/** m0c.c's second function, which is the mistaken `fuel_used` the construction challenge starts from. */
+/** m0c.c's second function: recorded mistaken subtraction, retained for compiler/model checks. */
 export const FUEL_USED_MISTAKEN_TEXT = ["sub w0, w1, w0", "ret"].join("\n");
 
-/** The corrected `fuel_used`: the challenge's reference. */
+/** The corrected `fuel_used`, also used by the adjacent-function experiment. */
 export const FUEL_USED_FIXED_TEXT = ["sub w0, w0, w1", "ret"].join("\n");
 
 /** increment_int.c, ARM64 GCC 16.1.0 -O1; raw request/response retained in module-0/increment. */

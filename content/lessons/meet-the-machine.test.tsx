@@ -34,7 +34,6 @@ describe("the lesson", () => {
     expect(checkLesson(lesson)).toEqual([]);
     expect(lesson.sections.map((s) => s.kind)).toEqual([
       "investigation",
-      "construction",
       "failureExperiment",
       "challenge",
     ]);
@@ -76,19 +75,10 @@ describe("the lesson", () => {
     expect(ids.indexOf("predict-no-ret")).toBeLessThan(ids.indexOf("step-no-ret"));
     expect(lesson.sections.at(-1)?.details).toBeUndefined();
   });
-
-  it("gives the construction challenge the gate add, sub and ret, and the registers w0 to w3", () => {
-    const c = challenge("fix-fuel-used");
-    expect(c.allowedConstructs).toEqual(["add", "sub", "ret"]);
-    expect(c.palette).toEqual(["w0", "w1", "w2", "w3"]);
-    expect(c.initial.text).toBe("sub w0, w1, w0\nret");
-    expect(c.reference.text).toBe("sub w0, w0, w1\nret");
-    expect(testCount(c)).toBe(3);
-  });
 });
 
 describe("the challenges", () => {
-  it.each(["fix-fuel-used", "trace-the-call"])(
+  it.each(["trace-the-call"])(
     "%s: the reference passes every test and the starting point does not",
     (id) => {
       const c = challenge(id);
@@ -99,41 +89,6 @@ describe("the challenges", () => {
       expect(grade(c, c.initial).passed).toBe(false);
     },
   );
-
-  it("fix-fuel-used: the starting point fails all three calls but (45, 45)", () => {
-    const c = challenge("fix-fuel-used");
-    const verdict = grade(c, c.initial);
-    expect(verdict.failures.map((f) => f.label)).toEqual(["fuel_used(50, 38)", "fuel_used(60, 5)"]);
-    expect(verdict.failures[0]?.actual).toEqual({ w0: "-12" });
-  });
-
-  it("fix-fuel-used: the reversed subtraction is answered with the lesson's sentence about the order", () => {
-    const c = challenge("fix-fuel-used");
-    const verdict = grade(c, c.initial);
-    expect(verdict.failures.map((f) => f.detail)).toEqual([
-      quoted(PROSE.fixReversedFeedback),
-      quoted(PROSE.fixReversedFeedback),
-    ]);
-    // The sentence says what to look at, not the answer.
-    expect(PROSE.fixReversedFeedback).not.toMatch(/sub w0, w0, w1/);
-  });
-
-  it("fix-fuel-used: any other wrong result keeps the usual card, with its values", () => {
-    const c = challenge("fix-fuel-used");
-    // add w0, w0, w1 gives 88, 90 and 65: right for none of the three calls, and not reversed.
-    const verdict = grade(c, { text: "add w0, w0, w1\nret" });
-    expect(verdict.failures).toHaveLength(3);
-    for (const f of verdict.failures) expect(f.detail).toBeUndefined();
-    expect(verdict.failures.map((f) => f.actual)).toEqual([
-      { w0: "88" },
-      { w0: "90" },
-      { w0: "65" },
-    ]);
-    // A program that returns 0 gets the (45, 45) call right; the other two fail with no sentence.
-    const zero = grade(c, { text: "sub w0, w0, w0\nret" });
-    expect(zero.failures).toHaveLength(2);
-    expect(zero.failures.every((f) => f.detail === undefined)).toBe(true);
-  });
 
   it("trace-the-call: a wrong w1 is answered with the lesson's sentence, not the value", () => {
     const c = challenge("trace-the-call");
@@ -168,23 +123,6 @@ describe("the page", () => {
     expect(container.querySelector("#ix-step-trip .al-listing")).not.toBeNull();
     expect(container.querySelector("#ix-step-no-ret .al-locked")).not.toBeNull();
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
-    expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
-  });
-});
-
-describe("the editor's keys", () => {
-  it("fix-fuel-used offers , and w, the registers w0 to w3, and no number pad", () => {
-    const c = challenge("fix-fuel-used");
-    expect(c.initial.data?.["editor"]).toEqual({
-      symbols: [",", "w"],
-      registers: ["w0", "w1", "w2", "w3"],
-      numberPad: false,
-    });
-    expect(c.palette).toEqual(["w0", "w1", "w2", "w3"]);
-  });
-
-  it("still accepts x typed, because the machine takes it", () => {
-    const c = challenge("fix-fuel-used");
-    expect(grade(c, { text: "sub x0, x0, x1\nret" }).passed).toBe(true);
+    expect(container.querySelectorAll("section.challenge")).toHaveLength(1);
   });
 });

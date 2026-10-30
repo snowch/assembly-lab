@@ -95,7 +95,7 @@ describe("the lesson", () => {
 
   it("carries an originality note, as the plan states it", () => {
     expect(lesson.originalityNote.textbookExample).toContain("two's complement");
-    expect(lesson.originalityNote.howThisDiffers).toContain("Module 0");
+    expect(lesson.originalityNote.howThisDiffers).toContain("subtraction inputs reversed");
   });
 
   it("names only figures the book has, and only the model the book has a note for", () => {

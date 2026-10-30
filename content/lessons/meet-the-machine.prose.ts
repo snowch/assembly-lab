@@ -13,26 +13,8 @@ export const PROSE = {
   investigationEnd:
     "`ret` returns to the code that called this function. The function's result is whatever `w0` holds at that moment.",
 
-  construction:
-    "A second function, `fuel_used`, should return the litres used on a trip. That is the fuel at the start minus the fuel at the end. Its C was written the wrong way round: `return at_end - at_start;`. GCC turned it into `sub w0, w1, w0` and `ret`.\n\n" +
-    "The two arguments arrive in registers:\n\n- `at_start` arrives in `w0`.\n- `at_end` arrives in `w1`.\n\n" +
-    "In a real project you would correct the C and compile it again; here you fix the instructions directly, to practise reading and changing assembly.",
-  // Under the card of a failed "Fix the subtraction" test, only when the learner's result is the
-  // reversed subtraction.
-  fixReversedFeedback:
-    "Your function subtracts the two values in the wrong order. `sub` writes its first operand. It subtracts its third operand from its second. Which value should come second?",
-  fixTask:
-    "Change the instructions so the function returns `at_start` minus `at_end`. Three calls test it. You can type the instructions, or tap a line to change it.",
-  fixHints: [
-    "`sub` writes its first operand as its second operand minus its third.",
-    "In the code you start with, the registers are right. Their order is not.",
-    "`sub w0, w2, w3` puts `w2` minus `w3` into `w0`.",
-    "The result must still go into `w0`. The second operand must be `at_start`, which is in `w0`.",
-    "The whole answer is `sub w0, w0, w1`, then `ret`.",
-  ] as const,
-
   failureExperiment:
-    "The processor keeps a program's instructions and values outside its registers, in a place called **memory**. In this example, `fuel_used`'s instructions come straight after `trip_distance`'s in memory.\n\nThe experiment's figure uses GCC's output from correct C, so `fuel_used` is `sub w0, w0, w1`, then `ret`. Its switch deletes `ret` from `trip_distance`, then runs `trip_distance(120, 85, 42, 15)` again.",
+    "The processor keeps instructions in **memory**, outside its registers. Here, `fuel_used` follows `trip_distance` in memory. `fuel_used` contains `sub w0, w0, w1`, then `ret`.\n\nMake your prediction, then use the switch to delete `trip_distance`’s `ret` and run `trip_distance(120, 85, 42, 15)` again.",
   // Shown immediately before the question: this prediction is a discovery experiment about
   // behaviour the learner has not yet seen, so they are invited to guess rather than recall.
   failureInvitation:
@@ -49,8 +31,6 @@ export const PROSE = {
     "0": "Read each instruction that runs, including any that come after `trip_distance`. Does any of them write 0 into `w0`?",
   },
 
-  explanation:
-    "A function name does not make the processor stop. In this example, execution advances through instructions in memory until `ret` returns to the caller. Removing that return lets the next function's instructions run with the values left in the registers.",
   challenge:
     "The car's odometer records the total distance it has travelled. The car needs a service when that reading reaches `service_at`. The `odometer` argument is the reading recorded before the current trip began. It does not include `trip_so_far`.\n\n`km_to_service` returns the kilometres left before the service, after allowing for the current trip and a planned trip. It also keeps 50 km spare. Its arguments are `service_at`, `odometer`, `trip_so_far` and `planned`, in `w0` to `w3`.\n\nGCC made the five instructions shown below. The `#50` in the last `sub` is the number 50 written inside the instruction.",
   traceTask: "Without running the call `km_to_service(30000, 28750, 140, 390)`, give two values.",

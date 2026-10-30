@@ -85,7 +85,7 @@ describe("what each lesson teaches", () => {
   });
 
   it("keeps C grammar and editor data separate from the assembly gate", () => {
-    const base = LESSONS.find((lesson) => lesson.id === "meet-the-machine")!;
+    const base = LESSONS.find((lesson) => lesson.id === "constants-and-widths")!;
     const assembly = base.challenges.find((c) => c.gradedDirection === "write")!;
     const cChallenge = {
       ...assembly,
@@ -101,7 +101,7 @@ describe("what each lesson teaches", () => {
     const result = withIntroduced(mixed, 0, [mixed]);
     expect(introducedBy([mixed], 0)).not.toContain("unsigned");
     expect(introducedBy([mixed], 0)).not.toContain("return");
-    expect(result.challenges![0]!.initial?.data?.["introduced"]).toContain("add");
+    expect(result.challenges![0]!.initial?.data?.["introduced"]).toContain("mov");
     expect(result.challenges![1]!.initial).toEqual(cChallenge.initial);
   });
 

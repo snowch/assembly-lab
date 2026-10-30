@@ -1,14 +1,8 @@
 // Copyright © 2026 Christopher Snow
 
-// Module 0, Meet the machine, in a browser, on the built site, at desktop and phone widths: the
-// lesson loads without an error; the stepper's values after each Next are the model's; the ret
-// prediction commits before it reveals; the construction challenge is completed by typing (at the
-// desktop width) and by tapping alone (at the phone width); a wrong answer is rejected; the answers
-// challenge rejects a wrong w1 with the lesson's sentence and accepts the reference; a completion
-// survives a reload and is graded again; Clear work removes it; and the page keeps the look the
-// shell's own pages keep. The stepper's panel of what the last instruction read and wrote, its
-// decimal registers with their switch, the two closed notes under the listing, and the ret
-// experiment's two connected groups are driven here too.
+// Putting it together, in the built site at desktop and phone widths: model-derived
+// register values, the gated missing-return experiment, the independent trace challenge,
+// saved answers and feedback, and legible layouts in both themes.
 
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
@@ -27,7 +21,6 @@ import { designProblems } from "./design";
 const LESSON_ID = "meet-the-machine";
 const STORAGE_KEY = `assembly-lab:v1:${LESSON_ID}`;
 const lesson = LESSONS.find((l) => l.id === LESSON_ID)!;
-const FIX = "fix-fuel-used";
 const TRACE = "trace-the-call";
 
 /** Everything the page logs as an error, or throws, until the test ends. */
@@ -91,13 +84,13 @@ const flowText = async (figure: Locator) => {
 const stored = (page: Page) =>
   page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? "null"), STORAGE_KEY);
 
-test("the lesson loads with no console error, selected sections, and its two challenges", async ({
+test("the lesson loads with no console error, selected sections, and its trace challenge", async ({
   page,
 }) => {
   const errors = watchErrors(page);
   await openLesson(page);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
-  await expect(page.locator("section.challenge")).toHaveCount(2);
+  await expect(page.locator("section.challenge")).toHaveCount(1);
   await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
   await expect(page.locator("a.back-link").first()).toHaveAttribute("href", "#/");
   await expect(page).toHaveTitle(`${lesson.title} / Assembly Lab`);
@@ -507,6 +500,15 @@ test.describe("the ret prediction commits before it reveals", () => {
     const question = figure.locator(".prose").nth(1);
     await expect(question).toContainText("With ret deleted");
     await expect(figure.locator(".al-outcome")).toHaveCount(0);
+    // Explanations outside the locked figure must not disclose the experiment's mechanism.
+    await expect(
+      page.getByText("A function name does not make the processor stop.", { exact: false }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByText("Without ret, it carries on with the instructions that follow.", {
+        exact: false,
+      }),
+    ).toHaveCount(0);
     await expect(figure.getByRole("button", { name: LABELS.commit.noRet })).toBeDisabled();
     await expect(figure.getByRole("button", { name: V.prediction.commit })).toHaveCount(0);
   });
@@ -565,166 +567,6 @@ test.describe("the ret prediction commits before it reveals", () => {
     await page.reload();
     await expect(page.locator("#ix-predict-no-ret .al-match")).toBeVisible();
     await expect(page.locator("#ix-step-no-ret .al-locked")).toHaveCount(0);
-  });
-});
-
-test.describe("the construction challenge", () => {
-  test("is completed by typing, at the desktop width", async ({ page }, info) => {
-    test.skip(info.project.name !== "desktop", "typing is the desktop width's way in");
-    const errors = watchErrors(page);
-    await openLesson(page);
-    const c = challenge(page, FIX);
-    await c.scrollIntoViewIfNeeded();
-    const box = c.getByRole("textbox", { name: V.editor.textLabel });
-    await expect(box).toHaveValue("sub w0, w1, w0\nret");
-    await expect(box).toHaveAttribute("autocapitalize", "off");
-    await expect(box).toHaveAttribute("autocorrect", "off");
-    await expect(box).toHaveAttribute("spellcheck", "false");
-    await box.fill("");
-    await box.pressSequentially("sub w0, w0, w1\nret");
-    await run(c).click();
-    await expect(status(c)).toHaveText(passing(3));
-    await expect(c.locator(".challenge-complete")).toHaveText(S.challenge.complete);
-    expect(errors).toEqual([]);
-  });
-
-  test("is completed by tapping alone, at the phone width", async ({ page }, info) => {
-    test.skip(info.project.name !== "phone", "tapping is the phone width's way in");
-    const errors = watchErrors(page);
-    await openLesson(page);
-    const c = challenge(page, FIX);
-    await c.scrollIntoViewIfNeeded();
-    await c.getByRole("button", { name: V.editor.tap, exact: true }).tap();
-    // No text box in this mode: nothing can be typed.
-    await expect(c.getByRole("textbox")).toHaveCount(0);
-    await c.locator(".asm-line-button").first().tap();
-    await c
-      .getByRole("group", { name: V.editor.operand(2) })
-      .getByRole("button", { name: "w0" })
-      .tap();
-    await c
-      .getByRole("group", { name: V.editor.operand(3) })
-      .getByRole("button", { name: "w1" })
-      .tap();
-    await expect(c.locator(".asm-line-button").first()).toContainText("sub w0, w0, w1");
-    await run(c).tap();
-    await expect(status(c)).toHaveText(passing(3));
-    await expect(c.locator(".challenge-complete")).toHaveText(S.challenge.complete);
-    expect((await stored(page)).challenges[FIX].artifact.text).toBe("sub w0, w0, w1\nret");
-    expect(errors).toEqual([]);
-  });
-
-  test("offers the keys this challenge needs: `,` and `w`, registers w0 to w3, no number pad", async ({
-    page,
-  }) => {
-    await openLesson(page);
-    const c = challenge(page, FIX);
-    await c.scrollIntoViewIfNeeded();
-    await expect(c.getByRole("group", { name: V.editor.symbols }).getByRole("button")).toHaveText([
-      ",",
-      "w",
-    ]);
-    await press(page, c.getByRole("button", { name: V.editor.tap, exact: true }));
-    await press(page, c.locator(".asm-line-button").first());
-    const third = c.getByRole("group", { name: V.editor.operand(3), exact: true });
-    await expect(third.getByRole("button")).toHaveText(["w0", "w1", "w2", "w3"]);
-  });
-
-  test("builds the whole answer from chips, from nothing", async ({ page }) => {
-    await openLesson(page);
-    const c = challenge(page, FIX);
-    await c.scrollIntoViewIfNeeded();
-    await press(page, c.getByRole("button", { name: V.editor.tap, exact: true }));
-    // Take the starting lines out, then build `sub w0, w0, w1` and `ret`.
-    for (let k = 0; k < 2; k++) {
-      await press(page, c.locator(".asm-line-button").first());
-      await press(page, c.getByRole("button", { name: V.editor.remove }));
-    }
-    await press(page, c.getByRole("button", { name: V.editor.addFirst }));
-    const chip = (group: string, name: string) =>
-      c.getByRole("group", { name: group, exact: true }).getByRole("button", { name, exact: true });
-    await press(page, chip(V.editor.instruction, "sub"));
-    await press(page, chip(V.editor.operand(1), "w0"));
-    await press(page, chip(V.editor.operand(2), "w0"));
-    await press(page, chip(V.editor.operand(3), "w1"));
-    await press(page, c.getByRole("button", { name: V.editor.addBelow }));
-    await press(page, chip(V.editor.instruction, "ret"));
-    await press(page, run(c));
-    await expect(status(c)).toHaveText(passing(3));
-  });
-
-  test("keeps the text when the learner switches between the two modes", async ({ page }) => {
-    await openLesson(page);
-    const c = challenge(page, FIX);
-    await c.scrollIntoViewIfNeeded();
-    const box = c.getByRole("textbox", { name: V.editor.textLabel });
-    // Characters from the bar go in at the cursor.
-    await box.fill("sub w0 w1");
-    await box.evaluate((el: HTMLTextAreaElement) => el.setSelectionRange(6, 6));
-    await press(page, c.getByRole("button", { name: V.editor.insert(",") }));
-    await expect(box).toHaveValue("sub w0, w1");
-    await press(page, c.getByRole("button", { name: V.editor.tap, exact: true }));
-    await expect(c.locator(".asm-line-button")).toHaveCount(1);
-    await expect(c.locator(".asm-line-button")).toContainText("sub w0, w1");
-    await press(page, c.getByRole("button", { name: V.editor.text, exact: true }));
-    await expect(box).toHaveValue("sub w0, w1");
-  });
-});
-
-test.describe("a wrong answer is rejected", () => {
-  test("the starting point fails the two calls it gets wrong, and says what it returned", async ({
-    page,
-  }) => {
-    await openLesson(page);
-    const c = challenge(page, FIX);
-    await c.scrollIntoViewIfNeeded();
-    await press(page, run(c));
-    await expect(status(c)).toHaveText(format(S.challenge.failing, { passed: 1, total: 3 }));
-    await expect(c.locator(".verdict-failure h4")).toHaveText([
-      "fuel_used(50, 38)",
-      "fuel_used(60, 5)",
-    ]);
-    // Both failures are the reversed subtraction, so each is answered with the sentence about the
-    // order of the operands, which names no value.
-    await expect(c.locator(".verdict-detail")).toHaveText([
-      quoted(PROSE.fixReversedFeedback),
-      quoted(PROSE.fixReversedFeedback),
-    ]);
-    await expect(c.locator(".challenge-complete")).toHaveCount(0);
-  });
-
-  test("any other wrong result keeps the usual card, with the values and without the sentence", async ({
-    page,
-  }) => {
-    await openLesson(page);
-    const c = challenge(page, FIX);
-    await c.scrollIntoViewIfNeeded();
-    const box = c.getByRole("textbox", { name: V.editor.textLabel });
-    await box.fill("add w0, w0, w1\nret");
-    await press(page, run(c));
-    await expect(c.locator(".verdict-failure")).toHaveCount(3);
-    await expect(c.locator(".verdict-detail")).toHaveCount(0);
-    await expect(c.locator(".verdict-failure").first()).toContainText("w0=88");
-  });
-
-  test("another wrong order of operands fails, and an instruction the lesson has not met is refused", async ({
-    page,
-  }) => {
-    await openLesson(page);
-    const c = challenge(page, FIX);
-    await c.scrollIntoViewIfNeeded();
-    const box = c.getByRole("textbox", { name: V.editor.textLabel });
-    await box.fill("sub w0, w1, w0\nsub w0, w0, w1\nret");
-    await press(page, run(c));
-    await expect(c.locator(".challenge-complete")).toHaveCount(0);
-    await expect(status(c)).not.toHaveText(passing(3));
-    await box.fill("mov w0, w1\nret");
-    await expect(c.locator(".asm-problems")).toContainText("Line 1");
-    await expect(c.locator(".asm-problems")).toContainText("mov");
-    await press(page, run(c));
-    await expect(status(c)).toHaveText(S.challenge.blocked);
-    await expect(c.locator(".verdict.blocked")).toContainText("mov");
-    await expect(c.locator(".challenge-complete")).toHaveCount(0);
   });
 });
 
@@ -842,24 +684,6 @@ test.describe("a completion", () => {
     await page.reload();
     await expect(challenge(page, TRACE).locator(".challenge-complete")).toHaveCount(0);
   });
-
-  test("of the construction challenge is cleared back to the mistaken instructions", async ({
-    page,
-  }) => {
-    await openLesson(page);
-    const c = challenge(page, FIX);
-    await c.scrollIntoViewIfNeeded();
-    const box = c.getByRole("textbox", { name: V.editor.textLabel });
-    await box.fill("sub w0, w0, w1\nret");
-    await press(page, run(c));
-    await expect(c.locator(".challenge-complete")).toBeVisible();
-    await page.reload();
-    await expect(challenge(page, FIX).locator(".challenge-complete")).toBeVisible();
-    await press(page, c.getByRole("button", { name: new RegExp(`^${S.challenge.reset}`) }));
-    await press(page, c.getByRole("button", { name: S.challenge.resetConfirm }));
-    await expect(c.locator(".challenge-complete")).toHaveCount(0);
-    await expect(box).toHaveValue("sub w0, w1, w0\nret");
-  });
 });
 
 test.describe("the look of the lesson page", () => {
@@ -870,9 +694,7 @@ test.describe("the look of the lesson page", () => {
     expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
   });
 
-  test("and so are the figures once they have been used, the tap editor open and a verdict shown", async ({
-    page,
-  }, info) => {
+  test("and so are the used figures and the trace verdict", async ({ page }, info) => {
     const phone = info.project.name === "phone";
     await openLesson(page);
     await commit(page, "predict-no-ret", "232");
@@ -890,23 +712,11 @@ test.describe("the look of the lesson page", () => {
       await press(page, noRet.getByRole("button", { name: V.stepper.next }));
     await expect(noRet.locator(".al-link")).toBeVisible();
     expect(await designProblems(page, phone)).toEqual([]);
-    const fix = challenge(page, FIX);
-    await press(page, fix.getByRole("button", { name: V.editor.tap, exact: true }));
-    await press(page, fix.locator(".asm-line-button").first());
-    // This challenge needs no constant: the third operand offers registers and no number pad.
-    const third = fix.getByRole("group", { name: V.editor.operand(3) });
-    await expect(third.getByRole("button", { name: V.editor.number })).toHaveCount(0);
-    await press(page, third.getByRole("button", { name: "w3" }));
-    await press(page, run(fix));
     const trace = challenge(page, TRACE);
     await trace.locator('[data-field="w0"] input').fill("1");
     await trace.locator('[data-field="w1"] input').fill("2");
     await press(page, run(trace));
     await press(page, trace.getByRole("button", { name: /Show hint/ }));
-    expect(await designProblems(page, phone)).toEqual([]);
-    // The text mode too, with a problem listed.
-    await press(page, fix.getByRole("button", { name: V.editor.text, exact: true }));
-    await fix.getByRole("textbox", { name: V.editor.textLabel }).fill("mov w0, w1");
     expect(await designProblems(page, phone)).toEqual([]);
   });
 
