@@ -5,7 +5,7 @@ import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { MODULE0_STRINGS as M } from "../../packages/views/src/strings.module0";
 
 for (const theme of ["light", "dark"] as const) {
-  test(`compact registers wrap by content and retain their bit disclosure in ${theme}`, async ({
+  test(`compact decimal registers wrap by content and stay readable in ${theme}`, async ({
     page,
   }) => {
     await page.addInitScript(
@@ -31,18 +31,10 @@ for (const theme of ["light", "dark"] as const) {
         ),
       ).toBe(true);
     }
-    const toggle = figure.getByRole("button", { name: M.registers.showBits });
-    expect((await toggle.boundingBox())!.height).toBeGreaterThanOrEqual(40);
-    await toggle.click();
-    await expect(figure.getByRole("button", { name: M.registers.hideBits })).toHaveAttribute(
-      "aria-expanded",
-      "true",
-    );
-    await expect(figure.locator(".al-bit")).toHaveCount(128);
+    await expect(figure.getByRole("button", { name: M.registers.showBits })).toHaveCount(0);
     await figure.getByRole("button", { name: V.stepper.next, exact: true }).click();
     await figure.getByRole("button", { name: V.stepper.back, exact: true }).click();
-    await expect(figure.locator(".al-bit")).toHaveCount(128);
-    await figure.getByRole("button", { name: M.registers.hideBits }).click();
+    await expect(figure.locator(".al-bit")).toHaveCount(0);
     // Text scaling may wrap whole summaries, but must preserve complete values and page containment.
     await page.setViewportSize({ width: 320, height: 900 });
     await page.addStyleTag({ content: "html { font-size: 200% !important; }" });

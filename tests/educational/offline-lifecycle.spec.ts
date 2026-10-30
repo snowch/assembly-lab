@@ -813,9 +813,11 @@ test("safe restart preserves each tab's current simulation view and unfinished a
     const stepper = second.locator("#ix-step-trip [data-figure='stepper']");
     await stepper.getByRole("button", { name: V.stepper.next, exact: true }).click();
     await stepper.getByRole("button", { name: V.stepper.next, exact: true }).click();
-    await stepper.getByRole("button", { name: "Show the bits", exact: true }).click();
+    await expect(stepper.getByRole("button", { name: "Show the bits", exact: true })).toHaveCount(
+      0,
+    );
     await expect(stepper).toHaveAttribute("data-k", "2");
-    await expect(stepper.locator(".al-registers")).toHaveAttribute("data-view", "bits");
+    await expect(stepper.locator(".al-registers")).toHaveAttribute("data-view", "decimal");
     const before = await stepper.locator(".al-status").innerText();
     const prediction = second.locator("#ix-predict-no-ret").getByRole("radio").first();
     await prediction.check();
@@ -828,7 +830,7 @@ test("safe restart preserves each tab's current simulation view and unfinished a
     await expect(operation).toHaveAttribute("data-k", "1");
     await expect(answer).toHaveValue("123");
     await expect(stepper).toHaveAttribute("data-k", "2");
-    await expect(stepper.locator(".al-registers")).toHaveAttribute("data-view", "bits");
+    await expect(stepper.locator(".al-registers")).toHaveAttribute("data-view", "decimal");
     await expect(stepper.locator(".al-status")).toHaveText(before);
     await expect(prediction).toBeChecked();
     await expect(second.locator("#ix-step-no-ret .al-locked")).toHaveCount(1);

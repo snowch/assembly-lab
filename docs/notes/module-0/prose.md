@@ -34,7 +34,7 @@ GCC 16.1.0 at `-O1` made the four instructions below for 64-bit Arm. Follow the 
 
 Run `trip_distance(120, 85, 42, 15)` with Next. The C statement and instruction that just ran are highlighted together; ▸ marks the next instruction. An outlined register was written by the last instruction. Back undoes a step; Reset starts again.
 
-On a narrow screen, swipe sideways within the listing to see the C and instructions. Show the bits changes the register display to 32-bit patterns.
+On a narrow screen, swipe sideways within the listing to see the C and instructions.
 
 *trip_distance(120, 85, 42, 15), from incoming arguments to the returned result.*
 
