@@ -2,6 +2,7 @@
 
 import { expect, test } from "@playwright/test";
 import { LESSONS } from "@al/content";
+import { designProblems } from "./design";
 
 const ordered = [...LESSONS].sort((a, b) => a.module - b.module || a.order - b.order);
 const first = ordered[0]!;
@@ -26,6 +27,7 @@ for (const theme of ["light", "dark"]) {
     await page.keyboard.press("Enter");
     await expect(button).toHaveText(undo);
     await expect(button).toBeFocused();
+    expect(await designProblems(page, page.viewportSize()!.width < 500)).toEqual([]);
     expect(await button.evaluate((el) => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(
       40,
     );
@@ -175,6 +177,7 @@ test("a storage failure keeps the mark for this visit and tells the learner it w
   await page.locator(".lesson-completion button").click();
   await expect(page.locator(".lesson-completion button")).toHaveText(undo);
   await expect(page.getByText(/Lesson marks could not be saved/)).toBeVisible();
+  expect(await designProblems(page, page.viewportSize()!.width < 500)).toEqual([]);
   await page.locator(".lesson-back a").click();
   await expect(page.locator(".lesson-complete-mark")).toHaveCount(1);
   await expect(page.getByText(/Lesson marks could not be saved/)).toBeVisible();

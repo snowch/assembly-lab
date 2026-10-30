@@ -616,6 +616,7 @@ ol {
   min-height: 44px;
 }
 .lesson-completion-note {
+  max-width: 65ch;
   color: var(--fg-muted);
   font-size: var(--text-sm);
   margin: 0 0 var(--space-4);

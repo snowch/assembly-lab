@@ -6,7 +6,7 @@ The reviewer did not draft the copy or implement the feature.
 
 ## Source and copy review
 
-No copy or terminology finding. One layout finding was accepted after the browser pass below.
+No copy or terminology finding. Two layout findings were accepted and corrected as recorded below.
 
 - “Mark lesson complete” and “Mark lesson incomplete” name a deliberate, reversible action.
   “Marked complete” and “You have marked all current lessons complete.” describe the learner’s
@@ -46,11 +46,33 @@ The finding is closed. First-candidate evidence is preserved in
 `/tmp/lesson-completion-learner-initial`; replacement-build evidence is in
 `/tmp/lesson-completion-learner`.
 
+## Accepted reading-measure finding, corrected
+
+**Low: the shared footer storage note used the whole desktop content width.** The managing
+session’s CI run reported “line of 132 characters” against “Lesson marks are saved…”. This is
+the checker’s estimate from paragraph width, not the length of the short saving sentence. The
+paragraph also carries the longer failure message. Direction: constrain its reading width using
+its own small-text size. The managing session added `max-width: 65ch` to
+`.lesson-completion-note` and added healthy/failure design assertions.
+
+Independent verification followed the successful 15.80-second build in
+`/tmp/completion-measure-build.log`. On that latest build, tested both saved and injected-quota
+failure states at 375 × 812 and 1280 × 800 in actual light and dark themes: eight states. The
+note is 343 pixels wide on the phone and 455 pixels on desktop, at 15-pixel type. The shared
+`designProblems` helper returned an empty list in all eight states; its estimated line measures
+are 45.73 and 60.67 characters respectively. The saved sentence remains one line; the failure
+message wraps into two readable lines at both widths. Screenshots show no clipping or overlap.
+Keyboard focus remains visible and the previous/mark/next group retains the verified 12-pixel
+spacing. The finding is closed. Evidence: `/tmp/lesson-completion-note-review/results.json` and
+the eight adjacent screenshots. This focused pass does not replace or change the outcome of the
+managing session’s earlier full-suite run.
+
 ## Independent browser evidence
 
 The reviewer drove Chromium against the production build at `http://localhost:4411/assembly-lab/`
-after the managing session’s replacement final-build notice. All focused checks below were
-repeated on that build, using the final `assembly-lab:v1:manual-completion:` namespace for
+after the managing session’s placement replacement-build notice. All focused checks below were
+repeated on that build; the subsequent note-width-only build received the eight-state recheck
+recorded above. Storage fixtures use the final `assembly-lab:v1:manual-completion:` namespace for
 isolated storage fixtures. The disposable scripts and screenshots are in
 `/tmp/lesson-completion-learner*`; no repository source or test implementation was changed by
 this review. Actual `html[data-theme]` and computed colours confirmed each requested theme.
@@ -85,5 +107,5 @@ offline, service-worker update and corruption handling belong to the technical/i
 checks and are not established by these screenshots. No physical touchscreen or assistive
 technology session was run; keyboard focus and accessible names were checked in Chromium.
 
-Status: ready. The accepted placement finding is independently verified as corrected; no open
+Status: ready. Both accepted layout findings are independently verified as corrected; no open
 learner-facing finding remains in this scope.

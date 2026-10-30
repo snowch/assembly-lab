@@ -46,3 +46,21 @@ use current durable storage on explicit external events; the technical review re
 memory-only conflict limitation. Normal subscription/route changes preserve unsaved choices.
 
 Full GitHub CI and deployment evidence will be recorded in the pull request after commit.
+
+## CI reading-measure correction
+
+The first push and PR Check runs (41066351213 and 41066404807) both failed. Each passed
+2,969 unit tests, then reported 107 browser failures, 1,166 passes and 21 skips. All 107
+failures reported the new completion saving note as a 132-character-wide line: its desktop
+paragraph box was unconstrained. The other two CI jobs passed in both runs.
+
+Constrained `.lesson-completion-note` to `65ch`, matching its smaller font, and added the
+existing `designProblems` assertions to the completion checks for saved and failed-save
+states. No design threshold was weakened. The rebuilt site passed 26 completion/module-1
+browser tests and 12 synthesis/reading-measure tests. Formatting and diff checks passed.
+Independent learner and technical follow-up reviews confirmed the final build at 375/1280
+in actual light/dark themes, including the longer failure notice. Both are ready; their
+notes retain measured evidence and the technical review's failed probe separately.
+
+The original full CI failures remain failures. Fresh full CI results will be recorded in
+the PR after this correction is pushed.

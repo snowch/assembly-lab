@@ -6,7 +6,9 @@ adapter. Model and effort were inherited from the managing session.
 
 ## Findings
 
-No technical defect found in the completion state or persistence paths reviewed below.
+No open technical defect in the completion state or persistence paths reviewed below.
+The initial focused review missed the footer note's excessive line-box width; the CI finding
+and its correction are recorded in the follow-up below.
 The learner review's accepted footer-grouping correction passed the final-build recheck.
 
 ## Source and focused checks
@@ -70,3 +72,37 @@ durable value, including over a memory-only local choice. The managing session a
 policy for reading marks. Ordinary route/subscription changes retain memory-only choices.
 
 Status: final source and built-site technical review ready. No open technical finding.
+
+## Follow-up: footer-note measure
+
+**Accepted, medium: the footer note exceeded the existing prose measure.** The managing
+session's full CI run reported 107 browser failures with the shared note estimated at
+132 characters. The earlier focused review checked overflow and readability but did not run
+the existing `designProblems` measure guard. A passing focused run did not establish this rule.
+
+The smallest correction adds `max-width: 65ch` to `.lesson-completion-note`. Source inspection
+confirmed that the change affects only paragraph width; storage, copy, status semantics,
+keyboard behaviour and update safety are unchanged. The added healthy/failed-save assertions
+call the existing `designProblems` helper without changing its 85-character threshold.
+
+Independent Chromium recheck against build
+`b44e489acad43ded99c7ba07947641b8f123cc91e615cd2454ecf795be0ef14b`:
+
+- At 375 pixels, the note measured 343 pixels wide at 15-pixel text, or 45.73 estimated
+  characters. At 1280, it measured 455 pixels, or 60.67 estimated characters. Both light and
+  dark produced the same measures; actual `html[data-theme]` was checked.
+- `designProblems` returned no problems in all 20 sampled states: initial, marked, last lesson,
+  unsaved mark and unsaved undo at both widths and themes. Saved notes remained one line;
+  failure notes wrapped to two lines without clipping. Screenshots were inspected.
+- Keyboard mark/undo kept focus, durable undo still stored `false`, and isolated failed saves
+  retained the mark and truthful warning. Undoing a genuinely unsaved mark kept the warning on
+  both lesson and plan. The first/last footer boundaries still worked.
+
+The first follow-up probe exited 1 because its fixture expected an unsaved warning after
+undo returned to an already durable `false`. The saving note was correct. A fresh failure
+context retained the intended unsaved precondition; the corrected probe exited 0. This does
+not change the first probe's failure or the managing session's original CI result.
+
+Evidence: `/tmp/completion-technical-measure/results.json` and adjacent screenshots. These are
+focused measurements and browser probes; full educational-suite reruns remain the managing
+session's responsibility. The measure finding is closed; no new technical finding remains.
