@@ -63,6 +63,8 @@ const Props = z.object({
   flow: z.boolean().default(false),
   /** Draw each register as a large decimal number; a switch opens the 32 bits. */
   decimal: z.boolean().default(false),
+  allowBits: z.boolean().default(true),
+  registersFirst: z.boolean().default(false),
   /** Draw the listing as one box for each function, with the run's stopping point and crossings marked. */
   grouped: z.boolean().default(false),
   /** Markdown-free text shown under the figure's status once the run has ended. */
@@ -326,7 +328,55 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
       </div>
     </div>
   );
-  const decimalOnly = data.decimal && !bitsShown;
+  const decimalOnly = data.decimal && (!data.allowBits || !bitsShown);
+  const registerDisplay = (
+    <>
+      {data.decimal && (
+        <div className="al-registers-head">
+          <span className="al-registers-title">{S.stepper.registers}</span>
+          {data.allowBits && (
+            <button
+              type="button"
+              className="button secondary"
+              aria-expanded={bitsShown}
+              aria-controls={bitsId}
+              onClick={() => setBitsShown(!bitsShown)}
+            >
+              {bitsShown ? M0.registers.hideBits : M0.registers.showBits}
+            </button>
+          )}
+        </div>
+      )}
+      <div
+        id={data.decimal ? bitsId : undefined}
+        className="al-registers"
+        role="group"
+        aria-label={S.stepper.registers}
+        data-view={data.decimal ? (decimalOnly ? "decimal" : "bits") : undefined}
+      >
+        {data.registers.map((n) =>
+          decimalOnly ? (
+            <DecimalRegister
+              key={n}
+              name={`w${n}`}
+              value={wValue(view.state, n)}
+              changed={view.written.has(n)}
+            />
+          ) : (
+            <RegisterRow
+              key={n}
+              name={`w${n}`}
+              value={wValue(view.state, n)}
+              changed={view.written.has(n)}
+              {...(data.showChanges
+                ? { tag: view.written.has(n) ? A.stepper.registerChanged : "" }
+                : {})}
+            />
+          ),
+        )}
+      </div>
+    </>
+  );
   return (
     <div
       className="al-figure al-stepper"
@@ -347,6 +397,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           <span>{withCode(S.stepper.deleteLine(data.removable.text))}</span>
         </label>
       )}
+      {data.registersFirst && registerDisplay}
       <ListingView
         cLines={cLinesOf(data.program.c)}
         lines={trace.lines}
@@ -441,48 +492,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
         </div>
       )}
       {data.flow && !data.compact && <FlowPanel trace={trace} k={view.k} shown={data.registers} />}
-      {data.decimal && (
-        <div className="al-registers-head">
-          <span className="al-registers-title">{S.stepper.registers}</span>
-          <button
-            type="button"
-            className="button secondary"
-            aria-expanded={bitsShown}
-            aria-controls={bitsId}
-            onClick={() => setBitsShown(!bitsShown)}
-          >
-            {bitsShown ? M0.registers.hideBits : M0.registers.showBits}
-          </button>
-        </div>
-      )}
-      <div
-        id={data.decimal ? bitsId : undefined}
-        className="al-registers"
-        role="group"
-        aria-label={S.stepper.registers}
-        data-view={data.decimal ? (decimalOnly ? "decimal" : "bits") : undefined}
-      >
-        {data.registers.map((n) =>
-          decimalOnly ? (
-            <DecimalRegister
-              key={n}
-              name={`w${n}`}
-              value={wValue(view.state, n)}
-              changed={view.written.has(n)}
-            />
-          ) : (
-            <RegisterRow
-              key={n}
-              name={`w${n}`}
-              value={wValue(view.state, n)}
-              changed={view.written.has(n)}
-              {...(data.showChanges
-                ? { tag: view.written.has(n) ? A.stepper.registerChanged : "" }
-                : {})}
-            />
-          ),
-        )}
-      </div>
+      {!data.registersFirst && registerDisplay}
       {data.subtractionReadings && view.k > 0 && (
         <div className="al-dual-reading" role="group" aria-label={M1.opener.readings}>
           <p>{withCode(M1.opener.samePattern(`w${data.subtractionReadings.register}`))}</p>

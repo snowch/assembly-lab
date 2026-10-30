@@ -97,6 +97,8 @@ export const meetTheMachine: LessonInput = {
             // Reuse the introductory operand rules in one complete function.
             flow: false,
             decimal: true,
+            allowBits: false,
+            registersFirst: true,
             // This synthesis walkthrough adds no repeated per-instruction quiz.
             expect: false,
             compact: false,
@@ -160,6 +162,8 @@ export const meetTheMachine: LessonInput = {
             after: "predict-no-ret",
             flow: true,
             decimal: true,
+            allowBits: false,
+            registersFirst: true,
             grouped: true,
           },
         },

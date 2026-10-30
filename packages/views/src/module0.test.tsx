@@ -225,6 +225,32 @@ describe("the registers as decimal numbers", () => {
     expect(container.querySelectorAll(".al-bit")).toHaveLength(0);
   });
 
+  it("can keep registers decimal and before code even after an earlier bit-display choice", async () => {
+    const user = userEvent.setup();
+    const { container, rerender, store } = figure(StepperFigure, "s", "stepper", stepper);
+    await user.click(screen.getByRole("button", { name: M0.registers.showBits }));
+    expect(container.querySelectorAll(".al-bit")).toHaveLength(128);
+    const interactive = Interactive.parse({
+      id: "s",
+      kind: "stepper",
+      timeModel: "steps",
+      caption: "c",
+      props: { ...stepper, allowBits: false, registersFirst: true },
+    });
+    rerender(<StepperFigure lesson={{} as Lesson} interactive={interactive} store={store} />);
+    expect(screen.queryByRole("button", { name: M0.registers.hideBits })).toBeNull();
+    expect(screen.queryByRole("button", { name: M0.registers.showBits })).toBeNull();
+    expect(container.querySelectorAll(".al-bit")).toHaveLength(0);
+    const bank = container.querySelector(".al-registers")!;
+    expect(
+      bank.compareDocumentPosition(container.querySelector(".al-listing")!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(decimal(container, "w0")).toBe("120");
+    await user.click(next());
+    expect(decimal(container, "w0")).toBe("205");
+  });
+
   it("mark a changed register by an outline and by the word Changed, and nothing else", async () => {
     const user = userEvent.setup();
     const { container } = figure(StepperFigure, "s", "stepper", stepper);

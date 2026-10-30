@@ -8,7 +8,7 @@ export const PROSE = {
     "`trip_distance` adds three trip distances, called legs, then subtracts a detour. Its `int` arguments arrive in registers:\n\n- `leg1` arrives in `w0`.\n- `leg2` arrives in `w1`.\n- `leg3` arrives in `w2`.\n- `detour` arrives in `w3`.\n\nGCC 16.1.0 at `-O1` made the four instructions below for 64-bit Arm. Follow the C variable `total` through the calculation: the instructions update `w0`, then `ret` returns with the result already there.",
 
   investigation:
-    "Run `trip_distance(120, 85, 42, 15)` with Next. The C statement and instruction that just ran are highlighted together; ▸ marks the next instruction. An outlined register was written by the last instruction. Back undoes a step; Reset starts again.\n\nOn a narrow screen, swipe sideways within the listing to see the C and instructions. Show the bits changes the register display to 32-bit patterns.",
+    "Run `trip_distance(120, 85, 42, 15)` with Next. The C statement and instruction that just ran are highlighted together; ▸ marks the next instruction. An outlined register was written by the last instruction. Back undoes a step; Reset starts again.\n\nOn a narrow screen, swipe sideways within the listing to see the C and instructions.",
   // Shown by the stepper once the run has ended.
   investigationEnd:
     "`ret` returns to the code that called this function. The function's result is whatever `w0` holds at that moment.",

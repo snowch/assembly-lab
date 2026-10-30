@@ -73,7 +73,7 @@ async function commit(page: Page, id: string, option: string | RegExp): Promise<
   return figure;
 }
 
-// The registers are drawn as decimal numbers, or as their 32 bits once the switch is pressed.
+// This lesson keeps the arithmetic register values in decimal.
 const registerValue = (figure: Locator, name: string) =>
   figure.locator(`[data-register="${name}"]`).locator(".al-dreg-value, .al-reg-value");
 
@@ -345,23 +345,19 @@ test.describe("the stepper's panel of what the last instruction read and wrote",
 });
 
 test.describe("the registers as decimal numbers", () => {
-  test("show no bits until the switch is pressed, and the switch works from the keyboard", async ({
-    page,
-  }) => {
+  test("keep this lesson's registers decimal without a bit-display switch", async ({ page }) => {
     await openLesson(page);
     const figure = page.locator("#ix-step-trip");
-    await figure.scrollIntoViewIfNeeded();
     await expect(figure.locator(".al-bit")).toHaveCount(0);
     await expect(registerValue(figure, "w0")).toHaveText("120");
-    const toggle = figure.getByRole("button", { name: M0.registers.showBits });
-    await expect(toggle).toHaveAttribute("aria-expanded", "false");
-    await toggle.focus();
-    await page.keyboard.press("Enter");
-    const hide = figure.getByRole("button", { name: M0.registers.hideBits });
-    await expect(hide).toHaveAttribute("aria-expanded", "true");
-    await expect(figure.locator(".al-bit")).toHaveCount(4 * 32);
-    await expect(figure.locator("[data-register='w0'] .al-bit-group")).toHaveCount(4);
-    await page.keyboard.press("Space");
+    const bank = (await figure.locator(".al-registers").boundingBox())!;
+    const code = (await figure.locator(".al-listing").boundingBox())!;
+    expect(bank.y + bank.height).toBeLessThanOrEqual(code.y);
+    await expect(figure.getByRole("button", { name: M0.registers.showBits })).toHaveCount(0);
+    await press(page, figure.getByRole("button", { name: V.stepper.next }));
+    await expect(registerValue(figure, "w0")).toHaveText("205");
+    await page.reload();
+    await expect(figure.locator(".al-registers")).toHaveAttribute("data-view", "decimal");
     await expect(figure.locator(".al-bit")).toHaveCount(0);
   });
 
@@ -883,11 +879,11 @@ test.describe("the look of the lesson page", () => {
     const step = page.locator("#ix-step-trip");
     await press(page, step.getByRole("button", { name: V.stepper.next }));
     await press(page, step.getByRole("button", { name: V.stepper.next }));
-    // Both notes under the listing open, the bits of the registers shown, and the experiment's run
+    // Decimal register values and the experiment's run
     // across into fuel_used with its connector drawn.
     for (const summary of await page.locator("#ix-step-trip summary").all())
       await press(page, summary);
-    await press(page, step.getByRole("button", { name: M0.registers.showBits }));
+    await expect(step.getByRole("button", { name: M0.registers.showBits })).toHaveCount(0);
     const noRet = page.locator("#ix-step-no-ret");
     await press(page, noRet.getByRole("checkbox"));
     for (let k = 0; k < 3; k++)
@@ -929,7 +925,7 @@ test.describe("the look of the lesson page", () => {
     await step.scrollIntoViewIfNeeded();
     await press(page, step.getByRole("button", { name: V.stepper.next }));
     expect(await designProblems(page, true)).toEqual([]);
-    await press(page, step.getByRole("button", { name: M0.registers.showBits }));
+    await expect(step.getByRole("button", { name: M0.registers.showBits })).toHaveCount(0);
     for (let k = 0; k < 3; k++)
       await press(page, step.getByRole("button", { name: V.stepper.next }));
     expect(await designProblems(page, true)).toEqual([]);
@@ -945,26 +941,23 @@ test.describe("the look of the lesson page", () => {
     expect(await designProblems(page, true)).toEqual([]);
   });
 
-  test("a register's 32 cells fit the screen, on a phone and on a desk", async ({ page }) => {
+  test("decimal register cards fit the screen, on a phone and on a desk", async ({ page }) => {
     await openLesson(page);
-    await press(
-      page,
-      page.locator("#ix-step-trip").getByRole("button", { name: M0.registers.showBits }),
-    );
+
     const row = page.locator("#ix-step-trip [data-register='w0']");
     await row.scrollIntoViewIfNeeded();
     const box = (await row.boundingBox())!;
     const width = page.viewportSize()!.width;
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(width);
-    await expect(row.locator(".al-bit")).toHaveCount(32);
-    await expect(row.locator(".al-bit-group")).toHaveCount(4);
+    await expect(row.locator(".al-bit")).toHaveCount(0);
+    await expect(row.locator(".al-dreg-value")).toHaveText("120");
   });
 });
 
 test.describe("both themes", () => {
   for (const theme of ["light", "dark"] as const) {
-    test(`the figures are drawn in the ${theme} theme, with the stepper's marker and filled bits visible`, async ({
+    test(`the figures are drawn in the ${theme} theme, with the stepper's marker and written register visible`, async ({
       page,
     }) => {
       await page.goto("#/");
@@ -974,11 +967,11 @@ test.describe("both themes", () => {
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       const figure = page.locator("#ix-step-trip");
       await press(page, figure.getByRole("button", { name: V.stepper.next }));
-      await press(page, figure.getByRole("button", { name: M0.registers.showBits }));
+      await expect(figure.getByRole("button", { name: M0.registers.showBits })).toHaveCount(0);
       const colours = await figure.evaluate((el) => {
-        const on = el.querySelector('.al-bit[data-on="true"]')!;
-        const off = el.querySelector('.al-bit[data-on="false"]')!;
-        return [getComputedStyle(on).backgroundColor, getComputedStyle(off).backgroundColor];
+        const on = el.querySelector('[data-register="w0"]')!;
+        const off = el.querySelector('[data-register="w1"]')!;
+        return [getComputedStyle(on).borderTopColor, getComputedStyle(off).borderTopColor];
       });
       expect(colours[0]).not.toBe(colours[1]);
     });
