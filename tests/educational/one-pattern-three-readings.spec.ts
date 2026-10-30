@@ -627,7 +627,7 @@ test.describe("Make −1, with the bits typed in hexadecimal", () => {
   const answerBox = (page: Page) => challenge(page, MAKE).locator('[data-field="unsigned"] input');
   const pressed = (page: Page) => challenge(page, MAKE).locator('.al-toggle[aria-pressed="true"]');
   const solved =
-    "With all 32 bits set, the signed reading is −1 and the unsigned reading is 4294967295.";
+    "0xffffffff has all 32 bits set. The top bit contributes −2147483648 and the other 31 bits add to 2147483647. Their sum is −1. The unsigned reading is 4294967295.";
 
   test("has a box beside the 32 buttons, which starts as the bits are and fills in no answer", async ({
     page,
@@ -736,7 +736,8 @@ test.describe("Make −1, with the bits typed in hexadecimal", () => {
     await expect(c.locator(".challenge-complete")).toHaveText(complete);
     await expect(page.getByText(solved)).toBeVisible();
     // The words are the lesson's own, in the section after the challenge.
-    expect(PROSE.constructionSolved).toBe(solved);
+    expect(PROSE.constructionSolved.replaceAll("`", "")).toBe(solved);
+    await expect(page.locator("#ix-make-minus-one-solved code")).toHaveText("0xffffffff");
     expect(errors).toEqual([]);
     // And they go again if the work stops passing, and after Clear work.
     await press(page, bit(c, 3));

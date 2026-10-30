@@ -65,6 +65,7 @@ export const PROSE = {
 
   failureExperiment:
     "`neg w0, w0` sets a value to its negative, which is 0 minus the value. `negs` does the same and also writes the four flags.\n\n" +
+    "In two’s complement, you can calculate the same 32 result bits by inverting every bit and adding 1. Inverting changes each 0 to 1 and each 1 to 0. Keep only the low 32 bits.\n\n" +
     "The figure runs `negs w0, w0` on `0x80000000`, the smallest signed 32-bit value, which is −2147483648.",
   failureQuestion: "**What does `w0` hold afterwards?**",
   failureExplain:

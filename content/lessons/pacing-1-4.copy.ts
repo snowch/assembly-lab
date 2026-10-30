@@ -17,7 +17,7 @@ export const COPY = {
     intro:
       "The **signed reading** allows negative numbers and is the reading C’s `int` uses here. The **unsigned reading** counts every bit as a positive amount. The simulator shows register numbers in unsigned decimal.\n\nNothing in the register changes when we change how we read its bits.",
     investigation:
-      "Each bit is worth twice the bit to its right: 1, 2, 4, 8 and so on. The leftmost bit, bit 31, is the **top bit**. It is worth 2147483648.\n\nThe **unsigned reading** adds the values of the bits that are 1. The **signed reading** does the same, except the top bit counts as minus 2147483648.\n\nThe other 31 bits count the same in both readings. So when the top bit is 0, the two readings agree.\n\nThe figure starts with `0xfffffff4`, the initial pattern in `w0`. It shows the top bit’s value and the other 31 bits’ total in each reading. Open Show calculation to see how those parts add up.",
+      "Each bit is worth twice the bit to its right: 1, 2, 4, 8 and so on. The leftmost bit, bit 31, is the **top bit**. It is worth 2147483648.\n\nThe **unsigned reading** adds the values of the bits that are 1. The **signed reading** does the same, except the top bit counts as minus 2147483648.\n\nThis way of reading signed bits is called **two’s complement**. The top bit contributes a negative value; it is not a separate minus sign for the other bits.\n\nThe other 31 bits count the same in both readings. So when the top bit is 0, the two readings agree.\n\nThe figure starts with `0xfffffff4`, the initial pattern in `w0`. It shows the top bit’s value and the other 31 bits’ total in each reading. Open Show calculation to see how those parts add up.",
   },
   loadConstant: {
     title: "Loading a constant",

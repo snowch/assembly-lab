@@ -47,7 +47,7 @@ export const onePatternThreeReadings: LessonInput = {
   module: 1,
   order: 0,
   objectives: [...LABELS.objectives],
-  introduces: ["hexadecimal", "unsigned reading", "signed reading", "top bit"],
+  introduces: ["hexadecimal", "unsigned reading", "signed reading", "top bit", "two’s complement"],
   sections: [
     {
       kind: "question",

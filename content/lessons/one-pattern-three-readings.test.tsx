@@ -20,7 +20,7 @@ const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
 it("teaches hexadecimal before the two readings and keeps their practice together", () => {
   expect(units.map((unit) => unit.introduces)).toEqual([
     ["hexadecimal"],
-    ["unsigned reading", "signed reading", "top bit"],
+    ["unsigned reading", "signed reading", "top bit", "two’s complement"],
     [],
   ]);
   expect(units.map((unit) => unit.challenges.map((c) => c.id))).toEqual([
