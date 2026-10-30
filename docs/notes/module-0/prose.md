@@ -74,9 +74,22 @@ The processor does not stop just because it reaches the next function. Without `
 
 ## 3. Kilometres to service
 
-The car's odometer records the total distance it has travelled. The car needs a service when that reading reaches `service_at`. The `odometer` argument is the reading recorded before the current trip began. It does not include `trip_so_far`.
+`km_to_service` returns the kilometres remaining before a car needs a service, after allowing for the current trip and a planned trip. It keeps 50 km spare.
 
-`km_to_service` returns the kilometres left before the service, after allowing for the current trip and a planned trip. It also keeps 50 km spare. Its arguments are `service_at`, `odometer`, `trip_so_far` and `planned`, in `w0` to `w3`.
+```c
+int km_to_service(
+    int service_at, int odometer,
+    int trip_so_far, int planned);
+```
+
+The car's odometer records the total distance it has travelled. All four inputs are in kilometres:
+
+- `service_at`: the odometer reading at which the service is due.
+- `odometer`: the odometer reading before the current trip began.
+- `trip_so_far`: the distance travelled on the current trip.
+- `planned`: the distance of the planned trip.
+
+The arguments arrive in `w0` to `w3`, in that order.
 
 GCC made the five instructions shown below. The `#50` in the last `sub` is the number 50 written inside the instruction.
 
