@@ -49,7 +49,7 @@ export const PROSE = {
   constructionSolved:
     "Step through your solution below to see the two halves of `w0` after each instruction. Watch which half changes and which is kept.",
   buildTask:
-    "Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The starting text, `mov w0, 1000000` then `ret`, does not assemble.",
+    "Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The starting text, `mov w0, 1000000` then `ret`, does not assemble.\n\nChoose Text to type one instruction per line. Choose Tap to select a line and edit it with buttons. Press Run tests to check your program.",
   buildHints: [
     "One `mov` holds a number whose bits fall in one 16-bit half. `movk` writes the other half without touching the first.",
     "A second `mov` replaces the whole register. Only `movk` keeps the other half.",

@@ -235,7 +235,7 @@ export const constantsAndWidths: LessonInput = {
       // The registers the tap editor offers, and the instructions the lesson's assembler allows.
       palette: ["w0"],
       allowedConstructs: ["mov", "movk", "ret"],
-      // The keys the editor offers: this challenge writes `w0` and commas, as Module 0's does, and
+      // The keys the editor offers: this challenge writes `w0` and commas, and
       // needs a number pad (the tap mode builds `mov` and `movk` from numbers).
       initial: {
         text: ODOMETER_LIMIT_START_TEXT,

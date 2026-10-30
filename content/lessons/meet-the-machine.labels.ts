@@ -8,7 +8,6 @@ export const LABELS = {
   objectives: SYNTHESIS_COPY.objectives,
   titles: {
     investigation: "Trace trip_distance",
-    construction: "Fixing fuel_used",
     failureExperiment: "Removing ret",
     challenge: "Kilometres to service",
   },
@@ -17,7 +16,6 @@ export const LABELS = {
     predictNoRet: "A prediction about what w0 holds when the run ends without ret.",
     noRet:
       "trip_distance(120, 85, 42, 15) again, with a switch that deletes ret. In memory, fuel_used comes after trip_distance.",
-    fix: "The editor shows the instructions GCC made for fuel_used from the mistaken C.",
     trace: "The five instructions GCC made for km_to_service, and the call to trace.",
   },
   options: {
@@ -35,7 +33,6 @@ export const LABELS = {
     noRet: "See what happens",
   },
   challenges: {
-    fix: { title: "Fix the subtraction" },
     trace: {
       title: "Trace the call",
       fields: {

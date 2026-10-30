@@ -754,10 +754,6 @@ Connect C arguments and results to the registers that hold them.
 
 ### synthesis / objectives 3
 
-Repair a subtraction whose inputs are reversed.
-
-### synthesis / objectives 4
-
 Explain what happens when a function's `ret` is removed.
 
 ### synthesis / originalityNote / textbookExample
@@ -766,7 +762,7 @@ A first assembly program often combines loading constants, arithmetic and output
 
 ### synthesis / originalityNote / howThisDiffers
 
-This lesson combines mechanics already practised in the earlier Fundamentals lessons. Its trip calculation, operand-order repair and experiment removing a return connect those mechanics to complete compiler output.
+This lesson combines mechanics already practised in the earlier Fundamentals lessons. Its trip calculation and experiment removing a return connect those mechanics to complete compiler output.
 
 ## Course plan
 

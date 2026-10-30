@@ -109,13 +109,6 @@ describe("the closed notes and the wrong-answer sentences", () => {
     expect(flatInvitation).not.toContain("fuel_used");
     expect(flatInvitation).not.toContain("147");
   });
-
-  it("give the construction challenge's three cases the sentence for the reversed subtraction", () => {
-    const c = lesson.challenges.find((x) => x.id === "fix-fuel-used")!;
-    if (c.tests.kind !== "answers") throw new Error("answer tests");
-    for (const t of c.tests.cases)
-      expect(t.given["misconception.feedback"], t.label).toBe(PROSE.fixReversedFeedback);
-  });
 });
 
 describe("the lesson's words", () => {

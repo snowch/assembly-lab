@@ -2,7 +2,7 @@
 
 // Lesson: Same bits, two readings (module 1, the first of its two lessons; its id is still
 // one-pattern-three-readings, so its route and its stored work do not change). The learner opens
-// the value Module 0's mistaken `fuel_used(50, 38)` left in `w0`: 32 bits, written shorter in
+// the value `fuel_used_wrong(50, 38)` leaves in `w0`: 32 bits, written shorter in
 // hexadecimal, read as an unsigned number and as a signed one. Both readings appear after the
 // subtraction; adding 12 later tests the pattern. GCC makes the same instruction from the
 // `int` and the `unsigned` version of the function.
@@ -289,6 +289,6 @@ export const onePatternThreeReadings: LessonInput = {
     textbookExample:
       'The obvious way in is a table of two\'s complement values, or the "flip the bits and add one" rule.',
     howThisDiffers:
-      "This lesson starts from a wrong answer the reader has already seen in Module 0, and shows both readings of its result before asking what adding 12 does to the bits. It shows that no type is in the machine with two compiled listings that are identical, the `int` function and the `unsigned` one.",
+      "This lesson starts from a fuel calculation with its subtraction inputs reversed, and shows both readings of its result before asking what adding 12 does to the bits. It shows that no type is in the machine with two compiled listings that are identical, the `int` function and the `unsigned` one.",
   },
 };

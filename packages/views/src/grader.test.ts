@@ -34,6 +34,31 @@ describe("grading written assembly", () => {
     expect(verdict.failures[1]).toMatchObject({ actual: { w0: "-55" }, expected: { w0: "55" } });
   });
 
+  it("uses mistake-specific feedback only for the matching wrong result", () => {
+    if (written.tests.kind !== "answers") throw new Error("answer tests");
+    const feedback = "Check the order of the inputs to `sub`.";
+    const exercise = {
+      ...written,
+      tests: {
+        ...written.tests,
+        cases: written.tests.cases.map((c) => ({
+          ...c,
+          given: {
+            ...c.given,
+            "misconception.value": Number(c.given["w1"]) - Number(c.given["w0"]),
+            "misconception.feedback": feedback,
+          },
+        })),
+      },
+    };
+    const reversed = gradeWritten(exercise, written.initial);
+    expect(reversed.failures.map((f) => f.detail)).toEqual([quoted(feedback), quoted(feedback)]);
+    const other = gradeWritten(exercise, { text: "add w0, w0, w1\nret" });
+    expect(other.failures).toHaveLength(3);
+    expect(other.failures.every((f) => f.detail === undefined)).toBe(true);
+    expect(gradeWritten(exercise, written.reference).passed).toBe(true);
+  });
+
   it("takes the instructions as written, with a label or a blank line before them", () => {
     expect(gradeWritten(written, { text: "\nfuel_used:\n  sub w0, w0, w1\n  ret\n" }).passed).toBe(
       true,

@@ -180,14 +180,13 @@ export const SYNTHESIS_COPY = {
   objectives: [
     "Trace a complete compiled function using the operand rules.",
     "Connect C arguments and results to the registers that hold them.",
-    "Repair a subtraction whose inputs are reversed.",
     "Explain what happens when a function's `ret` is removed.",
   ],
   originalityNote: {
     textbookExample:
       "A first assembly program often combines loading constants, arithmetic and output before the individual mechanics are established.",
     howThisDiffers:
-      "This lesson combines mechanics already practised in the earlier Fundamentals lessons. Its trip calculation, operand-order repair and experiment removing a return connect those mechanics to complete compiler output.",
+      "This lesson combines mechanics already practised in the earlier Fundamentals lessons. Its trip calculation and experiment removing a return connect those mechanics to complete compiler output.",
   },
 } as const;
 
