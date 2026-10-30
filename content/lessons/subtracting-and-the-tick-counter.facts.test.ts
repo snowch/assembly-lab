@@ -386,6 +386,25 @@ describe("negs on 0x80000000", () => {
   it("sets V only for 0x80000000", () => {
     for (const x of [1, 5, 0x7fffffff, MAX]) expect(negs(x).flags.v, `${x}`).toBe(false);
   });
+
+  it("matches inversion plus one at 32 bits, including zero and the signed limits", () => {
+    const inputs = new Set([
+      0,
+      1,
+      12,
+      0xfffffff4,
+      0x7fffffff,
+      0x80000000,
+      MAX,
+      ...Array.from({ length: 32 }, (_, bit) => 2 ** bit),
+    ]);
+    for (const input of inputs) {
+      const inverted = BigInt(input) ^ 0xffffffffn;
+      const low32 = Number(BigInt.asUintN(32, inverted + 1n));
+      expect(callText(assembly(NEGATE.listing), "negate", [input]).w0, `${input}`).toBe(low32);
+      expect(negs(input).w0, `${input}`).toBe(low32);
+    }
+  });
 });
 
 describe("one step past the top: elapsed(0, 4294967295)", () => {

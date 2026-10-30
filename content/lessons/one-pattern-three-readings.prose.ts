@@ -26,7 +26,7 @@ export const PROSE = {
     "Hexadecimal is a compact way to write a bit pattern. It does not tell you whether to read that pattern as signed or unsigned. The figure below shows each digit under its four bits.\n\n" +
     "Each bit is worth twice the bit to its right: 1, 2, 4, 8 and so on. The leftmost bit, bit 31, is the **top bit**. It is worth 2147483648.\n\n" +
     "The **unsigned reading** adds the values of the bits that are 1. The **signed reading** does the same, except the top bit counts as minus 2147483648.\n\n" +
-    "The other 31 bits count the same in both readings. So when the top bit is 0, the two readings agree.\n\n" +
+    "This way of reading signed bits is called **two’s complement**. The top bit contributes a negative value; it is not a separate minus sign for the other bits.\n\nThe other 31 bits count the same in both readings. So when the top bit is 0, the two readings agree.\n\n" +
     "The figure starts with `0xfffffff4`, the pattern `sub` left in `w0`. It shows the top bit's value and the other 31 bits' total in each reading. The full sum of every bit is under \"Show calculation\".\n\n" +
     "A bit that is 1 is **set**, and a bit that is 0 is **clear**: to set a bit is to make it 1, and to clear it is to make it 0.\n\n" +
     'Set or clear any bit, or press "Clear bits" to start from zero.',
@@ -35,7 +35,7 @@ export const PROSE = {
     "You can press bits one at a time, or type a pattern in hexadecimal and the bits follow it.\n\nUse the optional scratch register beside this exercise to try a pattern and inspect its readings. It starts with all bits clear. Changes there do not fill in your answers below.",
 
   constructionSolved:
-    "With all 32 bits set, the signed reading is −1 and the unsigned reading is 4294967295.",
+    "`0xffffffff` has all 32 bits set. The top bit contributes −2147483648 and the other 31 bits add to 2147483647. Their sum is −1. The unsigned reading is 4294967295.",
   makeTask:
     "Set `w0`'s bits so that its signed reading is −1, then give the unsigned reading of the same bits.",
   makeHints: [

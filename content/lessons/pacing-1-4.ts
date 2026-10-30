@@ -67,7 +67,7 @@ const readings = splitLesson(onePatternThreeReadings, [
     id: "same-bits-two-readings",
     title: COPY.readings.title,
     objectives: [...COPY.readings.objectives],
-    introduces: ["unsigned reading", "signed reading", "top bit"],
+    introduces: ["unsigned reading", "signed reading", "top bit", "two’s complement"],
     sections: [
       { kind: "question", title: COPY.readings.title, prose: READ.motivation, interactives: [] },
       { ...section(onePatternThreeReadings, "investigation"), prose: COPY.readings.investigation },
