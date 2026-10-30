@@ -204,11 +204,20 @@ test("detect, download, defer and explicit restart reload every app tab while pr
     const code = "unsigned cap_charge(unsigned a, unsigned b) { return a + b; }";
     const editor = first.locator("#challenge-write-cap-charge").getByRole("textbox");
     await editor.fill(code);
+    await first.getByRole("button", { name: "Mark lesson complete", exact: true }).click();
     const second = await context.newPage();
     await controlled(second, `${site.url}#/lesson/meet-the-machine`);
     const answer = second.locator("#challenge-trace-the-call").getByRole("textbox").first();
     await answer.fill("123");
+    await second.getByRole("button", { name: "Mark lesson complete", exact: true }).click();
     await second.getByLabel(STRINGS.theme).selectOption("light");
+    // Another tab can undo a mark without making the first tab's update guard stale.
+    await second.goto(`${site.url}#/lesson/from-c-to-instructions`);
+    await second.getByRole("button", { name: "Mark lesson incomplete", exact: true }).click();
+    await expect(
+      first.getByRole("button", { name: "Mark lesson complete", exact: true }),
+    ).toBeVisible();
+    await second.goto(`${site.url}#/lesson/meet-the-machine`);
     const observer = await context.newPage();
     await observer.goto(`${site.origin}/another-course/`);
     await observer.evaluate(async (name) => {
@@ -242,6 +251,12 @@ test("detect, download, defer and explicit restart reload every app tab while pr
     await expect(second.locator("html")).toHaveAttribute("data-theme", "light");
     await expect(editor).toHaveValue(code);
     await expect(answer).toHaveValue("123");
+    await expect(
+      first.getByRole("button", { name: "Mark lesson complete", exact: true }),
+    ).toBeVisible();
+    await expect(
+      second.getByRole("button", { name: "Mark lesson incomplete", exact: true }),
+    ).toBeVisible();
     await expect(first).toHaveURL(`${site.url}#/lesson/from-c-to-instructions`);
     await expect(second).toHaveURL(`${site.url}#/lesson/meet-the-machine`);
     expect([firstReloads, secondReloads]).toEqual([1, 1]);

@@ -11,3 +11,8 @@
   align-items: center;
   min-height: 44px;
 }
+.lesson-complete-mark {
+  display: inline-flex;
+  margin-left: var(--space-2);
+  color: var(--accent);
+}
