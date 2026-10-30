@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { RegisterStateLabel } from "../RegisterStateLabel";
 import { useHandoffState } from "../update-handoff";
 import { useRef, useState } from "react";
 import { z } from "zod";
@@ -243,6 +244,7 @@ export const CompilerPlayground = withProps(
                     : S.stepper.ran(result.trace.result.steps[view.k - 1]!.text),
               )}
             </p>
+            <RegisterStateLabel trace={result.trace} view={view} />
             <div className="al-c-registers">
               {[
                 ...new Set(

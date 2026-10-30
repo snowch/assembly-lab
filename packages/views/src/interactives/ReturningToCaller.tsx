@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { RegisterStateLabel } from "../RegisterStateLabel";
 import { useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { Prose, useSlot } from "@platform/lesson-runtime";
@@ -121,7 +122,11 @@ export const ReturningToCaller = withProps(
             aria-label={S.sharedRegisters}
           >
             <strong>{S.sharedRegisters}</strong>
-            <p className="al-returning-moment">{position === 0 ? S.beforeCall : S.registersNow}</p>
+            {position === 0 ? (
+              <p className="al-returning-moment">{S.beforeCall}</p>
+            ) : (
+              <RegisterStateLabel trace={trace} view={view} />
+            )}
             <div className="al-returning-register-values">
               {[0, 1].map((n) => (
                 <DecimalRegister

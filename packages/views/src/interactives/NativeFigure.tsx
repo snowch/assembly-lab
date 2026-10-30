@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { RegisterStateLabel } from "../RegisterStateLabel";
 import { useHandoffState } from "../update-handoff";
 
 // Native stops are recorded by scripts/native/check.py. The adjacent browser values are
@@ -214,6 +215,7 @@ export const NativeFigure = withProps(Props, function NativeFigure({ data, store
             ].map((side) => (
               <div key={side.kind} data-native-side={side.kind}>
                 <p>{side.title}</p>
+                {side.kind === "model" && trace && <RegisterStateLabel trace={trace} view={view} />}
                 <div className="al-memory-registers">
                   {side.values?.map((value, n) => (
                     <RegisterSummary

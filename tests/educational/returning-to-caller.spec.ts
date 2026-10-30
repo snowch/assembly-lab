@@ -22,7 +22,7 @@ for (const theme of ["light", "dark"]) {
     const value = (name: string) => figure.locator(`[data-register="${name}"] .al-dreg-value`);
     const step = figure.getByRole("button", { name: S.run, exact: true });
     const bank = figure.getByRole("group", { name: S.sharedRegisters, exact: true });
-    const moment = bank.locator(".al-returning-moment");
+    const moment = bank.locator(".al-returning-moment, .al-register-state");
     await expect(bank).toHaveCount(1);
     await expect(bank.locator(".al-returning-target")).toHaveCount(1);
     await expect(moment).toHaveText(S.beforeCall);
@@ -129,7 +129,7 @@ for (const theme of ["light", "dark"]) {
     await expect(savedAddress).toHaveCount(0);
     await expect(connector).toHaveCount(0);
     await step.click();
-    await expect(moment).toHaveText(S.registersNow);
+    await expect(moment).toHaveText("After bl increment_int");
     await expect(value("w0")).toHaveText("7");
     await expect(value("w1")).toHaveText("0");
     await assertConnector();
@@ -162,7 +162,7 @@ for (const theme of ["light", "dark"]) {
     await page.reload();
     await expect(figure).toHaveAttribute("data-k", "3");
     await assertConnector();
-    await expect(moment).toHaveText(S.registersNow);
+    await expect(moment).toHaveText("After ret");
     await expect(savedAddress).toHaveText(String(numbers[1]));
     await step.click();
     await expect(value("w0")).toHaveText("8");
@@ -209,7 +209,7 @@ test("keeps the same machine state when restoring progress from before the call 
   await openLesson(page, "returning-to-caller");
   const figure = page.locator('[data-figure="returning-to-caller"]');
   await expect(figure).toHaveAttribute("data-k", "3");
-  await expect(figure.locator(".al-returning-moment")).toHaveText(S.registersNow);
+  await expect(figure.locator(".al-returning-moment, .al-register-state")).toHaveText("After ret");
   await expect(figure.locator('.al-returning-instruction[data-next="true"]')).toContainText(
     "add w1, w0, w0",
   );

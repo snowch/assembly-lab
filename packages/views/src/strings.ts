@@ -44,6 +44,12 @@ export const VIEW_STRINGS = {
     instructionsPane: "The instructions",
   },
 
+  registerState: {
+    before: "Before the first instruction",
+    after: (instruction: string) => `After \`${instruction}\``,
+    final: "Final values",
+  },
+
   stepper: {
     next: "Next",
     back: "Back",

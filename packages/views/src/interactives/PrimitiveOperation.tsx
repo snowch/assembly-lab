@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { RegisterStateLabel } from "../RegisterStateLabel";
 import { useHandoffState } from "../update-handoff";
 
 // Small first applications of arithmetic. All displayed input/result values and read/write
@@ -91,6 +92,7 @@ export const PrimitiveOperation = withProps(
               <span className="al-primitive-call-arrow" aria-hidden="true" />
             </div>
             <div className="al-primitive-call-registers">
+              <RegisterStateLabel trace={trace} view={view} />
               {stage.registers.map((n) => (
                 <div className="al-primitive-call-register" key={n}>
                   <span>
@@ -113,7 +115,11 @@ export const PrimitiveOperation = withProps(
           </div>
         ) : (
           <>
-            <p className="al-primitive-state-label">{stage.steps > 1 ? S.current : S.before}</p>
+            {stage.steps > 1 ? (
+              <RegisterStateLabel trace={trace} view={view} />
+            ) : (
+              <p className="al-primitive-state-label">{S.before}</p>
+            )}
             <div
               className="al-primitive-registers"
               role="group"

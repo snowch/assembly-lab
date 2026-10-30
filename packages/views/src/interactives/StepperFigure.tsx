@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { RegisterStateLabel } from "../RegisterStateLabel";
 import { useHandoffState } from "../update-handoff";
 
 // A recorded program, run one instruction at a time. The listing shows a marker at the instruction
@@ -347,6 +348,7 @@ export const StepperFigure = withProps(Props, function StepperFigure({ data, sto
           )}
         </div>
       )}
+      <RegisterStateLabel trace={trace} view={view} />
       <div
         id={data.decimal ? bitsId : undefined}
         className="al-registers"

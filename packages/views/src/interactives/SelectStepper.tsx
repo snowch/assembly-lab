@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { RegisterStateLabel } from "../RegisterStateLabel";
 import { useHandoffState } from "../update-handoff";
 
 // The learner's own solution to a written challenge, run one instruction at a time on a test call
@@ -180,6 +181,7 @@ export const SelectStepper = withProps(Props, function SelectStepper({ data, sto
       <p className="al-status" role="status">
         {withCode(statusOf(trace, view.k, data.branchStatus))}
       </p>
+      <RegisterStateLabel trace={trace} view={view} />
       <div className="al-registers" role="group" aria-label={S.stepper.registers}>
         {data.registers.map((n) => (
           <RegisterRow
