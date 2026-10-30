@@ -603,6 +603,7 @@ ol {
 }
 .lesson-nav-forward {
   display: flex;
+  flex-wrap: wrap;
   align-items: stretch;
   gap: var(--space-3);
   margin-left: auto;
@@ -610,10 +611,43 @@ ol {
 }
 .lesson-completion {
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  width: 15rem;
+  max-width: 100%;
 }
-.lesson-completion button {
-  min-height: 44px;
+.lesson-completion button.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  width: 100%;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+  box-shadow: none;
+}
+.lesson-completion button.button:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+.lesson-completion button.button[data-complete="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.lesson-completion button.button[data-complete="true"]:hover {
+  border-color: var(--accent-strong);
+  color: var(--accent-strong);
+}
+.lesson-completion-icon {
+  flex: 0 0 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 .lesson-completion-note {
   max-width: 65ch;
@@ -653,6 +687,9 @@ ol {
   }
   .lesson-nav-forward {
     margin-left: 0;
+  }
+  .lesson-completion {
+    width: 100%;
   }
   .lesson-nav-link[data-direction="next"] {
     justify-items: start;
