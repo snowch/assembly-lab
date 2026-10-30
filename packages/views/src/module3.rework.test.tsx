@@ -44,7 +44,7 @@ import { traceOf, viewAt, wValue } from "./trace";
 
 vi.setConfig({ testTimeout: 30_000 });
 
-const masks = LESSONS.find((l) => l.id === "masks") as Lesson;
+const masks = LESSONS.find((l) => l.id === "reading-and-writing-fields") as Lesson;
 const SET = "write-set-gear";
 const CALLS: readonly (readonly [number, number])[] = [
   [0x35, 5],
@@ -58,7 +58,7 @@ function mount(
   id: string,
   kind: string,
   props: Record<string, unknown>,
-  store = new LessonStore(memoryStorage(), "assembly-lab", "masks"),
+  store = new LessonStore(memoryStorage(), "assembly-lab", "reading-and-writing-fields"),
 ) {
   const interactive = Interactive.parse({ id, kind, timeModel: "steps", caption: "c", props });
   const view = render(<View lesson={masks} interactive={interactive} store={store} />);
@@ -183,7 +183,7 @@ describe("the warning word, reworked", () => {
 
 describe("the field read out of 0x35", () => {
   it("releases the field notation beside the diagram only after the earlier basic prediction", () => {
-    const store = new LessonStore(memoryStorage(), "assembly-lab", "masks");
+    const store = new LessonStore(memoryStorage(), "assembly-lab", "reading-and-writing-fields");
     const { container } = mount(
       FieldReadingFigure,
       "field",
@@ -458,7 +458,7 @@ describe("the learner's own instructions, stepped", () => {
   const next = () => screen.getByRole("button", { name: S.stepper.next });
 
   function stored(text: string | undefined, attempts = 1) {
-    const store = new LessonStore(memoryStorage(), "assembly-lab", "masks");
+    const store = new LessonStore(memoryStorage(), "assembly-lab", "reading-and-writing-fields");
     if (text !== undefined)
       store.setChallenge(SET, (c) => ({ ...c, artifact: { text }, attempts }));
     return store;
@@ -664,7 +664,7 @@ describe("what leaving out the clear does", () => {
   });
 
   it("shows the old word, the new gear moved into place, the OR without the clear (0x75) and with it (0x55, from GCC's function on the model), with the surviving old field bits marked", () => {
-    const store = new LessonStore(memoryStorage(), "assembly-lab", "masks");
+    const store = new LessonStore(memoryStorage(), "assembly-lab", "reading-and-writing-fields");
     store.setSlot("p", { choice: "117" });
     const { container } = mount(ClearCompare, "c", "clear-compare", props, store);
     expect(container.querySelector(".al-locked")).toBeNull();
@@ -705,14 +705,14 @@ describe("the learner's code beside GCC's bfi", () => {
     field: { from: 4, to: 6 },
   };
   function stored(text: string, attempts = 1) {
-    const store = new LessonStore(memoryStorage(), "assembly-lab", "masks");
+    const store = new LessonStore(memoryStorage(), "assembly-lab", "reading-and-writing-fields");
     store.setChallenge(SET, (c) => ({ ...c, artifact: { text }, attempts }));
     return store;
   }
 
   it("is shut until the challenge passes, and shows nothing of GCC's function or the answer before", () => {
     for (const store of [
-      new LessonStore(memoryStorage(), "assembly-lab", "masks"),
+      new LessonStore(memoryStorage(), "assembly-lab", "reading-and-writing-fields"),
       stored("ret"),
       stored("and w1, w1, 7\nlsl w1, w1, 4\norr w0, w0, w1\nret"),
     ]) {

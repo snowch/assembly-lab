@@ -10,11 +10,13 @@ import { PRODUCT_STRINGS as P } from "../strings.products";
 import { MemoryCallSchema, RecordedSchema, withProps } from "./props";
 
 const Props = z.object({ program: RecordedSchema, call: MemoryCallSchema, after: z.string() });
-export const ProductHalves = withProps(Props, function ProductHalves({ data, store }) {
-  const [prediction] = useSlot<{ choice: string }>(store, data.after);
+const ProductProps = Props.extend({ after: z.string().optional() });
+export const ProductHalves = withProps(ProductProps, function ProductHalves({ data, store }) {
+  const [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
+  const unlocked = data.after === undefined || prediction !== undefined;
   const result = useMemo(
-    () => (prediction === undefined ? null : productHalves(traceOf(data.program, data.call))),
-    [prediction, data.program, data.call],
+    () => (unlocked ? productHalves(traceOf(data.program, data.call)) : null),
+    [unlocked, data.program, data.call],
   );
   if (result === null)
     return (

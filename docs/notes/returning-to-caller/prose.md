@@ -26,7 +26,7 @@ In our example, `ret` left `w0` and `w1` unchanged. Execution continued in the c
 
 The caller can use the other general-purpose registers too. It looks in `w0` for this `int` result because caller and function follow an agreed set of rules, a **calling convention**. `ret` does not select the result register.
 
-The rules also say which register values a function must preserve. This example stops after the caller’s addition. [Calls and returns](#/lesson/calls-and-returns) shows **how** a function keeps its return address when it calls another function.
+The rules also say which register values a function must preserve. This example stops after the caller’s addition. [Saving a return address](#/lesson/calls-and-returns) shows **how** a function keeps its return address when it calls another function.
 
 ### prose / sections / challenge
 

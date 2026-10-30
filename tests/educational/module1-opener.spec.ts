@@ -19,7 +19,7 @@ for (const width of [360, 375, 1280]) {
       await page.addInitScript((value) => {
         localStorage.setItem("assembly-lab:v1:theme", value);
       }, theme);
-      await openLesson(page, "one-pattern-three-readings");
+      await openLesson(page, "arithmetic-on-register-bits");
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       const figure = page.locator("#ix-run-fuel-used");
       const phase = figure.locator(".al-reading-phase");
@@ -47,19 +47,41 @@ for (const width of [360, 375, 1280]) {
       await expect(registerValue(figure, "w0")).toHaveText("50");
       await expect(page.locator("#ix-step-add-12 .al-locked")).toBeVisible();
       await expect(page.locator("#ix-predict-add-12 .al-outcome")).toHaveCount(0);
-      // Later hints are independently reachable: they must not disclose this prediction.
-      const make = page.locator('[data-challenge="make-minus-one"]');
-      for (let i = 0; i < 3; i++) await make.getByRole("button", { name: /Show hint/ }).click();
-      await expect(make).toContainText("positive values add to −12");
-      await expect(make).not.toContainText("adding 12 to it gives 0");
-      await expect(page.locator("#ix-step-add-12 .al-locked")).toBeVisible();
       await commit(page, "predict-add-12", "24");
       await expect(page.locator("#ix-predict-add-12 .al-outcome")).toContainText("w0 holding 0");
       await expect(page.locator("#ix-step-add-12 .al-locked")).toHaveCount(0);
+      await openLesson(page, "same-bits-two-readings");
       const details = page.locator("#ix-read-register details");
       await expect(details).not.toHaveAttribute("open", "");
       await details.getByText(M1.reader.showCalculation, { exact: true }).click();
       await expect(details).toHaveAttribute("open", "");
+      expect(await designProblems(page, width < 500)).toEqual([]);
+    });
+  }
+}
+
+for (const width of [375, 1280]) {
+  for (const theme of ["light", "dark"] as const) {
+    test(`hexadecimal before numerical readings at ${width}px in ${theme}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.addInitScript(
+        (value) => localStorage.setItem("assembly-lab:v1:theme", value),
+        theme,
+      );
+      await openLesson(page, "one-pattern-three-readings");
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      const reader = page.locator("#ix-read-register");
+      await expect(
+        reader.locator('[data-reading="signed"], [data-reading="unsigned"]'),
+      ).toHaveCount(0);
+      await expect(reader.locator('[data-reading="hex"] code')).toHaveText("0xfffffff4");
+      await reader.getByRole("textbox", { name: M1.hexEntry.label }).fill("0xf4");
+      await expect(reader.locator('[data-reading="hex"] code')).toHaveText("0x000000f4");
+      await expect(reader.locator('.al-toggle[aria-pressed="true"]')).toHaveCount(5);
+      await reader.locator('[data-bit="0"]').click();
+      await expect(reader.locator('[data-reading="hex"] code')).toHaveText("0x000000f5");
+      await reader.getByRole("button", { name: M1.reader.clearBits }).click();
+      await expect(reader.locator('[data-reading="hex"] code')).toHaveText("0x00000000");
       expect(await designProblems(page, width < 500)).toEqual([]);
     });
   }

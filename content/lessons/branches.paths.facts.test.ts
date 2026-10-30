@@ -34,7 +34,14 @@ import {
 import { PROSE } from "./branches.prose";
 import { assembly, callText, corpusText, functionIn, nzcv } from "./module-4.runs";
 
-const lesson = LESSONS.find((l) => l.id === "branches")!;
+const units = ["branches", "zero-and-threshold-branches", "register-and-bit-branches"].map((id) =>
+  LESSONS.find((l) => l.id === id)!,
+);
+const lesson = {
+  ...units[0]!,
+  sections: units.flatMap((unit) => unit.sections),
+  challenges: units.flatMap((unit) => unit.challenges),
+};
 const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
 const neg = (n: number) => Number(BigInt.asUintN(32, BigInt(n)));
 const run = (g: number, program = DESCRIBE) =>

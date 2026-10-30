@@ -20,7 +20,9 @@ import {
   watchErrors,
 } from "./module1";
 
-const routes = ["from-c-to-instructions", "compile-a-loop"];
+const routes = LESSONS.filter((l) => l.module === 10).map((l) => l.id);
+const readRoutes = ["from-c-to-instructions", "compile-a-loop"];
+const playId = (route: string) => figures(route).find((f) => f.kind === "compiler-playground")!.id;
 const lesson = (route: string) => LESSONS.find((l) => l.id === route)!;
 const figures = (route: string) => lesson(route).sections.flatMap((s) => s.interactives);
 interface Props {
@@ -38,14 +40,16 @@ async function unlock(page: Page, route: string) {
     await commit(page, f.id, p.options.find((o) => o.value === value)!.label.replaceAll("`", ""));
   }
 }
-for (const route of routes) {
+for (const route of routes.filter((route) =>
+  figures(route).some((f) => f.kind === "compiler-playground"),
+)) {
   test(`${route}: prediction gates and source edits persist`, async ({ page }) => {
     const errors = watchErrors(page);
     await openLesson(page, route);
-    await expect(page.locator(".al-locked")).toHaveCount(2);
+    await expect(page.locator(".al-locked")).toHaveCount(1);
     await unlock(page, route);
     await expect(page.locator(".al-locked")).toHaveCount(0);
-    const fig = page.locator(`#ix-play-${route}`);
+    const fig = page.locator(`#ix-${playId(route)}`);
     const source = fig.getByRole("textbox", { name: C.editor.source });
     const original = await source.inputValue();
     await source.fill(original + "\n// saved edit");
@@ -62,7 +66,7 @@ for (const route of routes) {
       await page.reload();
       await openLesson(page, route);
       await unlock(page, route);
-      const fig = page.locator(`#ix-play-${route}`);
+      const fig = page.locator(`#ix-${playId(route)}`);
       await press(page, fig.getByRole("button", { name: C.playground.run, exact: true }));
       await press(page, fig.getByRole("button", { name: C.editor.templates }));
       expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
@@ -73,7 +77,7 @@ for (const route of routes) {
   }) => {
     await openLesson(page, route);
     await unlock(page, route);
-    const f = figures(route).find((f) => f.id === `play-${route}`)!;
+    const f = figures(route).find((f) => f.id === playId(route))!;
     const p = f.props as unknown as Props;
     const result = runC(p.source, p.args);
     expect(result.ok).toBe(true);
@@ -126,6 +130,8 @@ for (const route of routes) {
     await source.fill("unsigned invalid(");
     await expect(fig.getByRole("status")).toContainText("Line 1");
   });
+}
+for (const route of routes) {
   for (const cdata of lesson(route).challenges)
     test(`${cdata.id}: failure, reference, stored regrade and reset`, async ({ page }) => {
       await openLesson(page, route);
@@ -175,8 +181,8 @@ test("GCC comparison sends only on press, caches success, preserves source link 
       body: JSON.stringify({ code: 0, asm: [{ text: "test:" }, { text: "ret" }] }),
     });
   });
-  await openLesson(page, routes[0]!);
-  await unlock(page, routes[0]!);
+  await openLesson(page, readRoutes[0]!);
+  await unlock(page, readRoutes[0]!);
   const fig = page.locator("#ix-play-from-c-to-instructions");
   const box = fig.getByRole("textbox", { name: C.editor.source });
   const source = await box.inputValue();
@@ -210,7 +216,7 @@ test("GCC comparison sends only on press, caches success, preserves source link 
 
 test("phone builds a complete C conditional using statement controls", async ({ page }, info) => {
   test.skip(info.project.name !== "phone", "touch editor");
-  await openLesson(page, routes[0]!);
+  await openLesson(page, "cap-charge-in-c");
   const c = challenge(page, "write-cap-charge");
   await c.getByRole("textbox", { name: C.editor.source }).fill("");
   await press(page, c.getByRole("button", { name: C.editor.templates }));
@@ -266,7 +272,7 @@ test("phone builds a complete C conditional using statement controls", async ({ 
 
 test("phone builds a complete C loop using statement controls", async ({ page }, info) => {
   test.skip(info.project.name !== "phone", "touch editor");
-  await openLesson(page, routes[1]!);
+  await openLesson(page, "repeated-shifts-in-c");
   const c = challenge(page, "write-c-dimming");
   await c.getByRole("textbox", { name: C.editor.source }).fill("");
   await press(page, c.getByRole("button", { name: C.editor.templates }));
@@ -328,9 +334,9 @@ test("phone builds a complete C loop using statement controls", async ({ page },
 test("C editor loads the selected statement and preserves the rest of the source", async ({
   page,
 }) => {
-  await openLesson(page, routes[0]!);
+  await openLesson(page, "cap-charge-in-c");
   const c = challenge(page, "write-cap-charge");
-  const original = lesson(routes[0]!).challenges[1]!.reference.text!;
+  const original = lesson("cap-charge-in-c").challenges[0]!.reference.text!;
   const lines = original.split("\n"),
     at = lines.findIndex((line) => line.includes("unsigned charge"));
   await c.getByRole("textbox", { name: C.editor.source }).fill(original);
@@ -354,8 +360,8 @@ test("C editor loads the selected statement and preserves the rest of the source
 test("an assembly budget stop is reported separately from a wrong returned value", async ({
   page,
 }) => {
-  await openLesson(page, routes[1]!);
-  await unlock(page, routes[1]!);
+  await openLesson(page, readRoutes[1]!);
+  await unlock(page, readRoutes[1]!);
   const fig = page.locator("#ix-play-compile-a-loop");
   await fig.getByLabel(C.playground.input("count"), { exact: true }).fill("800");
   await press(page, fig.getByRole("button", { name: C.playground.run, exact: true }));

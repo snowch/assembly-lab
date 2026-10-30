@@ -14,13 +14,7 @@ import {
   type RecordedProgram,
 } from "@al/views";
 import { LessonStore, LessonView, memoryStorage } from "@platform/lesson-runtime";
-import {
-  SECTION_KINDS,
-  checkLesson,
-  modelProblems,
-  termProblems,
-  testCount,
-} from "@platform/lesson-schema";
+import { checkLesson, modelProblems, termProblems, testCount } from "@platform/lesson-schema";
 import { LESSONS } from ".";
 import {
   ADJUST_GRADIENT_TEXT,
@@ -36,26 +30,37 @@ const figures = lessons.flatMap((l) => l.sections.flatMap((s) => s.interactives)
 const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
 
 describe("Module 6 lesson structure", () => {
-  it("contains two ordered lessons with ten sections and two mounted challenges each", () => {
+  it("separates first memory transfers, transfer widths, load interpretation and register conversion", () => {
     expect(lessons.map((l) => [l.id, l.module, l.order])).toEqual([
       ["memory-and-addresses", 6, 0],
-      ["loading-widths", 6, 1],
+      ["transfer-widths", 6, 1],
+      ["loading-widths", 6, 2],
+      ["extending-register-values", 6, 3],
     ]);
     for (const lesson of lessons) {
       expect(checkLesson(lesson)).toEqual([]);
-      expect(lesson.sections.map((s) => s.kind)).toEqual([...SECTION_KINDS]);
-      expect(lesson.challenges).toHaveLength(2);
+      const expected: Record<string, string[]> = {
+        "memory-and-addresses": ["write-save-distance"],
+        "transfer-widths": ["write-copy-distance"],
+        "loading-widths": ["write-adjust-gradient", "write-read-sensors"],
+        "extending-register-values": [],
+      };
+      expect(lesson.challenges.map((c) => c.id)).toEqual(expected[lesson.id]);
     }
     expect(termProblems(LESSONS)).toEqual([]);
     expect(modelProblems(LESSONS, [STEPS])).toEqual([]);
   });
 
-  it("gates every observable memory run behind an earlier prediction", () => {
+  it("keeps memory predictions local and opens the separate register investigations", () => {
     for (const lesson of lessons) {
       const all = lesson.sections.flatMap((s) => s.interactives);
       for (const [index, figure] of all.entries()) {
         if (figure.kind !== "challenge") expect(Object.keys(INTERACTIVES)).toContain(figure.kind);
         if (figure.kind !== "memory-stepper") continue;
+        if (lesson.id === "extending-register-values") {
+          expect(figure.props["after"]).toBeUndefined();
+          continue;
+        }
         expect(figure.props["after"]).toBeTypeOf("string");
         const earlier = all.findIndex((f) => f.id === figure.props["after"]);
         expect(earlier).toBeGreaterThanOrEqual(0);
@@ -63,6 +68,24 @@ describe("Module 6 lesson structure", () => {
         expect(all[earlier]!.kind).toBe("memory-prediction");
       }
     }
+  });
+
+  it("keeps pointer and byte-order qualifications local to each memory activity", () => {
+    for (const id of ["memory-and-addresses", "transfer-widths"]) {
+      const lesson = lessons.find((l) => l.id === id)!;
+      const prose = lesson.sections.map((s) => s.prose).join("\n");
+      expect(prose).toContain("its C pointer must also refer to storage for the declared type");
+      expect(prose).toContain("the byte at the lowest address supplies the lowest 8 bits");
+    }
+    const widths = lessons.find((l) => l.id === "transfer-widths")!;
+    expect(widths.sections.map((s) => s.prose).join("\n")).toContain(
+      "Keep the address elsewhere if you will need it again",
+    );
+    const wide = widths.sections
+      .flatMap((s) => s.interactives)
+      .filter((f) => ["step-read-long", "step-save-long"].includes(f.id));
+    expect(wide).toHaveLength(2);
+    for (const figure of wide) expect(figure.props["after"]).toBe("predict-wide-fuel-store");
   });
 
   it("every memory figure returns normally with its published fixture and call", () => {
@@ -113,7 +136,9 @@ describe("Module 6 lesson structure", () => {
   });
 
   it("mounts the C signed-conversion qualification beside the register extension examples", () => {
-    const section = lessons[1]!.sections.find((s) => s.kind === "explanation")!;
+    const section = lessons
+      .find((l) => l.id === "extending-register-values")!
+      .sections.find((s) => s.kind === "question")!;
     expect(section.details?.prose).toContain("implementation-defined");
   });
 });
@@ -199,7 +224,7 @@ describe("Module 6 challenges", () => {
   });
 
   it("regrades stored work rather than trusting an old completion mark", () => {
-    const lesson = lessons[1]!;
+    const lesson = lessons.find((l) => l.id === "loading-widths")!;
     const c = challenge("write-read-sensors");
     const store = new LessonStore(memoryStorage(), "assembly-lab", lesson.id);
     store.setChallenge(c.id, (current) => ({
@@ -219,20 +244,28 @@ describe("Module 6 challenges", () => {
 
 describe("Module 6 pages", () => {
   it.each(lessons)(
-    "$id renders with ten sections and no broken figure or premature outcome",
+    "$id renders its selected sections with no broken figure or premature outcome",
     (lesson) => {
       const { container } = render(
         <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
       );
-      expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
-      expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
+      expect(container.querySelectorAll("section.lesson-section")).toHaveLength(
+        lesson.sections.length,
+      );
+      expect(container.querySelectorAll("section.challenge")).toHaveLength(
+        lesson.challenges.length,
+      );
       expect(
         [...container.querySelectorAll(".interactive-problem, .interactive-missing")].map(
           (n) => n.textContent,
         ),
       ).toEqual([]);
       expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
-      expect(container.querySelectorAll(".al-locked").length).toBeGreaterThanOrEqual(3);
+      expect(container.querySelectorAll(".al-locked")).toHaveLength(
+        lesson.sections
+          .flatMap((s) => s.interactives)
+          .filter((f) => typeof f.props["after"] === "string").length,
+      );
     },
   );
 });

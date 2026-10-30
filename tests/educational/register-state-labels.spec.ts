@@ -3,6 +3,7 @@
 // Check the temporal annotation beside actual lesson banks, across each executing renderer.
 // Prediction and solution gates are opened through their existing controls.
 import { expect, test } from "@playwright/test";
+import { pacingOrigins } from "../../content/lessons/pacing";
 import { LESSONS } from "@al/content";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { COMPILER_STRINGS as C } from "../../packages/views/src/strings.compiler";
@@ -34,7 +35,18 @@ for (const example of examples) {
       page,
     }) => {
       const errors = watchErrors(page);
-      const lesson = LESSONS.find((l) => l.id === example.route)!;
+      const lesson = LESSONS.find(
+        (l) =>
+          (pacingOrigins.get(l.id) ?? l.id) === example.route &&
+          l.sections.some((s) =>
+            s.interactives.some(
+              (f) =>
+                f.kind === example.kind &&
+                (!example.id || f.id === example.id) &&
+                (!example.mode || f.props["mode"] === example.mode),
+            ),
+          ),
+      )!;
       const item = lesson.sections
         .flatMap((s) => s.interactives)
         .find(
@@ -43,7 +55,7 @@ for (const example of examples) {
             (!example.id || f.id === example.id) &&
             (!example.mode || f.props["mode"] === example.mode),
         )!;
-      await openLesson(page, example.route);
+      await openLesson(page, lesson.id);
       await page.locator(".theme-picker select").selectOption(theme);
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       const gate = item.props["after"];

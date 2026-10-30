@@ -108,8 +108,11 @@ for (const theme of ["light", "dark"] as const) {
         references.getByRole("link", { name: "architecture reference manual" }),
       ).toHaveAttribute("href", "https://developer.arm.com/documentation/ddi0487/latest/");
       expect(await designProblems(page, isMobile)).toEqual([]);
-      await press(page, views.getByRole("link", { name: "Constants and widths", exact: true }));
-      await expect(page.getByRole("heading", { level: 1 })).toHaveText("Constants and widths");
+      await press(
+        page,
+        views.getByRole("link", { name: "Writing w and x registers", exact: true }),
+      );
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText("Writing w and x registers");
       await expect(
         page.locator('.lesson-section[data-kind="failureExperiment"] .section-title'),
       ).toHaveText("Two names, one register");

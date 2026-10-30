@@ -30,7 +30,9 @@ import {
 } from "./module1";
 
 const MEMORY = "memory-and-addresses";
+const TRANSFERS = "transfer-widths";
 const WIDTHS = "loading-widths";
+const EXTENSIONS = "extending-register-values";
 const lesson = (id: string) => LESSONS.find((item) => item.id === id)!;
 const figures = (id: string) => lesson(id).sections.flatMap((s) => s.interactives ?? []);
 const plain = (s: string) => s.replaceAll("`", "");
@@ -59,7 +61,7 @@ interface PredictionProps extends FigureProps {
 }
 const propsOf = (route: string, id: string) =>
   figures(route).find((f) => f.id === id)!.props as unknown as FigureProps;
-const predictions = [MEMORY, WIDTHS].flatMap((route) =>
+const predictions = [MEMORY, TRANSFERS, WIDTHS].flatMap((route) =>
   figures(route)
     .filter((f) => f.kind === "memory-prediction")
     .map((f) => ({ route, id: f.id, props: f.props as unknown as PredictionProps })),
@@ -104,12 +106,12 @@ async function checkState(page: Page, id: string, props: FigureProps, trace: Tra
   }
 }
 
-for (const route of [MEMORY, WIDTHS]) {
-  test(`${route}: ten sections, two challenges and no browser errors`, async ({ page }) => {
+for (const route of [MEMORY, TRANSFERS, WIDTHS, EXTENSIONS]) {
+  test(`${route}: selected sections, local challenges and no browser errors`, async ({ page }) => {
     const errors = watchErrors(page);
     await openLesson(page, route);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson(route).title);
-    await expect(page.locator("section.challenge")).toHaveCount(2);
+    await expect(page.locator("section.challenge")).toHaveCount(lesson(route).challenges.length);
     await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
     expect(errors).toEqual([]);
   });
@@ -130,7 +132,11 @@ for (const route of [MEMORY, WIDTHS]) {
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
       expect(await figureOverflow(page)).toEqual([]);
-      expect(await page.locator(".al-memory-transfer").count()).toBeGreaterThan(0);
+      expect(
+        await page
+          .locator(route === EXTENSIONS ? ".al-memory-register-bytes" : ".al-memory-transfer")
+          .count(),
+      ).toBeGreaterThan(0);
       expect(errors).toEqual([]);
     });
   }
@@ -192,10 +198,10 @@ for (const p of predictions) {
 test("store widths mark only the bytes written, including a neighbouring-byte corruption", async ({
   page,
 }) => {
-  await openLesson(page, MEMORY);
-  await unlock(page, MEMORY, "predict-wide-fuel-store");
+  await openLesson(page, TRANSFERS);
+  await unlock(page, TRANSFERS, "predict-wide-fuel-store");
   for (const id of ["step-wide-fuel-store", "step-byte-fuel-store", "step-half-pulse-store"]) {
-    const props = propsOf(MEMORY, id);
+    const props = propsOf(TRANSFERS, id);
     const trace = traceOf(props.program, props.call);
     const figure = page.locator(`#ix-${id}`);
     await press(page, figure.getByRole("button", { name: V.stepper.next }));
@@ -244,7 +250,7 @@ test("sign extension to W fills its low word while clearing the upper half; exte
 const writes = [
   { route: MEMORY, id: "write-save-distance", wrong: "str x1, [x0]\nret" },
   {
-    route: MEMORY,
+    route: TRANSFERS,
     id: "write-copy-distance",
     wrong: "ldr w2, [x0]\nstr w2, [x0]\nmov w0, w2\nret",
   },

@@ -58,17 +58,13 @@ for (const theme of ["light", "dark"] as const) {
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     const fig = page.locator("#ix-step-small-returning-call");
     const full = page.locator("#ix-calls-and-returns-listing");
-    expect(
-      await fig.evaluate((el) =>
-        Boolean(
-          el.compareDocumentPosition(document.querySelector("#ix-calls-and-returns-listing")!) &
-          Node.DOCUMENT_POSITION_FOLLOWING,
-        ),
-      ),
-    ).toBe(true);
+    await expect(full).toHaveCount(0);
+    await expect(page.locator('.lesson-nav-link[data-direction="next"]')).toHaveAttribute(
+      "href",
+      "#/lesson/preserving-values-across-calls",
+    );
     await expect(fig.locator(".al-locked")).toHaveCount(0);
-    await expect(full).toContainText("trip_report");
-    await expect(page.locator("#ix-step-calls-and-returns .al-locked")).toHaveCount(1);
+    await expect(page.locator("#ix-step-calls-and-returns")).toHaveCount(0);
     await expect(fig).toContainText("sp to be a multiple of 16");
     const trace = traceOf(SMALL_CALL, { entry: "relay_distance", args: [128] });
     for (let k = 1; k <= trace.result.steps.length; k++) {
@@ -90,6 +86,8 @@ for (const theme of ["light", "dark"] as const) {
     await expect(fig.locator('[data-figure="stack-stepper"]')).toHaveAttribute("data-k", "0");
     await page.reload();
     await expect(fig.locator('[data-figure="stack-stepper"]')).toHaveAttribute("data-k", "0");
+    await page.locator('.lesson-nav-link[data-direction="next"]').click();
+    await expect(page.locator("#ix-calls-and-returns-listing")).toContainText("trip_report");
     await expect(page.locator("#ix-step-calls-and-returns .al-locked")).toHaveCount(1);
     expect(await designProblems(page, isMobile)).toEqual([]);
     expect(errors).toEqual([]);

@@ -11,6 +11,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { LESSONS } from "@al/content";
+import { COPY } from "../../content/lessons/pacing-1-4.copy";
 import { PROSE as P1 } from "../../content/lessons/compare-and-choose.prose";
 import { PROSE as P2 } from "../../content/lessons/branches.prose";
 import {
@@ -21,12 +22,12 @@ import {
   STEEPER_U,
   STEEPER_U_GE,
 } from "../../content/lessons/compare-and-choose.listings";
-import { DESCRIBE, FUEL_WARNING_TEXT } from "../../content/lessons/branches.listings";
+import { DESCRIBE, FUEL_WARNING_TEXT, SERVICE } from "../../content/lessons/branches.listings";
 import { branchStatusAt } from "../../packages/views/src/branchPath";
 import { selectModel } from "../../packages/views/src/select";
 import { VIEW_STRINGS as V, quoted } from "../../packages/views/src/strings";
 import { BRANCH_STRINGS as B } from "../../packages/views/src/strings.branch";
-import { traceOf, viewAt } from "../../packages/views/src/trace";
+import { traceOf, viewAt, wValue } from "../../packages/views/src/trace";
 import { designProblems } from "./design";
 import {
   challenge,
@@ -195,7 +196,7 @@ test.describe("lesson 1: the compare, the condition and the select", () => {
   test("the table of conditions: six at first, the rest behind Conditions beyond the first six, which opens from the keyboard", async ({
     page,
   }) => {
-    await openLesson(page, ONE);
+    await openLesson(page, "conditions-and-boolean-results");
     const f = page.locator("#ix-every-condition");
     await f.scrollIntoViewIfNeeded();
     await expect(f.locator(".al-cond-compare")).toContainText("cmp w0, w1 with a = w0 and b = w1");
@@ -234,13 +235,11 @@ test.describe("lesson 1: the compare, the condition and the select", () => {
   test("the notes are closed to begin with, each under its title, and the answer is not in the prose", async ({
     page,
   }) => {
-    await openLesson(page, ONE);
+    await openLesson(page, "conditions-and-boolean-results");
     const notes = page.locator("details.lesson-details");
     await expect(notes.locator("summary")).toHaveText([
-      P1.questionNoteSummary,
-      P1.motivationNoteSummary,
       P1.explanationNoteSummary,
-      P1.generalisationNoteSummary,
+      COPY.conditions.extensionsSummary,
       P1.reflectionNoteSummary,
     ]);
     for (const n of await notes.all()) await expect(n).not.toHaveAttribute("open", "");
@@ -255,7 +254,10 @@ test.describe("lesson 1: the compare, the condition and the select", () => {
 });
 
 test.describe("lesson 2: the path, the sentence after a branch, two conditions on one compare", () => {
-  const lesson2 = LESSONS.find((l) => l.id === TWO)!;
+  const lesson2 = {
+    ...LESSONS.find((l) => l.id === TWO)!,
+    challenges: LESSONS.filter((l) => l.module === 4).flatMap((l) => l.challenges),
+  };
 
   test("the stepper says what a branch did and what runs next, and the marker's jump shows", async ({
     page,
@@ -330,10 +332,9 @@ test.describe("lesson 2: the path, the sentence after a branch, two conditions o
     await expect(notes.locator("summary")).toHaveText([
       P2.questionNoteSummary,
       P2.investigationNoteSummary,
-      P2.explanationNoteSummary,
-      P2.reflectionNoteSummary,
     ]);
     for (const n of await notes.all()) await expect(n).not.toHaveAttribute("open", "");
+    await openLesson(page, "register-and-bit-branches");
     await expect(page.locator('section[data-kind="reflection"]')).toContainText(
       "What you now know",
     );
@@ -342,7 +343,7 @@ test.describe("lesson 2: the path, the sentence after a branch, two conditions o
   test("the grader says which of the checks to look at, and tells a wrong count where to look", async ({
     page,
   }) => {
-    await openLesson(page, TWO);
+    await openLesson(page, "zero-and-threshold-branches");
     const c = challenge(page, "write-fuel-warning");
     await c.scrollIntoViewIfNeeded();
     const box = c.getByRole("textbox", { name: V.editor.textLabel });
@@ -393,6 +394,7 @@ test.describe("lesson 2: the path, the sentence after a branch, two conditions o
     await expect(c.locator(".verdict-failure").first()).toContainText(
       quoted(P2.fuelWarningFeedback.topBit),
     );
+    await openLesson(page, TWO);
     const counts = challenge(page, "count-describe-runs");
     await counts.scrollIntoViewIfNeeded();
     const answers = lesson2.challenges.find((x) => x.id === "count-describe-runs")!.reference
@@ -422,6 +424,8 @@ test.describe("at 360 pixels", () => {
     const f = page.locator("#ix-step-steeper-ge");
     await press(page, f.getByRole("button", { name: V.stepper.next }));
     await press(page, f.getByRole("button", { name: V.stepper.next }));
+    expect(await designProblems(page, true)).toEqual([]);
+    await openLesson(page, "conditions-and-boolean-results");
     await press(page, page.locator("#ix-every-condition details summary"));
     expect(await designProblems(page, true)).toEqual([]);
     await fits(page);
@@ -455,7 +459,7 @@ test.describe("at 360 pixels", () => {
     page,
   }) => {
     const errors = watchErrors(page);
-    await openLesson(page, TWO);
+    await openLesson(page, "zero-and-threshold-branches");
     const c = challenge(page, "write-fuel-warning");
     await c.scrollIntoViewIfNeeded();
     await press(page, c.getByRole("button", { name: V.editor.tap, exact: true }));
@@ -484,7 +488,8 @@ test.describe("at 360 pixels", () => {
       );
     };
     const text = async () =>
-      (await stored(page, TWO)).challenges["write-fuel-warning"].artifact.text;
+      (await stored(page, "zero-and-threshold-branches")).challenges["write-fuel-warning"].artifact
+        .text;
     // Out with the starting point's two lines.
     await first();
     await first();
@@ -581,3 +586,28 @@ test.describe("at 360 pixels", () => {
     expect(errors).toEqual([]);
   });
 });
+
+for (const theme of ["light", "dark"] as const) {
+  test(`the register-bit branch unit steps its fixed service call and resets in ${theme}`, async ({
+    page,
+  }) => {
+    await page.addInitScript(
+      (value) => localStorage.setItem("assembly-lab:v1:theme", value),
+      theme,
+    );
+    await openLesson(page, "register-and-bit-branches");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    const figure = page.locator("#ix-follow-service-bit-test");
+    const model = traceOf(SERVICE, { entry: "service", args: [0x2a] });
+    const value = figure.locator('[data-register="w0"] .al-reg-value');
+    const next = figure.getByRole("button", { name: V.stepper.next, exact: true });
+    for (let step = 0; step <= model.result.steps.length; step++) {
+      await expect(value).toHaveText(String(wValue(viewAt(model, step).state, 0)));
+      if (step < model.result.steps.length) await next.click();
+    }
+    await expect(next).toBeDisabled();
+    await figure.getByRole("button", { name: V.stepper.reset, exact: true }).click();
+    await expect(value).toHaveText(String(wValue(viewAt(model, 0).state, 0)));
+    expect(await designProblems(page, page.viewportSize()!.width < 500)).toEqual([]);
+  });
+}

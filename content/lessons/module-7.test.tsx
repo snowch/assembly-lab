@@ -3,26 +3,26 @@
 import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { createBook, grade, traceOf, type MemoryTraceCall, type RecordedProgram } from "@al/views";
-import { LessonStore, LessonView, memoryStorage } from "@platform/lesson-runtime";
-import { checkLesson, SECTION_KINDS, testCount } from "@platform/lesson-schema";
+import { LessonView, memoryStorage } from "@platform/lesson-runtime";
+import { checkLesson, testCount } from "@platform/lesson-schema";
 import { LESSONS } from ".";
 import * as A from "./arrays.listings";
 const lessons = LESSONS.filter((l) => l.module === 7);
-const arrayAddresses = lessons[0]!;
+const traversingArrays = lessons.find((l) => l.id === "traversing-arrays")!;
 const challenges = lessons.flatMap((l) => l.challenges!);
 const figures = lessons.flatMap((l) => l.sections.flatMap((s) => s.interactives ?? []));
 const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
 const challenge = (id: string) => challenges.find((c) => c.id === id)!;
 describe("Module7 lessons", () => {
-  it("provides two complete lessons with two mounted challenges", () => {
+  it("separates element selection from pointer traversal before the strings investigation", () => {
     expect(lessons.map((l) => [l.id, l.module, l.order])).toEqual([
       ["array-addresses", 7, 0],
-      ["zero-terminated-strings", 7, 1],
+      ["traversing-arrays", 7, 1],
+      ["zero-terminated-strings", 7, 2],
     ]);
     for (const l of lessons) {
       expect(checkLesson(l)).toEqual([]);
-      expect(l.sections.map((s) => s.kind)).toEqual([...SECTION_KINDS]);
-      expect(l.challenges).toHaveLength(2);
+      expect(l.challenges).toHaveLength(l.id === "zero-terminated-strings" ? 2 : 1);
     }
   });
   it("every memory figure returns with its actual fixture", () => {
@@ -39,6 +39,10 @@ describe("Module7 lessons", () => {
       const fs = l.sections.flatMap((s) => s.interactives ?? []);
       for (const [i, f] of fs.entries())
         if (f.kind === "memory-stepper") {
+          if (l.id === "traversing-arrays") {
+            expect(f.props!["after"]).toBeUndefined();
+            continue;
+          }
           const p = fs.findIndex((p) => p.id === f.props!["after"]);
           expect(p).toBeGreaterThanOrEqual(0);
           expect(p).toBeLessThan(i);
@@ -90,17 +94,17 @@ describe("Module7 lessons", () => {
     const { container } = render(
       <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
     );
-    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
-    expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
+    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(
+      lesson.sections.length,
+    );
+    expect(container.querySelectorAll("section.challenge")).toHaveLength(lesson.challenges.length);
     expect(container.querySelectorAll(".interactive-problem,.interactive-missing")).toHaveLength(0);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
   });
   it("post-index visual highlights the old address while showing the advanced pointer", () => {
     const storage = memoryStorage();
-    const store = new LessonStore(storage, "assembly-lab", "array-addresses");
-    store.setSlot("predict-read-trip", { choice: "0x00000007" });
     const { container } = render(
-      <LessonView book={book} lesson={arrayAddresses} storage={storage} />,
+      <LessonView book={book} lesson={traversingArrays} storage={storage} />,
     );
     const figure = container.querySelector('#ix-step-array-offset [data-figure="memory-stepper"]')!;
     expect(figure).not.toBeNull();

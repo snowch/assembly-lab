@@ -13,7 +13,7 @@ import { describe, expect, it } from "vitest";
 import { ARITH_STRINGS as A } from "@al/views";
 import { learnerText, termProblems } from "@platform/lesson-schema";
 
-import { LESSONS } from ".";
+import { SOURCE_LESSONS as LESSONS } from ".";
 import { LABELS as L1 } from "./adding-and-the-flags.labels";
 import { PROSE as P1 } from "./adding-and-the-flags.prose";
 import { LABELS as L2 } from "./subtracting-and-the-tick-counter.labels";

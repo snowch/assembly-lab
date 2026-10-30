@@ -111,7 +111,7 @@ test("marks and undo stay in sync across tabs without losing other lesson marks"
   await expect(a.locator(".cover-start")).toBeVisible();
 });
 
-test("all current lessons can be marked, including single-lesson modules, then reopened", async ({
+test("all current split lessons can be marked, then the final lesson reopened", async ({
   page,
 }) => {
   await page.goto("#/");
@@ -127,17 +127,14 @@ test("all current lessons can be marked, including single-lesson modules, then r
   ).toBeVisible();
   await expect(page.locator(".cover-continue")).toHaveCount(0);
   await expect(page.locator(".lesson-complete-mark")).toHaveCount(ordered.length);
-  const single = ordered.find(
-    (l) => ordered.filter((other) => other.module === l.module).length === 1,
-  )!;
-  expect(single).toBeDefined();
-  await page.locator(`.plan-module a[href="#/lesson/${single.id}"]`).click();
+  const final = ordered.at(-1)!;
+  await page.locator(`.plan-module a[href="#/lesson/${final.id}"]`).click();
   await expect(page.locator(".lesson-completion button")).toHaveText(undo);
   await page.locator(".lesson-completion button").click();
   await page.locator(".lesson-back a").click();
-  await expect(page.locator(".cover-continue")).toHaveAttribute("href", `#/lesson/${single.id}`);
+  await expect(page.locator(".cover-continue")).toHaveAttribute("href", `#/lesson/${final.id}`);
   await expect(
-    page.locator(`.plan-module a[href="#/lesson/${single.id}"] .lesson-complete-mark`),
+    page.locator(`.plan-module a[href="#/lesson/${final.id}"] .lesson-complete-mark`),
   ).toHaveCount(0);
 });
 

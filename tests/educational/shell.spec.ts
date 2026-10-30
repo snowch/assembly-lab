@@ -115,10 +115,11 @@ test("a module with a lesson is published; with one lesson its title links to it
   expect(new URL(page.url()).hash).toBe("#/lesson/one-addition");
   await page.goto("#/");
   await page
-    .locator('.plan-module[data-module="registers-and-readings"] .module-lessons li a')
-    .nth(1)
+    .locator(
+      '.plan-module[data-module="registers-and-readings"] li[data-lesson="constants-and-widths"] a',
+    )
     .click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Constants and widths");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Loading a constant");
   expect(new URL(page.url()).hash).toBe("#/lesson/constants-and-widths");
 });
 
@@ -136,7 +137,9 @@ test("each lesson of a module with several is reached from the front page", asyn
   }
 });
 
-test("Module 3 is published and lists its two lessons in order", async ({ page }) => {
+test("Module 3 lists masks, fields, shifts and division in prerequisite order", async ({
+  page,
+}) => {
   await page.goto("#/");
   await ready(page);
   const module3 = page.locator('.plan-module[data-module="logic-shifts-masks"]');
@@ -145,7 +148,12 @@ test("Module 3 is published and lists its two lessons in order", async ({ page }
   const ids = await module3
     .locator(".module-lessons li")
     .evaluateAll((els) => els.map((el) => el.getAttribute("data-lesson")));
-  expect(ids).toEqual(["masks", "shifts"]);
+  expect(ids).toEqual([
+    "masks",
+    "reading-and-writing-fields",
+    "shifts",
+    "shifts-and-signed-division",
+  ]);
 });
 
 test("the tab is named for the page, and the course has an address for a lesson", async ({
@@ -186,12 +194,11 @@ test("each lesson foot names the lesson before it and the one after, in course o
     LESSONS[0]!.title,
   );
   // The Pi extension follows QEMU; optional A32 remains last and has no next.
-  const tail = LESSONS.slice(-4);
-  expect(tail.map((lesson) => lesson.id)).toEqual([
-    "debug-native-instructions",
-    "raspberry-pi-5",
-    "raspberry-pi-boot",
-    "same-c-on-a32",
+  const tail = LESSONS.filter((lesson) => lesson.module >= 12);
+  expect(tail[0]!.id).toBe("from-function-to-executable");
+  expect(tail.at(-1)!.id).toBe("a32-division-helper");
+  expect(tail.map((lesson) => lesson.module)).toEqual([
+    12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14,
   ]);
   await page.goto(`#/lesson/${tail[0]!.id}`);
   for (const lesson of tail.slice(1)) {

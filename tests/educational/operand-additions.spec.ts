@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { lessonForFigure } from "./pacing";
 import { expect, test } from "@playwright/test";
 import { designProblems } from "./design";
 import { watchErrors } from "./module3";
@@ -16,7 +17,6 @@ for (const theme of ["light", "dark"] as const) {
       kept: "w0 keeps its value",
       link: "Arm’s ADD (immediate) reference",
       path: "ADD--immediate---Add-immediate-value-",
-      gateCount: 3,
     },
     {
       lesson: "shifts",
@@ -28,7 +28,6 @@ for (const theme of ["light", "dark"] as const) {
       kept: "w0, w1 keep their values",
       link: "Arm’s ADD (shifted register) reference",
       path: "ADD--shifted-register---Add-optionally-shifted-register-",
-      gateCount: 2,
     },
   ]) {
     test(`${item.lesson}: one ADD input modifier in ${theme}, including restore and reset`, async ({
@@ -36,7 +35,7 @@ for (const theme of ["light", "dark"] as const) {
       isMobile,
     }) => {
       const errors = watchErrors(page);
-      await page.goto(`#/lesson/${item.lesson}`);
+      await page.goto(`#/lesson/${lessonForFigure(item.lesson, item.figure)}`);
       await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       const figure = page.locator(`#ix-${item.figure}`);
@@ -44,6 +43,7 @@ for (const theme of ["light", "dark"] as const) {
         "href",
         `https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/${item.path}`,
       );
+      const lockedBefore = await page.locator(".al-locked").count();
       const preview = figure.locator(".al-primitive-preview");
       await expect(preview).toContainText(item.input);
       await expect(preview.locator(".al-primitive-transform code")).toHaveText([
@@ -52,7 +52,7 @@ for (const theme of ["light", "dark"] as const) {
       ]);
       await expect(preview).toContainText("w2 = ?");
       await expect(figure).not.toContainText(item.result);
-      await expect(page.locator(".al-locked")).toHaveCount(item.gateCount);
+      await expect(page.locator(".al-locked")).toHaveCount(lockedBefore);
       await figure.getByRole("button", { name: "Run the instruction", exact: true }).click();
       await expect(figure.getByRole("status")).toContainText(item.result);
       await expect(figure.getByRole("status")).toContainText(item.kept);
@@ -66,7 +66,7 @@ for (const theme of ["light", "dark"] as const) {
       await figure.getByRole("button", { name: "Start again", exact: true }).click();
       await expect(figure.locator(".al-primitive-preview")).toContainText("w2 = ?");
       await expect(figure.getByRole("status")).toHaveCount(0);
-      await expect(page.locator(".al-locked")).toHaveCount(item.gateCount);
+      await expect(page.locator(".al-locked")).toHaveCount(lockedBefore);
       expect(await designProblems(page, isMobile)).toEqual([]);
       expect(errors).toEqual([]);
     });

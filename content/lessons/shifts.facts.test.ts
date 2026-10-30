@@ -27,7 +27,14 @@ import {
 } from "./logic-shifts-masks.listings";
 import { statedNumbers } from "./stated-numbers";
 
-const lesson = LESSONS.find((l) => l.id === "shifts")!;
+const units = ["shifts", "shifts-and-signed-division"].map((id) =>
+  LESSONS.find((l) => l.id === id)!,
+);
+const lesson = {
+  ...units[0]!,
+  sections: units.flatMap((unit) => unit.sections),
+  challenges: units.flatMap((unit) => unit.challenges),
+};
 
 // ---------------------------------------------------------------------------------------------
 // The model

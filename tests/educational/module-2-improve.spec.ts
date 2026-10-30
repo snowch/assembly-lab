@@ -20,7 +20,6 @@ import { DEFAULT_STRINGS as S } from "../../platform/lesson-runtime/src/strings"
 import { PLUS } from "../../content/lessons/adding-and-the-flags.listings";
 import { designProblems } from "./design";
 
-const ONE = "adding-and-the-flags";
 const TWO = "subtracting-and-the-tick-counter";
 const lesson = (id: string) => LESSONS.find((l) => l.id === id)!;
 
@@ -90,7 +89,7 @@ test.describe("lesson 1, the adder by column, by group and all at once", () => {
   test("a group move says which columns it worked, and reaches the state 32 single steps reach", async ({
     page,
   }) => {
-    await openLesson(page, ONE);
+    await openLesson(page, "adding-and-the-flags");
     await commit(page, "predict-readings", "Only the unsigned");
     const adder = page.locator("#ix-add-columns");
     await adder.scrollIntoViewIfNeeded();
@@ -114,7 +113,7 @@ test.describe("lesson 1, the adder by column, by group and all at once", () => {
   test("the column just worked is the model's, and Back restores the column before", async ({
     page,
   }) => {
-    await openLesson(page, ONE);
+    await openLesson(page, "adding-and-the-flags");
     await commit(page, "predict-readings", "Only the unsigned");
     const adder = page.locator("#ix-add-columns");
     await adder.scrollIntoViewIfNeeded();
@@ -135,7 +134,7 @@ test.describe("lesson 1, the adder by column, by group and all at once", () => {
   test("the carries at bit 31 and the lines for C and V show only when column 31 is done, and bit 31 is labelled", async ({
     page,
   }) => {
-    await openLesson(page, ONE);
+    await openLesson(page, "adding-and-the-flags");
     await commit(page, "predict-readings", "Only the unsigned");
     const adder = page.locator("#ix-add-columns");
     await adder.scrollIntoViewIfNeeded();
@@ -164,7 +163,7 @@ test.describe("lesson 1, the adder by column, by group and all at once", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 360, height: 800 });
-    await openLesson(page, ONE);
+    await openLesson(page, "adding-and-the-flags");
     await commit(page, "predict-readings", "Only the unsigned");
     const adder = page.locator("#ix-add-columns");
     await adder.scrollIntoViewIfNeeded();
@@ -198,7 +197,7 @@ test.describe("lesson 1, the adder by column, by group and all at once", () => {
       await page.goto("#/");
       await page.evaluate((t) => localStorage.setItem("assembly-lab:v1:theme", t), theme);
       await page.reload();
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       await commit(page, "predict-readings", "Only the unsigned");
       const adder = page.locator("#ix-add-columns");
@@ -224,7 +223,7 @@ test.describe("lesson 1, the flags challenge in groups", () => {
   test("is three groups, one for each addition, each with a row of N, Z, C and V, none chosen", async ({
     page,
   }) => {
-    await openLesson(page, ONE);
+    await openLesson(page, "adding-and-the-flags");
     const c = challenge(page, "predict-flags");
     await c.scrollIntoViewIfNeeded();
     const groups = c.locator("fieldset.answer-group");
@@ -247,7 +246,7 @@ test.describe("lesson 1, the flags challenge in groups", () => {
   test("names each wrong flag with its rule, never its value, and keeps the answers chosen when the learner tries again", async ({
     page,
   }) => {
-    await openLesson(page, ONE);
+    await openLesson(page, "adding-and-the-flags");
     const c = challenge(page, "predict-flags");
     await c.scrollIntoViewIfNeeded();
     const wrong = { ...ANSWERS, "third-c": "0", "third-v": "0", "second-n": "1" };
@@ -273,7 +272,7 @@ test.describe("lesson 1, the flags challenge in groups", () => {
   test("shows the text after the flags challenge only once it passes, with the adder it opens", async ({
     page,
   }) => {
-    await openLesson(page, ONE);
+    await openLesson(page, "adding-and-the-flags");
     const adder = page.locator("#ix-add-carry-out");
     const c = challenge(page, "predict-flags");
     await adder.scrollIntoViewIfNeeded();
@@ -302,7 +301,7 @@ test.describe("lesson 1, add against adds", () => {
   test("marks what changed by an outline and a word, and says what the add left alone only after it", async ({
     page,
   }) => {
-    await openLesson(page, ONE);
+    await openLesson(page, "flags-and-overflow");
     await commit(page, "predict-add-flags", /^N and C are still 1/);
     const stepper = page.locator("#ix-step-add");
     await stepper.scrollIntoViewIfNeeded();
@@ -342,7 +341,7 @@ test.describe("lesson 1, add against adds", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 360, height: 800 });
-    await openLesson(page, ONE);
+    await openLesson(page, "flags-and-overflow");
     await commit(page, "predict-add-flags", /^N and C are still 1/);
     const stepper = page.locator("#ix-step-add");
     await press(page, stepper.getByRole("button", { name: V.stepper.next }));
@@ -361,7 +360,7 @@ test.describe("lesson 2, the ring's strip and the subtraction figures", () => {
   test("the strip shows then, the wrap, now, the ticks before and after it and the total, counting forward", async ({
     page,
   }) => {
-    await openLesson(page, TWO);
+    await openLesson(page, "subtracting-and-the-tick-counter");
     await expect(page.locator("#ix-counter-ring .al-locked")).toBeVisible();
     await commit(page, "predict-elapsed", /^2000$/);
     const ring = page.locator("#ix-counter-ring");
@@ -384,7 +383,7 @@ test.describe("lesson 2, the ring's strip and the subtraction figures", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 360, height: 800 });
-    await openLesson(page, TWO);
+    await openLesson(page, "subtracting-and-the-tick-counter");
     await commit(page, "predict-elapsed", /^2000$/);
     const ring = page.locator("#ix-counter-ring");
     await ring.scrollIntoViewIfNeeded();
@@ -411,11 +410,10 @@ test.describe("lesson 2, the ring's strip and the subtraction figures", () => {
     test(`${d.id} opens at its final state, with the second operand as given and then changed`, async ({
       page,
     }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "subtraction-flags-and-negation");
       const figure = page.locator(`#ix-${d.id}`);
-      await expect(figure.locator(".al-locked")).toBeVisible();
-      await expect(figure.locator(".al-adder-final")).toHaveCount(0);
-      await commit(page, "predict-elapsed", /^2000$/);
+      await expect(figure.locator(".al-locked")).toHaveCount(0);
+      await expect(figure.locator(".al-adder-final")).toBeVisible();
       await figure.scrollIntoViewIfNeeded();
       await expect(figure.locator('.al-adder-final [data-line="result"]')).toHaveText(d.result);
       await expect(figure.locator('.al-adder-final [data-line="c"]')).toHaveText(d.c);
@@ -437,8 +435,7 @@ test.describe("lesson 2, the ring's strip and the subtraction figures", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 360, height: 800 });
-    await openLesson(page, TWO);
-    await commit(page, "predict-elapsed", /^2000$/);
+    await openLesson(page, "subtraction-flags-and-negation");
     for (const id of ["subtract-wrapped", "subtract-no-wrap"]) {
       const figure = page.locator(`#ix-${id}`);
       await figure.scrollIntoViewIfNeeded();
@@ -453,7 +450,7 @@ test.describe("lesson 2, the ring's strip and the subtraction figures", () => {
   test("the negs explanation and its three lines come only after the prediction is checked", async ({
     page,
   }) => {
-    await openLesson(page, TWO);
+    await openLesson(page, "subtraction-flags-and-negation");
     const figure = page.locator("#ix-predict-negs");
     await figure.scrollIntoViewIfNeeded();
     await expect(page.locator("main")).not.toContainText("the largest signed 32-bit value");
@@ -469,35 +466,25 @@ test.describe("lesson 2, the ring's strip and the subtraction figures", () => {
   test("the closed answer to the last question stays closed until it is opened", async ({
     page,
   }) => {
-    for (const id of [ONE, TWO]) {
+    for (const id of ["flags-and-overflow", TWO]) {
       await openLesson(page, id);
       const answer = page.locator('section[data-kind="reflection"] details.lesson-details');
       await expect(answer).not.toHaveAttribute("open", "");
       await expect(answer.locator("summary")).toHaveText("Answer");
       await press(page, answer.locator("summary"));
       await expect(answer).toHaveAttribute("open", "");
-      await expect(answer).toContainText(id === ONE ? "C is 1 and V is 0" : "592, and C is 0");
+      await expect(answer).toContainText(
+        id === "flags-and-overflow" ? "C is 1 and V is 0" : "592, and C is 0",
+      );
     }
   });
 
-  test("the adder after the construction challenge opens only once elapsed passes, and says what the subtraction kept", async ({
+  test("the arithmetic worked example opens without saved counter work and says what the subtraction kept", async ({
     page,
-  }, info) => {
-    test.skip(info.project.name !== "desktop", "typing is the desktop width's way in");
-    await openLesson(page, TWO);
+  }) => {
+    await openLesson(page, "subtraction-flags-and-negation");
     const own = page.locator("#ix-subtract-own");
-    const c = challenge(page, "write-elapsed");
     await own.scrollIntoViewIfNeeded();
-    await expect(own.locator(".al-locked")).toBeVisible();
-    await expect(own.locator(".al-adder-note")).toHaveCount(0);
-    await c.scrollIntoViewIfNeeded();
-    const box = c.getByRole("textbox", { name: V.editor.textLabel });
-    await box.fill("add w0, w0, w1\nret");
-    await run(c).click();
-    await expect(own.locator(".al-locked")).toBeVisible();
-    await box.fill("sub w0, w0, w1\nret");
-    await run(c).click();
-    await expect(c.locator(".challenge-complete")).toBeVisible();
     await expect(own.locator(".al-locked")).toHaveCount(0);
     await expect(own.locator(".al-adder-note")).toContainText(
       "A single 32-bit subtraction keeps the low 32 bits of now - then.",
@@ -507,15 +494,6 @@ test.describe("lesson 2, the ring's strip and the subtraction figures", () => {
     );
     await expect(own.locator('.al-adder-final [data-line="c"]')).toHaveText(
       "C = 0: a borrow was needed",
-    );
-    // The task shown next to the editor says where the operands arrive, and not the answer.
-    await expect(c.locator(".challenge-task li")).toHaveText([
-      "now arrives in w0.",
-      "then arrives in w1.",
-    ]);
-    await expect(c.locator(".challenge-task")).toContainText("Return the result in w0.");
-    expect(lesson(TWO).challenges.find((x) => x.id === "write-elapsed")!.task).not.toContain(
-      "sub w0, w0, w1",
     );
   });
 });

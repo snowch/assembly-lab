@@ -32,7 +32,14 @@ import {
   X5_QUESTION,
 } from "./module-1.listings";
 
-const lesson = LESSONS.find((l) => l.id === "constants-and-widths")!;
+const units = ["constants-and-widths", "building-constants", "register-widths"].map((id) =>
+  LESSONS.find((l) => l.id === id)!,
+);
+const lesson = {
+  ...units[0]!,
+  sections: units.flatMap((unit) => unit.sections),
+  challenges: units.flatMap((unit) => unit.challenges),
+};
 const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
 
 const build = (text: string): Program => {
@@ -391,7 +398,7 @@ describe("two names, one register", () => {
   });
 
   it("is the right option of the prediction, and not an error", () => {
-    const options = lesson.sections[5]!.interactives[0]!.props["options"] as {
+    const options = units[2]!.sections[0]!.interactives[0]!.props["options"] as {
       value: string;
       label: string;
     }[];

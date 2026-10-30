@@ -2,13 +2,14 @@
 
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { parseLesson, learnerText, termPattern } from "@platform/lesson-schema";
+import { parseLesson, learnerText, termPattern, termProblems } from "@platform/lesson-schema";
 import { traceOf, viewAt, wValue } from "@al/views";
 import { parseRegName } from "@al/machine";
 import { grade } from "../../packages/views/src/grader";
 import { fundamentalsLessons } from "./fundamentals";
 import { FUNDAMENTALS_PROSE, SYNTHESIS_COPY, FUNDAMENTALS_MODULE } from "./fundamentals.prose";
 import { FUNDAMENTALS_LABELS } from "./fundamentals.labels";
+import { LESSONS, SOURCE_LESSONS } from ".";
 
 const lessons = fundamentalsLessons.map(parseLesson);
 const flat = (value: string) => value.replace(/[`*]/g, "").replace(/\s+/g, " ").trim();
@@ -119,10 +120,22 @@ describe("visible Fundamentals lessons", () => {
     }
   });
 
-  it("uses the later constant term only to name the linked follow-up lesson", () => {
-    expect(learnerText(lessons[0]!).filter((text) => /\bconstant\w*/i.test(text))).toEqual([
-      FUNDAMENTALS_PROSE.addition.registerViews.after,
-    ]);
+  it("links register views to their focused follow-up without introducing constants", () => {
+    expect(learnerText(lessons[0]!).filter((text) => /\bconstant\w*/i.test(text))).toEqual([]);
+    expect(FUNDAMENTALS_PROSE.addition.registerViews.after).toContain(
+      "[Writing w and x registers](#/lesson/register-widths)",
+    );
+    expect(lessons[0]!.termExemptions.some((item) => item.term === "constant")).toBe(false);
+    // The preceding register-view diagram defines both names; writing each width comes later.
+    for (const term of ["w register", "x register"]) {
+      expect(lessons[0]!.termExemptions.some((item) => item.term === term)).toBe(false);
+      for (const catalogue of [LESSONS, SOURCE_LESSONS])
+        expect(
+          catalogue.filter((lesson) => lesson.introduces.includes(term)).map((l) => l.id),
+        ).toEqual(["one-addition"]);
+    }
+    expect(termProblems(LESSONS)).toEqual([]);
+    expect(termProblems(SOURCE_LESSONS)).toEqual([]);
   });
 
   it("grounds the opening register count and both name widths in the machine", () => {

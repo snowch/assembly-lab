@@ -26,7 +26,7 @@ Choose a small program you want to build and an environment in which to test it.
 
 ## preparation.prose
 
-You can try the playground route after [Calls and returns](#/lesson/calls-and-returns) in Module 9. You need its rules for calling another function and preserving the return address. The GNU/QEMU and Raspberry Pi lessons can follow separately.
+You can try the playground route after [Saving a return address](#/lesson/calls-and-returns) in Module 9. You need its rules for calling another function and preserving the return address. The GNU/QEMU and Raspberry Pi lessons can follow separately.
 
 ## playground.title
 

@@ -5,6 +5,10 @@
 // so an invalid lesson fails fast with its problems listed, and the content tests parse the same
 // list. The plan (../plan/plan.ts) works out each module's status from this list.
 
+import { paced1To4 } from "./pacing-1-4";
+import { paced5To9 } from "./pacing-5-9";
+import { paced10ToA } from "./pacing-10-a";
+
 import { parseLesson, type Lesson } from "@platform/lesson-schema";
 
 import { addingAndTheFlags } from "./adding-and-the-flags";
@@ -38,7 +42,7 @@ import { onePatternThreeReadings } from "./one-pattern-three-readings";
 import { shifts } from "./shifts";
 import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
 
-export const LESSONS: readonly Lesson[] = [
+export const SOURCE_LESSONS: readonly Lesson[] = [
   ...fundamentalsLessons,
   meetTheMachine,
   onePatternThreeReadings,
@@ -69,5 +73,21 @@ export const LESSONS: readonly Lesson[] = [
   raspberryPiBoot,
   sameCOnA32,
 ]
+  .map(withIntroduced)
+  .map(parseLesson);
+
+// The published course uses short learning units. Source lessons above retain the recorded
+// authoring groupings for provenance and fidelity checks; they are not alternate course pages.
+export const LESSONS: readonly Lesson[] = [
+  ...fundamentalsLessons,
+  meetTheMachine,
+  ...paced1To4,
+  ...paced5To9,
+  ...paced10ToA,
+]
+  .map((lesson, index, lessons) => ({
+    ...lesson,
+    order: lessons.slice(0, index).filter((previous) => previous.module === lesson.module).length,
+  }))
   .map(withIntroduced)
   .map(parseLesson);

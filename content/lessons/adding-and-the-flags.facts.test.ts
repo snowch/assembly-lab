@@ -28,7 +28,14 @@ import {
   recorded,
 } from "./module-2.runs";
 
-const lesson = LESSONS.find((l) => l.id === "adding-and-the-flags")!;
+const units = ["adding-and-the-flags", "flags-and-overflow"].map((id) =>
+  LESSONS.find((l) => l.id === id)!,
+);
+const lesson = {
+  ...units[0]!,
+  sections: units.flatMap((unit) => unit.sections),
+  challenges: units.flatMap((unit) => unit.challenges),
+};
 
 const plus = (a: number, b: number) => callText(assembly(PLUS.listing), "plus", [a, b]);
 const signed = (v: number) => Number(BigInt.asIntN(32, BigInt(v)));

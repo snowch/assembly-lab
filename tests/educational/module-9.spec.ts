@@ -22,7 +22,12 @@ import {
   watchErrors,
 } from "./module1";
 
-const routes = ["calls-and-returns", "recursive-calls"];
+const routes = [
+  "calls-and-returns",
+  "preserving-values-across-calls",
+  "recursive-calls",
+  "making-recursive-progress",
+];
 const lesson = (route: string) => LESSONS.find((l) => l.id === route)!;
 const figures = (route: string) => lesson(route).sections.flatMap((s) => s.interactives);
 interface Props {
@@ -52,13 +57,14 @@ for (const route of routes) {
     const errors = watchErrors(page);
     await openLesson(page, route);
     await expect(page.locator(".interactive-problem,.interactive-missing")).toHaveCount(0);
-    const gatedSteppers = route === "calls-and-returns" ? 2 : 3;
+    const gatedSteppers = figures(route).filter((f) => typeof f.props["after"] === "string").length;
+    const predictionCount = figures(route).filter((f) => f.kind.endsWith("prediction")).length;
     await expect(page.locator(".al-locked")).toHaveCount(gatedSteppers);
     await unlock(page, route);
     await expect(page.locator(".al-locked")).toHaveCount(0);
-    await expect(page.locator(".al-match")).toHaveCount(2);
+    await expect(page.locator(".al-match")).toHaveCount(predictionCount);
     await page.reload();
-    await expect(page.locator(".al-match")).toHaveCount(2);
+    await expect(page.locator(".al-match")).toHaveCount(predictionCount);
     await page.evaluate((k) => localStorage.removeItem(k), storageKey(route));
     await page.reload();
     await expect(page.locator(".al-locked")).toHaveCount(gatedSteppers);

@@ -47,7 +47,7 @@ const STORAGE_KEY = `assembly-lab:v1:${LESSON_ID}`;
 const lesson = LESSONS.find((l) => l.id === LESSON_ID)!;
 const COMPARE = "compare-shifts";
 const PICK = "pick-instruction";
-const open = (page: Page) => openLesson(page, LESSON_ID);
+const open = (page: Page, id = LESSON_ID) => openLesson(page, id);
 
 const stored = (page: Page) =>
   page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? "null"), STORAGE_KEY);
@@ -58,9 +58,9 @@ test("the lesson loads with no console error, selected sections, and its two cha
   page,
 }) => {
   const errors = watchErrors(page);
-  await open(page);
+  await open(page, "shifts");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
-  await expect(page.locator("section.challenge")).toHaveCount(2);
+  await expect(page.locator("section.challenge")).toHaveCount(1);
   await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
   await expect(page.locator("a.back-link").first()).toHaveAttribute("href", "#/");
   await expect(page).toHaveTitle(`${lesson.title} / Assembly Lab`);
@@ -71,7 +71,7 @@ test.describe("the two listings", () => {
   test("show each C line and its instructions as recorded, and mark the instruction that differs", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "shifts");
     const figure = page.locator("#ix-halve-compare");
     await figure.scrollIntoViewIfNeeded();
     await expect(figure.locator(".al-pair-side > .al-pane-head")).toHaveText(["int", "unsigned"]);
@@ -124,7 +124,7 @@ test.describe("the two predictions commit before they reveal", () => {
     ["predict-first-add", /^1 when g is negative/, /^31$/],
   ] as const) {
     test(id, async ({ page }) => {
-      await open(page);
+      await open(page, id === "predict-fill" ? "shifts" : "shifts-and-signed-division");
       const figure = page.locator(`#ix-${id}`);
       await figure.scrollIntoViewIfNeeded();
       await expect(figure.locator(".al-outcome")).toHaveCount(0);
@@ -145,7 +145,7 @@ test.describe("the two predictions commit before they reveal", () => {
   test("the first shows -7 before it is checked, and the model's asr of it after", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "shifts");
     const figure = page.locator("#ix-predict-fill");
     await figure.scrollIntoViewIfNeeded();
     const trace = traceOf(HALVE_GRADIENT, { entry: "halve_gradient", args: [-7] });
@@ -161,7 +161,7 @@ test.describe("the two predictions commit before they reveal", () => {
   test("the second says what the first instruction added, from the model's run", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "shifts-and-signed-division");
     const figure = await commit(page, "predict-first-add", /^1 when g is negative/);
     await expect(figure.locator(".al-outcome")).toContainText(
       "added 1 to a negative value and 0 to any other",
@@ -169,7 +169,7 @@ test.describe("the two predictions commit before they reveal", () => {
   });
 
   test("a commitment is kept, and is still there after a reload", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts");
     await commit(page, "predict-fill", FILL);
     await page.reload();
     await expect(page.locator("#ix-predict-fill .al-match")).toBeVisible();
@@ -179,7 +179,7 @@ test.describe("the two predictions commit before they reveal", () => {
 
 test.describe("the shift figure", () => {
   test("stays shut until the prediction before it is checked", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts");
     const figure = page.locator("#ix-shift-word");
     await expect(figure.locator(".al-locked")).toBeVisible();
     await expect(figure.locator(".al-bit")).toHaveCount(0);
@@ -190,7 +190,7 @@ test.describe("the shift figure", () => {
   test("shows the model's word after each shift by each amount, the bits that fell off and the bits that filled the gap", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "shifts");
     await commit(page, "predict-fill", FILL);
     const figure = page.locator("#ix-shift-word");
     await figure.scrollIntoViewIfNeeded();
@@ -233,7 +233,7 @@ test.describe("the shift figure", () => {
   test("asr of -7 by 1 is -4 and lsr of its bits is 2147483644: copies of the top bit, and zeros", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "shifts");
     await commit(page, "predict-fill", FILL);
     const figure = page.locator("#ix-shift-word");
     await figure.scrollIntoViewIfNeeded();
@@ -253,7 +253,7 @@ test.describe("the shift figure", () => {
   test("says so, and shows no result and never the starting word, when the learner types something it cannot read", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "shifts");
     await commit(page, "predict-fill", FILL);
     const figure = page.locator("#ix-shift-word");
     await figure.scrollIntoViewIfNeeded();
@@ -267,7 +267,7 @@ test.describe("the stepper after the second prediction", () => {
   test("stays shut until the prediction is checked, then shows the model's div2(-7): -7, -6, -3", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "shifts-and-signed-division");
     const stepper = page.locator("#ix-step-div2");
     await stepper.scrollIntoViewIfNeeded();
     await expect(stepper.locator(".al-locked")).toBeVisible();
@@ -305,10 +305,11 @@ test.describe("the comparison challenge", () => {
       await c.locator(`[data-field="${f}"] input`).fill(values[i]!);
   };
   const reference = () =>
-    lesson.challenges.find((x) => x.id === COMPARE)!.reference.answers as Record<string, string>;
+    LESSONS.flatMap((unit) => unit.challenges).find((x) => x.id === COMPARE)!.reference
+      .answers as Record<string, string>;
 
   test("asks for six numbers and shows no program", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts-and-signed-division");
     const c = challenge(page, COMPARE);
     await c.scrollIntoViewIfNeeded();
     await expect(c.locator(".answer-field")).toHaveCount(6);
@@ -326,7 +327,7 @@ test.describe("the comparison challenge", () => {
   });
 
   test("rejects a wrong answer by name, and never gives the right one", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts-and-signed-division");
     const c = challenge(page, COMPARE);
     await c.scrollIntoViewIfNeeded();
     // The division's answer given for the shift, and the shift's for the division.
@@ -345,7 +346,7 @@ test.describe("the comparison challenge", () => {
   });
 
   test("asks for every answer first, and for whole numbers", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts-and-signed-division");
     const c = challenge(page, COMPARE);
     await c.scrollIntoViewIfNeeded();
     await c.locator('[data-field="asr21"] input').fill("5");
@@ -358,7 +359,7 @@ test.describe("the comparison challenge", () => {
   });
 
   test("accepts the reference", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts-and-signed-division");
     const c = challenge(page, COMPARE);
     await c.scrollIntoViewIfNeeded();
     const a = reference();
@@ -380,7 +381,7 @@ test.describe("the instruction challenge", () => {
   };
 
   test("asks for three instructions, and shows none of GCC's", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts");
     const c = challenge(page, PICK);
     await c.scrollIntoViewIfNeeded();
     await expect(c.locator(".answer-field")).toHaveCount(3);
@@ -393,7 +394,7 @@ test.describe("the instruction challenge", () => {
   });
 
   test("rejects a wrong instruction by name, and never gives the right one", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts");
     const c = challenge(page, PICK);
     await c.scrollIntoViewIfNeeded();
     await fill(c, "lsr", "lsr", "lsl");
@@ -405,7 +406,7 @@ test.describe("the instruction challenge", () => {
   });
 
   test("asks for all three first", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts");
     const c = challenge(page, PICK);
     await c.scrollIntoViewIfNeeded();
     await c.locator('[data-field="shr_int"] input').fill("asr");
@@ -415,7 +416,7 @@ test.describe("the instruction challenge", () => {
   });
 
   test("accepts the reference, in any case", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts");
     const c = challenge(page, PICK);
     await c.scrollIntoViewIfNeeded();
     const a = lesson.challenges.find((x) => x.id === PICK)!.reference.answers!;
@@ -442,7 +443,7 @@ test.describe("a completion", () => {
   }
 
   test("survives a reload, graded again, not read from a mark", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts");
     await complete(page);
     await page.reload();
     const c = challenge(page, PICK);
@@ -461,7 +462,7 @@ test.describe("a completion", () => {
   });
 
   test("goes when the work is cleared, and stays gone after a reload", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts");
     const c = await complete(page);
     await press(page, c.getByRole("button", { name: new RegExp(`^${S.challenge.reset}`) }));
     await press(page, c.getByRole("button", { name: S.challenge.resetConfirm }));
@@ -474,10 +475,11 @@ test.describe("a completion", () => {
   });
 
   test("of the comparison challenge survives a reload too", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts-and-signed-division");
     const c = challenge(page, COMPARE);
     await c.scrollIntoViewIfNeeded();
-    const a = lesson.challenges.find((x) => x.id === COMPARE)!.reference.answers!;
+    const a = LESSONS.flatMap((unit) => unit.challenges).find((x) => x.id === COMPARE)!.reference
+      .answers!;
     for (const [id, value] of Object.entries(a))
       await c.locator(`[data-field="${id}"] input`).fill(value);
     await press(page, run(c));
@@ -494,7 +496,7 @@ test.describe("the look of the lesson page", () => {
   test("text is legible, controls are reachable, nothing scrolls sideways, prose keeps its measure", async ({
     page,
   }, info) => {
-    await open(page);
+    await open(page, "shifts");
     expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
   });
 
@@ -502,13 +504,15 @@ test.describe("the look of the lesson page", () => {
     page,
   }, info) => {
     const phone = info.project.name === "phone";
-    await open(page);
+    await open(page, "shifts");
     await commit(page, "predict-fill", FILL);
-    await commit(page, "predict-first-add", /^31$/);
     const shift = page.locator("#ix-shift-word");
     await shift.scrollIntoViewIfNeeded();
     await press(page, chip(shift, V.shift.instruction, "asr"));
     await press(page, chip(shift, V.shift.by, "8"));
+    expect(await designProblems(page, phone)).toEqual([]);
+    await open(page, "shifts-and-signed-division");
+    await commit(page, "predict-first-add", /^31$/);
     const step = page.locator("#ix-step-div2");
     await press(page, step.getByRole("button", { name: V.stepper.next }));
     await press(page, step.getByRole("button", { name: V.stepper.next }));
@@ -521,6 +525,8 @@ test.describe("the look of the lesson page", () => {
     await compare.locator('[data-field="div_neg"] input').fill("6");
     await press(page, run(compare));
     await press(page, compare.getByRole("button", { name: /Show hint/ }));
+    expect(await designProblems(page, phone)).toEqual([]);
+    await open(page, "shifts");
     const pick = challenge(page, PICK);
     await pick.locator('[data-field="shr_int"] input').fill("lsl");
     await press(page, run(pick));
@@ -528,7 +534,7 @@ test.describe("the look of the lesson page", () => {
   });
 
   test("a row of 32 cells fits the screen, on a phone and on a desk", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts");
     await commit(page, "predict-fill", FILL);
     const figure = page.locator("#ix-shift-word");
     const rows = figure.locator("[data-row]");
@@ -551,7 +557,7 @@ test.describe("both themes", () => {
       await page.goto("#/");
       await page.evaluate((t) => localStorage.setItem("assembly-lab:v1:theme", t), theme);
       await page.reload();
-      await open(page);
+      await open(page, "shifts");
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       await commit(page, "predict-fill", FILL);
       const figure = page.locator("#ix-shift-word");
@@ -583,7 +589,7 @@ test.describe("the reworked figures (17 October 2026)", () => {
   test("the shift figure says which way the bits move and what fills the gap, and marks -7's filled top bit for asr and lsr", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "shifts");
     await commit(page, "predict-fill", /^A copy of the old top bit/);
     const figure = page.locator("#ix-shift-word");
     await figure.scrollIntoViewIfNeeded();
@@ -603,7 +609,7 @@ test.describe("the reworked figures (17 October 2026)", () => {
   });
 
   test("a word the shift figure cannot read gets its message and no result", async ({ page }) => {
-    await open(page);
+    await open(page, "shifts");
     await commit(page, "predict-fill", /^A copy of the old top bit/);
     const figure = page.locator("#ix-shift-word");
     await figure.scrollIntoViewIfNeeded();
@@ -619,7 +625,7 @@ test.describe("the reworked figures (17 October 2026)", () => {
   test("the div2 stepper shows w0 before and after, the shifted operand, and a second call for 7", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "shifts-and-signed-division");
     await commit(page, "predict-first-add", /^1 when/);
     const figure = page.locator("#ix-step-div2");
     await figure.scrollIntoViewIfNeeded();

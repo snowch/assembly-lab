@@ -35,7 +35,7 @@ export const FUNDAMENTALS_PROSE = {
       caption:
         "Each x name selects all 64 bits; its matching w name selects the lower 32 bits of the same register.",
       after:
-        "You will experiment with both names in [Constants and widths](#/lesson/constants-and-widths) in Module 1, under ‘Two names, one register’.",
+        "You will experiment with both names in [Writing w and x registers](#/lesson/register-widths) in Module 1, under ‘Two names, one register’.",
     },
     references: {
       summary: "Arm’s reference manuals",

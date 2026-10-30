@@ -198,7 +198,7 @@ test("detect, download, defer and explicit restart reload every app tab while pr
   const site = await deployment();
   try {
     const first = await context.newPage();
-    await controlled(first, `${site.url}#/lesson/from-c-to-instructions`);
+    await controlled(first, `${site.url}#/lesson/cap-charge-in-c`);
     await downloadOffline(first);
     await first.getByLabel(STRINGS.theme).selectOption("dark");
     const code = "unsigned cap_charge(unsigned a, unsigned b) { return a + b; }";
@@ -212,7 +212,7 @@ test("detect, download, defer and explicit restart reload every app tab while pr
     await second.getByRole("button", { name: "Mark lesson complete", exact: true }).click();
     await second.getByLabel(STRINGS.theme).selectOption("light");
     // Another tab can undo a mark without making the first tab's update guard stale.
-    await second.goto(`${site.url}#/lesson/from-c-to-instructions`);
+    await second.goto(`${site.url}#/lesson/cap-charge-in-c`);
     await second.getByRole("button", { name: "Mark lesson incomplete", exact: true }).click();
     await expect(
       first.getByRole("button", { name: "Mark lesson complete", exact: true }),
@@ -257,7 +257,7 @@ test("detect, download, defer and explicit restart reload every app tab while pr
     await expect(
       second.getByRole("button", { name: "Mark lesson incomplete", exact: true }),
     ).toBeVisible();
-    await expect(first).toHaveURL(`${site.url}#/lesson/from-c-to-instructions`);
+    await expect(first).toHaveURL(`${site.url}#/lesson/cap-charge-in-c`);
     await expect(second).toHaveURL(`${site.url}#/lesson/meet-the-machine`);
     expect([firstReloads, secondReloads]).toEqual([1, 1]);
     const current = await cacheNames(first);
@@ -295,7 +295,7 @@ test("restart refuses memory-only edits, input composition and an unsaved theme,
     const first = await context.newPage();
     await controlled(first, site.url);
     const second = await context.newPage();
-    await controlled(second, `${site.url}#/lesson/from-c-to-instructions`);
+    await controlled(second, `${site.url}#/lesson/cap-charge-in-c`);
     await second.evaluate(() => {
       const original = Storage.prototype.setItem;
       Storage.prototype.setItem = () => {
@@ -420,7 +420,7 @@ test("an interrupted first download resumes verified assets and removal preserve
   const site = await deployment();
   try {
     const page = await context.newPage();
-    await controlled(page, `${site.url}#/lesson/from-c-to-instructions`);
+    await controlled(page, `${site.url}#/lesson/cap-charge-in-c`);
     const code = "unsigned kept(unsigned value) { return value; }";
     const editor = page.locator("#challenge-write-cap-charge").getByRole("textbox");
     await editor.fill(code);
@@ -907,7 +907,7 @@ test("removing an offline copy after deferred runtime replacement still permits 
   const site = await deployment();
   try {
     const page = await context.newPage();
-    await controlled(page, `${site.url}#/lesson/from-c-to-instructions`);
+    await controlled(page, `${site.url}#/lesson/cap-charge-in-c`);
     await downloadOffline(page);
     const code = "unsigned preserved(unsigned value) { return value + 23; }";
     await page.locator("#challenge-write-cap-charge").getByRole("textbox").fill(code);
@@ -920,7 +920,7 @@ test("removing an offline copy after deferred runtime replacement still permits 
     await page.close();
     await waitForRuntime(observer, site.url, next.buildId);
     const reopened = await context.newPage();
-    await controlled(reopened, `${site.url}#/lesson/from-c-to-instructions`);
+    await controlled(reopened, `${site.url}#/lesson/cap-charge-in-c`);
     expect(await currentBuild(reopened)).toBe(site.initial.buildId);
     const panel = await openStatus(reopened);
     await panel.getByRole("button", { name: "Remove offline copy", exact: true }).click();

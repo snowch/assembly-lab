@@ -526,7 +526,7 @@ describe("the two listings side by side", () => {
 });
 
 describe("the editor's number pad, for a mask", () => {
-  const challenge = LESSONS.find((l) => l.id === "masks")!.challenges.find(
+  const challenge = LESSONS.find((l) => l.id === "reading-and-writing-fields")!.challenges.find(
     (c) => c.id === "write-set-gear",
   )!;
 
@@ -640,7 +640,9 @@ describe("the answer boxes", () => {
   };
 
   it("give a field that takes a negative number the full keyboard, and a plain count the number keypad", () => {
-    expect(modeOf(challengeOf("shifts", "compare-shifts"), "asr_neg").mode).toBe("text");
+    expect(
+      modeOf(challengeOf("shifts-and-signed-division", "compare-shifts"), "asr_neg").mode,
+    ).toBe("text");
     expect(modeOf(challengeOf("meet-the-machine", "trace-the-call"), "w0").mode).toBe("numeric");
   });
 

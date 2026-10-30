@@ -36,7 +36,14 @@ import {
   recorded,
 } from "./module-2.runs";
 
-const lesson = LESSONS.find((l) => l.id === "subtracting-and-the-tick-counter")!;
+const units = ["subtracting-and-the-tick-counter", "subtraction-flags-and-negation"].map((id) =>
+  LESSONS.find((l) => l.id === id)!,
+);
+const lesson = {
+  ...units[0]!,
+  sections: units.flatMap((unit) => unit.sections),
+  challenges: units.flatMap((unit) => unit.challenges),
+};
 
 const MAX = 0xffffffff;
 const elapsed = (now: number, then: number) =>
@@ -214,7 +221,7 @@ describe("the adder drawing elapsed_subs", () => {
     expect(elapsed(9000, 2500).w0).toBe(6500);
   });
 
-  it("is a call no challenge tests, and both adders open after the prediction about elapsed", () => {
+  it("uses calls outside the construction tests and opens the arithmetic examples without remote gates", () => {
     const calls = lesson.challenges.flatMap((c) =>
       c.tests.kind === "answers"
         ? c.tests.cases.map((t) => [t.given["w0"], t.given["w1"]].join(","))
@@ -224,7 +231,7 @@ describe("the adder drawing elapsed_subs", () => {
     // The wrapped call is the prediction's and the ring's, not a challenge's.
     expect(calls).not.toContain("1000,4294966296");
     for (const id of ["subtract-wrapped", "subtract-no-wrap"])
-      expect(figure(id).props["after"]).toBe("predict-elapsed");
+      expect(figure(id).props["after"]).toBeUndefined();
   });
 
   it("are in the differential test's corpus, as calls of elapsed_subs", () => {
@@ -340,7 +347,9 @@ describe("negs on 0x80000000", () => {
   const negs = (x: number) => callText(assembly(NEGATE_FLAGS.listing), "negate_flags", [x]);
 
   it("lists the right option second, not first", () => {
-    const section = lesson.sections.find((s) => s.kind === "failureExperiment")!;
+    const section = lesson.sections.find((s) =>
+      s.interactives.some((f) => f.id === "predict-negs"),
+    )!;
     const options = section.interactives[0]!.props["options"] as { value: string }[];
     expect(options.map((o) => o.value)).toEqual([
       "0x7fffffff",
@@ -496,10 +505,10 @@ describe("the final states the two subtraction figures open with", () => {
     expect(subs(1000, 4294966296).flags.c).toBe(false);
   });
 
-  it("makes both figures open after the prediction, at their final states, with the detail", () => {
+  it("opens both arithmetic examples at their final states, with the detail", () => {
     for (const id of ["subtract-wrapped", "subtract-no-wrap"]) {
       const figure = lesson.sections.flatMap((s) => s.interactives).find((x) => x.id === id)!;
-      expect(figure.props["after"]).toBe("predict-elapsed");
+      expect(figure.props["after"]).toBeUndefined();
       expect(figure.props["opensAtEnd"]).toBe(true);
       expect(figure.props["detail"]).toBe(true);
       expect(figure.props["summary"]).toBe(true);

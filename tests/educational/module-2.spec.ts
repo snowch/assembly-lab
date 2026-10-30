@@ -112,14 +112,14 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     page,
   }) => {
     const errors = watchErrors(page);
-    await openLesson(page, ONE);
+    await openLesson(page, "adding-and-the-flags");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson(ONE).title);
-    await expect(page.locator("section.challenge")).toHaveCount(2);
+    await expect(page.locator("section.challenge")).toHaveCount(1);
     await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
     await expect(page).toHaveTitle(`${lesson(ONE).title} / Assembly Lab`);
     // The closed note on GCC's check, and the closed answer to the last section's question.
     const notes = page.locator("details.lesson-details");
-    await expect(notes).toHaveCount(2);
+    await expect(notes).toHaveCount(1);
     const note = notes.first();
     await expect(note).not.toHaveAttribute("open", "");
     await press(page, note.locator("summary"));
@@ -130,7 +130,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
   test("the two predictions commit before they reveal, and the model says which is right", async ({
     page,
   }) => {
-    await openLesson(page, ONE);
+    await openLesson(page, "adding-and-the-flags");
     await predictionCommitsBeforeItReveals(page, "predict-readings", "Only the unsigned", "Both");
     const readings = page.locator("#ix-predict-readings .al-match");
     // The unsigned reading is right and the signed reading wrong, because the model's answer is.
@@ -151,6 +151,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     // keeps that: not 1001, which the add's own addition would give, and not 0000.
     const flags = flagDigits(traceOf(SUM_FLAGS, SUM_CALL).result.final.flags);
     expect(flags).toEqual([1, 0, 1, 0]);
+    await openLesson(page, "flags-and-overflow");
     await predictionCommitsBeforeItReveals(
       page,
       "predict-add-flags",
@@ -171,7 +172,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
   });
 
   test("a commitment is kept, and is still there after a reload", async ({ page }) => {
-    await openLesson(page, ONE);
+    await openLesson(page, "adding-and-the-flags");
     await commit(page, "predict-readings", "Only the unsigned");
     await page.reload();
     await expect(page.locator("#ix-predict-readings .al-match")).toBeVisible();
@@ -185,7 +186,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       figure.locator(`[data-row="${row}"][data-col="${column}"]`);
 
     test("stays shut until the prediction before it is checked", async ({ page }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       const adder = page.locator("#ix-add-columns");
       await expect(adder.locator(".al-locked")).toBeVisible();
       await expect(adder.getByRole("button", { name: A.adder.next })).toHaveCount(0);
@@ -196,7 +197,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     test("draws each column from the model's record: the answer bit and the carry into the next column", async ({
       page,
     }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       await commit(page, "predict-readings", "Only the unsigned");
       const adder = page.locator("#ix-add-columns");
       await adder.scrollIntoViewIfNeeded();
@@ -235,7 +236,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     });
 
     test("goes back a column, shows every column at once, and starts again", async ({ page }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       await commit(page, "predict-readings", "Only the unsigned");
       const adder = page.locator("#ix-add-columns");
       await adder.scrollIntoViewIfNeeded();
@@ -253,7 +254,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
   test("the stepper after the failure experiment's prediction: adds, then add, the flags the adds left kept and w0 the model's", async ({
     page,
   }) => {
-    await openLesson(page, ONE);
+    await openLesson(page, "flags-and-overflow");
     const stepper = page.locator("#ix-step-add");
     await expect(stepper.locator(".al-locked")).toBeVisible();
     await commit(page, "predict-add-flags", /^N and C are still 1/);
@@ -304,7 +305,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     };
 
     test("asks for twelve choices, none made, and the program it is about", async ({ page }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       const c = challenge(page, "predict-flags");
       await c.scrollIntoViewIfNeeded();
       await expect(c.locator(".answer-choice")).toHaveCount(12);
@@ -317,21 +318,21 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       page,
     }) => {
       const errors = watchErrors(page);
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       const c = challenge(page, "predict-flags");
       await c.scrollIntoViewIfNeeded();
       await choose(page, c, ANSWERS);
       await press(page, run(c));
       await expect(status(c)).toHaveText(passing(3));
       await expect(c.locator(".challenge-complete")).toHaveText(S.challenge.complete);
-      expect((await stored(page, ONE)).challenges["predict-flags"].artifact.answers).toEqual(
-        ANSWERS,
-      );
+      expect(
+        (await stored(page, "adding-and-the-flags")).challenges["predict-flags"].artifact.answers,
+      ).toEqual(ANSWERS);
       expect(errors).toEqual([]);
     });
 
     test("asks for every choice before it grades anything", async ({ page }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       const c = challenge(page, "predict-flags");
       await c.scrollIntoViewIfNeeded();
       const { "third-v": _left, ...rest } = ANSWERS;
@@ -345,7 +346,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     test("opens the adder on 1 plus 0xffffffff only once the choices pass, and draws C 1 and Z 1", async ({
       page,
     }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       const adder = page.locator("#ix-add-carry-out");
       const c = challenge(page, "predict-flags");
       await adder.scrollIntoViewIfNeeded();
@@ -393,7 +394,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     test("rejects a wrong flag, names the addition and not the flag, and does not complete", async ({
       page,
     }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       const c = challenge(page, "predict-flags");
       await c.scrollIntoViewIfNeeded();
       // C and V taken for each other in the third addition: the one the hints warn about.
@@ -413,7 +414,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     test("fails the starting point, which has chosen nothing, and a run of all zeros", async ({
       page,
     }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       const c = challenge(page, "predict-flags");
       await c.scrollIntoViewIfNeeded();
       await press(page, run(c));
@@ -428,7 +429,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     test("survives a reload, graded again, and is gone when the work is cleared", async ({
       page,
     }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       let c = challenge(page, "predict-flags");
       await c.scrollIntoViewIfNeeded();
       await choose(page, c, ANSWERS);
@@ -452,7 +453,9 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       await press(page, c.getByRole("button", { name: S.challenge.resetConfirm }));
       await expect(status(c)).toHaveText(S.challenge.resetDone);
       await expect(c.locator("input[type=radio]:checked")).toHaveCount(0);
-      expect((await stored(page, ONE)).challenges["predict-flags"]).toBeUndefined();
+      expect(
+        (await stored(page, "adding-and-the-flags")).challenges["predict-flags"],
+      ).toBeUndefined();
     });
   });
 
@@ -461,7 +464,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       c.locator('[data-field="number"] input').fill(text);
 
     test("shows the program it is about, and asks for one number", async ({ page }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "flags-and-overflow");
       const c = challenge(page, "smallest-overflow");
       await c.scrollIntoViewIfNeeded();
       await expect(c.locator(".al-insn .al-text")).toHaveText(["adds w0, w0, w1", "ret"]);
@@ -471,7 +474,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     test("rejects 1, which does not overflow, and 3, which is not the smallest, without saying 2", async ({
       page,
     }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "flags-and-overflow");
       const c = challenge(page, "smallest-overflow");
       await c.scrollIntoViewIfNeeded();
       await answer(c, "1");
@@ -486,7 +489,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     });
 
     test("asks for a whole number before it grades", async ({ page }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "flags-and-overflow");
       const c = challenge(page, "smallest-overflow");
       await c.scrollIntoViewIfNeeded();
       await press(page, run(c));
@@ -499,11 +502,12 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     test("accepts the reference, keeps it over a reload, and drops it when the work changes", async ({
       page,
     }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "flags-and-overflow");
       let c = challenge(page, "smallest-overflow");
       await c.scrollIntoViewIfNeeded();
-      const reference = lesson(ONE).challenges.find((x) => x.id === "smallest-overflow")!.reference
-        .answers!["number"]!;
+      const reference = LESSONS.flatMap((unit) => unit.challenges).find(
+        (x) => x.id === "smallest-overflow",
+      )!.reference.answers!["number"]!;
       await answer(c, reference);
       await press(page, run(c));
       await expect(status(c)).toHaveText(passing(1));
@@ -521,7 +525,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     test("text is legible, controls are reachable, nothing scrolls sideways, prose keeps its measure", async ({
       page,
     }, info) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
     });
 
@@ -529,7 +533,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       page,
     }, info) => {
       const phone = info.project.name === "phone";
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       await commit(page, "predict-readings", "Both");
       const adder = page.locator("#ix-add-columns");
       for (let k = 0; k < 6; k++)
@@ -537,13 +541,16 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       await press(page, page.locator("details.lesson-details summary").first());
       expect(await designProblems(page, phone)).toEqual([]);
       await press(page, adder.getByRole("button", { name: A.adder.all }));
+      await openLesson(page, "flags-and-overflow");
       await commit(page, "predict-add-flags", "All four are 0");
       const stepper = page.locator("#ix-step-add");
       await press(page, stepper.getByRole("button", { name: V.stepper.next }));
+      await openLesson(page, "adding-and-the-flags");
       const flags = challenge(page, "predict-flags");
       await press(page, flags.locator('[data-field="first-n"] input[value="1"]'));
       await press(page, run(flags));
       await press(page, flags.getByRole("button", { name: /Show hint/ }));
+      await openLesson(page, "flags-and-overflow");
       const overflow = challenge(page, "smallest-overflow");
       await overflow.locator('[data-field="number"] input').fill("1");
       await press(page, run(overflow));
@@ -551,7 +558,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     });
 
     test("the adder's 33 places fit the screen, on a phone and on a desk", async ({ page }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       await commit(page, "predict-readings", "Both");
       const adder = page.locator("#ix-add-columns");
       await adder.scrollIntoViewIfNeeded();
@@ -572,7 +579,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       await page.goto("#/");
       await page.evaluate((t) => localStorage.setItem("assembly-lab:v1:theme", t), theme);
       await page.reload();
-      await openLesson(page, ONE);
+      await openLesson(page, "adding-and-the-flags");
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       await commit(page, "predict-readings", "Only the unsigned");
       const adder = page.locator("#ix-add-columns");
@@ -595,7 +602,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
   }
 
   test("the way back leads to the front page, where the lesson is listed", async ({ page }) => {
-    await openLesson(page, ONE);
+    await openLesson(page, "adding-and-the-flags");
     await press(page, page.locator("a.back-link").first());
     await expect(page.locator(`.module-lessons li[data-lesson="${ONE}"] a`)).toHaveText(
       lesson(ONE).title,
@@ -613,9 +620,9 @@ const STEP = "one-step-past";
 test.describe("lesson 2, Subtracting, and the tick counter", () => {
   test("loads with no console error, selected sections and two challenges", async ({ page }) => {
     const errors = watchErrors(page);
-    await openLesson(page, TWO);
+    await openLesson(page, "subtracting-and-the-tick-counter");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson(TWO).title);
-    await expect(page.locator("section.challenge")).toHaveCount(2);
+    await expect(page.locator("section.challenge")).toHaveCount(1);
     await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
     await expect(page).toHaveTitle(`${lesson(TWO).title} / Assembly Lab`);
     expect(errors).toEqual([]);
@@ -624,7 +631,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
   test("the prediction about elapsed commits before it reveals, and the model says 2000", async ({
     page,
   }) => {
-    await openLesson(page, TWO);
+    await openLesson(page, "subtracting-and-the-tick-counter");
     const figure = page.locator("#ix-predict-elapsed");
     await figure.scrollIntoViewIfNeeded();
     // The figure shows the recorded function and the two readings, and nothing of the run.
@@ -643,7 +650,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
   test("the ring stays shut until the prediction is checked, then shows the model's distance and C", async ({
     page,
   }) => {
-    await openLesson(page, TWO);
+    await openLesson(page, "subtracting-and-the-tick-counter");
     const ring = page.locator("#ix-counter-ring");
     await expect(ring.locator(".al-locked")).toBeVisible();
     await commit(page, "predict-elapsed", /^2000$/);
@@ -671,11 +678,9 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       test(`${d.id}: shut until the prediction is checked, then draws the model's subtraction and C ${d.flags[2]}`, async ({
         page,
       }) => {
-        await openLesson(page, TWO);
+        await openLesson(page, "subtraction-flags-and-negation");
         const adder = page.locator(`#ix-${d.id}`);
         await adder.scrollIntoViewIfNeeded();
-        await expect(adder.locator(".al-locked")).toBeVisible();
-        await commit(page, "predict-elapsed", /^2000$/);
         await expect(adder.locator(".al-locked")).toHaveCount(0);
         const model = traceOf(SUBS, { entry: "elapsed_subs", args: d.args });
         const record = additionSteps(model)[0]!.addition!;
@@ -714,7 +719,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     test("is completed by typing, at the desktop width", async ({ page }, info) => {
       test.skip(info.project.name !== "desktop", "typing is the desktop width's way in");
       const errors = watchErrors(page);
-      await openLesson(page, TWO);
+      await openLesson(page, "subtracting-and-the-tick-counter");
       const c = challenge(page, WRITE);
       await c.scrollIntoViewIfNeeded();
       const box = c.getByRole("textbox", { name: V.editor.textLabel });
@@ -731,7 +736,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     test("is completed by tapping alone, at the phone width", async ({ page }, info) => {
       test.skip(info.project.name !== "phone", "tapping is the phone width's way in");
       const errors = watchErrors(page);
-      await openLesson(page, TWO);
+      await openLesson(page, "subtracting-and-the-tick-counter");
       const c = challenge(page, WRITE);
       await c.scrollIntoViewIfNeeded();
       await c.getByRole("button", { name: V.editor.tap, exact: true }).tap();
@@ -753,14 +758,16 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       await run(c).tap();
       await expect(status(c)).toHaveText(passing(4));
       await expect(c.locator(".challenge-complete")).toHaveText(S.challenge.complete);
-      expect((await stored(page, TWO)).challenges[WRITE].artifact.text).toBe("sub w0, w0, w1\nret");
+      expect(
+        (await stored(page, "subtracting-and-the-tick-counter")).challenges[WRITE].artifact.text,
+      ).toBe("sub w0, w0, w1\nret");
       expect(errors).toEqual([]);
     });
 
     test("offers the instructions of the gate and the two registers, and no other", async ({
       page,
     }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "subtracting-and-the-tick-counter");
       const c = challenge(page, WRITE);
       await c.scrollIntoViewIfNeeded();
       await press(page, c.getByRole("button", { name: V.editor.tap, exact: true }));
@@ -777,7 +784,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     test("fails the starting point on all four calls, and says what it returned", async ({
       page,
     }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "subtracting-and-the-tick-counter");
       const c = challenge(page, WRITE);
       await c.scrollIntoViewIfNeeded();
       await press(page, run(c));
@@ -795,7 +802,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     test("rejects the operands the wrong way round and an addition, and refuses the tempting answer", async ({
       page,
     }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "subtracting-and-the-tick-counter");
       const c = challenge(page, WRITE);
       await c.scrollIntoViewIfNeeded();
       const box = c.getByRole("textbox", { name: V.editor.textLabel });
@@ -823,7 +830,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     test("survives a reload, graded again, and goes back to the starting point when cleared", async ({
       page,
     }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "subtracting-and-the-tick-counter");
       let c = challenge(page, WRITE);
       await c.scrollIntoViewIfNeeded();
       const box = c.getByRole("textbox", { name: V.editor.textLabel });
@@ -851,7 +858,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
   test("the failure experiment: negs on 0x80000000 holds 0x80000000, with N and V set", async ({
     page,
   }) => {
-    await openLesson(page, TWO);
+    await openLesson(page, "subtraction-flags-and-negation");
     const stepper = page.locator("#ix-step-negs");
     await expect(stepper.locator(".al-locked")).toBeVisible();
     await predictionCommitsBeforeItReveals(page, "predict-negs", /unchanged/, /^`?0x7fffffff`?$/);
@@ -879,7 +886,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     };
 
     test("shows the subtraction it is about, and asks for two numbers", async ({ page }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "subtraction-flags-and-negation");
       const c = challenge(page, STEP);
       await c.scrollIntoViewIfNeeded();
       await expect(c.locator(".al-insn .al-text")).toHaveText(["subs w0, w0, w1", "ret"]);
@@ -889,7 +896,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     test("rejects a wrong result and a wrong C, naming which, and never saying the value", async ({
       page,
     }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "subtraction-flags-and-negation");
       const c = challenge(page, STEP);
       await c.scrollIntoViewIfNeeded();
       await fill(c, "4294967295", "0");
@@ -906,7 +913,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     });
 
     test("asks for both numbers before it grades anything", async ({ page }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "subtraction-flags-and-negation");
       const c = challenge(page, STEP);
       await c.scrollIntoViewIfNeeded();
       await c.locator('[data-field="result"] input').fill("1");
@@ -918,10 +925,11 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     test("accepts the reference, keeps it over a reload, and goes when the work is cleared", async ({
       page,
     }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "subtraction-flags-and-negation");
       let c = challenge(page, STEP);
       await c.scrollIntoViewIfNeeded();
-      const answers = lesson(TWO).challenges.find((x) => x.id === STEP)!.reference.answers!;
+      const answers = LESSONS.flatMap((unit) => unit.challenges).find((x) => x.id === STEP)!
+        .reference.answers!;
       await fill(c, answers["result"]!, answers["c"]!);
       await press(page, run(c));
       await expect(status(c)).toHaveText(passing(2));
@@ -943,7 +951,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     test("text is legible, controls are reachable, nothing scrolls sideways, prose keeps its measure", async ({
       page,
     }, info) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "subtracting-and-the-tick-counter");
       expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
     });
 
@@ -951,21 +959,25 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       page,
     }, info) => {
       const phone = info.project.name === "phone";
-      await openLesson(page, TWO);
+      await openLesson(page, "subtracting-and-the-tick-counter");
       await commit(page, "predict-elapsed", /^0$/);
+      await openLesson(page, "subtraction-flags-and-negation");
       await commit(page, "predict-negs", /^0$/);
       const stepper = page.locator("#ix-step-negs");
       await press(page, stepper.getByRole("button", { name: V.stepper.next }));
+      await openLesson(page, "subtracting-and-the-tick-counter");
       const write = challenge(page, WRITE);
       await press(page, write.getByRole("button", { name: V.editor.tap, exact: true }));
       await press(page, write.locator(".asm-line-button").first());
       await press(page, run(write));
+      await openLesson(page, "subtraction-flags-and-negation");
       const step = challenge(page, STEP);
       await step.locator('[data-field="result"] input').fill("2");
       await step.locator('[data-field="c"] input').fill("1");
       await press(page, run(step));
       await press(page, step.getByRole("button", { name: /Show hint/ }));
       expect(await designProblems(page, phone)).toEqual([]);
+      await openLesson(page, "subtracting-and-the-tick-counter");
       await press(page, write.getByRole("button", { name: V.editor.text, exact: true }));
       await write.getByRole("textbox", { name: V.editor.textLabel }).fill("cmp w0, w1");
       expect(await designProblems(page, phone)).toEqual([]);
@@ -979,7 +991,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       await page.goto("#/");
       await page.evaluate((t) => localStorage.setItem("assembly-lab:v1:theme", t), theme);
       await page.reload();
-      await openLesson(page, TWO);
+      await openLesson(page, "subtracting-and-the-tick-counter");
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       await commit(page, "predict-elapsed", /^2000$/);
       const colours = await page.locator("#ix-counter-ring svg").evaluate((svg) => {
