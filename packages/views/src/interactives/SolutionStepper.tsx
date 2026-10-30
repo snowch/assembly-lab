@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { RegisterStateLabel } from "../RegisterStateLabel";
 import { useHandoffState } from "../update-handoff";
 
 // The learner's own instructions for a written challenge, stepped on one of the challenge's test
@@ -286,6 +287,7 @@ export const SolutionStepper = withProps(Props, function SolutionStepper({ data,
       <p className="al-status" role="status">
         {withCode(statusOf(trace, view))}
       </p>
+      <RegisterStateLabel trace={trace} view={view} />
       <div className="al-cellrows" role="group" aria-label={S.stepper.registers}>
         {rows}
       </div>

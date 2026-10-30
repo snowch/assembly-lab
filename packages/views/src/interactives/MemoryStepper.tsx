@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { RegisterStateLabel } from "../RegisterStateLabel";
 import { useHandoffState } from "../update-handoff";
 
 import { useMemo, type CSSProperties } from "react";
@@ -261,6 +262,7 @@ export const MemoryStepper = withProps(Props, function MemoryStepper({ data: sup
       <p className="al-status" role="status">
         {withCode(status)}
       </p>
+      <RegisterStateLabel trace={trace} view={view} />
       <div className="al-memory-registers" role="group" aria-label={S.stepper.registers}>
         {data.registers.map((name) => (
           <RegisterSummary

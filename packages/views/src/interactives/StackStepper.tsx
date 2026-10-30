@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { RegisterStateLabel } from "../RegisterStateLabel";
 import { useHandoffState } from "../update-handoff";
 
 import { useMemo } from "react";
@@ -104,6 +105,7 @@ export const StackStepper = withProps(Props, function StackStepper({ data, store
         next={view.next}
         ran={view.ran}
       />
+      <RegisterStateLabel trace={trace} view={view} />
       <div className="al-memory-registers" role="group" aria-label={S.stepper.registers}>
         <RegisterSummary
           className="al-memory-register"

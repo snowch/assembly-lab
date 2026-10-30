@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { RegisterStateLabel } from "../RegisterStateLabel";
 import { useHandoffState } from "../update-handoff";
 
 // A few instructions run one at a time on a register that is drawn in halves. Every value is what
@@ -221,6 +222,7 @@ function Stepping({ data, trace }: { data: Data; trace: Trace }) {
         {listing}
         {controls}
         {status}
+        <RegisterStateLabel trace={trace} view={view} />
         <div
           className="al-wide al-wide16"
           role="group"
@@ -276,6 +278,7 @@ function Stepping({ data, trace }: { data: Data; trace: Trace }) {
         {listing}
         {controls}
         {status}
+        <RegisterStateLabel trace={trace} view={view} />
         <div
           className="al-wide al-wide-named"
           role="group"
@@ -315,6 +318,7 @@ function Stepping({ data, trace }: { data: Data; trace: Trace }) {
       {listing}
       {controls}
       {status}
+      <RegisterStateLabel trace={trace} view={view} />
       <div
         className="al-wide"
         role="group"

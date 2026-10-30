@@ -113,6 +113,13 @@ it("restores the simulator step and bit disclosure, using the model to recompute
   expect(mounted.container.querySelector("[data-k]")).toHaveAttribute("data-k", "1");
   expect(screen.getByRole("button", { name: M0.registers.hideBits })).toBeVisible();
   expect(screen.getByRole("status")).toHaveTextContent("add w0, w0, w1");
+  expect(mounted.container.querySelector(".al-register-state")).toHaveTextContent(
+    "After add w0, w0, w1",
+  );
+  await user.click(screen.getByRole("button", { name: S.stepper.reset }));
+  expect(mounted.container.querySelector(".al-register-state")).toHaveTextContent(
+    "Before the first instruction",
+  );
 });
 
 it("fails safely when a per-tab snapshot cannot be saved and cancellation discards a pending handoff", async () => {

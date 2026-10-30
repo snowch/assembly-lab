@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { RegisterStateLabel } from "../RegisterStateLabel";
 import { useHandoffState } from "../update-handoff";
 
 // A program run one instruction at a time, as the stepper does, with every register drawn as a row
@@ -229,6 +230,7 @@ export const WordStepperFigure = withProps(Props, function WordStepperFigure({ d
       <p className="al-status" role="status">
         {withCode(statusOf(trace, view))}
       </p>
+      <RegisterStateLabel trace={trace} view={view} />
       <div className="al-bitrows" role="group" aria-label={S.stepper.registers}>
         <Ruler />
         {data.registers.map((n) => {
