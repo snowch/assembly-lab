@@ -114,6 +114,43 @@ checks passed. Both final independent reviewers are ready; their final Build 5 a
 record the two label changes, route destinations, relevant activity states and source-only
 test-boundary checks. No physical-board or local native-tool execution is claimed.
 
+## First CI check and vocabulary-home correction
+
+The first PR and push checks on `7c6c63c` passed GNU/QEMU differential and native/Pi source
+jobs, but each full unit run failed before browser tests: **3,077 passed and 14 failed in
+13 files**. All failures reported the same newly matching `x register` term in Module 0's
+corrected width-lesson link. The earlier full local unit pass preceded that link correction;
+its focused rerun did not include the global term-gate assertions. These CI failures remain
+failures: runs 41110498340 and 41110444263.
+
+Independent source review confirmed that the visible Module 0 caption and diagram already
+define the full-width x name and lower-32-bit w name before the link. Their vocabulary homes
+now match that actual introduction in one-addition, rather than the later width-writing unit.
+Both original and published catalogues retain a single home; the later unit still teaches
+writing the two widths. No term exemption, gate weakening, new learner wording or DOM change
+was added. The regression assertion checks both catalogues' complete term gates and unique
+homes, while existing machine-grounded width/diagram checks remain.
+
+The first fresh full local unit command after the metadata correction passed **3,090 tests**
+and failed **one** touch-editor test on its existing 20-second deadline (166 files passed,
+one failed; 263.06 seconds, exit 1). A worker-termination warning was also emitted. Every global
+term-gate assertion passed. No editor behaviour, test assertion or timeout was changed. A fresh
+full run caps local workers at two and avoids concurrent CPU-heavy checks; its result is separate
+from this failed command.
+
+The two-worker full rerun also passed **3,090 tests** and failed **one**, this time a different,
+unchanged 64-bit prediction UI test on its existing 30-second deadline (166 files passed,
+one failed; 237.31 seconds, exit 1). The earlier touch-editor case passed in this run; all
+vocabulary assertions passed again. Both results remain failures. No source or expectation
+in either timed-out UI case was changed; targeted single-worker checks and the complete CI
+suite provide the next verification, without another timeout or tolerance change.
+
+The targeted single-worker command passed **70 tests in four files**, exit 0 (28.65 seconds),
+including both previously timed-out UI cases, complete register-figure/editor suites and the
+Fundamentals/constant catalogue checks. The full-run deadline failures above are not relabelled
+as passes. The independent final metadata audit confirms both catalogues' vocabulary homes
+and empty term gates; final remote CI remains the merge gate.
+
 The initial full browser command used the default single worker, then was deliberately interrupted
 (exit130) to restart the identical suite with two local workers. Its partial result was 40 passed, one failed update-dialog preparation (Restart to update
 button not found), one interrupted typing test and 1,404 not run. The failure is retained

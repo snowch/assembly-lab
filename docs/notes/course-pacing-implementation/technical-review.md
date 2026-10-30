@@ -355,3 +355,52 @@ corrections are verified within the stated source/browser scope. No technical fi
 open for these changes. Earlier source and browser evidence retains its stated scope; no
 additional full-suite, external-service, native-tool, physical-board or assistive-technology
 claim is made here.
+
+### CI term-gate follow-up: accurate vocabulary homes
+
+The managing session reports that the first pushed CI Check failed **14 unit assertions**,
+with **3077 passing**, all from the same Module 0 vocabulary problem. The corrected exact
+link title “Writing w and x registers” matches `termPattern("x register")`, whose metadata
+home was still the later width lesson. An independent source-loaded check reproduced one
+underlying `termProblems` entry in each catalogue: `one-addition` used `x register` before
+`register-widths` in the published catalogue, or before `constants-and-widths` in the source
+catalogue. The earlier full local unit pass preceded this link correction; later narrow
+checks did not include the global term-gate assertions. The earlier technical link recheck
+missed this consequence. Its browser evidence remains valid, but it did not establish that
+the final metadata passed the unit suite. The original CI failure remains a failed run.
+
+**Accepted correction:** make `one-addition` the sole vocabulary home for both `w register`
+and `x register`, removing their introduction entries from the original constants record
+and the published width-writing unit. This reflects the existing visible teaching:
+“Each x name selects all 64 bits; its matching w name selects the lower 32 bits of the same
+register.” The immediately adjacent diagram places the matching names inside one enclosing
+register. Module 0 therefore already defines the two names before its follow-up link.
+The later activity still teaches width-specific writes and their effects; its instruction
+teaching, prediction, figures and challenge are unchanged.
+
+A title-only exemption was considered and rejected in favour of the accurate home. The
+repository previously used that mechanism for the old constant lesson's linked title, and
+still uses it for “shifted” in an official-reference URL. Here the visible page already
+defines the names, so moving their metadata home is more faithful to the term-rationing rule
+and requires no exemption, altered link formatting or premature instruction teaching.
+
+The final diff was independently read. It changes vocabulary metadata in three lesson files
+and corresponding tests; it changes no learner string, renderer or platform file. The
+fundamentals test now checks the unique `one-addition` home for **both terms in both
+catalogues**, absence of width-term exemptions, and the complete `termProblems` result for
+each catalogue. It retains the exact approved link assertion and existing machine-grounded
+register-width/caption checks. The width unit's test now correctly expects no newly introduced
+terms. A single-title-match restriction is unnecessary once the names' genuine definition
+is their home; the exact link check and complete gate assertions remain meaningful.
+
+An independent final source-loaded audit passed, exit 0, over **73 published pages and
+34 source records**. Each term has exactly one introduction, at `one-addition`; neither term
+has a Module 0 exemption; `termProblems` is empty in both catalogues. The approved link and
+visible explanatory caption are unchanged. Evidence:
+`/tmp/course-pacing-technical/term-home-final-review.json` and `term-home-final-review.mjs`.
+
+**Technical status:** the metadata correction and its regression-test scope are independently
+verified and ready. This reviewer made no product/test edit, rebuild or new browser visit.
+The managing session owns the in-progress complete unit rerun and subsequent CI outcome;
+those results must be recorded separately and do not replace the first CI failure. No new
+browser claim is needed for this metadata-only change; the Build 5 learner DOM is unchanged.

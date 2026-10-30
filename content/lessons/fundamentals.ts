@@ -20,7 +20,16 @@ const CONFIG = [
     test: 2,
     args: [14, 0, 5],
     fields: [1, 0],
-    introduces: ["instruction", "register", "assembly language", "operand", "memory", "AArch64"],
+    introduces: [
+      "instruction",
+      "register",
+      "assembly language",
+      "operand",
+      "memory",
+      "AArch64",
+      "w register",
+      "x register",
+    ],
   },
   {
     key: "constant",
