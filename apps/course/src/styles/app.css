@@ -284,6 +284,22 @@ ol {
   color: var(--hero-action-fg);
   font-weight: 600;
 }
+.cover-continue {
+  display: inline-grid;
+  gap: var(--space-1);
+}
+.cover-continue-title {
+  font-weight: 400;
+}
+.cover-hero .cover-completion-note {
+  margin: var(--space-2) 0 0;
+  color: var(--hero-muted);
+  font-size: var(--text-sm);
+}
+.cover-hero .cover-all-complete {
+  margin-top: var(--space-4);
+  color: var(--hero-sub);
+}
 .cover-hero .cover-help {
   margin-top: var(--space-3);
   margin-bottom: 0;
@@ -576,14 +592,34 @@ ol {
   }
 }
 
-/* The way between lessons, at the foot of each one. The two links sit one at each edge, so
-   "previous" and "next" is the page's own order; a missing link keeps the other in place. */
+/* Previous sits at the left; the completion control stays beside Next at the right. */
 .lesson-nav {
   display: flex;
   justify-content: space-between;
   align-items: stretch;
+  flex-wrap: wrap;
   gap: var(--space-3);
   margin: var(--space-4) 0 var(--space-3);
+}
+.lesson-nav-forward {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-3);
+  margin-left: auto;
+  max-width: 100%;
+}
+.lesson-completion {
+  display: flex;
+  align-items: center;
+}
+.lesson-completion button {
+  min-height: 44px;
+}
+.lesson-completion-note {
+  max-width: 65ch;
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+  margin: 0 0 var(--space-4);
 }
 .lesson-nav-link {
   display: grid;
@@ -601,7 +637,6 @@ ol {
 }
 .lesson-nav-link[data-direction="next"] {
   justify-items: end;
-  margin-left: auto;
   text-align: right;
 }
 .lesson-nav-direction {
@@ -612,8 +647,12 @@ ol {
   font-weight: 600;
 }
 @media (max-width: 30rem) {
-  .lesson-nav {
+  .lesson-nav,
+  .lesson-nav-forward {
     flex-direction: column;
+  }
+  .lesson-nav-forward {
+    margin-left: 0;
   }
   .lesson-nav-link[data-direction="next"] {
     justify-items: start;

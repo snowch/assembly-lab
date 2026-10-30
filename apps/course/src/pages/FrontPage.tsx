@@ -9,6 +9,7 @@ import { PLAN, lessonsOf, statusOf } from "@al/content/plan";
 
 import { lessonHref } from "../route";
 import { STRINGS } from "../strings";
+import { orderLessons, type LessonCompletion } from "../lesson-completion";
 import { CoverFigure, MODULE_ICONS } from "./icons";
 import "../styles/module-lessons.css";
 
@@ -83,26 +84,60 @@ function BeforeYouStart() {
   );
 }
 
-function Cover() {
+const EMPTY_COMPLETION: LessonCompletion = { completed: new Set(), unsaved: false };
+
+function CompletionMark() {
+  return (
+    <span className="lesson-complete-mark">
+      {" "}
+      <span aria-hidden="true">✓</span>
+      <span className="visually-hidden">{STRINGS.completion.marked}</span>
+    </span>
+  );
+}
+
+function Cover({ completion }: { completion: LessonCompletion }) {
+  const ordered = orderLessons(LESSONS);
+  const firstUnfinished = ordered.find((lesson) => !completion.completed.has(lesson.id));
+  const started = completion.completed.size > 0;
   return (
     <section className="cover-hero" aria-labelledby="cover-title">
       <div className="cover-text">
         <h1 id="cover-title">{STRINGS.title}</h1>
         <p className="cover-subtitle">{STRINGS.subtitle}</p>
         <p className="cover-intro">{STRINGS.intro}</p>
-        <a className="cover-start" href={lessonHref(LESSONS[0]!.id)}>
-          {STRINGS.start}
-        </a>
+        {firstUnfinished ? (
+          <a
+            className={`cover-start${started ? " cover-continue" : ""}`}
+            href={lessonHref(firstUnfinished.id)}
+          >
+            {started ? (
+              <>
+                <span>{STRINGS.completion.continue}</span>{" "}
+                <span className="cover-continue-title">{firstUnfinished.title}</span>
+              </>
+            ) : (
+              STRINGS.start
+            )}
+          </a>
+        ) : (
+          <p className="cover-all-complete">{STRINGS.completion.all}</p>
+        )}
+        {(started || completion.unsaved) && (
+          <p className="cover-completion-note" role="status">
+            {completion.unsaved ? STRINGS.completion.unsaved : STRINGS.completion.saved}
+          </p>
+        )}
       </div>
       <CoverFigure />
     </section>
   );
 }
 
-export function FrontPage() {
+export function FrontPage({ completion = EMPTY_COMPLETION }: { completion?: LessonCompletion }) {
   return (
     <div className="front-column">
-      <Cover />
+      <Cover completion={completion} />
       <BeforeYouStart />
       {PLAN.map((part) => (
         <section key={part.id} className="plan-part" aria-labelledby={`part-${part.id}`}>
@@ -123,7 +158,14 @@ export function FrontPage() {
                   <h3>
                     <span className="module-number">{STRINGS.module(m.label)}</span>
                     <span className="module-title">
-                      {first && !several ? <a href={lessonHref(first.id)}>{m.title}</a> : m.title}
+                      {first && !several ? (
+                        <a href={lessonHref(first.id)} data-lesson={first.id}>
+                          {m.title}
+                          {completion.completed.has(first.id) && <CompletionMark />}
+                        </a>
+                      ) : (
+                        m.title
+                      )}
                     </span>
                   </h3>
                   <p className="module-line">{m.line}</p>
@@ -131,7 +173,10 @@ export function FrontPage() {
                     <ol className="module-lessons" aria-label={STRINGS.lessonsOf(m.title)}>
                       {lessons.map((l) => (
                         <li key={l.id} data-lesson={l.id}>
-                          <a href={lessonHref(l.id)}>{l.title}</a>
+                          <a href={lessonHref(l.id)}>
+                            {l.title}
+                            {completion.completed.has(l.id) && <CompletionMark />}
+                          </a>
                         </li>
                       ))}
                     </ol>

@@ -253,6 +253,8 @@ test("every learner state key the course writes starts assembly-lab:v1:", async 
   await page.goto("#/");
   await ready(page);
   await page.getByLabel(STRINGS.theme).selectOption({ label: STRINGS.themeDark });
+  await page.locator(".cover-start").click();
+  await page.getByRole("button", { name: STRINGS.completion.mark, exact: true }).click();
   const keys = await page.evaluate(() => Object.keys(localStorage));
   expect(keys.length).toBeGreaterThan(0);
   for (const k of keys) expect(k.startsWith("assembly-lab:v1:"), k).toBe(true);

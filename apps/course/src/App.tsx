@@ -16,6 +16,8 @@ import { AppStatus } from "./AppStatus";
 import { STATUS_STRINGS } from "./strings.status";
 import { useOffline } from "./offline";
 import { updateStorage } from "./update-storage";
+import { LessonCompletionStore, orderLessons, useLessonCompletion } from "./lesson-completion";
+import { LessonCompletionButton } from "./LessonCompletionButton";
 import { WhereNextPage } from "./pages/WhereNextPage";
 import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
@@ -35,6 +37,16 @@ function skipToContent(e: React.MouseEvent<HTMLAnchorElement>) {
 
 export function App() {
   const persistence = useMemo(updateStorage, []);
+  const book = useMemo(() => createBook(), []);
+  const completionStore = useMemo(
+    () =>
+      new LessonCompletionStore(
+        persistence,
+        book.lessons.map((lesson) => lesson.id),
+      ),
+    [persistence, book],
+  );
+  const completion = useLessonCompletion(completionStore);
   const route = useRoute();
   const [theme, setTheme] = useTheme();
   const canReload = useCallback(
@@ -50,7 +62,6 @@ export function App() {
     clearViewHandoff();
   });
   const storage = persistence.storage;
-  const book = useMemo(() => createBook(), []);
   // The tab names the page, so a reader with several pages open can tell them apart.
   useEffect(() => {
     document.title = pageTitle(
@@ -61,12 +72,12 @@ export function App() {
   }, [route, book]);
 
   let page: React.ReactNode;
-  if (route.kind === "front") page = <FrontPage />;
+  if (route.kind === "front") page = <FrontPage completion={completion} />;
   else if (route.kind === "where-next") page = <WhereNextPage />;
   else if (route.kind === "lesson") {
     const lesson = book.lessons.find((l) => l.id === route.id);
     // The lessons in course order: module first, then the module's own order.
-    const ordered = [...book.lessons].sort((a, b) => a.module - b.module || a.order - b.order);
+    const ordered = orderLessons(book.lessons);
     const at = lesson ? ordered.findIndex((l) => l.id === lesson.id) : -1;
     const previous = ordered[at - 1];
     const next = ordered[at + 1];
@@ -99,13 +110,19 @@ export function App() {
           ) : (
             <span />
           )}
-          {next ? (
-            <a className="lesson-nav-link" data-direction="next" href={lessonHref(next.id)}>
-              <span className="lesson-nav-direction">{STRINGS.nextLesson}</span>
-              <span className="lesson-nav-title">{next.title}</span>
-            </a>
-          ) : null}
+          <div className="lesson-nav-forward">
+            <LessonCompletionButton store={completionStore} lessonId={lesson.id} />
+            {next ? (
+              <a className="lesson-nav-link" data-direction="next" href={lessonHref(next.id)}>
+                <span className="lesson-nav-direction">{STRINGS.nextLesson}</span>
+                <span className="lesson-nav-title">{next.title}</span>
+              </a>
+            ) : null}
+          </div>
         </nav>
+        <p id="lesson-completion-note" className="lesson-completion-note" role="status">
+          {completion.unsaved ? STRINGS.completion.unsaved : STRINGS.completion.saved}
+        </p>
       </>
     ) : (
       <>

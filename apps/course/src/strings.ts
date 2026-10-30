@@ -24,6 +24,16 @@ export const STRINGS = {
   intro:
     "Learn assembly by running instructions one at a time in your browser. The simulator supports a subset of 64-bit Arm instructions. In the lessons, you see C code beside its assembly instructions. After each instruction, you can inspect the register values and their bits, the flags and memory. You predict what will happen and write small assembly programs. Automatic checks test your answers and programs.",
   start: "Start with Module 0",
+  completion: {
+    mark: "Mark lesson complete",
+    undo: "Mark lesson incomplete",
+    marked: "Marked complete",
+    continue: "Continue learning",
+    all: "You have marked all current lessons complete.",
+    saved: "Lesson marks are saved in this browser on this device.",
+    unsaved:
+      "Lesson marks could not be saved. Changes will be lost when you reload or close this tab.",
+  },
   /** "Before you start", between the status note and the plan: what the course assumes. */
   prereqs: {
     heading: "Before you start",

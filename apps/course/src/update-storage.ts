@@ -17,14 +17,24 @@ export function updateStorage() {
       edits.set(key, null);
     },
   };
+  const persisted = (key: string, value: string | null) => {
+    try {
+      return localStorage.getItem(key) === value;
+    } catch {
+      return false;
+    }
+  };
   return {
     storage: tracked,
+    persisted,
+    /** A live view accepted another tab's value. Do not keep guarding its older edit. */
+    acceptExternal(key: string, value: string | null) {
+      if (!persisted(key, value)) return false;
+      edits.delete(key);
+      return true;
+    },
     saved() {
-      try {
-        return [...edits].every(([key, value]) => localStorage.getItem(key) === value);
-      } catch {
-        return false;
-      }
+      return [...edits].every(([key, value]) => persisted(key, value));
     },
   };
 }
