@@ -7,11 +7,11 @@
 // wrong answer is answered without the right value, and the whole page renders with no figure
 // problem.
 
-import { fireEvent, render, within } from "@testing-library/react";
+import { render, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { ARITH_STRINGS, BOOK_ID, INTERACTIVES, STEPS, createBook, grade } from "@al/views";
-import { LessonStore, LessonView, memoryStorage } from "@platform/lesson-runtime";
+import { ARITH_STRINGS, INTERACTIVES, STEPS, createBook, grade } from "@al/views";
+import { LessonView, memoryStorage } from "@platform/lesson-runtime";
 import {
   SECTION_KINDS,
   checkLesson,
@@ -23,12 +23,16 @@ import {
 } from "@platform/lesson-schema";
 
 import { LESSONS } from ".";
+import { introducedBy } from "./introduced";
 import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
 import { PROSE } from "./subtracting-and-the-tick-counter.prose";
 
 const lesson = LESSONS.find((l) => l.id === "subtracting-and-the-tick-counter")!;
+const arithmetic = LESSONS.find((l) => l.id === "subtraction-flags-and-negation")!;
+const units = [lesson, arithmetic];
 const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
-const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
+const challenge = (id: string) =>
+  units.flatMap((unit) => unit.challenges).find((c) => c.id === id)!;
 
 // Rendering a whole lesson and pressing its buttons takes a while on a busy machine.
 vi.setConfig({ testTimeout: 30_000 });
@@ -38,9 +42,14 @@ describe("the lesson", () => {
     expect(() => parseLesson(subtractingAndTheTickCounter)).not.toThrow();
     expect(checkLesson(lesson)).toEqual([]);
     expect(lesson.sections.map((s) => s.kind)).toEqual(
-      SECTION_KINDS.filter((kind) => !["question"].includes(kind)),
+      SECTION_KINDS.filter(
+        (kind) =>
+          !["question", "failureExperiment", "explanation", "generalisation", "challenge"].includes(
+            kind,
+          ),
+      ),
     );
-    expect([lesson.module, lesson.order]).toEqual([2, 1]);
+    expect([lesson.module, lesson.order]).toEqual([2, 2]);
   });
 
   it("introduces borrow and wrap, and passes the term gate", () => {
@@ -74,26 +83,17 @@ describe("the lesson", () => {
     const gated = lesson.sections
       .flatMap((s) => s.interactives)
       .filter((x) => typeof x.props["after"] === "string");
-    expect(gated.map((x) => x.id)).toEqual([
-      "counter-ring",
-      "subtract-wrapped",
-      "subtract-no-wrap",
-      "step-negs",
-    ]);
+    expect(gated.map((x) => x.id)).toEqual(["counter-ring"]);
     for (const x of gated)
       expect(ids.indexOf(x.props["after"] as string), x.id).toBeLessThan(ids.indexOf(x.id));
   });
 
-  it("gates a third adder behind the construction challenge, after the challenge in the page", () => {
-    const figures = lesson.sections.flatMap((s) => s.interactives);
-    const gated = figures.filter((x) => typeof x.props["afterChallenge"] === "string");
-    expect(gated.map((x) => x.id)).toEqual(["subtract-own"]);
-    const mount = figures.find(
-      (m) => m.props["challengeId"] === gated[0]!.props["afterChallenge"],
-    )!;
-    expect(figures.indexOf(mount)).toBeLessThan(figures.indexOf(gated[0]!));
-    // It draws one of the challenge's own calls, which the learner's elapsed has just passed.
-    const call = gated[0]!.props["call"] as { args: number[] };
+  it("opens the worked counter subtraction locally in the arithmetic unit", () => {
+    const worked = arithmetic.sections
+      .flatMap((part) => part.interactives)
+      .find((part) => part.id === "subtract-own")!;
+    expect(worked.props["afterChallenge"]).toBeUndefined();
+    const call = worked.props["call"] as { args: number[] };
     const c = challenge("write-elapsed");
     if (c.tests.kind !== "answers") throw new Error("answers");
     expect(c.tests.cases.map((t) => [t.given["w0"], t.given["w1"]])).toContainEqual(call.args);
@@ -101,7 +101,7 @@ describe("the lesson", () => {
 
   it("says nowhere that a subtraction, or C, counts or detects how many times a counter wrapped", () => {
     const sentences = [
-      ...learnerText(lesson),
+      ...units.flatMap(learnerText),
       ...Object.values(ARITH_STRINGS.ring).flatMap((v) => (typeof v === "string" ? [v] : [])),
     ].flatMap((t) => t.split(/(?<=[.?!])\s+/));
     const about = sentences.filter(
@@ -160,12 +160,18 @@ describe("the challenges", () => {
     expect(grade(c, { text: "subs w0, w0, w1\nret" }).passed).toBe(true);
   });
 
-  it("write-elapsed: neg is taught by this lesson, so the gate says what the challenge allows, not that neg is not met", () => {
+  it("write-elapsed: neg is not met until the following arithmetic unit", () => {
     const c = challenge("write-elapsed");
     const verdict = grade(c, { text: "neg w1, w1\nadd w0, w0, w1\nret" });
     expect(verdict.passed).toBe(false);
-    expect(verdict.blocked).toContain("This challenge allows only");
-    expect(verdict.blocked).not.toContain("not met");
+    expect(verdict.blocked).toContain("You have not met `neg` yet");
+    expect(verdict.blocked).not.toContain("This challenge allows only");
+    expect(introducedBy(LESSONS, LESSONS.indexOf(arithmetic))).toEqual(
+      expect.arrayContaining(["neg", "negs"]),
+    );
+    expect(learnerText(arithmetic).join("\n")).toContain(
+      "`neg w0, w0` sets a value to its negative",
+    );
   });
 
   it("write-elapsed: a wrong answer shows its values as unsigned numbers, not negative ones", () => {
@@ -233,9 +239,9 @@ describe("the page", () => {
     // The ring, the two adders and the stepper wait for their predictions; nothing of any run is
     // on the page.
     // The adder after the construction challenge waits for it too.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(5);
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(1);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
-    expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
+    expect(container.querySelectorAll("section.challenge")).toHaveLength(1);
     // The closed answer of the last section, and no other closed note.
     expect(container.querySelectorAll("details.lesson-details")).toHaveLength(1);
   });
@@ -254,47 +260,25 @@ describe("the page", () => {
     expect(within(answer).getByText("Answer")).toBeTruthy();
   });
 
-  it("opens the adder that follows the construction challenge only once elapsed passes, and then says what the subtraction kept", () => {
-    // The work the learner has saved is read when the page opens: one page for each piece of work.
-    const pageWith = (text: string | null) => {
-      const storage = memoryStorage();
-      if (text !== null)
-        new LessonStore(storage, BOOK_ID, lesson.id).setChallenge("write-elapsed", (c) => ({
-          ...c,
-          artifact: { text },
-        }));
-      const view = render(<LessonView book={book} lesson={lesson} storage={storage} />);
-      return view;
-    };
-    const none = pageWith(null);
-    expect(none.container.querySelector("#ix-subtract-own .al-locked")).not.toBeNull();
-    expect(none.container.textContent).not.toContain(PROSE.elapsedAfter.slice(0, 40));
-    none.unmount();
-    // An addition does not pass the four calls, so the adder stays shut.
-    const wrong = pageWith("add w0, w0, w1\nret");
-    expect(wrong.container.querySelector("#ix-subtract-own .al-locked")).not.toBeNull();
-    expect(wrong.container.textContent).not.toContain(PROSE.elapsedAfter.slice(0, 40));
-    wrong.unmount();
-    const { container } = pageWith("sub w0, w0, w1\nret");
-    const own = () => container.querySelector("#ix-subtract-own") as HTMLElement;
-    expect(own().querySelector(".al-locked")).toBeNull();
-    expect(own().querySelector(".al-adder-note")?.textContent).toContain(
+  it("shows the arithmetic unit's worked subtraction without earlier saved work", () => {
+    const { container } = render(
+      <LessonView book={book} lesson={arithmetic} storage={memoryStorage()} />,
+    );
+    const own = container.querySelector("#ix-subtract-own") as HTMLElement;
+    expect(own.querySelector(".al-locked")).toBeNull();
+    expect(own.querySelector(".al-adder-note")?.textContent).toContain(
       "A single 32-bit subtraction keeps the low 32 bits of now - then.",
     );
-    // It opens at the final state of the call: 250 minus 4294967046 is 500, with a borrow.
-    expect(own().querySelector('[data-line="result"]')?.textContent).toBe(
+    expect(own.querySelector('[data-line="result"]')?.textContent).toBe(
       "Result: 0x000001f4, which is 500",
     );
-    expect(own().querySelector('[data-line="c"]')?.textContent).toBe("C = 0: a borrow was needed");
+    expect(own.querySelector('[data-line="c"]')?.textContent).toBe("C = 0: a borrow was needed");
   });
 
-  it("opens the two subtraction figures at their final states once the prediction is checked, side by side in order", () => {
+  it("opens the two arithmetic examples at their final states with controls to trace each", () => {
     const { container } = render(
-      <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
+      <LessonView book={book} lesson={arithmetic} storage={memoryStorage()} />,
     );
-    const prediction = container.querySelector("#ix-predict-elapsed") as HTMLElement;
-    fireEvent.click(within(prediction).getByRole("radio", { name: "2000" }));
-    fireEvent.click(within(prediction).getByRole("button", { name: "Check your prediction" }));
     const line = (id: string, key: string) =>
       container.querySelector(`#ix-${id} [data-line="${key}"]`)?.textContent;
     expect(line("subtract-wrapped", "c")).toBe("C = 0: a borrow was needed");

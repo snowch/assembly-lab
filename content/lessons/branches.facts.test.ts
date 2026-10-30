@@ -33,7 +33,14 @@ import {
   recorded,
 } from "./module-4.runs";
 
-const lesson = LESSONS.find((l) => l.id === "branches")!;
+const units = ["branches", "zero-and-threshold-branches", "register-and-bit-branches"].map((id) =>
+  LESSONS.find((l) => l.id === id)!,
+);
+const lesson = {
+  ...units[0]!,
+  sections: units.flatMap((unit) => unit.sections),
+  challenges: units.flatMap((unit) => unit.challenges),
+};
 const body = lessonBody(2);
 
 const TOP = 0x80000000;

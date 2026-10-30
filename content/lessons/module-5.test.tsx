@@ -14,13 +14,7 @@ import {
   wValue,
 } from "@al/views";
 import { LessonStore, LessonView, memoryStorage } from "@platform/lesson-runtime";
-import {
-  SECTION_KINDS,
-  checkLesson,
-  modelProblems,
-  termProblems,
-  testCount,
-} from "@platform/lesson-schema";
+import { checkLesson, modelProblems, termProblems, testCount } from "@platform/lesson-schema";
 import { LESSONS } from ".";
 import { DIM_DO, DIM_UP_TEXT, DIM_DOWN_TEXT, DIM_UNTIL_DARK_TEXT } from "./loops.listings";
 
@@ -29,15 +23,23 @@ const challenge = (id: string) => lessons.flatMap((l) => l.challenges).find((c) 
 const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
 
 describe("Module 5 lesson structure", () => {
-  it("contains two ordered lessons with ten sections and all challenges mounted", () => {
+  it("contains five focused lessons with locally mounted challenges", () => {
     expect(lessons.map((l) => [l.id, l.module, l.order])).toEqual([
       ["counting-up", 5, 0],
-      ["counting-down", 5, 1],
+      ["writing-an-upward-loop", 5, 1],
+      ["counting-down", 5, 2],
+      ["testing-before-and-after", 5, 3],
+      ["stopping-when-work-ends", 5, 4],
     ]);
     for (const lesson of lessons) {
       expect(checkLesson(lesson)).toEqual([]);
-      expect(lesson.sections.map((s) => s.kind)).toEqual([...SECTION_KINDS]);
-      expect(lesson.challenges).toHaveLength(2);
+      expect(lesson.sections.length).toBeGreaterThan(0);
+      const mounted = lesson.sections
+        .flatMap((s) => s.interactives)
+        .filter((f) => f.kind === "challenge");
+      expect(mounted.map((f) => f.props["challengeId"])).toEqual(
+        lesson.challenges.map((c) => c.id),
+      );
     }
     expect(termProblems(LESSONS)).toEqual([]);
     expect(modelProblems(LESSONS, [STEPS])).toEqual([]);
@@ -70,8 +72,9 @@ describe("Module 5 lesson structure", () => {
   });
 
   it("shows the broken countdown's assembly, count and flags behind its prediction", () => {
-    const figure = lessons[1]!.sections
-      .flatMap((s) => s.interactives)
+    const figure = lessons
+      .find((l) => l.id === "testing-before-and-after")!
+      .sections.flatMap((s) => s.interactives)
       .find((f) => f.id === "step-dim-down-wrong")!;
     expect(figure.kind).toBe("stepper");
     expect(figure.props["registers"]).toEqual([0, 1]);
@@ -82,8 +85,9 @@ describe("Module 5 lesson structure", () => {
   });
 
   it("gates the do-loop stepper and exposes the zero count wrapping on its first subtraction", () => {
-    const figure = lessons[1]!.sections
-      .flatMap((s) => s.interactives)
+    const figure = lessons
+      .find((l) => l.id === "testing-before-and-after")!
+      .sections.flatMap((s) => s.interactives)
       .find((f) => f.id === "step-dim-do-zero")!;
     expect(figure.kind).toBe("stepper");
     expect(figure.props["program"]).toEqual(DIM_DO);
@@ -194,7 +198,7 @@ describe("Module 5 challenges", () => {
   });
 
   it("regrades restored work instead of trusting an old completion mark", () => {
-    const lesson = lessons[1]!;
+    const lesson = lessons.find((l) => l.id === "stopping-when-work-ends")!;
     const c = challenge("write-dim-until-dark");
     const store = new LessonStore(memoryStorage(), "assembly-lab", lesson.id);
     store.setChallenge(c.id, (current) => ({
@@ -213,18 +217,24 @@ describe("Module 5 challenges", () => {
 });
 
 describe("Module 5 pages", () => {
-  it.each(lessons)("$id renders ten sections, two challenges and no broken figure", (lesson) => {
+  it.each(lessons)("$id renders its selected sections and no broken figure", (lesson) => {
     const { container } = render(
       <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
     );
-    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
-    expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
+    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(
+      lesson.sections.length,
+    );
+    expect(container.querySelectorAll("section.challenge")).toHaveLength(lesson.challenges.length);
     expect(
       [...container.querySelectorAll(".interactive-problem, .interactive-missing")].map(
         (n) => n.textContent,
       ),
     ).toEqual([]);
     expect(container.querySelectorAll(".al-outcome, .al-loop-bars")).toHaveLength(0);
-    expect(container.querySelectorAll(".al-locked").length).toBeGreaterThanOrEqual(3);
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(
+      lesson.sections
+        .flatMap((s) => s.interactives)
+        .filter((f) => typeof f.props["after"] === "string").length,
+    );
   });
 });

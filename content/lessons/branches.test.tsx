@@ -32,16 +32,27 @@ import {
 } from "./branches.listings";
 
 const lesson = LESSONS.find((l) => l.id === "branches")!;
+const units = [
+  lesson,
+  ...["zero-and-threshold-branches", "register-and-bit-branches"].map((id) =>
+    LESSONS.find((l) => l.id === id)!,
+  ),
+];
 const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
-const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
+const challenge = (id: string) =>
+  units.flatMap((unit) => unit.challenges).find((c) => c.id === id)!;
 const text = (t: string) => ({ text: t });
 
 describe("the lesson", () => {
   it("parses and passes the schema's checks: ten sections in order, every challenge mounted", () => {
     expect(() => parseLesson(branches)).not.toThrow();
     expect(checkLesson(lesson)).toEqual([]);
-    expect(lesson.sections.map((s) => s.kind)).toEqual([...SECTION_KINDS]);
-    expect([lesson.module, lesson.order]).toEqual([4, 1]);
+    expect(lesson.sections.map((s) => s.kind)).toEqual(
+      SECTION_KINDS.filter(
+        (kind) => !["construction", "explanation", "generalisation", "reflection"].includes(kind),
+      ),
+    );
+    expect([lesson.module, lesson.order]).toEqual([4, 2]);
   });
 
   it("introduces branch, taken and wzr, and passes the term gate with every lesson before and after it", () => {
@@ -266,13 +277,15 @@ describe("the page", () => {
     const { container } = render(
       <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
     );
-    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
+    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(
+      lesson.sections.length,
+    );
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
     // The stepper and the arrows wait for the prediction; nothing of either run is on the page.
     expect(container.querySelectorAll(".al-locked")).toHaveLength(3);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
-    expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
+    expect(container.querySelectorAll("section.challenge")).toHaveLength(1);
     expect(container.querySelector('[data-figure="listing"]')).not.toBeNull();
   });
 });

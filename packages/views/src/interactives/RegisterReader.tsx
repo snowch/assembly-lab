@@ -20,6 +20,7 @@ import { Fragment, useMemo } from "react";
 import { z } from "zod";
 
 import { BitToggles } from "../BitToggles";
+import { HexEntry } from "../HexEntry";
 import {
   NO_BITS,
   patternAfterRun,
@@ -39,6 +40,8 @@ const Props = z.object({
   start: z.object({ program: RecordedSchema, call: CallSchema }).optional(),
   /** Draw the top bit's table, and the button that clears the bits. */
   topBit: z.boolean().default(false),
+  /** Teach hexadecimal before introducing the two numerical readings. */
+  hexOnly: z.boolean().default(false),
   /** An optional adjacent scratch area, initially closed. */
   disclosure: z.string().optional(),
 });
@@ -82,6 +85,36 @@ export const RegisterReader = withProps(Props, function RegisterReader({ data })
   const [bits, setBits] = useHandoffState("RegisterReader.bits", first);
   const readings = useMemo(() => readingsOfPattern(bits), [bits]);
   const table = useMemo(() => (data.topBit ? topBitTable(bits) : null), [data.topBit, bits]);
+
+  if (data.hexOnly) {
+    return (
+      <div
+        className="al-figure al-reader"
+        data-figure="register-reader"
+        data-register={data.register}
+      >
+        <BitToggles
+          bits={bits}
+          onChange={setBits}
+          label={S.toggles.group(data.register)}
+          digits={readings.digits}
+          groupOutline
+        />
+        <HexEntry handoffKey="register-pattern" bits={bits} onBits={setBits} />
+        <div className="al-pattern" data-reading="hex">
+          <span className="al-reading-name">{S.reader.hex}</span>
+          <code className="al-reading-value">0x{readings.digits}</code>
+          <button
+            type="button"
+            className="button secondary al-clear"
+            onClick={() => setBits(NO_BITS)}
+          >
+            {M1.reader.clearBits}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (table === null) {
     return (

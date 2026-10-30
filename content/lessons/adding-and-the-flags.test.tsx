@@ -26,8 +26,11 @@ import { addingAndTheFlags } from "./adding-and-the-flags";
 import { PROSE } from "./adding-and-the-flags.prose";
 
 const lesson = LESSONS.find((l) => l.id === "adding-and-the-flags")!;
+const followOn = LESSONS.find((l) => l.id === "flags-and-overflow")!;
+const units = [lesson, followOn];
 const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
-const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
+const challenge = (id: string) =>
+  units.flatMap((unit) => unit.challenges).find((c) => c.id === id)!;
 
 // Rendering a whole lesson and pressing its buttons takes a while on a busy machine.
 vi.setConfig({ testTimeout: 30_000 });
@@ -37,7 +40,17 @@ describe("the lesson", () => {
     expect(() => parseLesson(addingAndTheFlags)).not.toThrow();
     expect(checkLesson(lesson)).toEqual([]);
     expect(lesson.sections.map((s) => s.kind)).toEqual(
-      SECTION_KINDS.filter((kind) => !["question", "generalisation"].includes(kind)),
+      SECTION_KINDS.filter(
+        (kind) =>
+          ![
+            "question",
+            "failureExperiment",
+            "explanation",
+            "generalisation",
+            "challenge",
+            "reflection",
+          ].includes(kind),
+      ),
     );
     expect([lesson.module, lesson.order]).toEqual([2, 0]);
   });
@@ -73,8 +86,11 @@ describe("the lesson", () => {
   });
 
   it("gates the adder and the stepper behind the prediction before each, in the same lesson", () => {
-    const ids = lesson.sections.flatMap((s) => s.interactives.map((x) => x.id));
-    const gated = lesson.sections
+    const ids = units.flatMap((unit) =>
+      unit.sections.flatMap((s) => s.interactives.map((x) => x.id)),
+    );
+    const gated = units
+      .flatMap((unit) => unit.sections)
       .flatMap((s) => s.interactives)
       .filter((x) => typeof x.props["after"] === "string");
     expect(gated.map((x) => x.id)).toEqual(["add-columns", "step-add"]);
@@ -213,11 +229,11 @@ describe("the page", () => {
     expect(problems.map((p) => p.textContent)).toEqual([]);
     // The adder and the stepper wait for their predictions, and the second adder for the flags
     // challenge; nothing of any run is on the page.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(3);
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
-    expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
+    expect(container.querySelectorAll("section.challenge")).toHaveLength(1);
     // The closed note on GCC's check, and the closed answer to the last section's question.
-    expect(container.querySelectorAll("details.lesson-details")).toHaveLength(2);
+    expect(container.querySelectorAll("details.lesson-details")).toHaveLength(1);
   });
 
   it("draws the flags challenge as three separate groups of N, Z, C and V, with no answer chosen", () => {
@@ -279,7 +295,7 @@ describe("the page", () => {
     const { container } = render(
       <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
     );
-    for (const id of ["add-columns", "step-add", "add-carry-out"])
+    for (const id of ["add-columns", "add-carry-out"])
       expect(container.querySelector(`#ix-${id} .al-locked`), id).not.toBeNull();
     expect(container.querySelector(".al-adder-final")).toBeNull();
     expect(container.querySelector(".al-flag-tag")).toBeNull();

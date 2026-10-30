@@ -119,10 +119,12 @@ describe("visible Fundamentals lessons", () => {
     }
   });
 
-  it("uses the later constant term only to name the linked follow-up lesson", () => {
-    expect(learnerText(lessons[0]!).filter((text) => /\bconstant\w*/i.test(text))).toEqual([
-      FUNDAMENTALS_PROSE.addition.registerViews.after,
-    ]);
+  it("links register views to their focused follow-up without introducing constants", () => {
+    expect(learnerText(lessons[0]!).filter((text) => /\bconstant\w*/i.test(text))).toEqual([]);
+    expect(FUNDAMENTALS_PROSE.addition.registerViews.after).toContain(
+      "[Writing w and x registers](#/lesson/register-widths)",
+    );
+    expect(lessons[0]!.termExemptions.some((item) => item.term === "constant")).toBe(false);
   });
 
   it("grounds the opening register count and both name widths in the machine", () => {

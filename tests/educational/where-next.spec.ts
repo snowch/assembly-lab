@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 import { expect, test } from "@playwright/test";
-import { WHERE_NEXT, PLAYGROUND_STARTER } from "@al/content";
+import { LESSONS, WHERE_NEXT, PLAYGROUND_STARTER } from "@al/content";
 import { designProblems } from "./design";
 import { watchErrors } from "./module3";
 
@@ -55,7 +55,8 @@ for (const theme of ["light", "dark"] as const) {
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(WHERE_NEXT.title);
-    await page.goto("#/lesson/recursive-calls");
+    const lastCallsLesson = LESSONS.filter((lesson) => lesson.module === 9).at(-1)!;
+    await page.goto(`#/lesson/${lastCallsLesson.id}`);
     await page
       .locator(".where-next-after-calls")
       .getByRole("link", { name: WHERE_NEXT.linkLabel })

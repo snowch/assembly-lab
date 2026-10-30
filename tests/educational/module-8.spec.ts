@@ -17,7 +17,7 @@ import {
   storageKey,
   watchErrors,
 } from "./module1";
-const routes = ["products-and-widths", "division-and-remainders"];
+const routes = LESSONS.filter((l) => l.module === 8).map((l) => l.id);
 const lesson = (id: string) => LESSONS.find((l) => l.id === id)!;
 const figures = (id: string) => lesson(id).sections.flatMap((s) => s.interactives);
 type Props = {
@@ -52,14 +52,17 @@ for (const route of routes) {
       await page.reload();
       await openLesson(page, route);
       await expect(page.locator(".al-outcome")).toHaveCount(0);
+      const diagrams = figures(route).filter((f) =>
+        ["product-halves", "division-parts"].includes(f.kind),
+      );
       await expect(
         page.locator('[data-figure="product-halves"],[data-figure="division-parts"]'),
-      ).toHaveCount(0);
+      ).toHaveCount(diagrams.filter((f) => f.props["after"] === undefined).length);
       await unlock(page, route);
       await expect(page.locator(".interactive-problem,.interactive-missing")).toHaveCount(0);
       await expect(
         page.locator('[data-figure="product-halves"],[data-figure="division-parts"]'),
-      ).toHaveCount(1);
+      ).toHaveCount(diagrams.length);
       expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
       expect(await figureOverflow(page)).toEqual([]);
       expect(errors).toEqual([]);
@@ -93,10 +96,14 @@ for (const route of routes) {
 }
 for (const item of [
   { route: routes[0]!, id: "write-scaled-total", wrong: "mul w0, w0, w1\nret" },
-  { route: routes[0]!, id: "write-wide-product", wrong: "smull x0, w0, w1\nret" },
-  { route: routes[1]!, id: "write-remainder", wrong: "udiv w2, w0, w1\nmsub w0, w2, w1, w0\nret" },
+  { route: "widening-products", id: "write-wide-product", wrong: "smull x0, w0, w1\nret" },
   {
-    route: routes[1]!,
+    route: "division-and-remainders",
+    id: "write-remainder",
+    wrong: "udiv w2, w0, w1\nmsub w0, w2, w1, w0\nret",
+  },
+  {
+    route: "consumption-calculation",
     id: "write-consumption",
     wrong: "mov w2, #100\nmul w0, w0, w2\nudiv x0, x0, x1\nret",
   },

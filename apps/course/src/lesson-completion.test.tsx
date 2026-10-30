@@ -58,19 +58,16 @@ it("keeps a sensible first visit and continues to the first unfinished lesson, i
   );
 });
 
-it("gives plan ticks accessible text in both single-lesson and multiple-lesson modules", () => {
+it("gives plan ticks accessible text across different module lesson lists", () => {
   const modules = PLAN.flatMap((part) => part.modules);
-  const single = modules
-    .map((module) => lessonsOf(module, LESSONS))
-    .find((lessons) => lessons.length === 1)![0]!;
-  const multiple = modules
-    .map((module) => lessonsOf(module, LESSONS))
-    .find((lessons) => lessons.length > 1)![0]!;
+  const moduleLessons = modules.map((module) => lessonsOf(module, LESSONS));
+  const first = moduleLessons[0]![0]!;
+  const last = moduleLessons.at(-1)![0]!;
   const store = makeStore();
-  store.set(single.id, true);
-  store.set(multiple.id, true);
+  store.set(first.id, true);
+  store.set(last.id, true);
   const { container } = render(<ProgressPlan store={store} />);
-  for (const lesson of [single, multiple]) {
+  for (const lesson of [first, last]) {
     const link = container.querySelector(`.plan-module a[href="${lessonHref(lesson.id)}"]`);
     expect(link?.querySelector(".lesson-complete-mark")).toHaveTextContent(
       STRINGS.completion.marked,

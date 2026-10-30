@@ -27,6 +27,7 @@ import { LESSONS } from ".";
 import { compareAndChoose } from "./compare-and-choose";
 
 const lesson = LESSONS.find((l) => l.id === "compare-and-choose")!;
+const conditions = LESSONS.find((l) => l.id === "conditions-and-boolean-results")!;
 const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
 const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
 
@@ -34,7 +35,11 @@ describe("the lesson", () => {
   it("parses and passes the schema's checks: ten sections in order, every challenge mounted", () => {
     expect(() => parseLesson(compareAndChoose)).not.toThrow();
     expect(checkLesson(lesson)).toEqual([]);
-    expect(lesson.sections.map((s) => s.kind)).toEqual([...SECTION_KINDS]);
+    expect(lesson.sections.map((s) => s.kind)).toEqual(
+      SECTION_KINDS.filter(
+        (kind) => !["explanation", "generalisation", "reflection"].includes(kind),
+      ),
+    );
     expect([lesson.module, lesson.order]).toEqual([4, 0]);
   });
 
@@ -102,7 +107,7 @@ describe("the lesson", () => {
   });
 
   it("starts the condition table at a pair the last challenge does not ask about", () => {
-    const table = lesson.sections
+    const table = conditions.sections
       .flatMap((s) => s.interactives)
       .find((x) => x.kind === "condition-table")!;
     expect(table.props["start"]).toEqual(["8", "8"]);
@@ -110,7 +115,7 @@ describe("the lesson", () => {
   });
 
   it("offers the condition table's pairs by button only, and never a pair the challenge or the reflection question asks about", () => {
-    const table = lesson.sections
+    const table = conditions.sections
       .flatMap((s) => s.interactives)
       .find((x) => x.kind === "condition-table")!;
     expect(table.props["choices"]).toBe("presets");
@@ -237,7 +242,9 @@ describe("the page", () => {
     const { container } = render(
       <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
     );
-    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
+    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(
+      lesson.sections.length,
+    );
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
     // The two listings and the stepper wait for their predictions, and the learner's own solution
@@ -246,13 +253,16 @@ describe("the page", () => {
     expect(container.querySelector('[data-figure="select-stepper"]')).toBeNull();
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
-    expect(container.querySelector('[data-figure="condition-table"]')).not.toBeNull();
-    // The condition table has buttons for its pairs and no box to type a pair in.
-    expect(container.querySelectorAll('[data-figure="condition-table"] input')).toHaveLength(0);
+    expect(container.querySelector('[data-figure="condition-table"]')).toBeNull();
+    const followOn = render(
+      <LessonView book={book} lesson={conditions} storage={memoryStorage()} />,
+    ).container;
+    // The follow-on explorer has buttons for pairs and no input box.
+    expect(followOn.querySelectorAll('[data-figure="condition-table"] input')).toHaveLength(0);
     expect(
-      [
-        ...container.querySelectorAll('[data-figure="condition-table"] .al-cond-presets button'),
-      ].map((b) => b.textContent),
+      [...followOn.querySelectorAll('[data-figure="condition-table"] .al-cond-presets button')].map(
+        (b) => b.textContent,
+      ),
     ).toEqual(["8 and 8", "0x7fffffff and 0xffffffff", "0xffffffff and 1", "0x80000000 and 1"]);
   });
 });

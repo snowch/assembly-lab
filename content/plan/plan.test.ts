@@ -99,20 +99,32 @@ describe("the course's plan", () => {
       "instructions-in-sequence",
       "meet-the-machine",
     ]);
-    // Modules 1 and 2 have two lessons each, in the order they are taught.
+    // The short units stay in prerequisite order within each module.
     expect(lessonsOf(moduleByNumber(1)!, LESSONS).map((l) => l.id)).toEqual([
       "one-pattern-three-readings",
+      "same-bits-two-readings",
+      "arithmetic-on-register-bits",
       "constants-and-widths",
+      "building-constants",
+      "register-widths",
     ]);
     expect(lessonsOf(moduleByNumber(2)!, LESSONS).map((l) => l.id)).toEqual([
       "adding-and-the-flags",
+      "flags-and-overflow",
       "subtracting-and-the-tick-counter",
+      "subtraction-flags-and-negation",
     ]);
-    // Module 3 has two lessons, in the order they are taught.
-    expect(lessonsOf(moduleByNumber(3)!, LESSONS).map((l) => l.id)).toEqual(["masks", "shifts"]);
+    // Field operations follow single-bit masks and precede later shifts.
+    expect(lessonsOf(moduleByNumber(3)!, LESSONS).map((l) => l.id)).toEqual([
+      "masks",
+      "reading-and-writing-fields",
+      "shifts",
+      "shifts-and-signed-division",
+    ]);
     expect(lessonsOf(moduleByNumber(11)!, LESSONS).map((l) => l.id)).toEqual([
       "c-and-overflow",
       "checked-arithmetic",
+      "checked-addition",
     ]);
     expect(statusOf(meet, [])).toBe("planned");
     expect(statusOf(meet, [{ id: "x", module: 0 }])).toBe("published");

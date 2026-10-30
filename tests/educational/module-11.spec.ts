@@ -17,7 +17,7 @@ import {
   storageKey,
   watchErrors,
 } from "./module1";
-const routes = ["c-and-overflow", "checked-arithmetic"];
+const routes = ["c-and-overflow", "checked-arithmetic", "checked-addition"];
 const lesson = (id: string) => LESSONS.find((l) => l.id === id)!;
 const figures = (id: string) => lesson(id).sections.flatMap((s) => s.interactives);
 type Props = {
@@ -66,9 +66,9 @@ for (const route of routes) {
   }
 }
 test("checked addition exposes carry versus overflow and stored bytes", async ({ page }) => {
-  await openLesson(page, routes[1]!);
-  await unlock(page, routes[1]!);
-  const f = figures(routes[1]!).find((f) => f.id === "step-wrong-overflow")!;
+  await openLesson(page, "checked-addition");
+  await unlock(page, "checked-addition");
+  const f = figures("checked-addition").find((f) => f.id === "step-wrong-overflow")!;
   const p = f.props as unknown as Props;
   const trace = traceOf(p.program, p.call);
   const figure = page.locator(`#ix-${f.id}`);
@@ -95,7 +95,7 @@ for (const item of [
   { route: routes[0]!, id: "write-safe-increment", wrong: "add w0, w0, #1\nret" },
   { route: routes[1]!, id: "write-fuel-fits", wrong: "cmp w0, #255\ncset w0, le\nret" },
   {
-    route: routes[1]!,
+    route: "checked-addition",
     id: "write-checked-trip",
     wrong: "adds w0, w0, w1\nstr w0, [x2]\ncset w0, cs\nret",
   },

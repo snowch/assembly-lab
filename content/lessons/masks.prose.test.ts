@@ -13,7 +13,7 @@ import { describe, expect, it } from "vitest";
 
 import { learnerText, termProblems } from "@platform/lesson-schema";
 
-import { LESSONS } from ".";
+import { SOURCE_LESSONS as LESSONS } from ".";
 import { LABELS } from "./masks.labels";
 import { PROSE } from "./masks.prose";
 import {

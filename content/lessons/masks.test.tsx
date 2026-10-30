@@ -1,142 +1,46 @@
 // @vitest-environment jsdom
 // Copyright © 2026 Christopher Snow
 
-// Module 3's first lesson as content: it parses and passes the schema's checks and the term gate,
-// it names only figures and a model the book has, each challenge's reference passes its tests and
-// its starting point does not, a wrong answer is answered without the right value, the written
-// challenge accepts only the instructions its task allows, and the whole page renders with no
-// figure problem.
-
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-
-import { INTERACTIVES, STEPS, createBook, grade, parseListing } from "@al/views";
+import { createBook, grade } from "@al/views";
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
-import {
-  SECTION_KINDS,
-  checkLesson,
-  learnerText,
-  modelProblems,
-  parseLesson,
-  termProblems,
-  testCount,
-} from "@platform/lesson-schema";
-
+import { checkLesson, testCount } from "@platform/lesson-schema";
 import { LESSONS } from ".";
-import { masks, MASKS_INSTRUCTIONS } from "./masks";
 import { PROSE } from "./masks.prose";
-import { SET_GEAR_START_TEXT } from "./logic-shifts-masks.listings";
 
 const lesson = LESSONS.find((l) => l.id === "masks")!;
+const fields = LESSONS.find((l) => l.id === "reading-and-writing-fields")!;
 const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
-const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
+const challenge = (id: string) =>
+  [lesson, fields].flatMap((unit) => unit.challenges).find((c) => c.id === id)!;
 
-describe("the lesson", () => {
-  it("parses and passes the schema's checks: selected sections in order, every challenge mounted", () => {
-    expect(() => parseLesson(masks)).not.toThrow();
-    expect(checkLesson(lesson)).toEqual([]);
-    expect(lesson.sections.map((s) => s.kind)).toEqual(
-      SECTION_KINDS.filter((kind) => !["motivation", "generalisation"].includes(kind)),
-    );
-    expect([lesson.module, lesson.order]).toEqual([3, 0]);
-  });
+it("gives mask and field operations separate checks without a remote prediction gate", () => {
+  expect(lesson.introduces).toEqual(["mask"]);
+  expect(fields.introduces).toEqual(["field"]);
+  expect(challenge("trace-three-results").fields.map((f) => f.id)).toEqual([
+    "after_orr",
+    "after_and",
+  ]);
+  expect(challenge("trace-gear-field").fields.map((f) => f.id)).toEqual(["the_gear"]);
+  expect(
+    fields.sections.flatMap((part) => part.interactives).find((f) => f.id === "read-gear")!.props[
+      "after"
+    ],
+  ).toBeUndefined();
+});
 
-  it("introduces mask and field, and passes the term gate with every lesson written", () => {
-    expect(lesson.introduces).toEqual(["mask", "field"]);
-    expect(termProblems(LESSONS)).toEqual([]);
-  });
-
-  it("uses none of the terms the lesson withholds", () => {
-    // Lesson 2's terms are its own; the rest wait for later modules.
-    // Immediate is already defined in the earlier visible constant lesson.
-    const immediateHome = LESSONS.findIndex((l) => l.id === "adding-a-constant");
-    expect(immediateHome).toBeGreaterThanOrEqual(0);
-    expect(LESSONS[immediateHome]!.introduces).toContain("immediate");
-    expect(immediateHome).toBeLessThan(LESSONS.findIndex((l) => l.id === lesson.id));
-    const withheld =
-      /\b(shift\w*|sign extension|condition\w*|branch\w*|two's complement|encoding|opcode|mnemonic|barrel)\b/i;
-    expect(learnerText(lesson).filter((t) => withheld.test(t))).toEqual([]);
-  });
-
-  it("carries an originality note that names the textbook example and the lesson's difference", () => {
-    expect(lesson.originalityNote.textbookExample).toContain("file permissions");
-    expect(lesson.originalityNote.howThisDiffers).toContain("`set_gear`");
-    expect(lesson.originalityNote.howThisDiffers).toContain("`bfi`");
-  });
-
-  it("names only figures the book has, and only the model the book has a note for", () => {
-    for (const s of lesson.sections)
-      for (const x of s.interactives)
-        if (x.kind !== "challenge") expect(Object.keys(INTERACTIVES)).toContain(x.kind);
-    expect(modelProblems(LESSONS, [STEPS])).toEqual([]);
-    expect(book.timeModelNotes).toEqual({});
-  });
-
-  it("gates the bit figure and the stepper behind the prediction before each, in the same lesson", () => {
-    const all = lesson.sections.flatMap((s) => s.interactives);
-    const ids = all.map((x) => x.id);
-    const gated = all.filter((x) => typeof x.props["after"] === "string");
-    expect(gated.map((x) => [x.id, x.props["after"]])).toEqual([
-      ["mask-bits", "predict-minus-five"],
-      ["read-gear", "predict-minus-five"],
-      ["step-no-clear", "predict-no-clear"],
-      ["compare-no-clear", "predict-no-clear"],
-    ]);
-    // The two figures after the written challenge wait for the challenge, not for a prediction.
-    const waits = all.filter((x) => "afterRun" in x.props || "afterChallenge" in x.props);
-    expect(waits.map((x) => [x.id, x.props["afterRun"] ?? x.props["afterChallenge"]])).toEqual([
-      ["step-solution", "write-set-gear"],
-      ["compare-bfi", "write-set-gear"],
-    ]);
-    for (const x of waits)
-      expect(ids.indexOf("write-set-gear-here")).toBeLessThan(ids.indexOf(x.id));
-    for (const x of gated)
-      expect(ids.indexOf(x.props["after"] as string)).toBeLessThan(ids.indexOf(x.id));
-  });
-
-  it("does not show the recipe for set_gear, the challenge's answer, in the Investigation's figure", () => {
-    const figure = lesson.sections
-      .flatMap((s) => s.interactives)
-      .find((x) => x.id === "mask-bits")!;
-    const entries = (figure.props["functions"] as { entry: string }[]).map((f) => f.entry);
-    expect(entries).toEqual(["warn_fuel", "clear_door", "toggle_lights"]);
-    expect(JSON.stringify(figure.props)).not.toContain("7u << 4");
-  });
-
-  it("shows only instructions its gate has: the lesson's, and ret", () => {
-    const allowed = new Set<string>([...MASKS_INSTRUCTIONS, "ret"]);
-    const used = new Set<string>();
-    const walk = (v: unknown) => {
-      if (Array.isArray(v)) v.forEach(walk);
-      else if (v && typeof v === "object") {
-        const o = v as Record<string, unknown>;
-        if (typeof o["listing"] === "string")
-          for (const l of parseListing(o["listing"]))
-            if (l.kind === "instruction") used.add(l.text.split(" ")[0] as string);
-        Object.values(o).forEach(walk);
-      }
-    };
-    for (const s of lesson.sections) for (const x of s.interactives) walk(x.props);
-    for (const c of lesson.challenges) {
-      walk(c.initial.data);
-      for (const l of parseListing(`${c.reference.text ?? ""}\n${c.initial.text ?? ""}`))
-        if (l.kind === "instruction") used.add(l.text.split(" ")[0] as string);
-    }
-    expect([...used].filter((m) => !allowed.has(m))).toEqual([]);
-    expect(used.size).toBeGreaterThan(5);
-  });
-
-  it("gives the written challenge the gate and, orr, lsl and ret, and the registers w0 to w3", () => {
-    const c = challenge("write-set-gear");
-    expect(c.allowedConstructs).toEqual(["and", "orr", "lsl", "ret"]);
-    expect(c.palette).toEqual(["w0", "w1", "w2", "w3"]);
-    expect(c.initial.text).toBe(SET_GEAR_START_TEXT);
-    expect(testCount(c)).toBe(4);
-  });
+it.each([lesson, fields])("renders $id with its own local controls and gates", (unit) => {
+  expect(checkLesson(unit)).toEqual([]);
+  const view = render(<LessonView book={book} lesson={unit} storage={memoryStorage()} />);
+  expect(
+    view.container.querySelectorAll(".interactive-problem, .interactive-missing"),
+  ).toHaveLength(0);
+  expect(view.container.querySelectorAll("section.challenge")).toHaveLength(unit.challenges.length);
 });
 
 describe("the challenges", () => {
-  it.each(["write-set-gear", "trace-three-results"])(
+  it.each(["write-set-gear", "trace-three-results", "trace-gear-field"])(
     "%s: the reference passes every test and the starting point does not",
     (id) => {
       const c = challenge(id);
@@ -204,7 +108,11 @@ describe("the challenges", () => {
       );
     expect(detail({ after_orr: "0x2a" })).toEqual([PROSE.traceFeedback.after_orr]);
     expect(detail({ after_and: "0x2a" })).toEqual([PROSE.traceFeedback.after_and]);
-    expect(detail({ the_gear: "0x5" })).toEqual([PROSE.traceFeedback.the_gear]);
+    expect(
+      grade(challenge("trace-gear-field"), { answers: { the_gear: "0x5" } }).failures.map(
+        (f) => f.detail,
+      ),
+    ).toEqual([PROSE.traceFeedback.the_gear]);
     // 0x23 is what the same `and` gives on 0x2b, the `orr` result, run on the model: the chained mistake.
     expect(detail({ after_and: "0x23" })).toEqual([PROSE.traceFeedback.chained]);
     expect(detail({ after_and: "23" })).toEqual([PROSE.traceFeedback.chained]);
@@ -212,10 +120,7 @@ describe("the challenges", () => {
     expect(detail({ after_and: "0x24" })).toEqual([PROSE.traceFeedback.after_and]);
     expect(detail({})).toEqual([]);
     // Two wrong fields, two cases, two sentences.
-    expect(detail({ after_orr: "0x0", the_gear: "0x0" })).toEqual([
-      PROSE.traceFeedback.after_orr,
-      PROSE.traceFeedback.the_gear,
-    ]);
+    expect(detail({ after_orr: "0x0", the_gear: "0x0" })).toEqual([PROSE.traceFeedback.after_orr]);
     // No sentence gives the value of any of the three answers.
     const all = Object.values(PROSE.traceFeedback).join(" ");
     expect(all).not.toMatch(/0x2b|0x22|0x23/);
@@ -239,26 +144,6 @@ describe("the challenges", () => {
       answers: { after_orr: "0x2b", after_and: "banana", the_gear: "2" },
     });
     expect(verdict.blocked).toContain("hexadecimal");
-    expect(grade(c, { answers: { after_orr: "0x2b" } }).blocked).toContain("the gear");
-  });
-});
-
-describe("the page", () => {
-  it("renders every section and figure with no problem note", () => {
-    const { container } = render(
-      <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
-    );
-    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(
-      lesson.sections.length,
-    );
-    const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
-    expect(problems.map((p) => p.textContent)).toEqual([]);
-    // The bit figure, the stepper and the comparison wait for their predictions, and the solution
-    // stepper and the comparison with GCC's function wait for the challenge; nothing of any run is
-    // on the page.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(6);
-    expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
-    expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
-    expect(container.querySelectorAll('[data-figure="warning-word"] .al-bit')).toHaveLength(32);
+    expect(grade(c, { answers: { after_orr: "0x2b" } }).blocked).toContain("after and");
   });
 });

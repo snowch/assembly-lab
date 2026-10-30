@@ -42,27 +42,24 @@ import {
 } from "./module3";
 
 const LESSON_ID = "masks";
-const STORAGE_KEY = `assembly-lab:v1:${LESSON_ID}`;
 const lesson = LESSONS.find((l) => l.id === LESSON_ID)!;
 const SET = "write-set-gear";
 const THREE = "trace-three-results";
-const open = (page: Parameters<typeof openLesson>[0]) => openLesson(page, LESSON_ID);
+const open = (page: Parameters<typeof openLesson>[0], id = LESSON_ID) => openLesson(page, id);
 
-const stored = (page: import("@playwright/test").Page) =>
-  page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? "null"), STORAGE_KEY);
+const stored = (page: import("@playwright/test").Page, id = LESSON_ID) =>
+  page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? "null"), `assembly-lab:v1:${id}`);
 
 /** What a recorded function returns in w0 for a call, from the model. */
 const model = (name: keyof typeof RECORDED_FUNCTIONS, ...args: number[]) =>
   wValue(traceOf(RECORDED_FUNCTIONS[name], { entry: name, args }).result.final, 0);
 const hexOf = (n: number) => `0x${(n >>> 0).toString(16)}`;
 
-test("the lesson loads with no console error, selected sections, and its two challenges", async ({
-  page,
-}) => {
+test("the mask unit loads with no console error and its own closing check", async ({ page }) => {
   const errors = watchErrors(page);
-  await open(page);
+  await open(page, "masks");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
-  await expect(page.locator("section.challenge")).toHaveCount(2);
+  await expect(page.locator("section.challenge")).toHaveCount(1);
   await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
   await expect(page.locator("a.back-link").first()).toHaveAttribute("href", "#/");
   await expect(page).toHaveTitle(`${lesson.title} / Assembly Lab`);
@@ -73,7 +70,7 @@ test.describe("the warning word", () => {
   test("is the model's word: 32 bits in four groups of eight, and a key that reads each labelled bit from it", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "masks");
     const figure = page.locator("#ix-warning-word");
     const trace = traceOf(GEAR_OF, { entry: "gear_of", args: [0x35] });
     const word = wValue(viewAt(trace, 0).state, 0);
@@ -96,7 +93,7 @@ test.describe("the two predictions commit before they reveal", () => {
     ["predict-no-clear", "0x75", "0x55"],
   ] as const) {
     test(id, async ({ page }) => {
-      await open(page);
+      await open(page, id === "predict-minus-five" ? "masks" : "reading-and-writing-fields");
       const figure = page.locator(`#ix-${id}`);
       await figure.scrollIntoViewIfNeeded();
       await expect(figure.locator(".al-outcome")).toHaveCount(0);
@@ -117,7 +114,7 @@ test.describe("the two predictions commit before they reveal", () => {
   test("the first shows the model's run on a word with every bit set: only bit 2 came out 0", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "masks");
     const figure = await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
     const model = traceOf(CLEAR_DOOR, { entry: "clear_door", args: [0xffffffff] });
     const after = wValue(model.result.final, 0);
@@ -128,7 +125,7 @@ test.describe("the two predictions commit before they reveal", () => {
   });
 
   test("a commitment is kept, and is still there after a reload", async ({ page }) => {
-    await open(page);
+    await open(page, "masks");
     await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
     await page.reload();
     await expect(page.locator("#ix-predict-minus-five .al-match")).toBeVisible();
@@ -138,7 +135,7 @@ test.describe("the two predictions commit before they reveal", () => {
 
 test.describe("the bit figure", () => {
   test("stays shut until the prediction before it is checked", async ({ page }) => {
-    await open(page);
+    await open(page, "masks");
     const figure = page.locator("#ix-mask-bits");
     await expect(figure.locator(".al-locked")).toBeVisible();
     await expect(figure.locator(".al-bit")).toHaveCount(0);
@@ -149,7 +146,7 @@ test.describe("the bit figure", () => {
   test("starts on clear_door(0xf), which the model says is 0xb, with bit 2 outlined", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "masks");
     await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
     const figure = page.locator("#ix-mask-bits");
     await figure.scrollIntoViewIfNeeded();
@@ -168,7 +165,7 @@ test.describe("the bit figure", () => {
   test("gives the model's answer for each function on each word the learner types", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "masks");
     await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
     const figure = page.locator("#ix-mask-bits");
     await figure.scrollIntoViewIfNeeded();
@@ -196,8 +193,7 @@ test.describe("the bit figure", () => {
   test("underlines the gear field in the word for gear_of, and shows the gear at the bottom of the answer", async ({
     page,
   }) => {
-    await open(page);
-    await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
+    await open(page, "reading-and-writing-fields");
     // Field extraction follows the three-rule experiment in its own computed diagram.
     const figure = page.locator("#ix-read-gear");
     await figure.scrollIntoViewIfNeeded();
@@ -216,7 +212,7 @@ test.describe("the bit figure", () => {
   test("says so, and shows no result and never the starting word, when the learner types something it cannot read", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "masks");
     await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
     const figure = page.locator("#ix-mask-bits");
     await figure.scrollIntoViewIfNeeded();
@@ -230,7 +226,7 @@ test.describe("the stepper after the second prediction", () => {
   test("stays shut until the prediction is checked, then shows the model's run of set_gear(0x35, 5) without the clear", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "reading-and-writing-fields");
     const stepper = page.locator("#ix-step-no-clear");
     await stepper.scrollIntoViewIfNeeded();
     await expect(stepper.locator(".al-locked")).toBeVisible();
@@ -266,7 +262,7 @@ test.describe("the written challenge", () => {
   test("is completed by typing, at the desktop width", async ({ page }, info) => {
     test.skip(info.project.name !== "desktop", "typing is the desktop width's way in");
     const errors = watchErrors(page);
-    await open(page);
+    await open(page, "reading-and-writing-fields");
     const c = challenge(page, SET);
     await c.scrollIntoViewIfNeeded();
     const box = c.getByRole("textbox", { name: V.editor.textLabel });
@@ -285,7 +281,7 @@ test.describe("the written challenge", () => {
   }, info) => {
     test.skip(info.project.name !== "phone", "tapping is the phone width's way in");
     const errors = watchErrors(page);
-    await open(page);
+    await open(page, "reading-and-writing-fields");
     const c = challenge(page, SET);
     await c.scrollIntoViewIfNeeded();
     await c.getByRole("button", { name: V.editor.tap, exact: true }).tap();
@@ -322,14 +318,14 @@ test.describe("the written challenge", () => {
     await run(c).tap();
     await expect(status(c)).toHaveText(passing(4));
     await expect(c.locator(".challenge-complete")).toHaveText(S.challenge.complete);
-    expect((await stored(page)).challenges[SET].artifact.text).toBe(
+    expect((await stored(page, "reading-and-writing-fields")).challenges[SET].artifact.text).toBe(
       "and w1, w1, #7\nlsl w1, w1, #4\nand w0, w0, #-113\norr w0, w0, w1\nret",
     );
     expect(errors).toEqual([]);
   });
 
   test("keeps the text when the learner switches between the two modes", async ({ page }) => {
-    await open(page);
+    await open(page, "reading-and-writing-fields");
     const c = challenge(page, SET);
     await c.scrollIntoViewIfNeeded();
     const box = c.getByRole("textbox", { name: V.editor.textLabel });
@@ -344,7 +340,7 @@ test.describe("the written challenge", () => {
 
 test.describe("a wrong answer is rejected", () => {
   test("the starting point fails every call, and says what it returned", async ({ page }) => {
-    await open(page);
+    await open(page, "reading-and-writing-fields");
     const c = challenge(page, SET);
     await c.scrollIntoViewIfNeeded();
     await press(page, run(c));
@@ -361,7 +357,7 @@ test.describe("a wrong answer is rejected", () => {
   test("leaving out the clear fails the calls that need it; leaving out the mask on g fails the large g", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "reading-and-writing-fields");
     const c = challenge(page, SET);
     await c.scrollIntoViewIfNeeded();
     const box = c.getByRole("textbox", { name: V.editor.textLabel });
@@ -378,7 +374,7 @@ test.describe("a wrong answer is rejected", () => {
   test("GCC's own bfi is refused, as an instruction the challenge does not allow", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "reading-and-writing-fields");
     const c = challenge(page, SET);
     await c.scrollIntoViewIfNeeded();
     const box = c.getByRole("textbox", { name: V.editor.textLabel });
@@ -393,7 +389,7 @@ test.describe("a wrong answer is rejected", () => {
   });
 
   test("the chips offer only the task's instructions", async ({ page }) => {
-    await open(page);
+    await open(page, "reading-and-writing-fields");
     const c = challenge(page, SET);
     await c.scrollIntoViewIfNeeded();
     await press(page, c.getByRole("button", { name: V.editor.tap, exact: true }));
@@ -408,55 +404,55 @@ test.describe("the answers challenge", () => {
   const fill = async (c: import("@playwright/test").Locator, a: string, b: string, g: string) => {
     await c.locator('[data-field="after_orr"] input').fill(a);
     await c.locator('[data-field="after_and"] input').fill(b);
-    await c.locator('[data-field="the_gear"] input').fill(g);
+    void g;
   };
 
-  test("asks for three words, and shows no program", async ({ page }) => {
-    await open(page);
+  test("asks for two mask results, and shows no program", async ({ page }) => {
+    await open(page, "masks");
     const c = challenge(page, THREE);
     await c.scrollIntoViewIfNeeded();
-    await expect(c.locator(".answer-field")).toHaveCount(3);
+    await expect(c.locator(".answer-field")).toHaveCount(2);
     await expect(c.locator(".al-insn")).toHaveCount(0);
-    await expect(c.locator(".answer-label")).toHaveText(["after orr", "after and", "the gear"]);
+    await expect(c.locator(".answer-label")).toHaveText(["after orr", "after and"]);
   });
 
   test("rejects a wrong word by name, and never gives the right one", async ({ page }) => {
-    await open(page);
+    await open(page, "masks");
     const c = challenge(page, THREE);
     await c.scrollIntoViewIfNeeded();
     await fill(c, "0x2b", "0x2a", "0x2");
     await press(page, run(c));
-    await expect(status(c)).toHaveText(failing(2, 3));
+    await expect(status(c)).toHaveText(failing(1, 2));
     await expect(c.locator(".verdict-failure h4")).toHaveText(["after and"]);
     await expect(c.locator(".verdict")).not.toContainText("0x22");
     await expect(c.locator(".challenge-complete")).toHaveCount(0);
   });
 
   test("asks for every answer first, and for hexadecimal", async ({ page }) => {
-    await open(page);
+    await open(page, "masks");
     const c = challenge(page, THREE);
     await c.scrollIntoViewIfNeeded();
     await c.locator('[data-field="after_orr"] input').fill("0x2b");
     await press(page, run(c));
     await expect(status(c)).toHaveText(S.challenge.blocked);
-    await expect(c.locator(".verdict.blocked")).toContainText("the gear");
+    await expect(c.locator(".verdict.blocked")).toContainText("after and");
     await fill(c, "0x2b", "banana", "0x2");
     await press(page, run(c));
     await expect(c.locator(".verdict.blocked")).toContainText("hexadecimal");
   });
 
   test("accepts the reference, with or without 0x", async ({ page }) => {
-    await open(page);
+    await open(page, "masks");
     const c = challenge(page, THREE);
     await c.scrollIntoViewIfNeeded();
     const answers = lesson.challenges.find((x) => x.id === THREE)!.reference.answers!;
     await fill(c, answers["after_orr"]!, answers["after_and"]!, answers["the_gear"]!);
     await press(page, run(c));
-    await expect(status(c)).toHaveText(passing(3));
+    await expect(status(c)).toHaveText(passing(2));
     await expect(c.locator(".challenge-complete")).toHaveText(S.challenge.complete);
     await fill(c, "2B", "22", "2");
     await press(page, run(c));
-    await expect(status(c)).toHaveText(passing(3));
+    await expect(status(c)).toHaveText(passing(2));
   });
 });
 
@@ -466,14 +462,14 @@ test.describe("a completion", () => {
     await c.scrollIntoViewIfNeeded();
     await c.locator('[data-field="after_orr"] input').fill("0x2b");
     await c.locator('[data-field="after_and"] input').fill("0x22");
-    await c.locator('[data-field="the_gear"] input').fill("0x2");
+
     await press(page, run(c));
     await expect(c.locator(".challenge-complete")).toBeVisible();
     return c;
   }
 
   test("survives a reload, graded again, not read from a mark", async ({ page }) => {
-    await open(page);
+    await open(page, "masks");
     await complete(page);
     await page.reload();
     const c = challenge(page, THREE);
@@ -485,21 +481,21 @@ test.describe("a completion", () => {
       const s = JSON.parse(localStorage.getItem(k)!);
       s.challenges["trace-three-results"].artifact.answers.after_and = "0x0";
       localStorage.setItem(k, JSON.stringify(s));
-    }, STORAGE_KEY);
+    }, `assembly-lab:v1:masks`);
     await page.reload();
     await expect(challenge(page, THREE).locator(".challenge-complete")).toHaveCount(0);
-    await expect(status(challenge(page, THREE))).toHaveText(failing(2, 3));
+    await expect(status(challenge(page, THREE))).toHaveText(failing(1, 2));
   });
 
   test("goes when the work is cleared, and stays gone after a reload", async ({ page }) => {
-    await open(page);
+    await open(page, "masks");
     const c = await complete(page);
     await press(page, c.getByRole("button", { name: new RegExp(`^${S.challenge.reset}`) }));
     await press(page, c.getByRole("button", { name: S.challenge.resetConfirm }));
     await expect(c.locator(".challenge-complete")).toHaveCount(0);
     await expect(status(c)).toHaveText(S.challenge.resetDone);
     await expect(c.locator('[data-field="after_orr"] input')).toHaveValue("");
-    expect((await stored(page)).challenges[THREE]).toBeUndefined();
+    expect((await stored(page, "masks")).challenges[THREE]).toBeUndefined();
     await page.reload();
     await expect(challenge(page, THREE).locator(".challenge-complete")).toHaveCount(0);
   });
@@ -507,7 +503,7 @@ test.describe("a completion", () => {
   test("of the written challenge survives a reload, and is cleared back to the starting point", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "reading-and-writing-fields");
     const c = challenge(page, SET);
     await c.scrollIntoViewIfNeeded();
     const box = c.getByRole("textbox", { name: V.editor.textLabel });
@@ -527,7 +523,7 @@ test.describe("the look of the lesson page", () => {
   test("text is legible, controls are reachable, nothing scrolls sideways, prose keeps its measure", async ({
     page,
   }, info) => {
-    await open(page);
+    await open(page, "masks");
     expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
   });
 
@@ -535,13 +531,15 @@ test.describe("the look of the lesson page", () => {
     page,
   }, info) => {
     const phone = info.project.name === "phone";
-    await open(page);
+    await open(page, "masks");
     await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
-    await commit(page, "predict-no-clear", "0x55");
     const bits = page.locator("#ix-mask-bits");
     await bits.scrollIntoViewIfNeeded();
     await press(page, chip(bits, V.bitOps.functions, "toggle_lights"));
     await bits.getByLabel(V.bitOps.inputLabel("w0")).fill("0x35");
+    expect(await designProblems(page, phone)).toEqual([]);
+    await open(page, "reading-and-writing-fields");
+    await commit(page, "predict-no-clear", "0x55");
     await expect(page.locator("#ix-read-gear .al-fieldreading")).toBeVisible();
     const step = page.locator("#ix-step-no-clear");
     await press(page, step.getByRole("button", { name: V.stepper.next }));
@@ -552,14 +550,17 @@ test.describe("the look of the lesson page", () => {
     await press(page, chip(set, V.editor.instruction, "and"));
     await press(page, chip(set, V.editor.operand(3), V.editor.number));
     await press(page, run(set));
+    expect(await designProblems(page, phone)).toEqual([]);
+    await open(page, "masks");
     const three = challenge(page, THREE);
     await three.locator('[data-field="after_orr"] input').fill("1");
     await three.locator('[data-field="after_and"] input').fill("2");
-    await three.locator('[data-field="the_gear"] input').fill("3");
+
     await press(page, run(three));
     await press(page, three.getByRole("button", { name: /Show hint/ }));
     expect(await designProblems(page, phone)).toEqual([]);
     // The text mode too, with a problem listed.
+    await open(page, "reading-and-writing-fields");
     await press(page, set.getByRole("button", { name: V.editor.text, exact: true }));
     await set.getByRole("textbox", { name: V.editor.textLabel }).fill("mov w0, w1");
     expect(await designProblems(page, phone)).toEqual([]);
@@ -568,7 +569,7 @@ test.describe("the look of the lesson page", () => {
   test("a row of 32 cells fits the screen, on a phone and on a desk, and the key does not scroll", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "masks");
     const figure = page.locator("#ix-warning-word");
     const row = figure.locator("[data-row='word']");
     await row.scrollIntoViewIfNeeded();
@@ -590,7 +591,7 @@ test.describe("both themes", () => {
       await page.goto("#/");
       await page.evaluate((t) => localStorage.setItem("assembly-lab:v1:theme", t), theme);
       await page.reload();
-      await open(page);
+      await open(page, "masks");
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
       const figure = page.locator("#ix-mask-bits");
@@ -620,7 +621,7 @@ test.describe("the reworked figures (17 October 2026)", () => {
   test("the warning word marks bits 7 to 31 unused, labels bits 0 to 6, and marks a focused warning's bit", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "masks");
     const figure = page.locator("#ix-warning-word");
     expect((await marked(figure, "word", "unused")).length).toBe(25);
     await expect(figure.locator(".al-use .al-cell")).toHaveCount(7);
@@ -635,7 +636,7 @@ test.describe("the reworked figures (17 October 2026)", () => {
   test("the first prediction shows the mask as -5 and the low eight bits of word, mask and result only after the commit", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "masks");
     const figure = page.locator("#ix-predict-minus-five");
     await figure.scrollIntoViewIfNeeded();
     await expect(figure.locator(".al-maskview")).toHaveCount(0);
@@ -654,7 +655,7 @@ test.describe("the reworked figures (17 October 2026)", () => {
   test("the bit figure reads one column in one line, and a word it cannot read gets its message and no result", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "masks");
     await commit(page, "predict-minus-five", /^−5 is 0xfffffffb/);
     const figure = page.locator("#ix-mask-bits");
     await figure.scrollIntoViewIfNeeded();
@@ -678,7 +679,7 @@ test.describe("the reworked figures (17 October 2026)", () => {
   test("the learner's own instructions are stepped only after the challenge has been run, and the comparison with GCC only after it passes", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "reading-and-writing-fields");
     const stepper = page.locator("#ix-step-solution");
     const bfi = page.locator("#ix-compare-bfi");
     await stepper.scrollIntoViewIfNeeded();
@@ -712,7 +713,7 @@ test.describe("the reworked figures (17 October 2026)", () => {
   test("the comparison without the clear opens with the prediction and shows 0x75 and 0x55", async ({
     page,
   }) => {
-    await open(page);
+    await open(page, "reading-and-writing-fields");
     const figure = page.locator("#ix-compare-no-clear");
     await figure.scrollIntoViewIfNeeded();
     await expect(figure.locator(".al-locked")).toBeVisible();

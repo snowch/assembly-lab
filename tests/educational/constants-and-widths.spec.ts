@@ -49,7 +49,7 @@ const LESSON_ID = "constants-and-widths";
 const lesson = LESSONS.find((l) => l.id === LESSON_ID)!;
 const BUILD = "build-1000000";
 const TWO = "predict-two-registers";
-const openLesson = (page: Page) => open(page, LESSON_ID);
+const openLesson = (page: Page, id = LESSON_ID) => open(page, id);
 
 /** What the model does with `mov w0, <text>`: w0 afterwards, or the assembler's sentence. */
 function movResult(text: string): { w0: bigint } | { sentence: string } {
@@ -58,13 +58,13 @@ function movResult(text: string): { w0: bigint } | { sentence: string } {
   return { w0: run(program, { entry: TEXT_BASE }).final.x[0]! };
 }
 
-test("the lesson loads with no console error, ten sections, and its two challenges", async ({
+test("the constant-loading unit loads with no console error or remote challenge", async ({
   page,
 }) => {
   const errors = watchErrors(page);
-  await openLesson(page);
+  await openLesson(page, "constants-and-widths");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
-  await expect(page.locator("section.challenge")).toHaveCount(2);
+  await expect(page.locator("section.challenge")).toHaveCount(0);
   await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
   await expect(page.locator("a.back-link").first()).toHaveAttribute("href", "#/");
   await expect(page).toHaveTitle(`${lesson.title} / Assembly Lab`);
@@ -75,7 +75,7 @@ test.describe("the listing figure", () => {
   test("shows the C of service_interval and the instructions GCC recorded for it, and nothing of odometer_limit", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "constants-and-widths");
     const figure = page.locator("#ix-service-interval");
     await figure.scrollIntoViewIfNeeded();
     await expect(figure.locator(".al-cline .al-src")).toHaveText([
@@ -101,7 +101,7 @@ test.describe("the prediction about which numbers fit", () => {
     test(`commits before it reveals: ${option} ${match ? "matches" : "does not match"} the assembler`, async ({
       page,
     }) => {
-      await openLesson(page);
+      await openLesson(page, "constants-and-widths");
       const figure = page.locator("#ix-predict-fits");
       await figure.scrollIntoViewIfNeeded();
       await expect(figure.locator(".al-outcome")).toHaveCount(0);
@@ -128,7 +128,7 @@ test.describe("the prediction about which numbers fit", () => {
   });
 
   test("a commitment is kept, and is still there after a reload", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "constants-and-widths");
     await commit(page, "predict-fits", "65536");
     await page.reload();
     await expect(page.locator("#ix-predict-fits .al-match")).toBeVisible();
@@ -143,7 +143,7 @@ test.describe("the constant tester", () => {
   };
 
   test("stays shut until the prediction before it is checked", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "constants-and-widths");
     await expect(tester(page).locator(".al-locked")).toBeVisible();
     await expect(tester(page).getByRole("textbox")).toHaveCount(0);
     await commit(page, "predict-fits", "70000");
@@ -165,7 +165,7 @@ test.describe("the constant tester", () => {
     "0x00010001",
   ]) {
     test(`takes ${n} in one instruction and shows w0 as the model leaves it`, async ({ page }) => {
-      await openLesson(page);
+      await openLesson(page, "constants-and-widths");
       await commit(page, "predict-fits", "65536");
       const model = movResult(n);
       if (!("w0" in model)) throw new Error(`${n} should assemble`);
@@ -185,7 +185,7 @@ test.describe("the constant tester", () => {
     test(`refuses ${n} with the assembler's own sentence, and shows no register`, async ({
       page,
     }) => {
-      await openLesson(page);
+      await openLesson(page, "constants-and-widths");
       await commit(page, "predict-fits", "65536");
       const model = movResult(n);
       if (!("sentence" in model)) throw new Error(`${n} should not assemble`);
@@ -199,7 +199,7 @@ test.describe("the constant tester", () => {
   test("draws w0 as two labelled 16-bit halves with a rule between them, inside the box", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "constants-and-widths");
     await commit(page, "predict-fits", "65536");
     await tester(page).scrollIntoViewIfNeeded();
     await typeNumber(page, "65536");
@@ -233,7 +233,7 @@ test.describe("the constant tester", () => {
   test("says 'no single instruction' for 1000000, as the lesson's prose says it will", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "constants-and-widths");
     await commit(page, "predict-fits", "65536");
     await tester(page).scrollIntoViewIfNeeded();
     await typeNumber(page, "1000000");
@@ -243,7 +243,7 @@ test.describe("the constant tester", () => {
   });
 
   test("does not hand text that is not a number to the assembler", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "constants-and-widths");
     await commit(page, "predict-fits", "65536");
     await tester(page).scrollIntoViewIfNeeded();
     await typeNumber(page, "w1");
@@ -254,7 +254,7 @@ test.describe("the constant tester", () => {
   });
 
   test("keeps the closed note closed until it is opened", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "constants-and-widths");
     const note = page.locator("section[data-kind='investigation'] details.lesson-details");
     await expect(note.locator("summary")).toHaveText("Other patterns that fit");
     await expect(note).not.toHaveAttribute("open", "");
@@ -272,7 +272,7 @@ test.describe("the written challenge", () => {
   test("starts from the text that does not assemble, and says so against line 1", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     const c = challenge(page, BUILD);
     await c.scrollIntoViewIfNeeded();
     await expect(box(page)).toHaveValue(ODOMETER_LIMIT_START_TEXT);
@@ -289,7 +289,7 @@ test.describe("the written challenge", () => {
   test("is completed by typing, at the desktop width", async ({ page }, info) => {
     test.skip(info.project.name !== "desktop", "typing is the desktop width's way in");
     const errors = watchErrors(page);
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     const c = challenge(page, BUILD);
     await c.scrollIntoViewIfNeeded();
     await expect(box(page)).toHaveAttribute("autocapitalize", "off");
@@ -307,7 +307,7 @@ test.describe("the written challenge", () => {
   test("is completed by tapping alone, at the phone width", async ({ page }, info) => {
     test.skip(info.project.name !== "phone", "tapping is the phone width's way in");
     const errors = watchErrors(page);
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     const c = challenge(page, BUILD);
     await c.scrollIntoViewIfNeeded();
     await c.getByRole("button", { name: V.editor.tap, exact: true }).tap();
@@ -336,14 +336,14 @@ test.describe("the written challenge", () => {
     await runTests(c).tap();
     await expect(status(c)).toHaveText(passing(1));
     await expect(c.locator(".challenge-complete")).toHaveText(complete);
-    expect((await stored(page, LESSON_ID)).challenges[BUILD].artifact.text).toBe(
+    expect((await stored(page, "building-constants")).challenges[BUILD].artifact.text).toBe(
       "mov w0, #16960\nmovk w0, #15, lsl 16\nret",
     );
     expect(errors).toEqual([]);
   });
 
   test("builds the whole answer from chips and the number pad, from nothing", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     const c = challenge(page, BUILD);
     await c.scrollIntoViewIfNeeded();
     await press(page, c.getByRole("button", { name: V.editor.tap, exact: true }));
@@ -371,7 +371,7 @@ test.describe("the written challenge", () => {
   });
 
   test("offers only the instructions the lesson allows, and only w0", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     const c = challenge(page, BUILD);
     await c.scrollIntoViewIfNeeded();
     await press(page, c.getByRole("button", { name: V.editor.tap, exact: true }));
@@ -391,7 +391,7 @@ test.describe("the written challenge", () => {
   });
 
   test("rejects the lower half alone, and says what w0 held", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     const c = challenge(page, BUILD);
     await c.scrollIntoViewIfNeeded();
     await box(page).fill("mov w0, 16960\nret");
@@ -404,7 +404,7 @@ test.describe("the written challenge", () => {
   test("rejects a second mov, which replaces the whole register, and an instruction not yet met", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     const c = challenge(page, BUILD);
     await c.scrollIntoViewIfNeeded();
     await box(page).fill("mov w0, 16960\nmov w0, 15\nret");
@@ -427,7 +427,7 @@ test.describe("the written challenge", () => {
   test("offers a comma and w on the keyboard row, and w0 alone in the tap mode", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     const c = challenge(page, BUILD);
     await c.scrollIntoViewIfNeeded();
     await press(page, c.getByRole("button", { name: V.editor.text, exact: true }));
@@ -437,7 +437,7 @@ test.describe("the written challenge", () => {
   test("keeps a completion through a reload, grades it again, and is cleared back to the starting text", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     const c = challenge(page, BUILD);
     await c.scrollIntoViewIfNeeded();
     await box(page).fill(ODOMETER_LIMIT_TEXT);
@@ -451,7 +451,7 @@ test.describe("the written challenge", () => {
       const s = JSON.parse(localStorage.getItem(k)!);
       s.challenges["build-1000000"].artifact.text = "mov w0, 16960\nret";
       localStorage.setItem(k, JSON.stringify(s));
-    }, `assembly-lab:v1:${LESSON_ID}`);
+    }, `assembly-lab:v1:building-constants`);
     await page.reload();
     await expect(challenge(page, BUILD).locator(".challenge-complete")).toHaveCount(0);
     await expect(status(challenge(page, BUILD))).toHaveText(failing(0, 1));
@@ -459,7 +459,7 @@ test.describe("the written challenge", () => {
     await press(page, again.getByRole("button", { name: new RegExp(`^${S.challenge.reset}`) }));
     await press(page, again.getByRole("button", { name: S.challenge.resetConfirm }));
     await expect(box(page)).toHaveValue(ODOMETER_LIMIT_START_TEXT);
-    expect((await stored(page, LESSON_ID)).challenges[BUILD]).toBeUndefined();
+    expect((await stored(page, "building-constants")).challenges[BUILD]).toBeUndefined();
   });
 });
 
@@ -469,7 +469,7 @@ test.describe("the prediction about the lower name", () => {
   test("the register drawn as two halves stays shut until the prediction is checked", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     await expect(halves(page).locator(".al-locked")).toBeVisible();
     await expect(halves(page).getByRole("button", { name: V.stepper.next })).toHaveCount(0);
     await commit(page, "predict-width", "The lower 32 bits set and the upper 32 cleared.");
@@ -485,7 +485,7 @@ test.describe("the prediction about the lower name", () => {
     test(`commits before it reveals: "${option}" ${match ? "matches" : "does not match"} the run`, async ({
       page,
     }) => {
-      await openLesson(page);
+      await openLesson(page, "register-widths");
       const figure = page.locator("#ix-predict-width");
       await figure.scrollIntoViewIfNeeded();
       await expect(figure.locator(".al-outcome")).toHaveCount(0);
@@ -507,7 +507,7 @@ test.describe("the prediction about the lower name", () => {
   test("then shows x3 as the model has it after each step, in two halves of 32 bits", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     await commit(page, "predict-width", "The lower 32 bits set and the upper 32 cleared.");
     const figure = halves(page);
     await figure.scrollIntoViewIfNeeded();
@@ -554,7 +554,7 @@ test.describe("the prediction about the lower name", () => {
   });
 
   test("a commitment is kept, and is still there after a reload", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     await commit(page, "predict-width", "All 64 bits set, as before.");
     await page.reload();
     await expect(page.locator("#ix-predict-width .al-nomatch")).toBeVisible();
@@ -562,7 +562,7 @@ test.describe("the prediction about the lower name", () => {
   });
 
   test("a register's two halves fit the screen", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     await commit(page, "predict-width", "All 64 bits set, as before.");
     const x3 = halves(page).locator('[data-register="x3"]');
     await x3.scrollIntoViewIfNeeded();
@@ -583,7 +583,7 @@ test.describe("the answers challenge", () => {
   };
 
   test("shows the four instructions and asks for two numbers", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     const c = challenge(page, TWO);
     await c.scrollIntoViewIfNeeded();
     await expect(c.locator(".al-insn .al-text")).toHaveText(FOUR_INSTRUCTIONS.listing.split("\n"));
@@ -592,7 +592,7 @@ test.describe("the answers challenge", () => {
   });
 
   test("asks for both numbers before it grades anything", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     const c = challenge(page, TWO);
     await c.scrollIntoViewIfNeeded();
     await c.locator('[data-field="x1"] input').fill("5");
@@ -604,7 +604,7 @@ test.describe("the answers challenge", () => {
   test("refuses a hexadecimal answer by saying the answer is written in decimal", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     await fill(page, "0x5", "1000000");
     const c = challenge(page, TWO);
     await press(page, runTests(c));
@@ -618,7 +618,7 @@ test.describe("the answers challenge", () => {
   test("rejects x1 as it would be if writing w1 kept the upper half, a number of 64 bits", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     await fill(page, String(0xffffffff00000005n), "1000000");
     const c = challenge(page, TWO);
     await press(page, runTests(c));
@@ -632,7 +632,7 @@ test.describe("the answers challenge", () => {
   test("rejects w2 as the lower half alone, and as a number of more than 32 bits", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     const c = challenge(page, TWO);
     await fill(page, "5", "16960");
     await press(page, runTests(c));
@@ -644,8 +644,10 @@ test.describe("the answers challenge", () => {
   });
 
   test("accepts the reference", async ({ page }) => {
-    await openLesson(page);
-    const answers = lesson.challenges.find((x) => x.id === TWO)!.reference.answers!;
+    await openLesson(page, "register-widths");
+    const answers = LESSONS.find((l) => l.id === "register-widths")!.challenges.find(
+      (x) => x.id === TWO,
+    )!.reference.answers!;
     await fill(page, answers["x1"]!, answers["w2"]!);
     const c = challenge(page, TWO);
     await press(page, runTests(c));
@@ -656,7 +658,7 @@ test.describe("the answers challenge", () => {
   test("keeps a completion through a reload, grades it again, and goes when cleared", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     await fill(page, "5", "1000000");
     const c = challenge(page, TWO);
     await press(page, runTests(c));
@@ -668,7 +670,7 @@ test.describe("the answers challenge", () => {
       const s = JSON.parse(localStorage.getItem(k)!);
       s.challenges["predict-two-registers"].artifact.answers.x1 = "4294967301";
       localStorage.setItem(k, JSON.stringify(s));
-    }, `assembly-lab:v1:${LESSON_ID}`);
+    }, `assembly-lab:v1:register-widths`);
     await page.reload();
     await expect(challenge(page, TWO).locator(".challenge-complete")).toHaveCount(0);
     await expect(status(challenge(page, TWO))).toHaveText(failing(1, 2));
@@ -676,7 +678,7 @@ test.describe("the answers challenge", () => {
     await press(page, again.getByRole("button", { name: new RegExp(`^${S.challenge.reset}`) }));
     await press(page, again.getByRole("button", { name: S.challenge.resetConfirm }));
     await expect(again.locator('[data-field="x1"] input')).toHaveValue("");
-    expect((await stored(page, LESSON_ID)).challenges[TWO]).toBeUndefined();
+    expect((await stored(page, "register-widths")).challenges[TWO]).toBeUndefined();
   });
 });
 
@@ -702,7 +704,7 @@ test.describe("the halves of sixteen", () => {
   test("draws mov w0, 30000 as 0000 over 7530, the boundary between them, from the recorded listing", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "constants-and-widths");
     const figure = figureOf(page, "service-halves");
     await figure.scrollIntoViewIfNeeded();
     await expect(figure.locator(".al-insn .al-text")).toHaveText(["mov w0, 30000", "ret"]);
@@ -726,7 +728,7 @@ test.describe("the halves of sixteen", () => {
   test("draws the worked example: both halves new after the mov, then the upper new and the lower kept after the movk", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     const figure = figureOf(page, "movk-halves");
     await figure.scrollIntoViewIfNeeded();
     await expect(figure.locator(".al-insn .al-text")).toHaveText([
@@ -767,7 +769,7 @@ test.describe("the halves of sixteen", () => {
   test("writes each digit over its own four bits, and names the halves upper then lower", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "constants-and-widths");
     const figure = figureOf(page, "service-halves");
     await figure.scrollIntoViewIfNeeded();
     await press(page, next(figure));
@@ -797,7 +799,7 @@ test.describe("the halves of sixteen", () => {
   test("puts the halves side by side on a desk and one above the other on a phone, with a rule between them", async ({
     page,
   }, info) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     const figure = figureOf(page, "movk-halves");
     await figure.scrollIntoViewIfNeeded();
     const [upper, lower] = await figure
@@ -831,7 +833,7 @@ test.describe("the halves of sixteen", () => {
       await page.goto("#/");
       await page.evaluate((t) => localStorage.setItem("assembly-lab:v1:theme", t), theme);
       await page.reload();
-      await openLesson(page);
+      await openLesson(page, "constants-and-widths");
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       const figure = figureOf(page, "service-halves");
       await figure.scrollIntoViewIfNeeded();
@@ -871,7 +873,7 @@ test.describe("the stepper through the learner's own solution", () => {
   test("shows nothing of a solution, and not the words that introduce it, before Build 1000000 is passed", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     await stepper(page).scrollIntoViewIfNeeded();
     await expect(stepper(page).locator(".al-locked")).toBeVisible();
     await expect(stepper(page).locator(".al-h16")).toHaveCount(0);
@@ -891,7 +893,7 @@ test.describe("the stepper through the learner's own solution", () => {
     page,
   }) => {
     const errors = watchErrors(page);
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     await solve(page, ODOMETER_LIMIT_TEXT);
     await expect(challenge(page, BUILD).locator(".challenge-complete")).toBeVisible();
     await expect(page.getByText(words)).toBeVisible();
@@ -922,7 +924,7 @@ test.describe("the stepper through the learner's own solution", () => {
   test("steps a different passing solution, mov then movk then movk, as that solution runs", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     await solve(page, "mov w0, 1\nmovk w0, 15, lsl 16\nmovk w0, 16960\nret");
     await expect(challenge(page, BUILD).locator(".challenge-complete")).toBeVisible();
     const f = stepper(page);
@@ -949,7 +951,7 @@ test.describe("the stepper through the learner's own solution", () => {
   test("steps a solution typed with # and written lower half first with movk, as the tap editor builds it", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     await solve(page, "movk w0, #16960\nmovk w0, #15, lsl 16\nret");
     await expect(challenge(page, BUILD).locator(".challenge-complete")).toBeVisible();
     const f = stepper(page);
@@ -965,7 +967,7 @@ test.describe("the stepper through the learner's own solution", () => {
   test("shuts again if the saved work stops passing, and opens from the saved work after a reload", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     await solve(page, ODOMETER_LIMIT_TEXT);
     await expect(stepper(page).locator(".al-h16")).toHaveCount(2);
     await page.reload();
@@ -977,7 +979,7 @@ test.describe("the stepper through the learner's own solution", () => {
       const s = JSON.parse(localStorage.getItem(k)!);
       s.challenges["build-1000000"].artifact.text = "mov w0, 16960\nret";
       localStorage.setItem(k, JSON.stringify(s));
-    }, `assembly-lab:v1:${LESSON_ID}`);
+    }, `assembly-lab:v1:building-constants`);
     await page.reload();
     await expect(stepper(page).locator(".al-locked")).toBeVisible();
     await expect(stepper(page).locator(".al-h16")).toHaveCount(0);
@@ -985,7 +987,7 @@ test.describe("the stepper through the learner's own solution", () => {
   });
 
   test("goes when the work is cleared, with the words that introduce it", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "building-constants");
     await solve(page, ODOMETER_LIMIT_TEXT);
     await expect(page.getByText(words)).toBeVisible();
     const c = challenge(page, BUILD);
@@ -1006,7 +1008,7 @@ test.describe("x3 and w3 as one register", () => {
   test("is headed x3: 64 bits, with the halves Upper 32 bits and Lower 32 bits, and w3 marking the lower", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     await commit(page, "predict-width", "The lower 32 bits set and the upper 32 cleared.");
     await figure(page).scrollIntoViewIfNeeded();
     await expect(figure(page).locator(".al-wide-named .al-reg-name")).toHaveText(
@@ -1032,7 +1034,7 @@ test.describe("x3 and w3 as one register", () => {
   test("says in words what each step did: both halves written, then the upper cleared and the lower written", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     await commit(page, "predict-width", "The lower 32 bits set and the upper 32 cleared.");
     await figure(page).scrollIntoViewIfNeeded();
     const note = figure(page).locator(".al-wide-note");
@@ -1061,7 +1063,7 @@ test.describe("x3 and w3 as one register", () => {
   test("keeps the halves labelled, one above the other, on a phone, and inside the box", async ({
     page,
   }, info) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     await commit(page, "predict-width", "The lower 32 bits set and the upper 32 cleared.");
     await figure(page).scrollIntoViewIfNeeded();
     await press(page, next(page));
@@ -1081,7 +1083,7 @@ test.describe("the closed notes and the closing question", () => {
     page.locator(`section.lesson-section[data-kind="${kind}"] details.lesson-details`);
 
   test("has the compiler note shut at the start, and opens it", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "constants-and-widths");
     const n = note(page, "question");
     await expect(n.locator("summary")).toHaveText("Which compiler?");
     await expect(n).not.toHaveAttribute("open", "");
@@ -1094,7 +1096,7 @@ test.describe("the closed notes and the closing question", () => {
   test("closes with what you now know, the question about x5, and its answer shut", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "register-widths");
     const last = page.locator('section.lesson-section[data-kind="reflection"]');
     await last.scrollIntoViewIfNeeded();
     await expect(last.locator(".section-title")).toHaveText("What you now know");
@@ -1114,7 +1116,7 @@ test.describe("the look of the lesson page", () => {
   test("text is legible, controls are reachable, nothing scrolls sideways, prose keeps its measure", async ({
     page,
   }, info) => {
-    await openLesson(page);
+    await openLesson(page, "constants-and-widths");
     expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
     expect(await figureOverflow(page)).toEqual([]);
   });
@@ -1123,20 +1125,26 @@ test.describe("the look of the lesson page", () => {
     page,
   }, info) => {
     const phone = info.project.name === "phone";
-    await openLesson(page);
+    await openLesson(page, "constants-and-widths");
     await commit(page, "predict-fits", "1000000");
     const tester = page.locator("#ix-try-a-number");
     await tester.getByRole("textbox", { name: V.tester.input }).fill("1000000");
     await expect(tester.locator(".al-nomatch")).toBeVisible();
     await press(page, page.locator("section[data-kind='investigation'] details summary"));
+    expect(await designProblems(page, phone)).toEqual([]);
+    await openLesson(page, "register-widths");
     await commit(page, "predict-width", "All 64 bits set, as before.");
     const halves = page.locator("#ix-x3-halves");
     await press(page, halves.getByRole("button", { name: V.stepper.next }));
+    expect(await designProblems(page, phone)).toEqual([]);
+    await openLesson(page, "building-constants");
     const build = challenge(page, BUILD);
     await press(page, build.getByRole("button", { name: V.editor.tap, exact: true }));
     await press(page, build.locator(".asm-line-button").first());
     await press(page, runTests(build));
     await press(page, build.getByRole("button", { name: /Show hint/ }));
+    expect(await designProblems(page, phone)).toEqual([]);
+    await openLesson(page, "register-widths");
     const two = challenge(page, TWO);
     await two.locator('[data-field="x1"] input').fill("1");
     await two.locator('[data-field="w2"] input').fill("2");
@@ -1144,6 +1152,7 @@ test.describe("the look of the lesson page", () => {
     expect(await designProblems(page, phone)).toEqual([]);
     expect(await figureOverflow(page)).toEqual([]);
     // The text mode too, with a problem listed.
+    await openLesson(page, "building-constants");
     await press(page, build.getByRole("button", { name: V.editor.text, exact: true }));
     await build.getByRole("textbox", { name: V.editor.textLabel }).fill("add w0, w0, 1");
     expect(await designProblems(page, phone)).toEqual([]);
@@ -1152,7 +1161,7 @@ test.describe("the look of the lesson page", () => {
   test("the tester with the longest result, w0 drawn as 32 bits, fits the width of the screen", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "constants-and-widths");
     await commit(page, "predict-fits", "65536");
     const tester = page.locator("#ix-try-a-number");
     await tester.getByRole("textbox", { name: V.tester.input }).fill("-1");
@@ -1169,7 +1178,7 @@ test.describe("both themes", () => {
       await page.goto("#/");
       await page.evaluate((t) => localStorage.setItem("assembly-lab:v1:theme", t), theme);
       await page.reload();
-      await openLesson(page);
+      await openLesson(page, "register-widths");
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       await commit(page, "predict-width", "All 64 bits set, as before.");
       const figure = page.locator("#ix-x3-halves");

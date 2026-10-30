@@ -32,7 +32,16 @@ import {
   FUEL_USED_WRONG_U,
 } from "./module-1.listings";
 
-const lesson = LESSONS.find((l) => l.id === "one-pattern-three-readings")!;
+const units = [
+  "one-pattern-three-readings",
+  "same-bits-two-readings",
+  "arithmetic-on-register-bits",
+].map((id) => LESSONS.find((l) => l.id === id)!);
+const lesson = {
+  ...units[0]!,
+  sections: units.flatMap((unit) => unit.sections),
+  challenges: units.flatMap((unit) => unit.challenges),
+};
 const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
 
 const build = (text: string): Program => {
@@ -194,7 +203,7 @@ describe("the pattern the register to read starts with", () => {
   });
 
   it("is a start that the lesson's data names by program and call, not by the pattern", () => {
-    const reader = lesson.sections
+    const reader = units[1]!.sections
       .flatMap((s) => s.interactives)
       .find((x) => x.kind === "register-reader")!;
     expect(reader.props["topBit"]).toBe(true);

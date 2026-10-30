@@ -27,7 +27,14 @@ import {
 } from "./logic-shifts-masks.listings";
 import { statedNumbers } from "./stated-numbers";
 
-const lesson = LESSONS.find((l) => l.id === "masks")!;
+const units = ["masks", "reading-and-writing-fields"].map((id) =>
+  LESSONS.find((l) => l.id === id)!,
+);
+const lesson = {
+  ...units[0]!,
+  sections: units.flatMap((unit) => unit.sections),
+  challenges: units.flatMap((unit) => unit.challenges),
+};
 
 // ---------------------------------------------------------------------------------------------
 // The model
@@ -238,7 +245,10 @@ describe("the last challenge: three results for 0x2a", () => {
     expect(hex(w0(three, "after_and", 0x2a))).toBe("0x22");
     expect(hex(w0(three, "the_gear", 0x2a))).toBe("0x2");
     const c = lesson.challenges.find((x) => x.id === "trace-three-results")!;
-    expect(c.reference.answers).toEqual({ after_orr: "0x2b", after_and: "0x22", the_gear: "0x2" });
+    expect(c.reference.answers).toEqual({ after_orr: "0x2b", after_and: "0x22" });
+    expect(lesson.challenges.find((x) => x.id === "trace-gear-field")!.reference.answers).toEqual({
+      the_gear: "0x2",
+    });
   });
 
   it("starts from 0x2a, which is 0010 1010 with bits 1, 3 and 5 set", () => {

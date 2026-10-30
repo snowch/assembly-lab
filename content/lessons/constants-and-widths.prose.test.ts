@@ -12,7 +12,7 @@ import { describe, expect, it } from "vitest";
 
 import { learnerText } from "@platform/lesson-schema";
 
-import { LESSONS } from ".";
+import { SOURCE_LESSONS as LESSONS } from ".";
 import { LABELS } from "./constants-and-widths.labels";
 import { PROSE } from "./constants-and-widths.prose";
 import { fieldLabelsOf, flat, headingsOf, lessonBody, wordsOf } from "./module-1.prose-file";

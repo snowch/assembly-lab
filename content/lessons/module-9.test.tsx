@@ -3,23 +3,19 @@
 
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Lesson, SECTION_KINDS, checkLesson, testCount } from "@platform/lesson-schema";
+import { checkLesson, testCount } from "@platform/lesson-schema";
 import { grade, createBook } from "@al/views";
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
-import { callsAndReturns } from "./calls-and-returns";
-import { recursiveCalls } from "./recursive-calls";
+import { LESSONS } from ".";
 import { FADE_TEXT, RESERVE_TEXT, COUNT_TEXT } from "./calls.listings";
 
-const lessons = [callsAndReturns, recursiveCalls].map((l) => Lesson.parse(l));
+const lessons = LESSONS.filter((l) => l.module === 9);
 const challenges = lessons.flatMap((l) => l.challenges);
 
 describe("Module 9 lesson contracts", () => {
-  it.each(lessons)("$id has ordered sections and two mounted exercises", (lesson) => {
+  it.each(lessons)("$id has ordered sections and locally mounted exercises", (lesson) => {
     expect(checkLesson(lesson)).toEqual([]);
-    expect(lesson.sections.map((s) => s.kind)).toEqual(
-      SECTION_KINDS.filter((kind) => lesson.id !== "calls-and-returns" || kind !== "question"),
-    );
-    expect(lesson.challenges).toHaveLength(2);
+    expect(lesson.challenges).toHaveLength(1);
     const figures = lesson.sections.flatMap((s) => s.interactives);
     const ungated = figures.filter(
       (f) => f.kind === "stack-stepper" && f.props["after"] === undefined,
@@ -40,16 +36,39 @@ describe("Module 9 lesson contracts", () => {
         expect(["memory-prediction", "loop-prediction"]).toContain(figures[gate]!.kind);
       }
   });
-  it("shows the smaller caller before the full recorded function and its prediction", () => {
-    const figures = lessons[0]!.sections.flatMap((s) => s.interactives);
-    const positions = [
+  it("completes the smaller call before introducing reserve preservation", () => {
+    const small = lessons.find((l) => l.id === "calls-and-returns")!;
+    const reserve = lessons.find((l) => l.id === "preserving-values-across-calls")!;
+    expect(small.challenges.map((c) => c.id)).toEqual(["write-call-report"]);
+    expect(small.sections.flatMap((s) => s.interactives).map((f) => f.id)).toContain(
       "step-small-returning-call",
-      "calls-and-returns-listing",
-      "predict-calls-and-returns",
-    ].map((id) => figures.findIndex((figure) => figure.id === id));
-    expect(positions.every((position) => position >= 0)).toBe(true);
-    expect(positions[0]).toBeLessThan(positions[1]!);
-    expect(positions[1]).toBeLessThan(positions[2]!);
+    );
+    expect(reserve.challenges.map((c) => c.id)).toEqual(["write-preserve-reserve"]);
+    const figures = reserve.sections.flatMap((s) => s.interactives);
+    expect(figures.findIndex((f) => f.id === "calls-and-returns-listing")).toBeLessThan(
+      figures.findIndex((f) => f.id === "predict-calls-and-returns"),
+    );
+  });
+  it("completes recursive frame repair before a separate progress and counting activity", () => {
+    const frames = lessons.find((l) => l.id === "recursive-calls")!;
+    const progress = lessons.find((l) => l.id === "making-recursive-progress")!;
+    expect(frames.challenges.map((c) => c.id)).toEqual(["write-fade-sum"]);
+    expect(progress.challenges.map((c) => c.id)).toEqual(["write-lit-count"]);
+    const figures = frames.sections.flatMap((s) => s.interactives);
+    expect(figures.find((f) => f.id === "step-recursive-calls")!.props["after"]).toBe(
+      "predict-recursive-calls",
+    );
+    const deepest = figures.find((f) => f.id === "inspect-recursive-calls-stack")!;
+    expect(deepest.props["initialStep"]).toBe(22);
+    expect(deepest.props["after"]).toBe("predict-recursive-calls");
+    expect(progress.sections.flatMap((s) => s.interactives).map((f) => f.id)).toEqual([
+      "predict-recursive-calls-failure",
+      "step-recursive-calls-failure",
+      "write-lit-count",
+    ]);
+    expect(progress.sections.map((s) => s.prose).join("\n")).toContain(
+      "The simulator uses a fixed, prepared stack",
+    );
   });
   it.each(challenges)("$id reference passes and starter fails", (challenge) => {
     expect(grade(challenge, challenge.reference)).toEqual({
@@ -102,7 +121,7 @@ describe("Module 9 lesson contracts", () => {
     );
     expect(container.querySelector(".interactive-problem")).toBeNull();
     expect(container.querySelectorAll(".al-locked")).toHaveLength(
-      lesson.id === "calls-and-returns" ? 2 : 3,
+      lesson.id === "recursive-calls" ? 2 : 1,
     );
   });
 });

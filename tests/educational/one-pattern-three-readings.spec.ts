@@ -53,11 +53,11 @@ import {
   watchErrors,
 } from "./module1";
 
-const LESSON_ID = "one-pattern-three-readings";
+const LESSON_ID = "same-bits-two-readings";
 const lesson = LESSONS.find((l) => l.id === LESSON_ID)!;
 const MAKE = "make-minus-one";
 const READ = "two-readings-each";
-const openLesson = (page: Page) => open(page, LESSON_ID);
+const openLesson = (page: Page, id = LESSON_ID) => open(page, id);
 
 const ONES = "1".repeat(32);
 const MINUS_12 = patternOf(-12);
@@ -66,7 +66,7 @@ test("the lesson loads with no console error, selected sections, and its two cha
   page,
 }) => {
   const errors = watchErrors(page);
-  await openLesson(page);
+  await openLesson(page, "same-bits-two-readings");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
   await expect(page.locator("section.challenge")).toHaveCount(2);
   await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
@@ -79,7 +79,7 @@ test.describe("the first figure", () => {
   test("shows fuel_used(50, 38) with the C and the instructions GCC recorded, and 4294967284 in w0 after the subtraction", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "arithmetic-on-register-bits");
     const figure = page.locator("#ix-run-fuel-used");
     await figure.scrollIntoViewIfNeeded();
     await expect(figure.locator(".al-cline .al-src")).toHaveText([FUEL_USED_WRONG.c]);
@@ -100,7 +100,7 @@ test.describe("the first figure", () => {
 
 test.describe("the prediction about adding 12", () => {
   test("the stepper after it stays shut until the prediction is checked", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "arithmetic-on-register-bits");
     const stepper = page.locator("#ix-step-add-12");
     await expect(stepper.locator(".al-locked")).toBeVisible();
     await expect(stepper.getByRole("button", { name: V.stepper.next })).toHaveCount(0);
@@ -117,7 +117,7 @@ test.describe("the prediction about adding 12", () => {
     test(`commits before it reveals: ${String(option)} ${match ? "matches" : "does not match"} the model`, async ({
       page,
     }) => {
-      await openLesson(page);
+      await openLesson(page, "arithmetic-on-register-bits");
       const figure = page.locator("#ix-predict-add-12");
       await figure.scrollIntoViewIfNeeded();
       await expect(figure.locator(".al-outcome")).toHaveCount(0);
@@ -139,7 +139,7 @@ test.describe("the prediction about adding 12", () => {
   test("the stepper then shows the model's values: 4294967284 after the sub, 0 after the add", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "arithmetic-on-register-bits");
     await commit(page, "predict-add-12", "0");
     const figure = page.locator("#ix-step-add-12");
     await figure.scrollIntoViewIfNeeded();
@@ -162,7 +162,7 @@ test.describe("the prediction about adding 12", () => {
   });
 
   test("a commitment is kept, and is still there after a reload", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "arithmetic-on-register-bits");
     await commit(page, "predict-add-12", "0");
     await page.reload();
     await expect(page.locator("#ix-predict-add-12 .al-match")).toBeVisible();
@@ -217,7 +217,7 @@ test.describe("the register to read", () => {
   test("starts at the pattern the model leaves in w0, with 29 of the 32 bits set, and the page does not write it", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await reader(page).scrollIntoViewIfNeeded();
     await expect(reader(page).locator(".al-toggle")).toHaveCount(32);
     await expect(reader(page).locator('.al-toggle[aria-pressed="true"]')).toHaveCount(29);
@@ -228,7 +228,7 @@ test.describe("the register to read", () => {
   test("gives 4294967284 and −12 in the result row, from +2147483648 or −2147483648 and 2147483636", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await reader(page).scrollIntoViewIfNeeded();
     await expect(cell(page, "top", "unsigned")).toHaveText("+2147483648");
     await expect(cell(page, "top", "signed")).toHaveText("−2147483648");
@@ -241,7 +241,7 @@ test.describe("the register to read", () => {
   test("has the table's own words: the columns, the rows, and the pattern named as the pattern", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await reader(page).scrollIntoViewIfNeeded();
     await expect(reader(page).locator("thead th")).toHaveText([V.reader.unsigned, V.reader.signed]);
     await expect(reader(page).locator("tbody th")).toHaveText([
@@ -256,7 +256,7 @@ test.describe("the register to read", () => {
   test("updates both readings when bit 31 is pressed, and the two agree with the top bit at 0", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await reader(page).scrollIntoViewIfNeeded();
     await press(page, bit(reader(page), 31));
     const without = "0" + START.slice(1);
@@ -270,7 +270,7 @@ test.describe("the register to read", () => {
   });
 
   test("clears every bit with Clear bits, and sets bits from zero", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await reader(page).scrollIntoViewIfNeeded();
     await clear(page);
     await expect(reader(page).locator('.al-toggle[aria-pressed="true"]')).toHaveCount(0);
@@ -283,7 +283,7 @@ test.describe("the register to read", () => {
   test("shows plus and minus 2147483648 for the top bit alone, and every other bit the same in both", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await reader(page).scrollIntoViewIfNeeded();
     await clear(page);
     await press(page, bit(reader(page), 31));
@@ -304,7 +304,7 @@ test.describe("the register to read", () => {
   test("a bit pressed twice is back to what it was, and a pattern read again is the same", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await reader(page).scrollIntoViewIfNeeded();
     await clear(page);
     await press(page, bit(reader(page), 0));
@@ -317,7 +317,7 @@ test.describe("the register to read", () => {
   test("marks bit 31 as the top bit with a word and a border as well as its worth", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await reader(page).scrollIntoViewIfNeeded();
     await expect(reader(page).locator(".al-top-flag")).toHaveText(M1.toggles.topBit);
     await expect(reader(page).locator('.al-toggle[data-top="true"]')).toHaveCount(1);
@@ -333,7 +333,7 @@ test.describe("the register to read", () => {
   test("outlines the four bits and their digit together when a bit has the focus or the pointer", async ({
     page,
   }, info) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await reader(page).scrollIntoViewIfNeeded();
     const lit = reader(page).locator('.al-nibble[data-lit="true"]');
     await expect(lit).toHaveCount(0);
@@ -358,7 +358,7 @@ test.describe("the register to read", () => {
   });
 
   test("keeps each digit under its four bits at the width of the screen", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await reader(page).scrollIntoViewIfNeeded();
     for (let i = 0; i < 8; i++) {
       const nibble = reader(page).locator(".al-nibble").nth(i);
@@ -380,7 +380,7 @@ test.describe("the register to read", () => {
   test("holds the sum of every bit in Show calculation, shut at first, opened with the keyboard, and the table does not move", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await reader(page).scrollIntoViewIfNeeded();
     const calc = reader(page).locator("details.al-calc");
     const summary = calc.locator("summary");
@@ -410,7 +410,7 @@ test.describe("the register to read", () => {
   test("draws the bits in groups that fit the screen: a byte to a row on a phone, two on a desk", async ({
     page,
   }, info) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await reader(page).scrollIntoViewIfNeeded();
     const boxes = await reader(page)
       .locator(".al-toggle")
@@ -438,7 +438,7 @@ test.describe("the register to read", () => {
   test("keeps the controls at least 40 pixels tall on a phone, and nothing wider than the screen", async ({
     page,
   }, info) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await reader(page).scrollIntoViewIfNeeded();
     if (info.project.name === "phone") {
       for (const control of [
@@ -460,7 +460,7 @@ test.describe("the two listings compared", () => {
   test("shows the C of both functions, and nothing of their listings until the prediction is checked", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "arithmetic-on-register-bits");
     await figure(page).scrollIntoViewIfNeeded();
     await expect(figure(page).locator(".al-cline .al-src")).toHaveText([
       FUEL_USED_WRONG.c,
@@ -478,7 +478,7 @@ test.describe("the two listings compared", () => {
   test("compares the two line by line once checked, and the page's marks are the model's", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "arithmetic-on-register-bits");
     await commit(page, "compare-int-unsigned", /^Nothing/);
     const f = figure(page);
     await expect(f.locator(".al-match")).toContainText(V.compare.resultSame);
@@ -500,14 +500,14 @@ test.describe("the two listings compared", () => {
   test("a different answer is told it does not match, and the comparison still shows", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "arithmetic-on-register-bits");
     await commit(page, "compare-int-unsigned", /^It adds a check/);
     await expect(figure(page).locator(".al-nomatch")).toContainText(V.prediction.noMatch);
     await expect(figure(page).locator('.al-compare-row[data-same="true"]')).toHaveCount(2);
   });
 
   test("a commitment is kept after a reload, with the comparison", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "arithmetic-on-register-bits");
     await commit(page, "compare-int-unsigned", /^Nothing/);
     await page.reload();
     await expect(figure(page).locator(".al-match")).toBeVisible();
@@ -519,7 +519,7 @@ test.describe("Make −1", () => {
   const answerBox = (page: Page) => challenge(page, MAKE).locator('[data-field="unsigned"] input');
 
   test("is blocked until the number is given, and says which", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     const c = challenge(page, MAKE);
     await c.scrollIntoViewIfNeeded();
     await expect(c.locator('[data-field="bits"] .al-toggle')).toHaveCount(32);
@@ -531,7 +531,7 @@ test.describe("Make −1", () => {
   test("rejects the pattern for −12, says what the learner's bits read as, and never the right bits or number", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     const c = challenge(page, MAKE);
     await c.scrollIntoViewIfNeeded();
     await setBits(page, c, MINUS_12);
@@ -547,7 +547,7 @@ test.describe("Make −1", () => {
   test("rejects all 32 bits set with a number that is not their unsigned reading", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     const c = challenge(page, MAKE);
     await c.scrollIntoViewIfNeeded();
     await setBits(page, c, ONES);
@@ -562,7 +562,7 @@ test.describe("Make −1", () => {
     page,
   }) => {
     const errors = watchErrors(page);
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     const c = challenge(page, MAKE);
     await c.scrollIntoViewIfNeeded();
     await setBits(page, c, ONES);
@@ -571,12 +571,14 @@ test.describe("Make −1", () => {
     await press(page, run(c));
     await expect(status(c)).toHaveText(passing(2));
     await expect(c.locator(".challenge-complete")).toHaveText(complete);
-    expect((await stored(page, LESSON_ID)).challenges[MAKE].artifact.answers.bits).toBe(ONES);
+    expect(
+      (await stored(page, "same-bits-two-readings")).challenges[MAKE].artifact.answers.bits,
+    ).toBe(ONES);
     expect(errors).toEqual([]);
   });
 
   test("keeps the bits after a reload, and grades them again", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     const c = challenge(page, MAKE);
     await c.scrollIntoViewIfNeeded();
     await setBits(page, c, ONES);
@@ -594,7 +596,7 @@ test.describe("Make −1", () => {
         s.challenges["make-minus-one"].artifact.answers.bits = pattern;
         localStorage.setItem(k!, JSON.stringify(s));
       },
-      [`assembly-lab:v1:${LESSON_ID}`, MINUS_12],
+      [`assembly-lab:v1:same-bits-two-readings`, MINUS_12],
     );
     await page.reload();
     await expect(challenge(page, MAKE).locator(".challenge-complete")).toHaveCount(0);
@@ -602,7 +604,7 @@ test.describe("Make −1", () => {
   });
 
   test("goes when the work is cleared, with the bits", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     const c = challenge(page, MAKE);
     await c.scrollIntoViewIfNeeded();
     await setBits(page, c, ONES);
@@ -615,7 +617,7 @@ test.describe("Make −1", () => {
     await expect(status(c)).toHaveText(S.challenge.resetDone);
     await expect(c.locator('.al-toggle[aria-pressed="true"]')).toHaveCount(0);
     await expect(answerBox(page)).toHaveValue("");
-    expect((await stored(page, LESSON_ID)).challenges[MAKE]).toBeUndefined();
+    expect((await stored(page, "same-bits-two-readings")).challenges[MAKE]).toBeUndefined();
   });
 });
 
@@ -630,26 +632,27 @@ test.describe("Make −1, with the bits typed in hexadecimal", () => {
   test("has a box beside the 32 buttons, which starts as the bits are and fills in no answer", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await challenge(page, MAKE).scrollIntoViewIfNeeded();
     await expect(box(page)).toHaveValue("0x00000000");
     await expect(pressed(page)).toHaveCount(0);
     await expect(answerBox(page)).toHaveValue("");
-    expect((await stored(page, LESSON_ID))?.challenges?.[MAKE]).toBeUndefined();
+    expect((await stored(page, "same-bits-two-readings"))?.challenges?.[MAKE]).toBeUndefined();
   });
 
   test("sets all 32 bits when ffffffff or 0xffffffff is typed, and stores them as 32 characters", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await challenge(page, MAKE).scrollIntoViewIfNeeded();
     for (const text of ["ffffffff", "0xffffffff"]) {
       await box(page).fill("");
       await box(page).fill(text);
       await expect(pressed(page), text).toHaveCount(32);
-      expect((await stored(page, LESSON_ID)).challenges[MAKE].artifact.answers.bits, text).toBe(
-        ONES,
-      );
+      expect(
+        (await stored(page, "same-bits-two-readings")).challenges[MAKE].artifact.answers.bits,
+        text,
+      ).toBe(ONES);
       await press(page, bit(challenge(page, MAKE), 5));
       await expect(pressed(page), text).toHaveCount(31);
       await expect(box(page), text).toHaveValue("0xffffffdf");
@@ -657,7 +660,7 @@ test.describe("Make −1, with the bits typed in hexadecimal", () => {
   });
 
   test("puts the digits in the box when a bit is pressed", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     const c = challenge(page, MAKE);
     await c.scrollIntoViewIfNeeded();
     await press(page, bit(c, 31));
@@ -669,11 +672,12 @@ test.describe("Make −1, with the bits typed in hexadecimal", () => {
   test("changes no bit for text that is not hexadecimal or has more than eight digits, says so, and does not move the page", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     const c = challenge(page, MAKE);
     await c.scrollIntoViewIfNeeded();
     await press(page, bit(c, 4));
-    const before = (await stored(page, LESSON_ID)).challenges[MAKE].artifact.answers.bits;
+    const before = (await stored(page, "same-bits-two-readings")).challenges[MAKE].artifact.answers
+      .bits;
     const actions = c.locator(".challenge-actions");
     // Measured inside the challenge: a stored-state update re-renders figures elsewhere on the
     // page, and a fractional scroll offset or scroll anchoring can shift every page coordinate
@@ -695,9 +699,10 @@ test.describe("Make −1, with the bits typed in hexadecimal", () => {
       await box(page).fill(text);
       await expect(c.locator(".answer-hex-problem"), text).toHaveText(M1.hexEntry.invalid);
       await expect(box(page), text).toHaveAttribute("aria-invalid", "true");
-      expect((await stored(page, LESSON_ID)).challenges[MAKE].artifact.answers.bits, text).toBe(
-        before,
-      );
+      expect(
+        (await stored(page, "same-bits-two-readings")).challenges[MAKE].artifact.answers.bits,
+        text,
+      ).toBe(before);
       const current = await position();
       expect(current.relativeY, text).toBe(original.relativeY);
       expect(current.challengeH, text).toBe(original.challengeH);
@@ -713,7 +718,7 @@ test.describe("Make −1, with the bits typed in hexadecimal", () => {
     page,
   }) => {
     const errors = watchErrors(page);
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     const c = challenge(page, MAKE);
     await c.scrollIntoViewIfNeeded();
     await expect(page.getByText(solved)).toHaveCount(0);
@@ -746,7 +751,7 @@ test.describe("Make −1, with the bits typed in hexadecimal", () => {
   test("has the box 40 pixels tall on a phone, inside the screen, in both themes' text sizes", async ({
     page,
   }, info) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await challenge(page, MAKE).scrollIntoViewIfNeeded();
     const b = await box(page).boundingBox();
     if (info.project.name === "phone") expect(b!.height).toBeGreaterThanOrEqual(40);
@@ -765,7 +770,7 @@ test.describe("Two readings each", () => {
   const reference = lesson.challenges.find((x) => x.id === READ)!.reference.answers!;
 
   test("asks for six numbers, one for each reading of each pattern", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     const c = challenge(page, READ);
     await c.scrollIntoViewIfNeeded();
     await expect(c.locator(".answer-label")).toHaveText([
@@ -781,7 +786,7 @@ test.describe("Two readings each", () => {
   test("gives the three signed readings the full keyboard, and the unsigned ones the number keypad", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     const c = challenge(page, READ);
     await c.scrollIntoViewIfNeeded();
     for (const id of ["s1", "s2", "s3"])
@@ -791,7 +796,7 @@ test.describe("Two readings each", () => {
   });
 
   test("blocks until all six are given, and names the empty ones", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await fill(page, { u1: "42" });
     const c = challenge(page, READ);
     await press(page, run(c));
@@ -802,7 +807,7 @@ test.describe("Two readings each", () => {
   test("rejects the readings the wrong way round, and never says the right numbers", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await fill(page, {
       u1: "42",
       s1: "42",
@@ -823,7 +828,7 @@ test.describe("Two readings each", () => {
   });
 
   test("accepts the reference, and the minus sign as the lesson prints it", async ({ page }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await fill(page, { ...reference, s2: "−2147483648" });
     const c = challenge(page, READ);
     await press(page, run(c));
@@ -834,7 +839,7 @@ test.describe("Two readings each", () => {
   test("keeps a completion through a reload, grades it again, and goes when cleared", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     await fill(page, reference);
     const c = challenge(page, READ);
     await press(page, run(c));
@@ -848,7 +853,7 @@ test.describe("Two readings each", () => {
       const s = JSON.parse(localStorage.getItem(k)!);
       s.challenges["two-readings-each"].artifact.answers.s3 = "200";
       localStorage.setItem(k, JSON.stringify(s));
-    }, `assembly-lab:v1:${LESSON_ID}`);
+    }, `assembly-lab:v1:same-bits-two-readings`);
     await page.reload();
     await expect(challenge(page, READ).locator(".challenge-complete")).toHaveCount(0);
     await expect(status(challenge(page, READ))).toHaveText(failing(5, 6));
@@ -856,7 +861,7 @@ test.describe("Two readings each", () => {
     await press(page, again.getByRole("button", { name: new RegExp(`^${S.challenge.reset}`) }));
     await press(page, again.getByRole("button", { name: S.challenge.resetConfirm }));
     await expect(again.locator('[data-field="u3"] input')).toHaveValue("");
-    expect((await stored(page, LESSON_ID)).challenges[READ]).toBeUndefined();
+    expect((await stored(page, "same-bits-two-readings")).challenges[READ]).toBeUndefined();
   });
 });
 
@@ -867,7 +872,8 @@ test.describe("the closed notes and the closing question", () => {
   test("has the compiler note shut beside the comparison, and the answer shut at the end", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
+    await openLesson(page, "arithmetic-on-register-bits");
     const compiler = note(page, "failureExperiment");
     await compiler.scrollIntoViewIfNeeded();
     await expect(compiler.locator("summary")).toHaveText("Which compiler?");
@@ -875,6 +881,7 @@ test.describe("the closed notes and the closing question", () => {
     await press(page, compiler.locator("summary"));
     await expect(compiler).toHaveAttribute("open", "");
     await expect(compiler).toContainText("GCC 16.1");
+    await openLesson(page, "same-bits-two-readings");
     const answer = note(page, "reflection");
     await answer.scrollIntoViewIfNeeded();
     await expect(answer.locator("summary")).toHaveText("Answer");
@@ -888,18 +895,18 @@ test.describe("the closed notes and the closing question", () => {
   test("closes with the title What you now know, and the question before its answer", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     const last = page.locator('section.lesson-section[data-kind="reflection"]');
     await expect(last.locator(".section-title")).toHaveText("What you now know");
     await expect(last.locator(".prose").first()).toContainText("0x80000001");
     await expect(last.locator(".prose").first()).not.toContainText("2147483649");
   });
 
-  test("keeps its route, and shows its new title on the page and in the tab", async ({ page }) => {
-    await openLesson(page);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Same bits, two readings");
-    await expect(page).toHaveTitle("Same bits, two readings / Assembly Lab");
-    expect(page.url()).toContain("#/lesson/one-pattern-three-readings");
+  test("shows the readings unit at its own route and title", async ({ page }) => {
+    await openLesson(page, "same-bits-two-readings");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
+    await expect(page).toHaveTitle(`${lesson.title} / Assembly Lab`);
+    expect(page.url()).toContain("#/lesson/same-bits-two-readings");
   });
 });
 
@@ -907,7 +914,7 @@ test.describe("the look of the lesson page", () => {
   test("text is legible, controls are reachable, nothing scrolls sideways, prose keeps its measure", async ({
     page,
   }, info) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
     expect(await figureOverflow(page)).toEqual([]);
   });
@@ -916,7 +923,8 @@ test.describe("the look of the lesson page", () => {
     page,
   }, info) => {
     const phone = info.project.name === "phone";
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
+    await openLesson(page, "arithmetic-on-register-bits");
     await press(
       page,
       page.locator("#ix-run-fuel-used").getByRole("button", { name: V.stepper.next }),
@@ -925,9 +933,11 @@ test.describe("the look of the lesson page", () => {
     const step = page.locator("#ix-step-add-12");
     await press(page, step.getByRole("button", { name: V.stepper.next }));
     await press(page, step.getByRole("button", { name: V.stepper.next }));
+    await commit(page, "compare-int-unsigned", /^Nothing/);
+    expect(await designProblems(page, phone)).toEqual([]);
+    await openLesson(page, "same-bits-two-readings");
     // The reader starts at a dense pattern, which makes long sums.
     await press(page, page.locator("#ix-read-register").getByText(M1.reader.showCalculation));
-    await commit(page, "compare-int-unsigned", /^Nothing/);
     const make = challenge(page, MAKE);
     await setBits(page, make, MINUS_12);
     await make.locator('[data-field="unsigned"] input').fill("1");
@@ -944,7 +954,7 @@ test.describe("the look of the lesson page", () => {
   test("the pattern with the most terms in its sums fits the width of the screen", async ({
     page,
   }) => {
-    await openLesson(page);
+    await openLesson(page, "same-bits-two-readings");
     const reader = page.locator("#ix-read-register");
     await reader.scrollIntoViewIfNeeded();
     await press(page, reader.getByRole("button", { name: M1.reader.clearBits }));
@@ -967,7 +977,7 @@ test.describe("both themes", () => {
       await page.goto("#/");
       await page.evaluate((t) => localStorage.setItem("assembly-lab:v1:theme", t), theme);
       await page.reload();
-      await openLesson(page);
+      await openLesson(page, "same-bits-two-readings");
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       const reader = page.locator("#ix-read-register");
       await reader.scrollIntoViewIfNeeded();

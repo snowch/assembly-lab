@@ -55,8 +55,9 @@ export function instructionsNamedIn(text: string): string[] {
  */
 const NAMED_BEFORE_TAUGHT: Readonly<Record<string, readonly string[]>> = {
   // Module 12 explains adr in the native-only boot source, outside browser exercises.
-  "from-function-to-executable": ["adr"],
-  "constants-and-widths": ["lsl"],
+  "runtime-startup": ["adr"],
+  "building-constants": ["lsl"],
+  "register-widths": ["lsl"],
   "adding-and-the-flags": ["cmn", "cset"],
 };
 
@@ -85,7 +86,7 @@ describe("what each lesson teaches", () => {
   });
 
   it("keeps C grammar and editor data separate from the assembly gate", () => {
-    const base = LESSONS.find((lesson) => lesson.id === "constants-and-widths")!;
+    const base = LESSONS.find((lesson) => lesson.id === "building-constants")!;
     const assembly = base.challenges.find((c) => c.gradedDirection === "write")!;
     const cChallenge = {
       ...assembly,
@@ -101,7 +102,7 @@ describe("what each lesson teaches", () => {
     const result = withIntroduced(mixed, 0, [mixed]);
     expect(introducedBy([mixed], 0)).not.toContain("unsigned");
     expect(introducedBy([mixed], 0)).not.toContain("return");
-    expect(result.challenges![0]!.initial?.data?.["introduced"]).toContain("mov");
+    expect(result.challenges![0]!.initial?.data?.["introduced"]).toContain("movk");
     expect(result.challenges![1]!.initial).toEqual(cChallenge.initial);
   });
 
@@ -116,13 +117,18 @@ describe("what each lesson teaches", () => {
     expect(at("tiny-function").has("bl")).toBe(false);
     expect(at("returning-to-caller").has("bl")).toBe(true);
     expect(at("returning-to-caller").has("stp")).toBe(false);
-    expect(at("masks").has("bfi")).toBe(true);
+    expect(at("masks").has("bfi")).toBe(false);
+    expect(at("reading-and-writing-fields").has("bfi")).toBe(true);
     expect(at("masks").has("lsr")).toBe(false);
     expect(at("shifts").has("lsr")).toBe(true);
-    expect(at("compare-and-choose").has("tst")).toBe(true);
+    expect(at("compare-and-choose").has("tst")).toBe(false);
+    expect(at("conditions-and-boolean-results").has("tst")).toBe(true);
     expect(at("compare-and-choose").has("cbnz")).toBe(false);
-    expect(at("branches").has("cbnz")).toBe(true);
-    expect(at("subtracting-and-the-tick-counter").has("neg")).toBe(true);
+    expect(at("branches").has("cbnz")).toBe(false);
+    expect(at("zero-and-threshold-branches").has("cbz")).toBe(true);
+    expect(at("register-and-bit-branches").has("cbnz")).toBe(true);
+    expect(at("subtracting-and-the-tick-counter").has("neg")).toBe(false);
+    expect(at("subtraction-flags-and-negation").has("neg")).toBe(true);
     expect(at("subtracting-and-the-tick-counter").has("cset")).toBe(false);
   });
 

@@ -1,0 +1,735 @@
+{
+  "method": "Initial rendered lesson text at1280px, default theme; closed details and prediction gates retained. Word count includes visible code, labels and controls. Diagnostic, not a reading-time or lesson-quality score.",
+  "lessons": [
+    {
+      "module": "Module 0",
+      "id": "one-addition",
+      "title": "One addition",
+      "displayedWords": 407,
+      "sections": 3,
+      "figures": 3,
+      "headingCount": 5,
+      "height": 2771
+    },
+    {
+      "module": "Module 0",
+      "id": "adding-a-constant",
+      "title": "Adding a constant",
+      "displayedWords": 318,
+      "sections": 3,
+      "figures": 3,
+      "headingCount": 5,
+      "height": 2602
+    },
+    {
+      "module": "Module 0",
+      "id": "tiny-function",
+      "title": "A tiny function",
+      "displayedWords": 513,
+      "sections": 3,
+      "figures": 3,
+      "headingCount": 5,
+      "height": 3114
+    },
+    {
+      "module": "Module 0",
+      "id": "returning-to-caller",
+      "title": "Returning to the caller",
+      "displayedWords": 592,
+      "sections": 3,
+      "figures": 2,
+      "headingCount": 5,
+      "height": 3167
+    },
+    {
+      "module": "Module 0",
+      "id": "subtraction-and-reuse",
+      "title": "Subtraction and reuse",
+      "displayedWords": 303,
+      "sections": 3,
+      "figures": 3,
+      "headingCount": 5,
+      "height": 2634
+    },
+    {
+      "module": "Module 0",
+      "id": "instructions-in-sequence",
+      "title": "Instructions in sequence",
+      "displayedWords": 261,
+      "sections": 2,
+      "figures": 2,
+      "headingCount": 4,
+      "height": 2040
+    },
+    {
+      "module": "Module 0",
+      "id": "meet-the-machine",
+      "title": "Putting it together",
+      "displayedWords": 647,
+      "sections": 3,
+      "figures": 4,
+      "headingCount": 5,
+      "height": 3777
+    },
+    {
+      "module": "Module 1",
+      "id": "one-pattern-three-readings",
+      "title": "Reading hexadecimal",
+      "displayedWords": 266,
+      "sections": 2,
+      "figures": 1,
+      "headingCount": 3,
+      "height": 1185
+    },
+    {
+      "module": "Module 1",
+      "id": "same-bits-two-readings",
+      "title": "Signed and unsigned readings",
+      "displayedWords": 641,
+      "sections": 5,
+      "figures": 5,
+      "headingCount": 8,
+      "height": 3942
+    },
+    {
+      "module": "Module 1",
+      "id": "arithmetic-on-register-bits",
+      "title": "Arithmetic on register bits",
+      "displayedWords": 534,
+      "sections": 4,
+      "figures": 4,
+      "headingCount": 5,
+      "height": 3283
+    },
+    {
+      "module": "Module 1",
+      "id": "constants-and-widths",
+      "title": "Loading a constant",
+      "displayedWords": 568,
+      "sections": 4,
+      "figures": 4,
+      "headingCount": 5,
+      "height": 2994
+    },
+    {
+      "module": "Module 1",
+      "id": "building-constants",
+      "title": "Building a constant",
+      "displayedWords": 436,
+      "sections": 1,
+      "figures": 4,
+      "headingCount": 3,
+      "height": 2224
+    },
+    {
+      "module": "Module 1",
+      "id": "register-widths",
+      "title": "Writing w and x registers",
+      "displayedWords": 528,
+      "sections": 5,
+      "figures": 4,
+      "headingCount": 7,
+      "height": 3372
+    },
+    {
+      "module": "Module 2",
+      "id": "adding-and-the-flags",
+      "title": "Addition and its flags",
+      "displayedWords": 795,
+      "sections": 4,
+      "figures": 4,
+      "headingCount": 6,
+      "height": 4155
+    },
+    {
+      "module": "Module 2",
+      "id": "flags-and-overflow",
+      "title": "Flags and overflow",
+      "displayedWords": 510,
+      "sections": 5,
+      "figures": 3,
+      "headingCount": 7,
+      "height": 3139
+    },
+    {
+      "module": "Module 2",
+      "id": "subtracting-and-the-tick-counter",
+      "title": "Measuring elapsed ticks",
+      "displayedWords": 656,
+      "sections": 5,
+      "figures": 3,
+      "headingCount": 7,
+      "height": 3619
+    },
+    {
+      "module": "Module 2",
+      "id": "subtraction-flags-and-negation",
+      "title": "Subtraction flags and negation",
+      "displayedWords": 1924,
+      "sections": 6,
+      "figures": 6,
+      "headingCount": 8,
+      "height": 7528
+    },
+    {
+      "module": "Module 3",
+      "id": "masks",
+      "title": "Changing one warning",
+      "displayedWords": 1063,
+      "sections": 4,
+      "figures": 5,
+      "headingCount": 6,
+      "height": 5103
+    },
+    {
+      "module": "Module 3",
+      "id": "reading-and-writing-fields",
+      "title": "Reading and writing a field",
+      "displayedWords": 895,
+      "sections": 6,
+      "figures": 9,
+      "headingCount": 9,
+      "height": 5379
+    },
+    {
+      "module": "Module 3",
+      "id": "shifts",
+      "title": "Choosing a shift",
+      "displayedWords": 746,
+      "sections": 5,
+      "figures": 4,
+      "headingCount": 7,
+      "height": 3804
+    },
+    {
+      "module": "Module 3",
+      "id": "shifts-and-signed-division",
+      "title": "Shifts and signed division",
+      "displayedWords": 556,
+      "sections": 4,
+      "figures": 4,
+      "headingCount": 6,
+      "height": 3682
+    },
+    {
+      "module": "Module 4",
+      "id": "compare-and-choose",
+      "title": "Choosing a signed or unsigned result",
+      "displayedWords": 1164,
+      "sections": 7,
+      "figures": 8,
+      "headingCount": 10,
+      "height": 6522
+    },
+    {
+      "module": "Module 4",
+      "id": "conditions-and-boolean-results",
+      "title": "Conditions and Boolean results",
+      "displayedWords": 773,
+      "sections": 4,
+      "figures": 1,
+      "headingCount": 5,
+      "height": 3502
+    },
+    {
+      "module": "Module 4",
+      "id": "branches",
+      "title": "Following a branch",
+      "displayedWords": 1110,
+      "sections": 6,
+      "figures": 7,
+      "headingCount": 8,
+      "height": 6569
+    },
+    {
+      "module": "Module 4",
+      "id": "zero-and-threshold-branches",
+      "title": "Zero and threshold branches",
+      "displayedWords": 214,
+      "sections": 1,
+      "figures": 1,
+      "headingCount": 3,
+      "height": 1452
+    },
+    {
+      "module": "Module 4",
+      "id": "register-and-bit-branches",
+      "title": "Testing registers and bits",
+      "displayedWords": 425,
+      "sections": 3,
+      "figures": 1,
+      "headingCount": 4,
+      "height": 2217
+    },
+    {
+      "module": "Module 5",
+      "id": "counting-up",
+      "title": "Following a loop",
+      "displayedWords": 884,
+      "sections": 6,
+      "figures": 5,
+      "headingCount": 8,
+      "height": 5462
+    },
+    {
+      "module": "Module 5",
+      "id": "writing-an-upward-loop",
+      "title": "Writing an upward loop",
+      "displayedWords": 651,
+      "sections": 5,
+      "figures": 3,
+      "headingCount": 7,
+      "height": 3480
+    },
+    {
+      "module": "Module 5",
+      "id": "counting-down",
+      "title": "Counting down with flags",
+      "displayedWords": 686,
+      "sections": 5,
+      "figures": 5,
+      "headingCount": 7,
+      "height": 3853
+    },
+    {
+      "module": "Module 5",
+      "id": "testing-before-and-after",
+      "title": "Testing before or after the body",
+      "displayedWords": 661,
+      "sections": 4,
+      "figures": 4,
+      "headingCount": 5,
+      "height": 3043
+    },
+    {
+      "module": "Module 5",
+      "id": "stopping-when-work-ends",
+      "title": "Stopping when useful work ends",
+      "displayedWords": 217,
+      "sections": 2,
+      "figures": 1,
+      "headingCount": 4,
+      "height": 1484
+    },
+    {
+      "module": "Module 6",
+      "id": "memory-and-addresses",
+      "title": "Memory and addresses",
+      "displayedWords": 640,
+      "sections": 5,
+      "figures": 5,
+      "headingCount": 7,
+      "height": 3539
+    },
+    {
+      "module": "Module 6",
+      "id": "transfer-widths",
+      "title": "Choosing a transfer width",
+      "displayedWords": 635,
+      "sections": 6,
+      "figures": 7,
+      "headingCount": 8,
+      "height": 3818
+    },
+    {
+      "module": "Module 6",
+      "id": "loading-widths",
+      "title": "Loading stored values",
+      "displayedWords": 1036,
+      "sections": 9,
+      "figures": 8,
+      "headingCount": 12,
+      "height": 6113
+    },
+    {
+      "module": "Module 6",
+      "id": "extending-register-values",
+      "title": "Extending values in registers",
+      "displayedWords": 539,
+      "sections": 3,
+      "figures": 5,
+      "headingCount": 4,
+      "height": 3105
+    },
+    {
+      "module": "Module 7",
+      "id": "array-addresses",
+      "title": "Selecting an array element",
+      "displayedWords": 589,
+      "sections": 6,
+      "figures": 6,
+      "headingCount": 8,
+      "height": 3833
+    },
+    {
+      "module": "Module 7",
+      "id": "traversing-arrays",
+      "title": "Walking an array",
+      "displayedWords": 1033,
+      "sections": 5,
+      "figures": 3,
+      "headingCount": 7,
+      "height": 4655
+    },
+    {
+      "module": "Module 7",
+      "id": "zero-terminated-strings",
+      "title": "Strings and the zero byte",
+      "displayedWords": 1163,
+      "sections": 10,
+      "figures": 10,
+      "headingCount": 13,
+      "height": 6807
+    },
+    {
+      "module": "Module 8",
+      "id": "products-and-widths",
+      "title": "Multiplication and addition",
+      "displayedWords": 559,
+      "sections": 5,
+      "figures": 6,
+      "headingCount": 7,
+      "height": 3574
+    },
+    {
+      "module": "Module 8",
+      "id": "widening-products",
+      "title": "Widening before multiplication",
+      "displayedWords": 347,
+      "sections": 4,
+      "figures": 5,
+      "headingCount": 6,
+      "height": 2601
+    },
+    {
+      "module": "Module 8",
+      "id": "reading-product-halves",
+      "title": "Reading both halves of a product",
+      "displayedWords": 347,
+      "sections": 2,
+      "figures": 2,
+      "headingCount": 3,
+      "height": 1968
+    },
+    {
+      "module": "Module 8",
+      "id": "division-and-remainders",
+      "title": "Division and remainders",
+      "displayedWords": 843,
+      "sections": 7,
+      "figures": 12,
+      "headingCount": 9,
+      "height": 5195
+    },
+    {
+      "module": "Module 8",
+      "id": "consumption-calculation",
+      "title": "Calculating fuel consumption",
+      "displayedWords": 273,
+      "sections": 1,
+      "figures": 1,
+      "headingCount": 3,
+      "height": 1491
+    },
+    {
+      "module": "Module 8",
+      "id": "dividing-by-a-constant",
+      "title": "How GCC divides by a constant",
+      "displayedWords": 198,
+      "sections": 2,
+      "figures": 1,
+      "headingCount": 3,
+      "height": 1225
+    },
+    {
+      "module": "Module 9",
+      "id": "calls-and-returns",
+      "title": "Saving a return address",
+      "displayedWords": 796,
+      "sections": 4,
+      "figures": 4,
+      "headingCount": 6,
+      "height": 4616
+    },
+    {
+      "module": "Module 9",
+      "id": "preserving-values-across-calls",
+      "title": "Preserving values across a call",
+      "displayedWords": 683,
+      "sections": 6,
+      "figures": 4,
+      "headingCount": 8,
+      "height": 4145
+    },
+    {
+      "module": "Module 9",
+      "id": "recursive-calls",
+      "title": "Following recursive calls",
+      "displayedWords": 690,
+      "sections": 6,
+      "figures": 5,
+      "headingCount": 8,
+      "height": 4241
+    },
+    {
+      "module": "Module 9",
+      "id": "making-recursive-progress",
+      "title": "Making recursive progress",
+      "displayedWords": 510,
+      "sections": 5,
+      "figures": 3,
+      "headingCount": 7,
+      "height": 3403
+    },
+    {
+      "module": "Module 10",
+      "id": "from-c-to-instructions",
+      "title": "Reading generated instructions",
+      "displayedWords": 555,
+      "sections": 4,
+      "figures": 3,
+      "headingCount": 5,
+      "height": 2714
+    },
+    {
+      "module": "Module 10",
+      "id": "equivalent-trip-charge",
+      "title": "Writing equivalent assembly",
+      "displayedWords": 172,
+      "sections": 2,
+      "figures": 1,
+      "headingCount": 4,
+      "height": 1380
+    },
+    {
+      "module": "Module 10",
+      "id": "change-c-calculation",
+      "title": "Changing a C calculation",
+      "displayedWords": 280,
+      "sections": 3,
+      "figures": 2,
+      "headingCount": 4,
+      "height": 1552
+    },
+    {
+      "module": "Module 10",
+      "id": "cap-charge-in-c",
+      "title": "Capping a result in C",
+      "displayedWords": 208,
+      "sections": 3,
+      "figures": 1,
+      "headingCount": 5,
+      "height": 1481
+    },
+    {
+      "module": "Module 10",
+      "id": "compile-a-loop",
+      "title": "Reading a compiled loop",
+      "displayedWords": 549,
+      "sections": 4,
+      "figures": 3,
+      "headingCount": 5,
+      "height": 2939
+    },
+    {
+      "module": "Module 10",
+      "id": "write-assembly-loop",
+      "title": "Writing an equivalent loop",
+      "displayedWords": 143,
+      "sections": 2,
+      "figures": 1,
+      "headingCount": 4,
+      "height": 1297
+    },
+    {
+      "module": "Module 10",
+      "id": "change-loop-boundary",
+      "title": "Changing a loop boundary",
+      "displayedWords": 236,
+      "sections": 3,
+      "figures": 2,
+      "headingCount": 4,
+      "height": 1452
+    },
+    {
+      "module": "Module 10",
+      "id": "repeated-shifts-in-c",
+      "title": "Writing repeated shifts in C",
+      "displayedWords": 216,
+      "sections": 3,
+      "figures": 1,
+      "headingCount": 5,
+      "height": 1453
+    },
+    {
+      "module": "Module 11",
+      "id": "c-and-overflow",
+      "title": "C overflow and machine results",
+      "displayedWords": 1153,
+      "sections": 9,
+      "figures": 9,
+      "headingCount": 12,
+      "height": 6726
+    },
+    {
+      "module": "Module 11",
+      "id": "checked-arithmetic",
+      "title": "Conversions and comparisons",
+      "displayedWords": 612,
+      "sections": 5,
+      "figures": 6,
+      "headingCount": 7,
+      "height": 3718
+    },
+    {
+      "module": "Module 11",
+      "id": "checked-addition",
+      "title": "Checked addition",
+      "displayedWords": 573,
+      "sections": 6,
+      "figures": 3,
+      "headingCount": 8,
+      "height": 3307
+    },
+    {
+      "module": "Module 12",
+      "id": "from-function-to-executable",
+      "title": "Building and booting an executable",
+      "displayedWords": 1316,
+      "sections": 7,
+      "figures": 7,
+      "headingCount": 9,
+      "height": 6406
+    },
+    {
+      "module": "Module 12",
+      "id": "loading-and-startup",
+      "title": "Loading the executable image",
+      "displayedWords": 871,
+      "sections": 4,
+      "figures": 1,
+      "headingCount": 6,
+      "height": 4298
+    },
+    {
+      "module": "Module 12",
+      "id": "runtime-startup",
+      "title": "Preparing the runtime state",
+      "displayedWords": 936,
+      "sections": 4,
+      "figures": 2,
+      "headingCount": 7,
+      "height": 3961
+    },
+    {
+      "module": "Module 12",
+      "id": "debug-native-instructions",
+      "title": "Connecting GDB and checking startup",
+      "displayedWords": 632,
+      "sections": 2,
+      "figures": 1,
+      "headingCount": 7,
+      "height": 2778
+    },
+    {
+      "module": "Module 12",
+      "id": "stepping-native-function",
+      "title": "Stepping the native function",
+      "displayedWords": 749,
+      "sections": 5,
+      "figures": 2,
+      "headingCount": 8,
+      "height": 3877
+    },
+    {
+      "module": "Module 12",
+      "id": "diagnosing-native-failure",
+      "title": "Finding and repairing a native error",
+      "displayedWords": 1215,
+      "sections": 6,
+      "figures": 4,
+      "headingCount": 10,
+      "height": 5965
+    },
+    {
+      "module": "Module 13",
+      "id": "raspberry-pi-5",
+      "title": "Preparing and connecting the Pi",
+      "displayedWords": 533,
+      "sections": 4,
+      "figures": 1,
+      "headingCount": 6,
+      "height": 2274
+    },
+    {
+      "module": "Module 13",
+      "id": "raspberry-pi-boot",
+      "title": "Building and staging the Pi image",
+      "displayedWords": 750,
+      "sections": 4,
+      "figures": 2,
+      "headingCount": 7,
+      "height": 4370
+    },
+    {
+      "module": "Module 13",
+      "id": "capture-pi-boot",
+      "title": "Capturing the first Pi boot",
+      "displayedWords": 686,
+      "sections": 4,
+      "figures": 0,
+      "headingCount": 5,
+      "height": 2501
+    },
+    {
+      "module": "Module 13",
+      "id": "restore-pi-boot",
+      "title": "Breaking and restoring the Pi calculation",
+      "displayedWords": 506,
+      "sections": 4,
+      "figures": 0,
+      "headingCount": 5,
+      "height": 1825
+    },
+    {
+      "module": "Module A",
+      "id": "same-c-on-a32",
+      "title": "A32 registers and returns",
+      "displayedWords": 431,
+      "sections": 3,
+      "figures": 2,
+      "headingCount": 5,
+      "height": 2144
+    },
+    {
+      "module": "Module A",
+      "id": "a32-conditions",
+      "title": "A32 conditional moves and syntax",
+      "displayedWords": 502,
+      "sections": 5,
+      "figures": 5,
+      "headingCount": 7,
+      "height": 3177
+    },
+    {
+      "module": "Module A",
+      "id": "a32-constants",
+      "title": "A32 constant instructions",
+      "displayedWords": 289,
+      "sections": 3,
+      "figures": 2,
+      "headingCount": 5,
+      "height": 1817
+    },
+    {
+      "module": "Module A",
+      "id": "a32-division-helper",
+      "title": "A32 division helpers",
+      "displayedWords": 581,
+      "sections": 4,
+      "figures": 4,
+      "headingCount": 6,
+      "height": 3159
+    }
+  ]
+}

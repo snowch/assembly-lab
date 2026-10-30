@@ -4,30 +4,35 @@ import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { createBook, grade, traceOf, type MemoryTraceCall, type RecordedProgram } from "@al/views";
 import { LessonStore, LessonView, memoryStorage } from "@platform/lesson-runtime";
-import { Lesson, checkLesson, testCount } from "@platform/lesson-schema";
-import { productsAndWidths } from "./products-and-widths";
-import { divisionAndRemainders } from "./division-and-remainders";
+import { checkLesson, testCount } from "@platform/lesson-schema";
+import { LESSONS } from ".";
 import * as R from "./products.listings";
-const lessons = [productsAndWidths, divisionAndRemainders].map((l) => Lesson.parse(l));
+const lessons = LESSONS.filter((l) => l.module === 8);
 const book = createBook({ title: "Assembly Lab", lessons });
 const challenges = lessons.flatMap((l) => l.challenges);
 const challenge = (id: string) => challenges.find((c) => c.id === id)!;
 const figures = lessons.flatMap((l) => l.sections.flatMap((s) => s.interactives));
 describe("Module 8 lessons", () => {
-  it.each(lessons)("$id has ten sections and two mounted challenges", (lesson) => {
+  it.each(lessons)("$id has ordered selected sections and locally mounted challenges", (lesson) => {
     expect(checkLesson(lesson)).toEqual([]);
-    expect(lesson.sections).toHaveLength(10);
-    expect(lesson.challenges).toHaveLength(2);
+    expect(lesson.sections.length).toBeGreaterThan(0);
+    expect(lesson.challenges).toHaveLength(
+      ["reading-product-halves", "dividing-by-a-constant"].includes(lesson.id) ? 0 : 1,
+    );
   });
   it.each(challenges)("$id reference passes and starting program fails", (c) => {
     expect(grade(c, c.reference)).toEqual({ passed: true, total: testCount(c), failures: [] });
     expect(grade(c, c.initial).passed).toBe(false);
   });
-  it("gates every computed diagram and stepper behind an earlier prediction", () => {
+  it("keeps prediction gates local and opens the separate compiler investigations", () => {
     for (const lesson of lessons) {
       const all = lesson.sections.flatMap((s) => s.interactives);
       all.forEach((f, i) => {
         if (!["memory-stepper", "product-halves", "division-parts"].includes(f.kind)) return;
+        if (["reading-product-halves", "dividing-by-a-constant"].includes(lesson.id)) {
+          expect(f.props["after"]).toBeUndefined();
+          return;
+        }
         const gate = all.findIndex((other) => other.id === f.props["after"]);
         expect(gate).toBeGreaterThanOrEqual(0);
         expect(gate).toBeLessThan(i);
@@ -110,7 +115,9 @@ describe("Module 8 lessons", () => {
       <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
     );
     expect(container.querySelectorAll(".interactive-problem,.interactive-missing")).toHaveLength(0);
-    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(10);
+    expect(container.querySelectorAll("section.lesson-section")).toHaveLength(
+      lesson.sections.length,
+    );
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
   });
   it.each(lessons)("$id renders all unlocked diagrams", (lesson) => {

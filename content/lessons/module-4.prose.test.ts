@@ -12,7 +12,7 @@ import { describe, expect, it } from "vitest";
 
 import { learnerText } from "@platform/lesson-schema";
 
-import { LESSONS } from ".";
+import { SOURCE_LESSONS as LESSONS } from ".";
 import { LABELS as L1 } from "./compare-and-choose.labels";
 import { PROSE as P1 } from "./compare-and-choose.prose";
 import { COUNT_GROUPS, LABELS as L2 } from "./branches.labels";

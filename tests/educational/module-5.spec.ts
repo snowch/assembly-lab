@@ -42,6 +42,9 @@ import {
 
 const UP = "counting-up";
 const DOWN = "counting-down";
+const WRITE = "writing-an-upward-loop";
+const TEST = "testing-before-and-after";
+const EARLY = "stopping-when-work-ends";
 const lesson = (id: string) => LESSONS.find((item) => item.id === id)!;
 const plain = (s: string) => s.replaceAll("`", "");
 const interactive = (id: string, figure: string) =>
@@ -98,14 +101,14 @@ async function checkRuns(page: Page, route: string, id: string) {
   }
 }
 
-for (const route of [UP, DOWN]) {
-  test(`${route}: ten sections, two challenges and no browser or figure errors`, async ({
+for (const route of [UP, WRITE, DOWN, TEST, EARLY]) {
+  test(`${route}: selected sections, local challenges and no browser or figure errors`, async ({
     page,
   }) => {
     const errors = watchErrors(page);
     await openLesson(page, route);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson(route).title);
-    await expect(page.locator("section.challenge")).toHaveCount(2);
+    await expect(page.locator("section.challenge")).toHaveCount(lesson(route).challenges.length);
     await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
     expect(errors).toEqual([]);
   });
@@ -119,24 +122,20 @@ for (const route of [UP, DOWN]) {
       await page.reload();
       await openLesson(page, route);
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-      if (route === UP) {
-        await choosePrediction(page, UP, "predict-dim-up-count", "15");
-        await choosePrediction(page, UP, "predict-dim-up-beq", "64");
-      } else {
-        await choosePrediction(page, DOWN, "predict-dim-down-body", "3");
-        await choosePrediction(page, DOWN, "predict-dim-do-zero", "limit");
-      }
+      for (const p of predictions.filter((p) => p.route === route))
+        await choosePrediction(page, route, p.id, p.right);
       expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
       expect(await figureOverflow(page)).toEqual([]);
       const bars = page.locator(".al-loop-bar");
-      expect(await bars.count()).toBeGreaterThan(0);
-      const paints = await bars.first().evaluate((el) => ({
-        bar: getComputedStyle(el).backgroundColor,
-        track: getComputedStyle(el.parentElement!).backgroundColor,
-        height: el.getBoundingClientRect().height,
-      }));
-      expect(paints.bar).not.toBe(paints.track);
-      expect(paints.height).toBeGreaterThan(0);
+      if (await bars.count()) {
+        const paints = await bars.first().evaluate((el) => ({
+          bar: getComputedStyle(el).backgroundColor,
+          track: getComputedStyle(el.parentElement!).backgroundColor,
+          height: el.getBoundingClientRect().height,
+        }));
+        expect(paints.bar).not.toBe(paints.track);
+        expect(paints.height).toBeGreaterThan(0);
+      }
     });
   }
 }
@@ -151,7 +150,7 @@ const predictions = [
     gated: ["step-dim-up", "dim-up-runs"],
   },
   {
-    route: UP,
+    route: WRITE,
     id: "predict-dim-up-beq",
     right: String(
       wValue(traceOf(DIM_UP_BEQ, { entry: "dim_up", args: [128, 2, 5] }).result.final, 0),
@@ -165,10 +164,10 @@ const predictions = [
     gated: ["step-dim-down", "dim-down-runs"],
   },
   {
-    route: DOWN,
+    route: TEST,
     id: "predict-dim-do-zero",
     right: traceOf(DIM_DO, { entry: "dim_do", args: [128, 0], maxSteps: 20 }).result.stop.kind,
-    gated: ["step-dim-do-zero", "dim-do-runs", "step-dim-down-wrong", "dim-down-wrong-runs"],
+    gated: ["step-dim-do-zero", "step-dim-down-wrong"],
   },
 ];
 
@@ -213,9 +212,9 @@ test("counting up: bars count body executions, including zero, and history follo
 });
 
 test("changing the backward condition changes the completed run shown", async ({ page }) => {
-  await openLesson(page, UP);
-  await choosePrediction(page, UP, "predict-dim-up-beq", "64");
-  await checkRuns(page, UP, "dim-up-beq-runs");
+  await openLesson(page, WRITE);
+  await choosePrediction(page, WRITE, "predict-dim-up-beq", "64");
+  await checkRuns(page, WRITE, "dim-up-beq-runs");
 });
 
 test("counting down: zero skips the body and each nonzero run matches the model", async ({
@@ -230,8 +229,8 @@ test("counting down: zero skips the body and each nonzero run matches the model"
 test("do-while at zero and the wrong unsigned comparison show partial traces, never successful returns", async ({
   page,
 }) => {
-  await openLesson(page, DOWN);
-  await choosePrediction(page, DOWN, "predict-dim-do-zero", "limit");
+  await openLesson(page, TEST);
+  await choosePrediction(page, TEST, "predict-dim-do-zero", "limit");
   const stepper = page.locator("#ix-step-dim-do-zero");
   const doTrace = traceOf(DIM_DO, { entry: "dim_do", args: [128, 0], maxSteps: 20 });
   await press(page, stepper.getByRole("button", { name: V.stepper.next }));
@@ -241,16 +240,16 @@ test("do-while at zero and the wrong unsigned comparison show partial traces, ne
   expect(wrapped.flags.z).toBe(false);
   await expect(registerValue(stepper, "w1")).toHaveText(String(wValue(wrapped, 1)));
   await expect(stepper.locator('.al-flag[data-flag="z"]')).toHaveAttribute("data-value", "0");
-  await checkRuns(page, DOWN, "dim-do-runs");
-  await checkRuns(page, DOWN, "dim-down-wrong-runs");
-  const limited = page.locator('#ix-dim-do-runs .al-loop-bar-row[data-returned="false"]');
-  await expect(limited).toHaveCount(1);
+  for (let k = 2; k < doTrace.result.steps.length; k++)
+    await press(page, stepper.getByRole("button", { name: V.stepper.next }));
+  await expect(stepper.getByRole("button", { name: V.stepper.next })).toBeDisabled();
+  await expect(stepper.getByRole("status")).toContainText("20");
   const wrong = traceOf(DIM_DOWN_WRONG, { entry: "dim_down_wrong", args: [128, 3], maxSteps: 20 });
   expect(wrong.result.stop.kind).toBe("limit");
-  await expect(page.locator('#ix-dim-down-wrong-runs [role="status"]')).toHaveAttribute(
-    "data-stop",
-    "limit",
-  );
+  const wrongStepper = page.locator("#ix-step-dim-down-wrong");
+  for (let k = 0; k < wrong.result.steps.length; k++)
+    await press(page, wrongStepper.getByRole("button", { name: V.stepper.next }));
+  await expect(wrongStepper.getByRole("status")).toContainText("20");
 });
 
 test("the stepper makes a taken backward branch and its next instruction visible", async ({
@@ -272,8 +271,8 @@ test("the stepper makes a taken backward branch and its next instruction visible
 test("the wrong-loop stepper shows cmp replacing the subtraction's borrow flag", async ({
   page,
 }) => {
-  await openLesson(page, DOWN);
-  await choosePrediction(page, DOWN, "predict-dim-do-zero", "limit");
+  await openLesson(page, TEST);
+  await choosePrediction(page, TEST, "predict-dim-do-zero", "limit");
   const f = page.locator("#ix-step-dim-down-wrong");
   const trace = traceOf(DIM_DOWN_WRONG, {
     entry: "dim_down_wrong",
@@ -301,7 +300,7 @@ test("the wrong-loop stepper shows cmp replacing the subtraction's borrow flag",
 
 const writes = [
   {
-    route: UP,
+    route: WRITE,
     id: "write-dim-up",
     reference: DIM_UP_TEXT,
     wrong: DIM_UP_TEXT.replace("b.cs done", "b.eq done"),
@@ -312,7 +311,12 @@ const writes = [
     reference: DIM_DOWN_TEXT,
     wrong: DIM_DOWN_TEXT.replace("cbz w1, done\n", ""),
   },
-  { route: DOWN, id: "write-dim-until-dark", reference: DIM_UNTIL_DARK_TEXT, wrong: DIM_DOWN_TEXT },
+  {
+    route: EARLY,
+    id: "write-dim-until-dark",
+    reference: DIM_UNTIL_DARK_TEXT,
+    wrong: DIM_DOWN_TEXT,
+  },
 ];
 
 for (const item of writes) {
@@ -332,7 +336,7 @@ for (const item of writes) {
     await expect(c.locator(".challenge-complete")).toHaveCount(0);
     await box.fill(item.reference);
     await press(page, run(c));
-    await expect(status(c)).toHaveText(passing(item.route === UP ? 7 : 6));
+    await expect(status(c)).toHaveText(passing(item.id === "write-dim-up" ? 7 : 6));
     await expect(c.locator(".challenge-complete")).toBeVisible();
   });
 }

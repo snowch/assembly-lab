@@ -29,6 +29,7 @@ import {
 } from "./module1";
 
 const MEMORY = "array-addresses";
+const TRAVERSAL = "traversing-arrays";
 const WIDTHS = "zero-terminated-strings";
 const lesson = (id: string) => LESSONS.find((item) => item.id === id)!;
 const figures = (id: string) => lesson(id).sections.flatMap((s) => s.interactives ?? []);
@@ -104,11 +105,10 @@ async function checkState(page: Page, id: string, props: FigureProps, trace: Tra
 test("addressing forms share one comparison moment and preserve distinct address/update effects", async ({
   page,
 }) => {
-  await openLesson(page, MEMORY);
-  await unlock(page, MEMORY, "predict-read-trip");
+  await openLesson(page, TRAVERSAL);
   const id = "step-array-offset";
   const figure = page.locator(`#ix-${id}`);
-  const base = figures(MEMORY).find((item) => item.id === id)!.props as unknown as FigureProps;
+  const base = figures(TRAVERSAL).find((item) => item.id === id)!.props as unknown as FigureProps;
   await press(page, figure.getByRole("button", { name: V.stepper.next }));
   for (const [index, choice] of base.cases!.entries()) {
     await figure.getByRole("combobox").selectOption(String(index));
@@ -130,12 +130,12 @@ test("addressing forms share one comparison moment and preserve distinct address
   await expect(figure.locator(".al-memory-case-summary")).toHaveCount(0);
 });
 
-for (const route of [MEMORY, WIDTHS]) {
-  test(`${route}: ten sections, two challenges and no browser errors`, async ({ page }) => {
+for (const route of [MEMORY, TRAVERSAL, WIDTHS]) {
+  test(`${route}: selected sections, local challenges and no browser errors`, async ({ page }) => {
     const errors = watchErrors(page);
     await openLesson(page, route);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson(route).title);
-    await expect(page.locator("section.challenge")).toHaveCount(2);
+    await expect(page.locator("section.challenge")).toHaveCount(lesson(route).challenges.length);
     await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
     expect(errors).toEqual([]);
   });
@@ -223,7 +223,7 @@ for (const p of predictions) {
 
 const writes = [
   { route: MEMORY, id: "write-read-trip", wrong: A.READ_TRIP_TEXT.replace(", lsl #2", "") },
-  { route: MEMORY, id: "write-sum-trips", wrong: A.SUM_TRIPS_TEXT.replace("], #4", "], #1") },
+  { route: TRAVERSAL, id: "write-sum-trips", wrong: A.SUM_TRIPS_TEXT.replace("], #4", "], #1") },
   {
     route: WIDTHS,
     id: "write-label-length",

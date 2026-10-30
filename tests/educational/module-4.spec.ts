@@ -100,13 +100,15 @@ const LESS = "write-less-fuel";
 const HOLDS = "read-four-conditions";
 
 test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
-  test("loads with no console error, ten sections, two challenges and no figure problem", async ({
+  test("the comparison unit loads with no console error, two challenges and no figure problem", async ({
     page,
   }) => {
     const errors = watchErrors(page);
     await openLesson(page, ONE);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson(ONE).title);
-    await expect(page.locator("section.challenge")).toHaveCount(2);
+    await expect(page.locator("section.challenge")).toHaveCount(
+      lesson((await page.url()).split("/lesson/")[1]!).challenges.length,
+    );
     await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
     await expect(page).toHaveTitle(`${lesson(ONE).title} / Assembly Lab`);
     expect(errors).toEqual([]);
@@ -302,15 +304,14 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
       await box.fill("cmp w0, w1\ncsel w0, w0, w1, hi\nret");
       await press(page, run(c));
       await expect(c.locator(".challenge-complete")).toHaveCount(0);
-      // `cset` is taught in this lesson, so the gate says what the challenge allows and not that
-      // `cset` is not met.
+      // `cset` belongs to the following Boolean-results unit.
       await box.fill("cmp w0, w1\ncset w0, cc\nret");
       await expect(c.locator(".asm-problems")).toContainText("Line 2");
-      await expect(c.locator(".asm-problems")).toContainText("allows only");
-      await expect(c.locator(".asm-problems")).not.toContainText("not met");
+      await expect(c.locator(".asm-problems")).toContainText("not met");
+      await expect(c.locator(".asm-problems")).not.toContainText("allows only");
       await press(page, run(c));
       await expect(status(c)).toHaveText(blocked);
-      await expect(c.locator(".verdict.blocked")).toContainText("allows only");
+      await expect(c.locator(".verdict.blocked")).toContainText("not met");
     });
 
     test("survives a reload, graded again, and goes back to the starting point when cleared", async ({
@@ -405,7 +406,7 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
     test("starts at 8 and 8, never at the last challenge's pair, with the flags and holds the model gives", async ({
       page,
     }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "conditions-and-boolean-results");
       const f = figure(page);
       await f.scrollIntoViewIfNeeded();
       await expect(f.locator("input")).toHaveCount(0);
@@ -427,7 +428,7 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
     test("runs the compare again for each pair the buttons offer, and offers no box to type another in", async ({
       page,
     }) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "conditions-and-boolean-results");
       const f = figure(page);
       await f.scrollIntoViewIfNeeded();
       await press(page, f.getByRole("button", { name: "0x7fffffff and 0xffffffff" }));
@@ -459,7 +460,7 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
     test("draws every condition with its name, meaning and rule, and each fits its box", async ({
       page,
     }, info) => {
-      await openLesson(page, ONE);
+      await openLesson(page, "conditions-and-boolean-results");
       const f = figure(page);
       await f.scrollIntoViewIfNeeded();
       const ge = f.locator('[data-cond="ge"]');
@@ -478,7 +479,7 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
         await page.goto("#/");
         await page.evaluate((t) => localStorage.setItem("assembly-lab:v1:theme", t), theme);
         await page.reload();
-        await openLesson(page, ONE);
+        await openLesson(page, "conditions-and-boolean-results");
         await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
         const colours = await figure(page).evaluate((el) => {
           const paint = (selector: string, property: "color" | "borderLeftColor") =>
@@ -620,7 +621,9 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
     const errors = watchErrors(page);
     await openLesson(page, TWO);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson(TWO).title);
-    await expect(page.locator("section.challenge")).toHaveCount(2);
+    await expect(page.locator("section.challenge")).toHaveCount(
+      lesson((await page.url()).split("/lesson/")[1]!).challenges.length,
+    );
     await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
     await expect(page).toHaveTitle(`${lesson(TWO).title} / Assembly Lab`);
     expect(errors).toEqual([]);
@@ -855,7 +858,7 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
     test("is completed by typing, at the desktop width", async ({ page }, info) => {
       test.skip(info.project.name !== "desktop", "typing is the desktop width's way in");
       const errors = watchErrors(page);
-      await openLesson(page, TWO);
+      await openLesson(page, "zero-and-threshold-branches");
       const c = challenge(page, FUEL);
       await c.scrollIntoViewIfNeeded();
       const box = c.getByRole("textbox", { name: V.editor.textLabel });
@@ -874,7 +877,7 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
     }, info) => {
       test.skip(info.project.name !== "phone", "tapping is the phone width's way in");
       const errors = watchErrors(page);
-      await openLesson(page, TWO);
+      await openLesson(page, "zero-and-threshold-branches");
       const c = challenge(page, FUEL);
       await c.scrollIntoViewIfNeeded();
       await press(page, c.getByRole("button", { name: V.editor.tap, exact: true }));
@@ -962,7 +965,9 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
       await run(c).tap();
       await expect(status(c)).toHaveText(passing(5));
       await expect(c.locator(".challenge-complete")).toHaveText(complete);
-      expect((await stored(page, TWO)).challenges[FUEL].artifact.text).toBe(
+      expect(
+        (await stored(page, "zero-and-threshold-branches")).challenges[FUEL].artifact.text,
+      ).toBe(
         [
           "cbz w0, .Lempty",
           "cmp w0, w1",
@@ -983,7 +988,7 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
     test("offers the instructions of the gate, a branch under each condition, and a chip for each label", async ({
       page,
     }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "zero-and-threshold-branches");
       const c = challenge(page, FUEL);
       await c.scrollIntoViewIfNeeded();
       await press(page, c.getByRole("button", { name: V.editor.tap, exact: true }));
@@ -1019,7 +1024,7 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
     test("fails the starting point on the first two calls only, and says what it returned", async ({
       page,
     }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "zero-and-threshold-branches");
       const c = challenge(page, FUEL);
       await c.scrollIntoViewIfNeeded();
       await press(page, run(c));
@@ -1034,7 +1039,7 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
     test("accepts the second answer, with b.cs and two b instructions to one ret, and the GCC spelling blo", async ({
       page,
     }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "zero-and-threshold-branches");
       const c = challenge(page, FUEL);
       await c.scrollIntoViewIfNeeded();
       const box = c.getByRole("textbox", { name: V.editor.textLabel });
@@ -1049,7 +1054,7 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
     test("rejects the signed condition, the inclusive condition and the tests in the wrong order, and refuses instructions it has not met", async ({
       page,
     }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "zero-and-threshold-branches");
       const c = challenge(page, FUEL);
       await c.scrollIntoViewIfNeeded();
       const box = c.getByRole("textbox", { name: V.editor.textLabel });
@@ -1094,7 +1099,7 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
     test("survives a reload, graded again, and goes back to the starting point when cleared", async ({
       page,
     }) => {
-      await openLesson(page, TWO);
+      await openLesson(page, "zero-and-threshold-branches");
       let c = challenge(page, FUEL);
       await c.scrollIntoViewIfNeeded();
       const box = c.getByRole("textbox", { name: V.editor.textLabel });
@@ -1110,7 +1115,7 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
           s.challenges[id as string].artifact.text = "mov w0, 0\nret";
           localStorage.setItem(k as string, JSON.stringify(s));
         },
-        [storageKey(TWO), FUEL],
+        [storageKey("zero-and-threshold-branches"), FUEL],
       );
       await page.reload();
       c = challenge(page, FUEL);
@@ -1247,17 +1252,22 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
         page,
         page.locator("#ix-describe-arrows").getByRole("button", { name: "10", exact: true }),
       );
+      expect(await designProblems(page, phone)).toEqual([]);
+      await openLesson(page, "zero-and-threshold-branches");
       const fuel = challenge(page, FUEL);
       await press(page, fuel.getByRole("button", { name: V.editor.tap, exact: true }));
       await press(page, fuel.locator(".asm-line-button").first());
       await press(page, chip(fuel, I, "b.cc"));
       await press(page, run(fuel));
+      expect(await designProblems(page, phone)).toEqual([]);
+      await openLesson(page, TWO);
       const counts = challenge(page, COUNTS);
       await counts.locator('[data-field="result11"] input').fill("9");
       await press(page, run(counts));
       await press(page, counts.getByRole("button", { name: /Show hint/ }));
       expect(await designProblems(page, phone)).toEqual([]);
       expect(await figureOverflow(page)).toEqual([]);
+      await openLesson(page, "zero-and-threshold-branches");
       await press(page, fuel.getByRole("button", { name: V.editor.text, exact: true }));
       await fuel.getByRole("textbox", { name: V.editor.textLabel }).fill("cmp w0, w1\n.Lx:\nb .Lx");
       expect(await designProblems(page, phone)).toEqual([]);

@@ -72,9 +72,13 @@ describe("final core native module", () => {
   it("precedes optional A without changing its stored-work ID", () => {
     expect(lessons.map((l) => l.id)).toEqual([
       "from-function-to-executable",
+      "loading-and-startup",
+      "runtime-startup",
       "debug-native-instructions",
+      "stepping-native-function",
+      "diagnosing-native-failure",
     ]);
-    expect(LESSONS.at(-1)?.id).toBe("same-c-on-a32");
+    expect(LESSONS.at(-1)?.id).toBe("a32-division-helper");
     expect(LESSONS.at(-1)?.module).toBe(14);
     expect(termProblems(LESSONS)).toEqual([]);
   });
@@ -82,16 +86,19 @@ describe("final core native module", () => {
     "$id: renders selected sections, a mounted challenge, and no broken figures",
     (lesson) => {
       expect(checkLesson(lesson)).toEqual([]);
-      expect(lesson.sections.map((s) => s.kind)).toEqual(
-        SECTION_KINDS.filter((kind) => kind !== "question"),
-      );
+      const kinds = lesson.sections.map((s) => s.kind);
+      expect(kinds).toEqual(SECTION_KINDS.filter((kind) => kinds.includes(kind)));
       const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
       const { container } = render(
         <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
       );
       expect(container.querySelector(".al-problem")).toBeNull();
-      expect(container.querySelectorAll("section.lesson-section")).toHaveLength(9);
-      expect(container.querySelectorAll("section.challenge")).toHaveLength(1);
+      expect(container.querySelectorAll("section.lesson-section")).toHaveLength(
+        lesson.sections.length,
+      );
+      expect(container.querySelectorAll("section.challenge")).toHaveLength(
+        lesson.challenges.length,
+      );
       for (const challenge of lesson.challenges) {
         expect(gradeWritten(challenge, challenge.initial).passed).toBe(false);
         expect(gradeWritten(challenge, challenge.reference).passed).toBe(true);
@@ -123,7 +130,7 @@ describe("final core native module", () => {
     expect(boot.startupStops.slice(1).map((s) => s.sp)).toEqual([boot.stackTop, boot.stackTop]);
   });
   it("checks behaviour instead of exact reference text and shares native cases", () => {
-    const challenge = lessons[1]!.challenges[0]!;
+    const challenge = lessons.find((l) => l.id === "diagnosing-native-failure")!.challenges[0]!;
     const alternative = TWICE_TEXT.replace(
       "sub w0, w0, w3\nsub w0, w0, w3",
       "add w3, w3, w3\nsub w0, w0, w3",

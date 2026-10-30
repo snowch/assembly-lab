@@ -10,72 +10,82 @@ import { downloadOffline, offlineReady, openStatus } from "./app-status-helper";
 import { designProblems } from "./design";
 import { deployment } from "./offline-site";
 
-test("the whole course reopens offline, including lessons never visited online", async ({
-  page,
-  context,
-}) => {
-  const site = await deployment();
-  try {
-    test.setTimeout(120_000);
-    const errors = watchErrors(page);
-    const session = await context.newCDPSession(page);
-    await session.send("Network.enable");
-    await session.send("Network.setCacheDisabled", { cacheDisabled: true });
-    await page.goto(site.url);
-    await downloadOffline(page);
-    const downloadFiles = await page.evaluate(async () => {
-      const release = (await (
-        await fetch(new URL("release.json", location.href), { cache: "no-store" })
-      ).json()) as {
-        assets: { path: string; bytes: number; integrity: string }[];
-      };
-      return release.assets.filter(
-        (file) => file.path.startsWith("native/") || file.path === "examples/trip-playground.s",
-      );
-    });
-    expect(downloadFiles.length).toBeGreaterThan(0);
-    expect(downloadFiles.some((file) => file.path === "examples/trip-playground.s")).toBe(true);
-    site.connected(false);
-    await context.setOffline(true);
-    for (const lesson of LESSONS) {
-      const response = await page.goto(
-        new URL(`./?offline-check=${lesson.id}#/lesson/${lesson.id}`, site.url).href,
-      );
-      expect(response?.fromServiceWorker()).toBe(true);
-      await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
-      await expect(page.locator("section.lesson-section")).toHaveCount(lesson.sections.length);
-      await offlineReady(page);
-      await expect(page.locator(".app-status > summary")).toBeVisible();
-    }
-    const nextResponse = await page.goto(
-      new URL("./?offline-check=where-next#/where-next", site.url).href,
-    );
-    expect(nextResponse?.fromServiceWorker()).toBe(true);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(WHERE_NEXT.title);
-    await expect(page.locator(".where-next-starter code")).toHaveText(PLAYGROUND_STARTER);
-    const downloadResults = await page.evaluate(async (files) => {
-      const results = [];
-      for (const file of files) {
-        const response = await fetch(new URL(file.path, location.href));
-        const body = await response.arrayBuffer();
-        const hash = new Uint8Array(await crypto.subtle.digest("SHA-256", body));
-        results.push({
-          path: file.path,
-          ok: response.ok,
-          bytes: body.byteLength,
-          integrity: `sha256-${btoa(String.fromCharCode(...hash))}`,
-        });
+// Keep every published route, but bound each fresh offline session's work as the course grows.
+// Each batch still downloads the whole course and verifies all downloadable files.
+const OFFLINE_BATCH_SIZE = 20;
+const offlineBatches = Array.from(
+  { length: Math.ceil(LESSONS.length / OFFLINE_BATCH_SIZE) },
+  (_, i) => LESSONS.slice(i * OFFLINE_BATCH_SIZE, (i + 1) * OFFLINE_BATCH_SIZE),
+);
+
+for (const [batchIndex, offlineLessons] of offlineBatches.entries()) {
+  test(`the whole course reopens offline, including lessons never visited online (batch ${batchIndex + 1} of ${offlineBatches.length})`, async ({
+    page,
+    context,
+  }) => {
+    const site = await deployment();
+    try {
+      test.setTimeout(120_000);
+      const errors = watchErrors(page);
+      const session = await context.newCDPSession(page);
+      await session.send("Network.enable");
+      await session.send("Network.setCacheDisabled", { cacheDisabled: true });
+      await page.goto(site.url);
+      await downloadOffline(page);
+      const downloadFiles = await page.evaluate(async () => {
+        const release = (await (
+          await fetch(new URL("release.json", location.href), { cache: "no-store" })
+        ).json()) as {
+          assets: { path: string; bytes: number; integrity: string }[];
+        };
+        return release.assets.filter(
+          (file) => file.path.startsWith("native/") || file.path === "examples/trip-playground.s",
+        );
+      });
+      expect(downloadFiles.length).toBeGreaterThan(0);
+      expect(downloadFiles.some((file) => file.path === "examples/trip-playground.s")).toBe(true);
+      site.connected(false);
+      await context.setOffline(true);
+      for (const lesson of offlineLessons) {
+        const response = await page.goto(
+          new URL(`./?offline-check=${lesson.id}#/lesson/${lesson.id}`, site.url).href,
+        );
+        expect(response?.fromServiceWorker()).toBe(true);
+        await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
+        await expect(page.locator("section.lesson-section")).toHaveCount(lesson.sections.length);
+        await offlineReady(page);
+        await expect(page.locator(".app-status > summary")).toBeVisible();
       }
-      await document.fonts.ready;
-      return results;
-    }, downloadFiles);
-    expect(downloadResults).toEqual(downloadFiles.map((file) => ({ ...file, ok: true })));
-    expect(errors).toEqual([]);
-  } finally {
-    await context.close();
-    await site.close();
-  }
-});
+      const nextResponse = await page.goto(
+        new URL("./?offline-check=where-next#/where-next", site.url).href,
+      );
+      expect(nextResponse?.fromServiceWorker()).toBe(true);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(WHERE_NEXT.title);
+      await expect(page.locator(".where-next-starter code")).toHaveText(PLAYGROUND_STARTER);
+      const downloadResults = await page.evaluate(async (files) => {
+        const results = [];
+        for (const file of files) {
+          const response = await fetch(new URL(file.path, location.href));
+          const body = await response.arrayBuffer();
+          const hash = new Uint8Array(await crypto.subtle.digest("SHA-256", body));
+          results.push({
+            path: file.path,
+            ok: response.ok,
+            bytes: body.byteLength,
+            integrity: `sha256-${btoa(String.fromCharCode(...hash))}`,
+          });
+        }
+        await document.fonts.ready;
+        return results;
+      }, downloadFiles);
+      expect(downloadResults).toEqual(downloadFiles.map((file) => ({ ...file, ok: true })));
+      expect(errors).toEqual([]);
+    } finally {
+      await context.close();
+      await site.close();
+    }
+  });
+}
 
 test("offline compilation, exercise grading and saved work survive closing and reopening a tab", async ({
   page,
@@ -88,7 +98,7 @@ test("offline compilation, exercise grading and saved work survive closing and r
     await page.getByLabel(STRINGS.theme).selectOption("dark");
     site.connected(false);
     await context.setOffline(true);
-    const url = new URL("./#/lesson/from-c-to-instructions", page.url()).href;
+    const url = new URL("./#/lesson/cap-charge-in-c", page.url()).href;
     await page.close();
     const reopened = await context.newPage();
     const errors = watchErrors(reopened);
@@ -98,7 +108,7 @@ test("offline compilation, exercise grading and saved work survive closing and r
     expect((await reopened.goto(url))?.fromServiceWorker()).toBe(true);
     await expect(reopened.getByLabel(STRINGS.theme)).toHaveValue("dark");
 
-    const lesson = LESSONS.find((l) => l.id === "from-c-to-instructions")!;
+    const lesson = LESSONS.find((l) => l.id === "cap-charge-in-c")!;
     const exercise = lesson.challenges.find((c) => c.id === "write-cap-charge")!;
     if (exercise.tests.kind !== "answers") throw new Error("Expected a C exercise");
     const c = challenge(reopened, exercise.id);
@@ -113,8 +123,11 @@ test("offline compilation, exercise grading and saved work survive closing and r
     );
     await expect(c.locator(".challenge-complete")).toBeVisible();
 
+    // The compiler investigation is a separate lesson; it also opens from the saved course.
+    await reopened.goto(new URL("./#/lesson/from-c-to-instructions", reopened.url()).href);
+    const compilerLesson = LESSONS.find((l) => l.id === "from-c-to-instructions")!;
     // A committed prediction opens the compiler; compilation itself needs no server.
-    for (const figure of lesson.sections.flatMap((s) => s.interactives)) {
+    for (const figure of compilerLesson.sections.flatMap((s) => s.interactives)) {
       if (figure.kind !== "trace-prediction") continue;
       const prediction = reopened.locator(`#ix-${figure.id}`);
       await prediction.getByRole("radio").first().check();

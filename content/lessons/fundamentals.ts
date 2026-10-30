@@ -177,11 +177,6 @@ const primitiveLessons: LessonInput[] = CONFIG.map((config, order) => {
       key === "addition"
         ? [
             {
-              term: "constant",
-              reason:
-                "Only the linked title Constants and widths names the later lesson; constants are not taught here.",
-            },
-            {
               term: "shift",
               reason:
                 "Only the official ADD reference URL contains shifted; the visible lesson does not introduce shifting.",

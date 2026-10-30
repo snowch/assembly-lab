@@ -5,17 +5,25 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, it } from "vitest";
 import { Challenge, type Artifact, type Lesson } from "@platform/lesson-schema";
-import { arrayAddresses } from "../../../content/lessons/array-addresses";
-import { zeroTerminatedStrings } from "../../../content/lessons/zero-terminated-strings";
+import { LESSONS } from "@al/content";
+import { pacingOrigins } from "../../../content/lessons/pacing";
 import { AssemblyEditor } from "./AssemblyEditor";
 import { gradeWritten } from "./grader";
 import { VIEW_STRINGS as S } from "./strings";
 import { parseLine } from "./tap";
-function Harness({ challenge, seen }: { challenge: Challenge; seen: (a: Artifact) => void }) {
+function Harness({
+  lesson,
+  challenge,
+  seen,
+}: {
+  lesson: Lesson;
+  challenge: Challenge;
+  seen: (a: Artifact) => void;
+}) {
   const [artifact, setArtifact] = useState<Artifact>({ ...challenge.initial, text: "" });
   return (
     <AssemblyEditor
-      lesson={{} as Lesson}
+      lesson={lesson}
       challenge={challenge}
       artifact={artifact}
       onChange={(next) => {
@@ -28,14 +36,29 @@ function Harness({ challenge, seen }: { challenge: Challenge; seen: (a: Artifact
 const chip = (group: string, name: string) =>
   within(screen.getByRole("group", { name: group })).getByRole("button", { name });
 beforeEach(() => localStorage.clear());
-it.each([...arrayAddresses.challenges!, ...zeroTerminatedStrings.challenges!])(
-  "builds the whole $id reference using touch controls",
-  async (input) => {
+const sourceIds = ["array-addresses", "zero-terminated-strings"];
+const challenges = LESSONS.filter((lesson) =>
+  sourceIds.includes(pacingOrigins.get(lesson.id) ?? lesson.id),
+).flatMap((lesson) => lesson.challenges.map((challenge) => ({ lesson, challenge })));
+
+it("retains every published challenge for touch construction", () => {
+  expect(challenges.map(({ challenge }) => challenge.id)).toEqual([
+    "write-read-trip",
+    "write-sum-trips",
+    "write-label-length",
+    "write-count-marker",
+  ]);
+});
+
+it.each(challenges)(
+  "builds the whole $challenge.id reference in $lesson.id using touch controls",
+  async ({ lesson, challenge: input }) => {
     const challenge = Challenge.parse(input);
     let latest: Artifact = {};
     const user = userEvent.setup({ delay: null });
     render(
       <Harness
+        lesson={lesson}
         challenge={challenge}
         seen={(a) => {
           latest = a;

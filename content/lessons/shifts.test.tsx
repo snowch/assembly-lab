@@ -27,17 +27,29 @@ import { SHIFTS_INSTRUCTIONS, shifts } from "./shifts";
 import { PROSE } from "./shifts.prose";
 
 const lesson = LESSONS.find((l) => l.id === "shifts")!;
+const followOn = LESSONS.find((l) => l.id === "shifts-and-signed-division")!;
+const units = [lesson, followOn];
 const book = createBook({ title: "Assembly Lab", lessons: LESSONS });
-const challenge = (id: string) => lesson.challenges.find((c) => c.id === id)!;
+const challenge = (id: string) =>
+  units.flatMap((unit) => unit.challenges).find((c) => c.id === id)!;
 
 describe("the lesson", () => {
   it("parses and passes the schema's checks: selected sections in order, every challenge mounted", () => {
     expect(() => parseLesson(shifts)).not.toThrow();
     expect(checkLesson(lesson)).toEqual([]);
     expect(lesson.sections.map((s) => s.kind)).toEqual(
-      SECTION_KINDS.filter((kind) => !["motivation"].includes(kind)),
+      SECTION_KINDS.filter(
+        (kind) =>
+          ![
+            "motivation",
+            "construction",
+            "failureExperiment",
+            "generalisation",
+            "reflection",
+          ].includes(kind),
+      ),
     );
-    expect([lesson.module, lesson.order]).toEqual([3, 1]);
+    expect([lesson.module, lesson.order]).toEqual([3, 2]);
   });
 
   it("introduces shift, logical shift and arithmetic shift, and passes the term gate with every lesson written", () => {
@@ -69,7 +81,7 @@ describe("the lesson", () => {
   });
 
   it("gates the shift figure and the stepper behind the prediction before each, in the same lesson", () => {
-    const all = lesson.sections.flatMap((s) => s.interactives);
+    const all = units.flatMap((unit) => unit.sections.flatMap((s) => s.interactives));
     const ids = all.map((x) => x.id);
     const gated = all.filter((x) => typeof x.props["after"] === "string");
     expect(gated.map((x) => [x.id, x.props["after"]])).toEqual([
@@ -93,7 +105,8 @@ describe("the lesson", () => {
         Object.values(o).forEach(walk);
       }
     };
-    for (const s of lesson.sections) for (const x of s.interactives) walk(x.props);
+    for (const s of units.flatMap((unit) => unit.sections))
+      for (const x of s.interactives) walk(x.props);
     // The graders' own programs are the one place an instruction the lesson has not met is run
     // (`sdiv`, for C's `/ 4`): the learner is never shown them.
     const shownToLearner = [...used];
@@ -221,9 +234,9 @@ describe("the page", () => {
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
     // The shift figure and the stepper wait for their predictions; nothing of either run is on the page.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(1);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
-    expect(container.querySelectorAll("section.challenge")).toHaveLength(2);
+    expect(container.querySelectorAll("section.challenge")).toHaveLength(1);
     // The prediction shows the word it takes, before anything is committed.
     expect(container.querySelectorAll('[data-figure="probe-prediction"] .al-bit')).toHaveLength(32);
   });

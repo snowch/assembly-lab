@@ -1,0 +1,345 @@
+{
+  "method": "Initial rendered lesson text at1280px, default theme; closed details and prediction gates retained. Word count includes visible code, labels and controls. Diagnostic, not a reading-time or lesson-quality score.",
+  "lessons": [
+    {
+      "module": "Module 0",
+      "id": "one-addition",
+      "title": "One addition",
+      "displayedWords": 407,
+      "sections": 3,
+      "figures": 3,
+      "headingCount": 5,
+      "height": 2771
+    },
+    {
+      "module": "Module 0",
+      "id": "adding-a-constant",
+      "title": "Adding a constant",
+      "displayedWords": 318,
+      "sections": 3,
+      "figures": 3,
+      "headingCount": 5,
+      "height": 2602
+    },
+    {
+      "module": "Module 0",
+      "id": "tiny-function",
+      "title": "A tiny function",
+      "displayedWords": 513,
+      "sections": 3,
+      "figures": 3,
+      "headingCount": 5,
+      "height": 3114
+    },
+    {
+      "module": "Module 0",
+      "id": "returning-to-caller",
+      "title": "Returning to the caller",
+      "displayedWords": 592,
+      "sections": 3,
+      "figures": 2,
+      "headingCount": 5,
+      "height": 3167
+    },
+    {
+      "module": "Module 0",
+      "id": "subtraction-and-reuse",
+      "title": "Subtraction and reuse",
+      "displayedWords": 303,
+      "sections": 3,
+      "figures": 3,
+      "headingCount": 5,
+      "height": 2634
+    },
+    {
+      "module": "Module 0",
+      "id": "instructions-in-sequence",
+      "title": "Instructions in sequence",
+      "displayedWords": 261,
+      "sections": 2,
+      "figures": 2,
+      "headingCount": 4,
+      "height": 2040
+    },
+    {
+      "module": "Module 0",
+      "id": "meet-the-machine",
+      "title": "Putting it together",
+      "displayedWords": 647,
+      "sections": 3,
+      "figures": 4,
+      "headingCount": 5,
+      "height": 3777
+    },
+    {
+      "module": "Module 1",
+      "id": "one-pattern-three-readings",
+      "title": "Same bits, two readings",
+      "displayedWords": 1353,
+      "sections": 8,
+      "figures": 9,
+      "headingCount": 11,
+      "height": 7378
+    },
+    {
+      "module": "Module 1",
+      "id": "constants-and-widths",
+      "title": "Constants and widths",
+      "displayedWords": 1565,
+      "sections": 10,
+      "figures": 12,
+      "headingCount": 13,
+      "height": 8440
+    },
+    {
+      "module": "Module 2",
+      "id": "adding-and-the-flags",
+      "title": "Adding, and the four flags",
+      "displayedWords": 1344,
+      "sections": 8,
+      "figures": 7,
+      "headingCount": 11,
+      "height": 7204
+    },
+    {
+      "module": "Module 2",
+      "id": "subtracting-and-the-tick-counter",
+      "title": "Subtracting, and the tick counter",
+      "displayedWords": 1602,
+      "sections": 9,
+      "figures": 9,
+      "headingCount": 12,
+      "height": 8028
+    },
+    {
+      "module": "Module 3",
+      "id": "masks",
+      "title": "Masks and fields",
+      "displayedWords": 1710,
+      "sections": 8,
+      "figures": 13,
+      "headingCount": 11,
+      "height": 9012
+    },
+    {
+      "module": "Module 3",
+      "id": "shifts",
+      "title": "Shifts, and the type that picks one",
+      "displayedWords": 1340,
+      "sections": 9,
+      "figures": 8,
+      "headingCount": 12,
+      "height": 7468
+    },
+    {
+      "module": "Module 4",
+      "id": "compare-and-choose",
+      "title": "Compare, and the signed or unsigned condition",
+      "displayedWords": 1936,
+      "sections": 10,
+      "figures": 9,
+      "headingCount": 13,
+      "height": 9972
+    },
+    {
+      "module": "Module 4",
+      "id": "branches",
+      "title": "Branches, and the run that skips",
+      "displayedWords": 1669,
+      "sections": 10,
+      "figures": 8,
+      "headingCount": 13,
+      "height": 9621
+    },
+    {
+      "module": "Module 5",
+      "id": "counting-up",
+      "title": "Counting up, and the branch backwards",
+      "displayedWords": 1510,
+      "sections": 10,
+      "figures": 8,
+      "headingCount": 13,
+      "height": 8602
+    },
+    {
+      "module": "Module 5",
+      "id": "counting-down",
+      "title": "Counting down, and knowing when to stop",
+      "displayedWords": 1588,
+      "sections": 10,
+      "figures": 12,
+      "headingCount": 13,
+      "height": 8280
+    },
+    {
+      "module": "Module 6",
+      "id": "memory-and-addresses",
+      "title": "Memory and addresses",
+      "displayedWords": 1187,
+      "sections": 10,
+      "figures": 12,
+      "headingCount": 13,
+      "height": 6946
+    },
+    {
+      "module": "Module 6",
+      "id": "loading-widths",
+      "title": "Loading different widths",
+      "displayedWords": 1373,
+      "sections": 10,
+      "figures": 13,
+      "headingCount": 13,
+      "height": 7589
+    },
+    {
+      "module": "Module 7",
+      "id": "array-addresses",
+      "title": "Array addresses and moving pointers",
+      "displayedWords": 1220,
+      "sections": 10,
+      "figures": 9,
+      "headingCount": 13,
+      "height": 6624
+    },
+    {
+      "module": "Module 7",
+      "id": "zero-terminated-strings",
+      "title": "Strings and the zero byte",
+      "displayedWords": 1163,
+      "sections": 10,
+      "figures": 10,
+      "headingCount": 13,
+      "height": 6807
+    },
+    {
+      "module": "Module 8",
+      "id": "products-and-widths",
+      "title": "Products and their widths",
+      "displayedWords": 1178,
+      "sections": 10,
+      "figures": 14,
+      "headingCount": 13,
+      "height": 7064
+    },
+    {
+      "module": "Module 8",
+      "id": "division-and-remainders",
+      "title": "Division and remainders",
+      "displayedWords": 1181,
+      "sections": 10,
+      "figures": 13,
+      "headingCount": 13,
+      "height": 7041
+    },
+    {
+      "module": "Module 9",
+      "id": "calls-and-returns",
+      "title": "Calls, returns and the stack",
+      "displayedWords": 1483,
+      "sections": 9,
+      "figures": 8,
+      "headingCount": 12,
+      "height": 8549
+    },
+    {
+      "module": "Module 9",
+      "id": "recursive-calls",
+      "title": "Recursive calls and separate frames",
+      "displayedWords": 1249,
+      "sections": 10,
+      "figures": 8,
+      "headingCount": 13,
+      "height": 7594
+    },
+    {
+      "module": "Module 10",
+      "id": "from-c-to-instructions",
+      "title": "From C to instructions",
+      "displayedWords": 1164,
+      "sections": 10,
+      "figures": 7,
+      "headingCount": 13,
+      "height": 6457
+    },
+    {
+      "module": "Module 10",
+      "id": "compile-a-loop",
+      "title": "Compile a loop and follow its branches",
+      "displayedWords": 1147,
+      "sections": 10,
+      "figures": 7,
+      "headingCount": 13,
+      "height": 6570
+    },
+    {
+      "module": "Module 11",
+      "id": "c-and-overflow",
+      "title": "C overflow and machine results",
+      "displayedWords": 1256,
+      "sections": 10,
+      "figures": 9,
+      "headingCount": 13,
+      "height": 7097
+    },
+    {
+      "module": "Module 11",
+      "id": "checked-arithmetic",
+      "title": "Conversions and checked arithmetic",
+      "displayedWords": 1215,
+      "sections": 10,
+      "figures": 9,
+      "headingCount": 13,
+      "height": 6931
+    },
+    {
+      "module": "Module 12",
+      "id": "from-function-to-executable",
+      "title": "Build and boot an assembly program",
+      "displayedWords": 2314,
+      "sections": 9,
+      "figures": 10,
+      "headingCount": 11,
+      "height": 9794
+    },
+    {
+      "module": "Module 12",
+      "id": "debug-native-instructions",
+      "title": "Follow startup and debug the boot image",
+      "displayedWords": 1951,
+      "sections": 9,
+      "figures": 6,
+      "headingCount": 16,
+      "height": 9394
+    },
+    {
+      "module": "Module 13",
+      "id": "raspberry-pi-5",
+      "title": "From QEMU to Raspberry Pi 5",
+      "displayedWords": 815,
+      "sections": 5,
+      "figures": 2,
+      "headingCount": 8,
+      "height": 4012
+    },
+    {
+      "module": "Module 13",
+      "id": "raspberry-pi-boot",
+      "title": "Boot and test your Pi",
+      "displayedWords": 1256,
+      "sections": 6,
+      "figures": 1,
+      "headingCount": 8,
+      "height": 5095
+    },
+    {
+      "module": "Module A",
+      "id": "same-c-on-a32",
+      "title": "The same programs on 32-bit ARM",
+      "displayedWords": 1678,
+      "sections": 10,
+      "figures": 12,
+      "headingCount": 13,
+      "height": 8820
+    }
+  ]
+}
