@@ -39,6 +39,7 @@ import { meetTheMachine } from "./meet-the-machine";
 import { memoryAndAddresses } from "./memory-and-addresses";
 import { loadingWidths } from "./loading-widths";
 import { onePatternThreeReadings } from "./one-pattern-three-readings";
+import { twosComplement } from "./twos-complement";
 import { shifts } from "./shifts";
 import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
 
@@ -72,6 +73,7 @@ export const SOURCE_LESSONS: readonly Lesson[] = [
   raspberryPi5,
   raspberryPiBoot,
   sameCOnA32,
+  twosComplement,
 ]
   .map(withIntroduced)
   .map(parseLesson);
@@ -84,6 +86,7 @@ export const LESSONS: readonly Lesson[] = [
   ...paced1To4,
   ...paced5To9,
   ...paced10ToA,
+  twosComplement,
 ]
   .map((lesson, index, lessons) => ({
     ...lesson,

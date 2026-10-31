@@ -42,6 +42,7 @@ export {
   worths,
 } from "./readings";
 export type { HexEntry, Readings, TopBitTable } from "./readings";
+export { fourBitReadings, fourBitNegation, FOUR_BIT_LIMITS } from "./complement";
 export { halves16, wide64 } from "./halves";
 export type { HalfTag, Halves16, Wide64, WideTag } from "./halves";
 export { traceAssembly, traceText } from "./traceText";

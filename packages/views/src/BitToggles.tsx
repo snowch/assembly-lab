@@ -72,11 +72,6 @@ export function BitToggles({
                 data-lit={groupOutline ? hover === nibble || focus === nibble : undefined}
                 {...groupProps}
               >
-                {topBit && nibble === 0 && (
-                  <span className="al-top-flag" aria-hidden="true">
-                    {M1.toggles.topBit}
-                  </span>
-                )}
                 <div className="al-nibble-bits">
                   {[0, 1, 2, 3].map((k) => {
                     const index = nibble * 4 + k;
@@ -94,6 +89,11 @@ export function BitToggles({
                         data-top={topBit && n === 31 ? "true" : undefined}
                         onClick={() => flip(index)}
                       >
+                        {topBit && n === 31 && (
+                          <span className="al-top-flag" aria-hidden="true">
+                            {M1.toggles.topBit}
+                          </span>
+                        )}
                         <span className="al-toggle-n" aria-hidden="true">
                           {n}
                         </span>

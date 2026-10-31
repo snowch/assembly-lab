@@ -22,6 +22,7 @@ export const TAUGHT: Readonly<Record<string, readonly string[]>> = {
   "instructions-in-sequence": [],
   "meet-the-machine": [],
   "one-pattern-three-readings": [],
+  "twos-complement": [],
   "same-bits-two-readings": [],
   "arithmetic-on-register-bits": [],
   "constants-and-widths": ["mov"],

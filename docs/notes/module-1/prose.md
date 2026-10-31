@@ -49,21 +49,23 @@ A `0x` in front marks a number as hexadecimal. The pattern in `w0` is eight grou
 
 Hexadecimal is a compact way to write a bit pattern. It does not tell you whether to read that pattern as signed or unsigned. The figure below shows each digit under its four bits.
 
-Each bit is worth twice the bit to its right: 1, 2, 4, 8 and so on. The leftmost bit, bit 31, is the **top bit**. It is worth 2147483648.
+In the **unsigned reading**, each bit has a positive weight. Starting at the right, the weights are 1, 2, 4, 8 and so on. Each weight is twice the one to its right. The leftmost bit, bit 31, is the **top bit**. Its unsigned weight is 2147483648.
 
-The **unsigned reading** adds the values of the bits that are 1. The **signed reading** does the same, except the top bit counts as minus 2147483648.
+A set bit, 1, contributes its weight to the total. A clear bit, 0, contributes zero.
 
-This way of reading signed bits is called **two’s complement**. The top bit contributes a negative value; it is not a separate minus sign for the other bits.
+The **signed reading** changes only the top bit's weight, from +2147483648 to −2147483648. Every other bit keeps its positive weight. Add the contributions using these weights to get the signed reading.
 
-The other 31 bits count the same in both readings. So when the top bit is 0, the two readings agree.
+This signed representation is called **two’s complement**. The top bit contributes a negative amount; it is not a separate minus sign for the other bits. When the top bit is clear, it contributes zero in both readings, so the readings agree.
 
-The figure starts with `0xfffffff4`, the pattern `sub` left in `w0`. It shows the top bit's value and the other 31 bits' total in each reading. The full sum of every bit is under "Show calculation".
+For a smaller worked example, see [Appendix B: Two’s complement](#/lesson/twos-complement).
+
+The figure starts with `0xfffffff4`, the pattern `sub` left in `w0`. It shows the top bit's contribution and the other 31 bits' total in each reading. Open Show calculation to see the full sums.
 
 A bit that is 1 is **set**, and a bit that is 0 is **clear**: to set a bit is to make it 1, and to clear it is to make it 0.
 
 Set or clear any bit, or press "Clear bits" to start from zero.
 
-*One register, with each hexadecimal digit under its four bits. Each reading shows the top bit's value and the total from the other bits.*
+*One 32-bit pattern, read two ways. Only the top bit's weight differs.*
 
 ## 5. Bits that read as −1
 

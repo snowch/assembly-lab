@@ -4,6 +4,8 @@
 // docs/notes/module-1/prose.md (the part headed "Lesson 1"). one-pattern-three-readings.prose.test.ts
 // holds every string here to that file, so a change of wording is made there first.
 
+import { SIGNED_WEIGHTS } from "./twos-complement.prose";
+
 export const PROSE = {
   question:
     "Fuel used is the amount at the start minus the amount at the end. The function `fuel_used_wrong` reverses that subtraction. Run `fuel_used_wrong(50, 38)`.\n\n" +
@@ -24,10 +26,9 @@ export const PROSE = {
     "Thirty-two ones and zeros are hard to read, so they are written in **hexadecimal**. Each group of four bits becomes one digit: `0` to `9`, then `a` to `f` for ten to fifteen. `1111` is fifteen, so it is `f`; `0100` is four, so it is `4`. The eight bits `1111 0100` are written `f4`.\n\n" +
     "A `0x` in front marks a number as hexadecimal. The pattern in `w0` is eight groups of four, `1111 1111 1111 1111 1111 1111 1111 0100`, written `0xfffffff4`.\n\n" +
     "Hexadecimal is a compact way to write a bit pattern. It does not tell you whether to read that pattern as signed or unsigned. The figure below shows each digit under its four bits.\n\n" +
-    "Each bit is worth twice the bit to its right: 1, 2, 4, 8 and so on. The leftmost bit, bit 31, is the **top bit**. It is worth 2147483648.\n\n" +
-    "The **unsigned reading** adds the values of the bits that are 1. The **signed reading** does the same, except the top bit counts as minus 2147483648.\n\n" +
-    "This way of reading signed bits is called **two’s complement**. The top bit contributes a negative value; it is not a separate minus sign for the other bits.\n\nThe other 31 bits count the same in both readings. So when the top bit is 0, the two readings agree.\n\n" +
-    "The figure starts with `0xfffffff4`, the pattern `sub` left in `w0`. It shows the top bit's value and the other 31 bits' total in each reading. The full sum of every bit is under \"Show calculation\".\n\n" +
+    SIGNED_WEIGHTS +
+    "\n\n" +
+    "The figure starts with `0xfffffff4`, the pattern `sub` left in `w0`. It shows the top bit's contribution and the other 31 bits' total in each reading. Open Show calculation to see the full sums.\n\n" +
     "A bit that is 1 is **set**, and a bit that is 0 is **clear**: to set a bit is to make it 1, and to clear it is to make it 0.\n\n" +
     'Set or clear any bit, or press "Clear bits" to start from zero.',
 

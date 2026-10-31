@@ -35,11 +35,11 @@ describe("the course's plan", () => {
     for (const id of ids) expect(id).toMatch(/^[a-z][a-z0-9-]*$/);
   });
 
-  it("numbers the modules 0 to 13 in order across the parts, then the optional chapter A", () => {
+  it("numbers the modules 0 to 13 in order, then optional chapters A and B", () => {
     expect(PARTS.flatMap((p) => p.modules).map((m) => m.label)).toEqual(
       Array.from({ length: 14 }, (_, i) => String(i)),
     );
-    expect(OPTIONAL_PART.modules.map((m) => m.label)).toEqual(["A"]);
+    expect(OPTIONAL_PART.modules.map((m) => m.label)).toEqual(["A", "B"]);
   });
 
   it("gives every part at least one module", () => {
@@ -138,7 +138,8 @@ describe("the course's plan", () => {
     expect(lessonsOf(moduleByNumber(14)!, [{ id: "arm32", module: 14 }])).toEqual([
       { id: "arm32", module: 14 },
     ]);
-    expect(moduleByNumber(15)).toBeUndefined();
+    expect(moduleByNumber(15)?.label).toBe("B");
+    expect(moduleByNumber(16)).toBeUndefined();
   });
 
   it("names its parts and modules exactly as docs/plan.md does, so the two cannot drift", () => {
