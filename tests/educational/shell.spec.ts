@@ -397,9 +397,9 @@ test("the footer carries the copyright and links to the companion courses", asyn
   await expect(
     footer.getByRole("link", { name: STRINGS.companions.digitalDesign }),
   ).toHaveAttribute("href", COMPANION_LINKS.digitalDesign);
-  await expect(footer.getByRole("link", { name: STRINGS.companions.notes })).toHaveAttribute(
+  await expect(footer.getByRole("link", { name: STRINGS.companions.bitLab })).toHaveAttribute(
     "href",
-    COMPANION_LINKS.notes,
+    COMPANION_LINKS.bitLab,
   );
   await expect(footer.getByRole("link", { name: STRINGS.companions.hub })).toHaveAttribute(
     "href",
@@ -408,7 +408,7 @@ test("the footer carries the copyright and links to the companion courses", asyn
   // The notes' title and the first course's are set in italics in the sentence.
   await expect(footer.locator(".footer-intro em")).toHaveText([
     STRINGS.companions.digitalDesign,
-    STRINGS.companions.notes,
+    STRINGS.companions.bitLab,
   ]);
   // The copyright is in the footer of a page that is not the front page too.
   await page.goto("#/nowhere");
@@ -425,9 +425,9 @@ test("the note on further reading links each companion work by its title", async
     "href",
     COMPANION_LINKS.digitalDesign,
   );
-  await expect(further.getByRole("link", { name: "From gates to a compiled if" })).toHaveAttribute(
+  await expect(further.getByRole("link", { name: "Bit Lab" })).toHaveAttribute(
     "href",
-    COMPANION_LINKS.notes,
+    COMPANION_LINKS.bitLab,
   );
   // The titles stay in italics inside their links, and no mark shows as a character.
   await expect(further.locator("a em")).toHaveCount(2);
@@ -522,7 +522,7 @@ test.describe("with scripts off", () => {
     await expectSourceVersion(page);
     await expect(page.locator("footer.shell-footer em")).toHaveText([
       STRINGS.companions.digitalDesign,
-      STRINGS.companions.notes,
+      STRINGS.companions.bitLab,
     ]);
   });
 });

@@ -104,7 +104,7 @@ describe("the page before any script runs", () => {
     const sentence = STRINGS.companions.intro.map((p) => (typeof p === "string" ? p : p.title));
     expect(text(footer)).toContain(sentence.join(""));
     expect(footer).toContain(`<em>${STRINGS.companions.digitalDesign}</em>`);
-    expect(footer).toContain(`<em>${STRINGS.companions.notes}</em>`);
+    expect(footer).toContain(`<em>${STRINGS.companions.bitLab}</em>`);
     for (const [key, href] of Object.entries(COMPANION_LINKS)) {
       const name = STRINGS.companions[key as keyof typeof COMPANION_LINKS];
       expect(footer, key).toContain(`<a href="${href}">${name}</a>`);

@@ -9,7 +9,7 @@ export type CompanionIntroPart = string | { readonly title: string };
 /** Where the footer's links go, and the front page's links to the same works. */
 export const COMPANION_LINKS = {
   digitalDesign: "https://snowch.github.io/digital-design/",
-  notes: "https://snowch.github.io/programmer-calculator/docs/notes.html",
+  bitLab: "https://snowch.github.io/bit-lab/",
   hub: "https://snowch.github.io/",
 } as const;
 
@@ -64,7 +64,7 @@ export const STRINGS = {
     checkShow: "Show the answer",
     checkAnswer:
       "It returns 2. Both 120 and 140 are greater than the limit of 100; 85 is not. If you can follow this example, you are ready to start Module 0.",
-    further: `You can use this course without reading the companion resources. [*Digital Design*](${COMPANION_LINKS.digitalDesign}) builds a computer from gates. The notes [*From gates to a compiled if*](${COMPANION_LINKS.notes}) explain more about what bits mean.`,
+    further: `You can use this course without reading the companion resources. [*Digital Design*](${COMPANION_LINKS.digitalDesign}) builds a computer from gates. [*Bit Lab*](${COMPANION_LINKS.bitLab}) explores how computers represent and process data.`,
   },
   /** The label on a module that has no lessons yet. */
   status: {
@@ -125,12 +125,12 @@ export const STRINGS = {
      */
     intro: [
       { title: "Digital Design" },
-      " builds a computer from gates. The notes ",
-      { title: "From gates to a compiled if" },
-      " explain what the bits mean. Assembly Lab teaches Arm assembly through a browser simulator.",
+      " builds a computer from gates. ",
+      { title: "Bit Lab" },
+      " explores how computers represent and process data. Assembly Lab teaches Arm assembly through a browser simulator.",
     ] as readonly CompanionIntroPart[],
     digitalDesign: "Digital Design",
-    notes: "From gates to a compiled if",
+    bitLab: "Bit Lab",
     hub: "See all the author's courses and books",
   },
 };
