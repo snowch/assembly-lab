@@ -60,7 +60,9 @@ function BeforeYouStart() {
             <p>
               <Marked text={P.cNot} />
             </p>
-            <p>{P.numbers}</p>
+            <p>
+              <Marked text={P.numbers} />
+            </p>
             <p>{P.assembly}</p>
           </div>
           <div className="prereqs-check">

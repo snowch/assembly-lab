@@ -38,7 +38,7 @@ export const STRINGS = {
   prereqs: {
     heading: "Before you start",
     showDetails: "Check what you need to know",
-    lead: "You need a little C and some basic arithmetic. You do not need any assembly experience.",
+    lead: "You need a little C, basic arithmetic and an understanding of binary numbers. You do not need any assembly experience.",
     cLead: "You should be able to read small C functions that use:",
     cItems: [
       "`int` and `unsigned` arguments, and `return`.",
@@ -48,7 +48,7 @@ export const STRINGS = {
     ],
     cNot: "You do not need to know about pointers, structs, `malloc` or the standard library. Module 6 introduces pointers as addresses. You do not need a compiler; the lessons run in your browser.",
     numbers:
-      "You should be able to convert binary numbers to decimal and back. Module 1 introduces hexadecimal and explains how bit patterns represent positive and negative numbers.",
+      "You should know that binary uses `0` and `1`, and be able to read a small binary number using its place values. For a refresher, try [Build a number from bits in Bit Lab](https://snowch.github.io/bit-lab/#/lesson/patterns). Module 1 introduces hexadecimal and explains how bit patterns represent positive and negative numbers.",
     assembly: "Module 0 introduces assembly from the beginning.",
     checkLead:
       "A quick check before you start: what does this function return for `legs_over(100, 120, 85, 140)`?",
@@ -63,7 +63,7 @@ export const STRINGS = {
     /** The control that opens the check's answer. A standard control name. */
     checkShow: "Show the answer",
     checkAnswer:
-      "It returns 2. Both 120 and 140 are greater than the limit of 100; 85 is not. If you can follow this example, you are ready to start Module 0.",
+      "It returns 2. Both 120 and 140 are greater than the limit of 100; 85 is not. If you can follow this example, you have the C knowledge needed to start Module 0.",
     further: `You can use this course without reading the companion resources. [*Digital Design*](${COMPANION_LINKS.digitalDesign}) builds a computer from gates. [*Bit Lab*](${COMPANION_LINKS.bitLab}) explores how computers represent and process data.`,
   },
   /** The label on a module that has no lessons yet. */
