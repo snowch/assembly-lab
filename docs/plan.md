@@ -37,12 +37,12 @@ shift. Every module shows one more place where the compiler made that choice for
 
 ### What the course assumes
 
-The reader can read simple C (variables, `if`, loops, functions, arrays) and convert between
-binary and decimal. It does not assume hexadecimal, two's complement, pointers, any assembly, or
+The reader can read simple C (variables, `if`, loops, functions, arrays) and read small binary
+numbers using their place values. It does not assume hexadecimal, two's complement, pointers, any assembly, or
 any electronics: Module 1 teaches hexadecimal as a short way to write bits and derives the signed
 reading from the machine. Module 6 introduces pointers as addresses; Module 7 develops arrays
-and pointer arithmetic. The course links to digital-design and the notes for how the parts are
-built, never relying on them.
+and pointer arithmetic. Digital Design and Bit Lab provide optional background on building computers and
+representing data. The binary prerequisite links to Bit Lab’s refresher.
 
 ## Decision 1: which machine
 

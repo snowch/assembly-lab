@@ -405,7 +405,7 @@ test("the footer carries the copyright and links to the companion courses", asyn
     "href",
     COMPANION_LINKS.hub,
   );
-  // The notes' title and the first course's are set in italics in the sentence.
+  // Both companion titles are set in italics in the sentence.
   await expect(footer.locator(".footer-intro em")).toHaveText([
     STRINGS.companions.digitalDesign,
     STRINGS.companions.bitLab,
@@ -416,10 +416,25 @@ test("the footer carries the copyright and links to the companion courses", asyn
   await expectSourceVersion(page);
 });
 
-test("the note on further reading links each companion work by its title", async ({ page }) => {
+test("the prerequisites name binary and link to its refresher and companion works", async ({
+  page,
+}) => {
   await page.goto("#/");
   await ready(page);
+  const lead = page.locator(".prereqs > p");
+  await expect(lead).toBeVisible();
+  await expect(lead).toContainText("an understanding of binary numbers");
+  await expect(page.locator(".prereqs-details")).not.toHaveAttribute("open", "");
   await page.locator(".prereqs-details > summary").click();
+  const numbers = page
+    .locator(".prereqs-needs p")
+    .filter({ hasText: "You should know that binary" });
+  await expect(
+    numbers.getByRole("link", { name: "Build a number from bits in Bit Lab" }),
+  ).toHaveAttribute("href", "https://snowch.github.io/bit-lab/#/lesson/patterns");
+  await expect(numbers.locator("code")).toHaveText(["0", "1"]);
+  await expect(numbers).not.toContainText("[");
+  await expect(numbers).not.toContainText("`");
   const further = page.locator(".prereqs-further");
   await expect(further.getByRole("link", { name: "Digital Design" })).toHaveAttribute(
     "href",
