@@ -3,10 +3,10 @@
 Copyright © 2026 Christopher Snow.
 
 An interactive, browser-based course in which you drive a real processor's instruction set one
-instruction at a time, with the C that compiled to each instruction beside it. It is the third of
-the author's works on one machine: *Digital Design* (`snowch/digital-design`) builds a computer
-from gates, the notes *From gates to a compiled if* (`snowch/programmer-calculator`, `docs/`) read
-what its bits mean, and this course drives a real one.
+instruction at a time, with the C that compiled to each instruction beside it.
+*Digital Design* (`snowch/digital-design`) builds a computer from gates.
+[*Bit Lab*](https://snowch.github.io/bit-lab/) explores how computers represent and process data.
+Assembly Lab drives a real processor's instruction set.
 
 **The course is published at <https://snowch.github.io/assembly-lab/>.** The site is deployed
 from the `main` branch by `.github/workflows/deploy.yml`.

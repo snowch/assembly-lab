@@ -189,7 +189,7 @@ export function App() {
               <a href={COMPANION_LINKS.digitalDesign}>{STRINGS.companions.digitalDesign}</a>
             </li>
             <li>
-              <a href={COMPANION_LINKS.notes}>{STRINGS.companions.notes}</a>
+              <a href={COMPANION_LINKS.bitLab}>{STRINGS.companions.bitLab}</a>
             </li>
             <li>
               <a href={COMPANION_LINKS.hub}>{STRINGS.companions.hub}</a>

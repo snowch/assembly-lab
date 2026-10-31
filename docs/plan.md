@@ -14,13 +14,13 @@ The third of the author's works on one machine, each a different way of knowing 
 | Work | The machine, seen as | The reader |
 | --- | --- | --- |
 | `snowch/digital-design` | something you **build**: gates up to a CPU with its own instruction set | builds each part, then uses it |
-| the notes, *From gates to a compiled if* (`snowch/programmer-calculator`, `docs/`) | something you **read**: what bits mean, the wheel, the flags, where C trips | reads, steps worked examples, drills |
+| [*Bit Lab*](https://snowch.github.io/bit-lab/) (`snowch/bit-lab`) | how computers **represent and process data** | explores bit patterns, arithmetic and comparisons through interactive lessons |
 | **Assembly Lab** | something you **drive**: a real instruction set, one instruction at a time, with the C that compiled to it | writes and runs programs, predicts, breaks, compares with a real compiler |
 
 Digital-design teaches assembly for its own course machine (its Modules 10 and 11), whose
 instruction set is deliberately original. Assembly Lab is the one that meets a real instruction
-set, the one a real compiler targets. It is meant to become the place the notes send a reader who
-gets stuck on a listing; no page of the notes links to it yet.
+set, the one a real compiler targets. Bit Lab explores data representation and arithmetic;
+Assembly Lab connects those ideas to compiled instructions.
 
 The learner finishes able to read the listing a compiler produces for small C functions, predict
 what each instruction does to the registers, the flags and memory, write small functions by hand

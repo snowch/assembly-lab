@@ -50,16 +50,16 @@ describe("the course's words", () => {
     const parts = STRINGS.companions.intro;
     const joined = parts.map((p) => (typeof p === "string" ? p : p.title)).join("");
     expect(joined).toBe(
-      "Digital Design builds a computer from gates. The notes From gates to a compiled if explain what the bits mean. Assembly Lab teaches Arm assembly through a browser simulator.",
+      "Digital Design builds a computer from gates. Bit Lab explores how computers represent and process data. Assembly Lab teaches Arm assembly through a browser simulator.",
     );
     const titles = parts.flatMap((p) => (typeof p === "string" ? [] : [p.title]));
-    expect(titles).toEqual([STRINGS.companions.digitalDesign, STRINGS.companions.notes]);
+    expect(titles).toEqual([STRINGS.companions.digitalDesign, STRINGS.companions.bitLab]);
   });
 
   it("send the footer's links to the companion courses", () => {
     expect(COMPANION_LINKS).toEqual({
       digitalDesign: "https://snowch.github.io/digital-design/",
-      notes: "https://snowch.github.io/programmer-calculator/docs/notes.html",
+      bitLab: "https://snowch.github.io/bit-lab/",
       hub: "https://snowch.github.io/",
     });
   });

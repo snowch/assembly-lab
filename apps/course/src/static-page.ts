@@ -69,7 +69,7 @@ export function staticPage(html: string, base = "/", version: BuildVersion | nul
     `<nav aria-label="${escape(STRINGS.companions.label)}">`,
     `<ul class="footer-links">`,
     link(COMPANION_LINKS.digitalDesign, STRINGS.companions.digitalDesign),
-    link(COMPANION_LINKS.notes, STRINGS.companions.notes),
+    link(COMPANION_LINKS.bitLab, STRINGS.companions.bitLab),
     link(COMPANION_LINKS.hub, STRINGS.companions.hub),
     `</ul>`,
     `</nav>`,
