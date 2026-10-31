@@ -19,6 +19,7 @@
 
 @import "./bits.css";
 @import "./module1.css";
+@import "./complement.css";
 
 .al-figure {
   display: grid;

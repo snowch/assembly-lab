@@ -78,8 +78,9 @@ describe("final core native module", () => {
       "stepping-native-function",
       "diagnosing-native-failure",
     ]);
-    expect(LESSONS.at(-1)?.id).toBe("a32-division-helper");
-    expect(LESSONS.at(-1)?.module).toBe(14);
+    expect(LESSONS.filter((lesson) => lesson.module === 14).at(-1)?.id).toBe("a32-division-helper");
+    expect(LESSONS.at(-1)?.id).toBe("twos-complement");
+    expect(LESSONS.at(-1)?.module).toBe(15);
     expect(termProblems(LESSONS)).toEqual([]);
   });
   it.each(lessons)(

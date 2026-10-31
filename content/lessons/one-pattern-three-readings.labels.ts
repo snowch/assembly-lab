@@ -25,8 +25,7 @@ export const LABELS = {
   captions: {
     scratch: "An optional scratch register beside the exercise.",
     fuelRun: "fuel_used_wrong(50, 38). Initially before the subtraction; press Next to run it.",
-    reader:
-      "One register, with each hexadecimal digit under its four bits. Each reading shows the top bit's value and the total from the other bits.",
+    reader: "One 32-bit pattern, read two ways. Only the top bit's weight differs.",
     compare: "The two functions side by side, with GCC's listing for each.",
     // The prose file gives no caption for these four figures; Haiku drafted them (16 October 2026).
     predictAdd12:

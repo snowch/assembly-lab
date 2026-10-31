@@ -13,18 +13,18 @@
 /* Bit 31 is marked by a double border and the words "top bit" over it, as well as by what it is
    worth. The space for the words is kept whether or not they are shown, so nothing shifts. */
 .al-toggles[data-top-bit="marked"] {
-  padding-top: 1.4rem;
+  padding-top: 1.8rem;
 }
-.al-toggles[data-top-bit="marked"] .al-nibble {
+.al-toggle[data-top="true"] {
   position: relative;
 }
 .al-top-flag {
   position: absolute;
-  top: -1.4rem;
+  top: -1.8rem;
   left: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35em;
+  right: 0;
+  display: block;
+  text-align: left;
   color: var(--fg);
   font-size: 0.75rem;
   font-weight: 650;
@@ -33,6 +33,10 @@
 }
 .al-top-flag::after {
   content: "";
+  position: absolute;
+  top: calc(100% + 3px);
+  left: 50%;
+  transform: translateX(-50%);
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
   border-top: 5px solid currentColor;
