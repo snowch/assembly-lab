@@ -64,3 +64,29 @@ deployment verification are recorded in the PR. Commit before starting the
 post-commit full build/browser run, and do not change HEAD during that run:
 the footer tests correctly require built and current source revisions to match.
 Preserve the unrelated pre-existing untracked Pi source brief.
+
+## Navigation follow-up
+
+The first post-commit local run passed all 3101 unit/integration tests and
+the build. Its browser stage was interrupted (exit 130) after 797 passed,
+2 failed, 1 interrupted, 15 skipped and 645 not run. Original output is
+`/tmp/appendix-postcommit-check.log`; original traces were copied to
+`/tmp/appendix-original-postcommit-results` before another full run could
+replace `test-results/`.
+
+One failure was the unchanged offline-update scenario waiting for the
+synthetic `latest-after-deferred` release marker. Cause is not established.
+The exact unchanged isolated desktop/phone rerun passed (2 tests, 26.4 seconds),
+with separate output at `/tmp/appendix-offline-rerun.log`. This does not turn
+the original run into a pass.
+
+The other failure was a browser-navigation assertion still expecting A32 to
+end the course. The initial integration update corrected the unit assertions
+but missed this browser counterpart. The correction keeps A32 as penultimate,
+pins B as final, and adds module 15 to the exact tail list. All forward/back
+clicks, title checks, first/last boundaries and error checks remain. The
+corrected test passes desktop and phone (2 tests, 12.6 seconds), recorded at
+`/tmp/appendix-navigation-corrected.log`. A repository-wide code search found
+no other old A-final assumptions. Independent supplemental review is in
+technical-review.md. A follow-up commit precedes the restarted full check;
+final CI and deployment outcomes are recorded in the PR.
