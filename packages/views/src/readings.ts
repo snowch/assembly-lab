@@ -146,9 +146,29 @@ export function worths(pattern: string, reading: "unsigned" | "signed"): number[
   return out;
 }
 
-/** A number written in a learner's answer: a whole number, with a hyphen or the minus sign. */
+/** A bit's position, current value and weight remain separate in the teaching diagram. */
+export interface BitWeight {
+  readonly bit: number;
+  readonly value: 0 | 1;
+  readonly weight: number;
+  readonly contribution: number;
+}
+
+/** All 32 columns, highest first. Clearing a bit changes its contribution, never its weight. */
+export function bitWeightsOfPattern(
+  pattern: string,
+  reading: "unsigned" | "signed",
+): readonly BitWeight[] {
+  if (!isPattern(pattern)) throw new Error("A pattern is 32 characters, each a 0 or a 1.");
+  return worths("1".repeat(32), reading).map((weight, index) => {
+    const value = pattern[index] === "1" ? 1 : 0;
+    return { bit: 31 - index, value, weight, contribution: value === 1 ? weight : 0 };
+  });
+}
+
+/** A whole-number answer, with either minus sign and optional groups of three decimal digits. */
 export function wholeNumber(answer: string | undefined): bigint | null {
   if (answer === undefined) return null;
   const text = answer.trim().replaceAll(MINUS, "-");
-  return /^-?\d+$/.test(text) ? BigInt(text) : null;
+  return /^-?(?:\d+|\d{1,3}(?:,\d{3})+)$/.test(text) ? BigInt(text.replaceAll(",", "")) : null;
 }

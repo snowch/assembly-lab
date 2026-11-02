@@ -16,7 +16,7 @@ export const LABELS = {
     question: "Which is right, −12 or 4294967284?",
     prediction: "Adding 12",
     investigation: "Reading the bits",
-    construction: "Bits that read as −1",
+    construction: "Bits that read as −3",
     failureExperiment: "The unsigned version",
     explanation: "Bits and readings",
     challenge: "Three more patterns",
@@ -25,7 +25,8 @@ export const LABELS = {
   captions: {
     scratch: "An optional scratch register beside the exercise.",
     fuelRun: "fuel_used_wrong(50, 38). Initially before the subtraction; press Next to run it.",
-    reader: "One 32-bit pattern, read two ways. Only the top bit's weight differs.",
+    reader:
+      "A separate 32-bit example, initially all ones. Each 1 contributes its weight; each 0 contributes zero.",
     compare: "The two functions side by side, with GCC's listing for each.",
     // The prose file gives no caption for these four figures; Haiku drafted them (16 October 2026).
     predictAdd12:
@@ -52,7 +53,7 @@ export const LABELS = {
   },
   challenges: {
     make: {
-      title: "Make −1",
+      title: "Make −3",
       fields: {
         bits: "the bits of `w0`",
         unsigned: "its unsigned reading",

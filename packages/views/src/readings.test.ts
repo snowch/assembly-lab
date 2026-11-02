@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   MINUS,
+  bitWeightsOfPattern,
   NO_BITS,
   isPattern,
   patternOf,
@@ -74,6 +75,29 @@ describe("a pattern put in w0 by the model", () => {
 });
 
 describe("the sums the page draws", () => {
+  it("keeps every weight with its bit index and sums only the contributions of set bits", () => {
+    for (const pattern of patterns()) {
+      const readings = readingsOfPattern(pattern);
+      for (const reading of ["unsigned", "signed"] as const) {
+        const columns = bitWeightsOfPattern(pattern, reading);
+        expect(columns.map((column) => column.bit)).toEqual(
+          Array.from({ length: 32 }, (_, index) => 31 - index),
+        );
+        expect(columns.map((column) => column.value).join("")).toBe(pattern);
+        expect(columns.map((column) => column.weight)).toEqual(worths("1".repeat(32), reading));
+        expect(columns.reduce((total, column) => total + column.contribution, 0)).toBe(
+          readings[reading],
+        );
+      }
+    }
+    expect(bitWeightsOfPattern(NO_BITS, "signed")[0]).toEqual({
+      bit: 31,
+      value: 0,
+      weight: -2147483648,
+      contribution: 0,
+    });
+    expect(() => bitWeightsOfPattern("101", "unsigned")).toThrow();
+  });
   it("add up to the model's reading, for every pattern", () => {
     for (const p of patterns()) {
       const r = readingsOfPattern(p);
@@ -118,6 +142,29 @@ describe("numbers as the page and the learner write them", () => {
     expect(wholeNumber("42")).toBe(42n);
     for (const bad of ["", "4.5", "0x2a", "1e3", "--1", "4 2", undefined]) {
       expect(wholeNumber(bad), String(bad)).toBeNull();
+    }
+  });
+
+  it("accepts correctly grouped decimal answers and keeps their full integer precision", () => {
+    expect(wholeNumber("4,294,967,293")).toBe(4294967293n);
+    expect(wholeNumber("-2,147,483,648")).toBe(-2147483648n);
+    expect(wholeNumber(" −2,147,483,648 ")).toBe(-2147483648n);
+    expect(wholeNumber("18,446,744,073,709,551,615")).toBe(18446744073709551615n);
+    for (const bad of [
+      "4,29",
+      "1,2",
+      ",123",
+      "123,",
+      "1234,567",
+      "1,,000",
+      "1,000,00",
+      "1, 000",
+      "1.000",
+      "+1,000",
+      "−,123",
+      "1,000.0",
+    ]) {
+      expect(wholeNumber(bad), bad).toBeNull();
     }
   });
 });

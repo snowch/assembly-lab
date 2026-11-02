@@ -96,6 +96,20 @@ describe("bit-readings", () => {
     expect(v.total).toBe(2);
   });
 
+  it("grades grouped decimal answers without accepting malformed groups or a different reading", () => {
+    expect(
+      grade(bits, { answers: { ...bits.reference.answers, unsigned: "4,294,967,295" } }).passed,
+    ).toBe(true);
+    expect(
+      grade(bits, {
+        answers: { ...bits.reference.answers, unsigned: "4,294,967,294" },
+      }).failures.map((failure) => failure.label),
+    ).toEqual(["its unsigned reading"]);
+    expect(grade(bits, { answers: { ...bits.reference.answers, unsigned: "4,29" } }).blocked).toBe(
+      S.grader.notWhole("its unsigned reading"),
+    );
+  });
+
   it("blocks until the number is a whole number", () => {
     const empty = grade(bits, { answers: { bits: "1".repeat(32) } });
     expect(empty.blocked).toBe(S.grader.unanswered(fieldList(["its unsigned reading"]), 1));

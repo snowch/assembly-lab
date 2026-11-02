@@ -1,13 +1,10 @@
 // Copyright © 2026 Christopher Snow
 
-// Separately drafted in docs/notes/twos-complement-appendix/draft.md.
+// Appendix separately drafted in docs/notes/twos-complement-appendix/draft.md.
+// Shared weights revised in docs/notes/bit-weight-readings/draft.md.
 // Canonical strings: docs/notes/twos-complement-appendix/prose.md.
 export const SIGNED_WEIGHTS =
-  "In the **unsigned reading**, each bit has a positive weight. Starting at the right, the weights are 1, 2, 4, 8 and so on. Each weight is twice the one to its right. The leftmost bit, bit 31, is the **top bit**. Its unsigned weight is 2147483648.\n\n" +
-  "A set bit, 1, contributes its weight to the total. A clear bit, 0, contributes zero.\n\n" +
-  "The **signed reading** changes only the top bit's weight, from +2147483648 to −2147483648. Every other bit keeps its positive weight. Add the contributions using these weights to get the signed reading.\n\n" +
-  "This signed representation is called **two’s complement**. The top bit contributes a negative amount; it is not a separate minus sign for the other bits. When the top bit is clear, it contributes zero in both readings, so the readings agree.\n\n" +
-  "For a smaller worked example, see [Appendix B: Two’s complement](#/lesson/twos-complement).";
+  "Each bit has a **weight**. In the unsigned reading, bit 0, on the right, has weight 1. Each position to the left doubles the weight. The leftmost bit, bit 31, is the **top bit**. Its unsigned weight is +2147483648.\n\nA bit with value 1 contributes its weight. A bit with value 0 contributes zero. Add those contributions to get the unsigned reading.\n\nThe signed reading changes only the top bit’s weight to −2147483648. Every other weight stays positive. Add the contributions using these weights to get the signed reading.\n\nThis signed representation is called **two’s complement**. The top bit contributes a negative amount; it is not a separate minus sign. When that bit is 0, the two readings agree.\n\nFor a smaller worked example, see [Appendix B: Two’s complement](#/lesson/twos-complement).";
 
 export const COMPLEMENT_PROSE = {
   title: "Two’s complement",
