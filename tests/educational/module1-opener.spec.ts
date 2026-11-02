@@ -2,6 +2,7 @@
 
 import { expect, test } from "@playwright/test";
 
+import { READER_STRINGS as R } from "../../packages/views/src/strings.reader";
 import { MODULE1_STRINGS as M1 } from "../../packages/views/src/strings.module1";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { commit, openLesson, registerValue } from "./module1";
@@ -53,7 +54,7 @@ for (const width of [360, 375, 1280]) {
       await openLesson(page, "same-bits-two-readings");
       const details = page.locator("#ix-read-register details");
       await expect(details).not.toHaveAttribute("open", "");
-      await details.getByText(M1.reader.showCalculation, { exact: true }).click();
+      await details.getByText(R.fullSum, { exact: true }).click();
       await expect(details).toHaveAttribute("open", "");
       expect(await designProblems(page, width < 500)).toEqual([]);
     });
