@@ -47,17 +47,17 @@ A `0x` in front marks a number as hexadecimal. The pattern in `w0` is eight grou
 
 Hexadecimal is a compact way to write a bit pattern. It does not tell you whether to read that pattern as signed or unsigned. The figure below shows each digit under its four bits.
 
-Each bit has a **weight**. Bit 0, on the right, has weight 1. Each position to the left doubles the weight. The leftmost bit, bit 31, is the **top bit**. Its unsigned weight is +2,147,483,648.
+Each bit has a **weight**. Bit 0, on the right, has weight 1. Each position to the left doubles the weight. The leftmost bit, bit 31, is the **top bit**.
 
-A bit with value 1 contributes its weight. A bit with value 0 contributes zero. Add those contributions to get the unsigned reading.
+A set bit contributes its weight. A clear bit contributes zero. Add the contributions to get the unsigned reading.
 
-The figure starts with a separate example: `0xffffffff`, with all 32 bits set.
+The figure starts with only bit 0 set. Press a bit to set or clear it and inspect its weight.
 
 A bit that is 1 is **set**, and a bit that is 0 is **clear**: to set a bit is to make it 1, and to clear it is to make it 0.
 
 Set or clear any bit, or press "Clear bits" to start from zero.
 
-*A separate 32-bit example, initially all ones. Each 1 contributes its weight; each 0 contributes zero.*
+*A separate 32-bit example, initially with only bit 0 set.*
 
 ## 5. Bits that read as −3
 
@@ -77,7 +77,7 @@ Field labels: "the bits of `w0`" and "its unsigned reading".
 
 1. Add the contributions of the set bits. Only the top bit has a negative weight in the signed reading.
 2. Setting the top bit does not turn the other bits into a negative number. Their weights stay positive.
-3. The all-ones example reads as −1 signed. Clearing a lower bit removes its positive contribution.
+3. A pattern with all 32 bits set reads as −1 signed. Clearing a lower bit subtracts its weight from that reading.
 4. To go from −1 to −3, remove a contribution of 2. Find the bit with weight 2.
 5. Set every bit except bit 1: `0xfffffffd`. Its unsigned reading is 4294967293.
 

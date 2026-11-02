@@ -15,7 +15,7 @@ import { useHandoffState } from "../update-handoff";
 // column and the result under them, with the pattern on a line of its own because it is not a
 // reading, and keeps the sum of every bit in a closed part. It also adds a button that clears the
 // bits. `teachingReadings` instead starts with the unsigned reading and offers signed and compare
-// views of the same bits, with selected bit positions aligned above their values and weights.
+// views of the same bits, a selected-bit inspector and compact contribution totals.
 // `hexOnly` keeps numerical readings out of the earlier hexadecimal activity.
 
 import { Fragment, useMemo } from "react";
@@ -33,6 +33,7 @@ import {
 } from "../readings";
 import { VIEW_STRINGS as S } from "../strings";
 import { MODULE1_STRINGS as M1 } from "../strings.module1";
+import { READER_STRINGS as R } from "../strings.reader";
 import { CallSchema, RecordedSchema, withProps } from "./props";
 import { TeachingReadings } from "./TeachingReadings";
 
@@ -55,12 +56,16 @@ function Sum({
   pattern,
   reading,
   total,
+  grouped = false,
 }: {
   pattern: string;
   reading: "unsigned" | "signed";
   total: number;
+  grouped?: boolean;
 }) {
   const terms = worths(pattern, reading);
+  const format = (value: number) =>
+    grouped ? shown(value).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : shown(value);
   return (
     <span className="al-sum">
       {terms.length === 0 ? (
@@ -69,12 +74,12 @@ function Sum({
         terms.map((t, i) => (
           <Fragment key={i}>
             {i > 0 && " + "}
-            <span className="al-term">{shown(t)}</span>
+            <span className="al-term">{format(t)}</span>
           </Fragment>
         ))
       )}
       {" = "}
-      <span className="al-term al-total">{shown(total)}</span>
+      <span className="al-term al-total">{format(total)}</span>
     </span>
   );
 }
@@ -168,12 +173,17 @@ export const RegisterReader = withProps(Props, function RegisterReader({ data })
         table={table}
         calculation={(visible) => (
           <details className="lesson-details al-calc">
-            <summary>{M1.reader.showCalculation}</summary>
+            <summary>{R.fullSum}</summary>
             <div className="al-calc-body">
               {visible.map((reading) => (
                 <div className="al-reading" data-sum={reading} key={reading}>
                   <span className="al-reading-name">{S.reader[reading]}</span>
-                  <Sum pattern={readings.pattern} reading={reading} total={readings[reading]} />
+                  <Sum
+                    pattern={readings.pattern}
+                    reading={reading}
+                    total={readings[reading]}
+                    grouped
+                  />
                 </div>
               ))}
             </div>

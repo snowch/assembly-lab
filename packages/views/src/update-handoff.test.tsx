@@ -13,6 +13,7 @@ import {
 } from "../../../content/lessons/meet-the-machine.primitives";
 import { VIEW_STRINGS as S } from "./strings";
 import { MODULE0_STRINGS as M0 } from "./strings.module0";
+import { READER_STRINGS as R } from "./strings.reader";
 
 const key = "assembly-lab:update:views:v1";
 afterEach(() => {
@@ -240,36 +241,18 @@ it("preserves a radio draft without committing it or revealing the model result"
   expect(next.container.querySelector(".al-outcome")).not.toBeNull();
 });
 
-it("restores a teaching reader's selected reading and bits together, then resets both", async () => {
+it("restores a teaching reader's selected reading, selected bit and bits together, then resets", async () => {
   const { RegisterReader } = await import("./interactives/RegisterReader");
   const handoff = await import("./update-handoff");
-  const interactive = Interactive.parse({
-    id: "reader",
-    kind: "register-reader",
-    timeModel: "steps",
-    caption: "Bits",
-    props: {
-      register: "w0",
-      teachingReadings: true,
-      start: {
-        program: { c: "", listing: "read_bits:\n ret" },
-        call: { entry: "read_bits", args: [-1] },
-      },
-    },
-  });
-  const props = {
-    lesson: {} as Lesson,
-    interactive,
-    store: new LessonStore(memoryStorage(), "assembly-lab", "reader"),
-  };
+  const props = teachingReaderProps();
   const original = render(
     <StrictMode>
       <RegisterReader {...props} />
     </StrictMode>,
   );
   const user = userEvent.setup();
-  await user.click(screen.getByRole("button", { name: "Signed" }));
-  await user.click(screen.getByRole("button", { name: S.toggles.bit(0) }));
+  await user.click(screen.getByRole("button", { name: R.views.signed }));
+  await user.click(screen.getByRole("button", { name: S.toggles.bit(31) }));
   expect(handoff.prepareViewHandoff()).toBe(true);
   original.unmount();
   vi.resetModules();
@@ -279,10 +262,116 @@ it("restores a teaching reader's selected reading and bits together, then resets
       <Restored {...props} />
     </StrictMode>,
   );
-  expect(screen.getByRole("button", { name: "Signed" })).toHaveAttribute("aria-pressed", "true");
-  expect(next.container.querySelector('[data-reading="hex"]')).toHaveTextContent("0xfffffffe");
-  expect(next.container.querySelector('[data-reading="signed"]')).toHaveTextContent("−2");
-  await user.click(screen.getByRole("button", { name: "Reset to all ones" }));
-  expect(screen.getByRole("button", { name: "Unsigned" })).toHaveAttribute("aria-pressed", "true");
-  expect(next.container.querySelector('[data-reading="hex"]')).toHaveTextContent("0xffffffff");
+  expect(screen.getByRole("button", { name: R.views.signed })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(next.container.querySelector('.al-toggle[data-bit="31"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(next.container.querySelector(".al-selected-bit")).toHaveAttribute(
+    "data-selected-bit",
+    "31",
+  );
+  expect(next.container.querySelector('[data-reading="signed"]')).toHaveTextContent(
+    "−2,147,483,647",
+  );
+  await user.click(screen.getByRole("button", { name: R.reset }));
+  expect(screen.getByRole("button", { name: R.views.unsigned })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(next.container.querySelectorAll('.al-toggle[aria-pressed="true"]')).toHaveLength(1);
+  expect(next.container.querySelector('.al-toggle[data-bit="0"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(next.container.querySelector(".al-selected-bit")).toHaveAttribute(
+    "data-selected-bit",
+    "0",
+  );
 });
+
+it("restores a pending teaching prediction without revealing results, then restores its committed result", async () => {
+  const { RegisterReader } = await import("./interactives/RegisterReader");
+  const handoff = await import("./update-handoff");
+  const props = teachingReaderProps();
+  const original = render(
+    <StrictMode>
+      <RegisterReader {...props} />
+    </StrictMode>,
+  );
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("button", { name: R.predictEntry }));
+  expect(handoff.prepareViewHandoff()).toBe(true);
+  original.unmount();
+  vi.resetModules();
+  const { RegisterReader: Pending } = await import("./interactives/RegisterReader");
+  const next = render(
+    <StrictMode>
+      <Pending {...props} />
+    </StrictMode>,
+  );
+  expect(next.container.querySelector(".al-teaching-reader")).toHaveAttribute(
+    "data-prediction",
+    "pending",
+  );
+  expect(next.container.querySelector('.al-toggle[data-bit="0"]')).toBeDisabled();
+  expect(next.container.querySelector('.al-toggle[data-bit="0"]')).toHaveAttribute(
+    "aria-pressed",
+    "false",
+  );
+  expect(next.container.querySelector("[data-reading]")).toBeNull();
+  expect(next.container.querySelector(".al-prediction-feedback")).toBeNull();
+  await user.click(screen.getByRole("button", { name: R.prediction.choices.signed }));
+  expect(screen.getByRole("status")).toHaveTextContent(R.prediction.incorrect);
+  const restoredHandoff = await import("./update-handoff");
+  expect(restoredHandoff.prepareViewHandoff()).toBe(true);
+  next.unmount();
+  vi.resetModules();
+  const { RegisterReader: Committed } = await import("./interactives/RegisterReader");
+  const final = render(
+    <StrictMode>
+      <Committed {...props} />
+    </StrictMode>,
+  );
+  expect(final.container.querySelector(".al-teaching-reader")).toHaveAttribute(
+    "data-prediction",
+    "signed",
+  );
+  expect(screen.getByRole("status")).toHaveTextContent(R.prediction.incorrect);
+  expect(
+    final.container.querySelector('[data-phase="after"] [data-cell="signed"]'),
+  ).toHaveTextContent("−2,147,483,647");
+  await user.click(screen.getByRole("button", { name: R.prediction.explore }));
+  expect(screen.getByRole("button", { name: R.views.compare })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(final.container.querySelector('.al-toggle[data-bit="0"]')).not.toBeDisabled();
+  await user.click(screen.getByRole("button", { name: R.reset }));
+  expect(final.container.querySelector(".al-prediction-feedback")).toBeNull();
+  expect(final.container.querySelector('[data-reading="unsigned"]')).toHaveTextContent("1");
+});
+
+function teachingReaderProps() {
+  return {
+    lesson: {} as Lesson,
+    store: new LessonStore(memoryStorage(), "assembly-lab", "reader"),
+    interactive: Interactive.parse({
+      id: "reader",
+      kind: "register-reader",
+      timeModel: "steps",
+      caption: "Bits",
+      props: {
+        register: "w0",
+        teachingReadings: true,
+        start: {
+          program: { c: "", listing: "read_bits:\n ret" },
+          call: { entry: "read_bits", args: [1] },
+        },
+      },
+    }),
+  };
+}

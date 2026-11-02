@@ -4,7 +4,7 @@ Drafted separately in draft.md; edited for the live page names, source/paced fig
 
 ```json
 {
-  "UNSIGNED_WEIGHTS": "Each bit has a **weight**. Bit 0, on the right, has weight 1. Each position to the left doubles the weight. The leftmost bit, bit 31, is the **top bit**. Its unsigned weight is +2,147,483,648.\n\nA bit with value 1 contributes its weight. A bit with value 0 contributes zero. Add those contributions to get the unsigned reading.",
+  "UNSIGNED_WEIGHTS": "Each bit has a **weight**. Bit 0, on the right, has weight 1. Each position to the left doubles the weight. The leftmost bit, bit 31, is the **top bit**.\n\nA set bit contributes its weight. A clear bit contributes zero. Add the contributions to get the unsigned reading.",
   "COMPLEMENT_PROSE": {
     "title": "Two’s complement",
     "line": "Explore signed bit weights and fixed-width negation using four-bit patterns.",

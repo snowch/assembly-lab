@@ -27,7 +27,7 @@ export const PROSE = {
     "Hexadecimal is a compact way to write a bit pattern. It does not tell you whether to read that pattern as signed or unsigned. The figure below shows each digit under its four bits.\n\n" +
     UNSIGNED_WEIGHTS +
     "\n\n" +
-    "The figure starts with a separate example: `0xffffffff`, with all 32 bits set.\n\n" +
+    "The figure starts with only bit 0 set. Press a bit to set or clear it and inspect its weight.\n\n" +
     "A bit that is 1 is **set**, and a bit that is 0 is **clear**: to set a bit is to make it 1, and to clear it is to make it 0.\n\n" +
     'Set or clear any bit, or press "Clear bits" to start from zero.',
 
@@ -41,7 +41,7 @@ export const PROSE = {
   makeHints: [
     "Add the contributions of the set bits. Only the top bit has a negative weight in the signed reading.",
     "Setting the top bit does not turn the other bits into a negative number. Their weights stay positive.",
-    "The all-ones example reads as −1 signed. Clearing a lower bit removes its positive contribution.",
+    "A pattern with all 32 bits set reads as −1 signed. Clearing a lower bit subtracts its weight from that reading.",
     "To go from −1 to −3, remove a contribution of 2. Find the bit with weight 2.",
     "Set every bit except bit 1: `0xfffffffd`. Its unsigned reading is 4294967293.",
   ] as const,

@@ -25,8 +25,7 @@ export const LABELS = {
   captions: {
     scratch: "An optional scratch register beside the exercise.",
     fuelRun: "fuel_used_wrong(50, 38). Initially before the subtraction; press Next to run it.",
-    reader:
-      "A separate 32-bit example, initially all ones. Each 1 contributes its weight; each 0 contributes zero.",
+    reader: "A separate 32-bit example, initially with only bit 0 set.",
     compare: "The two functions side by side, with GCC's listing for each.",
     // The prose file gives no caption for these four figures; Haiku drafted them (16 October 2026).
     predictAdd12:

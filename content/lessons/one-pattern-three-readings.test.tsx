@@ -83,7 +83,7 @@ describe("the challenges", () => {
     expect(JSON.stringify(verdict)).not.toContain("4294967293");
   });
 
-  it("make-minus-three: the worked all-ones example does not solve the fresh challenge", () => {
+  it("make-minus-three: an all-ones boundary pattern does not solve the fresh challenge", () => {
     const verdict = grade(challenge("make-minus-three"), {
       answers: { bits: "1".repeat(32), unsigned: "4294967295" },
     });

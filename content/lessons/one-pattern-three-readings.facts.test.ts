@@ -196,7 +196,7 @@ describe("the int and the unsigned function", () => {
 // The register to read: its first pattern, and the top bit's table
 
 describe("the independent starting patterns of the register readers", () => {
-  it("starts the teaching reader with all ones from a fresh model run", () => {
+  it("starts the teaching reader with only bit 0 set from a fresh model run", () => {
     const reader = units[1]!.sections
       .flatMap((s) => s.interactives)
       .find((x) => x.id === "read-register")!;
@@ -207,8 +207,8 @@ describe("the independent starting patterns of the register readers", () => {
     expect(reader.props["topBit"]).toBe(true);
     expect(reader.props["teachingReadings"]).toBe(true);
     expect(start.program).toEqual(FUEL_USED_WRONG);
-    expect(start.call).toEqual({ entry: "fuel_used_wrong", args: [1, 0] });
-    expect(patternAfterRun(start.program, start.call)).toBe("1".repeat(32));
+    expect(start.call).toEqual({ entry: "fuel_used_wrong", args: [0, 1] });
+    expect(patternAfterRun(start.program, start.call)).toBe("0".repeat(31) + "1");
   });
 
   it("keeps the hexadecimal reader on the earlier subtraction's original pattern", () => {
@@ -411,15 +411,7 @@ describe("every number the lesson states", () => {
 
   it("writes each hexadecimal number as the pattern the model holds", () => {
     expect([...new Set(hexes)].sort()).toEqual(
-      [
-        "0x0000002a",
-        "0x80000000",
-        "0x80000001",
-        "0xffffff38",
-        "0xfffffff4",
-        "0xffffffff",
-        "0xfffffffd",
-      ].sort(),
+      ["0x0000002a", "0x80000000", "0x80000001", "0xffffff38", "0xfffffff4", "0xfffffffd"].sort(),
     );
     for (const h of hexes) {
       const r = readingsOfValue(BigInt(h));

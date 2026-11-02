@@ -1,26 +1,55 @@
 // Copyright © 2026 Christopher Snow
 
-// Drafted separately from checked register-reading facts; see docs/notes/reading-sequence/draft.md.
-// Canonical strings: docs/notes/reading-sequence/prose.md.
+// Drafted separately from checked facts; see docs/notes/compact-readings/draft.md.
+// Canonical strings: docs/notes/compact-readings/prose.md.
 export const READER_STRINGS = {
   viewsLabel: "Reading",
   views: { unsigned: "Unsigned", signed: "Signed", compare: "Compare" },
   guidance: {
-    unsigned: "Change a bit and follow its contribution to the unsigned total. Then select Signed.",
+    unsigned: "All weights are positive. Choose **Bit 31 only** to inspect the top bit on its own.",
     signed:
-      "The **signed reading** gives the top bit weight −2,147,483,648. Every other weight stays positive. Add the contributions using these weights to get the signed reading.\n\nThis representation is called **two’s complement**. The top bit contributes a negative amount; it is not a separate minus sign. C’s `int` uses this signed reading here.\n\nSelecting a reading leaves the bits unchanged. Change a bit and follow the signed total. Then select Compare.\n\nFor a smaller worked example, see [Appendix B: Two’s complement](#/lesson/twos-complement).",
+      "The signed reading gives bit 31 a negative weight. Every other weight stays positive. This representation is called **two’s complement**. Here, C’s `int` uses this signed reading. Changing the reading keeps the same bits. Choose **Compare** to see both readings together.",
     compare:
-      "Both columns read the same bits. The top bit’s weight is +2,147,483,648 in Unsigned and −2,147,483,648 in Signed. All the other weights agree.\n\nChange the top bit and compare its contribution to each total. When the top bit is 0, it contributes zero to both totals, so the readings agree.\n\nFor a smaller worked example, see [Appendix B: Two’s complement](#/lesson/twos-complement).",
+      "Both readings use the same bits. Only the top bit’s weight differs. A clear top bit contributes zero in both readings.",
   },
+  unsignedTop: "Choose **Signed** to read these same bits another way.",
+  appendix: "Explore two’s complement with four bits",
   bit: "Bit",
   value: "Value",
   weight: "Weight",
-  unsignedWeight: "Unsigned weight",
-  signedWeight: "Signed weight",
-  reset: "Reset to all ones",
-  resetExample: "Reset example",
-  scrollCue: "Scroll to see the bit weights",
-  omittedBits: "Bits 29 to 4 omitted",
-  diagramLabel: "Selected bit positions and their weights",
-  caption: "Selected bit positions, with each value above its weight.",
+  contribution: "Contribution",
+  selectedBit: (bit: number) => `Bit ${bit}`,
+  set: "This bit is set, so it contributes its weight.",
+  clear: "This bit is clear, so it contributes zero. Its weight stays the same.",
+  presetBit0: "Bit 0 only",
+  presetTop: "Bit 31 only",
+  reset: "Reset",
+  resetGuidance: "Reset restores Unsigned with only bit 0 set.",
+  top: "Top bit contributes",
+  other: "Other bits contribute",
+  total: "Total",
+  fullSum: "Full sum",
+  predictEntry: "Start prediction",
+  predictGuidance: "Explore **Signed** and **Compare** before trying this prediction.",
+  prediction: {
+    title: "Setting bit 0",
+    starting: "Starting bits",
+    prompt:
+      "Start with only bit 31 set. Bit 0 is clear. If you set bit 0 and leave every other bit unchanged, which reading changes?",
+    pending: "Choose an answer to see the result.",
+    choices: {
+      unsigned: "Only the unsigned reading",
+      signed: "Only the signed reading",
+      both: "Both readings",
+    },
+    correct: "Correct.",
+    incorrect: "Not quite.",
+    feedback:
+      "Both readings change. Bit 0 has the same positive weight in both readings. Setting it adds that weight to each total. The top bit stays set, so its contribution stays the same.",
+    before: "Before",
+    after: "After setting bit 0",
+    cancel: "Return to exploring",
+    explore: "Explore the result",
+    table: "Readings before and after setting bit 0",
+  },
 } as const;
