@@ -340,6 +340,9 @@ test.describe("the register to read", () => {
   }, info) => {
     await openReader(page);
     await reader(page).scrollIntoViewIfNeeded();
+    // Focus can scroll the taller explanation into view. Park the pointer outside the
+    // figure so the keyboard-only check cannot also highlight a different hovered group.
+    await page.mouse.move(0, 0);
     const lit = reader(page).locator('.al-nibble[data-lit="true"]');
     await expect(lit).toHaveCount(0);
     await bit(reader(page), 21).focus();

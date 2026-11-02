@@ -139,3 +139,52 @@ between the two reviews.
 
 My separate preview was stopped with Ctrl-C after review (intentional exit 130).
 No review preview remains running on my behalf.
+
+## Amendment: full-run findings and focus-test correction
+
+The managing session reported that CI for the original head `52a12eb` passed
+3,111 unit tests and finished its browser suite with 1,453 passed, 20 skipped and
+one failure. The failure was the existing four-bit group outline test: after
+focusing bit 21 it expected one highlighted group and observed two.
+
+I independently reviewed the test-only correction in
+`tests/educational/one-pattern-three-readings.spec.ts` and the shared
+`BitToggles` implementation. The implementation intentionally highlights a group
+when either its bits have keyboard focus **or** its group is hovered:
+`hover === nibble || focus === nibble`. Clicking Compare leaves the pointer at
+the button's screen coordinates. The taller explanation and subsequent scrolling
+can move another group beneath that stationary pointer while bit 21 receives
+focus. Two highlights in that combined state do not demonstrate a broken focus
+outline.
+
+Accepted correction: park the pointer at `(0, 0)` after scrolling the reader into
+view and before the keyboard-focus assertions. This is the smallest harness fix:
+it establishes a keyboard-only state without changing production interaction or
+allowing extra highlights. The test still requires exactly one highlighted group,
+exactly four bit buttons, digit index 2, a solid 2 px outline and an underlined
+digit. Blur must still clear every highlight. The desktop's separate explicit
+hover of bit 9 must still highlight only digit index 5. No assertion was weakened,
+removed or given a wider tolerance.
+
+I also reproduced the difference independently in the built page at 1280 × 800.
+With the original pointer position, zero groups were highlighted before focus,
+then digit indices `[1, 2]` were highlighted after bit 21 received focus. With the
+pointer parked first, the corresponding result was `[2]`. The unchanged build was
+served on my separate port 4183 preview; the short harness
+`/tmp/reading-sequence-focus-review.mjs` exited 0. I then stopped that preview with
+Ctrl-C (intentional exit 130).
+
+The managing session's focused repeat run, independently read in
+`/tmp/reading-sequence-focus-rerun.log`, passed all six cases: three repetitions
+each in desktop and phone browser contexts. This is a focused rerun, not a passing
+replacement for the original CI result.
+
+The separate local full check was intentionally stopped for isolation after an
+offline batch-1 timeout clicking App status. I read
+`/tmp/reading-sequence-full-check.log`: 567 passed, 14 skipped, one failed, one
+interrupted and 891 did not run; the managing session recorded command exit 130.
+The interruption occurred in offline batch 4 after that timeout, so this was not a
+completed full-suite pass. The unchanged-build isolated desktop batch-1 rerun in
+`/tmp/reading-sequence-offline-rerun.log` passed (24.3 seconds total). No app or
+offline-test change was made for that result. A passing rerun does not alter the
+original failure or establish a cause for the timeout.
