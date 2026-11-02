@@ -4,7 +4,7 @@
 // docs/notes/module-1/prose.md (the part headed "Lesson 1"). one-pattern-three-readings.prose.test.ts
 // holds every string here to that file, so a change of wording is made there first.
 
-import { SIGNED_WEIGHTS } from "./twos-complement.prose";
+import { UNSIGNED_WEIGHTS } from "./twos-complement.prose";
 
 export const PROSE = {
   question:
@@ -12,7 +12,7 @@ export const PROSE = {
     "The figure starts before the subtraction. Press Next to see which values it reads and what it writes.",
 
   motivation:
-    "The **unsigned reading** adds the positive amounts represented by the bits. The **signed reading** allows negative numbers and is the reading C’s `int` uses here. The simulator shows register numbers in unsigned decimal.\n\nChanging the reading does not change the bits.",
+    "The **unsigned reading** adds the positive amounts represented by the bits. The simulator shows register numbers in unsigned decimal. Use the figure to follow how the bits contribute to that number.",
 
   prediction:
     "Start with the bits the subtraction left in `w0`: −12 signed, or 4294967284 unsigned.\n\n" +
@@ -25,9 +25,9 @@ export const PROSE = {
     "Thirty-two ones and zeros are hard to read, so they are written in **hexadecimal**. Each group of four bits becomes one digit: `0` to `9`, then `a` to `f` for ten to fifteen. `1111` is fifteen, so it is `f`; `0100` is four, so it is `4`. The eight bits `1111 0100` are written `f4`.\n\n" +
     "A `0x` in front marks a number as hexadecimal. The pattern in `w0` is eight groups of four, `1111 1111 1111 1111 1111 1111 1111 0100`, written `0xfffffff4`.\n\n" +
     "Hexadecimal is a compact way to write a bit pattern. It does not tell you whether to read that pattern as signed or unsigned. The figure below shows each digit under its four bits.\n\n" +
-    SIGNED_WEIGHTS +
+    UNSIGNED_WEIGHTS +
     "\n\n" +
-    "The figure starts with a separate example: `0xffffffff`, with all 32 bits set. Start with Unsigned, then select Signed to see the top weight change. Select Compare to see both readings together.\n\n" +
+    "The figure starts with a separate example: `0xffffffff`, with all 32 bits set.\n\n" +
     "A bit that is 1 is **set**, and a bit that is 0 is **clear**: to set a bit is to make it 1, and to clear it is to make it 0.\n\n" +
     'Set or clear any bit, or press "Clear bits" to start from zero.',
 

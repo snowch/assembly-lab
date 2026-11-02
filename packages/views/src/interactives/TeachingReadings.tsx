@@ -1,6 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 import { useMemo, type ReactNode } from "react";
+import { Prose } from "@platform/lesson-runtime";
 
 import { BitToggles } from "../BitToggles";
 import { bitWeightsOfPattern, NO_BITS, shown, type Readings, type TopBitTable } from "../readings";
@@ -31,7 +32,7 @@ export function TeachingReadings({
   onBits: (bits: string) => void;
   readings: Readings;
   table: TopBitTable;
-  calculation: ReactNode;
+  calculation: (readings: readonly ("unsigned" | "signed")[]) => ReactNode;
 }) {
   const [view, setView] = useHandoffState<ReadingView>("RegisterReader.reading", "unsigned");
   const weights = useMemo(
@@ -62,7 +63,7 @@ export function TeachingReadings({
           </button>
         ))}
       </div>
-      <p className="al-reader-instruction">{R.instruction}</p>
+      <Prose markdown={R.guidance[view]} className="al-reader-guidance" />
       <BitToggles
         bits={bits}
         onChange={onBits}
@@ -184,7 +185,7 @@ export function TeachingReadings({
           </tbody>
         </table>
       </div>
-      {calculation}
+      {calculation(visible)}
     </div>
   );
 }

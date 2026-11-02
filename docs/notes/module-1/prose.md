@@ -20,9 +20,7 @@ The figure starts before the subtraction. Press Next to see which values it read
 
 *fuel_used_wrong(50, 38). Initially before the subtraction; press Next to run it.*
 
-The **unsigned reading** adds the positive amounts represented by the bits. The **signed reading** allows negative numbers and is the reading C’s `int` uses here. The simulator shows register numbers in unsigned decimal.
-
-Changing the reading does not change the bits.
+The **unsigned reading** adds the positive amounts represented by the bits. The simulator shows register numbers in unsigned decimal. Use the figure to follow how the bits contribute to that number.
 
 ## 3. Adding 12
 
@@ -49,17 +47,11 @@ A `0x` in front marks a number as hexadecimal. The pattern in `w0` is eight grou
 
 Hexadecimal is a compact way to write a bit pattern. It does not tell you whether to read that pattern as signed or unsigned. The figure below shows each digit under its four bits.
 
-Each bit has a **weight**. In the unsigned reading, bit 0, on the right, has weight 1. Each position to the left doubles the weight. The leftmost bit, bit 31, is the **top bit**. Its unsigned weight is +2147483648.
+Each bit has a **weight**. Bit 0, on the right, has weight 1. Each position to the left doubles the weight. The leftmost bit, bit 31, is the **top bit**. Its unsigned weight is +2,147,483,648.
 
 A bit with value 1 contributes its weight. A bit with value 0 contributes zero. Add those contributions to get the unsigned reading.
 
-The signed reading changes only the top bit’s weight to −2147483648. Every other weight stays positive. Add the contributions using these weights to get the signed reading.
-
-This signed representation is called **two’s complement**. The top bit contributes a negative amount; it is not a separate minus sign. When that bit is 0, the two readings agree.
-
-For a smaller worked example, see [Appendix B: Two’s complement](#/lesson/twos-complement).
-
-The figure starts with a separate example: `0xffffffff`, with all 32 bits set. Start with Unsigned, then select Signed to see the top weight change. Select Compare to see both readings together.
+The figure starts with a separate example: `0xffffffff`, with all 32 bits set.
 
 A bit that is 1 is **set**, and a bit that is 0 is **clear**: to set a bit is to make it 1, and to clear it is to make it 0.
 

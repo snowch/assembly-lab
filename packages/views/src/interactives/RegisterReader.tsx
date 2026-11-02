@@ -166,11 +166,11 @@ export const RegisterReader = withProps(Props, function RegisterReader({ data })
         onBits={setBits}
         readings={readings}
         table={table}
-        calculation={
+        calculation={(visible) => (
           <details className="lesson-details al-calc">
             <summary>{M1.reader.showCalculation}</summary>
             <div className="al-calc-body">
-              {(["unsigned", "signed"] as const).map((reading) => (
+              {visible.map((reading) => (
                 <div className="al-reading" data-sum={reading} key={reading}>
                   <span className="al-reading-name">{S.reader[reading]}</span>
                   <Sum pattern={readings.pattern} reading={reading} total={readings[reading]} />
@@ -178,7 +178,7 @@ export const RegisterReader = withProps(Props, function RegisterReader({ data })
               ))}
             </div>
           </details>
-        }
+        )}
       />
     );
     return data.disclosure === undefined ? (

@@ -1,10 +1,10 @@
 # Canonical appendix and clarity copy
 
-Drafted separately in draft.md; edited for the live page names, source/paced figure context, exact controls and model-computed values. Shared unsigned/signed explanation remains visible in Module 1.
+Drafted separately in draft.md; edited for the live page names, source/paced figure context, exact controls and model-computed values. Module 1 keeps unsigned weights before the figure; its signed and comparison explanations appear with their selected views. See ../reading-sequence/prose.md.
 
 ```json
 {
-  "SIGNED_WEIGHTS": "Each bit has a **weight**. In the unsigned reading, bit 0, on the right, has weight 1. Each position to the left doubles the weight. The leftmost bit, bit 31, is the **top bit**. Its unsigned weight is +2147483648.\n\nA bit with value 1 contributes its weight. A bit with value 0 contributes zero. Add those contributions to get the unsigned reading.\n\nThe signed reading changes only the top bit’s weight to −2147483648. Every other weight stays positive. Add the contributions using these weights to get the signed reading.\n\nThis signed representation is called **two’s complement**. The top bit contributes a negative amount; it is not a separate minus sign. When that bit is 0, the two readings agree.\n\nFor a smaller worked example, see [Appendix B: Two’s complement](#/lesson/twos-complement).",
+  "UNSIGNED_WEIGHTS": "Each bit has a **weight**. Bit 0, on the right, has weight 1. Each position to the left doubles the weight. The leftmost bit, bit 31, is the **top bit**. Its unsigned weight is +2,147,483,648.\n\nA bit with value 1 contributes its weight. A bit with value 0 contributes zero. Add those contributions to get the unsigned reading.",
   "COMPLEMENT_PROSE": {
     "title": "Two’s complement",
     "line": "Explore signed bit weights and fixed-width negation using four-bit patterns.",
