@@ -38,16 +38,16 @@ for (const theme of ["light", "dark"] as const) {
     await expect(page.getByRole("link", { name: "Two’s complement", exact: true })).toBeVisible();
     await page.goto("#/lesson/same-bits-two-readings");
     await expect(
-      page.getByText("Its unsigned weight is 2147483648.", { exact: false }),
+      page.getByText("Its unsigned weight is +2147483648.", { exact: false }),
     ).toBeVisible();
     const reader = page.locator("#ix-read-register");
     await alignedTopBit(reader);
     await reader.getByRole("button", { name: "Bit 31", exact: true }).click();
     await alignedTopBit(reader);
-    const scratch = page.locator("#ix-scratch-minus-one");
+    const scratch = page.locator("#ix-scratch-minus-three");
     await scratch.locator("details.al-reader-scratch > summary").click();
     await alignedTopBit(scratch);
-    await expect(page.locator("#ix-make-minus-one-solved code")).toHaveCount(0);
+    await expect(page.locator("#ix-make-minus-three-solved code")).toHaveCount(0);
     await page.getByRole("link", { name: "Appendix B: Two’s complement", exact: true }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Two’s complement");
     const reading = page.locator("#ix-four-bit-readings");

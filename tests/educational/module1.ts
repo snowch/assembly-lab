@@ -90,10 +90,16 @@ export async function figureOverflow(page: Page): Promise<string[]> {
         out.push(`${el.className} is ${el.scrollWidth - el.clientWidth}px wider than its box`);
     }
     const width = document.documentElement.clientWidth;
+    if (document.documentElement.scrollWidth > width + 1)
+      out.push(`page is ${document.documentElement.scrollWidth - width}px wider than the viewport`);
     for (const el of document.querySelectorAll("figure.interactive *")) {
       // A listing scrolls sideways as one contained piece, so its children can sit past the
       // page's width inside it; the listing itself, not the page, carries that scroll.
       if (!visible(el) || el.closest(".visually-hidden") || el.closest(".al-listing")) continue;
+      // Weight and reading tables also scroll within their own containers. Check each
+      // container's edge below, while allowing its clipped descendants past that edge.
+      const containedScroll = el.closest(".al-weight-scroll, .al-reader-table-scroll");
+      if (containedScroll && containedScroll !== el) continue;
       const r = el.getBoundingClientRect();
       if (r.right > width + 1)
         out.push(`${el.className || el.tagName} reaches ${Math.round(r.right)}px`);

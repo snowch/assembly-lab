@@ -48,7 +48,7 @@ it("keeps the essential explanation visible in Module 1 and links the correct li
   const main = LESSONS.find((entry) => entry.id === "same-bits-two-readings")!;
   const text = learnerText(main).join("\n");
   expect(text).toContain(SIGNED_WEIGHTS);
-  expect(text).toContain("Its unsigned weight is 2147483648.");
+  expect(text).toContain("Its unsigned weight is +2147483648.");
   expect(text).not.toContain("It is worth 2147483648.");
   expect(text).toContain("#/lesson/twos-complement");
   const links = [

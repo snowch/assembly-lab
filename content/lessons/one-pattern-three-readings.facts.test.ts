@@ -194,24 +194,30 @@ describe("the int and the unsigned function", () => {
 // ---------------------------------------------------------------------------------------------
 // The register to read: its first pattern, and the top bit's table
 
-describe("the pattern the register to read starts with", () => {
-  it("is what w0 holds after fuel_used_wrong(50, 38), taken from the model: 0xfffffff4", () => {
-    const start = patternAfterRun(FUEL_USED_WRONG, FUEL_CALL);
-    expect(grouped(start)).toBe("1111 1111 1111 1111 1111 1111 1111 0100");
-    expect(readingsOfPattern(start).digits).toBe("fffffff4");
-    expect(start).toBe(readingsOfValue(w0(fuel(FUEL_USED_WRONG).final)).pattern);
-  });
-
-  it("is a start that the lesson's data names by program and call, not by the pattern", () => {
+describe("the independent starting patterns of the register readers", () => {
+  it("starts the teaching reader with all ones from a fresh model run", () => {
     const reader = units[1]!.sections
       .flatMap((s) => s.interactives)
-      .find((x) => x.kind === "register-reader")!;
+      .find((x) => x.id === "read-register")!;
+    const start = reader.props["start"] as {
+      program: typeof FUEL_USED_WRONG;
+      call: typeof FUEL_CALL;
+    };
     expect(reader.props["topBit"]).toBe(true);
+    expect(reader.props["teachingReadings"]).toBe(true);
+    expect(start.program).toEqual(FUEL_USED_WRONG);
+    expect(start.call).toEqual({ entry: "fuel_used_wrong", args: [1, 0] });
+    expect(patternAfterRun(start.program, start.call)).toBe("1".repeat(32));
+  });
+
+  it("keeps the hexadecimal reader on the earlier subtraction's original pattern", () => {
+    const reader = units[0]!.sections
+      .flatMap((s) => s.interactives)
+      .find((x) => x.id === "read-register")!;
     expect(reader.props["start"]).toEqual({ program: FUEL_USED_WRONG, call: FUEL_CALL });
-    const data = JSON.stringify(reader.props);
-    expect(data).not.toContain("fffffff4");
-    expect(data).not.toContain("4294967284");
-    expect(data).not.toContain("1111111");
+    expect(reader.props["teachingReadings"]).toBe(false);
+    expect(reader.props["hexOnly"]).toBe(true);
+    expect(readingsOfPattern(patternAfterRun(FUEL_USED_WRONG, FUEL_CALL)).digits).toBe("fffffff4");
   });
 });
 
@@ -297,21 +303,28 @@ describe("the hexadecimal a learner may type for the bits", () => {
 });
 
 describe("the challenges", () => {
-  it("Make −1: all 32 bits set read as −1 signed and 4294967295 unsigned, and adding 1 gives 0", () => {
-    const ones = readingsOfPattern("1".repeat(32));
-    expect([ones.signed, ones.unsigned, ones.digits]).toEqual([-1, 4294967295, "ffffffff"]);
-    const program = build("add w0, w0, 1\nret\n");
-    const result = run(program, { entry: 0x400000, args: [{ value: 0xffffffffn, width: 32 }] });
+  it("Make −3: clearing bit 1 of all ones gives −3 signed and 4294967293 unsigned", () => {
+    const pattern = "1".repeat(30) + "01";
+    const reading = readingsOfPattern(pattern);
+    expect([reading.signed, reading.unsigned, reading.digits]).toEqual([
+      -3,
+      4294967293,
+      "fffffffd",
+    ]);
+    const program = build("add w0, w0, 3\nret\n");
+    const result = run(program, { entry: 0x400000, args: [{ value: 0xfffffffdn, width: 32 }] });
     expect(w0(result.final)).toBe(0n);
-    expect(challenge("make-minus-one").reference.answers).toEqual({
-      bits: "1".repeat(32),
-      unsigned: "4294967295",
+    expect(challenge("make-minus-three").reference.answers).toEqual({
+      bits: pattern,
+      unsigned: "4294967293",
     });
+    expect(topBitTable(pattern).other).toBe(2147483645);
   });
 
-  it("Make −1, hints: −1 is not 1 with the top bit set, and −12 is 0xfffffff4", () => {
-    expect(readingsOfPattern("1" + "0".repeat(30) + "1").signed).not.toBe(-1);
-    expect(readingsOfValue(-12).digits).toBe("fffffff4");
+  it("Make −3, hints: the top bit is not a minus sign, and clearing bit 1 removes 2", () => {
+    expect(readingsOfPattern("1" + "0".repeat(29) + "11").signed).not.toBe(-3);
+    expect(readingsOfValue(-1).signed - 2).toBe(-3);
+    expect(readingsOfValue(-1).unsigned - 2).toBe(readingsOfValue(-3).unsigned);
   });
 
   it("Two readings each: 0x0000002a is 42 both ways, 0x80000000 is 2147483648 and −2147483648, 0xffffff38 is 4294967096 and −200", () => {
@@ -371,6 +384,8 @@ describe("every number the lesson states", () => {
     9,
     // The range of the readings, and the patterns of the last challenge.
     4294967295, 2147483647, 42, 4294967096, 200,
+    // Fresh construction target and its lower-bit contribution.
+    3, 4294967293, 2147483645,
     // The top bit is bit 31 and the rest are 31 bits (the tests below), and the unsigned reading of
     // 0x80000001, the closing question's pattern.
     31, 2147483649,
@@ -394,7 +409,15 @@ describe("every number the lesson states", () => {
 
   it("writes each hexadecimal number as the pattern the model holds", () => {
     expect([...new Set(hexes)].sort()).toEqual(
-      ["0x0000002a", "0x80000000", "0x80000001", "0xffffff38", "0xfffffff4", "0xffffffff"].sort(),
+      [
+        "0x0000002a",
+        "0x80000000",
+        "0x80000001",
+        "0xffffff38",
+        "0xfffffff4",
+        "0xffffffff",
+        "0xfffffffd",
+      ].sort(),
     );
     for (const h of hexes) {
       const r = readingsOfValue(BigInt(h));

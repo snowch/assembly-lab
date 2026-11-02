@@ -114,12 +114,12 @@ export const onePatternThreeReadings: LessonInput = {
           timeModel: STEPS,
           role: "experiment",
           caption: LABELS.captions.reader,
-          // The register starts as `fuel_used_wrong(50, 38)` leaves `w0`, from the model; the top
-          // bit's table is drawn, and the sum of every bit is under "Show calculation".
+          // A separate model run supplies all ones; changing a reading leaves its bits intact.
           props: {
             register: "w0",
-            start: { program: FUEL_USED_WRONG, call: FUEL_CALL },
+            start: { program: FUEL_USED_WRONG, call: { entry: "fuel_used_wrong", args: [1, 0] } },
             topBit: true,
+            teachingReadings: true,
           },
         },
       ],
@@ -130,7 +130,7 @@ export const onePatternThreeReadings: LessonInput = {
       prose: PROSE.construction,
       interactives: [
         {
-          id: "scratch-minus-one",
+          id: "scratch-minus-three",
           kind: "register-reader",
           timeModel: STEPS,
           role: "experiment",
@@ -138,20 +138,20 @@ export const onePatternThreeReadings: LessonInput = {
           props: { register: "w0", topBit: true, disclosure: LABELS.scratch.disclosure },
         },
         {
-          id: "make-minus-one",
+          id: "make-minus-three",
           kind: "challenge",
           timeModel: STEPS,
           role: "exercise",
           caption: LABELS.captions.make,
-          props: { challengeId: "make-minus-one" },
+          props: { challengeId: "make-minus-three" },
         },
         {
-          // A few words that appear once Make −1 has passed. Its caption is the challenge's title.
-          id: "make-minus-one-solved",
+          // A few words that appear once Make −3 has passed. Its caption is the challenge's title.
+          id: "make-minus-three-solved",
           kind: "challenge-note",
           timeModel: "none",
           caption: MAKE.title,
-          props: { afterChallenge: "make-minus-one", text: PROSE.constructionSolved },
+          props: { afterChallenge: "make-minus-three", text: PROSE.constructionSolved },
         },
       ],
     },
@@ -206,7 +206,7 @@ export const onePatternThreeReadings: LessonInput = {
   ],
   challenges: [
     {
-      id: "make-minus-one",
+      id: "make-minus-three",
       title: MAKE.title,
       task: PROSE.makeTask,
       gradedDirection: "answer",
@@ -216,7 +216,7 @@ export const onePatternThreeReadings: LessonInput = {
       ],
       // The field of bits also takes hexadecimal, typed. The stored answer is still the 32 bits.
       initial: { data: { hexEntry: ["bits"] } },
-      // The first test reads the learner's bits as signed and wants −1; the second wants the
+      // The first test reads the learner's bits as signed and wants −3; the second wants the
       // number to be what the learner's own bits give as unsigned. Both readings come from the model.
       tests: {
         kind: "answers",
@@ -225,7 +225,7 @@ export const onePatternThreeReadings: LessonInput = {
           {
             label: plain(MAKE.fields.bits),
             given: { reading: "signed" },
-            expect: { bits: -1 },
+            expect: { bits: -3 },
           },
           {
             label: plain(MAKE.fields.unsigned),
@@ -235,7 +235,7 @@ export const onePatternThreeReadings: LessonInput = {
         ],
       },
       hints: [...PROSE.makeHints],
-      reference: { answers: { bits: "1".repeat(32), unsigned: "4294967295" } },
+      reference: { answers: { bits: "1".repeat(30) + "01", unsigned: "4294967293" } },
     },
     {
       id: "two-readings-each",

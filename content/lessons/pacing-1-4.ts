@@ -9,6 +9,7 @@ import { SERVICE } from "./branches.listings";
 import { compareAndChoose } from "./compare-and-choose";
 import { constantsAndWidths } from "./constants-and-widths";
 import { masks } from "./masks";
+import { FUEL_CALL, FUEL_USED_WRONG } from "./module-1.listings";
 import { PROSE as MASK } from "./masks.prose";
 import { onePatternThreeReadings } from "./one-pattern-three-readings";
 import { PROSE as READ } from "./one-pattern-three-readings.prose";
@@ -57,7 +58,13 @@ const readings = splitLesson(onePatternThreeReadings, [
           {
             ...hexReader,
             caption: COPY.hexadecimal.caption,
-            props: { ...hexReader.props, topBit: false, hexOnly: true },
+            props: {
+              ...hexReader.props,
+              start: { program: FUEL_USED_WRONG, call: FUEL_CALL },
+              topBit: false,
+              hexOnly: true,
+              teachingReadings: false,
+            },
           },
         ],
       },

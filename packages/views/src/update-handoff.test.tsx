@@ -239,3 +239,50 @@ it("preserves a radio draft without committing it or revealing the model result"
   expect(store.get().slots["prediction"]).toEqual({ choice: "w1" });
   expect(next.container.querySelector(".al-outcome")).not.toBeNull();
 });
+
+it("restores a teaching reader's selected reading and bits together, then resets both", async () => {
+  const { RegisterReader } = await import("./interactives/RegisterReader");
+  const handoff = await import("./update-handoff");
+  const interactive = Interactive.parse({
+    id: "reader",
+    kind: "register-reader",
+    timeModel: "steps",
+    caption: "Bits",
+    props: {
+      register: "w0",
+      teachingReadings: true,
+      start: {
+        program: { c: "", listing: "read_bits:\n ret" },
+        call: { entry: "read_bits", args: [-1] },
+      },
+    },
+  });
+  const props = {
+    lesson: {} as Lesson,
+    interactive,
+    store: new LessonStore(memoryStorage(), "assembly-lab", "reader"),
+  };
+  const original = render(
+    <StrictMode>
+      <RegisterReader {...props} />
+    </StrictMode>,
+  );
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("button", { name: "Signed" }));
+  await user.click(screen.getByRole("button", { name: S.toggles.bit(0) }));
+  expect(handoff.prepareViewHandoff()).toBe(true);
+  original.unmount();
+  vi.resetModules();
+  const { RegisterReader: Restored } = await import("./interactives/RegisterReader");
+  const next = render(
+    <StrictMode>
+      <Restored {...props} />
+    </StrictMode>,
+  );
+  expect(screen.getByRole("button", { name: "Signed" })).toHaveAttribute("aria-pressed", "true");
+  expect(next.container.querySelector('[data-reading="hex"]')).toHaveTextContent("0xfffffffe");
+  expect(next.container.querySelector('[data-reading="signed"]')).toHaveTextContent("−2");
+  await user.click(screen.getByRole("button", { name: "Reset to all ones" }));
+  expect(screen.getByRole("button", { name: "Unsigned" })).toHaveAttribute("aria-pressed", "true");
+  expect(next.container.querySelector('[data-reading="hex"]')).toHaveTextContent("0xffffffff");
+});

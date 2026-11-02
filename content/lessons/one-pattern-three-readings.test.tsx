@@ -25,7 +25,7 @@ it("teaches hexadecimal before the two readings and keeps their practice togethe
   ]);
   expect(units.map((unit) => unit.challenges.map((c) => c.id))).toEqual([
     [],
-    ["make-minus-one", "two-readings-each"],
+    ["make-minus-three", "two-readings-each"],
     [],
   ]);
   expect(units[2]!.sections.flatMap((part) => part.interactives.map((f) => f.id))).toEqual([
@@ -50,7 +50,7 @@ it.each(units)("renders $id with no missing activity or challenge", (unit) => {
 });
 
 describe("the challenges", () => {
-  it.each(["make-minus-one", "two-readings-each"])(
+  it.each(["make-minus-three", "two-readings-each"])(
     "%s: the reference passes every test and the starting point does not",
     (id) => {
       const c = challenge(id);
@@ -62,8 +62,8 @@ describe("the challenges", () => {
     },
   );
 
-  it("make-minus-one: two tests, on a field of 32 bits and a number", () => {
-    const c = challenge("make-minus-one");
+  it("make-minus-three: two tests, on a field of 32 bits and a number", () => {
+    const c = challenge("make-minus-three");
     expect(testCount(c)).toBe(2);
     expect(c.fields.map((f) => [f.id, f.kind])).toEqual([
       ["bits", "bits"],
@@ -72,22 +72,32 @@ describe("the challenges", () => {
     expect(c.fields[0]).toMatchObject({ width: 32, weights: "signed" });
   });
 
-  it("make-minus-one: the pattern for −12 is wrong, and says what it reads as, not what is right", () => {
-    const c = challenge("make-minus-one");
+  it("make-minus-three: the pattern for −12 is wrong, and says what it reads as, not what is right", () => {
+    const c = challenge("make-minus-three");
     const verdict = grade(c, {
       answers: { bits: "1".repeat(28) + "0100", unsigned: "4294967284" },
     });
     expect(verdict.passed).toBe(false);
     expect(verdict.failures.map((f) => f.label)).toEqual(["the bits of w0"]);
     expect(verdict.failures[0]?.detail).toBe(VIEW_STRINGS.readings.bitsRead("−12"));
-    expect(JSON.stringify(verdict)).not.toContain("4294967295");
+    expect(JSON.stringify(verdict)).not.toContain("4294967293");
   });
 
-  it("make-minus-one: a number that is not the unsigned reading of the learner's bits is wrong", () => {
-    const c = challenge("make-minus-one");
-    const verdict = grade(c, { answers: { bits: "1".repeat(32), unsigned: "-1" } });
+  it("make-minus-three: the worked all-ones example does not solve the fresh challenge", () => {
+    const verdict = grade(challenge("make-minus-three"), {
+      answers: { bits: "1".repeat(32), unsigned: "4294967295" },
+    });
+    expect(verdict.passed).toBe(false);
+    expect(verdict.failures.map((failure) => failure.label)).toEqual(["the bits of w0"]);
+    expect(verdict.failures[0]?.detail).toBe(VIEW_STRINGS.readings.bitsRead("−1"));
+    expect(JSON.stringify(verdict)).not.toContain("4294967293");
+  });
+
+  it("make-minus-three: a number that is not the unsigned reading of the learner's bits is wrong", () => {
+    const c = challenge("make-minus-three");
+    const verdict = grade(c, { answers: { bits: "1".repeat(30) + "01", unsigned: "-3" } });
     expect(verdict.failures.map((f) => f.label)).toEqual(["its unsigned reading"]);
-    expect(JSON.stringify(verdict)).not.toContain("4294967295");
+    expect(JSON.stringify(verdict)).not.toContain("4294967293");
   });
 
   it("two-readings-each: six tests, and a pair of readings swapped fails both", () => {

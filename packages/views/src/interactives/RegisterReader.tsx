@@ -8,13 +8,15 @@ import { useHandoffState } from "../update-handoff";
 // Each reading that is a number is drawn with the sum of the worths of the bits that are 1, so the
 // worth of the top bit, plus or minus 2147483648, is there to see.
 //
-// Two optional props change the figure; without them it is the figure every other lesson has.
+// Optional props change the figure; without them it is the figure every other lesson has.
 // `start` says where the first pattern comes from: a recorded program and call, run on the model,
 // whose `w0` the register starts as (the pattern is then written nowhere in the lesson). `topBit`
 // draws the readings as a small table, the top bit's worth and the other 31 bits' worth in each
 // column and the result under them, with the pattern on a line of its own because it is not a
 // reading, and keeps the sum of every bit in a closed part. It also adds a button that clears the
-// bits.
+// bits. `teachingReadings` instead starts with the unsigned reading and offers signed and compare
+// views of the same bits, with selected bit positions aligned above their values and weights.
+// `hexOnly` keeps numerical readings out of the earlier hexadecimal activity.
 
 import { Fragment, useMemo } from "react";
 import { z } from "zod";
@@ -32,6 +34,7 @@ import {
 import { VIEW_STRINGS as S } from "../strings";
 import { MODULE1_STRINGS as M1 } from "../strings.module1";
 import { CallSchema, RecordedSchema, withProps } from "./props";
+import { TeachingReadings } from "./TeachingReadings";
 
 const Props = z.object({
   /** The register the figure reads: it is always `w0` in Module 1. */
@@ -42,6 +45,8 @@ const Props = z.object({
   topBit: z.boolean().default(false),
   /** Teach hexadecimal before introducing the two numerical readings. */
   hexOnly: z.boolean().default(false),
+  /** Start with one numerical reading and offer a named comparison of the same bits. */
+  teachingReadings: z.boolean().default(false),
   /** An optional adjacent scratch area, initially closed. */
   disclosure: z.string().optional(),
 });
@@ -84,7 +89,10 @@ export const RegisterReader = withProps(Props, function RegisterReader({ data })
   }, [data.start, data.register]);
   const [bits, setBits] = useHandoffState("RegisterReader.bits", first);
   const readings = useMemo(() => readingsOfPattern(bits), [bits]);
-  const table = useMemo(() => (data.topBit ? topBitTable(bits) : null), [data.topBit, bits]);
+  const table = useMemo(
+    () => (data.topBit || data.teachingReadings ? topBitTable(bits) : null),
+    [data.topBit, data.teachingReadings, bits],
+  );
 
   if (data.hexOnly) {
     return (
@@ -146,6 +154,40 @@ export const RegisterReader = withProps(Props, function RegisterReader({ data })
           </div>
         </div>
       </div>
+    );
+  }
+
+  if (data.teachingReadings) {
+    const teaching = (
+      <TeachingReadings
+        register={data.register}
+        first={first}
+        bits={bits}
+        onBits={setBits}
+        readings={readings}
+        table={table}
+        calculation={
+          <details className="lesson-details al-calc">
+            <summary>{M1.reader.showCalculation}</summary>
+            <div className="al-calc-body">
+              {(["unsigned", "signed"] as const).map((reading) => (
+                <div className="al-reading" data-sum={reading} key={reading}>
+                  <span className="al-reading-name">{S.reader[reading]}</span>
+                  <Sum pattern={readings.pattern} reading={reading} total={readings[reading]} />
+                </div>
+              ))}
+            </div>
+          </details>
+        }
+      />
+    );
+    return data.disclosure === undefined ? (
+      teaching
+    ) : (
+      <details className="lesson-details al-reader-scratch">
+        <summary>{data.disclosure}</summary>
+        {teaching}
+      </details>
     );
   }
 

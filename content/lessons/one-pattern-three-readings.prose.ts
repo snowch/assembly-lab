@@ -12,8 +12,7 @@ export const PROSE = {
     "The figure starts before the subtraction. Press Next to see which values it reads and what it writes.",
 
   motivation:
-    "The **signed reading** allows negative numbers and is the reading C's `int` uses here. The **unsigned reading** counts every bit as a positive amount. The simulator shows register numbers in unsigned decimal.\n\n" +
-    "Nothing in the register changes when we change how we read its bits.",
+    "The **unsigned reading** adds the positive amounts represented by the bits. The **signed reading** allows negative numbers and is the reading C’s `int` uses here. The simulator shows register numbers in unsigned decimal.\n\nChanging the reading does not change the bits.",
 
   prediction:
     "Start with the bits the subtraction left in `w0`: −12 signed, or 4294967284 unsigned.\n\n" +
@@ -28,7 +27,7 @@ export const PROSE = {
     "Hexadecimal is a compact way to write a bit pattern. It does not tell you whether to read that pattern as signed or unsigned. The figure below shows each digit under its four bits.\n\n" +
     SIGNED_WEIGHTS +
     "\n\n" +
-    "The figure starts with `0xfffffff4`, the pattern `sub` left in `w0`. It shows the top bit's contribution and the other 31 bits' total in each reading. Open Show calculation to see the full sums.\n\n" +
+    "The figure starts with a separate example: `0xffffffff`, with all 32 bits set. Start with Unsigned, then select Signed to see the top weight change. Select Compare to see both readings together.\n\n" +
     "A bit that is 1 is **set**, and a bit that is 0 is **clear**: to set a bit is to make it 1, and to clear it is to make it 0.\n\n" +
     'Set or clear any bit, or press "Clear bits" to start from zero.',
 
@@ -36,15 +35,15 @@ export const PROSE = {
     "You can press bits one at a time, or type a pattern in hexadecimal and the bits follow it.\n\nUse the optional scratch register beside this exercise to try a pattern and inspect its readings. It starts with all bits clear. Changes there do not fill in your answers below.",
 
   constructionSolved:
-    "`0xffffffff` has all 32 bits set. The top bit contributes −2147483648 and the other 31 bits add to 2147483647. Their sum is −1. The unsigned reading is 4294967295.",
+    "`0xfffffffd` has every bit set except bit 1. The top bit contributes −2147483648; the other set bits add to 2147483645. Their sum is −3. The unsigned reading is 4294967293.",
   makeTask:
-    "Set `w0`'s bits so that its signed reading is −1, then give the unsigned reading of the same bits.",
+    "Set `w0`’s bits so that its signed reading is −3, then give the unsigned reading of the same bits.",
   makeHints: [
-    "In the signed reading the top bit is worth minus 2147483648, and the other bits add to it.",
-    "−1 is not the pattern for 1 with the top bit set.",
-    "In `0xfffffff4`, the top bit's negative value and the other bits' positive values add to −12.",
-    "The pattern for −1 is the one that gives 0 when 1 is added to it.",
-    "Set all 32 bits: `0xffffffff`. Its unsigned reading is 4294967295.",
+    "Add the contributions of the set bits. Only the top bit has a negative weight in the signed reading.",
+    "Setting the top bit does not turn the other bits into a negative number. Their weights stay positive.",
+    "The all-ones example reads as −1 signed. Clearing a lower bit removes its positive contribution.",
+    "To go from −1 to −3, remove a contribution of 2. Find the bit with weight 2.",
+    "Set every bit except bit 1: `0xfffffffd`. Its unsigned reading is 4294967293.",
   ] as const,
 
   failureExperiment:

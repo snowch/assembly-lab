@@ -143,6 +143,91 @@
   padding: 0 var(--space-4) var(--space-3);
 }
 
+/* The teaching reader keeps each selected bit above its value and its weight. Long decimal
+   weights scroll inside this diagram; the real 32-bit editor keeps its phone-sized targets. */
+.al-reading-views,
+.al-reader-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.al-reading-views .button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.al-teaching-reader .al-reader-instruction {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+.al-weight-diagram {
+  min-width: 0;
+  margin: 0;
+}
+.al-weight-diagram figcaption,
+.al-weight-scroll-cue {
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+.al-weight-scroll-cue {
+  margin: var(--space-1) 0;
+}
+.al-weight-scroll,
+.al-reader-table-scroll {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.al-weight-scroll {
+  padding-bottom: var(--space-2);
+}
+.al-weight-strip {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-sm);
+}
+.al-weight-strip th,
+.al-weight-strip td {
+  padding: var(--space-2);
+  text-align: center;
+  white-space: nowrap;
+}
+.al-weight-strip th[scope="row"] {
+  text-align: left;
+  font-weight: 600;
+}
+.al-weight-strip [data-weight-bit] {
+  font-family: var(--font-mono);
+}
+.al-weight-strip tbody tr {
+  border-top: 1px solid var(--border);
+}
+.al-weight-strip [data-weight-bit="31"] {
+  border-left: 3px double var(--fg);
+  border-right: 3px double var(--fg);
+}
+.al-teaching-reader .al-top-table {
+  table-layout: auto;
+  max-width: 38rem;
+}
+.al-teaching-reader .al-top-table td,
+.al-teaching-reader .al-top-table .al-reading-value,
+.al-teaching-reader .al-pattern .al-reading-value {
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+.al-teaching-reader .al-top-table tbody th {
+  width: auto;
+  min-width: 8rem;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
 /* ---- A field of bits that also takes hexadecimal ---- */
 
 .answer-hex {
