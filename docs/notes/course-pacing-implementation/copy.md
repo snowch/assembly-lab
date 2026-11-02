@@ -23,7 +23,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
       "read the same register bits as signed or unsigned numbers."
     ],
     "intro": "The **unsigned reading** adds the positive amounts represented by the bits. The simulator shows register numbers in unsigned decimal. Use the figure to follow how the bits contribute to that number.",
-    "investigation": "Each bit has a **weight**. Bit 0, on the right, has weight 1. Each position to the left doubles the weight. The leftmost bit, bit 31, is the **top bit**. Its unsigned weight is +2,147,483,648.\n\nA bit with value 1 contributes its weight. A bit with value 0 contributes zero. Add those contributions to get the unsigned reading.\n\nThe figure starts with a separate example: `0xffffffff`, with all 32 bits set."
+    "investigation": "Each bit has a **weight**. Bit 0, on the right, has weight 1. Each position to the left doubles the weight. The leftmost bit, bit 31, is the **top bit**.\n\nA set bit contributes its weight. A clear bit contributes zero. Add the contributions to get the unsigned reading.\n\nThe figure starts with only bit 0 set. Press a bit to set or clear it and inspect its weight."
   },
   "loadConstant": {
     "title": "Loading a constant",

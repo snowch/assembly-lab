@@ -1,6 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 import { expect, test, type Locator } from "@playwright/test";
+import { READER_STRINGS as R } from "../../packages/views/src/strings.reader";
 import { fourBitReadings } from "@al/views";
 import { shown } from "../../packages/views/src/readings";
 import { designProblems } from "./design";
@@ -38,7 +39,7 @@ for (const theme of ["light", "dark"] as const) {
     await expect(page.getByRole("link", { name: "Two’s complement", exact: true })).toBeVisible();
     await page.goto("#/lesson/same-bits-two-readings");
     await expect(
-      page.getByText("Its unsigned weight is +2,147,483,648.", { exact: false }),
+      page.getByText("The figure starts with only bit 0 set.", { exact: false }),
     ).toBeVisible();
     const reader = page.locator("#ix-read-register");
     await alignedTopBit(reader);
@@ -49,13 +50,13 @@ for (const theme of ["light", "dark"] as const) {
     await alignedTopBit(scratch);
     await expect(page.locator("#ix-make-minus-three-solved code")).toHaveCount(0);
     const appendix = reader.getByRole("link", {
-      name: "Appendix B: Two’s complement",
+      name: R.appendix,
       exact: true,
     });
     await expect(appendix).toHaveCount(0);
     await reader.getByRole("button", { name: "Signed", exact: true }).click();
     await expect(reader).toContainText("This representation is called two’s complement.");
-    await expect(reader).toContainText("C’s int uses this signed reading here.");
+    await expect(reader).toContainText("Here, C’s int uses this signed reading.");
     await expect(appendix).toBeVisible();
     await appendix.click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Two’s complement");

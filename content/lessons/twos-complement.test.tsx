@@ -51,7 +51,7 @@ it("keeps the unsigned explanation before Module 1's figure and links the correc
     .map((section) => section.prose)
     .join("\n");
   expect(text).toContain(UNSIGNED_WEIGHTS);
-  expect(text).toContain("Its unsigned weight is +2,147,483,648.");
+  expect(text).toContain("The figure starts with only bit 0 set.");
   expect(text).not.toContain("It is worth 2147483648.");
   expect(text).not.toMatch(/negative|two’s complement|C’s `int`|#\/lesson\/twos-complement/);
   const links = [

@@ -21,7 +21,7 @@ export const COPY = {
     investigation:
       UNSIGNED_WEIGHTS +
       "\n\n" +
-      "The figure starts with a separate example: `0xffffffff`, with all 32 bits set.",
+      "The figure starts with only bit 0 set. Press a bit to set or clear it and inspect its weight.",
   },
   loadConstant: {
     title: "Loading a constant",

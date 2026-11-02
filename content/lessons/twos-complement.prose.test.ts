@@ -22,10 +22,13 @@ it("keeps the separately drafted words in the canonical record", () => {
 
 it("keeps the separately drafted register-reading guidance in its canonical record", () => {
   const record = readFileSync(
-    new URL("../../docs/notes/reading-sequence/prose.md", import.meta.url),
+    new URL("../../docs/notes/compact-readings/prose.md", import.meta.url),
     "utf8",
   );
   const json = record.match(/```json\n([\s\S]*?)\n```/)?.[1];
   expect(json).toBeDefined();
-  expect(JSON.parse(json!)).toEqual(READER_STRINGS);
+  expect(JSON.parse(json!)).toEqual({
+    ...READER_STRINGS,
+    selectedBit: [0, 31].map(READER_STRINGS.selectedBit),
+  });
 });

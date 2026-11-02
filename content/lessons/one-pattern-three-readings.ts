@@ -114,10 +114,10 @@ export const onePatternThreeReadings: LessonInput = {
           timeModel: STEPS,
           role: "experiment",
           caption: LABELS.captions.reader,
-          // A separate model run supplies all ones; changing a reading leaves its bits intact.
+          // A separate model run supplies 1; changing a reading leaves its bits intact.
           props: {
             register: "w0",
-            start: { program: FUEL_USED_WRONG, call: { entry: "fuel_used_wrong", args: [1, 0] } },
+            start: { program: FUEL_USED_WRONG, call: { entry: "fuel_used_wrong", args: [0, 1] } },
             topBit: true,
             teachingReadings: true,
           },

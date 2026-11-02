@@ -143,89 +143,116 @@
   padding: 0 var(--space-4) var(--space-3);
 }
 
-/* The teaching reader keeps each selected bit above its value and its weight. Long decimal
-   weights scroll inside this diagram; the real 32-bit editor keeps its phone-sized targets. */
-.al-reading-views,
-.al-reader-actions {
+/* Compact teaching controls are scoped here; other register editors retain their layout. */
+.al-teaching-reader .al-reading-views,
+.al-teaching-reader .al-reader-actions,
+.al-teaching-reader .al-prediction-choices {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
 }
-.al-reading-views .button[aria-pressed="true"] {
+.al-teaching-reader .al-reading-views .button[aria-pressed="true"] {
   background: var(--accent);
   color: var(--accent-fg);
   border-color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.al-teaching-reader .al-reader-instruction {
+.al-teaching-reader .al-reader-bit-editor {
+  border: 0;
+  padding: 0;
   margin: 0;
-  font-size: var(--text-sm);
-}
-.al-weight-diagram {
   min-width: 0;
-  margin: 0;
 }
-.al-weight-diagram figcaption,
-.al-weight-scroll-cue {
-  font-size: var(--text-sm);
-  color: var(--fg-muted);
+.al-teaching-reader .al-toggles {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
 }
-.al-weight-scroll-cue {
-  margin: var(--space-1) 0;
+.al-teaching-reader .al-byte {
+  gap: var(--space-2);
 }
-.al-weight-scroll,
-.al-reader-table-scroll {
-  max-width: 100%;
+.al-teaching-reader .al-nibble-bits {
+  gap: 2px;
+}
+.al-teaching-reader .al-toggle {
+  min-height: 2.75rem;
+}
+.al-teaching-reader .al-reader-guidance p,
+.al-teaching-reader .al-reader-prediction p {
+  margin-block: 0 var(--space-2);
+}
+.al-teaching-reader .al-prediction-entry {
+  justify-self: start;
+}
+.al-teaching-reader .al-selected-bit {
   min-width: 0;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-}
-.al-weight-scroll {
-  padding-bottom: var(--space-2);
-}
-.al-weight-strip {
-  width: max-content;
-  min-width: 100%;
-  border-collapse: collapse;
-  font-variant-numeric: tabular-nums;
-  font-size: var(--text-sm);
-}
-.al-weight-strip th,
-.al-weight-strip td {
   padding: var(--space-2);
-  text-align: center;
-  white-space: nowrap;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
 }
-.al-weight-strip th[scope="row"] {
-  text-align: left;
-  font-weight: 600;
+.al-teaching-reader .al-selected-bit-title {
+  margin: 0 0 var(--space-1);
+  font-weight: 650;
 }
-.al-weight-strip [data-weight-bit] {
-  font-family: var(--font-mono);
+.al-teaching-reader .al-selected-bit-title span {
+  margin-left: var(--space-3);
+  font-weight: 400;
 }
-.al-weight-strip tbody tr {
-  border-top: 1px solid var(--border);
+.al-teaching-reader .al-selected-bit-note,
+.al-teaching-reader .al-reader-reset-guidance,
+.al-teaching-reader .al-reader-appendix {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-sm);
 }
-.al-weight-strip [data-weight-bit="31"] {
-  border-left: 3px double var(--fg);
-  border-right: 3px double var(--fg);
+.al-teaching-reader .al-reader-appendix {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
 }
 .al-teaching-reader .al-top-table {
-  table-layout: auto;
-  max-width: 38rem;
+  table-layout: fixed;
+  max-width: none;
 }
-.al-teaching-reader .al-top-table td,
-.al-teaching-reader .al-top-table .al-reading-value,
-.al-teaching-reader .al-pattern .al-reading-value {
-  white-space: nowrap;
-  overflow-wrap: normal;
+.al-teaching-reader .al-top-table th,
+.al-teaching-reader .al-top-table td {
+  padding: var(--space-2) 2px;
+}
+.al-teaching-reader .al-top-table thead td {
+  width: 25%;
 }
 .al-teaching-reader .al-top-table tbody th {
   width: auto;
-  min-width: 8rem;
+  font-size: 0.75rem;
+}
+.al-teaching-reader .al-top-table td,
+.al-teaching-reader .al-top-table .al-reading-value {
+  font-size: 0.875rem;
   white-space: nowrap;
   overflow-wrap: normal;
+}
+.al-teaching-reader .al-prediction-phase {
+  font-weight: 650;
+}
+.al-teaching-reader .al-prediction-feedback {
+  padding: var(--space-2);
+  border-left: 3px solid var(--fg);
+}
+.al-teaching-reader .al-calc-body {
+  min-width: 0;
+  padding-inline: var(--space-2);
+}
+.al-teaching-reader .al-calc-body .al-reading {
+  min-width: 0;
+}
+@media (min-width: 48rem) {
+  .al-teaching-reader .al-toggles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .al-teaching-reader .al-top-table td,
+  .al-teaching-reader .al-top-table .al-reading-value,
+  .al-teaching-reader .al-top-table tbody th {
+    font-size: var(--text-sm);
+  }
 }
 
 /* ---- A field of bits that also takes hexadecimal ---- */
@@ -483,4 +510,47 @@ figure.interactive[data-kind="challenge-note"]
   font-size: 1.25rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+/* Keep grouped totals at the same readable size as the contributions. The result selector
+   includes its row because the shared reader gives totals a larger font. */
+.al-teaching-reader .al-top-table .al-top-result td .al-reading-value {
+  font-size: 0.875rem;
+}
+@media (min-width: 48rem) {
+  .al-teaching-reader .al-top-table .al-top-result td .al-reading-value {
+    font-size: var(--text-sm);
+  }
+}
+/* At the smallest width each comparison row keeps its semantic label above its two values.
+   This gives both complete numbers room without shrinking text or splitting a number. */
+@media (max-width: 26rem) {
+  .al-teaching-reader[data-view="compare"] .al-top-table,
+  .al-teaching-reader .al-prediction-results,
+  .al-teaching-reader[data-view="compare"] .al-top-table thead,
+  .al-teaching-reader .al-prediction-results thead,
+  .al-teaching-reader[data-view="compare"] .al-top-table tbody,
+  .al-teaching-reader .al-prediction-results tbody {
+    display: block;
+    width: 100%;
+  }
+  .al-teaching-reader[data-view="compare"] .al-top-table tr,
+  .al-teaching-reader .al-prediction-results tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .al-teaching-reader[data-view="compare"] .al-top-table thead td,
+  .al-teaching-reader .al-prediction-results thead td {
+    display: none;
+  }
+  .al-teaching-reader[data-view="compare"] .al-top-table th[scope="row"],
+  .al-teaching-reader .al-prediction-results th[scope="row"] {
+    grid-column: 1 / -1;
+    text-align: left;
+    padding-bottom: 0;
+  }
+  .al-teaching-reader[data-view="compare"] .al-top-table tbody td,
+  .al-teaching-reader .al-prediction-results tbody td {
+    border-top: 0;
+  }
 }
