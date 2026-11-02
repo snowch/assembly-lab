@@ -99,3 +99,25 @@ it("leaves hexadecimal-only and legacy scratch readers outside the teaching mode
   expect(scratch.container.querySelector(".al-reader-scratch")).not.toHaveAttribute("open");
   expect(scratch.container.querySelectorAll(".al-top-table [data-reading]")).toHaveLength(2);
 });
+
+it("teaches and expands only the selected reading, without changing the learner's bits", () => {
+  const view = figure();
+  const guidance = () => view.container.querySelector(".al-reader-guidance")!;
+  const sums = () =>
+    [...view.container.querySelectorAll("[data-sum]")].map((sum) => sum.getAttribute("data-sum"));
+  expect(guidance()).not.toHaveTextContent(/two’s complement|negative|−2,147/);
+  expect(sums()).toEqual(["unsigned"]);
+  fireEvent.click(view.container.querySelector('.al-toggle[data-bit="0"]')!);
+  const bits = view.container.querySelector('[data-reading="hex"]')!.textContent;
+  fireEvent.click(view.getByRole("button", { name: R.views.signed }));
+  expect(guidance()).toHaveTextContent("two’s complement");
+  expect(guidance()).toHaveTextContent("−2,147,483,648");
+  expect(sums()).toEqual(["signed"]);
+  expect(view.container.querySelector('[data-reading="hex"]')).toHaveTextContent(bits!);
+  fireEvent.click(view.getByRole("button", { name: R.views.compare }));
+  expect(guidance()).toHaveTextContent("Both columns read the same bits");
+  expect(sums()).toEqual(["unsigned", "signed"]);
+  fireEvent.click(view.getByRole("button", { name: R.reset }));
+  expect(sums()).toEqual(["unsigned"]);
+  expect(guidance()).not.toHaveTextContent("two’s complement");
+});

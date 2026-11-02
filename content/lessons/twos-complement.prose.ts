@@ -1,10 +1,10 @@
 // Copyright © 2026 Christopher Snow
 
 // Appendix separately drafted in docs/notes/twos-complement-appendix/draft.md.
-// Shared weights revised in docs/notes/bit-weight-readings/draft.md.
+// Shared unsigned weights revised in docs/notes/reading-sequence/draft.md.
 // Canonical strings: docs/notes/twos-complement-appendix/prose.md.
-export const SIGNED_WEIGHTS =
-  "Each bit has a **weight**. In the unsigned reading, bit 0, on the right, has weight 1. Each position to the left doubles the weight. The leftmost bit, bit 31, is the **top bit**. Its unsigned weight is +2147483648.\n\nA bit with value 1 contributes its weight. A bit with value 0 contributes zero. Add those contributions to get the unsigned reading.\n\nThe signed reading changes only the top bit’s weight to −2147483648. Every other weight stays positive. Add the contributions using these weights to get the signed reading.\n\nThis signed representation is called **two’s complement**. The top bit contributes a negative amount; it is not a separate minus sign. When that bit is 0, the two readings agree.\n\nFor a smaller worked example, see [Appendix B: Two’s complement](#/lesson/twos-complement).";
+export const UNSIGNED_WEIGHTS =
+  "Each bit has a **weight**. Bit 0, on the right, has weight 1. Each position to the left doubles the weight. The leftmost bit, bit 31, is the **top bit**. Its unsigned weight is +2,147,483,648.\n\nA bit with value 1 contributes its weight. A bit with value 0 contributes zero. Add those contributions to get the unsigned reading.";
 
 export const COMPLEMENT_PROSE = {
   title: "Two’s complement",

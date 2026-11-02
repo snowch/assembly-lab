@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 // New pacing copy; exact strings recorded in docs/notes/course-pacing-implementation/copy.md.
-import { SIGNED_WEIGHTS } from "./twos-complement.prose";
+import { UNSIGNED_WEIGHTS } from "./twos-complement.prose";
 
 export const COPY = {
   hexadecimal: {
@@ -17,11 +17,11 @@ export const COPY = {
     title: "Signed and unsigned readings",
     objectives: ["read the same register bits as signed or unsigned numbers."],
     intro:
-      "The **unsigned reading** adds the positive amounts represented by the bits. The **signed reading** allows negative numbers and is the reading C’s `int` uses here. The simulator shows register numbers in unsigned decimal.\n\nChanging the reading does not change the bits.",
+      "The **unsigned reading** adds the positive amounts represented by the bits. The simulator shows register numbers in unsigned decimal. Use the figure to follow how the bits contribute to that number.",
     investigation:
-      SIGNED_WEIGHTS +
+      UNSIGNED_WEIGHTS +
       "\n\n" +
-      "The figure starts with a separate example: `0xffffffff`, with all 32 bits set. Start with Unsigned, then select Signed to see the top weight change. Select Compare to see both readings together.",
+      "The figure starts with a separate example: `0xffffffff`, with all 32 bits set.",
   },
   loadConstant: {
     title: "Loading a constant",

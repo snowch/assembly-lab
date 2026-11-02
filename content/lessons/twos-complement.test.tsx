@@ -13,7 +13,7 @@ import {
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
 import { checkLesson, learnerText, modelProblems, termProblems } from "@platform/lesson-schema";
 import { LESSONS, SOURCE_LESSONS } from ".";
-import { SIGNED_WEIGHTS } from "./twos-complement.prose";
+import { UNSIGNED_WEIGHTS } from "./twos-complement.prose";
 
 const lesson = LESSONS.find((entry) => entry.id === "twos-complement")!;
 
@@ -44,13 +44,16 @@ it("publishes an independently accessible reference with valid computed figures"
   expect(view.container.querySelectorAll(".al-complement")).toHaveLength(2);
 });
 
-it("keeps the essential explanation visible in Module 1 and links the correct live pages", () => {
+it("keeps the unsigned explanation before Module 1's figure and links the correct live pages", () => {
   const main = LESSONS.find((entry) => entry.id === "same-bits-two-readings")!;
-  const text = learnerText(main).join("\n");
-  expect(text).toContain(SIGNED_WEIGHTS);
-  expect(text).toContain("Its unsigned weight is +2147483648.");
+  const text = main.sections
+    .slice(0, 2)
+    .map((section) => section.prose)
+    .join("\n");
+  expect(text).toContain(UNSIGNED_WEIGHTS);
+  expect(text).toContain("Its unsigned weight is +2,147,483,648.");
   expect(text).not.toContain("It is worth 2147483648.");
-  expect(text).toContain("#/lesson/twos-complement");
+  expect(text).not.toMatch(/negative|two’s complement|C’s `int`|#\/lesson\/twos-complement/);
   const links = [
     ...learnerText(lesson)
       .join("\n")

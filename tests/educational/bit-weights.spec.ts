@@ -5,6 +5,44 @@ import { READER_STRINGS as R } from "../../packages/views/src/strings.reader";
 import { bit, openLesson, press } from "./module1";
 
 for (const theme of ["light", "dark"] as const) {
+  test(`explanations and full calculations introduce one reading at a time in ${theme}`, async ({
+    page,
+  }) => {
+    await page.goto("#/");
+    await page.evaluate((value) => localStorage.setItem("assembly-lab:v1:theme", value), theme);
+    await page.reload();
+    await openLesson(page, "same-bits-two-readings");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    const initialProse = page.locator(
+      '.lesson-section[data-kind="question"] > .prose, .lesson-section[data-kind="investigation"] > .prose',
+    );
+    for (const prose of await initialProse.all()) {
+      await expect(prose).not.toContainText(/\bsigned\b|two’s complement|−2,147/);
+    }
+    const reader = page.locator("#ix-read-register");
+    const guidance = reader.locator(".al-reader-guidance");
+    await expect(guidance).not.toContainText(/two’s complement|negative|−2,147/);
+    await reader.locator("details.al-calc summary").click();
+    await expect(reader.locator('[data-sum="unsigned"]')).toBeVisible();
+    await expect(reader.locator('[data-sum="signed"]')).toHaveCount(0);
+    await bit(reader, 0).click();
+    const pattern = (await reader.locator('[data-reading="hex"]').textContent())!;
+    await reader.getByRole("button", { name: "Signed", exact: true }).click();
+    await expect(guidance).toContainText("two’s complement");
+    await expect(guidance).toContainText("−2,147,483,648");
+    await expect(reader.locator('[data-sum="signed"]')).toBeVisible();
+    await expect(reader.locator('[data-sum="unsigned"]')).toHaveCount(0);
+    await expect(reader.locator('[data-reading="hex"]')).toHaveText(pattern);
+    await reader.getByRole("button", { name: "Compare", exact: true }).click();
+    await expect(guidance).toContainText("Both columns read the same bits");
+    await expect(reader.locator('[data-sum="signed"]')).toBeVisible();
+    await expect(reader.locator('[data-sum="unsigned"]')).toBeVisible();
+    await expect(reader.locator('[data-reading="hex"]')).toHaveText(pattern);
+    await reader.getByRole("button", { name: R.reset, exact: true }).click();
+    await expect(guidance).not.toContainText("two’s complement");
+    await expect(reader.locator('[data-sum="signed"]')).toHaveCount(0);
+  });
+
   test(`Compare keeps readable row labels inside its scroller at 320 pixels in ${theme}`, async ({
     page,
   }) => {

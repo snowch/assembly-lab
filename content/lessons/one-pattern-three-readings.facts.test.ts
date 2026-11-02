@@ -25,6 +25,7 @@ import {
 } from "@al/views";
 
 import { LESSONS } from ".";
+import { READER_STRINGS } from "../../packages/views/src/strings.reader";
 import {
   FUEL_CALL,
   FUEL_USED_WRONG,
@@ -391,7 +392,7 @@ describe("every number the lesson states", () => {
     31, 2147483649,
   ]);
 
-  const text = learnerText(lesson).join("\n");
+  const text = [...learnerText(lesson), ...Object.values(READER_STRINGS.guidance)].join("\n");
   const hexes = [...text.matchAll(/0x[0-9a-f]+/g)].map((m) => m[0]);
   const bitGroups = [...text.matchAll(/(?:[01]{4} ){7}[01]{4}/g)].map((m) => m[0]);
 
@@ -401,6 +402,7 @@ describe("every number the lesson states", () => {
     const plain = text
       .replace(/(?:[01]{4} ){7}[01]{4}/g, " ")
       .replace(/0x[0-9a-f]+/g, " ")
+      .replace(/(?<=\d),(?=\d{3}(?:\D|$))/g, "")
       .replace(/[A-Za-z_][A-Za-z_0-9]*/g, " ");
     const numbers = [...plain.matchAll(/\d+/g)].map((m) => Number(m[0]));
     expect(numbers.length).toBeGreaterThan(30);

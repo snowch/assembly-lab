@@ -38,7 +38,7 @@ for (const theme of ["light", "dark"] as const) {
     await expect(page.getByRole("link", { name: "Two’s complement", exact: true })).toBeVisible();
     await page.goto("#/lesson/same-bits-two-readings");
     await expect(
-      page.getByText("Its unsigned weight is +2147483648.", { exact: false }),
+      page.getByText("Its unsigned weight is +2,147,483,648.", { exact: false }),
     ).toBeVisible();
     const reader = page.locator("#ix-read-register");
     await alignedTopBit(reader);
@@ -48,7 +48,16 @@ for (const theme of ["light", "dark"] as const) {
     await scratch.locator("details.al-reader-scratch > summary").click();
     await alignedTopBit(scratch);
     await expect(page.locator("#ix-make-minus-three-solved code")).toHaveCount(0);
-    await page.getByRole("link", { name: "Appendix B: Two’s complement", exact: true }).click();
+    const appendix = reader.getByRole("link", {
+      name: "Appendix B: Two’s complement",
+      exact: true,
+    });
+    await expect(appendix).toHaveCount(0);
+    await reader.getByRole("button", { name: "Signed", exact: true }).click();
+    await expect(reader).toContainText("This representation is called two’s complement.");
+    await expect(reader).toContainText("C’s int uses this signed reading here.");
+    await expect(appendix).toBeVisible();
+    await appendix.click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Two’s complement");
     const reading = page.locator("#ix-four-bit-readings");
     const negation = page.locator("#ix-four-bit-negation");
