@@ -6,6 +6,8 @@
 /** A part of the footer's sentence: plain words, or the title of a work, set in italics. */
 export type CompanionIntroPart = string | { readonly title: string };
 
+export const GITHUB_REPOSITORY = "https://github.com/snowch/assembly-lab";
+
 /** Where the footer's links go, and the front page's links to the same works. */
 export const COMPANION_LINKS = {
   digitalDesign: "https://snowch.github.io/digital-design/",
@@ -20,6 +22,8 @@ export const STRINGS = {
     utc: "(UTC)",
   },
   title: "Assembly Lab",
+  githubStar: "Star",
+  githubStarDestination: "on GitHub",
   subtitle: "From a line of C to the bits in a register",
   intro:
     "Learn assembly by running instructions one at a time in your browser. The simulator supports a subset of 64-bit Arm instructions. In the lessons, you see C code beside its assembly instructions. After each instruction, you can inspect the register values and their bits, the flags and memory. You predict what will happen and write small assembly programs. Automatic checks test your answers and programs.",
