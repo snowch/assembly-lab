@@ -22,7 +22,7 @@ import { WhereNextPage } from "./pages/WhereNextPage";
 import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
 import { RUNTIME_STRINGS } from "./runtime-strings";
-import { COMPANION_LINKS, STRINGS } from "./strings";
+import { COMPANION_LINKS, GITHUB_REPOSITORY, STRINGS } from "./strings";
 import { clearThemeUpdate, saveThemeForUpdate, useTheme, type Theme } from "./theme";
 
 /**
@@ -160,6 +160,13 @@ export function App() {
       <header className="shell-header" inert={offline?.updating}>
         <a className="brand" href="#/">
           {STRINGS.title}
+        </a>
+        <a className="github-star" href={GITHUB_REPOSITORY}>
+          <span aria-hidden="true">☆</span>
+          <span>
+            {STRINGS.githubStar}
+            <span className="github-star-destination"> {STRINGS.githubStarDestination}</span>
+          </span>
         </a>
         <AppStatus offline={offline} />
         <label className="theme-picker">
