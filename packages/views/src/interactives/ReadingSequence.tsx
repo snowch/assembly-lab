@@ -16,6 +16,7 @@ import {
 } from "../reading-sequence";
 import { READING_SEQUENCE as S } from "../strings.reading-sequence";
 import { withProps } from "./props";
+import { Calculator } from "../Calculator";
 
 const Props = z.object({
   stage: z.enum(["unsigned", "signed", "practice", "bridge", "transfer", "explore"]),
@@ -169,6 +170,7 @@ function Task({ stage, store }: { stage: "practice" | "transfer"; store: LessonS
             </label>
           ))}
         </div>
+        {stage === "transfer" && <Calculator handoffKey="transfer" />}
         <label>
           {stage === "practice" ? S.practiceReason : S.unchangedPrompt}
           <textarea

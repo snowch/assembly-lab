@@ -70,7 +70,6 @@ The original mock draft is retained in mock-copy.json.
   ],
   "makeHeading": "Make a negative number",
   "makeIntro": "Use the same rule to build a 32-bit pattern with the requested signed reading.",
-  "explorationHeading": "Explore the readings",
   "captions": {
     "unsigned": "Four positions and their unsigned contributions, before and after setting the highest bit.",
     "signed": "The same four-bit pattern with two sets of positional weights.",

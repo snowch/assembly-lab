@@ -200,7 +200,25 @@ describe("the independent starting patterns of the register readers", () => {
     const figures = units[1]!.sections.flatMap((s) => s.interactives);
     expect(
       figures.filter((x) => x.kind === "reading-sequence").map((x) => x.props["stage"]),
-    ).toEqual(["unsigned", "signed", "practice", "bridge", "transfer", "explore"]);
+    ).toEqual(["unsigned", "signed", "practice", "explore", "bridge", "transfer"]);
+    expect(units[1]!.sections.map((section) => section.kind)).toEqual([
+      "question",
+      "motivation",
+      "investigation",
+      "construction",
+      "challenge",
+    ]);
+    expect(
+      units[1]!.sections
+        .find((section) => section.kind === "motivation")!
+        .interactives.map((figure) => figure.id),
+    ).toEqual(["reading-signed", "reading-practice", "reading-explore"]);
+    expect(figures.at(-1)).toMatchObject({
+      id: "make-minus-three-solved",
+      kind: "challenge-note",
+      after: "[More about two’s complement in Appendix B](#/lesson/twos-complement)",
+      props: { afterChallenge: "make-minus-three" },
+    });
     expect(figures.some((x) => x.id === "read-register")).toBe(false);
     expect(units[1]!.challenges.map((c) => c.id)).toEqual(["make-minus-three"]);
   });

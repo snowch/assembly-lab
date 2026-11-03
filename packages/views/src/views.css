@@ -21,6 +21,7 @@
 @import "./module1.css";
 @import "./complement.css";
 @import "./reading-sequence.css";
+@import "./calculator.css";
 
 .al-figure {
   display: grid;

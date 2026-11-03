@@ -122,6 +122,14 @@ const readings = splitLesson(onePatternThreeReadings, [
             lead: RS.practiceIntro,
             props: { stage: "practice" },
           },
+          {
+            id: "reading-explore",
+            kind: "reading-sequence",
+            timeModel: "none",
+            role: "experiment",
+            caption: RS.captions.explore,
+            props: { stage: "explore" },
+          },
         ],
       },
       {
@@ -160,24 +168,13 @@ const readings = splitLesson(onePatternThreeReadings, [
         kind: "challenge",
         title: RS.makeHeading,
         prose: RS.makeIntro,
-        interactives: section(onePatternThreeReadings, "construction").interactives?.filter(
-          (x) => x.id !== "scratch-minus-three",
-        ),
-      },
-      {
-        kind: "reflection",
-        title: RS.explorationHeading,
-        prose: `[${RS.appendix}](#/lesson/twos-complement)`,
-        interactives: [
-          {
-            id: "reading-explore",
-            kind: "reading-sequence",
-            timeModel: "none",
-            role: "experiment",
-            caption: RS.captions.explore,
-            props: { stage: "explore" },
-          },
-        ],
+        interactives: section(onePatternThreeReadings, "construction")
+          .interactives?.filter((x) => x.id !== "scratch-minus-three")
+          .map((x) =>
+            x.id === "make-minus-three-solved"
+              ? { ...x, after: `[${RS.appendix}](#/lesson/twos-complement)` }
+              : x,
+          ),
       },
     ],
   },
