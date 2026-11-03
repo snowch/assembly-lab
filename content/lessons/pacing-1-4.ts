@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { READING_SEQUENCE as RS } from "@al/views";
 import type { LessonInput } from "@platform/lesson-schema";
 
 import { addingAndTheFlags } from "./adding-and-the-flags";
@@ -73,14 +74,111 @@ const readings = splitLesson(onePatternThreeReadings, [
   {
     id: "same-bits-two-readings",
     title: COPY.readings.title,
-    objectives: [...COPY.readings.objectives],
+    objectives: [...RS.objectives],
     introduces: ["unsigned reading", "signed reading", "top bit", "two’s complement"],
+    originalityNote: {
+      textbookExample:
+        "A signed-value table or an inversion rule before the meaning of the weights is established.",
+      howThisDiffers:
+        "Uses a visible four-position before/after example, then changes only the reading of the same pattern. Separate fresh tasks and a new 32-bit pattern check the width bridge; optional exploration follows an attempted practice.",
+    },
     sections: [
-      { kind: "question", title: COPY.readings.title, prose: READ.motivation, interactives: [] },
-      { ...section(onePatternThreeReadings, "investigation"), prose: COPY.readings.investigation },
-      section(onePatternThreeReadings, "construction"),
-      section(onePatternThreeReadings, "challenge"),
-      section(onePatternThreeReadings, "reflection"),
+      {
+        kind: "question",
+        title: RS.unsignedHeading,
+        prose: RS.unsignedIntro,
+        interactives: [
+          {
+            id: "reading-unsigned",
+            kind: "reading-sequence",
+            timeModel: "none",
+            role: "diagram",
+            caption: RS.captions.unsigned,
+            props: { stage: "unsigned" },
+            after: RS.unsignedAfter,
+          },
+        ],
+      },
+      {
+        kind: "motivation",
+        title: RS.signedHeading,
+        prose: RS.signedIntro,
+        interactives: [
+          {
+            id: "reading-signed",
+            kind: "reading-sequence",
+            timeModel: "none",
+            role: "diagram",
+            caption: RS.captions.signed,
+            props: { stage: "signed" },
+            after: RS.signedAfter,
+          },
+          {
+            id: "reading-practice",
+            kind: "reading-sequence",
+            timeModel: "none",
+            role: "exercise",
+            caption: RS.captions.practice,
+            lead: RS.practiceIntro,
+            props: { stage: "practice" },
+          },
+        ],
+      },
+      {
+        kind: "investigation",
+        title: RS.bridgeHeading,
+        prose: RS.bridgeIntro,
+        interactives: [
+          {
+            id: "reading-bridge",
+            kind: "reading-sequence",
+            timeModel: "none",
+            role: "diagram",
+            caption: RS.captions.bridge,
+            props: { stage: "bridge" },
+            after: RS.bridgeAfter + "\n\n" + RS.negativeUse,
+          },
+        ],
+      },
+      {
+        kind: "construction",
+        title: RS.challengeHeading,
+        prose: RS.challengeIntro,
+        interactives: [
+          {
+            id: "reading-transfer",
+            kind: "reading-sequence",
+            timeModel: "none",
+            role: "exercise",
+            caption: RS.captions.transfer,
+            props: { stage: "transfer" },
+          },
+        ],
+      },
+      {
+        ...section(onePatternThreeReadings, "construction"),
+        kind: "challenge",
+        title: RS.makeHeading,
+        prose: RS.makeIntro,
+        interactives: section(onePatternThreeReadings, "construction").interactives?.filter(
+          (x) => x.id !== "scratch-minus-three",
+        ),
+      },
+      {
+        kind: "reflection",
+        title: RS.explorationHeading,
+        prose: `[${RS.appendix}](#/lesson/twos-complement)`,
+        interactives: [
+          {
+            id: "reading-explore",
+            kind: "reading-sequence",
+            timeModel: "none",
+            role: "experiment",
+            caption: RS.captions.explore,
+            props: { stage: "explore" },
+          },
+        ],
+      },
     ],
   },
   {

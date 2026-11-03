@@ -10,6 +10,7 @@ export interface LessonPart {
   sections: Section[];
   introduces?: string[];
   challengeIds?: string[];
+  originalityNote?: LessonInput["originalityNote"];
 }
 
 /** Authoring provenance, used to check that splitting does not lose exercises or figures. */
@@ -37,6 +38,7 @@ export function splitLesson(source: LessonInput, parts: readonly LessonPart[]): 
       showTimeModelNotes: false,
       introduces: part.introduces ?? (order === 0 ? source.introduces : []),
       sections: part.sections,
+      originalityNote: part.originalityNote ?? source.originalityNote,
       challenges: (source.challenges ?? []).filter((challenge) => mounted.has(challenge.id)),
     };
   });

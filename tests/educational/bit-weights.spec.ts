@@ -1,170 +1,259 @@
 // Copyright © 2026 Christopher Snow
 
-import { expect, test } from "@playwright/test";
-import { READER_STRINGS as R } from "../../packages/views/src/strings.reader";
+import { expect, test, type Locator, type Page } from "@playwright/test";
+import { fourBitReadings } from "@al/views";
 import { readingsOfPattern, patternOf, shown } from "../../packages/views/src/readings";
-import { openLesson, bit } from "./module1";
+import { designProblems } from "./design";
+import { openLesson, watchErrors } from "./module1";
 
+const figure = (page: Page, stage: string) => page.locator(`#ix-reading-${stage}`);
+const task = (page: Page, kind: "practice" | "transfer") =>
+  page.locator(`[data-reading-task="${kind}"]`);
+const field = (form: Locator, name: string) => form.locator(`[name="${name}"]`);
 const grouped = (value: number) => shown(value).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+const practice = fourBitReadings("1001");
+const transfer = readingsOfPattern(patternOf((1n << 31n) + 2n));
+
+async function fillTask(form: Locator, values: { unsigned: number; signed: number }) {
+  await field(form, "unsigned").fill(grouped(values.unsigned));
+  await field(form, "signed").fill(grouped(values.signed));
+  await field(form, "reason").fill(
+    "The highest weight is negative only for the signed reading. The lower weights stay positive. Reading changes no stored bit.",
+  );
+  const cleared = field(form, "cleared");
+  if (await cleared.count())
+    await cleared.fill("The highest position keeps its weight but a clear bit contributes zero.");
+}
+
 for (const theme of ["light", "dark"] as const) {
-  test(`compact readings progress from one bit to the top bit and comparison in ${theme}`, async ({
+  test(`worked unsigned, signed and 32-bit examples are visible on the required route in ${theme}`, async ({
     page,
   }) => {
+    const errors = watchErrors(page);
     await page.goto("#/");
     await page.locator("select").selectOption(theme);
     await openLesson(page, "same-bits-two-readings");
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-    for (const prose of await page
-      .locator(
-        '.lesson-section[data-kind="question"] > .prose, .lesson-section[data-kind="investigation"] > .prose',
-      )
-      .all()) {
-      await expect(prose).not.toContainText(/\bsigned\b|two’s complement|−2,147/);
+    expect(
+      await page
+        .locator(".al-reading-sequence")
+        .evaluateAll((figures) => figures.map((el) => el.getAttribute("data-stage"))),
+    ).toEqual(["unsigned", "signed", "practice", "bridge", "transfer", "explore"]);
+    const unsigned = figure(page, "unsigned");
+    const signed = figure(page, "signed");
+    const bridge = figure(page, "bridge");
+    for (const panel of [unsigned, signed]) {
+      await expect(panel).toBeVisible();
+      await expect(panel.locator("[data-sum]").first()).toBeVisible();
+      await expect(panel.locator("details:not([open]) [data-sum]")).toHaveCount(0);
     }
-    const reader = page.locator("#ix-read-register");
-    const pattern = () =>
-      reader
-        .locator(".al-toggle")
-        .evaluateAll((buttons) =>
-          buttons
-            .map((button) => (button.getAttribute("aria-pressed") === "true" ? "1" : "0"))
-            .join(""),
-        );
-    await expect(reader.locator('.al-toggle[aria-pressed="true"]')).toHaveCount(1);
-    await expect(bit(reader, 0)).toHaveAttribute("aria-pressed", "true");
-    await expect(reader.locator('.al-reader-totals [data-reading="unsigned"]')).toHaveText("1");
-    await expect(reader.locator('[data-selected-bit="0"]')).toBeVisible();
-    await reader.locator("details.al-calc summary").click();
-    await expect(reader.locator('[data-sum="signed"]')).toHaveCount(0);
-    await reader.getByRole("button", { name: R.presetTop, exact: true }).click();
-    expect(await pattern()).toBe(patternOf(1n << 31n));
+    await expect(unsigned.getByRole("row").nth(2).getByRole("cell")).toHaveText([
+      "0",
+      "0",
+      "1",
+      "1",
+    ]);
+    await expect(unsigned.getByRole("row").nth(3).getByRole("cell")).toHaveText([
+      "1",
+      "0",
+      "1",
+      "1",
+    ]);
+    await expect(signed.getByRole("row").nth(1).getByRole("cell")).toHaveText(["1", "0", "1", "1"]);
+    await expect(signed).toContainText("0011");
+    await expect(signed.locator('[data-sum="signed"]').first()).toContainText(
+      `= ${shown(fourBitReadings("1011").signed)}`,
+    );
+    await expect(bridge).toBeVisible();
+    await expect(bridge.locator("code").filter({ hasText: " + 0 = " })).toHaveCount(2);
+    await expect(bridge).toContainText("31");
+    await expect(bridge).toContainText("2,147,483,648");
+    await expect(bridge).toContainText("−2,147,483,648");
+    for (const kind of ["practice", "transfer"] as const) {
+      const form = task(page, kind);
+      await expect(form.locator("[data-feedback]")).toHaveCount(0);
+      await expect(field(form, "unsigned")).toHaveValue("");
+      await expect(field(form, "signed")).toHaveValue("");
+      await expect(form.locator("[data-sum]")).toHaveCount(0);
+    }
+    await expect(task(page, "transfer")).not.toContainText(grouped(transfer.unsigned));
+    await expect(task(page, "transfer")).not.toContainText(grouped(transfer.signed));
     await expect(
-      reader.locator('[data-selected-bit="31"] [data-metric="weight"] [data-cell="unsigned"]'),
-    ).toHaveText("+2,147,483,648");
-    const before = await pattern();
-    await reader.getByRole("button", { name: R.views.signed, exact: true }).click();
-    expect(await pattern()).toBe(before);
-    await expect(reader.locator(".al-reader-guidance")).toContainText("two’s complement");
-    await expect(reader.locator('[data-sum="unsigned"]')).toHaveCount(0);
-    await expect(reader.locator('[data-sum="signed"]')).toBeVisible();
-    await expect(
-      reader.locator('[data-selected-bit="31"] [data-metric="weight"] [data-cell="signed"]'),
-    ).toHaveText("−2,147,483,648");
-    await bit(reader, 31).click();
-    await expect(
-      reader.locator('[data-selected-bit="31"] [data-metric="weight"] [data-cell="signed"]'),
-    ).toHaveText("−2,147,483,648");
-    await expect(
-      reader.locator('[data-selected-bit="31"] [data-metric="contribution"] [data-cell="signed"]'),
-    ).toHaveText("0");
-    await reader.getByRole("button", { name: R.views.compare, exact: true }).click();
-    await expect(reader.locator("[data-sum]")).toHaveCount(2);
-    await expect(reader.locator('.al-reader-totals [data-reading="unsigned"]')).toHaveText("0");
-    await expect(reader.locator('.al-reader-totals [data-reading="signed"]')).toHaveText("0");
-    await reader.getByRole("button", { name: R.reset, exact: true }).click();
-    expect(await pattern()).toBe(patternOf(1));
-    await expect(
-      reader.getByRole("button", { name: R.views.unsigned, exact: true }),
-    ).toHaveAttribute("aria-pressed", "true");
-    await expect(reader.locator('[data-sum="signed"]')).toHaveCount(0);
-    await page.reload();
-    expect(await pattern()).toBe(patternOf(1));
+      page.locator('#ix-read-register, [data-challenge="two-readings-each"]'),
+    ).toHaveCount(0);
+    expect(errors).toEqual([]);
   });
 
-  test(`prediction conceals its result until commitment and restores exploration in ${theme}`, async ({
+  test(`practice validates numbers and required explanations before unlocking exploration in ${theme}`, async ({
     page,
   }) => {
     await page.goto("#/");
     await page.locator("select").selectOption(theme);
     await openLesson(page, "same-bits-two-readings");
-    const reader = page.locator("#ix-read-register");
-    await expect(reader.getByRole("button", { name: R.predictEntry, exact: true })).toBeVisible();
-    await reader.getByRole("button", { name: R.views.compare, exact: true }).click();
-    await reader.locator("details.al-calc summary").click();
-    await reader.getByRole("button", { name: R.predictEntry, exact: true }).click();
-    await expect(reader.locator('[data-prediction="pending"]')).toBeVisible();
-    await expect(bit(reader, 0)).toHaveAttribute("aria-pressed", "false");
-    await expect(bit(reader, 31)).toHaveAttribute("aria-pressed", "true");
-    await expect(bit(reader, 0)).toBeDisabled();
-    await expect(
-      reader.locator(".al-reader-totals, [data-sum], .al-selected-bit, .al-prediction-results"),
-    ).toHaveCount(0);
-    await expect(reader).not.toContainText("2,147,483,649");
-    await expect(reader).not.toContainText("−2,147,483,647");
-    await reader.getByRole("button", { name: R.prediction.choices.unsigned, exact: true }).click();
-    await expect(reader).toContainText(R.prediction.incorrect);
-    const after = readingsOfPattern(patternOf(0x80000001));
-    for (const reading of ["unsigned", "signed"] as const) {
-      await expect(
-        reader.locator(`.al-prediction-results [data-phase="after"] [data-cell="${reading}"]`),
-      ).toHaveText(grouped(after[reading]));
+    const form = task(page, "practice");
+    const explore = figure(page, "explore");
+    await expect(explore.locator("button[data-bit]")).toHaveCount(0);
+    const check = form.getByRole("button", { name: "Check readings", exact: true });
+    await check.click();
+    await expect(form.locator("[data-feedback]")).toHaveCount(0);
+    await expect(field(form, "unsigned")).toBeFocused();
+    await fillTask(form, practice);
+    for (const invalid of ["9 cats", "9.5", "1,23", "0x9"]) {
+      await field(form, "unsigned").fill(invalid);
+      await check.click();
+      await expect(form.locator("[data-feedback]")).toHaveCount(0);
+      await expect(form.getByRole("status")).toContainText(
+        "Enter decimal whole numbers and complete each explanation.",
+      );
+      await expect(explore.locator("button[data-bit]")).toHaveCount(0);
     }
-    await reader.getByRole("button", { name: R.prediction.explore, exact: true }).click();
-    await expect(
-      reader.getByRole("button", { name: R.views.compare, exact: true }),
-    ).toHaveAttribute("aria-pressed", "true");
-    await expect(bit(reader, 0)).toBeEnabled();
-    await expect(bit(reader, 0)).toHaveAttribute("aria-pressed", "true");
-    await reader.getByRole("button", { name: R.predictEntry, exact: true }).click();
-    await reader.getByRole("button", { name: R.prediction.choices.both, exact: true }).click();
-    await expect(reader).toContainText(R.prediction.correct);
-    await reader.getByRole("button", { name: R.reset, exact: true }).click();
-    await expect(reader.locator("[data-prediction]")).toHaveCount(0);
-    await expect(reader.locator('.al-toggle[aria-pressed="true"]')).toHaveCount(1);
+    await field(form, "unsigned").fill(String(practice.unsigned));
+    await field(form, "reason").fill(" ");
+    await check.click();
+    await expect(form.locator("[data-feedback]")).toHaveCount(0);
+    await expect(explore.locator("button[data-bit]")).toHaveCount(0);
+    await fillTask(form, practice);
+    // The typographic minus sign is the notation used in the worked examples.
+    await check.focus();
+    await page.keyboard.press("Enter");
+    await expect(form.getByRole("status")).toContainText(
+      "Only your numeric readings are checked automatically.",
+    );
+    await expect(form.getByRole("status")).toContainText("Both readings match the model.");
+    await expect(explore.locator("button[data-bit]")).toHaveCount(4);
   });
 
-  for (const width of [320, 390, 1280]) {
-    test(`compact numbered bits and calculation fit ${width}px in ${theme}`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 900 });
-      await page.goto("#/");
-      await page.locator("select").selectOption(theme);
-      await openLesson(page, "same-bits-two-readings");
-      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-      const reader = page.locator("#ix-read-register");
-      await reader.getByRole("button", { name: R.presetTop, exact: true }).click();
-      for (const mode of ["unsigned", "signed", "compare"] as const) {
-        await reader.getByRole("button", { name: R.views[mode], exact: true }).click();
-        const buttons = await reader.locator(".al-toggle").evaluateAll((els) =>
-          els.map((el) => ({
-            box: el.getBoundingClientRect().toJSON(),
-            label: el.querySelector(".al-toggle-n")?.textContent,
-          })),
-        );
-        expect(buttons.map((b) => b.label)).toEqual(
-          Array.from({ length: 32 }, (_, i) => String(31 - i)),
-        );
-        for (const { box } of buttons) {
-          expect(box.height).toBeGreaterThanOrEqual(40);
-          expect(box.x).toBeGreaterThanOrEqual(0);
-          expect(box.right).toBeLessThanOrEqual(width);
-        }
-        expect(
-          await page.evaluate(
-            () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-          ),
-        ).toBe(0);
-        for (const panel of await reader.locator(".al-selected-bit, .al-reader-totals").all()) {
-          expect(await panel.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(
-            1,
+  test(`transfer, practice and exploration keep independent work and reset state in ${theme}`, async ({
+    page,
+  }) => {
+    await page.goto("#/");
+    await page.locator("select").selectOption(theme);
+    await openLesson(page, "same-bits-two-readings");
+    const small = task(page, "practice");
+    const large = task(page, "transfer");
+    await expect(large.locator("[data-pattern]")).toHaveAttribute("data-pattern", transfer.pattern);
+    await fillTask(large, transfer);
+    await field(large, "cleared").fill(" ");
+    await large.getByRole("button", { name: "Check readings", exact: true }).click();
+    await expect(large.locator("[data-feedback]")).toHaveCount(0);
+    await fillTask(large, { unsigned: 0, signed: 0 });
+    await large.getByRole("button", { name: "Check readings", exact: true }).click();
+    await expect(large.getByRole("status")).toContainText(
+      "At least one reading differs from the model.",
+    );
+    await expect(large.getByRole("status")).toContainText(grouped(transfer.unsigned));
+    await expect(large.getByRole("status")).toContainText(grouped(transfer.signed));
+    await fillTask(large, transfer);
+    await large.getByRole("button", { name: "Check readings", exact: true }).click();
+    await expect(large.getByRole("status")).toContainText("Both readings match the model.");
+    await page.reload();
+    await expect(field(large, "cleared")).toHaveValue(
+      "The highest position keeps its weight but a clear bit contributes zero.",
+    );
+    await expect(large.getByRole("status")).toContainText(
+      "Only your numeric readings are checked automatically.",
+    );
+    await expect(small.locator("[data-feedback]")).toHaveCount(0);
+    await expect(field(small, "unsigned")).toHaveValue("");
+    // Any complete attempt opens exploration, including an incorrect numeric attempt.
+    await fillTask(small, { unsigned: 0, signed: 0 });
+    await small.getByRole("button", { name: "Check readings", exact: true }).click();
+    await expect(small.getByRole("status")).toContainText(
+      "At least one reading differs from the model.",
+    );
+    const before = await large.innerText();
+    const explore = figure(page, "explore");
+    await explore.locator("summary").click();
+    const top = explore.locator('button[data-bit="3"]');
+    await top.focus();
+    await page.keyboard.press("Space");
+    await expect(top).toHaveAttribute("aria-pressed", "true");
+    await expect(explore.locator('[data-sum="signed"]')).toContainText("= −5");
+    await explore.getByRole("button", { name: /reset/i }).click();
+    await expect(top).toHaveAttribute("aria-pressed", "false");
+    await expect(explore.locator('[data-sum="signed"]')).toContainText("= 3");
+    expect(await large.innerText()).toBe(before);
+    await expect(large.locator("[data-pattern]")).toHaveAttribute("data-pattern", transfer.pattern);
+    await expect(field(large, "unsigned")).toHaveValue(grouped(transfer.unsigned));
+    await expect(field(large, "signed")).toHaveValue(grouped(transfer.signed));
+    await small.getByRole("button", { name: "Try again", exact: true }).click();
+    await expect(small.locator("[data-feedback]")).toHaveCount(0);
+    await expect(large.getByRole("status")).toBeVisible();
+    await expect(field(large, "unsigned")).toHaveValue(grouped(transfer.unsigned));
+    await expect(explore.locator("button[data-bit]")).toHaveCount(0);
+  });
+
+  test(`the sequence and submitted feedback fit 320px in ${theme}`, async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 900 });
+    await page.goto("#/");
+    await page.locator("select").selectOption(theme);
+    await openLesson(page, "same-bits-two-readings");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    expect(await designProblems(page, true)).toEqual([]);
+    for (const kind of ["practice", "transfer"] as const) {
+      const form = task(page, kind);
+      await fillTask(form, kind === "practice" ? practice : transfer);
+      await form.getByRole("button", { name: "Check readings", exact: true }).click();
+      await expect(form.getByRole("status")).toBeVisible();
+    }
+    const contrasts = await page
+      .locator("[data-reading-task] input, [data-reading-task] textarea")
+      .evaluateAll((controls) => {
+        const colour = (text: string) => {
+          const parts = text.match(/[\d.]+/g)!.map(Number);
+          return { rgb: parts.slice(0, 3), alpha: parts[3] ?? 1 };
+        };
+        const over = (front: ReturnType<typeof colour>, back: number[]) =>
+          front.rgb.map((channel, i) => channel * front.alpha + back[i]! * (1 - front.alpha));
+        const luminance = (rgb: number[]) =>
+          rgb
+            .map((channel) => {
+              const s = channel / 255;
+              return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+            })
+            .reduce((total, channel, i) => total + channel * [0.2126, 0.7152, 0.0722][i]!, 0);
+        return controls.map((control) => {
+          const ancestry: Element[] = [];
+          for (let el: Element | null = control; el; el = el.parentElement) ancestry.unshift(el);
+          const background = ancestry.reduce(
+            (back, el) => over(colour(getComputedStyle(el).backgroundColor), back),
+            [255, 255, 255],
           );
-        }
-      }
-      // Long all-ones totals must fit their cells, even when the overall table fits.
-      for (let position = 30; position >= 0; position--) {
-        await bit(reader, position).click();
-        await expect(bit(reader, position)).toHaveAttribute("aria-pressed", "true");
-      }
-      await expect(reader.locator('.al-reader-totals [data-reading="unsigned"]')).toHaveText(
-        "4,294,967,295",
+          const style = getComputedStyle(control);
+          const foreground = over(colour(style.color), background);
+          const light = luminance(foreground),
+            dark = luminance(background);
+          return {
+            field: `${control.closest("[data-reading-task]")!.getAttribute("data-reading-task")}.${control.getAttribute("name")}`,
+            value: (control as HTMLInputElement | HTMLTextAreaElement).value,
+            foreground: style.color,
+            background: style.backgroundColor,
+            ratio: (Math.max(light, dark) + 0.05) / (Math.min(light, dark) + 0.05),
+          };
+        });
+      });
+    expect(contrasts).toHaveLength(7);
+    for (const contrast of contrasts) {
+      expect(contrast.value.trim(), contrast.field).not.toBe("");
+      expect(
+        contrast.ratio,
+        `${contrast.field}: ${contrast.foreground} on ${contrast.background}`,
+      ).toBeGreaterThanOrEqual(4.5);
+    }
+    const explore = figure(page, "explore");
+    await explore.locator("summary").click();
+    for (const control of await explore.locator("button[data-bit]").all()) {
+      const box = await control.boundingBox();
+      expect(box!.height).toBeGreaterThanOrEqual(40);
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(320);
+    }
+    const overflow = await page
+      .locator('[id^="ix-reading-"]')
+      .evaluateAll((figures) =>
+        figures.filter((el) => el.scrollWidth > el.clientWidth + 1).map((el) => el.id),
       );
-      for (const cell of await reader.locator(".al-top-table td").all()) {
-        expect(await cell.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1);
-      }
-      const marker = await reader.locator(".al-top-flag").boundingBox();
-      const button = await bit(reader, 31).boundingBox();
-      expect(Math.abs(marker!.x + marker!.width / 2 - button!.x - button!.width / 2)).toBeLessThan(
-        1,
-      );
-    });
-  }
+    expect(overflow).toEqual([]);
+    expect(await designProblems(page, true)).toEqual([]);
+  });
 }

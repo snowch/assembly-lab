@@ -1,7 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
 import { expect, test, type Locator } from "@playwright/test";
-import { READER_STRINGS as R } from "../../packages/views/src/strings.reader";
 import { fourBitReadings } from "@al/views";
 import { shown } from "../../packages/views/src/readings";
 import { designProblems } from "./design";
@@ -38,27 +37,17 @@ for (const theme of ["light", "dark"] as const) {
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await expect(page.getByRole("link", { name: "Two’s complement", exact: true })).toBeVisible();
     await page.goto("#/lesson/same-bits-two-readings");
-    await expect(
-      page.getByText("The figure starts with only bit 0 set.", { exact: false }),
-    ).toBeVisible();
-    const reader = page.locator("#ix-read-register");
-    await alignedTopBit(reader);
-    await reader.getByRole("button", { name: "Bit 31", exact: true }).click();
-    await alignedTopBit(reader);
-    const scratch = page.locator("#ix-scratch-minus-three");
-    await scratch.locator("details.al-reader-scratch > summary").click();
-    await alignedTopBit(scratch);
+    const signed = page.locator("#ix-reading-signed");
+    await expect(page.locator("section.lesson-section").filter({ has: signed })).toContainText(
+      "two’s complement",
+    );
+    await expect(signed.locator('[data-sum="signed"]')).toBeVisible();
     await expect(page.locator("#ix-make-minus-three-solved code")).toHaveCount(0);
-    const appendix = reader.getByRole("link", {
-      name: R.appendix,
-      exact: true,
-    });
-    await expect(appendix).toHaveCount(0);
-    await reader.getByRole("button", { name: "Signed", exact: true }).click();
-    await expect(reader).toContainText("This representation is called two’s complement.");
-    await expect(reader).toContainText("Here, C’s int uses this signed reading.");
-    await expect(appendix).toBeVisible();
-    await appendix.click();
+    await expect(page.locator("#ix-scratch-minus-three")).toHaveCount(0);
+    // The appendix extends an already visible signed explanation.
+    await page
+      .getByRole("link", { name: "More about two’s complement in Appendix B", exact: true })
+      .click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Two’s complement");
     const reading = page.locator("#ix-four-bit-readings");
     const negation = page.locator("#ix-four-bit-negation");

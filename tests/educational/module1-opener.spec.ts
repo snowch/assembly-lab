@@ -2,7 +2,6 @@
 
 import { expect, test } from "@playwright/test";
 
-import { READER_STRINGS as R } from "../../packages/views/src/strings.reader";
 import { MODULE1_STRINGS as M1 } from "../../packages/views/src/strings.module1";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { commit, openLesson, registerValue } from "./module1";
@@ -52,10 +51,38 @@ for (const width of [360, 375, 1280]) {
       await expect(page.locator("#ix-predict-add-12 .al-outcome")).toContainText("w0 holding 0");
       await expect(page.locator("#ix-step-add-12 .al-locked")).toHaveCount(0);
       await openLesson(page, "same-bits-two-readings");
-      const details = page.locator("#ix-read-register details");
-      await expect(details).not.toHaveAttribute("open", "");
-      await details.getByText(R.fullSum, { exact: true }).click();
-      await expect(details).toHaveAttribute("open", "");
+      const unsigned = page.locator("#ix-reading-unsigned");
+      const signed = page.locator("#ix-reading-signed");
+      await expect(unsigned.locator('[data-sum="unsigned"]')).toHaveText([
+        "0 + 0 + 2 + 1 = 3",
+        "8 + 0 + 2 + 1 = 11",
+      ]);
+      await expect(signed.locator('[data-sum="signed"]')).toHaveText("−8 + 0 + 2 + 1 = −5");
+      await expect(unsigned.locator('[data-sum="unsigned"]').first()).toBeVisible();
+      await expect(signed.locator('[data-sum="signed"]')).toBeVisible();
+      await expect(page.locator("#ix-reading-bridge")).toContainText(
+        "−2,147,483,648 + 0 = −2,147,483,648",
+      );
+      const transfer = page.locator('[data-reading-task="transfer"]');
+      await expect(transfer.locator("[data-feedback]")).toHaveCount(0);
+      await expect(transfer).not.toContainText("2,147,483,650");
+      await transfer
+        .getByRole("textbox", { name: "Unsigned reading", exact: true })
+        .fill("2,147,483,650");
+      await transfer
+        .getByRole("textbox", { name: "Signed reading", exact: true })
+        .fill("−2,147,483,646");
+      await transfer
+        .locator('[name="reason"]')
+        .fill("Changing the interpretation leaves every stored bit unchanged.");
+      await transfer
+        .locator('[name="cleared"]')
+        .fill("Clearing bit 31 makes its contribution zero while its weight stays the same.");
+      await transfer.getByRole("button", { name: "Check readings", exact: true }).click();
+      await expect(transfer.getByRole("status")).toContainText("Both readings match the model.");
+      await expect(transfer.getByRole("status")).toContainText(
+        "Only your numeric readings are checked automatically.",
+      );
       expect(await designProblems(page, width < 500)).toEqual([]);
     });
   }
