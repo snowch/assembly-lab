@@ -49,7 +49,12 @@ it("keeps the unsigned explanation before Module 1's figure and links the correc
   expect(main.sections[0]!.prose).toBe(READING_SEQUENCE.unsignedIntro);
   expect(main.sections[0]!.prose).not.toMatch(/negative|two’s complement/);
   expect(main.sections[1]!.prose).toBe(READING_SEQUENCE.signedIntro);
-  expect(main.sections.at(-1)!.prose).toContain("#/lesson/twos-complement");
+  const closing = main.sections.at(-1)!;
+  expect(closing.kind).toBe("challenge");
+  expect(closing.interactives.at(-1)!.id).toBe("make-minus-three-solved");
+  expect(closing.interactives.at(-1)!.after).toBe(
+    `[${READING_SEQUENCE.appendix}](#/lesson/twos-complement)`,
+  );
   const links = [
     ...learnerText(lesson)
       .join("\n")

@@ -38,7 +38,17 @@ for (const theme of ["light", "dark"] as const) {
       await page
         .locator(".al-reading-sequence")
         .evaluateAll((figures) => figures.map((el) => el.getAttribute("data-stage"))),
-    ).toEqual(["unsigned", "signed", "practice", "bridge", "transfer", "explore"]);
+    ).toEqual(["unsigned", "signed", "practice", "explore", "bridge", "transfer"]);
+    expect(
+      await page
+        .locator('.lesson-section[data-kind="motivation"] > figure')
+        .evaluateAll((figures) => figures.map((el) => el.id)),
+    ).toEqual(["ix-reading-signed", "ix-reading-practice", "ix-reading-explore"]);
+    await expect(page.locator('.lesson-section[data-kind="reflection"]')).toHaveCount(0);
+    const appendix = page.locator("#ix-make-minus-three-solved > .figure-after a");
+    await expect(appendix).toHaveText("More about two’s complement in Appendix B");
+    await expect(appendix).toHaveAttribute("href", "#/lesson/twos-complement");
+    await expect(appendix).toBeVisible();
     const unsigned = figure(page, "unsigned");
     const signed = figure(page, "signed");
     const bridge = figure(page, "bridge");

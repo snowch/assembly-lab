@@ -4,12 +4,13 @@
 // challenge is about, if the challenge carries one in `initial.data.program`, and one box for each
 // field. What the learner types is kept as text, by field id, and graded by the challenge's grader.
 
-import type { ComponentType } from "react";
+import { Fragment, type ComponentType } from "react";
 import { z } from "zod";
 
 import type { ChallengeEditorProps } from "@platform/lesson-runtime";
 
 import { BitToggles } from "./BitToggles";
+import { Calculator } from "./Calculator";
 import { HexEntry } from "./HexEntry";
 import { RecordedSchema } from "./interactives/props";
 import { cLinesOf, programLines } from "./listing";
@@ -48,36 +49,41 @@ export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
   // The fields of bits that also take hexadecimal, named in the challenge's `initial.data.hexEntry`.
   // A challenge that does not name a field gets 32 buttons and nothing else, as before.
   const hexFields = z.array(z.string()).safeParse(challenge.initial.data?.["hexEntry"]);
+  const calculatorFields = z.array(z.string()).safeParse(challenge.initial.data?.["calculator"]);
   // A number or a word is a text box; a field that takes a negative number gets the full keyboard.
   const textBox = (f: (typeof challenge.fields)[number], label: string, compact = false) => {
     const id = `answer-${challenge.id}-${f.id}`;
     return (
-      <label
-        key={f.id}
-        className={compact ? "answer-field answer-compact" : "answer-field"}
-        data-field={f.id}
-        htmlFor={id}
-      >
-        <span className="answer-label">{withCode(label)}</span>
-        <span className="answer-input">
-          <input
-            id={id}
-            type="text"
-            // A number keypad has no minus sign on every phone: a field that takes a negative
-            // number (it says so with a `min` below 0) gets the full keyboard.
-            inputMode={
-              f.kind === "number" && !(f.min !== undefined && f.min < 0) ? "numeric" : "text"
-            }
-            autoComplete="off"
-            autoCapitalize="off"
-            autoCorrect="off"
-            spellCheck={false}
-            value={answers[f.id] ?? ""}
-            onChange={(e) => set(f.id, e.target.value)}
-          />
-          {f.unit && <span className="answer-unit">{f.unit}</span>}
-        </span>
-      </label>
+      <Fragment key={f.id}>
+        <label
+          className={compact ? "answer-field answer-compact" : "answer-field"}
+          data-field={f.id}
+          htmlFor={id}
+        >
+          <span className="answer-label">{withCode(label)}</span>
+          <span className="answer-input">
+            <input
+              id={id}
+              type="text"
+              // A number keypad has no minus sign on every phone: a field that takes a negative
+              // number (it says so with a `min` below 0) gets the full keyboard.
+              inputMode={
+                f.kind === "number" && !(f.min !== undefined && f.min < 0) ? "numeric" : "text"
+              }
+              autoComplete="off"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
+              value={answers[f.id] ?? ""}
+              onChange={(e) => set(f.id, e.target.value)}
+            />
+            {f.unit && <span className="answer-unit">{f.unit}</span>}
+          </span>
+        </label>
+        {f.kind === "number" &&
+          calculatorFields.success &&
+          calculatorFields.data.includes(f.id) && <Calculator handoffKey={f.id} />}
+      </Fragment>
     );
   };
   return (

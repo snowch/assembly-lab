@@ -215,7 +215,7 @@ export const onePatternThreeReadings: LessonInput = {
         { id: "unsigned", label: MAKE.fields.unsigned, kind: "number" },
       ],
       // The field of bits also takes hexadecimal, typed. The stored answer is still the 32 bits.
-      initial: { data: { hexEntry: ["bits"] } },
+      initial: { data: { hexEntry: ["bits"], calculator: ["unsigned"] } },
       // The first test reads the learner's bits as signed and wants −3; the second wants the
       // number to be what the learner's own bits give as unsigned. Both readings come from the model.
       tests: {

@@ -1,0 +1,49 @@
+/* Copyright © 2026 Christopher Snow */
+
+.al-calculator {
+  min-width: 0;
+  margin-block: 0.5rem 1rem;
+}
+.al-calculator > summary {
+  width: fit-content;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.al-calculator-panel {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.al-calculator-panel > p:first-child {
+  margin-top: 0;
+}
+.al-calculator-entry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.al-calculator .al-calculator-entry input {
+  flex: 1 1 12rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  color: var(--fg);
+  font-size: 1rem;
+  font-family: var(--font-mono);
+}
+.al-calculator-format {
+  font-size: var(--text-sm);
+}
+.al-calculator [role="status"] code {
+  overflow-wrap: anywhere;
+}
