@@ -31,6 +31,17 @@ describe("the published short lesson sequence", () => {
         ),
       );
       for (const challenge of source.challenges) {
+        // This legacy quiz was deliberately replaced by the visible worked sequence and
+        // independent model-graded form. Keep every other historical exercise obligation.
+        if (source.id === "one-pattern-three-readings" && challenge.id === "two-readings-each") {
+          const readings = pages.find((page) => page.id === "same-bits-two-readings")!;
+          expect(
+            readings.sections
+              .flatMap((s) => s.interactives)
+              .some((x) => x.kind === "reading-sequence" && x.props["stage"] === "transfer"),
+          ).toBe(true);
+          continue;
+        }
         if (challenge.tests.kind !== "answers") continue;
         for (const test of challenge.tests.cases)
           for (const [field, value] of Object.entries(test.expect)) {

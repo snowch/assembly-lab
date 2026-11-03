@@ -28,6 +28,13 @@ recommendations replace the former requirement to use Haiku for drafting.
 
 ## The drafting brief
 
+For a new teaching sequence or a confusing existing activity, use the repository's
+[learning-design skill](../.agents/skills/learning-design/SKILL.md) before choosing controls.
+It adds a concrete outcome, misconception checks, a fresh application and a plan for
+observing a beginner. Agent reviews and browser checks remain distinct from evidence of
+learning. See the [Reading the bits brief](notes/readings-learning-design/brief.md) for an
+application of this workflow; its proposed sequence remains a hypothesis to test.
+
 Before drafting, give the writer:
 
 - The learning objective and what the learner should be able to explain or do afterwards.

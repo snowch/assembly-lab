@@ -1,0 +1,99 @@
+// Copyright © 2026 Christopher Snow
+
+// Separate draft and canonical record: docs/notes/readings-learning-design/.
+export const READING_SEQUENCE = {
+  title: "Reading the bits",
+  intro:
+    "The same bits can represent different numbers. First use a small pattern, then apply the rule to the register view you have used.",
+  unsignedHeading: "Add the unsigned weights",
+  unsignedIntro:
+    "This is a 4-bit teaching example, not an Arm register. A bit is either set or clear. Its position has a weight. A set bit contributes its weight to the sum; a clear bit contributes zero. In an unsigned reading, every weight is positive.",
+  unsignedAfter:
+    "The second pattern has its highest bit set. Its positive weight joins the sum; every other contribution stays the same.",
+  signedHeading: "Give the highest position a negative weight",
+  signedIntro:
+    "To represent negative numbers, we need another way to read the bits. In two’s complement, the highest position has a negative weight. Every lower position keeps its positive weight. Read the same pattern below using both rules. Changing the reading does not rewrite any bit.",
+  signedAfter:
+    "Add the negative highest contribution to the positive lower contributions. The highest bit does not tell you to negate the lower bits' total.",
+  practiceHeading: "Try a fresh small pattern",
+  practiceIntro:
+    "Calculate both readings of the new pattern. Use the displayed weights and add the contributions. Enter decimal numbers; use a minus sign for a negative answer. Worked answers appear after you check.",
+  practiceReason:
+    "Explain how the highest bit contributes to each reading and how the lowest set bit contributes.",
+  bridgeHeading: "Use the same rule in w0",
+  bridgeIntro:
+    "The w0 register view has 32 bits. Its highest position is bit 31, rather than bit 3 in our small example. The weight rule stays the same: the highest weight is positive unsigned and negative signed. Every lower weight stays positive.",
+  bridgeAfter:
+    "This new register example has only its highest bit set. Every lower contribution is zero. We have chosen a new pattern at a new width; we are not extending the earlier small pattern. Adding clear positions on the left would change which position has the negative weight.",
+  challengeHeading: "Read a fresh register pattern",
+  challengeIntro:
+    "Only the labelled bits are set in this new pattern. Calculate both readings using the supplied weights. You may use a calculator. Explain your reasoning before checking your answers.",
+  unchangedPrompt: "Would reading this pattern as signed change any stored bit? Explain why.",
+  clearPrompt:
+    "Suppose you clear the highest bit. Explain what happens to each reading, that position's weight and its contribution.",
+  reasonLabel: "How did you use the weights?",
+  exploreLabel: "Explore after the task",
+  numericCorrect: "Both readings match the model.",
+  numericIncorrect:
+    "At least one reading differs from the model. Compare your sums with the worked answers below.",
+  reasoningReview:
+    "Only your numeric readings are checked automatically. Compare your explanation with the model explanation below.",
+  practiceFeedback:
+    "The highest bit is set, so it contributes its positive weight unsigned and its negative weight signed. The lowest set bit contributes its positive weight in both readings. Each clear bit contributes zero. Add those contributions for each reading.",
+  challengeFeedback:
+    "Changing the interpretation changes the highest weight used in the sum; it preserves every stored bit. Clearing the highest bit changes the stored pattern. Its positional weights stay the same, but its contribution becomes zero in both readings. The lower set bit keeps its positive contribution.",
+  checkLabel: "Check readings",
+  retryLabel: "Try again",
+  unsignedLabel: "Unsigned reading",
+  signedLabel: "Signed reading",
+  lightThemeLabel: "Light theme",
+  darkThemeLabel: "Dark theme",
+  exploreIntro:
+    "Change the small pattern and compare its two readings. A bit change changes the pattern. Reading the pattern another way leaves its bits unchanged.",
+  resetLabel: "Reset exploration",
+  matrixLabel: "Bits aligned with their positional weights",
+  bitPosition: "Bit position",
+  weight: "Weight",
+  before: "Before",
+  highestSet: "Highest bit set",
+  bit3Set: "Bit 3 set",
+  sameBits: "Same bits",
+  freshBits: "Fresh bits",
+  unsignedWeight: "Unsigned weight",
+  signedWeight: "Signed weight",
+  clearExample: "With the highest bit clear, both readings agree.",
+  allZero: "all zero",
+  bits30to2: "Bits 30–2",
+  bit31: "Bit 31",
+  bit1: "Bit 1",
+  bit0: "Bit 0",
+  topUnsigned: "Bit 31 · unsigned weight",
+  topSigned: "Bit 31 · signed weight",
+  lowerWeight:
+    "Bit 1 has the same positive weight in both readings. Every other bit is clear and contributes zero.",
+  gate: "Check your small-pattern readings above to open exploration.",
+  invalid:
+    "Enter decimal whole numbers and complete each explanation. A minus sign and commas between groups of three digits are accepted.",
+  afterClear: "After clearing bit 31, both readings agree.",
+  saved:
+    "Your responses are saved in this browser. Written explanations are for you to compare with the feedback.",
+  appendix: "More about two’s complement in Appendix B",
+  negativeUse: "Here, C’s int uses the signed reading.",
+  objectives: [
+    "Read the same fixed-width bits as unsigned and signed numbers.",
+    "Explain why changing the reading leaves the stored bits unchanged.",
+    "Apply the positional-weight rule to a 32-bit register view.",
+  ],
+  makeHeading: "Make a negative number",
+  makeIntro: "Use the same rule to build a 32-bit pattern with the requested signed reading.",
+  explorationHeading: "Explore the readings",
+  captions: {
+    unsigned:
+      "Four positions and their unsigned contributions, before and after setting the highest bit.",
+    signed: "The same four-bit pattern with two sets of positional weights.",
+    practice: "A fresh four-bit pattern to read using the supplied weights.",
+    bridge: "A fresh 32-bit pattern with only bit 31 set.",
+    transfer: "A fresh 32-bit pattern with only bits 31 and 1 set.",
+    explore: "Change a small pattern and compare its two readings after attempting the practice.",
+  },
+} as const;

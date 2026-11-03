@@ -13,7 +13,7 @@ import {
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
 import { checkLesson, learnerText, modelProblems, termProblems } from "@platform/lesson-schema";
 import { LESSONS, SOURCE_LESSONS } from ".";
-import { UNSIGNED_WEIGHTS } from "./twos-complement.prose";
+import { READING_SEQUENCE } from "@al/views";
 
 const lesson = LESSONS.find((entry) => entry.id === "twos-complement")!;
 
@@ -46,14 +46,10 @@ it("publishes an independently accessible reference with valid computed figures"
 
 it("keeps the unsigned explanation before Module 1's figure and links the correct live pages", () => {
   const main = LESSONS.find((entry) => entry.id === "same-bits-two-readings")!;
-  const text = main.sections
-    .slice(0, 2)
-    .map((section) => section.prose)
-    .join("\n");
-  expect(text).toContain(UNSIGNED_WEIGHTS);
-  expect(text).toContain("The figure starts with only bit 0 set.");
-  expect(text).not.toContain("It is worth 2147483648.");
-  expect(text).not.toMatch(/negative|two’s complement|C’s `int`|#\/lesson\/twos-complement/);
+  expect(main.sections[0]!.prose).toBe(READING_SEQUENCE.unsignedIntro);
+  expect(main.sections[0]!.prose).not.toMatch(/negative|two’s complement/);
+  expect(main.sections[1]!.prose).toBe(READING_SEQUENCE.signedIntro);
+  expect(main.sections.at(-1)!.prose).toContain("#/lesson/twos-complement");
   const links = [
     ...learnerText(lesson)
       .join("\n")

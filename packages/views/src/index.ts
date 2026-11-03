@@ -87,3 +87,5 @@ export type { ArithFlow, Flow, FlowSource, ReturnFlow } from "./flow";
 export { MODULE0_STRINGS } from "./strings.module0";
 
 export { prepareViewHandoff, clearViewHandoff } from "./update-handoff";
+
+export { READING_SEQUENCE } from "./strings.reading-sequence";

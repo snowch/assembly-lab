@@ -196,19 +196,13 @@ describe("the int and the unsigned function", () => {
 // The register to read: its first pattern, and the top bit's table
 
 describe("the independent starting patterns of the register readers", () => {
-  it("starts the teaching reader with only bit 0 set from a fresh model run", () => {
-    const reader = units[1]!.sections
-      .flatMap((s) => s.interactives)
-      .find((x) => x.id === "read-register")!;
-    const start = reader.props["start"] as {
-      program: typeof FUEL_USED_WRONG;
-      call: typeof FUEL_CALL;
-    };
-    expect(reader.props["topBit"]).toBe(true);
-    expect(reader.props["teachingReadings"]).toBe(true);
-    expect(start.program).toEqual(FUEL_USED_WRONG);
-    expect(start.call).toEqual({ entry: "fuel_used_wrong", args: [0, 1] });
-    expect(patternAfterRun(start.program, start.call)).toBe("0".repeat(31) + "1");
+  it("uses distinct model-backed worked examples and fresh reading tasks", () => {
+    const figures = units[1]!.sections.flatMap((s) => s.interactives);
+    expect(
+      figures.filter((x) => x.kind === "reading-sequence").map((x) => x.props["stage"]),
+    ).toEqual(["unsigned", "signed", "practice", "bridge", "transfer", "explore"]);
+    expect(figures.some((x) => x.id === "read-register")).toBe(false);
+    expect(units[1]!.challenges.map((c) => c.id)).toEqual(["make-minus-three"]);
   });
 
   it("keeps the hexadecimal reader on the earlier subtraction's original pattern", () => {
@@ -327,35 +321,6 @@ describe("the challenges", () => {
     expect(readingsOfValue(-1).signed - 2).toBe(-3);
     expect(readingsOfValue(-1).unsigned - 2).toBe(readingsOfValue(-3).unsigned);
   });
-
-  it("Two readings each: 0x0000002a is 42 both ways, 0x80000000 is 2147483648 and −2147483648, 0xffffff38 is 4294967096 and −200", () => {
-    const read = (hex: string) => readingsOfValue(BigInt(hex));
-    const got = ["0x0000002a", "0x80000000", "0xffffff38"].map(read);
-    expect(got.map((r) => [r.unsigned, r.signed])).toEqual([
-      [42, 42],
-      [2147483648, -2147483648],
-      [4294967096, -200],
-    ]);
-    expect(challenge("two-readings-each").reference.answers).toEqual({
-      u1: "42",
-      s1: "42",
-      u2: "2147483648",
-      s2: "-2147483648",
-      u3: "4294967096",
-      s3: "-200",
-    });
-  });
-
-  it("Two readings each: the patterns the cases give are the ones the task names", () => {
-    const c = challenge("two-readings-each");
-    if (c.tests.kind !== "answers") throw new Error("answer tests");
-    expect([...new Set(c.tests.cases.map((t) => t.given["pattern"]))]).toEqual([
-      "0x0000002a",
-      "0x80000000",
-      "0xffffff38",
-    ]);
-    for (const p of ["0x0000002a", "0x80000000", "0xffffff38"]) expect(c.task).toContain(p);
-  });
 });
 
 // ---------------------------------------------------------------------------------------------
@@ -410,9 +375,7 @@ describe("every number the lesson states", () => {
   });
 
   it("writes each hexadecimal number as the pattern the model holds", () => {
-    expect([...new Set(hexes)].sort()).toEqual(
-      ["0x0000002a", "0x80000000", "0x80000001", "0xffffff38", "0xfffffff4", "0xfffffffd"].sort(),
-    );
+    expect([...new Set(hexes)].sort()).toEqual(["0xfffffff4", "0xfffffffd"].sort());
     for (const h of hexes) {
       const r = readingsOfValue(BigInt(h));
       expect(`0x${r.digits}`).toBe(h);

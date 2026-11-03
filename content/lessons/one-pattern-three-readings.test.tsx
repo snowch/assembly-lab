@@ -3,7 +3,7 @@
 
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { AnswerEditor, VIEW_STRINGS, createBook, grade } from "@al/views";
+import { VIEW_STRINGS, createBook, grade } from "@al/views";
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
 import { checkLesson, testCount } from "@platform/lesson-schema";
 import { LESSONS } from ".";
@@ -25,7 +25,7 @@ it("teaches hexadecimal before the two readings and keeps their practice togethe
   ]);
   expect(units.map((unit) => unit.challenges.map((c) => c.id))).toEqual([
     [],
-    ["make-minus-three", "two-readings-each"],
+    ["make-minus-three"],
     [],
   ]);
   expect(units[2]!.sections.flatMap((part) => part.interactives.map((f) => f.id))).toEqual([
@@ -50,7 +50,7 @@ it.each(units)("renders $id with no missing activity or challenge", (unit) => {
 });
 
 describe("the challenges", () => {
-  it.each(["make-minus-three", "two-readings-each"])(
+  it.each(["make-minus-three"])(
     "%s: the reference passes every test and the starting point does not",
     (id) => {
       const c = challenge(id);
@@ -99,64 +99,16 @@ describe("the challenges", () => {
     expect(verdict.failures.map((f) => f.label)).toEqual(["its unsigned reading"]);
     expect(JSON.stringify(verdict)).not.toContain("4294967293");
   });
-
-  it("two-readings-each: six tests, and a pair of readings swapped fails both", () => {
-    const c = challenge("two-readings-each");
-    expect(testCount(c)).toBe(6);
-    const swapped = grade(c, {
-      answers: {
-        u1: "42",
-        s1: "42",
-        u2: "-2147483648",
-        s2: "2147483648",
-        u3: "-200",
-        s3: "4294967096",
-      },
-    });
-    expect(swapped.failures.map((f) => f.label)).toEqual([
-      "unsigned reading of 0x80000000",
-      "signed reading of 0x80000000",
-      "unsigned reading of 0xffffff38",
-      "signed reading of 0xffffff38",
-    ]);
-    expect(JSON.stringify(swapped.failures)).not.toMatch(/4294967096|2147483648/);
-  });
-
-  it("two-readings-each: the minus sign the lesson prints is accepted as a typed answer", () => {
-    const c = challenge("two-readings-each");
-    const answers = { ...c.reference.answers, s2: "−2147483648", s3: "−200" };
-    expect(grade(c, { answers }).passed).toBe(true);
-  });
 });
 
-describe("the answer boxes of Two readings each", () => {
-  const modeOf = (field: string) => {
-    const { container } = render(
-      <AnswerEditor
-        lesson={{} as typeof lesson}
-        challenge={challenge("two-readings-each")}
-        artifact={{}}
-        onChange={() => {}}
-      />,
-    );
-    return container.querySelector(`[data-field="${field}"] input`)?.getAttribute("inputmode");
-  };
-
-  it("give the three signed readings, which are negative or can be, the full keyboard", () => {
-    // A number keypad has no minus sign on every phone, and −2147483648 and −200 are answers.
-    expect(["s1", "s2", "s3"].map(modeOf)).toEqual(["text", "text", "text"]);
-  });
-
-  it("keep the number keypad for the three unsigned readings, which are never negative", () => {
-    expect(["u1", "u2", "u3"].map(modeOf)).toEqual(["numeric", "numeric", "numeric"]);
-  });
-
-  it("still take the lowest signed answer the keyboard can give them", () => {
-    const c = challenge("two-readings-each");
-    expect(c.fields.filter((f) => f.min !== undefined).map((f) => [f.id, f.min])).toEqual([
-      ["s1", -2147483648],
-      ["s2", -2147483648],
-      ["s3", -2147483648],
-    ]);
-  });
+it("keeps both new reading tasks on a keyboard that can enter a minus sign", () => {
+  const { container } = render(
+    <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
+  );
+  const fields = container.querySelectorAll("[data-reading-task] input");
+  expect(fields).toHaveLength(4);
+  for (const field of fields) {
+    expect(field).toHaveAttribute("type", "text");
+    expect(field.getAttribute("inputmode")).not.toBe("numeric");
+  }
 });
