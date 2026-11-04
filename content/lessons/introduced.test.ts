@@ -56,6 +56,8 @@ export function instructionsNamedIn(text: string): string[] {
 const NAMED_BEFORE_TAUGHT: Readonly<Record<string, readonly string[]>> = {
   // Module 12 explains adr in the native-only boot source, outside browser exercises.
   "runtime-startup": ["adr"],
+  // Linked carry-flag preview names adds; Module 2 teaches writing it.
+  "four-bit-arithmetic": ["adds"],
   "building-constants": ["lsl"],
   "register-widths": ["lsl"],
   "adding-and-the-flags": ["cmn", "cset"],
@@ -114,6 +116,8 @@ describe("what each lesson teaches", () => {
           LESSONS.findIndex((l) => l.id === id),
         ),
       );
+    expect(at("four-bit-arithmetic").has("adds")).toBe(false);
+    expect(at("adding-and-the-flags").has("adds")).toBe(true);
     expect(at("tiny-function").has("bl")).toBe(false);
     expect(at("returning-to-caller").has("bl")).toBe(true);
     expect(at("returning-to-caller").has("stp")).toBe(false);

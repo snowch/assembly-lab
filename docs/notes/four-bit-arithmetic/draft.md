@@ -43,7 +43,7 @@ Unsigned 15 + 1 needs a fifth place.
 
 The boundary separates the four result bits from the extra carry.
 
-Keep the low four bits, `0000`. Discard the extra carry.
+For an Arm register, `adds` records the carry beyond its width in C, a one-bit **carry flag**. Ordinary `add` leaves the flags unchanged. [Adding and the flags](#/lesson/adding-and-the-flags) in Module 2 explains how to use these flags.
 
 Subtracting by addition
 
