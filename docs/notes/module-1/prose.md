@@ -14,6 +14,8 @@ The improvement pass (the title of Lesson 1, the top-bit table, the halves of si
 
 ## 1. Which is right, −12 or 4294967284?
 
+The same rule now uses 32 places. The `sub` instruction performs the subtraction as one instruction.
+
 Fuel used is the amount at the start minus the amount at the end. A developer wrote `fuel_used_wrong` with that subtraction the wrong way round in C. GCC compiles that C as written. Run `fuel_used_wrong(50, 38)`.
 
 The figure starts before the subtraction. Press Next to see which values it reads and what it writes.

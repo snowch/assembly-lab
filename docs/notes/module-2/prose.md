@@ -226,19 +226,7 @@ Two readings close together sit at almost one spot on a ring of 4294967296 value
 
 *The counter as a ring: `then`, `now`, and the distance between them.*
 
-Subtraction can be worked out as addition. To calculate `a - b`, change every bit of `b`: each 1 becomes 0, and each 0 becomes 1. Add those changed bits to `a`, with 1 more as the carry into the first column.
-
-The example uses four bits only, to show the method. The real instruction uses 32. 5 is `0101`. 3 is `0011`, and with every bit changed it is `1100`.
-
-```
-   0101     5
-+  1100     3, every bit changed
-+     1     carry in, into the first column
-  -----
-  10010     sum
-   0010     kept: 2
-  1         carry out of the top
-```
+The four-bit lesson built subtraction by inverting the second input, adding one and adding that opposite to the first input. The same rule applies here with 32 available bits.
 
 For 32 bits, changing every bit of `b` gives 4294967295 minus `b`. The adder adds that value to `a`, then adds 1. The full sum is `a + 4294967296 - b`, before keeping only the low 32 bits. When `b` is 0, the full sum is `a + 4294967296`: the low 32 bits hold `a`, and a carry leaves the top bit.
 
