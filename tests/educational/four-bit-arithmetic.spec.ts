@@ -1,7 +1,35 @@
 // Copyright © 2026 Christopher Snow
 
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 import { designProblems } from "./design";
+
+// Check the drawn arrow, including its head, actually reaches both destinations.
+async function expectConnectedCarry(addition: Locator) {
+  const geometry = await addition.evaluate((root) => {
+    const path = root.querySelector<SVGPathElement>(".al-four-carry-path")!;
+    const diagram = root.querySelector(".al-four-diagram")!.getBoundingClientRect();
+    const source = root.querySelector('[data-carry-source="true"]')!.getBoundingClientRect();
+    const target = root.querySelector('[data-destination="carry"]')!.getBoundingClientRect();
+    const length = path.getTotalLength();
+    const start = path.getPointAtLength(0);
+    const end = path.getPointAtLength(length);
+    const shaft = path.getPointAtLength(length - 16);
+    return {
+      startX: start.x - (source.left + source.width / 2 - diagram.left),
+      startY: start.y - (source.bottom - diagram.top),
+      endX: end.x - (target.left + target.width / 2 - diagram.left),
+      endY: end.y - (target.top - diagram.top),
+      shaftX: shaft.x - end.x,
+      shaftHeight: end.y - shaft.y,
+      headReference: root.querySelector<SVGMarkerElement>("marker")!.refX.baseVal.value,
+    };
+  });
+  for (const key of ["startX", "startY", "endX", "endY", "shaftX"] as const) {
+    expect(Math.abs(geometry[key])).toBeLessThan(1);
+  }
+  expect(geometry.shaftHeight).toBeGreaterThan(15);
+  expect(geometry.headReference).toBe(8);
+}
 
 for (const theme of ["light", "dark"] as const) {
   test(`four-bit arithmetic teaches carries and grades fresh subtraction in ${theme}`, async ({
@@ -15,30 +43,49 @@ for (const theme of ["light", "dark"] as const) {
     await page.getByRole("link", { name: "Arithmetic with four bits", exact: true }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Arithmetic with four bits");
     const addition = page.locator("#ix-four-bit-addition");
-    const result = addition.locator('[data-row="result"] td');
+    const result = addition.locator('[data-row="result"] .al-four-value');
     await expect(result).toHaveText(["?", "?", "?", "?"]);
-    await expect(addition.locator('[data-row="carry"] td')).toHaveText(["?", "?", "?", "0"]);
-    await expect(addition.locator('[data-row="a"] td')).toHaveText(["0", "0", "1", "1"]);
-    await expect(addition.locator('[data-row="b"] td')).toHaveText(["0", "0", "0", "1"]);
+    await expect(addition.locator('[data-row="carry"] .al-four-value')).toHaveText([
+      "?",
+      "?",
+      "?",
+      "0",
+    ]);
+    await expect(addition.locator('[data-row="a"] .al-four-value')).toHaveText([
+      "0",
+      "0",
+      "1",
+      "1",
+    ]);
+    await expect(addition.locator('[data-row="b"] .al-four-value')).toHaveText([
+      "0",
+      "0",
+      "0",
+      "1",
+    ]);
     const next = addition.getByRole("button", { name: "Next column" });
     await next.focus();
     await page.keyboard.press("Space");
     await expect(result).toHaveText(["?", "?", "?", "0"]);
-    await expect(addition.getByRole("status")).toContainText("carried 1 left");
+    await expect(addition.locator('[data-destination="carry"] .al-four-value')).toHaveText("1");
+    await expect(addition.locator('[data-destination="kept"] .al-four-value')).toHaveText("0");
+    await expectConnectedCarry(addition);
     for (let i = 0; i < 3; i++) await next.click();
     await expect(result).toHaveText(["0", "1", "0", "0"]);
     await expect(next).toBeDisabled();
+    await expectConnectedCarry(addition);
     await expect(addition.locator('[data-reading="unsigned"]')).toHaveText("4");
     await addition.getByRole("button", { name: "Reset", exact: true }).click();
     await expect(result).toHaveText(["?", "?", "?", "?"]);
     await expect(next).toBeEnabled();
 
     const wrap = page.locator("#ix-four-bit-width");
-    await expect(wrap.locator('[data-outside="true"]')).toHaveText("1");
-    await expect(wrap.locator('[data-row="result"] [data-bit]')).toHaveText(["0", "0", "0", "0"]);
+    await expect(wrap.locator('[data-outside="true"] .al-four-value')).toHaveText("1");
+    await expect(wrap.locator('[data-reading="pattern"]')).toHaveText("0000");
     const subtraction = page.locator("#ix-four-bit-subtraction");
     await expect(subtraction.locator("[data-stage]")).toHaveText(["0101", "1010", "1011"]);
-    await expect(subtraction.locator('[data-row="b"] th')).toContainText("(−5)");
+    await expect(subtraction.locator('[data-reading="pattern"]')).toHaveText("1110");
+    await expect(page.locator(".al-four-walkthrough")).toHaveCount(1);
     await expect(subtraction.locator('[data-reading="signed"]')).toHaveText("−8 + 4 + 2 = −2");
 
     const challenge = page.locator("#ix-four-bit-practice");
