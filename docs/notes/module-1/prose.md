@@ -193,7 +193,13 @@ In hexadecimal each half is four digits, so the boundary falls in the middle of 
 
 ## 3. Which numbers fit?
 
-Here are three of the four in hexadecimal, with a space between the halves. 65536 is `0x0001 0000`, 70000 is `0x0001 1170`, and 100000 is `0x0001 86a0`. The fourth, 1000000, is the odometer limit from the first section, which GCC needs two instructions for. Look at which halves of the three numbers have set bits.
+Here are three of the four in hexadecimal, with a space between the halves:
+
+- 65536 is `0x0001 0000`.
+- 70000 is `0x0001 1170`.
+- 100000 is `0x0001 86a0`.
+
+The fourth, 1000000, is the odometer limit from the first section, which GCC needs two instructions for. Look at which halves of the three numbers have set bits.
 
 **Which number does the rule above guarantee will fit in one `mov` to `w0`?**
 
@@ -236,7 +242,13 @@ With a `w` name, `movk` replaces one 16-bit half of the 32 bits and keeps the ot
 
 For example, `mov w0, 3` gives `0x0000 0003`. Then `movk w0, 2, lsl 16` gives `0x0002 0003`, which is 131075. The upper half is new, and the lower half is kept. The figure draws each step.
 
-To split a non-negative 32-bit integer into halves, divide it by 65536. This is the value of the lowest bit in the upper half. Take the result without its fractional part for the upper half. The amount left after this whole-number division is the **remainder**. It gives the lower half. In the example above, 131075 = 2 × 65536 + 3, so the upper half is 2 and the lower half is 3.
+To split a non-negative 32-bit integer into halves:
+
+1. Divide it by 65536, the value of the lowest bit in the upper half.
+2. Take the result without its fractional part for the upper half.
+3. Take the amount left after this whole-number division for the lower half. This amount is the **remainder**.
+
+In the example above, 131075 = 2 × 65536 + 3, so the upper half is 2 and the lower half is 3.
 
 Writing `#` before a number is optional. `mov w0, 30000` and `mov w0, #30000` are the same instruction.
 

@@ -11,7 +11,7 @@ export const FOUR_BIT_PROSE = {
   addition: {
     title: "Adding columns",
     before:
-      "These four-bit miniatures are not Arm registers. Unsigned weights are 8, 4, 2, 1; signed weights are −8, 4, 2, 1. The signed range is −8 to 7.\n\nAdd `0011` (3) and `0001` (1). Start at the right with carry 0. Add both bits and the incoming **carry**, a bit passed left from the previous column. Binary `1 + 1 = 10`: keep 0, carry 1. For `1 + 1 + 1 = 11`: keep 1, carry 1.\n\nPress Next column to reveal each calculation. Revealing a column does not execute another instruction.",
+      "These four-bit miniatures are not Arm registers.\n\n- Unsigned weights are 8, 4, 2, 1.\n- Signed weights are −8, 4, 2, 1.\n- The signed range is −8 to 7.\n\nAdd `0011` (3) and `0001` (1). A **carry** is a bit passed left from the previous column.\n\n1. Start at the right with carry 0.\n2. Add both bits and the incoming carry.\n3. Keep the rightmost bit of the sum. Pass the carry to the next column on the left, then repeat.\n\nFor example:\n\n- Binary `1 + 1 = 10`: keep 0, carry 1.\n- Binary `1 + 1 + 1 = 11`: keep 1, carry 1.\n\nPress Next column to reveal each calculation. Revealing a column does not execute another instruction.",
     caption: "Add 0011 and 0001, starting at the right.",
     after: "",
   },
@@ -24,14 +24,14 @@ export const FOUR_BIT_PROSE = {
   subtraction: {
     title: "Subtracting by addition",
     before:
-      "Subtract 5 by adding its opposite. **Invert** every bit: change 0 to 1 and 1 to 0. Then add one.\n\nThe original plus its inverted pattern gives `1111`. Adding one makes `10000`, whose low four bits are zero. That is why inverting and adding one constructs a pattern that cancels the original.",
+      "Calculate `0011` (3) minus `0101` (5) by adding the opposite of 5:\n\n1. **Invert** every bit of the second input: change 0 to 1 and 1 to 0.\n2. Add one to construct its opposite.\n3. Add that opposite to the first input.\n\nThe original plus its inverted pattern gives `1111`. Adding one makes `10000`, whose low four bits are zero. That is why inverting and adding one constructs a pattern that cancels the original.",
     caption: "Construct the opposite of 0101, then add it to 0011 to calculate 3 − 5.",
     after:
       "The opposite reads as −5 signed. Adding it gives `1110`: −8 + 4 + 2 = −2. These signed values fit. The top bit has a weight, not a separate minus sign.",
   },
   practice: {
     title: "Try 6 − 3",
-    task: "Start with `0110` and subtract `0011`. Enter the opposite of the second input, then the retained result. Use four binary digits in each box. Decide what to do with an extra leftmost carry.",
+    task: "Start with `0110` and subtract `0011`. Use four binary digits in each box.\n\n1. Enter the opposite of the second input.\n2. Enter the retained result.\n3. Decide what to do with an extra leftmost carry.",
     caption: "A fresh subtraction with four available places.",
     fields: {
       negated: "Opposite of 0011",

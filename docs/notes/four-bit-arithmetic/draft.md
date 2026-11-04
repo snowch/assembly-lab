@@ -14,9 +14,22 @@ Keep the available bits when an extra carry appears.
 
 Adding columns
 
-These four-bit miniatures are not Arm registers. Unsigned weights are 8, 4, 2, 1; signed weights are −8, 4, 2, 1. The signed range is −8 to 7.
+These four-bit miniatures are not Arm registers.
 
-Add `0011` (3) and `0001` (1). Start at the right with carry 0. Add both bits and the incoming **carry**, a bit passed left from the previous column. Binary `1 + 1 = 10`: keep 0, carry 1. For `1 + 1 + 1 = 11`: keep 1, carry 1.
+- Unsigned weights are 8, 4, 2, 1.
+- Signed weights are −8, 4, 2, 1.
+- The signed range is −8 to 7.
+
+Add `0011` (3) and `0001` (1). A **carry** is a bit passed left from the previous column.
+
+1. Start at the right with carry 0.
+2. Add both bits and the incoming carry.
+3. Keep the rightmost bit of the sum. Pass the carry to the next column on the left, then repeat.
+
+For example:
+
+- Binary `1 + 1 = 10`: keep 0, carry 1.
+- Binary `1 + 1 + 1 = 11`: keep 1, carry 1.
 
 Press Next column to reveal each calculation. Revealing a column does not execute another instruction.
 
@@ -34,7 +47,11 @@ Keep the low four bits, `0000`. Discard the extra carry.
 
 Subtracting by addition
 
-Subtract 5 by adding its opposite. **Invert** every bit: change 0 to 1 and 1 to 0. Then add one.
+Calculate `0011` (3) minus `0101` (5) by adding the opposite of 5:
+
+1. **Invert** every bit of the second input: change 0 to 1 and 1 to 0.
+2. Add one to construct its opposite.
+3. Add that opposite to the first input.
 
 The original plus its inverted pattern gives `1111`. Adding one makes `10000`, whose low four bits are zero. That is why inverting and adding one constructs a pattern that cancels the original.
 
@@ -44,7 +61,11 @@ The opposite reads as −5 signed. Adding it gives `1110`: −8 + 4 + 2 = −2. 
 
 Try 6 − 3
 
-Start with `0110` and subtract `0011`. Enter the opposite of the second input, then the retained result. Use four binary digits in each box. Decide what to do with an extra leftmost carry.
+Start with `0110` and subtract `0011`. Use four binary digits in each box.
+
+1. Enter the opposite of the second input.
+2. Enter the retained result.
+3. Decide what to do with an extra leftmost carry.
 
 A fresh subtraction with four available places.
 

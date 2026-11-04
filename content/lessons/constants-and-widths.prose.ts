@@ -22,7 +22,7 @@ export const PROSE = {
     "In hexadecimal each half is four digits, so the boundary falls in the middle of the eight digits.",
 
   prediction:
-    "Here are three of the four in hexadecimal, with a space between the halves. 65536 is `0x0001 0000`, 70000 is `0x0001 1170`, and 100000 is `0x0001 86a0`. The fourth, 1000000, is the odometer limit from the first section, which GCC needs two instructions for. Look at which halves of the three numbers have set bits.",
+    "Here are three of the four in hexadecimal, with a space between the halves:\n\n- 65536 is `0x0001 0000`.\n- 70000 is `0x0001 1170`.\n- 100000 is `0x0001 86a0`.\n\nThe fourth, 1000000, is the odometer limit from the first section, which GCC needs two instructions for. Look at which halves of the three numbers have set bits.",
   predictionQuestion:
     "**Which number does the rule above guarantee will fit in one `mov` to `w0`?**",
   predictionExplain:
@@ -43,7 +43,7 @@ export const PROSE = {
     "With a `w` name, `movk` replaces one 16-bit half of the 32 bits and keeps the other half. `mov` replaces all 32 bits.\n\n" +
     "`lsl 16` after the number tells `movk` to put it in the upper half, bits 16 to 31. Without `lsl 16`, `movk` puts it in the lower half.\n\n" +
     "For example, `mov w0, 3` gives `0x0000 0003`. Then `movk w0, 2, lsl 16` gives `0x0002 0003`, which is 131075. The upper half is new, and the lower half is kept. The figure draws each step.\n\n" +
-    "To split a non-negative 32-bit integer into halves, divide it by 65536. This is the value of the lowest bit in the upper half. Take the result without its fractional part for the upper half. The amount left after this whole-number division is the **remainder**. It gives the lower half. In the example above, 131075 = 2 × 65536 + 3, so the upper half is 2 and the lower half is 3.\n\n" +
+    "To split a non-negative 32-bit integer into halves:\n\n1. Divide it by 65536, the value of the lowest bit in the upper half.\n2. Take the result without its fractional part for the upper half.\n3. Take the amount left after this whole-number division for the lower half. This amount is the **remainder**.\n\nIn the example above, 131075 = 2 × 65536 + 3, so the upper half is 2 and the lower half is 3.\n\n" +
     "Writing `#` before a number is optional. `mov w0, 30000` and `mov w0, #30000` are the same instruction.",
   /** Shown once Build 1000000 has passed, above the stepper through the learner's own solution. */
   constructionSolved:
