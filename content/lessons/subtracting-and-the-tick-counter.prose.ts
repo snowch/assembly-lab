@@ -5,6 +5,8 @@
 // module-2.prose.test.ts holds every string here to that file, so a change
 // of wording is made there first.
 
+import { FOUR_BIT_PROSE } from "./four-bit-arithmetic.prose";
+
 export const PROSE = {
   question:
     "The trip computer counts milliseconds using a 32-bit unsigned counter. After 4294967295, the next value is 0.\n\n" +
@@ -30,17 +32,8 @@ export const PROSE = {
     "Two readings close together sit at almost one spot on a ring of 4294967296 values. So the strip under the ring enlarges the stretch round the wrap. The strip shows `then`, the wrap from 4294967295 to 0, `now`, the ticks before the wrap, the ticks after it, and their total.",
 
   subtractionInvestigation:
-    "Subtraction can be worked out as addition. To calculate `a - b`, change every bit of `b`: each 1 becomes 0, and each 0 becomes 1. Add those changed bits to `a`, with 1 more as the carry into the first column.\n\n" +
-    "The example uses four bits only, to show the method. The real instruction uses 32. 5 is `0101`. 3 is `0011`, and with every bit changed it is `1100`.\n\n" +
-    "```\n" +
-    "   0101     5\n" +
-    "+  1100     3, every bit changed\n" +
-    "+     1     carry in, into the first column\n" +
-    "  -----\n" +
-    "  10010     sum\n" +
-    "   0010     kept: 2\n" +
-    "  1         carry out of the top\n" +
-    "```\n\n" +
+    FOUR_BIT_PROSE.laterBridge +
+    "\n\n" +
     "For 32 bits, changing every bit of `b` gives 4294967295 minus `b`. The adder adds that value to `a`, then adds 1. The full sum is `a + 4294967296 - b`, before keeping only the low 32 bits. When `b` is 0, the full sum is `a + 4294967296`: the low 32 bits hold `a`, and a carry leaves the top bit.\n\n" +
     "The figures below use this calculation to explain the result and flags of 32-bit `subs`: the input being subtracted, its bits changed, the carry in of 1, the result and the carry out.\n\n" +
     "A carry leaves the top exactly when `a` is at least `b`, so C = 1 also means no borrow was needed.\n\n" +

@@ -19,6 +19,7 @@
 // computes, never values in the lesson's data. A wrong field gives the case's own sentence for
 // that field (`given["feedback.<field>"]`) as the failure's detail, and never the right value.
 
+import { FOUR_BIT_SUBTRACTION, gradeFourBitSubtraction } from "./grader-four-bit";
 import { RUN_C, gradeC } from "./grader-c";
 import { RECORDED_TOKENS, gradeRecorded } from "./grader-recorded";
 import { failureDetail, fieldList } from "./fields";
@@ -325,6 +326,7 @@ export function gradeInstructions(challenge: Challenge, artifact: Artifact): Ver
 
 export function grade(challenge: Challenge, artifact: Artifact): Verdict {
   const { grader } = answerTests(challenge);
+  if (grader === FOUR_BIT_SUBTRACTION) return gradeFourBitSubtraction(challenge, artifact);
   if (grader === RUN_C) return gradeC(challenge, artifact);
   if (grader === RECORDED_TOKENS) return gradeRecorded(challenge, artifact);
   if (grader === RUN_REGISTERS) return gradeWritten(challenge, artifact);

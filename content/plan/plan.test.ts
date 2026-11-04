@@ -103,6 +103,7 @@ describe("the course's plan", () => {
     expect(lessonsOf(moduleByNumber(1)!, LESSONS).map((l) => l.id)).toEqual([
       "one-pattern-three-readings",
       "same-bits-two-readings",
+      "four-bit-arithmetic",
       "arithmetic-on-register-bits",
       "constants-and-widths",
       "building-constants",

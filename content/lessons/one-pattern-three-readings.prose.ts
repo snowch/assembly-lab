@@ -4,10 +4,13 @@
 // docs/notes/module-1/prose.md (the part headed "Lesson 1"). one-pattern-three-readings.prose.test.ts
 // holds every string here to that file, so a change of wording is made there first.
 
+import { FOUR_BIT_PROSE } from "./four-bit-arithmetic.prose";
 import { UNSIGNED_WEIGHTS } from "./twos-complement.prose";
 
 export const PROSE = {
   question:
+    FOUR_BIT_PROSE.fuelBridge +
+    "\n\n" +
     "Fuel used is the amount at the start minus the amount at the end. A developer wrote `fuel_used_wrong` with that subtraction the wrong way round in C. GCC compiles that C as written. Run `fuel_used_wrong(50, 38)`.\n\n" +
     "The figure starts before the subtraction. Press Next to see which values it reads and what it writes.",
 

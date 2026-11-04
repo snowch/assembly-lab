@@ -24,6 +24,7 @@ export const TAUGHT: Readonly<Record<string, readonly string[]>> = {
   "one-pattern-three-readings": [],
   "twos-complement": [],
   "same-bits-two-readings": [],
+  "four-bit-arithmetic": [],
   "arithmetic-on-register-bits": [],
   "constants-and-widths": ["mov"],
   "building-constants": ["movk"],
