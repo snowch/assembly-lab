@@ -21,7 +21,16 @@ for (const theme of ["light", "dark"] as const) {
     await first.locator("summary").click();
     const calculation = first.getByLabel("Calculation", { exact: true });
     await expect(calculation).toHaveValue("");
-    await calculation.fill("2,147,483,648 + 8");
+    await expect(first.locator(".al-calculator-format code")).toContainText([
+      "+",
+      "-",
+      "*",
+      "/",
+      "^",
+      "2^8",
+      "^",
+    ]);
+    await calculation.fill("2^31 + 8");
     await calculation.press("Enter");
     await expect(calculation).toBeFocused();
     await expect(first.getByRole("status")).toHaveText("Result: 2,147,483,656");
@@ -34,6 +43,12 @@ for (const theme of ["light", "dark"] as const) {
     await expect(first.getByRole("status")).toHaveText(
       "This division does not give a whole number.",
     );
+    await calculation.fill("2^-1");
+    await calculation.press("Enter");
+    await expect(first.getByRole("status")).toHaveText("Use a non-negative whole number after ^.");
+    await calculation.fill("2^64");
+    await calculation.press("Enter");
+    await expect(first.getByRole("status")).toHaveText("Result: 18,446,744,073,709,551,616");
 
     const exercise = page.locator("#ix-make-minus-three");
     const answer = exercise.getByLabel("its unsigned reading", { exact: true });
@@ -42,7 +57,7 @@ for (const theme of ["light", "dark"] as const) {
     await second.locator("summary").click();
     const scratch = second.getByLabel("Calculation", { exact: true });
     await expect(scratch).toHaveValue("");
-    await scratch.fill("(20 - 6) * 3");
+    await scratch.fill("(2^3 - 1) * 6");
     await scratch.press("Enter");
     await expect(second.getByRole("status")).toHaveText("Result: 42");
     await expect(answer).toHaveValue("123");
@@ -50,7 +65,7 @@ for (const theme of ["light", "dark"] as const) {
     await second.locator("summary").click();
     await second.locator("summary").focus();
     await page.keyboard.press("Enter");
-    await expect(scratch).toHaveValue("(20 - 6) * 3");
+    await expect(scratch).toHaveValue("(2^3 - 1) * 6");
     await expect(second.getByRole("status")).toHaveText("Result: 42");
     for (const input of [calculation, scratch]) {
       const contrast = await input.evaluate((element) => {
