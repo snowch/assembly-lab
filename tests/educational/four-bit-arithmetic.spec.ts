@@ -21,12 +21,14 @@ async function expectConnectedCarry(addition: Locator) {
       endY: end.y - (target.top - diagram.top),
       shaftX: shaft.x - end.x,
       shaftHeight: end.y - shaft.y,
+      headReference: root.querySelector<SVGMarkerElement>("marker")!.refX.baseVal.value,
     };
   });
   for (const key of ["startX", "startY", "endX", "endY", "shaftX"] as const) {
     expect(Math.abs(geometry[key])).toBeLessThan(1);
   }
   expect(geometry.shaftHeight).toBeGreaterThan(15);
+  expect(geometry.headReference).toBe(8);
 }
 
 for (const theme of ["light", "dark"] as const) {

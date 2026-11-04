@@ -253,8 +253,8 @@
   border-top: 1px solid var(--border);
   font-size: var(--text-xs);
 }
-.al-four-outcome > p {
-  max-width: 60ch;
+.al-four-arithmetic .al-four-outcome > p {
+  max-width: 40em;
 }
 .al-four-outcome > p + p {
   margin-top: var(--space-1);
