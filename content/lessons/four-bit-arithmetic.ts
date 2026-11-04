@@ -14,7 +14,7 @@ export const fourBitArithmetic: LessonInput = {
   sectionLayout: "selected",
   showTimeModelNotes: false,
   objectives: [...P.objectives],
-  introduces: ["carry", "invert"],
+  introduces: ["carry", "invert", "flag"],
   sections: [
     {
       kind: "motivation",
