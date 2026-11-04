@@ -3,88 +3,316 @@
 .al-four-arithmetic {
   min-width: 0;
   grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
 }
-.al-four-columns {
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: separate;
-  border-spacing: var(--space-1);
-  text-align: center;
-}
-.al-four-columns tr > :first-child {
-  width: 7.5rem;
-  text-align: left;
-}
-.al-four-columns th {
-  color: var(--fg-muted);
-  font-size: var(--text-xs);
-  font-weight: 400;
-  overflow-wrap: anywhere;
-}
-.al-four-columns th code {
-  display: inline-block;
-  padding: 0;
-  background: none;
-  font-size: inherit;
-}
-.al-four-columns td:not(:first-child) {
-  padding: var(--space-2) 0;
-  font-family: var(--font-mono);
-  font-size: 1.25rem;
+.al-four-arithmetic code {
   font-variant-numeric: tabular-nums;
-  border-radius: var(--radius);
 }
-.al-four-input {
-  background: var(--bg-sunken);
-  border: 1px dashed var(--border-strong);
-}
-.al-four-columns .al-four-carry {
-  font-size: 1rem;
-  color: var(--fg-muted);
-}
-.al-four-result {
-  border-top: 2px solid var(--border-strong);
-}
-.al-four-result[data-revealed="true"] {
-  border: 2px solid var(--accent);
-  font-weight: 700;
-}
-.al-four-result[data-revealed="false"] {
-  color: var(--fg-muted);
-}
-.al-four-columns [data-bit="3"] {
-  border-left: 3px solid var(--border-strong);
-}
-.al-four-columns .al-four-extra {
-  border: 1px dashed var(--border-strong);
-}
-.al-four-arithmetic .al-controls {
-  margin-top: var(--space-3);
+.al-four-arithmetic p {
+  margin: 0;
 }
 .al-four-arithmetic button {
   min-height: 44px;
   min-width: 44px;
 }
-.al-four-status {
-  min-height: 4.5rem;
+.al-four-top {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--fg-muted);
+  font-size: 0.75rem;
+}
+.al-four-operands {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-2) 0 var(--space-4);
+}
+.al-four-operands > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+.al-four-operands b {
+  color: var(--fg-muted);
+  font-size: 0.75rem;
+}
+.al-four-operands code {
+  padding: 0;
+  background: none;
+  font-size: 1.125rem;
+  letter-spacing: 0.1em;
+}
+.al-four-diagram {
+  position: relative;
+}
+.al-four-split {
+  padding: var(--space-3) var(--space-2) var(--space-4);
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.al-four-split .al-four-current {
+  max-width: 60ch;
+  margin: 0 auto var(--space-3);
+  text-align: center;
+  color: var(--fg-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.al-four-binary-equation,
+.al-four-equation-part,
+.al-four-binary {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+.al-four-binary {
+  gap: var(--space-1);
+}
+.al-four-term,
+.al-four-output {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 1.5rem;
+}
+.al-four-term > span,
+.al-four-output > span {
+  color: var(--fg-muted);
+  font-size: 0.75rem;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.al-four-term strong,
+.al-four-sign {
+  font: 500 1.75rem/46px var(--font-mono);
+}
+.al-four-sign {
+  font-size: 1.35rem;
+}
+.al-four-output strong {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  font: 600 1.75rem/1 var(--font-mono);
+}
+.al-four-output[data-known="true"] strong {
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.al-four-binary sub {
+  position: static;
+  align-self: flex-end;
+  margin-left: -2px;
+  font: 0.75rem/1 var(--font-mono);
+}
+.al-four-route-space {
+  position: relative;
+  height: 80px;
+}
+.al-four-final-carry {
+  position: absolute;
+  left: 0;
+  bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 78px;
+  height: 44px;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.al-four-final-carry > span {
+  max-width: 34px;
+  font-size: 0.75rem;
+  line-height: 1.15;
+}
+.al-four-final-carry strong {
+  font: 600 1.5rem/1 var(--font-mono);
+}
+.al-four-grid {
+  display: grid;
+  grid-template-columns: 72px repeat(4, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+.al-four-row-labels,
+.al-four-column {
+  display: grid;
+  grid-template-rows: 57px 34px 34px 57px 44px;
+  gap: var(--space-1);
+  min-width: 0;
+  padding-top: 7px;
+}
+.al-four-row-labels {
+  color: var(--fg-muted);
+  font-size: 0.75rem;
+}
+.al-four-row-labels > span {
+  display: flex;
+  align-items: center;
+  line-height: 1.2;
+}
+.al-four-row-labels > :nth-child(4) {
+  border-top: 1px solid var(--border-strong);
+  color: var(--fg);
+  font-weight: 600;
+}
+.al-four-column {
+  padding: 6px 4px 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+}
+.al-four-column[data-active="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.al-four-column[data-next="true"] {
+  border-color: var(--border-strong);
+  border-style: dashed;
+}
+.al-four-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  border-radius: var(--radius);
+  font: 500 1.6rem/1.1 var(--font-mono);
+}
+.al-four-cell[data-row="carry"] {
+  border: 1px solid var(--border);
+  background: var(--bg-sunken);
+}
+.al-four-cell[data-row="result"] {
+  border-top: 1px solid var(--border-strong);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+.al-four-cell[data-unknown="true"] {
+  color: var(--fg-muted);
+}
+.al-four-cell[data-destination] {
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  color: var(--accent);
+  background: var(--bg-raised);
+  font-weight: 700;
+}
+.al-four-role {
+  display: block;
+  margin-top: 3px;
+  font: 0.75rem/1.2 var(--font-text);
+}
+.al-four-bit-label {
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+.al-four-bit-label strong {
+  font-weight: 600;
+}
+.al-four-bit-label > span {
+  display: block;
+  margin-top: 4px;
+  color: var(--accent);
+  font-size: 0.6875rem;
+}
+.al-four-connector {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  color: var(--accent);
+}
+.al-four-connector marker path {
+  fill: currentColor;
+}
+.al-four-carry-path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.al-four-outcome {
+  min-height: 6rem;
   margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+  font-size: var(--text-xs);
 }
-.al-four-status p,
-.al-four-arithmetic .al-four-reading,
-.al-four-arithmetic .al-four-equation,
-.al-four-arithmetic .al-four-stage-label {
-  margin: var(--space-2) 0;
+.al-four-outcome > p {
+  max-width: 60ch;
 }
-.al-four-arithmetic code {
-  font-variant-numeric: tabular-nums;
-  overflow-wrap: anywhere;
+.al-four-outcome > p + p {
+  margin-top: var(--space-1);
+}
+.al-four-walkthrough .al-controls {
+  margin-top: var(--space-2);
+}
+.al-four-walkthrough [aria-disabled="true"] {
+  color: var(--fg-muted);
+  background: var(--bg-sunken);
+  border-color: var(--border);
+  cursor: default;
+}
+/* Later examples keep their distinct job without repeating the column walkthrough. */
+.al-four-width-sum,
+.al-four-width-result {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+.al-four-width-sum {
+  flex-wrap: wrap;
+  align-items: center;
+}
+.al-four-width-sum > code,
+.al-four-compact-addition code {
+  padding: 0;
+  background: none;
+  font-size: 1.125rem;
+  white-space: nowrap;
+}
+.al-four-width-result > span {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-align: center;
+}
+.al-four-width-result > span > span {
+  color: var(--fg-muted);
+  font-size: 0.75rem;
+}
+.al-four-width-carry > strong,
+.al-four-width-kept > code {
+  padding: var(--space-2);
+  font: 500 1.25rem/1.2 var(--font-mono);
+}
+.al-four-width-carry > strong {
+  border: 1px dashed var(--border-strong);
+}
+.al-four-width-kept > code {
+  border-left: 3px solid var(--border-strong);
+  background: var(--accent-soft);
 }
 .al-four-negation {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-  margin: var(--space-3) 0 var(--space-4);
 }
 .al-four-negation > div {
   min-width: 0;
@@ -92,16 +320,16 @@
 }
 .al-four-negation > div > span {
   display: block;
-  font-size: var(--text-xs);
   color: var(--fg-muted);
+  font-size: var(--text-xs);
 }
 .al-four-negation > div > code {
   display: block;
-  font-size: 1.2rem;
-  letter-spacing: 0.12em;
-  border: 1px dashed var(--border-strong);
   margin: var(--space-2) 0;
   padding: var(--space-2);
+  border: 1px dashed var(--border-strong);
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
 }
 .al-four-negation > .al-four-opposite > code {
   border: 2px solid var(--accent);
@@ -118,15 +346,48 @@
   font-size: 1rem;
 }
 .al-four-reading {
-  border-top: 1px solid var(--border);
   padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
 }
 @media (max-width: 600px) {
-  .al-four-columns tr > :first-child {
-    width: 5.75rem;
+  .al-four-binary-equation,
+  .al-four-equation-part {
+    gap: 6px;
   }
-  .al-four-columns td:not(:first-child) {
-    font-size: 1.1rem;
+  .al-four-term {
+    min-width: 22px;
+  }
+  .al-four-term strong,
+  .al-four-sign {
+    line-height: 42px;
+  }
+  .al-four-term strong {
+    font-size: 1.6rem;
+  }
+  .al-four-sign {
+    font-size: 1.15rem;
+  }
+  .al-four-output strong {
+    width: 36px;
+    height: 42px;
+    font-size: 1.65rem;
+  }
+  .al-four-grid {
+    grid-template-columns: 52px repeat(4, minmax(0, 1fr));
+    gap: 3px;
+  }
+  .al-four-row-labels,
+  .al-four-column {
+    grid-template-rows: 54px 31px 31px 54px 43px;
+  }
+  .al-four-column {
+    padding-inline: 2px;
+  }
+  .al-four-cell {
+    font-size: 1.5rem;
+  }
+  .al-four-role {
+    font-size: 0.6875rem;
   }
   .al-four-negation {
     flex-direction: column;
@@ -140,5 +401,17 @@
   }
   .al-four-arrow-glyph {
     transform: rotate(90deg);
+  }
+}
+@media (forced-colors: active) {
+  .al-four-column[data-active="true"] {
+    outline: 2px solid Highlight;
+  }
+  .al-four-cell[data-destination],
+  .al-four-output[data-known="true"] strong {
+    border-color: Highlight;
+  }
+  .al-four-connector {
+    color: Highlight;
   }
 }
