@@ -185,6 +185,25 @@ input[type="checkbox"]:focus-visible {
 .prose > *:last-child {
   margin-bottom: 0;
 }
+/* Keep the subtraction procedure distinct from its worked example. */
+[data-lesson="four-bit-arithmetic"] .prose > blockquote {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-sunken);
+  color: var(--fg);
+}
+[data-lesson="four-bit-arithmetic"] .prose > blockquote > :last-child {
+  margin-bottom: 0;
+}
+[data-lesson="four-bit-arithmetic"] .prose > blockquote ol {
+  padding-left: var(--space-5);
+}
+[data-lesson="four-bit-arithmetic"] .prose > blockquote li + li {
+  margin-top: var(--space-2);
+}
 @media (max-width: 600px) {
   .prose a {
     display: inline-flex;

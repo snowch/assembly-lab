@@ -47,13 +47,17 @@ For an Arm register, `adds` records the carry beyond its width in C, a one-bit *
 
 Subtracting by addition
 
-Calculate `0011` (3) minus `0101` (5) by adding the opposite of 5:
+> To subtract the second input from the first:
+>
+> 1. **Invert** every bit of the second input: change 0 to 1 and 1 to 0.
+> 2. **Add one** to the inverted pattern to construct the opposite pattern.
+> 3. **Add** that opposite pattern to the first input.
+>
+> Keep four result bits after each addition. Discard any extra carry to their left.
 
-1. **Invert** every bit of the second input: change 0 to 1 and 1 to 0.
-2. Add one to construct its opposite.
-3. Add that opposite to the first input.
+For `0011` (3) minus `0101` (5), construct the opposite of `0101`, then add it to `0011`.
 
-The original plus its inverted pattern gives `1111`. Adding one makes `10000`, whose low four bits are zero. That is why inverting and adding one constructs a pattern that cancels the original.
+The second input plus its inverted pattern gives `1111`. Adding one makes `10000`, whose low four bits are zero. That is why inverting and adding one constructs a pattern that cancels the original.
 
 Construct the opposite of 0101, then add it to 0011 to calculate 3 − 5.
 
@@ -123,6 +127,9 @@ export const FOUR_BIT_STRINGS = {
   columnsLabel: "Four-bit addition columns",
   carryRow: "Incoming carry",
   firstRow: "First input",
+  carryNotes: "Carry notes (optional, not graded)",
+  carryNote: (bit: number) => `Carry note for bit ${bit} (optional, not graded)`,
+  plusSign: "+",
   secondRow: "Second input",
   resultRow: "Result",
   extraRow: "Extra carry",

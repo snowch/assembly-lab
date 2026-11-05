@@ -25,7 +25,7 @@ export const FOUR_BIT_PROSE = {
   subtraction: {
     title: "Subtracting by addition",
     before:
-      "Calculate `0011` (3) minus `0101` (5) by adding the opposite of 5:\n\n1. **Invert** every bit of the second input: change 0 to 1 and 1 to 0.\n2. Add one to construct its opposite.\n3. Add that opposite to the first input.\n\nThe original plus its inverted pattern gives `1111`. Adding one makes `10000`, whose low four bits are zero. That is why inverting and adding one constructs a pattern that cancels the original.",
+      "> To subtract the second input from the first:\n>\n> 1. **Invert** every bit of the second input: change 0 to 1 and 1 to 0.\n> 2. **Add one** to the inverted pattern to construct the opposite pattern.\n> 3. **Add** that opposite pattern to the first input.\n>\n> Keep four result bits after each addition. Discard any extra carry to their left.\n\nFor `0011` (3) minus `0101` (5), construct the opposite of `0101`, then add it to `0011`.\n\nThe second input plus its inverted pattern gives `1111`. Adding one makes `10000`, whose low four bits are zero. That is why inverting and adding one constructs a pattern that cancels the original.",
     caption: "Construct the opposite of 0101, then add it to 0011 to calculate 3 − 5.",
     after:
       "The opposite reads as −5 signed. Adding it gives `1110`: −8 + 4 + 2 = −2. These signed values fit. The top bit has a weight, not a separate minus sign.",

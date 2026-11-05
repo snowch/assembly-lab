@@ -97,7 +97,10 @@ export const fourBitArithmetic: LessonInput = {
           options: [...P.practice.options],
         },
       ],
-      initial: { answers: {} },
+      initial: {
+        answers: {},
+        data: { editor: { kind: "four-bit-subtraction", first: practice.a.pattern } },
+      },
       tests: {
         kind: "answers",
         grader: "four-bit-subtraction",
