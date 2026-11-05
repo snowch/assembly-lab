@@ -31,37 +31,50 @@ async function expectConnectedCarry(addition: Locator) {
   expect(geometry.headReference).toBe(8);
 }
 
-// Measure visible character centres, rather than relying on shared CSS classes.
+// The separate cells must form the same four columns in every working row.
 async function expectAlignedBits(workspace: Locator) {
   const geometry = await workspace.evaluate(async (root) => {
     await document.fonts.ready;
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d")!;
-    const patterns = [...root.querySelectorAll<HTMLElement>(".al-four-pattern")].map((element) => {
-      const style = getComputedStyle(element);
-      context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-      const advance = context.measureText("0").width;
-      const left =
-        element.getBoundingClientRect().left +
-        parseFloat(style.borderLeftWidth) +
-        parseFloat(style.paddingLeft) -
-        element.scrollLeft;
-      return Array.from({ length: 4 }, (_, index) => left + (index + 0.5) * advance);
-    });
-    const notes = [...root.querySelectorAll<HTMLInputElement>(".al-four-carry-notes input")].map(
-      (element) => {
+    const centres = (selector: string) =>
+      [...root.querySelectorAll(selector)].map((element) => {
         const box = element.getBoundingClientRect();
-        return box.left + box.width / 2;
-      },
-    );
-    return { patterns, notes };
+        return { x: box.left + box.width / 2, width: box.width, height: box.height };
+      });
+    return [
+      centres('[data-row="first"] code'),
+      centres('[data-row="negated"] input'),
+      centres('[data-row="result"] input'),
+      centres(".al-four-carry-notes input"),
+    ];
   });
-  expect(geometry.patterns).toHaveLength(3);
-  for (const row of [...geometry.patterns.slice(1), geometry.notes]) {
-    row.forEach((centre, index) =>
-      expect(Math.abs(centre - geometry.patterns[0]![index]!)).toBeLessThan(1),
-    );
+  for (const row of geometry) {
+    expect(row).toHaveLength(4);
+    row.forEach((cell, index) => {
+      expect(Math.abs(cell.x - geometry[0]![index]!.x)).toBeLessThan(1);
+      expect(cell.width).toBeGreaterThanOrEqual(44);
+      expect(cell.height).toBeGreaterThanOrEqual(44);
+    });
   }
+}
+
+async function expectCells(cells: Locator, values: string[]) {
+  await expect(cells).toHaveCount(values.length);
+  for (let index = 0; index < values.length; index++)
+    await expect(cells.nth(index)).toHaveValue(values[index]!);
+}
+
+async function fillCells(cells: Locator, pattern: string) {
+  for (let index = 0; index < 4; index++) await cells.nth(index).fill(pattern[index] ?? "");
+}
+
+async function paste(cells: Locator, text: string) {
+  await cells.first().evaluate((element, value) => {
+    const data = new DataTransfer();
+    data.setData("text/plain", value);
+    element.dispatchEvent(
+      new ClipboardEvent("paste", { clipboardData: data, bubbles: true, cancelable: true }),
+    );
+  }, text);
 }
 
 for (const theme of ["light", "dark"] as const) {
@@ -125,41 +138,57 @@ for (const theme of ["light", "dark"] as const) {
     const solved = page.locator("#ix-four-bit-solved");
     const workspace = challenge.locator(".al-four-workspace");
     const notes = workspace.locator(".al-four-carry-notes input");
-    await expect(workspace.locator('[data-row="first"] code')).toHaveText("0110");
-    await expect(notes).toHaveCount(4);
-    for (const note of await notes.all()) await expect(note).toHaveValue("");
+    const oppositeGroup = challenge.getByRole("group", { name: "Opposite of 0011", exact: true });
+    const answerGroup = challenge.getByRole("group", {
+      name: "Retained result of 0110 minus 0011",
+      exact: true,
+    });
+    const opposite = oppositeGroup.locator("input");
+    const answer = answerGroup.locator("input");
+    await expect(workspace.locator('[data-row="first"] code')).toHaveText(["0", "1", "1", "0"]);
+    await expectCells(notes, ["", "", "", ""]);
+    await expectCells(opposite, ["", "", "", ""]);
+    await expectCells(answer, ["", "", "", ""]);
+    await expect(opposite.first()).toHaveAccessibleName("Opposite of 0011, bit 3");
     await expectAlignedBits(workspace);
     await notes.first().fill("9"); // Scratch notes are deliberately ungraded.
     await page.reload();
     await expect(notes.first()).toHaveValue("9");
-    await expect(
-      challenge.getByRole("textbox", { name: "Opposite of 0011", exact: true }),
-    ).toHaveValue("");
+    await expectCells(opposite, ["", "", "", ""]);
     await expect(solved.locator(".al-challenge-note")).toHaveCount(0);
     await challenge.getByRole("button", { name: "Run tests", exact: true }).click();
     await expect(challenge.locator(".verdict.blocked")).toBeVisible();
-    await challenge.getByRole("textbox", { name: "Opposite of 0011", exact: true }).fill("1100");
-    await challenge
-      .getByRole("textbox", { name: "Retained result of 0110 minus 0011", exact: true })
-      .fill("0011");
+    await opposite.first().focus();
+    await page.keyboard.type("1101");
+    await expectCells(opposite, ["1", "1", "0", "1"]);
+    await expect(opposite.last()).toBeFocused();
+    await page.keyboard.press("ArrowLeft");
+    await expect(opposite.nth(2)).toBeFocused();
+    await page.keyboard.press("ArrowRight");
+    await expect(opposite.last()).toBeFocused();
+    await answer.nth(2).fill("1");
+    await answer.nth(3).fill("1");
     await challenge.getByRole("radio", { name: "Discard it outside the four result bits" }).check();
+    await page.reload();
+    await expectCells(answer, ["", "", "1", "1"]); // Missing leading zeroes stay missing.
+    await challenge.getByRole("button", { name: "Run tests", exact: true }).click();
+    await expect(challenge.locator(".verdict-failure")).toHaveCount(1);
+    await expect(solved.locator(".al-challenge-note")).toHaveCount(0);
+    await paste(answer, "10011");
+    await expect(answerGroup.getByRole("alert")).toBeVisible();
+    await expectCells(answer, ["", "", "1", "1"]); // Overlong paste is not silently truncated.
+    await paste(answer, "00x1");
+    await expect(answerGroup.getByRole("alert")).toBeVisible();
+    await expectCells(answer, ["", "", "1", "1"]);
+    await paste(answer, "00 11");
+    await expectCells(answer, ["0", "0", "1", "1"]);
+    await expect(answerGroup.getByRole("alert")).toHaveCount(0);
+    await fillCells(opposite, "1100");
     await expectAlignedBits(workspace);
     await challenge.getByRole("button", { name: "Run tests", exact: true }).click();
     await expect(challenge.locator(".verdict-failure")).toHaveCount(1);
     await expect(solved.locator(".al-challenge-note")).toHaveCount(0);
-    await challenge.getByRole("textbox", { name: "Opposite of 0011", exact: true }).fill("1101");
-    const answer = challenge.getByRole("textbox", {
-      name: "Retained result of 0110 minus 0011",
-      exact: true,
-    });
-    await answer.fill("10011");
-    await expect(answer).toHaveValue("10011");
-    await challenge.getByRole("button", { name: "Run tests", exact: true }).click();
-    await expect(challenge.locator(".verdict-failure")).toHaveCount(1);
-    await expect(solved.locator(".al-challenge-note")).toHaveCount(0);
-    await answer.fill("00 11");
-    await expect(answer).toHaveValue("0011");
-    await expectAlignedBits(workspace);
+    await fillCells(opposite, "1101");
     await challenge.getByRole("button", { name: "Run tests", exact: true }).click();
     await expect(challenge.locator(".challenge-complete")).toBeVisible();
     await expect(solved).toContainText("Keeping the low four bits");
@@ -167,15 +196,14 @@ for (const theme of ["light", "dark"] as const) {
     await page.reload();
     await expect(challenge.locator(".challenge-complete")).toBeVisible();
     await expect(notes.first()).toHaveValue("9");
+    await expectCells(answer, ["0", "0", "1", "1"]);
     await expect(solved).toContainText("Keeping the low four bits");
     await challenge.getByRole("button", { name: "Clear work: Try 6 − 3", exact: true }).click();
     await challenge.getByRole("button", { name: "Discard work", exact: true }).click();
     await expect(challenge.locator(".challenge-complete")).toHaveCount(0);
-    for (const note of await notes.all()) await expect(note).toHaveValue("");
-    await expect(
-      challenge.getByRole("textbox", { name: "Opposite of 0011", exact: true }),
-    ).toHaveValue("");
-    await expect(answer).toHaveValue("");
+    await expectCells(notes, ["", "", "", ""]);
+    await expectCells(opposite, ["", "", "", ""]);
+    await expectCells(answer, ["", "", "", ""]);
     await expectAlignedBits(workspace);
     await expect(solved.locator(".al-challenge-note")).toHaveCount(0);
     await expect(
