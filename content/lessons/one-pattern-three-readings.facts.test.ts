@@ -401,10 +401,11 @@ describe("every number the lesson states", () => {
     }
   });
 
-  it("leaves the complete 32-bit pattern to the computed figures", () => {
-    // Published arithmetic now compares the fresh C calls; its complete result bits are
-    // model-rendered after running, rather than repeated as a prose diagram.
-    expect(bitGroups).toEqual([]);
+  it("checks the hexadecimal lesson's written pattern against the model", () => {
+    expect(bitGroups).toEqual([grouped(readingsOfValue(-12).pattern)]);
+    // Only the revised arithmetic page leaves its complete result pattern to the figure.
+    const arithmeticText = learnerText(units[2]!).join("\n");
+    expect(arithmeticText.match(/(?:[01]{4} ){7}[01]{4}/g) ?? []).toEqual([]);
   });
 
   it("agrees with the model on every pinned result", () => {
