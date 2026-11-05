@@ -24,7 +24,7 @@ import {
   wValueAsInt,
 } from "@al/views";
 
-import { LESSONS } from ".";
+import { LESSONS, SOURCE_LESSONS } from ".";
 import { READER_STRINGS } from "../../packages/views/src/strings.reader";
 import {
   FUEL_CALL,
@@ -110,12 +110,11 @@ describe("adding 12 to that pattern", () => {
 
   it("does not stop with an error, so the prediction's right option is 0", () => {
     expect(result.stop.kind).not.toBe("fault");
-    const options = lesson.sections.find((section) => section.kind === "prediction")!
-      .interactives[0]!.props["options"] as {
-      value: string;
-      label: string;
-    }[];
-    expect(options.map((o) => o.value)).toEqual(["0", "4294967296", "24", "error"]);
+    // The legacy source retains this arithmetic prediction; the published page now compares C types.
+    const source = SOURCE_LESSONS.find((unit) => unit.id === "one-pattern-three-readings")!;
+    const options = source.sections.find((section) => section.kind === "prediction")!
+      .interactives[0]!.props["options"] as { value: string; label: string }[];
+    expect(options.map((option) => option.value)).toEqual(["0", "4294967296", "24", "error"]);
     expect(String(wValue(result.final, 0))).toBe("0");
   });
 
@@ -369,7 +368,7 @@ describe("every number the lesson states", () => {
     // The range of the readings, and the patterns of the last challenge.
     4294967295, 2147483647, 42, 4294967096, 200,
     // Fresh construction target and its lower-bit contribution.
-    3, 4294967293, 2147483645,
+    3, 5, 4294967293, 2147483645, 4294967294,
     // The top bit is bit 31 and the rest are 31 bits (the tests below), and the unsigned reading of
     // 0x80000001, the closing question's pattern.
     31, 2147483649,
@@ -383,6 +382,8 @@ describe("every number the lesson states", () => {
     // Names such as w0 and fuel_used_wrong_u hold digits that are not numbers; so do hexadecimal
     // numbers and groups of bits, which are held to the model below.
     const plain = text
+      // Standard section identifiers are references, not arithmetic claims.
+      .replace(/sections 6\.2\.5 and 6\.5 paragraph 5/g, " ")
       .replace(/(?:[01]{4} ){7}[01]{4}/g, " ")
       .replace(/0x[0-9a-f]+/g, " ")
       .replace(/(?<=\d),(?=\d{3}(?:\D|$))/g, "")
@@ -400,9 +401,11 @@ describe("every number the lesson states", () => {
     }
   });
 
-  it("writes the 32 bits of w0 as the model holds them", () => {
-    expect(bitGroups).toEqual(["1111 1111 1111 1111 1111 1111 1111 0100"]);
-    expect(grouped(readingsOfValue(-12).pattern)).toBe(bitGroups[0]);
+  it("checks the hexadecimal lesson's written pattern against the model", () => {
+    expect(bitGroups).toEqual([grouped(readingsOfValue(-12).pattern)]);
+    // Only the revised arithmetic page leaves its complete result pattern to the figure.
+    const arithmeticText = learnerText(units[2]!).join("\n");
+    expect(arithmeticText.match(/(?:[01]{4} ){7}[01]{4}/g) ?? []).toEqual([]);
   });
 
   it("agrees with the model on every pinned result", () => {

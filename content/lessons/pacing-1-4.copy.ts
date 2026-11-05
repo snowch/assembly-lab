@@ -105,9 +105,34 @@ export const COPY = {
   },
   arithmeticBits: {
     title: "Arithmetic on register bits",
+    comparisonTitle: "Two C return types",
     objectives: [
-      "follow how addition and subtraction act on the same bits under signed and unsigned readings.",
+      "explain why the same subtraction bits give different C return values for int and unsigned.",
     ],
+    intro:
+      "You have already calculated 3 − 5 with four bits. Now compare two C functions that subtract the distance travelled from the planned distance. Only their types differ.\n\nOn this AArch64 target, `int` and `unsigned int` both use 32 bits. `int` uses the signed reading; `unsigned int` uses the unsigned reading. In C, `unsigned` on its own means `unsigned int`.",
+    caption:
+      "Two independent calls with planned = 3 and travelled = 5. Predict the instructions, then call both functions to compare their returned bits and C values.",
+    question:
+      "Does changing these C types from `int` to `unsigned` change the instructions in the recorded GCC output?",
+    options: [
+      { value: "same", label: "The instructions are identical." },
+      { value: "different", label: "The instructions differ." },
+    ],
+    explain:
+      "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.\n\nPress **Call both functions**. Compare the returned bits, then read each return value using its C type. The registers contain bits; the function’s return type determines their C reading.",
+    boundsTitle: "C arithmetic has type rules",
+    bounds:
+      "C applies different rules to these two types:\n\n- **A negative `int` result can be valid.** Here `int` ranges from −2147483648 to 2147483647. A mathematical result outside that range is signed **overflow**. The result of 3 − 5 is −2, which fits: this signed call does not overflow.\n- **Unsigned arithmetic wraps into range.** Here the range is 0 to 4294967295. A mathematical result below zero or above that maximum wraps back into range. Subtraction below zero follows this rule too.\n- **Signed arithmetic outside its range has no C guarantee.** For signed addition, subtraction and multiplication, an out-of-range result has **undefined behaviour**: C places no requirements on that case. For example, adding 1 to 2147483647 exceeds this `int` range. C guarantees neither wrapping nor an error.\n\nFor compiler examples and ways to check the bounds, see [C overflow and machine results](#/lesson/c-and-overflow).",
+    compilerSummary: "Which compiler?",
+    compiler:
+      "These are recorded GCC 16.1.0 listings for AArch64 Linux, compiled with `-O1 -g`. `-O1` enables compiler optimisations; `-g` records source-line information. Other compiler settings may choose different instructions. The C rules here follow draft N3096, sections 6.2.5 and 6.5 paragraph 5.",
+    originality: {
+      textbookExample:
+        "A signed-versus-unsigned puzzle that changes the source, the arithmetic and the displayed interpretation at once.",
+      howThisDiffers:
+        "Continues the earlier four-bit 3 minus 5 subtraction with two recorded 32-bit trip functions. The learner predicts whether their instructions differ, then calls both with the same inputs and compares identical result bits under each C return type.",
+    },
   },
   branches: {
     title: "Following a branch",

@@ -52,8 +52,8 @@ describe("the lesson", () => {
     expect([lesson.module, lesson.order]).toEqual([2, 2]);
   });
 
-  it("introduces borrow and wrap, and passes the term gate", () => {
-    expect(lesson.introduces).toEqual(["borrow", "wrap"]);
+  it("introduces borrow after wrap was named in the C type comparison, and passes the term gate", () => {
+    expect(lesson.introduces).toEqual(["borrow"]);
     expect(termProblems(LESSONS)).toEqual([]);
   });
 

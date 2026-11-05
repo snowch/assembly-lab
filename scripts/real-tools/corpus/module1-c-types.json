@@ -1,0 +1,19 @@
+{
+  "entry": "trip_remaining",
+  "calls": [
+    {
+      "entry": "trip_remaining",
+      "args": [
+        ["3", 32],
+        ["5", 32]
+      ]
+    },
+    {
+      "entry": "trip_remaining_u",
+      "args": [
+        ["3", 32],
+        ["5", 32]
+      ]
+    }
+  ]
+}
