@@ -3,6 +3,8 @@
 // New pacing copy; exact strings recorded in docs/notes/course-pacing-implementation/copy.md.
 export const pacing5To9 = {
   "counting-up": {
+    reminder:
+      "The condition after `cmp` chooses the unsigned comparison, as in [Zero and threshold branches](#/lesson/zero-and-threshold-branches).",
     title: "Following a loop",
     objectives: [
       "follow repeated passes through a loop and distinguish an iteration from an instruction.",
@@ -31,6 +33,7 @@ export const pacing5To9 = {
       "The `dim_down` loop has no useful shifting left once brightness reaches zero. Write a version that stops when either the ticks or the brightness run out. Follow the exercise’s input and return contract.",
   },
   "loading-widths": {
+    widthLink: "[Writing w and x registers](#/lesson/register-widths)",
     title: "Loading stored values",
     objectives: ["choose a load that preserves the intended signed or unsigned value."],
   },
@@ -43,6 +46,8 @@ export const pacing5To9 = {
       "Compare the input bits with each extended result. Identify whether the added bits are zeros or copies of the original top bit. Then follow the wider calculation that uses the value.",
   },
   "array-addresses": {
+    reminder:
+      "A left shift multiplies by a power of two and discards bits that leave the register, as in [Choosing a shift](#/lesson/shifts).",
     title: "Selecting an array element",
     objectives: ["scale an index to select the intended array element."],
   },
@@ -69,6 +74,8 @@ export const pacing5To9 = {
     objectives: ["use a quotient and remainder while preserving the required input values."],
   },
   "dividing-by-a-constant": {
+    reminder:
+      "The high half contains the product bits above the low register width, as in [Reading both halves of a product](#/lesson/reading-product-halves).",
     title: "How GCC divides by a constant",
     objectives: ["follow a recorded multiplication-and-shift implementation of unsigned division."],
     intro:
@@ -95,6 +102,8 @@ export const pacing5To9 = {
       "A wider destination cannot recover product bits already discarded. Compare the two recorded calculations to find where the widening must happen.",
   },
   "consumption-calculation": {
+    reminder:
+      "Widen the operands before multiplying to preserve the full product, as in [Widening before multiplication](#/lesson/widening-products).",
     title: "Calculating fuel consumption",
     objectives: [
       "combine multiplication and division while preserving the required intermediate values.",
@@ -107,6 +116,8 @@ export const pacing5To9 = {
       "An address identifies where a transfer starts; its width determines how many bytes it touches. Compare the stores, then copy the required value without overwriting its neighbour.",
   },
   "recursive-calls": {
+    reminder:
+      "The original brightness must survive the recursive call; [Preserving values across a call](#/lesson/preserving-values-across-calls) shows how a saved register keeps such a value available.",
     title: "Following recursive calls",
     objectives: [
       "follow how recursive calls save their values and resume after the base case returns.",

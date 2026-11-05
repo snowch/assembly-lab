@@ -16,6 +16,7 @@ import { ListingCompare } from "./ListingCompare";
 function comparison(
   args = [3, 5],
   store = new LessonStore(memoryStorage(), "assembly-lab", "comparison-calls"),
+  workedReadings = true,
 ) {
   const interactive = Interactive.parse({
     id: "typed-subtraction",
@@ -30,7 +31,7 @@ function comparison(
         { value: "same", label: "Same" },
         { value: "different", label: "Different" },
       ],
-      callComparison: { args, leftType: "signed", rightType: "unsigned" },
+      callComparison: { args, leftType: "signed", rightType: "unsigned", workedReadings },
     },
   });
   return {
@@ -57,6 +58,7 @@ describe("comparing the C return types by calling both listings", () => {
     expect(container).not.toHaveTextContent("sub w0, w0, w1");
     expect(screen.queryByRole("button", { name: C.callBoth })).toBeNull();
     expect(container.querySelector("[data-call-result]")).toBeNull();
+    expect(container.querySelector("[data-return-explanation]")).toBeNull();
     fireEvent.click(screen.getByRole("radio", { name: "Same" }));
     expect(container.querySelector(".al-listing")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: S.prediction.commit }));
@@ -77,6 +79,7 @@ describe("comparing the C return types by calling both listings", () => {
     expect(container.querySelector(".al-source-connections")).toBeNull();
     expect(screen.getByRole("button", { name: C.callBoth })).toBeEnabled();
     expect(container.querySelector("[data-call-result]")).toBeNull();
+    expect(container.querySelector("[data-return-explanation]")).toBeNull();
     expect(screen.queryByRole("button", { name: S.stepper.next })).toBeNull();
   });
 
@@ -110,6 +113,22 @@ describe("comparing the C return types by calling both listings", () => {
       );
       expect(side.querySelectorAll("[data-return-reading]")).toHaveLength(1);
     }
+    const bridge = container.querySelector("[data-return-explanation]") as HTMLElement;
+    const word = wValue(models[0]!.final, 0);
+    const lower = word % 2 ** 31;
+    const top = Math.floor(word / 2 ** 31);
+    expect(bridge).toHaveTextContent(
+      C.readingEquation(C.signedType, lower, -top * 2 ** 31, wValueAsInt(models[0]!.final, 0)),
+    );
+    expect(bridge).toHaveTextContent(C.readingEquation(C.unsignedType, lower, top * 2 ** 31, word));
+    expect(within(bridge).getByRole("link")).toHaveAttribute(
+      "href",
+      "#/lesson/same-bits-two-readings",
+    );
+    expect(
+      container.querySelector('[data-call-result="1"]')!.compareDocumentPosition(bridge) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(container.querySelector("[data-same-bits]")).toHaveAttribute("data-same-bits", "true");
     expect(screen.getByRole("button", { name: C.callBoth })).toBeDisabled();
     expect(store.slot("typed-subtraction:calls")).toBe(true);
@@ -134,9 +153,23 @@ describe("comparing the C return types by calling both listings", () => {
     for (const result of restored.container.querySelectorAll("[data-return-value]")) {
       expect(result).toHaveAttribute("data-return-value", "5");
     }
+    expect(restored.container.querySelector("[data-return-explanation]")).toHaveTextContent(
+      "5 + 0 = 5",
+    );
+    expect(restored.container.querySelector("[data-return-explanation]")).not.toHaveTextContent(
+      "2147483646",
+    );
     expect(
       within(screen.getByRole("group", { name: C.resultGroup })).getByText(C.sameBits),
     ).toBeInTheDocument();
+  });
+
+  it("keeps the worked reading opt-in for existing call comparisons", () => {
+    const { container } = comparison([3, 5], undefined, false);
+    predict();
+    callBoth();
+    expect(container.querySelectorAll("[data-call-result]")).toHaveLength(2);
+    expect(container.querySelector("[data-return-explanation]")).toBeNull();
   });
 
   it("resets calls without losing the prediction, and a lesson reset closes both gates", () => {
@@ -145,6 +178,7 @@ describe("comparing the C return types by calling both listings", () => {
     callBoth();
     fireEvent.click(screen.getByRole("button", { name: C.resetCalls }));
     expect(container.querySelector("[data-call-result]")).toBeNull();
+    expect(container.querySelector("[data-return-explanation]")).toBeNull();
     expect(container.querySelectorAll(".al-listing")).toHaveLength(2);
     expect(store.slot("typed-subtraction")).toEqual({ choice: "same" });
     expect(store.slot("typed-subtraction:calls")).toBeUndefined();
@@ -153,6 +187,7 @@ describe("comparing the C return types by calling both listings", () => {
     act(() => store.reset());
     expect(container.querySelector(".al-listing")).toBeNull();
     expect(container.querySelector("[data-call-result]")).toBeNull();
+    expect(container.querySelector("[data-return-explanation]")).toBeNull();
     expect(screen.queryByRole("button", { name: C.callBoth })).toBeNull();
   });
 });

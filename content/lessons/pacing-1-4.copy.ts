@@ -28,6 +28,8 @@ export const COPY = {
     objectives: ["test whether a constant fits one mov instruction."],
   },
   buildConstant: {
+    reminder:
+      "`mov` replaces the whole destination value. [Loading a constant](#/lesson/constants-and-widths) shows which constants fit one instruction.",
     title: "Building a constant",
     objectives: ["combine mov and movk to construct a constant."],
     intro:
@@ -40,6 +42,8 @@ export const COPY = {
       "The w and x names refer to the same register at different widths. Predict what remains after each write.",
   },
   masks: {
+    reminder:
+      "A negative printed constant still names a bit pattern. [Signed and unsigned readings](#/lesson/same-bits-two-readings) shows how the same bits can have either reading.",
     title: "Changing one warning",
     objectives: ["set, clear and flip a warning bit without changing the other bits."],
     traceTitle: "Trace two mask operations",
@@ -56,6 +60,8 @@ export const COPY = {
     investigationTitle: "Three rules for masks",
   },
   fields: {
+    reminder:
+      "AND clears bits where its mask has zeros; OR sets bits where its mask has ones. [Changing one warning](#/lesson/masks) lets you try both rules.",
     title: "Reading and writing a field",
     objectives: ["replace a field while keeping every bit outside it."],
     intro:
@@ -74,12 +80,16 @@ export const COPY = {
     readTitle: "Reading the gear field",
   },
   compare: {
+    reminder:
+      "After subtraction, C records whether no unsigned borrow was needed, while V records signed overflow. [Subtraction flags and negation](#/lesson/subtraction-flags-and-negation) explains these separate tests.",
     title: "Choosing a signed or unsigned result",
     objectives: ["choose a condition that matches the signed or unsigned order."],
     coreConditions:
       "After `cmp a, b`, `cs` means higher or same, unsigned: C is 1. Its opposite, `cc`, means lower: C is 0. For signed order, `ge` means greater than or equal: N equals V. Its opposite, `lt`, means less than: N differs from V.",
   },
   conditions: {
+    reminder:
+      "A condition reads flags using a signed or unsigned rule. [Choosing a signed or unsigned result](#/lesson/compare-and-choose) follows the compare and selection together.",
     title: "Conditions and Boolean results",
     objectives: ["read condition rules and turn a condition into a Boolean result."],
     intro:
@@ -87,6 +97,8 @@ export const COPY = {
     extensionsSummary: "Other compiler forms and bit tests",
   },
   addition: {
+    reminder:
+      "The same bits can represent different signed and unsigned numbers. [Signed and unsigned readings](#/lesson/same-bits-two-readings) shows how to calculate each reading.",
     explanation:
       "The same result bits have signed and unsigned readings. After addition, C reports whether the unsigned sum is too large. V reports signed **overflow**: the mathematical signed sum is outside the signed range. These are separate tests.",
     title: "Addition and its flags",
@@ -120,7 +132,7 @@ export const COPY = {
       { value: "different", label: "The instructions differ." },
     ],
     explain:
-      "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.\n\nPress **Call both functions**. Compare the returned bits, then read each return value using its C type. The registers contain bits; the function’s return type determines their C reading.",
+      "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.\n\nPress **Call both functions**. Compare the returned bits and the calculation beneath them. It shows how each C return value comes from those bits.",
     boundsTitle: "C arithmetic has type rules",
     bounds:
       "C applies different rules to these two types:\n\n- **A negative `int` result can be valid.** Here `int` ranges from −2147483648 to 2147483647. A mathematical result outside that range is signed **overflow**. The result of 3 − 5 is −2, which fits: this signed call does not overflow.\n- **Unsigned arithmetic wraps into range.** Here the range is 0 to 4294967295. A mathematical result below zero or above that maximum wraps back into range. Subtraction below zero follows this rule too.\n- **Signed arithmetic outside its range has no C guarantee.** For signed addition, subtraction and multiplication, an out-of-range result has **undefined behaviour**: C places no requirements on that case. For example, adding 1 to 2147483647 exceeds this `int` range. C guarantees neither wrapping nor an error.\n\nFor compiler examples and ways to check the bounds, see [C overflow and machine results](#/lesson/c-and-overflow).",
@@ -135,6 +147,8 @@ export const COPY = {
     },
   },
   branches: {
+    reminder:
+      "A condition asks a yes-or-no question about the flags. [Conditions and Boolean results](#/lesson/conditions-and-boolean-results) lists the rules each condition uses.",
     title: "Following a branch",
     objectives: ["trace how a conditional branch chooses the next instruction."],
   },
@@ -145,15 +159,21 @@ export const COPY = {
     ],
   },
   registerBitBranches: {
+    reminder:
+      "Each warning occupies its own bit in the warning word. [Changing one warning](#/lesson/masks) gives the warning positions and shows how to change one bit independently.",
     title: "Testing registers and bits",
     objectives: ["follow branches that test a register or one bit without reading the flags."],
     caption: "The course-written service function, stepped with warning word 0x2a.",
   },
   shifts: {
+    reminder:
+      "A set top bit makes the signed reading negative, while the unsigned reading stays non-negative. [Signed and unsigned readings](#/lesson/same-bits-two-readings) explains the two readings.",
     title: "Choosing a shift",
     objectives: ["choose how a shift fills the places left by moved bits."],
   },
   staleFlags: {
+    reminder:
+      "`add` leaves the flags unchanged; `adds` writes them. [Addition and its flags](#/lesson/adding-and-the-flags) explains what N, Z, C and V record.",
     title: "Flags and overflow",
     objectives: [
       "distinguish preserved flags from flags written by the latest arithmetic operation.",
@@ -162,6 +182,8 @@ export const COPY = {
       "An instruction that leaves the flags unchanged can leave an earlier operation’s flags beside a new result. Follow the two additions to identify which operation the flags describe.",
   },
   subtractionArithmetic: {
+    reminder:
+      "Each addition column passes its carry to the next column on the left. [Addition and its flags](#/lesson/adding-and-the-flags) follows those carries and the flags they produce.",
     title: "Subtraction flags and negation",
     objectives: [
       "relate subtraction’s flags to its arithmetic and test negation at the signed limit.",
@@ -169,6 +191,8 @@ export const COPY = {
     exampleCaption: "A counter subtraction, showing its result bits and flags.",
   },
   shiftDivision: {
+    reminder:
+      "`asr` fills from the old top bit; `lsr` fills with zeros. [Choosing a shift](#/lesson/shifts) shows how that changes the signed and unsigned readings.",
     title: "Shifts and signed division",
     objectives: ["compare a shift with signed division and follow the compiler’s correction."],
   },

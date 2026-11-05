@@ -22,6 +22,8 @@ A separate Codex drafting agent streamlined the synthesis lesson on 24 October 2
 
 ## 1. Trace trip_distance
 
+Each instruction uses the register values left by the previous one. [Instructions in sequence](#/lesson/instructions-in-sequence) lets you practise using those values in the next instruction.
+
 `trip_distance` adds three trip distances, called legs, then subtracts a detour. Its `int` arguments arrive in registers:
 
 - `leg1` arrives in `w0`.

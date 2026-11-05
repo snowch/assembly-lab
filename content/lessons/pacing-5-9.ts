@@ -32,6 +32,10 @@ const question = (title: string, prose: string): Section => ({
   prose,
   interactives: [],
 });
+const withReminder = (section: Section, reminder: string): Section => ({
+  ...section,
+  prose: section.prose + "\n\n" + reminder,
+});
 const reflection = (source: LessonInput, prose: string): Section => ({
   ...s(source, "reflection"),
   prose,
@@ -53,7 +57,7 @@ const upParts = splitLesson(countingUp, [
     ...copy("counting-up"),
     sections: [
       s(countingUp, "question"),
-      s(countingUp, "motivation"),
+      withReminder(s(countingUp, "motivation"), C["counting-up"].reminder),
       s(countingUp, "prediction"),
       s(countingUp, "investigation"),
       s(countingUp, "challenge"),
@@ -167,7 +171,15 @@ const loadParts = splitLesson(loadingWidths, [
     ...copy("loading-widths"),
     sections: [
       s(loadingWidths, "question"),
-      s(loadingWidths, "motivation"),
+      {
+        ...s(loadingWidths, "motivation"),
+        prose: LOAD.motivation.replace(
+          "Both instructions write a `w` register, so both clear the upper 32 bits of the corresponding `x` register.",
+          "Both instructions write a `w` register, so both clear the upper 32 bits of the corresponding `x` register, as in " +
+            C["loading-widths"].widthLink +
+            ".",
+        ),
+      },
       s(loadingWidths, "prediction"),
       s(loadingWidths, "investigation"),
       s(loadingWidths, "construction"),
@@ -208,7 +220,7 @@ const arrayParts = splitLesson(arrayAddresses, [
     introduces: ["array", "element", "index"],
     sections: [
       s(arrayAddresses, "question"),
-      s(arrayAddresses, "motivation"),
+      withReminder(s(arrayAddresses, "motivation"), C["array-addresses"].reminder),
       s(arrayAddresses, "prediction"),
       s(arrayAddresses, "construction"),
       s(arrayAddresses, "failureExperiment"),
@@ -308,14 +320,19 @@ const divisionParts = splitLesson(divisionAndRemainders, [
   {
     id: "consumption-calculation",
     ...copy("consumption-calculation"),
-    sections: [s(divisionAndRemainders, "challenge")],
+    sections: [
+      withReminder(s(divisionAndRemainders, "challenge"), C["consumption-calculation"].reminder),
+    ],
   },
   {
     id: "dividing-by-a-constant",
     ...copy("dividing-by-a-constant"),
     sections: [
       {
-        ...ungated(s(divisionAndRemainders, "generalisation")),
+        ...withReminder(
+          ungated(s(divisionAndRemainders, "generalisation")),
+          C["dividing-by-a-constant"].reminder,
+        ),
         kind: "question",
         details: s(productsAndWidths, "question").details,
       },
@@ -369,7 +386,7 @@ const recursiveParts = splitLesson(recursiveCalls, [
     ...copy("recursive-calls"),
     sections: [
       s(recursiveCalls, "question"),
-      s(recursiveCalls, "motivation"),
+      withReminder(s(recursiveCalls, "motivation"), C["recursive-calls"].reminder),
       s(recursiveCalls, "prediction"),
       s(recursiveCalls, "investigation"),
       s(recursiveCalls, "construction"),

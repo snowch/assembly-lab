@@ -35,6 +35,7 @@ const Props = z.object({
       args: z.array(z.number().int()).max(8),
       leftType: z.enum(["signed", "unsigned"]),
       rightType: z.enum(["signed", "unsigned"]),
+      workedReadings: z.boolean().default(false),
     })
     .optional(),
 });
@@ -86,6 +87,30 @@ function CPane({ recorded }: { recorded: Recorded }) {
           <code className="al-src">{text}</code>
         </div>
       ))}
+    </div>
+  );
+}
+
+/** Decompose the returned model word using the already-taught signed and unsigned weights. */
+function ReturnedReadings({ value }: { value: number }) {
+  const weight = 2 ** 31;
+  const lower = unsignedOf(value) % weight;
+  const top = Math.floor(unsignedOf(value) / weight);
+  return (
+    <div data-return-explanation role="group" aria-label={C.readingGroup}>
+      <p>{C.readingIntro(hex(value), lower)}</p>
+      <p>{C.readingTop(top, weight)}</p>
+      <p>
+        <code>{C.readingEquation(C.signedType, lower, -top * weight, signedOf(value))}</code>
+      </p>
+      <p>
+        <code>{C.readingEquation(C.unsignedType, lower, top * weight, unsignedOf(value))}</code>
+      </p>
+      <p>{C.unsignedWrap}</p>
+      <p>{C.readingTypes}</p>
+      <p>
+        <a href="#/lesson/same-bits-two-readings">{C.readingLink}</a>
+      </p>
     </div>
   );
 }
@@ -273,6 +298,12 @@ export const ListingCompare = withProps(
                         {calls[0]?.value === calls[1]?.value ? C.sameBits : C.differentBits}
                       </p>
                     )}
+                    {data.callComparison.workedReadings &&
+                      calls[0]?.value !== null &&
+                      calls[0]?.value !== undefined &&
+                      calls[0].value === calls[1]?.value && (
+                        <ReturnedReadings value={calls[0].value} />
+                      )}
                   </div>
                 )}
               </div>

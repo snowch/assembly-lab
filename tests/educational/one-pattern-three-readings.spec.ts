@@ -104,7 +104,7 @@ test.describe("one subtraction with two C types", () => {
         ...TRIP_REMAINING.c.split("\n"),
         ...TRIP_REMAINING_U.c.split("\n"),
       ]);
-      await expect(f.locator("[data-call-side]")).toHaveCount(0);
+      await expect(f.locator("[data-call-side], [data-return-explanation]")).toHaveCount(0);
       await expect(f.getByRole("button", { name: C.callBoth })).toBeEnabled();
       await expect(f.locator(".al-compare-summary")).toHaveText(V.compare.allSame(2));
     });
@@ -134,9 +134,18 @@ test.describe("one subtraction with two C types", () => {
       );
     }
     await expect(f.locator('[data-same-bits="true"]')).toHaveText(C.sameBits);
+    const explanation = f.locator("[data-return-explanation]");
+    await expect(explanation).toContainText("2147483646 − 2147483648 = -2");
+    await expect(explanation).toContainText("2147483646 + 2147483648 = 4294967294");
+    await expect(explanation).toContainText("without a type tag");
+    await expect(explanation.locator("a")).toHaveAttribute(
+      "href",
+      "#/lesson/same-bits-two-readings",
+    );
+
     await expect(f.getByRole("button", { name: C.callBoth, exact: true })).toBeDisabled();
     await press(page, f.getByRole("button", { name: C.resetCalls, exact: true }));
-    await expect(f.locator("[data-call-side]")).toHaveCount(0);
+    await expect(f.locator("[data-call-side], [data-return-explanation]")).toHaveCount(0);
     await expect(f.locator(".al-listing")).toHaveCount(2);
     await expect(f.locator(".al-match")).toBeVisible();
     await expect(f.getByRole("button", { name: C.callBoth, exact: true })).toBeEnabled();

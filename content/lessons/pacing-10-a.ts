@@ -52,7 +52,10 @@ const tripRead = s(trip, "investigation");
 const tripUnits = splitLesson(trip, [
   part("from-c-to-instructions", COPY.tripRead, [
     s(trip, "question"),
-    s(trip, "motivation"),
+    {
+      ...s(trip, "motivation"),
+      prose: s(trip, "motivation").prose + "\n\n" + COPY.tripRead.reminder,
+    },
     s(trip, "prediction"),
     { ...tripRead, prose: paras(tripRead, 0, 2) },
   ]),
@@ -146,7 +149,10 @@ const nativeSource = {
 };
 const nativeUnits = splitLesson(nativeSource, [
   part("from-function-to-executable", COPY.nativeBoot, [
-    s(native, "motivation"),
+    {
+      ...s(native, "motivation"),
+      prose: s(native, "motivation").prose + "\n\n" + COPY.nativeBoot.reminder,
+    },
     s(native, "prediction"),
     {
       ...nativeInvestigation,
@@ -395,9 +401,11 @@ export const paced10ToA: LessonInput[] = [
     sections: cAndOverflow.sections
       .filter((section) => section.kind !== "reflection")
       .map((section) =>
-        section.kind === "explanation"
-          ? { ...section, prose: [paras(section, 0, 1), paras(section, 2)].join("\n\n") }
-          : section,
+        section.kind === "prediction"
+          ? { ...section, prose: COPY.overflowReminder + "\n\n" + section.prose }
+          : section.kind === "explanation"
+            ? { ...section, prose: [paras(section, 0, 1), paras(section, 2)].join("\n\n") }
+            : section,
       ),
   },
   ...checkedUnits,
