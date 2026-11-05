@@ -36,6 +36,7 @@ it("teaches hexadecimal before the two readings and keeps their practice togethe
     args: [3, 5],
     leftType: "signed",
     rightType: "unsigned",
+    workedReadings: true,
   });
 });
 

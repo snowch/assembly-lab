@@ -204,7 +204,12 @@ const readings = splitLesson(onePatternThreeReadings, [
               question: COPY.arithmeticBits.question,
               options: COPY.arithmeticBits.options,
               explain: COPY.arithmeticBits.explain,
-              callComparison: { args: [3, 5], leftType: "signed", rightType: "unsigned" },
+              callComparison: {
+                args: [3, 5],
+                leftType: "signed",
+                rightType: "unsigned",
+                workedReadings: true,
+              },
             },
           },
         ],
@@ -236,7 +241,15 @@ const constants = splitLesson(constantsAndWidths, [
     title: COPY.buildConstant.title,
     objectives: [...COPY.buildConstant.objectives],
     introduces: ["remainder"],
-    sections: [section(constantsAndWidths, "construction")],
+    sections: [
+      {
+        ...section(constantsAndWidths, "construction"),
+        prose: [
+          COPY.buildConstant.reminder,
+          section(constantsAndWidths, "construction").prose,
+        ].join("\n\n"),
+      },
+    ],
   },
   {
     id: "register-widths",
@@ -263,7 +276,12 @@ const addition = splitLesson(addingAndTheFlags, [
     objectives: [...COPY.addition.objectives],
     introduces: ["carry", "flag"],
     sections: [
-      section(addingAndTheFlags, "motivation"),
+      {
+        ...section(addingAndTheFlags, "motivation"),
+        prose: [COPY.addition.reminder, section(addingAndTheFlags, "motivation").prose].join(
+          "\n\n",
+        ),
+      },
       section(addingAndTheFlags, "prediction"),
       {
         ...section(addingAndTheFlags, "investigation"),
@@ -283,7 +301,7 @@ const addition = splitLesson(addingAndTheFlags, [
       {
         kind: "question",
         title: COPY.staleFlags.title,
-        prose: COPY.staleFlags.intro,
+        prose: [COPY.staleFlags.reminder, COPY.staleFlags.intro].join("\n\n"),
         interactives: [],
       },
       section(addingAndTheFlags, "failureExperiment"),
@@ -332,7 +350,7 @@ const subtraction = splitLesson(subtractingAndTheTickCounter, [
       {
         kind: "investigation",
         title: COPY.subtraction.drilldownTitle,
-        prose: SUB.subtractionInvestigation,
+        prose: [COPY.subtractionArithmetic.reminder, SUB.subtractionInvestigation].join("\n\n"),
         interactives: [
           ...(counterInvestigation.interactives ?? [])
             .filter((part) => part.kind === "adder")
@@ -405,7 +423,10 @@ const bitMasks = splitLesson(maskSource, [
     objectives: [...COPY.masks.objectives],
     introduces: ["mask"],
     sections: [
-      section(masks, "question"),
+      {
+        ...section(masks, "question"),
+        prose: [COPY.masks.reminder, section(masks, "question").prose].join("\n\n"),
+      },
       {
         ...section(masks, "prediction"),
         prose: section(masks, "prediction").prose.replace(" `<<` moves bits towards the top.", ""),
@@ -434,7 +455,7 @@ const bitMasks = splitLesson(maskSource, [
       {
         kind: "investigation",
         title: COPY.fields.readTitle,
-        prose: COPY.fields.intro,
+        prose: [COPY.fields.reminder, COPY.fields.intro].join("\n\n"),
         interactives: [{ ...fieldReader, props: { ...fieldReader.props, after: undefined } }],
       },
       section(masks, "construction"),
@@ -470,7 +491,10 @@ const pacedShifts = splitLesson(shifts, [
     title: COPY.shifts.title,
     objectives: [...COPY.shifts.objectives],
     sections: [
-      section(shifts, "question"),
+      {
+        ...section(shifts, "question"),
+        prose: [COPY.shifts.reminder, section(shifts, "question").prose].join("\n\n"),
+      },
       section(shifts, "prediction"),
       {
         ...shiftInvestigation,
@@ -488,7 +512,10 @@ const pacedShifts = splitLesson(shifts, [
     objectives: [...COPY.shiftDivision.objectives],
     introduces: [],
     sections: [
-      section(shifts, "construction"),
+      {
+        ...section(shifts, "construction"),
+        prose: [COPY.shiftDivision.reminder, section(shifts, "construction").prose].join("\n\n"),
+      },
       {
         ...shiftFailure,
         interactives: [
@@ -515,7 +542,10 @@ const comparisons = splitLesson(compareAndChoose, [
     objectives: [...COPY.compare.objectives],
     sections: [
       section(compareAndChoose, "question"),
-      section(compareAndChoose, "motivation"),
+      {
+        ...section(compareAndChoose, "motivation"),
+        prose: [COPY.compare.reminder, section(compareAndChoose, "motivation").prose].join("\n\n"),
+      },
       section(compareAndChoose, "prediction"),
       section(compareAndChoose, "investigation"),
       {
@@ -537,7 +567,7 @@ const comparisons = splitLesson(compareAndChoose, [
       {
         kind: "question",
         title: COPY.conditions.title,
-        prose: COPY.conditions.intro,
+        prose: [COPY.conditions.reminder, COPY.conditions.intro].join("\n\n"),
         interactives: [],
       },
       { ...compareExplanation, kind: "investigation" },
@@ -575,7 +605,10 @@ const pacedBranches = splitLesson(branchSource, [
     objectives: [...COPY.branches.objectives],
     sections: [
       section(branches, "question"),
-      section(branches, "motivation"),
+      {
+        ...section(branches, "motivation"),
+        prose: [COPY.branches.reminder, section(branches, "motivation").prose].join("\n\n"),
+      },
       section(branches, "prediction"),
       section(branches, "investigation"),
       section(branches, "failureExperiment"),
@@ -602,7 +635,10 @@ const pacedBranches = splitLesson(branchSource, [
     sections: [
       {
         ...section(branches, "explanation"),
-        prose: section(branches, "explanation").prose.replace(/```[\s\S]*?```\n\n/, ""),
+        prose: [
+          COPY.registerBitBranches.reminder,
+          section(branches, "explanation").prose.replace(/```[\s\S]*?```\n\n/, ""),
+        ].join("\n\n"),
         interactives: [
           {
             id: "follow-service-bit-test",

@@ -5,12 +5,14 @@ export const pacing10A = {
   tripRead: {
     title: "Reading generated instructions",
     objectives: ["follow how the compiler carries a C calculation through registers."],
+    reminder:
+      "`movk` replaces one part of a register while preserving the other bits; [Building a constant](#/lesson/building-constants) shows how it combines with `movz`.",
   },
   tripAssembly: {
     title: "Writing equivalent assembly",
     objectives: ["write assembly that preserves the C calculation’s result."],
     intro:
-      "Use the C calculation you have traced as the contract. Write an instruction sequence that returns the same result.",
+      "A 32-bit `mul` keeps the low 32 product bits, as in [Multiplication and addition](#/lesson/products-and-widths). Use the C calculation you have traced as the contract. Write an instruction sequence that returns the same result.",
   },
   tripEdit: {
     title: "Changing a C calculation",
@@ -22,7 +24,7 @@ export const pacing10A = {
     title: "Capping a result in C",
     objectives: ["write a C condition that limits the calculated charge."],
     intro:
-      "Add a limit to the charge calculation. Use the C condition to choose between the calculated charge and the cap.",
+      "Unsigned comparisons use different conditions from signed comparisons; [Choosing a signed or unsigned result](#/lesson/compare-and-choose) shows how the instruction selects the reading. Add a limit to the charge calculation. Use the C condition to choose between the calculated charge and the cap.",
   },
   loopRead: {
     title: "Reading a compiled loop",
@@ -32,7 +34,7 @@ export const pacing10A = {
     title: "Writing an equivalent loop",
     objectives: ["write assembly that repeats the calculation required by the C loop."],
     intro:
-      "Use the repeated calculation and stopping condition from the compiled loop. Write an assembly loop that preserves both.",
+      "Check the count before entering the body so zero means no iterations, as in [Testing before and after](#/lesson/testing-before-and-after). Use the repeated calculation and stopping condition from the compiled loop. Write an assembly loop that preserves both.",
   },
   loopBoundary: {
     title: "Changing a loop boundary",
@@ -44,7 +46,7 @@ export const pacing10A = {
     title: "Writing repeated shifts in C",
     objectives: ["construct a C loop that shifts a value repeatedly."],
     intro:
-      "Express repeated shifts as a C loop. Keep the changing value and the stopping condition visible in the source.",
+      "An unsigned right shift fills the vacated positions with zero, as in [Choosing a shift](#/lesson/shifts). Express repeated shifts as a C loop. Keep the changing value and the stopping condition visible in the source.",
   },
   conversions: {
     title: "Conversions and comparisons",
@@ -52,18 +54,22 @@ export const pacing10A = {
       "check a value’s range before conversion and identify the comparison rule C selects.",
     ],
     motivation:
-      "Narrowing can change a value even when no arithmetic overflows. If the application must reject values outside a required range, check the original value before converting it. The recorded conversions show why keeping the low byte is not a range check.",
+      "Narrowing can change a value even when no arithmetic overflows. If the application must reject values outside a required range, check the original value before converting it. The recorded conversions show why keeping the low byte is not a range check. Sign extension repeats the narrow value’s top bit; [Extending values in registers](#/lesson/extending-register-values) traces that rule.",
   },
+  overflowReminder:
+    "A64’s V flag reports signed overflow; [Flags and overflow](#/lesson/flags-and-overflow) separates that report from unsigned carry. The next experiment executes an instruction directly, so its rules differ from those of the C expression.",
   checkedAdd: {
     title: "Checked addition",
     objectives: ["store the sum bits and return a separate report of signed overflow."],
     intro:
-      "Checked addition has two outputs: stored result bits and a report of whether the mathematical sum fits. Keep them separate. The following experiment stores the sum but tests the wrong flag for its report.",
+      "Checked addition has two outputs: stored result bits and a report of whether the mathematical sum fits. Keep them separate. [Flags and overflow](#/lesson/flags-and-overflow) distinguishes unsigned carry from signed overflow. The following experiment stores the sum but tests the wrong flag for its report.",
   },
   nativeBoot: {
     title: "Building and booting an executable",
     objectives: ["assemble and link the trip function, then boot and check its report in QEMU."],
     repairTitle: "Repair and rebuild the calculation",
+    reminder:
+      "A caller supplies arguments in registers and `ret` returns to its saved address, as in [Saving a return address](#/lesson/calls-and-returns). The native startup below supplies that caller.",
     finalTask:
       "Repair `trip_distance`. Four signed 32-bit values arrive in registers:\n\n- The first distance in `w0`.\n- The second distance in `w1`.\n- The third distance in `w2`.\n- The correction in `w3`.\n\nReturn the sum of the distances minus the correction in `w0`, then return to the assembly caller. The supplied tests stay within the signed 32-bit range.\n\nThe browser tests check several input sets and accept any permitted instruction sequence with the required behaviour. Copy your function body into `trip_distance.s`, keeping the function label and the supplied lines beginning with a dot. Assemble it again, link `boot.elf` again and boot it. The native caller checks the original trip inputs and chooses a serial message. The following pages trace the executable’s loading and startup.",
   },
@@ -71,7 +77,7 @@ export const pacing10A = {
     title: "Loading the executable image",
     objectives: ["connect the executable’s sections and loading information to its memory layout."],
     intro:
-      "The executable has already booted. Inspect how the linker script and ELF loading information describe the image’s contents and their positions in memory.",
+      "[Building and booting an executable](#/lesson/from-function-to-executable) supplies the working `boot.elf` used here. The executable has already booted. Inspect how the linker script and ELF loading information describe the image’s contents and their positions in memory.",
     checkpoint:
       "Record the entry point selected by the linker script. Identify the LOAD segments and distinguish bytes stored in the ELF file from space reserved in memory.",
     conditionalAssembly:
@@ -85,7 +91,7 @@ export const pacing10A = {
     investigation:
       "With the Pi and probe disconnected from power, connect the supplied three-pin cable between the probe’s **U** socket and the Pi 5 connector labelled **UART**. This dedicated connector is separate from the large GPIO header. The probe’s **D** socket is for a different debugging connection.\n\nMatch the keyed plugs to their sockets and do not force them. Use the [official probe picture and cable guide](https://www.raspberrypi.com/documentation/microcontrollers/debug-probe.html#about-the-debug-probe) to identify them. The schematic shows the connection and output direction; it is not a pin-orientation drawing or a recording of a Pi run. Leave the Pi powered off until the serial terminal is ready for the first boot.",
     intro:
-      "The trip calculation already runs on QEMU. Move that same assembly function onto a Raspberry Pi 5. The work changes around it: firmware loads the image, startup prepares the processor, and a physical serial connection carries the report.\n\n**Hardware verification is pending.** The build checks inspect the image’s files and layout. They do not establish that the Pi boots it or sends readable serial output. Prepare the connection here, then build and stage the image before the physical boot test.\n\nThe Pi stores its bootloader in **EEPROM**, rewritable storage that keeps its contents without power.",
+      "The trip calculation already runs on QEMU in [Building and booting an executable](#/lesson/from-function-to-executable). Move that same assembly function onto a Raspberry Pi 5. The work changes around it: firmware loads the image, startup prepares the processor, and a physical serial connection carries the report.\n\n**Hardware verification is pending.** The build checks inspect the image’s files and layout. They do not establish that the Pi boots it or sends readable serial output. Prepare the connection here, then build and stage the image before the physical boot test.\n\nThe Pi stores its bootloader in **EEPROM**, rewritable storage that keeps its contents without power.",
   },
   piBuild: {
     title: "Building and staging the Pi image",
@@ -103,7 +109,7 @@ export const pacing10A = {
     title: "Capturing the first Pi boot",
     objectives: ["boot the staged image and save the actual serial output."],
     intro:
-      "Use the staged build from the preceding page. Prepare the spare card and open the serial terminal before powering the Pi. Hardware verification remains pending until you record what your board sends.",
+      "Use the staged build from [Building and staging the Pi image](#/lesson/raspberry-pi-boot). Prepare the spare card and open the serial terminal before powering the Pi. Hardware verification remains pending until you record what your board sends.",
     checkpoint:
       "Save the actual serial capture and mark any unobserved stage as unverified. Record the terminal settings and the image checksum. Close the terminal and remove Pi power before changing the card or cable. Run `sha256sum assembly-lab-pi5.img` in the source directory for the image’s fingerprint.",
     troubleshooting:
@@ -115,7 +121,7 @@ export const pacing10A = {
       "capture a deliberate failure and a restored boot, then diagnose from the earliest evidence.",
     ],
     intro:
-      "Keep the first capture as your baseline. Change the calculation, rebuild and replace the card’s image, then capture the new boot. Restore the source and repeat the full build and boot sequence. Hardware verification remains pending; expected messages are source-selected expectations, not recorded Pi output.",
+      "Keep the first capture from [Capturing the first Pi boot](#/lesson/capture-pi-boot) as your baseline. Change the calculation, rebuild and replace the card’s image, then capture the new boot. Restore the source and repeat the full build and boot sequence. Hardware verification remains pending; expected messages are source-selected expectations, not recorded Pi output.",
     checkpoint:
       "Record your Pi model, EEPROM version, source revision, image checksum, terminal settings and actual serial capture. Use the optional Raspberry Pi OS commands from the preparation page for board and EEPROM details, or record unknown. Copy the commit shown in the course footer as the source revision. Run `sha256sum assembly-lab-pi5.img` in the source directory for the image’s fingerprint. Keep the working, broken and restored runs separate. Repeat the restored image from a fresh power-on.\n\nWhich observation shows that our code ran? Which shows that the arithmetic check rejected the deliberate error? If a stage is still unobserved, record it as unverified. Your hardware test completes the evidence that a build alone cannot provide.",
   },
@@ -149,7 +155,7 @@ export const pacing10A = {
       "Enter `movcs`.",
     ],
     intro:
-      "The recorded limit function uses an A32 conditional move. Compare its role with A64’s select, then test the recorded line against the course assembler.",
+      "A64 `csel` chooses a value using the flags from a comparison, as in [Choosing a signed or unsigned result](#/lesson/compare-and-choose). The recorded limit function uses an A32 conditional move. Compare its role with A64’s select, then test the recorded line against the course assembler.",
   },
   a32Constants: {
     title: "A32 constant instructions",
@@ -164,7 +170,7 @@ export const pacing10A = {
       "Enter `movw`.",
     ],
     intro:
-      "Read the service-marker pair to compare how each target loads its constant. Check which letters belong to the instruction name.",
+      "A64 `movk` keeps the bits outside its selected part, as in [Building a constant](#/lesson/building-constants). Read the service-marker pair to compare how each target loads its constant. Check which letters belong to the instruction name.",
   },
   a32Division: {
     title: "A32 division helpers",
@@ -179,7 +185,7 @@ export const pacing10A = {
       "Enter `__aeabi_uidiv` for the helper, `udiv` for the A64 instruction and 23 for the result.",
     ],
     intro:
-      "Read the unsigned-average pair. Follow the A64 run and identify the helper call chosen for the recorded A32 target.",
+      "Unsigned division keeps the whole-number quotient, as in [Division and remainders](#/lesson/division-and-remainders). Read the unsigned-average pair. Follow the A64 run and identify the helper call chosen for the recorded A32 target.",
   },
   nativeRuntime: {
     title: "Preparing the runtime state",
@@ -187,7 +193,7 @@ export const pacing10A = {
       "follow startup as it prepares the stack and storage before calling the trip function.",
     ],
     intro:
-      "Loading places the image in memory. Startup must then prepare the stack and working storage that the called function needs. Follow those steps before the calculation and output.",
+      "The stack uses `sp` to locate saved values, as in [Preserving values across calls](#/lesson/preserving-values-across-calls). Loading places the image in memory. Startup must then prepare the stack and working storage that the called function needs. Follow those steps before the calculation and output.",
     checkpoint:
       "Find the instructions that prepare the stack and clear working storage. Identify where startup supplies the arguments, calls the trip function and sends its selected report. Compare those source operations with the recorded stops.",
     loading:
@@ -197,7 +203,7 @@ export const pacing10A = {
     title: "Connecting GDB and checking startup",
     objectives: ["connect GDB to paused QEMU and verify that startup clears the marked storage."],
     intro:
-      "Use the source directory and working `boot.elf` from Building and booting an executable. Restore the subtraction and rebuild if you left the deliberate error in place. Start a paused QEMU session, connect GDB and test storage clearing with the marker before proceeding to the function.",
+      "Use the source directory and working `boot.elf` from [Building and booting an executable](#/lesson/from-function-to-executable). Restore the subtraction and rebuild if you left the deliberate error in place. Start a paused QEMU session, connect GDB and test storage clearing with the marker before proceeding to the function.",
     checkpoint:
       "Close this session before starting another. In GDB, enter `detach`, then `quit`. In the QEMU terminal, press Ctrl-A, release it, then press X. If GDB is still running when you need to stop, press Ctrl-C there before the detach commands.",
   },
@@ -207,7 +213,7 @@ export const pacing10A = {
       "follow every instruction of the native trip function and inspect the saved result.",
     ],
     intro:
-      "Use the source directory and working `boot.elf` from Building and booting an executable. Restore the subtraction and rebuild if needed. Start fresh QEMU and GDB sessions. Connect to the paused machine, then stop at `trip_distance` to check its inputs. Use `continue` to resume the remote machine; do not use GDB’s `run` command.",
+      "Use the source directory and working `boot.elf` from [Building and booting an executable](#/lesson/from-function-to-executable). Restore the subtraction and rebuild if needed. Start fresh QEMU and GDB sessions. Connect to the paused machine, then stop at `trip_distance` to check its inputs. Use `continue` to resume the remote machine; do not use GDB’s `run` command.",
     checkpoint:
       "Record the function’s returned value and the value saved by its caller. Check where the program counter points before and after `ret`. Close both sessions before starting another run.",
   },
@@ -217,7 +223,7 @@ export const pacing10A = {
       "locate the first incorrect write and test a revised function in a bootable image.",
     ],
     intro:
-      "Use the source directory and working `boot.elf` from Building and booting an executable. Close the old GDB and QEMU sessions before editing or rebuilding. In `trip_distance.s`, change the third arithmetic instruction to `add w0, w0, w3`. Rebuild with the commands below, then start fresh QEMU and GDB sessions and stop at `trip_distance`.",
+      "Use the source directory and working `boot.elf` from [Building and booting an executable](#/lesson/from-function-to-executable). Close the old GDB and QEMU sessions before editing or rebuilding. In `trip_distance.s`, change the third arithmetic instruction to `add w0, w0, w3`. Rebuild with the commands below, then start fresh QEMU and GDB sessions and stop at `trip_distance`.",
     originalCaption:
       "The original trip function at the recorded GDB stops, with the matching browser-model state.",
     modifiedCaption:
