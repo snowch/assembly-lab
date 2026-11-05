@@ -65,7 +65,7 @@ The opposite reads as −5 signed. Adding it gives `1110`: −8 + 4 + 2 = −2. 
 
 Try 6 − 3
 
-Start with `0110` and subtract `0011`. Use four binary digits in each box.
+Start with `0110` and subtract `0011`. Enter one binary digit in each box.
 
 1. Enter the opposite of the second input.
 2. Enter the retained result.
@@ -129,6 +129,9 @@ export const FOUR_BIT_STRINGS = {
   firstRow: "First input",
   carryNotes: "Carry notes (optional, not graded)",
   carryNote: (bit: number) => `Carry note for bit ${bit} (optional, not graded)`,
+  answerBit: (label: string, bit: number) => `${label}, bit ${bit}`,
+  bitEntryError: "Use only 0 or 1. A pasted pattern must fit the four boxes.",
+  savedBitEntry: (value: string) => `Saved entry: ${value}. Enter bits in the boxes to replace it.`,
   plusSign: "+",
   secondRow: "Second input",
   resultRow: "Result",

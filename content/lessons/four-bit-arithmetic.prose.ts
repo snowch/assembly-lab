@@ -32,7 +32,7 @@ export const FOUR_BIT_PROSE = {
   },
   practice: {
     title: "Try 6 − 3",
-    task: "Start with `0110` and subtract `0011`. Use four binary digits in each box.\n\n1. Enter the opposite of the second input.\n2. Enter the retained result.\n3. Decide what to do with an extra leftmost carry.",
+    task: "Start with `0110` and subtract `0011`. Enter one binary digit in each box.\n\n1. Enter the opposite of the second input.\n2. Enter the retained result.\n3. Decide what to do with an extra leftmost carry.",
     caption: "A fresh subtraction with four available places.",
     fields: {
       negated: "Opposite of 0011",
