@@ -11,6 +11,7 @@ import { ViewHandoffScope } from "./update-handoff";
 import { CEditor } from "./CEditor";
 import { RUN_C } from "./grader-c";
 import { AnswerEditor } from "./AnswerEditor";
+import { FourBitAnswerEditor, FourBitEditorSchema } from "./FourBitAnswerEditor";
 import { AssemblyEditor } from "./AssemblyEditor";
 import { grade, isWritten } from "./grader";
 import { INTERACTIVES } from "./interactives";
@@ -23,11 +24,14 @@ export const BOOK_ID = "assembly-lab";
 export const STEPS = "steps";
 
 export function ChallengeEditor(props: ChallengeEditorProps) {
+  const fourBit = FourBitEditorSchema.safeParse(props.challenge.initial.data?.["editor"]);
   const editor =
     props.challenge.tests.kind === "answers" && props.challenge.tests.grader === RUN_C ? (
       <CEditor {...props} />
     ) : isWritten(props.challenge) ? (
       <AssemblyEditor {...props} />
+    ) : fourBit.success ? (
+      <FourBitAnswerEditor {...props} first={fourBit.data.first} />
     ) : (
       <AnswerEditor {...props} />
     );
