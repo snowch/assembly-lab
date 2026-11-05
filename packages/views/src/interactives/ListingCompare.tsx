@@ -15,6 +15,9 @@ import { useSlot } from "@platform/lesson-runtime";
 import { assemblyOf, cLinesOf, parseListing, programLines } from "../listing";
 import { ListingView } from "../parts";
 import { VIEW_STRINGS as S } from "../strings";
+import { CALL_COMPARISON_STRINGS as C } from "../strings.call-comparison";
+import { BitRow, hex, signedOf, unsignedOf } from "../bits";
+import { traceOf, wValue } from "../trace";
 import { PredictionBox, type Outcome } from "./PredictionBox";
 import { RecordedSchema, withProps } from "./props";
 
@@ -26,6 +29,14 @@ const Props = z.object({
   options: z.array(z.object({ value: z.string(), label: z.string() })).min(2),
   /** Markdown, shown once the prediction is checked. */
   explain: z.string().default(""),
+  /** Call both listings independently after the prediction, then read their returned w0 bits. */
+  callComparison: z
+    .object({
+      args: z.array(z.number().int()).max(8),
+      leftType: z.enum(["signed", "unsigned"]),
+      rightType: z.enum(["signed", "unsigned"]),
+    })
+    .optional(),
 });
 
 type Recorded = z.infer<typeof RecordedSchema>;
@@ -83,6 +94,7 @@ export const ListingCompare = withProps(
   Props,
   function ListingCompare({ data, interactive, store }) {
     const [committed] = useSlot<{ choice: string }>(store, interactive.id);
+    const [called, setCalled] = useSlot<boolean>(store, `${interactive.id}:calls`);
     const rows = useMemo(
       () => (committed ? compareListings(data.left, data.right) : []),
       [committed, data.left, data.right],
@@ -96,12 +108,56 @@ export const ListingCompare = withProps(
       };
     }, [data.left, data.right]);
     const names = [nameOf(data.left), nameOf(data.right)];
+    const calls = useMemo(() => {
+      const comparison = data.callComparison;
+      if (!committed || !called || !comparison) return undefined;
+      return [data.left, data.right].map((recorded, i) => {
+        const name = nameOf(recorded);
+        const trace = traceOf(recorded, { entry: name, args: comparison.args });
+        const value = trace.result.stop.kind === "returned" ? wValue(trace.result.final, 0) : null;
+        return {
+          name,
+          value,
+          type: i === 0 ? comparison.leftType : comparison.rightType,
+        };
+      });
+    }, [committed, called, data.callComparison, data.left, data.right]);
     return (
-      <div className="al-figure al-compare" data-figure="listing-compare">
-        <div className="al-compare-c">
-          <CPane recorded={data.left} />
-          <CPane recorded={data.right} />
+      <div
+        className="al-figure al-compare"
+        data-figure="listing-compare"
+        data-call-state={
+          data.callComparison
+            ? !committed
+              ? "unpredicted"
+              : called
+                ? "returned"
+                : "ready"
+            : undefined
+        }
+      >
+        <div className={data.callComparison && committed ? "al-pair-sides" : "al-compare-c"}>
+          {data.callComparison && committed ? (
+            [data.left, data.right].map((recorded, i) => (
+              <div key={i}>
+                <p>
+                  <code>{names[i]}</code>
+                </p>
+                <ListingView cLines={cLinesOf(recorded.c)} lines={programLines(recorded)} />
+              </div>
+            ))
+          ) : (
+            <>
+              <CPane recorded={data.left} />
+              <CPane recorded={data.right} />
+            </>
+          )}
         </div>
+        {data.callComparison && (
+          <p className="al-compare-inputs">
+            {C.startingInputs(data.callComparison.args.join(", "))}
+          </p>
+        )}
         <PredictionBox
           id={interactive.id}
           store={store}
@@ -113,36 +169,114 @@ export const ListingCompare = withProps(
         />
         {committed && (
           <div className="al-compare-result">
-            <ol className="al-compare-rows" aria-label={S.compare.table}>
-              {rows.map((r, i) => (
-                <li key={i} className="al-compare-row" data-same={r.same}>
-                  <span className="al-cmp-n">{i + 1}</span>
-                  <span className="al-cmp-side" data-side="left">
-                    <span className="al-cmp-name">{names[0]}</span>
-                    <code>{r.left}</code>
-                  </span>
-                  <span className="al-cmp-side" data-side="right">
-                    <span className="al-cmp-name">{names[1]}</span>
-                    <code>{r.right}</code>
-                  </span>
-                  <span className="al-cmp-mark">{r.same ? S.compare.same : S.compare.differs}</span>
-                </li>
-              ))}
-            </ol>
+            {!data.callComparison && (
+              <ol className="al-compare-rows" aria-label={S.compare.table}>
+                {rows.map((r, i) => (
+                  <li key={i} className="al-compare-row" data-same={r.same}>
+                    <span className="al-cmp-n">{i + 1}</span>
+                    <span className="al-cmp-side" data-side="left">
+                      <span className="al-cmp-name">{names[0]}</span>
+                      <code>{r.left}</code>
+                    </span>
+                    <span className="al-cmp-side" data-side="right">
+                      <span className="al-cmp-name">{names[1]}</span>
+                      <code>{r.right}</code>
+                    </span>
+                    <span className="al-cmp-mark">
+                      {r.same ? S.compare.same : S.compare.differs}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            )}
             <p role="status" className="al-compare-summary">
               {rows.every((r) => r.same) ? S.compare.allSame(rows.length) : S.compare.notAllSame}
             </p>
-            <details className="al-source-connections">
-              <summary>{S.listing.sourceConnections}</summary>
-              <div className="al-pair-sides">
-                {[data.left, data.right].map((recorded, i) => (
-                  <div key={i}>
-                    <p>{names[i]}</p>
-                    <ListingView cLines={cLinesOf(recorded.c)} lines={programLines(recorded)} />
+            {!data.callComparison && (
+              <details className="al-source-connections">
+                <summary>{S.listing.sourceConnections}</summary>
+                <div className="al-pair-sides">
+                  {[data.left, data.right].map((recorded, i) => (
+                    <div key={i}>
+                      <p>{names[i]}</p>
+                      <ListingView cLines={cLinesOf(recorded.c)} lines={programLines(recorded)} />
+                    </div>
+                  ))}
+                </div>
+              </details>
+            )}
+            {data.callComparison && (
+              <div className="al-compare-calls">
+                <div className="al-compare-call-controls">
+                  <button
+                    type="button"
+                    className="button primary"
+                    disabled={called === true}
+                    onClick={() => setCalled(true)}
+                  >
+                    {C.callBoth}
+                  </button>
+                  {called && (
+                    <button
+                      type="button"
+                      className="button secondary"
+                      onClick={() => setCalled(undefined)}
+                    >
+                      {C.resetCalls}
+                    </button>
+                  )}
+                </div>
+                {calls && (
+                  <div className="al-compare-call-results" role="group" aria-label={C.resultGroup}>
+                    {calls.map((call, i) => (
+                      <div key={i} data-call-result={i} data-call-side={i === 0 ? "left" : "right"}>
+                        <p>{C.returnedBits(call.name)}</p>
+                        {call.value === null ? (
+                          <p role="status">{S.prediction.endedWithError}</p>
+                        ) : (
+                          <>
+                            <div data-return-bits>
+                              <BitRow
+                                name="w0"
+                                value={call.value}
+                                text={<span data-return-hex>{hex(call.value)}</span>}
+                                row={`return-${i}`}
+                              />
+                            </div>
+                            <p
+                              data-return-reading={call.type}
+                              data-return-value={
+                                call.type === "signed"
+                                  ? signedOf(call.value)
+                                  : unsignedOf(call.value)
+                              }
+                            >
+                              {C.returnValue(
+                                call.type === "signed" ? C.signedType : C.unsignedType,
+                                String(
+                                  call.type === "signed"
+                                    ? signedOf(call.value)
+                                    : unsignedOf(call.value),
+                                ),
+                              )}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                    {calls.every((call) => call.value !== null) && (
+                      <p
+                        role="status"
+                        className="al-compare-summary"
+                        data-same-bits={calls[0]?.value === calls[1]?.value}
+                      >
+                        {calls[0]?.value === calls[1]?.value ? C.sameBits : C.differentBits}
+                      </p>
+                    )}
                   </div>
-                ))}
+                )}
               </div>
-            </details>
+            )}
           </div>
         )}
       </div>

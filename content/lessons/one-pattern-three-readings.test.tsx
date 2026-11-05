@@ -21,7 +21,7 @@ it("teaches hexadecimal before the two readings and keeps their practice togethe
   expect(units.map((unit) => unit.introduces)).toEqual([
     ["hexadecimal"],
     ["unsigned reading", "signed reading", "top bit", "two’s complement"],
-    [],
+    ["overflow", "undefined behaviour", "wrap"],
   ]);
   expect(units.map((unit) => unit.challenges.map((c) => c.id))).toEqual([
     [],
@@ -29,15 +29,14 @@ it("teaches hexadecimal before the two readings and keeps their practice togethe
     [],
   ]);
   expect(units[2]!.sections.flatMap((part) => part.interactives.map((f) => f.id))).toEqual([
-    "run-fuel-used",
-    "predict-add-12",
-    "step-add-12",
     "compare-int-unsigned",
   ]);
-  expect(
-    units[2]!.sections.flatMap((part) => part.interactives).find((f) => f.id === "step-add-12")!
-      .props["after"],
-  ).toBe("predict-add-12");
+  const comparison = units[2]!.sections.flatMap((part) => part.interactives)[0]!;
+  expect(comparison.props["callComparison"]).toEqual({
+    args: [3, 5],
+    leftType: "signed",
+    rightType: "unsigned",
+  });
 });
 
 it.each(units)("renders $id with no missing activity or challenge", (unit) => {

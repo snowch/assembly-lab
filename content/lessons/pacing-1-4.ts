@@ -10,7 +10,7 @@ import { SERVICE } from "./branches.listings";
 import { compareAndChoose } from "./compare-and-choose";
 import { constantsAndWidths } from "./constants-and-widths";
 import { masks } from "./masks";
-import { FUEL_CALL, FUEL_USED_WRONG } from "./module-1.listings";
+import { FUEL_CALL, FUEL_USED_WRONG, TRIP_REMAINING, TRIP_REMAINING_U } from "./module-1.listings";
 import { PROSE as MASK } from "./masks.prose";
 import { onePatternThreeReadings } from "./one-pattern-three-readings";
 import { PROSE as READ } from "./one-pattern-three-readings.prose";
@@ -32,8 +32,6 @@ function figure(source: LessonInput, id: string): Figure {
   if (!found) throw new Error(`${source.id}: missing ${id}`);
   return found;
 }
-const readingsQuestion = section(onePatternThreeReadings, "question");
-const readingsFigure = figure(onePatternThreeReadings, "run-fuel-used");
 const hexReader = figure(onePatternThreeReadings, "read-register");
 
 const readings = splitLesson(onePatternThreeReadings, [
@@ -182,12 +180,40 @@ const readings = splitLesson(onePatternThreeReadings, [
     id: "arithmetic-on-register-bits",
     title: COPY.arithmeticBits.title,
     objectives: [...COPY.arithmeticBits.objectives],
-    introduces: [],
+    introduces: ["overflow", "undefined behaviour", "wrap"],
+    originalityNote: COPY.arithmeticBits.originality,
     sections: [
-      { ...readingsQuestion, interactives: [{ ...readingsFigure, after: undefined }] },
-      section(onePatternThreeReadings, "prediction"),
-      section(onePatternThreeReadings, "failureExperiment"),
-      section(onePatternThreeReadings, "explanation"),
+      {
+        kind: "question",
+        title: COPY.arithmeticBits.comparisonTitle,
+        prose: COPY.arithmeticBits.intro,
+        details: {
+          summary: COPY.arithmeticBits.compilerSummary,
+          prose: COPY.arithmeticBits.compiler,
+        },
+        interactives: [
+          {
+            id: "compare-int-unsigned",
+            kind: "listing-compare",
+            timeModel: "steps",
+            role: "prediction",
+            caption: COPY.arithmeticBits.caption,
+            props: {
+              left: TRIP_REMAINING,
+              right: TRIP_REMAINING_U,
+              question: COPY.arithmeticBits.question,
+              options: COPY.arithmeticBits.options,
+              explain: COPY.arithmeticBits.explain,
+              callComparison: { args: [3, 5], leftType: "signed", rightType: "unsigned" },
+            },
+          },
+        ],
+      },
+      {
+        kind: "explanation",
+        title: COPY.arithmeticBits.boundsTitle,
+        prose: COPY.arithmeticBits.bounds,
+      },
     ],
   },
 ]);
@@ -235,6 +261,7 @@ const addition = splitLesson(addingAndTheFlags, [
     id: addingAndTheFlags.id,
     title: COPY.addition.title,
     objectives: [...COPY.addition.objectives],
+    introduces: ["carry", "flag"],
     sections: [
       section(addingAndTheFlags, "motivation"),
       section(addingAndTheFlags, "prediction"),
@@ -277,6 +304,7 @@ const subtraction = splitLesson(subtractingAndTheTickCounter, [
     id: subtractingAndTheTickCounter.id,
     title: COPY.subtraction.title,
     objectives: [...COPY.subtraction.objectives],
+    introduces: ["borrow"],
     sections: [
       section(subtractingAndTheTickCounter, "motivation"),
       section(subtractingAndTheTickCounter, "prediction"),

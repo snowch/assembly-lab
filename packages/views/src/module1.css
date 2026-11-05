@@ -10,6 +10,28 @@
 
 /* ---- The register to read, with the top bit's table ---- */
 
+/* C-type comparisons reveal paired source first, then run two independent calls together. */
+.al-compare-calls,
+.al-compare-call-results {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+.al-compare-call-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.al-compare-call-results > div {
+  min-width: 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+}
+.al-compare-call-results [data-return-reading] {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
 /* Bit 31 is marked by a double border and the words "top bit" over it, as well as by what it is
    worth. The space for the words is kept whether or not they are shown, so nothing shifts. */
 .al-toggles[data-top-bit="marked"] {

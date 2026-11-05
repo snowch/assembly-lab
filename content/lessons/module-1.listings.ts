@@ -97,3 +97,15 @@ export const ODOMETER_LIMIT_START_TEXT = ["mov w0, 1000000", "ret"].join("\n");
 
 /** The reference answer: GCC's own `odometer_limit`. */
 export const ODOMETER_LIMIT_TEXT = ["mov w0, 16960", "movk w0, 0xf, lsl 16", "ret"].join("\n");
+
+/** Recorded ARM64 GCC 16.1.0, -O1 -g; see docs/notes/module-1/c-types-subtraction. */
+export const TRIP_REMAINING = {
+  c: "int trip_remaining(int planned, int travelled)\n{\n    return planned - travelled;\n}",
+  listing: "trip_remaining:\nsub     w0, w0, w1 C4\nret C4",
+  sourceLines: [[3], [3]],
+} as const;
+export const TRIP_REMAINING_U = {
+  c: "unsigned trip_remaining_u(unsigned planned, unsigned travelled)\n{\n    return planned - travelled;\n}",
+  listing: "trip_remaining_u:\nsub     w0, w0, w1 C4\nret C4",
+  sourceLines: [[3], [3]],
+} as const;

@@ -1,6 +1,6 @@
 # Course pacing implementation: new copy
 
-Drafted separately from checked facts supplied by the three implementation agents. Existing canonical paragraphs remain in their original records. These exact strings are additions or replacements for page boundaries and local activities. Instruction values and answers reuse the existing model/compiler records; no new computed answer is introduced.
+Drafted separately from checked facts supplied by the three implementation agents. Existing canonical paragraphs remain in their original records. These exact strings are additions or replacements for page boundaries and local activities. The arithmetic comparison revision adds fresh compiler records and model-backed return values, described in its checked-facts brief below.
 
 Sentence and idea passes: one goal per title/objective; instructions name the local action; no answer appears in an initial task. Native checkpoints distinguish file inspection from physical execution. Independent reviews remain pending.
 
@@ -114,9 +114,32 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
   },
   "arithmeticBits": {
     "title": "Arithmetic on register bits",
+    "comparisonTitle": "Two C return types",
     "objectives": [
-      "follow how addition and subtraction act on the same bits under signed and unsigned readings."
-    ]
+      "explain why the same subtraction bits give different C return values for int and unsigned."
+    ],
+    "intro": "You have already calculated 3 − 5 with four bits. Now compare two C functions that subtract the distance travelled from the planned distance. Only their types differ.\n\nOn this AArch64 target, `int` and `unsigned int` both use 32 bits. `int` uses the signed reading; `unsigned int` uses the unsigned reading. In C, `unsigned` on its own means `unsigned int`.",
+    "caption": "Two independent calls with planned = 3 and travelled = 5. Predict the instructions, then call both functions to compare their returned bits and C values.",
+    "question": "Does changing these C types from `int` to `unsigned` change the instructions in the recorded GCC output?",
+    "options": [
+      {
+        "value": "same",
+        "label": "The instructions are identical."
+      },
+      {
+        "value": "different",
+        "label": "The instructions differ."
+      }
+    ],
+    "explain": "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.\n\nPress **Call both functions**. Compare the returned bits, then read each return value using its C type. The registers contain bits; the function’s return type determines their C reading.",
+    "boundsTitle": "C arithmetic has type rules",
+    "bounds": "C applies different rules to these two types:\n\n- **A negative `int` result can be valid.** Here `int` ranges from −2147483648 to 2147483647. A mathematical result outside that range is signed **overflow**. The result of 3 − 5 is −2, which fits: this signed call does not overflow.\n- **Unsigned arithmetic wraps into range.** Here the range is 0 to 4294967295. A mathematical result below zero or above that maximum wraps back into range. Subtraction below zero follows this rule too.\n- **Signed arithmetic outside its range has no C guarantee.** For signed addition, subtraction and multiplication, an out-of-range result has **undefined behaviour**: C places no requirements on that case. For example, adding 1 to 2147483647 exceeds this `int` range. C guarantees neither wrapping nor an error.\n\nFor compiler examples and ways to check the bounds, see [C overflow and machine results](#/lesson/c-and-overflow).",
+    "compilerSummary": "Which compiler?",
+    "compiler": "These are recorded GCC 16.1.0 listings for AArch64 Linux, compiled with `-O1 -g`. `-O1` enables compiler optimisations; `-g` records source-line information. Other compiler settings may choose different instructions. The C rules here follow draft N3096, sections 6.2.5 and 6.5 paragraph 5.",
+    "originality": {
+      "textbookExample": "A signed-versus-unsigned puzzle that changes the source, the arithmetic and the displayed interpretation at once.",
+      "howThisDiffers": "Continues the earlier four-bit 3 minus 5 subtraction with two recorded 32-bit trip functions. The learner predicts whether their instructions differ, then calls both with the same inputs and compares identical result bits under each C return type."
+    }
   },
   "branches": {
     "title": "Following a branch",
@@ -537,4 +560,39 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "modifiedCaption": "The modified trip function at the same named GDB stops, with the matching browser-model state. Compare it with the original recording."
   }
 }
+```
+
+## Arithmetic comparison revision: checked-facts brief
+
+- Outcome: explain why identical subtraction result bits have different return values for C `int` and `unsigned`.
+- Preparation: signed and unsigned readings already establish bit weights and both 32-bit ranges. Four-bit arithmetic already demonstrates wrap, inversion plus one, and 3 minus 5 equals minus 2. This page does not repeat those calculations.
+- Recorded evidence: `TRIP_REMAINING` and `TRIP_REMAINING_U`, GCC 16.1.0 for AArch64 Linux at `-O1 -g`, both contain `sub w0, w0, w1` and `ret`. Calls with arguments 3 and 5 return `0xfffffffe`; the model reads those bits as signed −2 and unsigned 4294967294.
+- C source: N3096 section 6.2.5 paragraph 11 defines unsigned arithmetic modulo the type range. Section 6.5 paragraph 5 gives undefined behaviour when an expression result is outside its type’s representable range. Minus 2 fits signed `int` here.
+- Proposed misconception checks: the instruction prediction distinguishes a belief in separate signed subtraction instructions. The visible returned bits and typed values distinguish arithmetic from interpretation. Local bounds prose distinguishes a negative result from signed overflow, and defined unsigned wrap from undefined signed arithmetic. These are design hypotheses, not observed learner findings.
+- Scope: one comparison and two independent calls. No new maths walkthrough or exercise. The prior four-bit lesson supplies worked arithmetic and fresh application; this page applies that preparation to real C types. Flags, overflow-checking code, mixed-type conversions and compiler optimisation examples remain later.
+- State: prediction reveals listings, then Call both functions runs both independently. Reset calls removes call results and retains the checked prediction.
+- Terms: the published page first defines overflow and undefined behaviour. Published addition keeps carry and flag as its new terms. Legacy source lessons retain their original metadata.
+- Inspection: source and recorded listings read; browser review and independent technical/learner review pending. No beginner observation has taken place.
+
+UI labels were drafted in a separate drafting agent from the engineer’s checked-facts brief and are held in `packages/views/src/strings.call-comparison.ts`.
+
+### Exact call-comparison UI strings
+
+```ts
+// Copyright © 2026 Christopher Snow
+
+// Drafted separately from the interaction implementation from its checked-facts brief.
+export const CALL_COMPARISON_STRINGS = {
+  startingInputs: (argsText: string) =>
+    `Starting arguments for each independent call: ${argsText}.`,
+  callBoth: "Call both functions",
+  resetCalls: "Reset calls",
+  returnedBits: (functionName: string) => `Final w0 bits when ${functionName} returns`,
+  sameBits: "Both calls returned the same bits in w0.",
+  differentBits: "The calls returned different bits in w0.",
+  returnValue: (type: string, value: string) => `${type} return value: ${value}`,
+  signedType: "int (signed)",
+  unsignedType: "unsigned int",
+  resultGroup: "Returned bits and C values",
+} as const;
 ```

@@ -1,0 +1,13 @@
+{
+  "source": "unsigned trip_remaining_u(unsigned planned, unsigned travelled)\n{\n    return planned - travelled;\n}",
+  "options": {
+    "userArguments": "-O1 -g",
+    "filters": {
+      "binary": false,
+      "labels": true,
+      "directives": false,
+      "commentOnly": true,
+      "intel": false
+    }
+  }
+}

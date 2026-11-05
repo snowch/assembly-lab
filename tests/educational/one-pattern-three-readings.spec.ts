@@ -7,20 +7,13 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import { LESSONS } from "@al/content";
-import { assemble } from "@al/machine";
 import { readingsOfPattern, patternOf } from "../../packages/views/src/readings";
 import { MODULE1_STRINGS as M1 } from "../../packages/views/src/strings.module1";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
-import { assemblyOf, parseListing } from "../../packages/views/src/listing";
-import { traceOf, viewAt, wValue } from "../../packages/views/src/trace";
 import { DEFAULT_STRINGS as S } from "../../platform/lesson-runtime/src/strings";
 
-import {
-  FUEL_CALL,
-  FUEL_USED_WRONG,
-  FUEL_USED_WRONG_PLUS_12,
-  FUEL_USED_WRONG_U,
-} from "../../content/lessons/module-1.listings";
+import { TRIP_REMAINING, TRIP_REMAINING_U } from "../../content/lessons/module-1.listings";
+import { CALL_COMPARISON_STRINGS as C } from "../../packages/views/src/strings.call-comparison";
 import { PROSE } from "../../content/lessons/one-pattern-three-readings.prose";
 import { designProblems } from "./design";
 import {
@@ -34,7 +27,6 @@ import {
   openLesson as open,
   passing,
   press,
-  registerValue,
   run,
   setBits,
   status,
@@ -65,159 +57,107 @@ test("the lesson loads with no console error, selected sections, and its constru
   expect(errors).toEqual([]);
 });
 
-test.describe("the first figure", () => {
-  test("shows fuel_used(50, 38) with the C and the instructions GCC recorded, and 4294967284 in w0 after the subtraction", async ({
+test.describe("one subtraction with two C types", () => {
+  const figure = (page: Page) => page.locator("#ix-compare-int-unsigned");
+
+  test("shows the two complete C functions and starting arguments before revealing any instructions", async ({
     page,
   }) => {
+    const errors = watchErrors(page);
     await openLesson(page, "arithmetic-on-register-bits");
-    const figure = page.locator("#ix-run-fuel-used");
-    await figure.scrollIntoViewIfNeeded();
-    await expect(figure.locator(".al-cline .al-src")).toHaveText([FUEL_USED_WRONG.c]);
-    await expect(figure.locator(".al-insn .al-text")).toHaveText(["sub w0, w1, w0", "ret"]);
-    await expect(registerValue(figure, "w0")).toHaveText("50");
-    await expect(registerValue(figure, "w1")).toHaveText("38");
-    const model = traceOf(FUEL_USED_WRONG, FUEL_CALL);
-    await press(page, figure.getByRole("button", { name: V.stepper.next }));
-    expect(wValue(viewAt(model, 1).state, 0)).toBe(4294967284);
-    await expect(registerValue(figure, "w0")).toHaveText("4294967284");
-    await expect(registerValue(figure, "w1")).toHaveText("38");
-    await expect(figure.locator('[data-changed="true"]')).toHaveAttribute("data-register", "w0");
-    await press(page, figure.getByRole("button", { name: V.stepper.next }));
-    await expect(registerValue(figure, "w0")).toHaveText("4294967284");
-    await expect(figure.locator("[role=status]")).toContainText(V.stepper.ended);
-  });
-});
-
-test.describe("the prediction about adding 12", () => {
-  test("the stepper after it stays shut until the prediction is checked", async ({ page }) => {
-    await openLesson(page, "arithmetic-on-register-bits");
-    const stepper = page.locator("#ix-step-add-12");
-    await expect(stepper.locator(".al-locked")).toBeVisible();
-    await expect(stepper.getByRole("button", { name: V.stepper.next })).toHaveCount(0);
-    await commit(page, "predict-add-12", "0");
-    await expect(stepper.locator(".al-locked")).toHaveCount(0);
+    const f = figure(page);
+    await expect(f.locator('[data-call-state="unpredicted"]')).toBeVisible();
+    await expect(f.locator(".al-cline .al-src")).toHaveText([
+      ...TRIP_REMAINING.c.split("\n"),
+      ...TRIP_REMAINING_U.c.split("\n"),
+    ]);
+    await expect(f.locator(".al-compare-inputs")).toHaveText(C.startingInputs("3, 5"));
+    await expect(f.locator(".al-insn, .al-outcome, [data-call-side]")).toHaveCount(0);
+    await expect(f.getByRole("button", { name: C.callBoth })).toHaveCount(0);
+    await f.getByRole("radio", { name: "The instructions are identical.", exact: true }).check();
+    await expect(f.locator(".al-insn, .al-outcome, [data-call-side]")).toHaveCount(0);
+    expect(errors).toEqual([]);
   });
 
-  for (const [option, match] of [
-    ["0", true],
-    ["4294967296", false],
-    ["24", false],
-    [/^the run stops/, false],
-  ] as const) {
-    test(`commits before it reveals: ${String(option)} ${match ? "matches" : "does not match"} the model`, async ({
+  for (const identical of [true, false]) {
+    test(`a ${identical ? "matching" : "different"} prediction reveals the recorded paired listings, before either call runs`, async ({
       page,
     }) => {
       await openLesson(page, "arithmetic-on-register-bits");
-      const figure = page.locator("#ix-predict-add-12");
-      await figure.scrollIntoViewIfNeeded();
-      await expect(figure.locator(".al-outcome")).toHaveCount(0);
-      await expect(figure.getByRole("button", { name: V.prediction.commit })).toBeDisabled();
-      await figure.getByRole("radio", { name: option, exact: typeof option === "string" }).check();
-      // A choice is not a commitment: nothing is shown until it is checked.
-      await expect(figure.locator(".al-outcome")).toHaveCount(0);
-      await press(page, figure.getByRole("button", { name: V.prediction.commit }));
-      await expect(figure.locator(match ? ".al-match" : ".al-nomatch")).toContainText(
-        match ? V.prediction.match : V.prediction.noMatch,
+      await commit(
+        page,
+        "compare-int-unsigned",
+        identical ? "The instructions are identical." : "The instructions differ.",
       );
-      await expect(figure.locator(".al-outcome")).toContainText("The run ended with w0 holding 0");
-      await expect(figure.locator(".al-outcome .prose")).toContainText(
-        PROSE.predictionExplain.split("\n")[0]!.replaceAll("`", "").slice(0, 40),
-      );
+      const f = figure(page);
+      await expect(f.locator(identical ? ".al-match" : ".al-nomatch")).toBeVisible();
+      await expect(f.locator('[data-call-state="ready"]')).toBeVisible();
+      await expect(f.locator(".al-listing")).toHaveCount(2);
+      await expect(f.locator(".al-insn .al-text")).toHaveText([
+        "sub w0, w0, w1",
+        "ret",
+        "sub w0, w0, w1",
+        "ret",
+      ]);
+      await expect(f.locator(".al-cline .al-src")).toHaveText([
+        ...TRIP_REMAINING.c.split("\n"),
+        ...TRIP_REMAINING_U.c.split("\n"),
+      ]);
+      await expect(f.locator("[data-call-side]")).toHaveCount(0);
+      await expect(f.getByRole("button", { name: C.callBoth })).toBeEnabled();
+      await expect(f.locator(".al-compare-summary")).toHaveText(V.compare.allSame(2));
     });
   }
 
-  test("the stepper then shows the model's values: 4294967284 after the sub, 0 after the add", async ({
+  test("runs both calls and shows the same 32 bits with each C return type's value", async ({
     page,
   }) => {
     await openLesson(page, "arithmetic-on-register-bits");
-    await commit(page, "predict-add-12", "0");
-    const figure = page.locator("#ix-step-add-12");
-    await figure.scrollIntoViewIfNeeded();
-    await expect(figure.locator(".al-insn .al-text")).toHaveText([
-      "sub w0, w1, w0",
-      "add w0, w0, 12",
-      "ret",
-    ]);
-    // The added line has no C line beside it.
-    await expect(figure.locator(".al-insn .al-ctag")).toHaveText(["1", "1"]);
-    const model = traceOf(FUEL_USED_WRONG_PLUS_12, FUEL_CALL);
-    const next = figure.getByRole("button", { name: V.stepper.next });
-    for (const k of [1, 2, 3]) {
-      await press(page, next);
-      const w0 = String(wValue(viewAt(model, k).state, 0));
-      await expect(registerValue(figure, "w0")).toHaveText(w0);
-    }
-    await expect(registerValue(figure, "w0")).toHaveText("0");
-    await expect(next).toBeDisabled();
-  });
-
-  test("a commitment is kept, and is still there after a reload", async ({ page }) => {
-    await openLesson(page, "arithmetic-on-register-bits");
-    await commit(page, "predict-add-12", "0");
-    await page.reload();
-    await expect(page.locator("#ix-predict-add-12 .al-match")).toBeVisible();
-    await expect(page.locator("#ix-step-add-12 .al-locked")).toHaveCount(0);
-  });
-});
-
-test.describe("the two listings compared", () => {
-  const figure = (page: Page) => page.locator("#ix-compare-int-unsigned");
-
-  test("shows the C of both functions, and nothing of their listings until the prediction is checked", async ({
-    page,
-  }) => {
-    await openLesson(page, "arithmetic-on-register-bits");
-    await figure(page).scrollIntoViewIfNeeded();
-    await expect(figure(page).locator(".al-cline .al-src")).toHaveText([
-      FUEL_USED_WRONG.c,
-      FUEL_USED_WRONG_U.c,
-    ]);
-    await expect(figure(page).locator(".al-compare-result")).toHaveCount(0);
-    await expect(figure(page).locator(".al-outcome")).toHaveCount(0);
-    await expect(figure(page).getByText("sub w0, w1, w0")).toHaveCount(0);
-    await figure(page)
-      .getByRole("radio", { name: /^Nothing/ })
-      .check();
-    await expect(figure(page).locator(".al-compare-result")).toHaveCount(0);
-  });
-
-  test("compares the two line by line once checked, and the page's marks are the model's", async ({
-    page,
-  }) => {
-    await openLesson(page, "arithmetic-on-register-bits");
-    await commit(page, "compare-int-unsigned", /^Nothing/);
+    await commit(page, "compare-int-unsigned", "The instructions are identical.");
     const f = figure(page);
-    await expect(f.locator(".al-match")).toContainText(V.compare.resultSame);
-    // What the model says of the two listings, in the browser and here.
-    const ops = (p: { listing: string }) =>
-      assemble(assemblyOf(parseListing(p.listing))).program!.instructions.map((i) =>
-        JSON.stringify(i.op, (_k, v) => (typeof v === "bigint" ? `${v}n` : v)),
+    await press(page, f.getByRole("button", { name: C.callBoth, exact: true }));
+    await expect(f.locator('[data-call-state="returned"]')).toBeVisible();
+    for (const [side, type, value] of [
+      ["left", "signed", "-2"],
+      ["right", "unsigned", "4294967294"],
+    ]) {
+      const result = f.locator(`[data-call-side="${side}"]`);
+      await expect(result.locator("[data-return-bits] .al-bit")).toHaveText([
+        ..."1".repeat(31),
+        "0",
+      ]);
+      await expect(result.locator("[data-return-hex]")).toHaveText("0xfffffffe");
+      await expect(result.locator(`[data-return-reading="${type}"]`)).toHaveAttribute(
+        "data-return-value",
+        value!,
       );
-    expect(ops(FUEL_USED_WRONG)).toEqual(ops(FUEL_USED_WRONG_U));
-    const rows = f.locator(".al-compare-row");
-    await expect(rows).toHaveCount(2);
-    await expect(rows.locator('[data-side="left"] code')).toHaveText(["sub w0, w1, w0", "ret"]);
-    await expect(rows.locator('[data-side="right"] code')).toHaveText(["sub w0, w1, w0", "ret"]);
-    await expect(rows.locator(".al-cmp-mark")).toHaveText([V.compare.same, V.compare.same]);
-    await expect(f.locator(".al-compare-summary")).toHaveText(V.compare.allSame(2));
-    await expect(f.locator(".al-outcome .prose")).toContainText("Both listings are");
+    }
+    await expect(f.locator('[data-same-bits="true"]')).toHaveText(C.sameBits);
+    await expect(f.getByRole("button", { name: C.callBoth, exact: true })).toBeDisabled();
+    await press(page, f.getByRole("button", { name: C.resetCalls, exact: true }));
+    await expect(f.locator("[data-call-side]")).toHaveCount(0);
+    await expect(f.locator(".al-listing")).toHaveCount(2);
+    await expect(f.locator(".al-match")).toBeVisible();
+    await expect(f.getByRole("button", { name: C.callBoth, exact: true })).toBeEnabled();
   });
 
-  test("a different answer is told it does not match, and the comparison still shows", async ({
+  test("retains the checked prediction and returned model results after reloading", async ({
     page,
   }) => {
     await openLesson(page, "arithmetic-on-register-bits");
-    await commit(page, "compare-int-unsigned", /^It adds a check/);
-    await expect(figure(page).locator(".al-nomatch")).toContainText(V.prediction.noMatch);
-    await expect(figure(page).locator('.al-compare-row[data-same="true"]')).toHaveCount(2);
-  });
-
-  test("a commitment is kept after a reload, with the comparison", async ({ page }) => {
-    await openLesson(page, "arithmetic-on-register-bits");
-    await commit(page, "compare-int-unsigned", /^Nothing/);
+    await commit(page, "compare-int-unsigned", "The instructions are identical.");
+    await press(page, figure(page).getByRole("button", { name: C.callBoth, exact: true }));
     await page.reload();
     await expect(figure(page).locator(".al-match")).toBeVisible();
-    await expect(figure(page).locator(".al-compare-row")).toHaveCount(2);
+    await expect(figure(page).locator(".al-listing")).toHaveCount(2);
+    await expect(figure(page).locator('[data-return-reading="signed"]')).toHaveAttribute(
+      "data-return-value",
+      "-2",
+    );
+    await expect(figure(page).locator('[data-return-reading="unsigned"]')).toHaveAttribute(
+      "data-return-value",
+      "4294967294",
+    );
   });
 });
 
@@ -485,7 +425,7 @@ test.describe("the compiler note and the readings route", () => {
   test("has the compiler note shut beside the comparison", async ({ page }) => {
     await openLesson(page, "same-bits-two-readings");
     await openLesson(page, "arithmetic-on-register-bits");
-    const compiler = note(page, "failureExperiment");
+    const compiler = note(page, "question");
     await compiler.scrollIntoViewIfNeeded();
     await expect(compiler.locator("summary")).toHaveText("Which compiler?");
     await expect(compiler).not.toHaveAttribute("open", "");
@@ -517,15 +457,13 @@ test.describe("the look of the lesson page", () => {
     const phone = info.project.name === "phone";
     await openLesson(page, "same-bits-two-readings");
     await openLesson(page, "arithmetic-on-register-bits");
+    await commit(page, "compare-int-unsigned", "The instructions differ.");
     await press(
       page,
-      page.locator("#ix-run-fuel-used").getByRole("button", { name: V.stepper.next }),
+      page
+        .locator("#ix-compare-int-unsigned")
+        .getByRole("button", { name: C.callBoth, exact: true }),
     );
-    await commit(page, "predict-add-12", "24");
-    const step = page.locator("#ix-step-add-12");
-    await press(page, step.getByRole("button", { name: V.stepper.next }));
-    await press(page, step.getByRole("button", { name: V.stepper.next }));
-    await commit(page, "compare-int-unsigned", /^Nothing/);
     expect(await designProblems(page, phone)).toEqual([]);
     await openLesson(page, "same-bits-two-readings");
     const make = challenge(page, MAKE);
