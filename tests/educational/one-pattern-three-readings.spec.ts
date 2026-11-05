@@ -99,6 +99,7 @@ test.describe("one subtraction with two C types", () => {
         "sub w0, w0, w1",
         "ret",
       ]);
+      await expect(f.locator(".al-insn .al-ctag")).toHaveText(["3", "3", "3", "3"]);
       await expect(f.locator(".al-cline .al-src")).toHaveText([
         ...TRIP_REMAINING.c.split("\n"),
         ...TRIP_REMAINING_U.c.split("\n"),
