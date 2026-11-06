@@ -19,10 +19,14 @@ export const CALL_COMPARISON_STRINGS = {
     `The top bit is ${top}. Its weight is −${weight} for a signed reading and +${weight} for an unsigned reading.`,
   readingEquation: (type: string, lower: number, contribution: number, result: number) =>
     `${type}: ${lower} ${contribution < 0 ? "−" : "+"} ${Math.abs(contribution)} = ${result}`,
+  tripOverrun: (signed: number, unsigned: number) =>
+    `The int result, ${signed} km, can express that you travelled ${Math.abs(signed)} km beyond the plan. It fits the signed range, so this call has no signed overflow. The unsigned result, ${unsigned} km, does not express that overrun.`,
   unsignedWrap:
-    "For this unsigned subtraction, a mathematical result below zero wraps into the unsigned range. That is why the unsigned call can return a large positive value.",
+    "Unsigned subtraction below zero wraps into its range, as C defines. The large returned number carries no warning that it came from a wrap. In another calculation, the same unsigned value could be a valid distance.",
+  noArithmeticError:
+    "Neither sub nor ret in these listings reports an arithmetic error. This program returns the bits without checking whether the trip exceeded its plan.",
   readingTypes:
-    "The compiler knows the C parameter and return types. The register stores the result bits without a type tag. Each function’s return type tells you which reading gives its C return value.",
-  readingLink: "Review the bit weights in Signed and unsigned readings.",
+    "The compiler uses the C parameter types to apply the arithmetic rules. The register stores the result bits without a type tag. The return type determines how the caller reads these returned bits; it does not generally determine the type of the subtraction.",
+  readingLink: "Signed and unsigned readings",
   resultGroup: "Returned bits and C values",
 } as const;

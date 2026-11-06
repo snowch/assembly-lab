@@ -13,3 +13,18 @@ it("keeps the separately drafted Module 1–4 pacing copy in its canonical recor
   expect(json).toBeDefined();
   expect(JSON.parse(json!)).toEqual(COPY);
 });
+
+it("keeps the call comparison UI strings in the canonical drafting record", () => {
+  const record = readFileSync(
+    new URL("../../docs/notes/course-pacing-implementation/copy.md", import.meta.url),
+    "utf8",
+  );
+  const exact = record
+    .split("### Exact call-comparison UI strings\n")[1]
+    ?.match(/```ts\n([\s\S]*?)\n```/)?.[1];
+  const source = readFileSync(
+    new URL("../../packages/views/src/strings.call-comparison.ts", import.meta.url),
+    "utf8",
+  );
+  expect(exact?.trim()).toBe(source.trim());
+});

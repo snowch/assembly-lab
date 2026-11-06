@@ -209,6 +209,7 @@ const readings = splitLesson(onePatternThreeReadings, [
                 leftType: "signed",
                 rightType: "unsigned",
                 workedReadings: true,
+                tripContext: true,
               },
             },
           },
@@ -217,7 +218,16 @@ const readings = splitLesson(onePatternThreeReadings, [
       {
         kind: "explanation",
         title: COPY.arithmeticBits.boundsTitle,
-        prose: COPY.arithmeticBits.bounds,
+        prose: [COPY.arithmeticBits.bounds, COPY.arithmeticBits.contract].join("\n\n"),
+      },
+      {
+        kind: "reflection",
+        title: COPY.arithmeticBits.reflectionTitle,
+        prose: COPY.arithmeticBits.reflection,
+        details: {
+          summary: COPY.arithmeticBits.reflectionSummary,
+          prose: COPY.arithmeticBits.reflectionAnswer,
+        },
       },
     ],
   },

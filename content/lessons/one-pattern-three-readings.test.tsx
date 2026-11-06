@@ -37,6 +37,7 @@ it("teaches hexadecimal before the two readings and keeps their practice togethe
     leftType: "signed",
     rightType: "unsigned",
     workedReadings: true,
+    tripContext: true,
   });
 });
 

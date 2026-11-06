@@ -27,7 +27,7 @@ export const STRINGS = {
   subtitle: "From a line of C to the bits in a register",
   intro:
     "Learn assembly by running instructions one at a time in your browser. The simulator supports a subset of 64-bit Arm instructions. In the lessons, you see C code beside its assembly instructions. After each instruction, you can inspect the register values and their bits, the flags and memory. You predict what will happen and write small assembly programs. Automatic checks test your answers and programs.",
-  start: "Start with Module 0",
+  start: "Start with",
   completion: {
     mark: "Mark lesson complete",
     undo: "Mark lesson incomplete",

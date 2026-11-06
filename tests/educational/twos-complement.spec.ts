@@ -4,6 +4,7 @@ import { expect, test, type Locator } from "@playwright/test";
 import { fourBitReadings } from "@al/views";
 import { shown } from "../../packages/views/src/readings";
 import { designProblems } from "./design";
+import { lessonLabel } from "./lesson-references";
 
 async function alignedTopBit(figure: Locator) {
   const bit = figure.locator('.al-toggle[data-top="true"]');
@@ -35,7 +36,9 @@ for (const theme of ["light", "dark"] as const) {
     await page.goto("#/");
     await page.locator("select").selectOption(theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-    await expect(page.getByRole("link", { name: "Two’s complement", exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: lessonLabel("twos-complement"), exact: true }),
+    ).toBeVisible();
     await page.goto("#/lesson/same-bits-two-readings");
     const signed = page.locator("#ix-reading-signed");
     await expect(page.locator("section.lesson-section").filter({ has: signed })).toContainText(
@@ -46,7 +49,10 @@ for (const theme of ["light", "dark"] as const) {
     await expect(page.locator("#ix-scratch-minus-three")).toHaveCount(0);
     // The appendix extends an already visible signed explanation.
     await page
-      .getByRole("link", { name: "More about two’s complement in Appendix B", exact: true })
+      .getByRole("link", {
+        name: lessonLabel("twos-complement", "More about two’s complement in Appendix B"),
+        exact: true,
+      })
       .click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Two’s complement");
     const reading = page.locator("#ix-four-bit-readings");
@@ -83,7 +89,10 @@ for (const theme of ["light", "dark"] as const) {
     await expect(negation.locator('[data-value="after"]')).toHaveText("6");
     expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
     await page
-      .getByRole("link", { name: "Return to Module 1: Signed and unsigned readings" })
+      .getByRole("link", {
+        name: lessonLabel("same-bits-two-readings"),
+        exact: true,
+      })
       .click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       "Signed and unsigned readings",

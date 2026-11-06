@@ -31,7 +31,13 @@ function comparison(
         { value: "same", label: "Same" },
         { value: "different", label: "Different" },
       ],
-      callComparison: { args, leftType: "signed", rightType: "unsigned", workedReadings },
+      callComparison: {
+        args,
+        leftType: "signed",
+        rightType: "unsigned",
+        workedReadings,
+        tripContext: true,
+      },
     },
   });
   return {
@@ -117,6 +123,14 @@ describe("comparing the C return types by calling both listings", () => {
     const word = wValue(models[0]!.final, 0);
     const lower = word % 2 ** 31;
     const top = Math.floor(word / 2 ** 31);
+    expect(bridge).toHaveTextContent(C.noArithmeticError);
+    if (args[0]! < args[1]!) {
+      expect(bridge).toHaveTextContent(C.tripOverrun(wValueAsInt(models[0]!.final, 0), word));
+      expect(bridge).toHaveTextContent(C.unsignedWrap);
+    } else {
+      expect(bridge.querySelector("[data-trip-overrun]")).toBeNull();
+      expect(bridge).not.toHaveTextContent(C.unsignedWrap);
+    }
     expect(bridge).toHaveTextContent(
       C.readingEquation(C.signedType, lower, -top * 2 ** 31, wValueAsInt(models[0]!.final, 0)),
     );
@@ -159,6 +173,8 @@ describe("comparing the C return types by calling both listings", () => {
     expect(restored.container.querySelector("[data-return-explanation]")).not.toHaveTextContent(
       "2147483646",
     );
+    expect(restored.container.querySelector("[data-trip-overrun]")).toBeNull();
+    expect(restored.container).not.toHaveTextContent(C.unsignedWrap);
     expect(
       within(screen.getByRole("group", { name: C.resultGroup })).getByText(C.sameBits),
     ).toBeInTheDocument();
