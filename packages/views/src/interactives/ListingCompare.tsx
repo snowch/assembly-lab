@@ -130,7 +130,9 @@ function CallResults({
   tripContext,
   tripDifference,
   subtraction,
+  id,
 }: {
+  id: string;
   calls: CallResult[];
   workedReadings: boolean;
   tripContext: boolean;
@@ -157,142 +159,163 @@ function CallResults({
     signedOf(word) === tripDifference;
   return (
     <div className="al-compare-call-results" role="group" aria-label={C.resultGroup}>
-      {word !== undefined && subtraction ? (
-        <SubtractionWorking
-          work={subtraction}
-          returnedWord={<ReturnedWord value={word} row="shared" />}
-        />
-      ) : (
-        word !== undefined && (
-          <div className="al-compare-shared-word">
+      {word !== undefined && subtraction && (
+        <section
+          className="al-compare-output-section"
+          data-comparison-section="arithmetic"
+          aria-labelledby={`${id}-arithmetic-heading`}
+        >
+          <h3 id={`${id}-arithmetic-heading`}>{C.subtraction.heading}</h3>
+          <SubtractionWorking
+            work={subtraction}
+            returnedWord={<ReturnedWord value={word} row="shared" />}
+          />
+        </section>
+      )}
+      <section
+        className="al-compare-output-section al-compare-interpretation"
+        data-comparison-section="readings"
+        aria-labelledby={`${id}-readings-heading`}
+      >
+        <h3 id={`${id}-readings-heading`}>{C.readingsHeading}</h3>
+        {word !== undefined && !subtraction && (
+          <div className="al-compare-shared-word al-compare-panel">
             <p>{C.sharedReturnedBits}</p>
             <ReturnedWord value={word} row="shared" />
           </div>
-        )
-      )}
-      <div className="al-compare-readings">
-        {calls.map((call, i) => (
-          <div
-            className="al-compare-reading"
-            role="group"
-            aria-label={`${call.name}: ${typeLabel(call.type)}`}
-            key={i}
-            data-call-result={i}
-            data-call-side={i === 0 ? "left" : "right"}
-          >
-            {shared ? (
-              <p className="al-compare-reading-function">
-                <code>{call.name}</code>
-              </p>
-            ) : (
-              <p>{C.returnedBits(call.name)}</p>
-            )}
-            {call.value === null ? (
-              <p role="status">{S.prediction.endedWithError}</p>
-            ) : (
-              <>
-                {!shared && <ReturnedWord value={call.value} row={String(i)} />}
-                <p className="al-compare-reading-type">{typeLabel(call.type)}</p>
-                <p
-                  className="al-compare-reading-value"
-                  data-return-reading={call.type}
-                  data-return-value={read(call)}
-                >
-                  {tripContext ? C.distanceValue(decimal(read(call))) : decimal(read(call))}
+        )}
+        <div className="al-compare-readings">
+          {calls.map((call, i) => (
+            <div
+              className="al-compare-reading"
+              role="group"
+              aria-label={`${call.name}: ${typeLabel(call.type)}`}
+              key={i}
+              data-call-result={i}
+              data-call-side={i === 0 ? "left" : "right"}
+            >
+              {shared ? (
+                <p className="al-compare-reading-function">
+                  <code>{call.name}</code>
                 </p>
-                {overrun && call.type === "signed" && read(call) < 0 && (
-                  <p className="al-compare-reading-meaning" data-trip-overrun>
-                    {C.signedMeaning(decimal(Math.abs(read(call))))}
-                  </p>
-                )}
-                {overrun && call.type === "unsigned" && (
-                  <p className="al-compare-reading-meaning">{C.unsignedMeaning}</p>
-                )}
-                {overrun && call.type === "signed" && read(call) < 0 && (
-                  <p className="al-compare-reading-range">{C.signedRange}</p>
-                )}
-              </>
-            )}
-          </div>
-        ))}
-      </div>
-      {calls.every((call) => call.value !== null) && (
-        <p role="status" className="al-compare-summary" data-same-bits={shared}>
-          {shared ? C.sameBits : C.differentBits}
-        </p>
-      )}
-      {workedReadings && word !== undefined && (
-        <div
-          className="al-compare-weights"
-          data-return-explanation
-          role="group"
-          aria-label={C.readingGroup}
-        >
-          <p>
-            {C.bitWeights}
-            {calls[0]?.type !== calls[1]?.type && <> {C.topWeightDiffers}</>}
-          </p>
-          <table className="al-compare-weight-table">
-            <thead>
-              <tr>
-                <td />
-                {calls.map((call, i) => (
-                  <th key={i} scope="col">
-                    {typeLabel(call.type)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr data-weight-row="lower">
-                <th scope="row">{C.lowerBits}</th>
-                <td colSpan={calls.length}>{decimal(lower)}</td>
-              </tr>
-              <tr data-weight-row="top-bit">
-                <th scope="row">{C.topBitValue}</th>
-                <td colSpan={calls.length}>{top}</td>
-              </tr>
-              {top === 0 && (
-                <tr data-weight-row="top-weight">
-                  <th scope="row">{C.topBitWeight}</th>
-                  {calls.map((call, i) => (
-                    <td key={i}>
-                      <span>
-                        {call.type === "signed" ? "−" : "+"}
-                        {decimal(weight)}
-                      </span>
-                    </td>
-                  ))}
-                </tr>
+              ) : (
+                <p>{C.returnedBits(call.name)}</p>
               )}
-              <tr data-weight-row="top-contribution">
-                <th scope="row">{C.topBitContribution}</th>
-                {calls.map((call, i) => (
-                  <td key={i}>
-                    <span>
-                      {top !== 0 ? (call.type === "signed" ? "−" : "+") : ""}
-                      {decimal(top * weight)}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-              <tr data-weight-row="total">
-                <th scope="row">{C.total}</th>
-                {calls.map((call, i) => (
-                  <td key={i}>
-                    <span>{decimal(read(call))}</span>
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-          <p className="al-compare-types">{C.readingTypes}</p>
-          {tripContext && <p>{C.noArithmeticError}</p>}
-          <p>
-            <LessonLink href="#/lesson/same-bits-two-readings">{C.readingLink}</LessonLink>
-          </p>
+              {call.value === null ? (
+                <p role="status">{S.prediction.endedWithError}</p>
+              ) : (
+                <>
+                  {!shared && <ReturnedWord value={call.value} row={String(i)} />}
+                  <p className="al-compare-reading-type">{typeLabel(call.type)}</p>
+                  <p
+                    className="al-compare-reading-value"
+                    data-return-reading={call.type}
+                    data-return-value={read(call)}
+                  >
+                    {tripContext ? C.distanceValue(decimal(read(call))) : decimal(read(call))}
+                  </p>
+                  {overrun && call.type === "signed" && read(call) < 0 && (
+                    <p className="al-compare-reading-meaning" data-trip-overrun>
+                      {C.signedMeaning(decimal(Math.abs(read(call))))}
+                    </p>
+                  )}
+                  {overrun && call.type === "unsigned" && (
+                    <p className="al-compare-reading-meaning">{C.unsignedMeaning}</p>
+                  )}
+                  {overrun && call.type === "signed" && read(call) < 0 && (
+                    <p className="al-compare-reading-range">{C.signedRange}</p>
+                  )}
+                </>
+              )}
+            </div>
+          ))}
         </div>
-      )}
+        {calls.every((call) => call.value !== null) && (
+          <p role="status" className="al-compare-summary" data-same-bits={shared}>
+            {shared ? C.sameBits : C.differentBits}
+          </p>
+        )}
+        {workedReadings && word !== undefined && (
+          <div
+            className="al-compare-weights"
+            data-return-explanation
+            role="group"
+            aria-label={C.readingGroup}
+          >
+            <h4>{C.weightsHeading}</h4>
+            <p>
+              {C.bitWeights}
+              {calls[0]?.type !== calls[1]?.type && <> {C.topWeightDiffers}</>}
+            </p>
+            <div className="al-compare-weight-panel al-compare-panel">
+              <table className="al-compare-weight-table">
+                <colgroup>
+                  <col className="al-compare-weight-label" />
+                  <col />
+                  <col />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <td />
+                    {calls.map((call, i) => (
+                      <th key={i} scope="col">
+                        {typeLabel(call.type)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr data-weight-row="lower">
+                    <th scope="row">{C.lowerBits}</th>
+                    <td colSpan={calls.length}>{decimal(lower)}</td>
+                  </tr>
+                  <tr data-weight-row="top-bit">
+                    <th scope="row">{C.topBitValue}</th>
+                    <td colSpan={calls.length}>{top}</td>
+                  </tr>
+                  {top === 0 && (
+                    <tr data-weight-row="top-weight">
+                      <th scope="row">{C.topBitWeight}</th>
+                      {calls.map((call, i) => (
+                        <td key={i}>
+                          <span>
+                            {call.type === "signed" ? "−" : "+"}
+                            {decimal(weight)}
+                          </span>
+                        </td>
+                      ))}
+                    </tr>
+                  )}
+                  <tr data-weight-row="top-contribution">
+                    <th scope="row">{C.topBitContribution}</th>
+                    {calls.map((call, i) => (
+                      <td key={i}>
+                        <span>
+                          {top !== 0 ? (call.type === "signed" ? "−" : "+") : ""}
+                          {decimal(top * weight)}
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+                  <tr data-weight-row="total">
+                    <th scope="row">{C.total}</th>
+                    {calls.map((call, i) => (
+                      <td key={i}>
+                        <span>{decimal(read(call))}</span>
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="al-compare-types">{C.readingTypes}</p>
+            {tripContext && <p>{C.noArithmeticError}</p>}
+            <p>
+              <LessonLink href="#/lesson/same-bits-two-readings">{C.readingLink}</LessonLink>
+            </p>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
@@ -356,24 +379,26 @@ export const ListingCompare = withProps(
             aria-labelledby={`${interactive.id}-source-heading`}
           >
             <h3 id={`${interactive.id}-source-heading`}>{C.sourceHeading}</h3>
-            <div className={committed ? "al-pair-sides" : "al-compare-c"}>
-              {committed ? (
-                [data.left, data.right].map((recorded, i) => (
-                  <div key={i}>
-                    <p>
-                      <code>{names[i]}</code>
-                    </p>
-                    <ListingView cLines={cLinesOf(recorded.c)} lines={programLines(recorded)} />
-                  </div>
-                ))
-              ) : (
-                <>
-                  <CPane recorded={data.left} />
-                  <CPane recorded={data.right} />
-                </>
-              )}
+            <div className="al-compare-panel al-compare-source-panel">
+              <div className={committed ? "al-pair-sides" : "al-compare-c"}>
+                {committed ? (
+                  [data.left, data.right].map((recorded, i) => (
+                    <div key={i}>
+                      <p>
+                        <code>{names[i]}</code>
+                      </p>
+                      <ListingView cLines={cLinesOf(recorded.c)} lines={programLines(recorded)} />
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <CPane recorded={data.left} />
+                    <CPane recorded={data.right} />
+                  </>
+                )}
+              </div>
+              <p className="al-compare-inputs">{C.startingInputs(comparison.args.join(", "))}</p>
             </div>
-            <p className="al-compare-inputs">{C.startingInputs(comparison.args.join(", "))}</p>
           </section>
           <section
             className="al-compare-stage"
@@ -382,12 +407,16 @@ export const ListingCompare = withProps(
             aria-labelledby={`${interactive.id}-prediction-heading`}
           >
             <h3 id={`${interactive.id}-prediction-heading`}>{C.predictionHeading}</h3>
-            {prediction}
-            {committed && (
-              <p role="status" className="al-compare-summary">
-                {rows.every((r) => r.same) ? S.compare.allSame(rows.length) : S.compare.notAllSame}
-              </p>
-            )}
+            <div className="al-compare-panel al-compare-prediction-panel">
+              {prediction}
+              {committed && (
+                <p role="status" className="al-compare-summary">
+                  {rows.every((r) => r.same)
+                    ? S.compare.allSame(rows.length)
+                    : S.compare.notAllSame}
+                </p>
+              )}
+            </div>
           </section>
           <section
             className="al-compare-stage al-compare-calls"
@@ -396,48 +425,51 @@ export const ListingCompare = withProps(
             aria-labelledby={`${interactive.id}-call-heading`}
           >
             <h3 id={`${interactive.id}-call-heading`}>{C.callHeading}</h3>
-            <Prose markdown={comparison.intro} />
-            <div className="al-compare-call-controls">
-              <button
-                type="button"
-                className="button primary"
-                disabled={!committed || called === true}
-                onClick={() => {
-                  if (!committed || called) return;
-                  setCalled(true);
-                }}
-              >
-                {C.callBoth}
-              </button>
-              {committed && called && (
+            <div className="al-compare-panel al-compare-call-panel">
+              <Prose markdown={comparison.intro} />
+              <div className="al-compare-call-controls">
                 <button
                   type="button"
-                  className="button secondary"
-                  onClick={() => setCalled(undefined)}
+                  className="button primary"
+                  disabled={!committed || called === true}
+                  onClick={() => {
+                    if (!committed || called) return;
+                    setCalled(true);
+                  }}
                 >
-                  {C.resetCalls}
+                  {C.callBoth}
                 </button>
-              )}
+                {committed && called && (
+                  <button
+                    type="button"
+                    className="button secondary"
+                    onClick={() => setCalled(undefined)}
+                  >
+                    {C.resetCalls}
+                  </button>
+                )}
+              </div>
             </div>
-            {calls && (
-              <CallResults
-                calls={calls}
-                subtraction={
-                  comparison.workedSubtraction
-                    ? subtractionWork(calls.map((call) => call.trace))
-                    : null
-                }
-                workedReadings={comparison.workedReadings}
-                tripContext={comparison.tripContext}
-                tripDifference={
-                  comparison.args.length === 2 &&
-                  comparison.args.every((arg) => arg >= 0 && arg < 2 ** 31)
-                    ? comparison.args[0]! - comparison.args[1]!
-                    : null
-                }
-              />
-            )}
           </section>
+          {calls && (
+            <CallResults
+              id={interactive.id}
+              calls={calls}
+              subtraction={
+                comparison.workedSubtraction
+                  ? subtractionWork(calls.map((call) => call.trace))
+                  : null
+              }
+              workedReadings={comparison.workedReadings}
+              tripContext={comparison.tripContext}
+              tripDifference={
+                comparison.args.length === 2 &&
+                comparison.args.every((arg) => arg >= 0 && arg < 2 ** 31)
+                  ? comparison.args[0]! - comparison.args[1]!
+                  : null
+              }
+            />
+          )}
         </div>
       );
     }

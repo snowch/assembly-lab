@@ -33,6 +33,21 @@ for (const width of [360, 375, 416, 1280]) {
       const source = figure.locator('[data-comparison-stage="source"]');
       const prediction = figure.locator('[data-comparison-stage="prediction"]');
       const calls = figure.locator('[data-comparison-stage="calls"]');
+      const wrapperStyle = await figure.locator(".al-compare-stages").evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          background: style.backgroundColor,
+          border: style.borderTopWidth,
+          shadow: style.boxShadow,
+          padding: style.padding,
+        };
+      });
+      expect(wrapperStyle).toEqual({
+        background: "rgba(0, 0, 0, 0)",
+        border: "0px",
+        shadow: "none",
+        padding: "0px",
+      });
       await expect(source.getByRole("heading")).toHaveText(C.sourceHeading);
       await expect(prediction.getByRole("heading")).toHaveText(C.predictionHeading);
       await expect(calls.getByRole("heading")).toHaveText(C.callHeading);
@@ -69,6 +84,22 @@ for (const width of [360, 375, 416, 1280]) {
       );
       const work = figure.locator("[data-subtraction-work]");
       await expect(work).toBeVisible();
+      await expect(
+        calls.locator("[data-subtraction-work], [data-call-side], [data-return-explanation]"),
+      ).toHaveCount(0);
+      const interpretation = figure.locator(".al-compare-interpretation");
+      await expect(
+        interpretation.getByRole("heading", { name: C.readingsHeading, exact: true }),
+      ).toBeVisible();
+      await expect(
+        interpretation.getByRole("heading", { name: C.weightsHeading, exact: true }),
+      ).toBeVisible();
+      await expect(
+        work.getByRole("heading", { name: C.subtraction.oppositeHeading, exact: true }),
+      ).toBeVisible();
+      await expect(
+        work.getByRole("heading", { name: C.subtraction.sumHeading, exact: true }),
+      ).toBeVisible();
       for (const [row, value] of Object.entries({
         second: 5,
         inverted: 4294967290,
@@ -99,6 +130,22 @@ for (const width of [360, 375, 416, 1280]) {
       );
       const weightTable = figure.locator("[data-return-explanation] table");
       await expect(weightTable).toBeVisible();
+      const wrappedNumbers = await weightTable.locator("td").evaluateAll((cells) =>
+        cells.flatMap((cell) => {
+          if (!cell.textContent?.trim()) return [];
+          const walker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT);
+          const tops = new Set<number>();
+          let text: Node | null;
+          while ((text = walker.nextNode())) {
+            if (!text.textContent?.trim()) continue;
+            const range = document.createRange();
+            range.selectNodeContents(text);
+            for (const rect of range.getClientRects()) tops.add(Math.round(rect.top));
+          }
+          return tops.size > 1 ? [cell.textContent] : [];
+        }),
+      );
+      expect(wrappedNumbers).toEqual([]);
       expect(
         await weightTable.evaluate((table) => table.scrollWidth - table.clientWidth),
       ).toBeLessThanOrEqual(1);
