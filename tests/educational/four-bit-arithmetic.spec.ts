@@ -2,6 +2,7 @@
 
 import { expect, test, type Locator } from "@playwright/test";
 import { designProblems } from "./design";
+import { lessonLabel } from "./lesson-references";
 
 // Check the drawn arrow, including its head, actually reaches both destinations.
 async function expectConnectedCarry(addition: Locator) {
@@ -86,7 +87,7 @@ for (const theme of ["light", "dark"] as const) {
     await page.goto("#/");
     await page.locator("select").selectOption(theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-    await page.getByRole("link", { name: "Arithmetic with four bits", exact: true }).click();
+    await page.getByRole("link", { name: lessonLabel("four-bit-arithmetic"), exact: true }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Arithmetic with four bits");
     const addition = page.locator("#ix-four-bit-addition");
     const result = addition.locator('[data-row="result"] .al-four-value');
@@ -207,9 +208,17 @@ for (const theme of ["light", "dark"] as const) {
     await expectAlignedBits(workspace);
     await expect(solved.locator(".al-challenge-note")).toHaveCount(0);
     await expect(
-      page.getByRole("link", { name: /Previous lesson Signed and unsigned readings/ }),
+      page.getByRole("link", {
+        name: `Previous lesson ${lessonLabel("same-bits-two-readings")}`,
+        exact: true,
+      }),
     ).toBeVisible();
-    await page.getByRole("link", { name: /Next lesson Arithmetic on register bits/ }).click();
+    await page
+      .getByRole("link", {
+        name: `Next lesson ${lessonLabel("arithmetic-on-register-bits")}`,
+        exact: true,
+      })
+      .click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Arithmetic on register bits");
     expect(errors).toEqual([]);
   });

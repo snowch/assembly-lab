@@ -138,6 +138,9 @@ test.describe("one subtraction with two C types", () => {
     await expect(explanation).toContainText("2147483646 − 2147483648 = -2");
     await expect(explanation).toContainText("2147483646 + 2147483648 = 4294967294");
     await expect(explanation).toContainText("without a type tag");
+    await expect(explanation).toContainText(C.tripOverrun(-2, 4294967294));
+    await expect(explanation).toContainText(C.unsignedWrap);
+    await expect(explanation).toContainText(C.noArithmeticError);
     await expect(explanation.locator("a")).toHaveAttribute(
       "href",
       "#/lesson/same-bits-two-readings",

@@ -6,9 +6,14 @@
 
 import { useCallback, useEffect, useMemo } from "react";
 
-import { prepareViewHandoff, clearViewHandoff } from "@al/views";
+import {
+  prepareViewHandoff,
+  clearViewHandoff,
+  LessonProse,
+  LessonReferenceProvider,
+} from "@al/views";
 import { WHERE_NEXT } from "@al/content";
-import { LessonView, Prose } from "@platform/lesson-runtime";
+import { LessonView } from "@platform/lesson-runtime";
 
 import { createBook } from "./book";
 import { BUILD_VERSION, commitHref } from "./build-version";
@@ -88,9 +93,10 @@ export function App() {
             {STRINGS.backToPlan}
           </a>
         </p>
+        <p className="lesson-position">{book.references.position(lesson.id)}</p>
         <LessonView
           key={lesson.id}
-          book={book}
+          book={{ ...book, lessons: book.referenceLessons }}
           lesson={lesson}
           storage={storage}
           lessonHref={lessonHref}
@@ -98,14 +104,14 @@ export function App() {
         />
         {lesson.module === 9 && next?.module !== 9 && (
           <aside className="where-next-after-calls">
-            <Prose markdown={WHERE_NEXT.afterCalls} />
+            <LessonProse markdown={WHERE_NEXT.afterCalls} />
           </aside>
         )}
         <nav className="lesson-nav" aria-label={STRINGS.lessonNav}>
           {previous ? (
             <a className="lesson-nav-link" data-direction="previous" href={lessonHref(previous.id)}>
               <span className="lesson-nav-direction">{STRINGS.previousLesson}</span>
-              <span className="lesson-nav-title">{previous.title}</span>
+              <span className="lesson-nav-title">{book.references.label(previous.id)}</span>
             </a>
           ) : (
             <span />
@@ -115,7 +121,7 @@ export function App() {
             {next ? (
               <a className="lesson-nav-link" data-direction="next" href={lessonHref(next.id)}>
                 <span className="lesson-nav-direction">{STRINGS.nextLesson}</span>
-                <span className="lesson-nav-title">{next.title}</span>
+                <span className="lesson-nav-title">{book.references.label(next.id)}</span>
               </a>
             ) : null}
           </div>
@@ -148,7 +154,7 @@ export function App() {
   }
 
   return (
-    <>
+    <LessonReferenceProvider references={book.references}>
       <a className="skip-link" href="#main" onClick={skipToContent}>
         {STRINGS.skip}
       </a>
@@ -217,6 +223,6 @@ export function App() {
           </p>
         )}
       </footer>
-    </>
+    </LessonReferenceProvider>
   );
 }

@@ -6,6 +6,7 @@
 
 import { LESSONS, WHERE_NEXT } from "@al/content";
 import { PLAN, lessonsOf, statusOf } from "@al/content/plan";
+import { COURSE_REFERENCES } from "../book";
 
 import { lessonHref } from "../route";
 import { STRINGS } from "../strings";
@@ -113,14 +114,10 @@ function Cover({ completion }: { completion: LessonCompletion }) {
             className={`cover-start${started ? " cover-continue" : ""}`}
             href={lessonHref(firstUnfinished.id)}
           >
-            {started ? (
-              <>
-                <span>{STRINGS.completion.continue}</span>{" "}
-                <span className="cover-continue-title">{firstUnfinished.title}</span>
-              </>
-            ) : (
-              STRINGS.start
-            )}
+            <span>{started ? STRINGS.completion.continue : STRINGS.start}</span>{" "}
+            <span className="cover-continue-title">
+              {COURSE_REFERENCES.label(firstUnfinished.id)}
+            </span>
           </a>
         ) : (
           <p className="cover-all-complete">{STRINGS.completion.all}</p>
@@ -149,7 +146,7 @@ export function FrontPage({ completion = EMPTY_COMPLETION }: { completion?: Less
               // A module's status and its links come from the lessons that are written: a module
               // of one lesson links its title to it, and a module of several lists them.
               const status = statusOf(m, LESSONS);
-              const lessons = lessonsOf(m, LESSONS);
+              const lessons = orderLessons(lessonsOf(m, LESSONS));
               const first = lessons[0];
               const several = lessons.length > 1;
               return (
@@ -162,7 +159,7 @@ export function FrontPage({ completion = EMPTY_COMPLETION }: { completion?: Less
                     <span className="module-title">
                       {first && !several ? (
                         <a href={lessonHref(first.id)} data-lesson={first.id}>
-                          {m.title}
+                          {COURSE_REFERENCES.label(first.id)}
                           {completion.completed.has(first.id) && <CompletionMark />}
                         </a>
                       ) : (
@@ -176,7 +173,7 @@ export function FrontPage({ completion = EMPTY_COMPLETION }: { completion?: Less
                       {lessons.map((l) => (
                         <li key={l.id} data-lesson={l.id}>
                           <a href={lessonHref(l.id)}>
-                            {l.title}
+                            {COURSE_REFERENCES.label(l.id)}
                             {completion.completed.has(l.id) && <CompletionMark />}
                           </a>
                         </li>

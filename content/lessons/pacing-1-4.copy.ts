@@ -117,14 +117,14 @@ export const COPY = {
   },
   arithmeticBits: {
     title: "Arithmetic on register bits",
-    comparisonTitle: "Two C return types",
+    comparisonTitle: "A trip beyond its planned distance",
     objectives: [
-      "explain why the same subtraction bits give different C return values for int and unsigned.",
+      "choose C types and checks that match what a trip’s returned distance should mean.",
     ],
     intro:
-      "You have already calculated 3 − 5 with four bits. Now compare two C functions that subtract the distance travelled from the planned distance. Only their types differ.\n\nOn this AArch64 target, `int` and `unsigned int` both use 32 bits. `int` uses the signed reading; `unsigned int` uses the unsigned reading. In C, `unsigned` on its own means `unsigned int`.",
+      "The trip computer should show how much distance remains and how far you have gone beyond the plan. You planned 3 km and travelled 5 km. Can the returned distance express that you are beyond the plan?\n\nCompare two C functions that subtract the distance travelled from the planned distance. Their parameter and return types differ. You have already calculated this subtraction with four bits.\n\nOn this AArch64 target, `int` and `unsigned int` both use 32 bits. `int` uses the signed reading; `unsigned int` uses the unsigned reading. In C, `unsigned` on its own means `unsigned int`.",
     caption:
-      "Two independent calls with planned = 3 and travelled = 5. Predict the instructions, then call both functions to compare their returned bits and C values.",
+      "Two independent calls with planned = 3 km and travelled = 5 km. Predict the instructions, then call both functions to compare their returned bits and C values.",
     question:
       "Does changing these C types from `int` to `unsigned` change the instructions in the recorded GCC output?",
     options: [
@@ -135,7 +135,15 @@ export const COPY = {
       "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.\n\nPress **Call both functions**. Compare the returned bits and the calculation beneath them. It shows how each C return value comes from those bits.",
     boundsTitle: "C arithmetic has type rules",
     bounds:
-      "C applies different rules to these two types:\n\n- **A negative `int` result can be valid.** Here `int` ranges from −2147483648 to 2147483647. A mathematical result outside that range is signed **overflow**. The result of 3 − 5 is −2, which fits: this signed call does not overflow.\n- **Unsigned arithmetic wraps into range.** Here the range is 0 to 4294967295. A mathematical result below zero or above that maximum wraps back into range. Subtraction below zero follows this rule too.\n- **Signed arithmetic outside its range has no C guarantee.** For signed addition, subtraction and multiplication, an out-of-range result has **undefined behaviour**: C places no requirements on that case. For example, adding 1 to 2147483647 exceeds this `int` range. C guarantees neither wrapping nor an error.\n\nFor compiler examples and ways to check the bounds, see [C overflow and machine results](#/lesson/c-and-overflow).",
+      "C applies different rules to these two types:\n\n- **A negative `int` result can be valid.** Here `int` ranges from −2147483648 to 2147483647. A mathematical result outside that range is signed **overflow**. A negative value within this range does not overflow.\n- **Unsigned arithmetic wraps into range.** Here the range is 0 to 4294967295. A mathematical result below zero or above that maximum wraps back into range. Subtraction below zero follows this rule too.\n- **Signed arithmetic outside its range has no C guarantee.** For signed addition, subtraction and multiplication, an out-of-range result has **undefined behaviour**: C places no requirements on that case. For example, adding 1 to 2147483647 exceeds this `int` range. C guarantees neither wrapping nor an error.\n\nFor compiler examples and ways to check the bounds, see [C overflow and machine results](#/lesson/c-and-overflow).",
+    contract:
+      "Decide what the function should return when the trip exceeds its plan: a negative distance, zero, or a separate error report. That choice determines the C types and any checks the function needs. Changing the types alone does not add a check.",
+    reflectionTitle: "Return zero beyond the plan",
+    reflection:
+      "If the function must return zero once the planned distance is exceeded, what check must it make before subtracting?",
+    reflectionSummary: "Check your reasoning",
+    reflectionAnswer:
+      "Check whether `travelled > planned`. If so, return zero; otherwise subtract `travelled` from `planned`. Make this check before subtracting so the unsigned subtraction cannot wrap below zero.",
     compilerSummary: "Which compiler?",
     compiler:
       "These are recorded GCC 16.1.0 listings for AArch64 Linux, compiled with `-O1 -g`. `-O1` enables compiler optimisations; `-g` records source-line information. Other compiler settings may choose different instructions. The C rules here follow draft N3096, sections 6.2.5 and 6.5 paragraph 5.",
@@ -143,7 +151,7 @@ export const COPY = {
       textbookExample:
         "A signed-versus-unsigned puzzle that changes the source, the arithmetic and the displayed interpretation at once.",
       howThisDiffers:
-        "Continues the earlier four-bit 3 minus 5 subtraction with two recorded 32-bit trip functions. The learner predicts whether their instructions differ, then calls both with the same inputs and compares identical result bits under each C return type.",
+        "Continues the earlier four-bit 3 minus 5 subtraction with two recorded 32-bit trip functions. The learner predicts whether their instructions differ, then compares model-derived returns against the trip’s purpose and chooses a check for a different return rule.",
     },
   },
   branches: {

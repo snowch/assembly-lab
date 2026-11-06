@@ -17,6 +17,7 @@ import {
 } from "./lesson-completion";
 import { FrontPage } from "./pages/FrontPage";
 import { lessonHref } from "./route";
+import { COURSE_REFERENCES } from "./book";
 import { STRINGS } from "./strings";
 import { updateStorage } from "./update-storage";
 
@@ -41,15 +42,16 @@ function ProgressPlan({ store }: { store: LessonCompletionStore }) {
 it("keeps a sensible first visit and continues to the first unfinished lesson, including gaps", () => {
   const store = makeStore();
   const { container, getByRole } = render(<ProgressPlan store={store} />);
-  expect(getByRole("link", { name: STRINGS.start })).toHaveAttribute(
-    "href",
-    lessonHref(ordered[0]!.id),
-  );
+  expect(
+    getByRole("link", { name: `${STRINGS.start} ${COURSE_REFERENCES.label(ordered[0]!.id)}` }),
+  ).toHaveAttribute("href", lessonHref(ordered[0]!.id));
   expect(container.querySelector(".lesson-complete-mark")).toBeNull();
   // A later mark must not skip the earlier unfinished lesson.
   act(() => store.set(ordered[2]!.id, true));
   expect(
-    getByRole("link", { name: `${STRINGS.completion.continue} ${ordered[0]!.title}` }),
+    getByRole("link", {
+      name: `${STRINGS.completion.continue} ${COURSE_REFERENCES.label(ordered[0]!.id)}`,
+    }),
   ).toHaveAttribute("href", lessonHref(ordered[0]!.id));
   act(() => store.set(ordered[0]!.id, true));
   expect(container.querySelector(".cover-continue")).toHaveAttribute(

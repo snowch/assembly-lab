@@ -291,7 +291,8 @@ ol {
   margin-bottom: 0;
 }
 .cover-start {
-  display: inline-flex;
+  display: inline-grid;
+  gap: var(--space-1);
   align-items: center;
   min-height: 44px;
   margin-top: var(--space-4);
@@ -300,10 +301,6 @@ ol {
   background: var(--hero-action);
   color: var(--hero-action-fg);
   font-weight: 600;
-}
-.cover-continue {
-  display: inline-grid;
-  gap: var(--space-1);
 }
 .cover-continue-title {
   font-weight: 400;

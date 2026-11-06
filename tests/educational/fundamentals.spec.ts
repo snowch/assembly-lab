@@ -8,6 +8,7 @@ import { INCREMENT_INT } from "../../content/lessons/meet-the-machine.listings";
 import { PRIMITIVE_STRINGS as P } from "../../packages/views/src/strings.primitive";
 import { DEFAULT_STRINGS as S } from "../../platform/lesson-runtime/src/strings";
 import { designProblems } from "./design";
+import { lessonLabel } from "./lesson-references";
 import { challenge, openLesson, passing, press, run, status, watchErrors } from "./module1";
 
 const IDS = [
@@ -48,7 +49,7 @@ for (const theme of ["light", "dark"] as const) {
       await expect(module.getByRole("heading")).toContainText("Fundamentals");
       const links = module.locator(".module-lessons a");
       await expect(links).toHaveCount(IDS.length);
-      await expect(links).toHaveText(lessons.map((lesson) => lesson.title));
+      await expect(links).toHaveText(lessons.map((lesson) => lessonLabel(lesson.id)));
       for (let index = 0; index < IDS.length; index++) {
         await expect(links.nth(index)).toHaveAttribute("href", `#/lesson/${IDS[index]}`);
         await press(page, links.nth(index));
@@ -110,7 +111,7 @@ for (const theme of ["light", "dark"] as const) {
       expect(await designProblems(page, isMobile)).toEqual([]);
       await press(
         page,
-        views.getByRole("link", { name: "Writing w and x registers", exact: true }),
+        views.getByRole("link", { name: lessonLabel("register-widths"), exact: true }),
       );
       await expect(page.getByRole("heading", { level: 1 })).toHaveText("Writing w and x registers");
       await expect(

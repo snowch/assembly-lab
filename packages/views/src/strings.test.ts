@@ -39,11 +39,25 @@ describe("the book", () => {
 
   it("has the id the stored work is namespaced by, the lessons, and the figures Module 0 uses", () => {
     expect(book.id).toBe("assembly-lab");
-    expect(book.lessons).toBe(LESSONS);
+    expect(
+      book.lessons.map(({ id, module, order, title }) => ({ id, module, order, title })),
+    ).toEqual(LESSONS.map(({ id, module, order, title }) => ({ id, module, order, title })));
+    for (const [index, lesson] of book.lessons.entries()) {
+      expect(lesson.challenges.map(({ id }) => id)).toEqual(
+        LESSONS[index]!.challenges.map(({ id }) => id),
+      );
+      for (const [challengeIndex, challenge] of lesson.challenges.entries()) {
+        const source = LESSONS[index]!.challenges[challengeIndex]!;
+        expect(challenge.initial).toBe(source.initial);
+        expect(challenge.tests).toBe(source.tests);
+      }
+    }
     expect(Object.keys(book.interactives).sort()).toEqual(
       expect.arrayContaining(["listing", "stepper", "trace-prediction"]),
     );
-    expect(book.interactives).toBe(INTERACTIVES);
+    // Course wrappers supply generated reference labels while retaining every figure kind.
+    expect(Object.keys(book.interactives).sort()).toEqual(Object.keys(INTERACTIVES).sort());
+    for (const View of Object.values(book.interactives)) expect(typeof View).toBe("function");
   });
 
   it("leaves stepping guidance to lessons and retains the distinct calculation guidance", () => {

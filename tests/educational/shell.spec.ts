@@ -14,6 +14,8 @@ import { MODULES, PLAN, lessonsOf, statusOf } from "@al/content/plan";
 
 import { VIEW_STRINGS } from "../../packages/views/src/strings";
 
+import { lessonLabel } from "./lesson-references";
+
 import { COMPANION_LINKS, STRINGS } from "../../apps/course/src/strings";
 
 const THEME_KEY = "assembly-lab:v1:theme";
@@ -91,11 +93,13 @@ test("a module with a lesson is published; with one lesson its title links to it
     await expect(entry.locator(".module-status")).toHaveCount(0);
     if (lessons.length === 1) {
       const link = entry.locator("h3 a");
-      await expect(link).toHaveText(m.title);
+      await expect(link).toHaveText(lessonLabel(lessons[0]!.id));
       await expect(link).toHaveAttribute("href", `#/lesson/${lessons[0]!.id}`);
     } else {
       await expect(entry.locator("h3 a")).toHaveCount(0);
-      await expect(entry.locator(".module-lessons a")).toHaveText(lessons.map((l) => l.title));
+      await expect(entry.locator(".module-lessons a")).toHaveText(
+        lessons.map((l) => lessonLabel(l.id)),
+      );
       for (const l of lessons)
         await expect(entry.locator(`.module-lessons li[data-lesson="${l.id}"] a`)).toHaveAttribute(
           "href",
@@ -186,12 +190,12 @@ test("each lesson foot names the lesson before it and the one after, in course o
   const nav = page.getByRole("navigation", { name: STRINGS.lessonNav });
   await expect(nav.locator('[data-direction="previous"]')).toHaveCount(0);
   await expect(nav.locator('[data-direction="next"] .lesson-nav-title')).toHaveText(
-    LESSONS[1]!.title,
+    lessonLabel(LESSONS[1]!.id),
   );
   await page.getByRole("link", { name: new RegExp(STRINGS.nextLesson) }).click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(LESSONS[1]!.title);
   await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
-    LESSONS[0]!.title,
+    lessonLabel(LESSONS[0]!.id),
   );
   // The Pi extension follows QEMU, then A32 and Appendix B; B has no next.
   const tail = LESSONS.filter((lesson) => lesson.module >= 12);
@@ -203,13 +207,15 @@ test("each lesson foot names the lesson before it and the one after, in course o
   ]);
   await page.goto(`#/lesson/${tail[0]!.id}`);
   for (const lesson of tail.slice(1)) {
-    await expect(nav.locator('[data-direction="next"] .lesson-nav-title')).toHaveText(lesson.title);
+    await expect(nav.locator('[data-direction="next"] .lesson-nav-title')).toHaveText(
+      lessonLabel(lesson.id),
+    );
     await page.getByRole("link", { name: new RegExp(STRINGS.nextLesson) }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
   }
   await expect(nav.locator('[data-direction="next"]')).toHaveCount(0);
   await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
-    LESSONS.at(-2)!.title,
+    lessonLabel(LESSONS.at(-2)!.id),
   );
   await page.getByRole("link", { name: new RegExp(STRINGS.previousLesson) }).click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(LESSONS.at(-2)!.title);

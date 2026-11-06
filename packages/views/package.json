@@ -10,6 +10,7 @@
     "./views.css": "./src/views.css"
   },
   "dependencies": {
+    "mdast-util-from-markdown": "^2.1.0",
     "react": "^19.3.0",
     "zod": "^4.6.5"
   }

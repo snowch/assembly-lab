@@ -17,6 +17,7 @@ import { VIEW_STRINGS as S } from "../strings";
 import { MODULE1_STRINGS as M1 } from "../strings.module1";
 import { READER_STRINGS as R } from "../strings.reader";
 import { useHandoffState } from "../update-handoff";
+import { LessonLink } from "../lesson-references";
 
 type ReadingView = "unsigned" | "signed" | "compare";
 type Choice = keyof typeof R.prediction.choices;
@@ -114,9 +115,9 @@ export function TeachingReadings({
       </div>
       {!active && <Prose markdown={R.guidance[view]} className="al-reader-guidance" />}
       {!active && view !== "unsigned" && (
-        <a className="al-reader-appendix" href="#/lesson/twos-complement">
+        <LessonLink className="al-reader-appendix" href="#/lesson/twos-complement">
           {R.appendix}
-        </a>
+        </LessonLink>
       )}
       {active && (
         <section className="al-reader-prediction" aria-label={R.prediction.title}>

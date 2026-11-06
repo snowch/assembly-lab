@@ -31,6 +31,8 @@ import {
   FUEL_USED_WRONG,
   FUEL_USED_WRONG_PLUS_12,
   FUEL_USED_WRONG_U,
+  TRIP_REMAINING,
+  TRIP_REMAINING_U,
 } from "./module-1.listings";
 
 const units = [
@@ -419,4 +421,30 @@ describe("every number the lesson states", () => {
     ];
     for (const n of results) expect(model.has(n), String(n)).toBe(true);
   });
+});
+
+describe("the trip function’s returned distance", () => {
+  it.each([TRIP_REMAINING, TRIP_REMAINING_U])(
+    "returns the overrun bits without reporting an error or changing condition flags",
+    (recorded) => {
+      const program = build(assemblyOf(parseListing(recorded.listing)));
+      for (const bit of [false, true]) {
+        const flags = { n: bit, z: !bit, c: bit, v: !bit };
+        const result = run(program, {
+          entry: (parseListing(recorded.listing)[0] as { text: string }).text,
+          args: [3, 5].map((value) => ({ value: BigInt(value), width: 32 as const })),
+          flags,
+        });
+        expect(result.stop.kind).toBe("returned");
+        expect(result.steps.map((step) => step.text)).toEqual(["sub w0, w0, w1", "ret"]);
+        for (const step of result.steps) {
+          expect(step.flagsBefore).toEqual(flags);
+          expect(step.flagsAfter).toEqual(flags);
+        }
+        expect(wValue(result.final, 0)).toBe(4294967294);
+        expect(wValueAsInt(result.final, 0)).toBe(-2);
+        expect(Math.abs(wValueAsInt(result.final, 0))).toBe(5 - 3);
+      }
+    },
+  );
 });

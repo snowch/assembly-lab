@@ -1,6 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 import { useSyncExternalStore } from "react";
+export { orderLessons } from "@al/views";
 
 import type { updateStorage } from "./update-storage";
 
@@ -9,12 +10,6 @@ type Persistence = ReturnType<typeof updateStorage>;
 // A separate key for each reading mark: a stale LessonStore cannot overwrite it, and marking
 // one lesson never writes another lesson's mark or exercise work. The version lives in the key.
 export const completionKey = (id: string) => `assembly-lab:v1:manual-completion:${id}`;
-
-export function orderLessons<T extends { module: number; order: number }>(
-  lessons: readonly T[],
-): T[] {
-  return [...lessons].sort((a, b) => a.module - b.module || a.order - b.order);
-}
 
 export interface LessonCompletion {
   readonly completed: ReadonlySet<string>;

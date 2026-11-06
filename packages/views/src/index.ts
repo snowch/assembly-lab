@@ -4,6 +4,16 @@
 // platform's runtime.
 
 export { BOOK_ID, ChallengeEditor, STEPS, createBook } from "./book";
+export type { CourseBook } from "./book";
+export {
+  createLessonReferences,
+  orderLessons,
+  LessonLink,
+  LessonProse,
+  LessonReferenceProvider,
+  numberLessonMarkdown,
+} from "./lesson-references";
+export type { LessonReferences } from "./lesson-references";
 export { AssemblyEditor, SYMBOLS } from "./AssemblyEditor";
 export { AnswerEditor } from "./AnswerEditor";
 export {

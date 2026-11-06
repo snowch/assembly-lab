@@ -14,6 +14,7 @@ import { useSlot } from "@platform/lesson-runtime";
 
 import { assemblyOf, cLinesOf, parseListing, programLines } from "../listing";
 import { ListingView } from "../parts";
+import { LessonLink } from "../lesson-references";
 import { VIEW_STRINGS as S } from "../strings";
 import { CALL_COMPARISON_STRINGS as C } from "../strings.call-comparison";
 import { BitRow, hex, signedOf, unsignedOf } from "../bits";
@@ -36,6 +37,7 @@ const Props = z.object({
       leftType: z.enum(["signed", "unsigned"]),
       rightType: z.enum(["signed", "unsigned"]),
       workedReadings: z.boolean().default(false),
+      tripContext: z.boolean().default(false),
     })
     .optional(),
 });
@@ -92,12 +94,25 @@ function CPane({ recorded }: { recorded: Recorded }) {
 }
 
 /** Decompose the returned model word using the already-taught signed and unsigned weights. */
-function ReturnedReadings({ value }: { value: number }) {
+function ReturnedReadings({
+  value,
+  tripContext,
+  subtractionBelowZero,
+}: {
+  value: number;
+  tripContext: boolean;
+  subtractionBelowZero: boolean;
+}) {
   const weight = 2 ** 31;
   const lower = unsignedOf(value) % weight;
   const top = Math.floor(unsignedOf(value) / weight);
   return (
     <div data-return-explanation role="group" aria-label={C.readingGroup}>
+      {tripContext && subtractionBelowZero && signedOf(value) < 0 && (
+        <p data-trip-overrun>{C.tripOverrun(signedOf(value), unsignedOf(value))}</p>
+      )}
+      {subtractionBelowZero && <p>{C.unsignedWrap}</p>}
+      {tripContext && <p>{C.noArithmeticError}</p>}
       <p>{C.readingIntro(hex(value), lower)}</p>
       <p>{C.readingTop(top, weight)}</p>
       <p>
@@ -106,10 +121,9 @@ function ReturnedReadings({ value }: { value: number }) {
       <p>
         <code>{C.readingEquation(C.unsignedType, lower, top * weight, unsignedOf(value))}</code>
       </p>
-      <p>{C.unsignedWrap}</p>
       <p>{C.readingTypes}</p>
       <p>
-        <a href="#/lesson/same-bits-two-readings">{C.readingLink}</a>
+        <LessonLink href="#/lesson/same-bits-two-readings">{C.readingLink}</LessonLink>
       </p>
     </div>
   );
@@ -302,7 +316,13 @@ export const ListingCompare = withProps(
                       calls[0]?.value !== null &&
                       calls[0]?.value !== undefined &&
                       calls[0].value === calls[1]?.value && (
-                        <ReturnedReadings value={calls[0].value} />
+                        <ReturnedReadings
+                          value={calls[0].value}
+                          tripContext={data.callComparison.tripContext}
+                          subtractionBelowZero={
+                            (data.callComparison.args[0] ?? 0) < (data.callComparison.args[1] ?? 0)
+                          }
+                        />
                       )}
                   </div>
                 )}

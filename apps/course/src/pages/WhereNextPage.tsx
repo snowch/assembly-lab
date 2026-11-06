@@ -1,14 +1,15 @@
 // Copyright © 2026 Christopher Snow
 
 import { WHERE_NEXT, PLAYGROUND_STARTER } from "@al/content";
-import { Prose } from "@platform/lesson-runtime";
+import { LessonProse as Prose, LessonReferenceProvider } from "@al/views";
+import { COURSE_REFERENCES } from "../book";
 import { STRINGS } from "../strings";
 import "../styles/where-next.css";
 
 export function WhereNextPage() {
   const P = WHERE_NEXT;
   return (
-    <>
+    <LessonReferenceProvider references={COURSE_REFERENCES}>
       <p className="lesson-back">
         <a className="back-link" href="#/">
           {STRINGS.backToPlan}
@@ -57,6 +58,6 @@ export function WhereNextPage() {
           <Prose markdown={P.routes.prose} />
         </section>
       </article>
-    </>
+    </LessonReferenceProvider>
   );
 }
