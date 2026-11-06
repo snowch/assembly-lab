@@ -12,6 +12,8 @@ Subtract by inverting the second input, adding one, then adding that opposite to
 
 Keep the available bits when an extra carry appears.
 
+Trace a 32-bit add from its input registers to its destination and inspect one column.
+
 Adding columns
 
 These four-bit miniatures are not Arm registers.
@@ -20,7 +22,7 @@ These four-bit miniatures are not Arm registers.
 - Signed weights are −8, 4, 2, 1.
 - The signed range is −8 to 7.
 
-Add `0011` (3) and `0001` (1). A **carry** is a bit passed left from the previous column.
+Add `0011` (3) and `0011` (3). A **carry** is a bit passed left from the previous column.
 
 1. Start at the right with carry 0.
 2. Add both bits and the incoming carry.
@@ -33,7 +35,7 @@ For example:
 
 Press Next column to reveal each calculation. Revealing a column does not execute another instruction.
 
-Add 0011 and 0001, starting at the right.
+Add 0011 and 0011, starting at the right.
 
 
 
@@ -103,7 +105,19 @@ The result has four places. An extra carry belongs outside those places; it does
 
 The opposite of `0011` is `1101`. Adding `0110` gives `10011`. Keeping the low four bits gives `0011`, read as 3. Discard the extra carry.
 
-The next page applies this rule with 32 places. Its `sub` instruction performs the subtraction as one instruction.
+The arithmetic now uses 32 places. Follow one `add` instruction from its input registers to its destination.
+
+An add instruction uses the ALU
+
+An arithmetic logic unit (ALU) performs arithmetic and logic operations. This instruction selects addition.
+
+`add w2, w0, w1` reads the 32-bit values in w0 and w1, adds them and writes the low 32 result bits to w2. Decimal values here use the unsigned reading.
+
+Run the instruction, then select a column to inspect its inputs, result bit and carry. Selecting a column changes the view without executing another instruction.
+
+One 32-bit add, from the input registers through the ALU to the destination.
+
+The next page applies subtraction with 32 places. Its `sub` instruction performs the subtraction as one instruction.
 
 The same rule now uses 32 places. The `sub` instruction performs the subtraction as one instruction.
 

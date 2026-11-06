@@ -100,7 +100,9 @@ describe("four-place arithmetic views of the real machine", () => {
 
   it("pins the worked examples and zero, signed-boundary and maximum inputs", () => {
     const { addition, width, subtraction } = FOUR_BIT_EXAMPLES;
-    expect(fourBitAddition(addition.a, addition.b).result.pattern).toBe("0100");
+    const added = fourBitAddition(addition.a, addition.b);
+    expect(added.result.pattern).toBe("0110");
+    expect(added.columns[1]).toMatchObject({ a: 1, b: 1, carryIn: 1, kept: 1, carryOut: 1 });
     const wrapped = fourBitAddition(width.a, width.b);
     expect([wrapped.fullPattern, wrapped.result.pattern, wrapped.carryOut]).toEqual([
       "10000",

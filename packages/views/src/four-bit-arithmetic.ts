@@ -8,7 +8,7 @@ import { fourBitNegation, fourBitReadings } from "./complement";
 import { patternOf } from "./readings";
 
 export const FOUR_BIT_EXAMPLES = {
-  addition: { a: 3, b: 1 },
+  addition: { a: 3, b: 3 },
   width: { a: 15, b: 1 },
   subtraction: { a: 3, b: 5 },
 } as const;
