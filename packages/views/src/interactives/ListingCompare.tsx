@@ -93,38 +93,192 @@ function CPane({ recorded }: { recorded: Recorded }) {
   );
 }
 
-/** Decompose the returned model word using the already-taught signed and unsigned weights. */
-function ReturnedReadings({
-  value,
-  tripContext,
-  subtractionBelowZero,
-}: {
-  value: number;
-  tripContext: boolean;
-  subtractionBelowZero: boolean;
-}) {
-  const weight = 2 ** 31;
-  const lower = unsignedOf(value) % weight;
-  const top = Math.floor(unsignedOf(value) / weight);
+type CallResult = {
+  name: string;
+  value: number | null;
+  type: "signed" | "unsigned";
+};
+
+const decimal = (value: number): string => value.toLocaleString("en-GB").replace("-", "−");
+const read = (call: CallResult): number =>
+  call.type === "signed" ? signedOf(call.value ?? 0) : unsignedOf(call.value ?? 0);
+const typeLabel = (type: CallResult["type"]): string =>
+  type === "signed" ? C.signedType : C.unsignedType;
+
+function ReturnedWord({ value, row }: { value: number; row: string }) {
   return (
-    <div data-return-explanation role="group" aria-label={C.readingGroup}>
-      {tripContext && subtractionBelowZero && signedOf(value) < 0 && (
-        <p data-trip-overrun>{C.tripOverrun(signedOf(value), unsignedOf(value))}</p>
+    <div data-return-bits={row}>
+      <BitRow
+        name="w0"
+        value={value}
+        text={<span data-return-hex>{hex(value)}</span>}
+        row={`return-${row}`}
+      />
+    </div>
+  );
+}
+
+/** One computed word, with the two C readings and their bit weights kept beside it. */
+function CallResults({
+  calls,
+  workedReadings,
+  tripContext,
+  tripDifference,
+}: {
+  calls: CallResult[];
+  workedReadings: boolean;
+  tripContext: boolean;
+  tripDifference: number | null;
+}) {
+  const first = calls[0];
+  const word =
+    first?.value !== null &&
+    first?.value !== undefined &&
+    calls.every((call) => call.value === first.value)
+      ? first.value
+      : undefined;
+  const shared = word !== undefined;
+  const weight = 2 ** 31;
+  const lower = word === undefined ? 0 : unsignedOf(word) % weight;
+  const top = word === undefined ? 0 : Math.floor(unsignedOf(word) / weight);
+  const overrun =
+    workedReadings &&
+    tripContext &&
+    word !== undefined &&
+    tripDifference !== null &&
+    tripDifference < 0 &&
+    signedOf(word) === tripDifference;
+  return (
+    <div className="al-compare-call-results" role="group" aria-label={C.resultGroup}>
+      {word !== undefined && (
+        <div className="al-compare-shared-word">
+          <p>{C.sharedReturnedBits}</p>
+          <ReturnedWord value={word} row="shared" />
+        </div>
       )}
-      {subtractionBelowZero && <p>{C.unsignedWrap}</p>}
-      {tripContext && <p>{C.noArithmeticError}</p>}
-      <p>{C.readingIntro(hex(value), lower)}</p>
-      <p>{C.readingTop(top, weight)}</p>
-      <p>
-        <code>{C.readingEquation(C.signedType, lower, -top * weight, signedOf(value))}</code>
-      </p>
-      <p>
-        <code>{C.readingEquation(C.unsignedType, lower, top * weight, unsignedOf(value))}</code>
-      </p>
-      <p>{C.readingTypes}</p>
-      <p>
-        <LessonLink href="#/lesson/same-bits-two-readings">{C.readingLink}</LessonLink>
-      </p>
+      <div className="al-compare-readings">
+        {calls.map((call, i) => (
+          <div
+            className="al-compare-reading"
+            role="group"
+            aria-label={`${call.name}: ${typeLabel(call.type)}`}
+            key={i}
+            data-call-result={i}
+            data-call-side={i === 0 ? "left" : "right"}
+          >
+            {shared ? (
+              <p className="al-compare-reading-function">
+                <code>{call.name}</code>
+              </p>
+            ) : (
+              <p>{C.returnedBits(call.name)}</p>
+            )}
+            {call.value === null ? (
+              <p role="status">{S.prediction.endedWithError}</p>
+            ) : (
+              <>
+                {!shared && <ReturnedWord value={call.value} row={String(i)} />}
+                <p className="al-compare-reading-type">{typeLabel(call.type)}</p>
+                <p
+                  className="al-compare-reading-value"
+                  data-return-reading={call.type}
+                  data-return-value={read(call)}
+                >
+                  {tripContext ? C.distanceValue(decimal(read(call))) : decimal(read(call))}
+                </p>
+                {overrun && call.type === "signed" && read(call) < 0 && (
+                  <p className="al-compare-reading-meaning" data-trip-overrun>
+                    {C.signedMeaning(decimal(Math.abs(read(call))))}
+                  </p>
+                )}
+                {overrun && call.type === "unsigned" && (
+                  <p className="al-compare-reading-meaning">{C.unsignedMeaning}</p>
+                )}
+                {overrun && call.type === "signed" && read(call) < 0 && (
+                  <p className="al-compare-reading-range">{C.signedRange}</p>
+                )}
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+      {calls.every((call) => call.value !== null) && (
+        <p role="status" className="al-compare-summary" data-same-bits={shared}>
+          {shared ? C.sameBits : C.differentBits}
+        </p>
+      )}
+      {workedReadings && word !== undefined && (
+        <div
+          className="al-compare-weights"
+          data-return-explanation
+          role="group"
+          aria-label={C.readingGroup}
+        >
+          <p>
+            {C.bitWeights}
+            {calls[0]?.type !== calls[1]?.type && <> {C.topWeightDiffers}</>}
+          </p>
+          <table className="al-compare-weight-table">
+            <thead>
+              <tr>
+                <td />
+                {calls.map((call, i) => (
+                  <th key={i} scope="col">
+                    {typeLabel(call.type)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-weight-row="lower">
+                <th scope="row">{C.lowerBits}</th>
+                <td colSpan={calls.length}>{decimal(lower)}</td>
+              </tr>
+              <tr data-weight-row="top-bit">
+                <th scope="row">{C.topBitValue}</th>
+                <td colSpan={calls.length}>{top}</td>
+              </tr>
+              {top === 0 && (
+                <tr data-weight-row="top-weight">
+                  <th scope="row">{C.topBitWeight}</th>
+                  {calls.map((call, i) => (
+                    <td key={i}>
+                      <span>
+                        {call.type === "signed" ? "−" : "+"}
+                        {decimal(weight)}
+                      </span>
+                    </td>
+                  ))}
+                </tr>
+              )}
+              <tr data-weight-row="top-contribution">
+                <th scope="row">{C.topBitContribution}</th>
+                {calls.map((call, i) => (
+                  <td key={i}>
+                    <span>
+                      {top !== 0 ? (call.type === "signed" ? "−" : "+") : ""}
+                      {decimal(top * weight)}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+              <tr data-weight-row="total">
+                <th scope="row">{C.total}</th>
+                {calls.map((call, i) => (
+                  <td key={i}>
+                    <span>{decimal(read(call))}</span>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+          <p className="al-compare-types">{C.readingTypes}</p>
+          {tripContext && <p>{C.noArithmeticError}</p>}
+          <p>
+            <LessonLink href="#/lesson/same-bits-two-readings">{C.readingLink}</LessonLink>
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -266,65 +420,17 @@ export const ListingCompare = withProps(
                   )}
                 </div>
                 {calls && (
-                  <div className="al-compare-call-results" role="group" aria-label={C.resultGroup}>
-                    {calls.map((call, i) => (
-                      <div key={i} data-call-result={i} data-call-side={i === 0 ? "left" : "right"}>
-                        <p>{C.returnedBits(call.name)}</p>
-                        {call.value === null ? (
-                          <p role="status">{S.prediction.endedWithError}</p>
-                        ) : (
-                          <>
-                            <div data-return-bits>
-                              <BitRow
-                                name="w0"
-                                value={call.value}
-                                text={<span data-return-hex>{hex(call.value)}</span>}
-                                row={`return-${i}`}
-                              />
-                            </div>
-                            <p
-                              data-return-reading={call.type}
-                              data-return-value={
-                                call.type === "signed"
-                                  ? signedOf(call.value)
-                                  : unsignedOf(call.value)
-                              }
-                            >
-                              {C.returnValue(
-                                call.type === "signed" ? C.signedType : C.unsignedType,
-                                String(
-                                  call.type === "signed"
-                                    ? signedOf(call.value)
-                                    : unsignedOf(call.value),
-                                ),
-                              )}
-                            </p>
-                          </>
-                        )}
-                      </div>
-                    ))}
-                    {calls.every((call) => call.value !== null) && (
-                      <p
-                        role="status"
-                        className="al-compare-summary"
-                        data-same-bits={calls[0]?.value === calls[1]?.value}
-                      >
-                        {calls[0]?.value === calls[1]?.value ? C.sameBits : C.differentBits}
-                      </p>
-                    )}
-                    {data.callComparison.workedReadings &&
-                      calls[0]?.value !== null &&
-                      calls[0]?.value !== undefined &&
-                      calls[0].value === calls[1]?.value && (
-                        <ReturnedReadings
-                          value={calls[0].value}
-                          tripContext={data.callComparison.tripContext}
-                          subtractionBelowZero={
-                            (data.callComparison.args[0] ?? 0) < (data.callComparison.args[1] ?? 0)
-                          }
-                        />
-                      )}
-                  </div>
+                  <CallResults
+                    calls={calls}
+                    workedReadings={data.callComparison.workedReadings}
+                    tripContext={data.callComparison.tripContext}
+                    tripDifference={
+                      data.callComparison.args.length === 2 &&
+                      data.callComparison.args.every((arg) => arg >= 0 && arg < 2 ** 31)
+                        ? data.callComparison.args[0]! - data.callComparison.args[1]!
+                        : null
+                    }
+                  />
                 )}
               </div>
             )}

@@ -72,10 +72,18 @@ test.describe("one subtraction with two C types", () => {
       ...TRIP_REMAINING_U.c.split("\n"),
     ]);
     await expect(f.locator(".al-compare-inputs")).toHaveText(C.startingInputs("3, 5"));
-    await expect(f.locator(".al-insn, .al-outcome, [data-call-side]")).toHaveCount(0);
+    await expect(
+      f.locator(
+        ".al-insn, .al-outcome, [data-call-side], [data-return-bits], [data-return-explanation]",
+      ),
+    ).toHaveCount(0);
     await expect(f.getByRole("button", { name: C.callBoth })).toHaveCount(0);
     await f.getByRole("radio", { name: "The instructions are identical.", exact: true }).check();
-    await expect(f.locator(".al-insn, .al-outcome, [data-call-side]")).toHaveCount(0);
+    await expect(
+      f.locator(
+        ".al-insn, .al-outcome, [data-call-side], [data-return-bits], [data-return-explanation]",
+      ),
+    ).toHaveCount(0);
     expect(errors).toEqual([]);
   });
 
@@ -104,7 +112,9 @@ test.describe("one subtraction with two C types", () => {
         ...TRIP_REMAINING.c.split("\n"),
         ...TRIP_REMAINING_U.c.split("\n"),
       ]);
-      await expect(f.locator("[data-call-side], [data-return-explanation]")).toHaveCount(0);
+      await expect(
+        f.locator("[data-call-side], [data-return-bits], [data-return-explanation]"),
+      ).toHaveCount(0);
       await expect(f.getByRole("button", { name: C.callBoth })).toBeEnabled();
       await expect(f.locator(".al-compare-summary")).toHaveText(V.compare.allSame(2));
     });
@@ -123,23 +133,36 @@ test.describe("one subtraction with two C types", () => {
       ["right", "unsigned", "4294967294"],
     ]) {
       const result = f.locator(`[data-call-side="${side}"]`);
-      await expect(result.locator("[data-return-bits] .al-bit")).toHaveText([
-        ..."1".repeat(31),
-        "0",
-      ]);
-      await expect(result.locator("[data-return-hex]")).toHaveText("0xfffffffe");
+      await expect(result.locator("[data-return-bits]")).toHaveCount(0);
       await expect(result.locator(`[data-return-reading="${type}"]`)).toHaveAttribute(
         "data-return-value",
         value!,
       );
     }
+    await expect(f.locator('[data-return-bits="shared"]')).toHaveCount(1);
+    await expect(f.locator("[data-return-bits] .al-bit")).toHaveText([..."1".repeat(31), "0"]);
+    await expect(f.locator("[data-return-hex]")).toHaveText("0xfffffffe");
     await expect(f.locator('[data-same-bits="true"]')).toHaveText(C.sameBits);
     const explanation = f.locator("[data-return-explanation]");
-    await expect(explanation).toContainText("2147483646 − 2147483648 = -2");
-    await expect(explanation).toContainText("2147483646 + 2147483648 = 4294967294");
-    await expect(explanation).toContainText("without a type tag");
-    await expect(explanation).toContainText(C.tripOverrun(-2, 4294967294));
-    await expect(explanation).toContainText(C.unsignedWrap);
+    await expect(explanation.locator("table")).toBeVisible();
+    await expect(explanation.locator('[data-weight-row="lower"] td')).toHaveText("2,147,483,646");
+    await expect(explanation.locator('[data-weight-row="top-bit"] td')).toHaveText("1");
+    await expect(explanation.locator('[data-weight-row="top-weight"]')).toHaveCount(0);
+    await expect(explanation.locator('[data-weight-row="top-contribution"] td')).toHaveText([
+      "−2,147,483,648",
+      "+2,147,483,648",
+    ]);
+    await expect(explanation.locator('[data-weight-row="total"] td')).toHaveText([
+      "−2",
+      "4,294,967,294",
+    ]);
+    await expect(explanation).toContainText(C.bitWeights);
+    await expect(explanation).toContainText(C.readingTypes);
+    await expect(f.locator('[data-call-side="left"] [data-trip-overrun]')).toContainText(
+      C.signedMeaning("2"),
+    );
+    await expect(f.locator('[data-call-side="left"]')).toContainText(C.signedRange);
+    await expect(f.locator('[data-call-side="right"]')).toContainText(C.unsignedMeaning);
     await expect(explanation).toContainText(C.noArithmeticError);
     await expect(explanation.locator("a")).toHaveAttribute(
       "href",
@@ -148,7 +171,9 @@ test.describe("one subtraction with two C types", () => {
 
     await expect(f.getByRole("button", { name: C.callBoth, exact: true })).toBeDisabled();
     await press(page, f.getByRole("button", { name: C.resetCalls, exact: true }));
-    await expect(f.locator("[data-call-side], [data-return-explanation]")).toHaveCount(0);
+    await expect(
+      f.locator("[data-call-side], [data-return-bits], [data-return-explanation]"),
+    ).toHaveCount(0);
     await expect(f.locator(".al-listing")).toHaveCount(2);
     await expect(f.locator(".al-match")).toBeVisible();
     await expect(f.getByRole("button", { name: C.callBoth, exact: true })).toBeEnabled();
@@ -163,6 +188,12 @@ test.describe("one subtraction with two C types", () => {
     await page.reload();
     await expect(figure(page).locator(".al-match")).toBeVisible();
     await expect(figure(page).locator(".al-listing")).toHaveCount(2);
+    await expect(figure(page).locator('[data-return-bits="shared"]')).toHaveCount(1);
+    await expect(figure(page).locator("[data-return-bits] .al-bit")).toHaveText([
+      ..."1".repeat(31),
+      "0",
+    ]);
+    await expect(figure(page).locator("[data-call-side] [data-return-bits]")).toHaveCount(0);
     await expect(figure(page).locator('[data-return-reading="signed"]')).toHaveAttribute(
       "data-return-value",
       "-2",
