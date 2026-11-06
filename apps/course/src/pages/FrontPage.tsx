@@ -14,6 +14,12 @@ import { orderLessons, type LessonCompletion } from "../lesson-completion";
 import { CoverFigure, MODULE_ICONS } from "./icons";
 import "../styles/module-lessons.css";
 
+/** The module heading supplies context for these compact plan links. */
+function planLessonLabel(id: string): string {
+  const lesson = COURSE_REFERENCES.byId.get(id);
+  return lesson ? STRINGS.planLesson(lesson.number, lesson.title) : id;
+}
+
 /** Backticks become code, asterisks emphasis, and `[words](address)` a link: the only marks the front page's strings use. */
 function Marked({ text }: { text: string }) {
   const parts = text.split(/(\[[^\]]+\]\([^)]+\)|`[^`]+`|\*[^*]+\*)/);
@@ -159,7 +165,7 @@ export function FrontPage({ completion = EMPTY_COMPLETION }: { completion?: Less
                     <span className="module-title">
                       {first && !several ? (
                         <a href={lessonHref(first.id)} data-lesson={first.id}>
-                          {COURSE_REFERENCES.label(first.id)}
+                          {planLessonLabel(first.id)}
                           {completion.completed.has(first.id) && <CompletionMark />}
                         </a>
                       ) : (
@@ -173,7 +179,7 @@ export function FrontPage({ completion = EMPTY_COMPLETION }: { completion?: Less
                       {lessons.map((l) => (
                         <li key={l.id} data-lesson={l.id}>
                           <a href={lessonHref(l.id)}>
-                            {COURSE_REFERENCES.label(l.id)}
+                            {planLessonLabel(l.id)}
                             {completion.completed.has(l.id) && <CompletionMark />}
                           </a>
                         </li>

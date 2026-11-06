@@ -85,6 +85,8 @@ export const STRINGS = {
     "This course runs in your browser, so it needs JavaScript. With JavaScript turned off, you see only this summary of the plan.",
   // the plan's module label, "Module 4" and "Module A".
   module: (label: string) => `Module ${label}`,
+  // A plan lesson link; its module heading supplies the module label.
+  planLesson: (number: number, title: string) => `L${number}: ${title}`,
   // The name of the list of a module's lessons, for a screen reader, when it has several.
   lessonsOf: (title: string) => `Lessons of ${title}`,
   // a page's name in the browser's tab, after its own name; the front page keeps the title.

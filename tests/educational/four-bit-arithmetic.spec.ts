@@ -2,7 +2,7 @@
 
 import { expect, test, type Locator } from "@playwright/test";
 import { designProblems } from "./design";
-import { lessonLabel } from "./lesson-references";
+import { planLessonLabel, lessonLabel } from "./lesson-references";
 
 // Check the drawn arrow, including its head, actually reaches both destinations.
 async function expectConnectedCarry(addition: Locator) {
@@ -87,7 +87,9 @@ for (const theme of ["light", "dark"] as const) {
     await page.goto("#/");
     await page.locator("select").selectOption(theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-    await page.getByRole("link", { name: lessonLabel("four-bit-arithmetic"), exact: true }).click();
+    await page
+      .getByRole("link", { name: planLessonLabel("four-bit-arithmetic"), exact: true })
+      .click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Arithmetic with four bits");
     const addition = page.locator("#ix-four-bit-addition");
     const result = addition.locator('[data-row="result"] .al-four-value');
