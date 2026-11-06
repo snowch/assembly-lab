@@ -135,3 +135,17 @@ the useful completeness guarantee of the old identity check. I confirmed the
 final source includes that exact per-lesson challenge id/order assertion; the
 follow-up review has no remaining finding. The managing session records the
 original full-run failure and subsequent rerun separately.
+
+## CI appendix-expectation follow-up
+
+I independently reviewed the later test-only diff in
+`tests/educational/bit-weights.spec.ts`. The old exact appendix-link text omits the
+now-required generated position. Its replacement calls the independent expected
+label helper with the same target id and the complete original custom wording,
+“More about two’s complement in Appendix B”. That helper derives the expected
+module label and one-based ordinal from published lessons and plan data, rather
+than calling the product formatter. The assertion remains an exact `toHaveText`
+comparison; the original `#/lesson/twos-complement` href and visibility assertions
+remain intact. No coverage is removed or loosened, and no product code changes
+in this diff. I found no issue. The managing session records the original CI
+browser failures and the focused rerun separately; this follow-up is source-only.

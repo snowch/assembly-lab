@@ -4,6 +4,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { fourBitReadings } from "@al/views";
 import { readingsOfPattern, patternOf, shown } from "../../packages/views/src/readings";
 import { designProblems } from "./design";
+import { lessonLabel } from "./lesson-references";
 import { openLesson, watchErrors } from "./module1";
 
 const figure = (page: Page, stage: string) => page.locator(`#ix-reading-${stage}`);
@@ -46,7 +47,9 @@ for (const theme of ["light", "dark"] as const) {
     ).toEqual(["ix-reading-signed", "ix-reading-practice", "ix-reading-explore"]);
     await expect(page.locator('.lesson-section[data-kind="reflection"]')).toHaveCount(0);
     const appendix = page.locator("#ix-make-minus-three-solved > .figure-after a");
-    await expect(appendix).toHaveText("More about two’s complement in Appendix B");
+    await expect(appendix).toHaveText(
+      lessonLabel("twos-complement", "More about two’s complement in Appendix B"),
+    );
     await expect(appendix).toHaveAttribute("href", "#/lesson/twos-complement");
     await expect(appendix).toBeVisible();
     const unsigned = figure(page, "unsigned");
