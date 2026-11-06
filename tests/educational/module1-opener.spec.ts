@@ -4,15 +4,15 @@ import { expect, test } from "@playwright/test";
 
 import { MODULE1_STRINGS as M1 } from "../../packages/views/src/strings.module1";
 import { CALL_COMPARISON_STRINGS as C } from "../../packages/views/src/strings.call-comparison";
-import { commit, openLesson } from "./module1";
+import { commit, figureOverflow, openLesson } from "./module1";
 import { designProblems } from "./design";
 
 // The viewport matrix includes phones even in the desktop project; enable the shared tap helper.
 test.use({ hasTouch: true });
 
-// Check both phone widths explicitly, independently of the project viewport. The first figure
+// Check phone widths explicitly, independently of the project viewport. The first figure
 // must never put a result beside a before-state, including after Back and Reset.
-for (const width of [360, 375, 1280]) {
+for (const width of [360, 375, 416, 1280]) {
   for (const theme of ["light", "dark"] as const) {
     test(`C subtraction comparison and earlier reading stages at ${width}px in ${theme}`, async ({
       page,
@@ -24,11 +24,17 @@ for (const width of [360, 375, 1280]) {
       await openLesson(page, "arithmetic-on-register-bits");
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       const figure = page.locator("#ix-compare-int-unsigned");
-      await expect(figure.locator("[data-call-side], .al-listing")).toHaveCount(0);
+      await expect(
+        figure.locator(
+          "[data-call-side], [data-return-bits], [data-return-explanation], .al-listing",
+        ),
+      ).toHaveCount(0);
       await expect(figure.locator(".al-compare-inputs")).toHaveText(C.startingInputs("3, 5"));
       await commit(page, "compare-int-unsigned", "The instructions are identical.");
       await expect(figure.locator(".al-listing")).toHaveCount(2);
-      await expect(figure.locator("[data-call-side]")).toHaveCount(0);
+      await expect(
+        figure.locator("[data-call-side], [data-return-bits], [data-return-explanation]"),
+      ).toHaveCount(0);
       await figure.getByRole("button", { name: C.callBoth, exact: true }).click();
       await expect(figure.locator('[data-return-reading="signed"]')).toHaveAttribute(
         "data-return-value",
@@ -38,13 +44,29 @@ for (const width of [360, 375, 1280]) {
         "data-return-value",
         "4294967294",
       );
-      for (const result of await figure.locator("[data-call-side]").all()) {
-        await expect(result.locator("[data-return-bits] .al-bit")).toHaveCount(32);
-        await expect(result.locator("[data-return-hex]")).toHaveText("0xfffffffe");
-      }
+      await expect(figure.locator('[data-return-bits="shared"]')).toHaveCount(1);
+      await expect(figure.locator("[data-return-bits] .al-bit")).toHaveText([
+        ..."1".repeat(31),
+        "0",
+      ]);
+      await expect(figure.locator("[data-return-hex]")).toHaveText("0xfffffffe");
+      await expect(figure.locator("[data-call-side] [data-return-bits]")).toHaveCount(0);
+      await expect(figure.locator("[data-call-side]")).toHaveCount(2);
+      await expect(figure.locator('[data-return-reading="signed"]')).toContainText("−2 km");
+      await expect(figure.locator('[data-return-reading="unsigned"]')).toContainText(
+        "4,294,967,294 km",
+      );
+      const weightTable = figure.locator("[data-return-explanation] table");
+      await expect(weightTable).toBeVisible();
+      expect(
+        await weightTable.evaluate((table) => table.scrollWidth - table.clientWidth),
+      ).toBeLessThanOrEqual(1);
       expect(await designProblems(page, width < 500)).toEqual([]);
+      expect(await figureOverflow(page)).toEqual([]);
       await figure.getByRole("button", { name: C.resetCalls, exact: true }).click();
-      await expect(figure.locator("[data-call-side]")).toHaveCount(0);
+      await expect(
+        figure.locator("[data-call-side], [data-return-bits], [data-return-explanation]"),
+      ).toHaveCount(0);
       await expect(figure.locator(".al-listing")).toHaveCount(2);
       await openLesson(page, "same-bits-two-readings");
       const unsigned = page.locator("#ix-reading-unsigned");

@@ -17,6 +17,12 @@ function comparison(
   args = [3, 5],
   store = new LessonStore(memoryStorage(), "assembly-lab", "comparison-calls"),
   workedReadings = true,
+  right: {
+    c: string;
+    listing: string;
+    sourceLines: readonly (readonly number[])[];
+  } = TRIP_REMAINING_U,
+  rightType: "signed" | "unsigned" = "unsigned",
 ) {
   const interactive = Interactive.parse({
     id: "typed-subtraction",
@@ -25,7 +31,7 @@ function comparison(
     caption: "Test comparison",
     props: {
       left: TRIP_REMAINING,
-      right: TRIP_REMAINING_U,
+      right,
       question: "Do the instructions match?",
       options: [
         { value: "same", label: "Same" },
@@ -34,7 +40,7 @@ function comparison(
       callComparison: {
         args,
         leftType: "signed",
-        rightType: "unsigned",
+        rightType,
         workedReadings,
         tripContext: true,
       },
@@ -106,16 +112,20 @@ describe("comparing the C return types by calling both listings", () => {
     for (const [i, result] of models.entries()) {
       expect(result.stop.kind).toBe("returned");
       const side = container.querySelector(`[data-call-result="${i}"]`) as HTMLElement;
-      const bits = [...side.querySelectorAll(".al-bit")].map((bit) => bit.textContent).join("");
+      const shared = container.querySelector('[data-return-bits="shared"]')!;
+      const bits = [...shared.querySelectorAll(".al-bit")].map((bit) => bit.textContent).join("");
       expect(bits).toBe(bitsOf(wValue(result.final, 0)));
-      expect(side.querySelectorAll(".al-bit-group")).toHaveLength(4);
+      expect(shared.querySelectorAll(".al-bit-group")).toHaveLength(4);
+      expect(side.querySelectorAll(".al-bit")).toHaveLength(0);
+      expect(side).toHaveTextContent(i === 0 ? "trip_remaining" : "trip_remaining_u");
+      expect(side).toHaveTextContent(i === 0 ? C.signedType : C.unsignedType);
       const reading = i === 0 ? wValueAsInt(result.final, 0) : wValue(result.final, 0);
       expect(side.querySelector("[data-return-value]")).toHaveAttribute(
         "data-return-value",
         String(reading),
       );
-      expect(side).toHaveTextContent(
-        C.returnValue(i === 0 ? C.signedType : C.unsignedType, String(reading)),
+      expect(side.querySelector("[data-return-value]")).toHaveTextContent(
+        C.distanceValue(reading.toLocaleString("en-GB").replace("-", "−")),
       );
       expect(side.querySelectorAll("[data-return-reading]")).toHaveLength(1);
     }
@@ -123,18 +133,34 @@ describe("comparing the C return types by calling both listings", () => {
     const word = wValue(models[0]!.final, 0);
     const lower = word % 2 ** 31;
     const top = Math.floor(word / 2 ** 31);
+    expect(container.querySelectorAll("[data-return-bits]")).toHaveLength(1);
+    expect(container.querySelectorAll(".al-bit")).toHaveLength(32);
     expect(bridge).toHaveTextContent(C.noArithmeticError);
-    if (args[0]! < args[1]!) {
-      expect(bridge).toHaveTextContent(C.tripOverrun(wValueAsInt(models[0]!.final, 0), word));
-      expect(bridge).toHaveTextContent(C.unsignedWrap);
-    } else {
-      expect(bridge.querySelector("[data-trip-overrun]")).toBeNull();
-      expect(bridge).not.toHaveTextContent(C.unsignedWrap);
-    }
-    expect(bridge).toHaveTextContent(
-      C.readingEquation(C.signedType, lower, -top * 2 ** 31, wValueAsInt(models[0]!.final, 0)),
+    expect(bridge).toHaveTextContent(C.readingTypes);
+    expect(bridge).toHaveTextContent(C.topWeightDiffers);
+    const decimal = (n: number) => n.toLocaleString("en-GB").replace("-", "−");
+    const cells = (row: string) =>
+      [...bridge.querySelectorAll(`[data-weight-row="${row}"] td`)].map((cell) => cell.textContent);
+    expect(cells("lower")).toEqual([decimal(lower)]);
+    expect(cells("top-bit")).toEqual([String(top)]);
+    expect(cells("top-contribution")).toEqual(
+      top ? [decimal(-(2 ** 31)), `+${decimal(2 ** 31)}`] : ["0", "0"],
     );
-    expect(bridge).toHaveTextContent(C.readingEquation(C.unsignedType, lower, top * 2 ** 31, word));
+    expect(cells("total")).toEqual([decimal(wValueAsInt(models[0]!.final, 0)), decimal(word)]);
+    if (args[0]! < args[1]!) {
+      expect(container.querySelector('[data-call-side="left"]')).toHaveTextContent(
+        C.signedMeaning(decimal(Math.abs(wValueAsInt(models[0]!.final, 0)))),
+      );
+      expect(container.querySelector('[data-call-side="left"]')).toHaveTextContent(C.signedRange);
+      expect(container.querySelector('[data-call-side="right"]')).toHaveTextContent(
+        C.unsignedMeaning,
+      );
+      expect(cells("top-weight")).toHaveLength(0);
+    } else {
+      expect(container.querySelector("[data-trip-overrun]")).toBeNull();
+      expect(container).not.toHaveTextContent(C.unsignedMeaning);
+      expect(cells("top-weight")).toEqual([decimal(-(2 ** 31)), `+${decimal(2 ** 31)}`]);
+    }
     expect(within(bridge).getByRole("link")).toHaveAttribute(
       "href",
       "#/lesson/same-bits-two-readings",
@@ -167,17 +193,104 @@ describe("comparing the C return types by calling both listings", () => {
     for (const result of restored.container.querySelectorAll("[data-return-value]")) {
       expect(result).toHaveAttribute("data-return-value", "5");
     }
-    expect(restored.container.querySelector("[data-return-explanation]")).toHaveTextContent(
-      "5 + 0 = 5",
-    );
+    expect(
+      [...restored.container.querySelectorAll('[data-weight-row="total"] td')].map(
+        (cell) => cell.textContent,
+      ),
+    ).toEqual(["5", "5"]);
+    expect(
+      [...restored.container.querySelectorAll('[data-weight-row="top-contribution"] td')].map(
+        (cell) => cell.textContent,
+      ),
+    ).toEqual(["0", "0"]);
     expect(restored.container.querySelector("[data-return-explanation]")).not.toHaveTextContent(
       "2147483646",
     );
     expect(restored.container.querySelector("[data-trip-overrun]")).toBeNull();
-    expect(restored.container).not.toHaveTextContent(C.unsignedWrap);
+    expect(restored.container).not.toHaveTextContent(C.unsignedMeaning);
     expect(
       within(screen.getByRole("group", { name: C.resultGroup })).getByText(C.sameBits),
     ).toBeInTheDocument();
+  });
+
+  it("keeps each function's signed value without claiming a change of weight sign for equal types", () => {
+    const right = {
+      ...TRIP_REMAINING,
+      c: TRIP_REMAINING.c.replace("trip_remaining", "trip_remaining_copy"),
+      listing: TRIP_REMAINING.listing.replace("trip_remaining:", "trip_remaining_copy:"),
+    };
+    const { container } = comparison([8, 2], undefined, true, right, "signed");
+    predict();
+    callBoth();
+    expect(container.querySelectorAll("[data-return-bits]")).toHaveLength(1);
+    for (const [i, program] of [TRIP_REMAINING, right].entries()) {
+      const name = i === 0 ? "trip_remaining" : "trip_remaining_copy";
+      const model = traceOf(program, { entry: name, args: [8, 2] }).result;
+      const card = container.querySelector(`[data-call-result="${i}"]`)!;
+      expect(card).toHaveTextContent(name);
+      expect(card).toHaveTextContent(C.signedType);
+      expect(card.querySelector('[data-return-reading="signed"]')).toHaveAttribute(
+        "data-return-value",
+        String(wValueAsInt(model.final, 0)),
+      );
+      expect(card).toHaveTextContent(
+        C.distanceValue(wValueAsInt(model.final, 0).toLocaleString("en-GB")),
+      );
+    }
+    const explanation = container.querySelector("[data-return-explanation]")!;
+    expect(explanation).toHaveTextContent(C.bitWeights);
+    expect(explanation).not.toHaveTextContent(C.topWeightDiffers);
+    expect(
+      [...explanation.querySelectorAll('[data-weight-row="total"] td')].map(
+        (cell) => cell.textContent,
+      ),
+    ).toEqual(["6", "6"]);
+  });
+
+  it("shows two independently computed bit words when the model results differ", () => {
+    const right = {
+      ...TRIP_REMAINING_U,
+      listing: "trip_remaining_u:\n  add w0, w0, w1 C3\n  ret C3",
+    };
+    const { container } = comparison([3, 5], undefined, true, right);
+    predict();
+    callBoth();
+    expect(container.querySelector('[data-return-bits="shared"]')).toBeNull();
+    expect(container.querySelectorAll("[data-return-bits]")).toHaveLength(2);
+    for (const [i, program] of [TRIP_REMAINING, right].entries()) {
+      const result = traceOf(program, {
+        entry: i === 0 ? "trip_remaining" : "trip_remaining_u",
+        args: [3, 5],
+      }).result;
+      const side = container.querySelector(`[data-call-result="${i}"]`)!;
+      expect([...side.querySelectorAll(".al-bit")].map((bit) => bit.textContent).join("")).toBe(
+        bitsOf(wValue(result.final, 0)),
+      );
+    }
+    expect(container.querySelector('[data-same-bits="false"]')).toHaveTextContent(C.differentBits);
+    expect(container.querySelector("[data-return-explanation]")).toBeNull();
+    expect(container.querySelector("[data-trip-overrun]")).toBeNull();
+    expect(container).not.toHaveTextContent(C.unsignedMeaning);
+  });
+
+  it("retains a separate fault result instead of sharing a successful call's bits", () => {
+    const right = {
+      ...TRIP_REMAINING_U,
+      listing: "trip_remaining_u:\n  sub w0, w0, w1 C3",
+      sourceLines: [[3]],
+    };
+    const { container } = comparison([3, 5], undefined, true, right);
+    predict();
+    callBoth();
+    expect(container.querySelectorAll("[data-call-result]")).toHaveLength(2);
+    expect(container.querySelector('[data-return-bits="shared"]')).toBeNull();
+    expect(container.querySelectorAll("[data-return-bits]")).toHaveLength(1);
+    expect(container.querySelector('[data-call-side="right"]')).toHaveTextContent(
+      S.prediction.endedWithError,
+    );
+    expect(container.querySelector('[data-call-side="right"] [data-return-value]')).toBeNull();
+    expect(container.querySelector("[data-same-bits]")).toBeNull();
+    expect(container.querySelector("[data-return-explanation]")).toBeNull();
   });
 
   it("keeps the worked reading opt-in for existing call comparisons", () => {
