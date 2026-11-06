@@ -1,0 +1,5 @@
+- [x] Objective: identify each plan lesson with its module-local number and title; the module heading already supplies the module label (`FrontPage.tsx`).
+- [x] Prior knowledge: the learner is reading lessons beneath a named module in the course plan; no assembly knowledge is needed.
+- [x] `COURSE_REFERENCES` supplies each lesson's ordinal and title; `fundamentals` begins with One addition and Adding a constant.
+- [x] Scope: module lesson links, including single-lesson modules; full references stay in prose, navigation and the cover's Continue link.
+- [x] Copy follows `docs/style.md`: use the requested `L` prefix, ordinal, colon and title; preserve the lesson titles.

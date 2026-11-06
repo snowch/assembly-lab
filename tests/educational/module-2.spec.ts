@@ -9,7 +9,7 @@
 // typing (at the desktop width) and by tapping alone (at the phone width), the tempting answer is
 // refused by the gate, and the ring and the stepper show the model's values.
 
-import { lessonLabel } from "./lesson-references";
+import { planLessonLabel } from "./lesson-references";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { LESSONS } from "@al/content";
@@ -606,7 +606,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     await openLesson(page, "adding-and-the-flags");
     await press(page, page.locator("a.back-link").first());
     await expect(page.locator(`.module-lessons li[data-lesson="${ONE}"] a`)).toHaveText(
-      lessonLabel(ONE),
+      planLessonLabel(ONE),
     );
   });
 });

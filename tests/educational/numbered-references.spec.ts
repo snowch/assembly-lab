@@ -40,7 +40,7 @@ for (const theme of ["light", "dark"] as const) {
       await page.goto("#/");
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       const link = page.getByRole("link", {
-        name: "Module 1, lesson 2: Signed and unsigned readings",
+        name: "L2: Signed and unsigned readings",
         exact: true,
       });
       await expect(link).toHaveAttribute("href", "#/lesson/same-bits-two-readings");
@@ -114,8 +114,11 @@ for (const theme of ["light", "dark"] as const) {
       ] as const) {
         await page.goto("#/");
         const plan = page.locator(`.plan-module a[href="#/lesson/${id}"]`);
-        await expect(plan).toHaveText(lessonLabel(id));
-        await expect(plan).toContainText(`Module ${label}, lesson 1:`);
+        await expect(plan).toHaveText(`L1: ${LESSONS.find((lesson) => lesson.id === id)!.title}`);
+        await expect(plan).not.toContainText("Module");
+        await expect(
+          plan.locator("xpath=ancestor::li[contains(@class, 'plan-module')]//h3"),
+        ).toContainText(`Module ${label}`);
         await press(page, plan);
         await expect(page.locator(".lesson-position")).toHaveText(`Module ${label}, lesson 1`);
         await expect(page.getByRole("heading", { level: 1 })).toHaveText(

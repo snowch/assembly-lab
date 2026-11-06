@@ -19,3 +19,13 @@ export function lessonLabel(id: string, title?: string): string {
   if (!lesson) throw new Error(`No published lesson: ${id}`);
   return `${lessonPosition(id)}: ${title ?? lesson.title}`;
 }
+
+/** Compact labels only within an already named module on the plan. */
+export function planLessonLabel(id: string): string {
+  const lesson = LESSONS.find((item) => item.id === id);
+  if (!lesson) throw new Error(`No published lesson: ${id}`);
+  const siblings = LESSONS.filter((item) => item.module === lesson.module).sort(
+    (a, b) => a.order - b.order,
+  );
+  return `L${siblings.findIndex((item) => item.id === id) + 1}: ${lesson.title}`;
+}

@@ -12,7 +12,7 @@
 // Completion survives a reload and is graded again, Clear work removes it, and every page keeps the
 // look the shell's own pages keep.
 
-import { lessonLabel } from "./lesson-references";
+import { planLessonLabel } from "./lesson-references";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { LESSONS } from "@al/content";
@@ -603,10 +603,10 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
     await openLesson(page, ONE);
     await press(page, page.locator("a.back-link").first());
     await expect(page.locator(`.module-lessons li[data-lesson="${ONE}"] a`)).toHaveText(
-      lessonLabel(ONE),
+      planLessonLabel(ONE),
     );
     await expect(page.locator(`.module-lessons li[data-lesson="${TWO}"] a`)).toHaveText(
-      lessonLabel(TWO),
+      planLessonLabel(TWO),
     );
   });
 });

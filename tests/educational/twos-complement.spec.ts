@@ -4,7 +4,7 @@ import { expect, test, type Locator } from "@playwright/test";
 import { fourBitReadings } from "@al/views";
 import { shown } from "../../packages/views/src/readings";
 import { designProblems } from "./design";
-import { lessonLabel } from "./lesson-references";
+import { planLessonLabel, lessonLabel } from "./lesson-references";
 
 async function alignedTopBit(figure: Locator) {
   const bit = figure.locator('.al-toggle[data-top="true"]');
@@ -37,7 +37,7 @@ for (const theme of ["light", "dark"] as const) {
     await page.locator("select").selectOption(theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await expect(
-      page.getByRole("link", { name: lessonLabel("twos-complement"), exact: true }),
+      page.getByRole("link", { name: planLessonLabel("twos-complement"), exact: true }),
     ).toBeVisible();
     await page.goto("#/lesson/same-bits-two-readings");
     const signed = page.locator("#ix-reading-signed");

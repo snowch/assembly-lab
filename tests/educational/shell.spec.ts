@@ -14,7 +14,7 @@ import { MODULES, PLAN, lessonsOf, statusOf } from "@al/content/plan";
 
 import { VIEW_STRINGS } from "../../packages/views/src/strings";
 
-import { lessonLabel } from "./lesson-references";
+import { planLessonLabel, lessonLabel } from "./lesson-references";
 
 import { COMPANION_LINKS, STRINGS } from "../../apps/course/src/strings";
 
@@ -93,12 +93,12 @@ test("a module with a lesson is published; with one lesson its title links to it
     await expect(entry.locator(".module-status")).toHaveCount(0);
     if (lessons.length === 1) {
       const link = entry.locator("h3 a");
-      await expect(link).toHaveText(lessonLabel(lessons[0]!.id));
+      await expect(link).toHaveText(planLessonLabel(lessons[0]!.id));
       await expect(link).toHaveAttribute("href", `#/lesson/${lessons[0]!.id}`);
     } else {
       await expect(entry.locator("h3 a")).toHaveCount(0);
       await expect(entry.locator(".module-lessons a")).toHaveText(
-        lessons.map((l) => lessonLabel(l.id)),
+        lessons.map((l) => planLessonLabel(l.id)),
       );
       for (const l of lessons)
         await expect(entry.locator(`.module-lessons li[data-lesson="${l.id}"] a`)).toHaveAttribute(

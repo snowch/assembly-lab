@@ -85,9 +85,12 @@ it("shows a truthful all-marked state while every lesson link remains available"
   expect(getByText(STRINGS.completion.all)).toBeVisible();
   expect(container.querySelector(".cover-start")).toBeNull();
   for (const lesson of ordered) {
-    expect(
-      container.querySelector(`.plan-module a[href="${lessonHref(lesson.id)}"]`),
-    ).not.toBeNull();
+    const link = container.querySelector(`.plan-module a[href="${lessonHref(lesson.id)}"]`);
+    expect(link).not.toBeNull();
+    expect(link).toHaveTextContent(
+      `L${COURSE_REFERENCES.byId.get(lesson.id)!.number}: ${lesson.title}`,
+    );
+    expect(link).not.toHaveTextContent("Module ");
   }
   act(() => store.set(ordered.at(-1)!.id, false));
   expect(container.querySelector(".cover-continue")).toHaveAttribute(
