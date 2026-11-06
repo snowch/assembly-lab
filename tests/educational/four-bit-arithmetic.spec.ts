@@ -109,7 +109,7 @@ for (const theme of ["light", "dark"] as const) {
     await expect(addition.locator('[data-row="b"] .al-four-value')).toHaveText([
       "0",
       "0",
-      "0",
+      "1",
       "1",
     ]);
     const next = addition.getByRole("button", { name: "Next column" });
@@ -119,11 +119,18 @@ for (const theme of ["light", "dark"] as const) {
     await expect(addition.locator('[data-destination="carry"] .al-four-value')).toHaveText("1");
     await expect(addition.locator('[data-destination="kept"] .al-four-value')).toHaveText("0");
     await expectConnectedCarry(addition);
-    for (let i = 0; i < 3; i++) await next.click();
-    await expect(result).toHaveText(["0", "1", "0", "0"]);
+    await next.click();
+    await expect(addition.locator(".al-four-binary-equation")).toHaveAttribute(
+      "aria-label",
+      /1 plus 1 plus incoming carry 1 equals 11 in binary/,
+    );
+    await expect(addition.locator('[data-destination="carry"] .al-four-value')).toHaveText("1");
+    await expect(addition.locator('[data-destination="kept"] .al-four-value')).toHaveText("1");
+    for (let i = 0; i < 2; i++) await next.click();
+    await expect(result).toHaveText(["0", "1", "1", "0"]);
     await expect(next).toBeDisabled();
     await expectConnectedCarry(addition);
-    await expect(addition.locator('[data-reading="unsigned"]')).toHaveText("4");
+    await expect(addition.locator('[data-reading="unsigned"]')).toHaveText("6");
     await addition.getByRole("button", { name: "Reset", exact: true }).click();
     await expect(result).toHaveText(["?", "?", "?", "?"]);
     await expect(next).toBeEnabled();
