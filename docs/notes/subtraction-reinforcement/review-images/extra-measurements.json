@@ -1,0 +1,18 @@
+[
+  {
+    "theme": "light",
+    "pageWidth": 320,
+    "pageScroll": 320,
+    "calculationWidth": 262,
+    "calculationScroll": 272,
+    "keyboard": "commit/call/reset/link Enter passed"
+  },
+  {
+    "theme": "dark",
+    "pageWidth": 320,
+    "pageScroll": 320,
+    "calculationWidth": 262,
+    "calculationScroll": 272,
+    "keyboard": "commit/call/reset/link Enter passed"
+  }
+]

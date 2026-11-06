@@ -19,6 +19,8 @@ import { VIEW_STRINGS as S } from "../strings";
 import { CALL_COMPARISON_STRINGS as C } from "../strings.call-comparison";
 import { BitRow, hex, signedOf, unsignedOf } from "../bits";
 import { traceOf, wValue } from "../trace";
+import { subtractionWork, type SubtractionWork } from "../subtraction-work";
+import { SubtractionWorking } from "../SubtractionWorking";
 import { PredictionBox, type Outcome } from "./PredictionBox";
 import { RecordedSchema, withProps } from "./props";
 
@@ -39,6 +41,7 @@ const Props = z.object({
       leftType: z.enum(["signed", "unsigned"]),
       rightType: z.enum(["signed", "unsigned"]),
       workedReadings: z.boolean().default(false),
+      workedSubtraction: z.boolean().default(false),
       tripContext: z.boolean().default(false),
     })
     .optional(),
@@ -126,11 +129,13 @@ function CallResults({
   workedReadings,
   tripContext,
   tripDifference,
+  subtraction,
 }: {
   calls: CallResult[];
   workedReadings: boolean;
   tripContext: boolean;
   tripDifference: number | null;
+  subtraction: SubtractionWork | null;
 }) {
   const first = calls[0];
   const word =
@@ -152,11 +157,18 @@ function CallResults({
     signedOf(word) === tripDifference;
   return (
     <div className="al-compare-call-results" role="group" aria-label={C.resultGroup}>
-      {word !== undefined && (
-        <div className="al-compare-shared-word">
-          <p>{C.sharedReturnedBits}</p>
-          <ReturnedWord value={word} row="shared" />
-        </div>
+      {word !== undefined && subtraction ? (
+        <SubtractionWorking
+          work={subtraction}
+          returnedWord={<ReturnedWord value={word} row="shared" />}
+        />
+      ) : (
+        word !== undefined && (
+          <div className="al-compare-shared-word">
+            <p>{C.sharedReturnedBits}</p>
+            <ReturnedWord value={word} row="shared" />
+          </div>
+        )
       )}
       <div className="al-compare-readings">
         {calls.map((call, i) => (
@@ -313,6 +325,7 @@ export const ListingCompare = withProps(
         return {
           name,
           value,
+          trace,
           type: i === 0 ? comparison.leftType : comparison.rightType,
         };
       });
@@ -409,6 +422,11 @@ export const ListingCompare = withProps(
             {calls && (
               <CallResults
                 calls={calls}
+                subtraction={
+                  comparison.workedSubtraction
+                    ? subtractionWork(calls.map((call) => call.trace))
+                    : null
+                }
                 workedReadings={comparison.workedReadings}
                 tripContext={comparison.tripContext}
                 tripDifference={

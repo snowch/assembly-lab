@@ -57,6 +57,118 @@
   margin-bottom: var(--space-2);
   font-weight: 600;
 }
+/* The same returned word closes the subtraction working. Every byte occupies
+   the same columns, including when its label takes more than one line. */
+.al-subtraction-work {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+.al-subtraction-heading,
+.al-subtraction-result > p {
+  font-weight: 600;
+}
+.al-subtraction-width,
+.al-subtraction-reminder {
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+.al-subtraction-scroll {
+  min-width: 0;
+  overflow-x: auto;
+}
+.al-subtraction-calculation {
+  display: grid;
+  min-width: 17rem;
+  max-width: 38rem;
+  gap: var(--space-2);
+}
+.al-subtraction-row {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  align-items: baseline;
+  row-gap: 2px;
+}
+.al-subtraction-label {
+  grid-column: 1 / -1;
+  font-size: var(--text-sm);
+}
+.al-subtraction-operator,
+.al-subtraction-equals {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  text-align: center;
+}
+.al-subtraction-row > .al-subtraction-pattern {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 0;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.8;
+}
+.al-subtraction-pattern > span {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  white-space: nowrap;
+  letter-spacing: 0;
+  text-align: center;
+}
+.al-subtraction-sum {
+  display: grid;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px dashed var(--border-strong);
+}
+.al-subtraction-result {
+  padding-top: var(--space-2);
+  border-top: 2px solid var(--border-strong);
+}
+.al-subtraction-returned {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  align-items: end;
+}
+.al-subtraction-returned > [data-return-bits] {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+.al-subtraction-returned > .al-subtraction-equals {
+  grid-column: 1;
+  grid-row: 1;
+  z-index: 1;
+  line-height: 1.8;
+}
+.al-subtraction-returned .al-reg.al-bitrow {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "name value" "bits bits";
+  padding: 0;
+  border: 0;
+  gap: 2px var(--space-2);
+}
+.al-subtraction-returned .al-reg-name,
+.al-subtraction-returned .al-reg-value {
+  font-size: var(--text-sm);
+}
+.al-subtraction-returned .al-reg-value {
+  justify-self: end;
+}
+.al-subtraction-returned .al-bits {
+  max-width: none;
+  margin-left: 1rem;
+  gap: 6px;
+}
+.al-subtraction-returned .al-bit-group {
+  gap: 0;
+}
+.al-subtraction-returned .al-bit {
+  font-size: 0.75rem;
+  line-height: 1.8;
+}
 .al-compare-readings {
   display: grid;
   gap: var(--space-3);

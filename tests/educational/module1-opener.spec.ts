@@ -26,7 +26,7 @@ for (const width of [360, 375, 416, 1280]) {
       const figure = page.locator("#ix-compare-int-unsigned");
       await expect(
         figure.locator(
-          "[data-call-side], [data-return-bits], [data-return-explanation], .al-listing",
+          "[data-call-side], [data-return-bits], [data-return-explanation], [data-subtraction-work], .al-listing",
         ),
       ).toHaveCount(0);
       await expect(figure.locator(".al-compare-inputs")).toHaveText(C.startingInputs("3, 5"));
@@ -67,6 +67,24 @@ for (const width of [360, 375, 416, 1280]) {
         "data-return-value",
         "4294967294",
       );
+      const work = figure.locator("[data-subtraction-work]");
+      await expect(work).toBeVisible();
+      for (const [row, value] of Object.entries({
+        second: 5,
+        inverted: 4294967290,
+        opposite: 4294967291,
+        first: 3,
+        "add-opposite": 4294967291,
+        result: 4294967294,
+      })) {
+        await expect(work.locator(`[data-work-row="${row}"]`)).toHaveAttribute(
+          "data-work-value",
+          String(value),
+        );
+      }
+      const reminder = work.getByRole("link");
+      await expect(reminder).toHaveAttribute("href", "#/lesson/four-bit-arithmetic");
+      await expect(reminder).toHaveText("Module 1, lesson 3: Arithmetic with four bits");
       await expect(figure.locator('[data-return-bits="shared"]')).toHaveCount(1);
       await expect(figure.locator("[data-return-bits] .al-bit")).toHaveText([
         ..."1".repeat(31),

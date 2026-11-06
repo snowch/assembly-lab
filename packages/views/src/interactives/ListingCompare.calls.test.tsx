@@ -23,6 +23,7 @@ function comparison(
     sourceLines: readonly (readonly number[])[];
   } = TRIP_REMAINING_U,
   rightType: "signed" | "unsigned" = "unsigned",
+  workedSubtraction = true,
 ) {
   const interactive = Interactive.parse({
     id: "typed-subtraction",
@@ -42,6 +43,7 @@ function comparison(
         leftType: "signed",
         rightType,
         workedReadings,
+        workedSubtraction,
         tripContext: true,
       },
     },
@@ -81,6 +83,7 @@ describe("comparing the C return types by calling both listings", () => {
     expect(store.slot("typed-subtraction:calls")).toBeUndefined();
     expect(container.querySelector("[data-call-result]")).toBeNull();
     expect(container.querySelector("[data-return-explanation]")).toBeNull();
+    expect(container.querySelector("[data-subtraction-work]")).toBeNull();
     fireEvent.click(screen.getByRole("radio", { name: "Same" }));
     expect(container.querySelector(".al-listing")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: S.prediction.commit }));
@@ -106,6 +109,7 @@ describe("comparing the C return types by calling both listings", () => {
     expect(screen.getByRole("button", { name: C.callBoth })).toBeEnabled();
     expect(container.querySelector("[data-call-result]")).toBeNull();
     expect(container.querySelector("[data-return-explanation]")).toBeNull();
+    expect(container.querySelector("[data-subtraction-work]")).toBeNull();
     expect(screen.queryByRole("button", { name: S.stepper.next })).toBeNull();
   });
 
@@ -188,6 +192,46 @@ describe("comparing the C return types by calling both listings", () => {
     expect(store.slot("typed-subtraction:calls")).toBe(true);
   });
 
+  it("shows the aligned calculation only after a call, before the C readings", () => {
+    const { container } = comparison();
+    predict();
+    expect(container.querySelector("[data-subtraction-work]")).toBeNull();
+    callBoth();
+    const work = container.querySelector("[data-subtraction-work]")!;
+    expect(work).not.toBeNull();
+    const expected = {
+      second: 5,
+      inverted: 4294967290,
+      opposite: 4294967291,
+      first: 3,
+      "add-opposite": 4294967291,
+      result: 4294967294,
+    };
+    for (const [key, value] of Object.entries(expected)) {
+      const row = work.querySelector(`[data-work-row="${key}"]`)!;
+      expect(row).toHaveAttribute("data-work-value", String(value));
+      const pattern =
+        key === "result"
+          ? [...row.querySelectorAll(".al-bit")].map((bit) => bit.textContent).join("")
+          : row.querySelector("[data-work-pattern]")!.textContent!.replace(/\s/g, "");
+      expect(pattern).toBe(bitsOf(value));
+    }
+    expect(
+      work.compareDocumentPosition(container.querySelector(".al-compare-readings")!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(work.querySelector('a[href="#/lesson/four-bit-arithmetic"]')).not.toBeNull();
+    expect(container.querySelectorAll('[data-return-bits="shared"]')).toHaveLength(1);
+  });
+
+  it("leaves the new working out of comparisons that do not request it", () => {
+    const { container } = comparison([3, 5], undefined, true, undefined, "unsigned", false);
+    predict();
+    callBoth();
+    expect(container.querySelector("[data-subtraction-work]")).toBeNull();
+    expect(container.querySelectorAll("[data-call-result]")).toHaveLength(2);
+  });
+
   it("restores the call action and recomputes results from the current model inputs", () => {
     const storage = memoryStorage();
     const initialStore = new LessonStore(storage, "assembly-lab", "restore-calls");
@@ -204,6 +248,14 @@ describe("comparing the C return types by calling both listings", () => {
     const restoredStore = new LessonStore(storage, "assembly-lab", "restore-calls");
     const restored = comparison([7, 2], restoredStore);
     expect(restored.container.querySelectorAll(".al-listing")).toHaveLength(2);
+    expect(restored.container.querySelector('[data-work-row="first"]')).toHaveAttribute(
+      "data-work-value",
+      "7",
+    );
+    expect(restored.container.querySelector('[data-work-row="second"]')).toHaveAttribute(
+      "data-work-value",
+      "2",
+    );
     for (const result of restored.container.querySelectorAll("[data-return-value]")) {
       expect(result).toHaveAttribute("data-return-value", "5");
     }
@@ -282,7 +334,9 @@ describe("comparing the C return types by calling both listings", () => {
       );
     }
     expect(container.querySelector('[data-same-bits="false"]')).toHaveTextContent(C.differentBits);
+    expect(container.querySelector("[data-subtraction-work]")).toBeNull();
     expect(container.querySelector("[data-return-explanation]")).toBeNull();
+    expect(container.querySelector("[data-subtraction-work]")).toBeNull();
     expect(container.querySelector("[data-trip-overrun]")).toBeNull();
     expect(container).not.toHaveTextContent(C.unsignedMeaning);
   });
@@ -305,14 +359,16 @@ describe("comparing the C return types by calling both listings", () => {
     expect(container.querySelector('[data-call-side="right"] [data-return-value]')).toBeNull();
     expect(container.querySelector("[data-same-bits]")).toBeNull();
     expect(container.querySelector("[data-return-explanation]")).toBeNull();
+    expect(container.querySelector("[data-subtraction-work]")).toBeNull();
   });
 
   it("keeps the worked reading opt-in for existing call comparisons", () => {
-    const { container } = comparison([3, 5], undefined, false);
+    const { container } = comparison([3, 5], undefined, false, undefined, "unsigned", false);
     predict();
     callBoth();
     expect(container.querySelectorAll("[data-call-result]")).toHaveLength(2);
     expect(container.querySelector("[data-return-explanation]")).toBeNull();
+    expect(container.querySelector("[data-subtraction-work]")).toBeNull();
   });
 
   it("resets calls without losing the prediction, and a lesson reset closes both gates", () => {
@@ -322,6 +378,7 @@ describe("comparing the C return types by calling both listings", () => {
     fireEvent.click(screen.getByRole("button", { name: C.resetCalls }));
     expect(container.querySelector("[data-call-result]")).toBeNull();
     expect(container.querySelector("[data-return-explanation]")).toBeNull();
+    expect(container.querySelector("[data-subtraction-work]")).toBeNull();
     expect(container.querySelectorAll(".al-listing")).toHaveLength(2);
     expect(store.slot("typed-subtraction")).toEqual({ choice: "same" });
     expect(store.slot("typed-subtraction:calls")).toBeUndefined();
@@ -331,6 +388,7 @@ describe("comparing the C return types by calling both listings", () => {
     expect(container.querySelector(".al-listing")).toBeNull();
     expect(container.querySelector("[data-call-result]")).toBeNull();
     expect(container.querySelector("[data-return-explanation]")).toBeNull();
+    expect(container.querySelector("[data-subtraction-work]")).toBeNull();
     expect(screen.getByRole("button", { name: C.callBoth })).toBeDisabled();
   });
 });

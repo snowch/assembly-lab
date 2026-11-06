@@ -13,6 +13,21 @@ export const CALL_COMPARISON_STRINGS = {
   returnedBits: (functionName: string) => `Final w0 bits when ${functionName} returns`,
   sameBits: "Both calls returned the same bits in w0.",
   differentBits: "The calls returned different bits in w0.",
+  subtraction: {
+    heading: "Subtraction in bits",
+    calculationNote: (width: number) =>
+      `These rows break down a single \`sub\` instruction with ${width} places. Keep the lowest ${width} bits after each addition.`,
+    second: (value: string) => `Second input: ${value}`,
+    inverted: "Invert every bit",
+    plusOne: (value: string) => `Add ${value}`,
+    opposite: "Opposite pattern",
+    first: (value: string) => `First input: ${value}`,
+    result: "Result",
+    widthNote: (highBit: number, lowBit: number) =>
+      `Bits run from ${highBit} on the left to ${lowBit} on the right.`,
+    reminder: "For the smaller example, revisit",
+    link: "Arithmetic with four bits",
+  },
   signedType: "int (signed)",
   unsignedType: "unsigned int",
   distanceValue: (value: string) => `${value} km`,
