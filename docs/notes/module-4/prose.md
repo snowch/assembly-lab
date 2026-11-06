@@ -314,7 +314,13 @@ The flags are NZCV 0000. `gt` (Z is 0 and N equals V) is yes: as signed, 2 is gr
 
 The trip computer classifies a gradient as steep uphill, steep downhill or neither. The result depends on how the gradient compares with 10 and −10.
 
-`describe` returns 2 when the gradient is above 10, −2 when it is below −10, and 0 otherwise. The paired listing below shows its C and GCC's eight instructions.
+`describe` returns one of three values:
+
+- 2 when the gradient is above 10.
+- −2 when it is below −10.
+- 0 otherwise.
+
+The paired listing below shows its C and GCC's eight instructions.
 
 `wzr` is a register name that always reads as 0. A write to it is thrown away.
 
@@ -397,9 +403,9 @@ The GNU assembler turns `cmp w0, -10` into `cmn w0, 10`. The simulator gives the
 
 Write `fuel_warning(litres, reserve)`. Both are `unsigned`. Its rules, in order:
 
-- If `litres` is 0, return 2.
-- Otherwise, if `litres` is below `reserve`, return 1.
-- Otherwise, return 0.
+1. If `litres` is 0, return 2.
+2. Otherwise, if `litres` is below `reserve`, return 1.
+3. Otherwise, return 0.
 
 Use only `cmp`, a branch with a condition, `cbz`, `b`, `mov` and `ret`. Five calls test it. One has `litres` equal to `reserve`. One has the top bit of `litres` set.
 
@@ -500,7 +506,13 @@ The instructions from `.L17` run `beep`. They belong to a later module, so they 
 
 ## 8. When GCC uses a branch
 
-GCC 16.1 at `-O1` made different choices for different `if`s. In `warning_light`, the `if` became `cmp` and `cset`, with no branch. In `describe`, one `if` became a branch, for `gradient > 10`, and the other became a `csel`, for `gradient < -10`. Another function, `maybe_beep`, runs `beep` only when `litres` is zero. Its `if` became a branch, `cbz`. The optional note above shows the start of that listing.
+GCC 16.1 at `-O1` made different choices for different `if`s:
+
+- In `warning_light`, the `if` became `cmp` and `cset`, with no branch.
+- In `describe`, one `if` became a branch, for `gradient > 10`, and the other became a `csel`, for `gradient < -10`.
+- In `maybe_beep`, which runs `beep` only when `litres` is zero, the `if` became a branch, `cbz`.
+
+The optional note above shows the start of the `maybe_beep` listing.
 
 `csel` chooses between register values. `cset` writes 0 or 1. Neither can decide whether another function runs. In `maybe_beep`, the branch decides whether execution reaches the instructions that run `beep`.
 

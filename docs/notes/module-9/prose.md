@@ -36,7 +36,12 @@ The listings paired with C use GCC 16.1 with `-O1 -fno-inline` for little-endian
 
 Follow the handwritten `relay_distance` below. It calls `half_distance` and returns the helper’s result unchanged. Press Next to follow each instruction. The simulator supplies an aligned stack and a return address that ends the outer call; startup is not part of this example.
 
-The space reserved for one active call is its **stack frame**. `stp` stores a pair: `stp x29, x30, [sp, #-16]!` decreases `sp` by 16, then stores two 64-bit values. The saved `x29` starts at `sp`; `x30` starts at `sp + 8`. AAPCS64 requires `sp` to be a multiple of 16 for stack accesses through it. This is 16-byte alignment. Reserving 16 bytes keeps that alignment.
+The space reserved for one active call is its **stack frame**. `stp` stores a pair: `stp x29, x30, [sp, #-16]!` decreases `sp` by 16, then stores two 64-bit values:
+
+- The saved `x29` starts at `sp`.
+- The saved `x30` starts at `sp + 8`.
+
+AAPCS64 requires `sp` to be a multiple of 16 for stack accesses through it. This is 16-byte alignment. Reserving 16 bytes keeps that alignment.
 
 Here `x29` is a **frame pointer**, identifying this call’s frame. `mov x29, sp` sets it after saving its old value. `ldp` loads a pair: `ldp x29, x30, [sp], #16` restores both values, then releases the frame by increasing `sp` by 16. The final `ret` uses the restored return address.
 
@@ -57,9 +62,13 @@ It returns 73, or `0x00000049`. The helper returns 64 in `w0`; the report then a
 
 ## 4. Inspect the saved values on the stack
 
-Now follow `trip_report`, which keeps a reserve across the helper call. Its stack frame reserves 32 bytes. The saved pair has the same layout as before: `x29` at `sp`, then `x30` at `sp + 8`. `stp x29, x30, [sp, #-32]!` reserves this larger frame; `ldp x29, x30, [sp], #32` restores the pair and releases it.
+Now follow `trip_report`, which keeps a reserve across the helper call. Its stack frame reserves 32 bytes. GCC saves these registers:
 
-GCC also saves `x19` at `sp + 16`, then uses `w19` to keep the reserve across the helper call. On return, it restores all three saved registers.
+- `x29` at `sp`.
+- `x30` at `sp + 8`.
+- `x19` at `sp + 16`.
+
+`stp x29, x30, [sp, #-32]!` reserves the frame and stores the pair. GCC also saves `x19`, then uses `w19` to keep the reserve across the helper call. On return, it restores `x19`; `ldp x29, x30, [sp], #32` restores the pair and releases the frame.
 
 AAPCS64 requires a callee to preserve `x19` through `x29` and restore `sp`. Preserve all 64 bits, even if your own calculation uses only a `w` view. The stack must also be aligned to 16 bytes at public call boundaries, where separately compiled functions meet.
 
@@ -118,7 +127,12 @@ To keep a value, the caller can save it in memory or use a register the callee m
 
 ## 8. Protect what the caller still needs
 
-Before each call, identify the values needed afterwards. Protect the return address and any other live values. After the call, use the returned value, restore saved registers, and release the stack space.
+Work through a call in this order:
+
+1. Identify the values needed afterwards.
+2. Protect the return address and any other live values.
+3. Make the call and use its returned value.
+4. Restore saved registers and release the stack space.
 
 A **leaf function** calls no other function. It can often return using the incoming link register directly. A function that makes another call needs to account for the link register being overwritten.
 
@@ -271,7 +285,12 @@ It returns `0x0000000b`, or 11. The calls receive 7, 3, 1 and 0. They return in 
 
 ## 4. Follow the frames down and back
 
-This figure starts at the deepest point, with all four calls active. Use Back to inspect how the calls built the stack, or Next to follow the remaining instructions and returns. Each invocation of this GCC function reserves 32 bytes. For brightness 7, the four active frames use 128 bytes at the deepest point.
+This figure starts at the deepest point, with all four calls active:
+
+- Use Back to inspect how the calls built the stack.
+- Use Next to follow the remaining instructions and returns.
+
+Each invocation of this GCC function reserves 32 bytes. For brightness 7, the four active frames use 128 bytes at the deepest point.
 
 The repeated function name does not mean there is only one saved brightness or return address. Each frame holds the values for a different invocation. As calls return, those values become current again.
 
@@ -338,7 +357,12 @@ The current call must keep any value needed after the recursive call. `w0` will 
 
 ## 8. Define the smaller problem
 
-To design a recursive function, specify a base case, a smaller remaining problem, and how to use its returned answer. Then account for the values and return address that must survive the call.
+To design a recursive function:
+
+1. Specify a base case.
+2. Specify a smaller remaining problem.
+3. Decide how to use its returned answer.
+4. Account for the values and return address that must survive the call.
 
 For a count of nonzero brightness levels, the zero case returns zero. A nonzero case returns one plus the count for half the brightness. The extra one counts the current level. Add it after the recursive call, when `w0` contains the smaller problem's result.
 

@@ -7,7 +7,7 @@
 
 export const PROSE = {
   question:
-    "The trip computer classifies a gradient as steep uphill, steep downhill or neither. The result depends on how the gradient compares with 10 and −10.\n\n`describe` returns 2 when the gradient is above 10, −2 when it is below −10, and 0 otherwise. The paired listing below shows its C and GCC's eight instructions.\n\n`wzr` is a register name that always reads as 0. A write to it is thrown away.\n\nThe earlier arithmetic examples ran their calculations in order. This listing has two lines that end in a colon, `.L7:` and `.L9:`. Two instructions name them.\n\n**How does the processor execute only the instructions needed for that result?**",
+    "The trip computer classifies a gradient as steep uphill, steep downhill or neither. The result depends on how the gradient compares with 10 and −10.\n\n`describe` returns one of three values:\n\n- 2 when the gradient is above 10.\n- −2 when it is below −10.\n- 0 otherwise.\n\nThe paired listing below shows its C and GCC's eight instructions.\n\n`wzr` is a register name that always reads as 0. A write to it is thrown away.\n\nThe earlier arithmetic examples ran their calculations in order. This listing has two lines that end in a colon, `.L7:` and `.L9:`. Two instructions name them.\n\n**How does the processor execute only the instructions needed for that result?**",
 
   questionNoteSummary: "Which compiler?",
   questionNote:
@@ -39,7 +39,7 @@ export const PROSE = {
 
   fuelWarningTask:
     "Write `fuel_warning(litres, reserve)`. Both are `unsigned`. Its rules, in order:\n\n" +
-    "- If `litres` is 0, return 2.\n- Otherwise, if `litres` is below `reserve`, return 1.\n- Otherwise, return 0.\n\n" +
+    "1. If `litres` is 0, return 2.\n2. Otherwise, if `litres` is below `reserve`, return 1.\n3. Otherwise, return 0.\n\n" +
     "Use only `cmp`, a branch with a condition, `cbz`, `b`, `mov` and `ret`. Five calls test it. One has `litres` equal to `reserve`. One has the top bit of `litres` set.\n\n" +
     "- `litres` arrives in `w0`.\n- `reserve` arrives in `w1`.\n\nThe answer leaves in `w0`.\n\n" +
     "`cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags.\n\n" +
@@ -94,7 +94,7 @@ export const PROSE = {
     "`maybe_beep(5)` runs two instructions: `cbz` is not taken, and `ret` follows. `maybe_beep(0)` sends the run to `.L17`, because `cbz` is taken. GCC put the part that runs `beep` after the `ret`, so the straight-line path is the one where `litres` is not 0.",
 
   generalisation:
-    "GCC 16.1 at `-O1` made different choices for different `if`s. In `warning_light`, the `if` became `cmp` and `cset`, with no branch. In `describe`, one `if` became a branch, for `gradient > 10`, and the other became a `csel`, for `gradient < -10`. Another function, `maybe_beep`, runs `beep` only when `litres` is zero. Its `if` became a branch, `cbz`. The optional note above shows the start of that listing.\n\n" +
+    "GCC 16.1 at `-O1` made different choices for different `if`s:\n\n- In `warning_light`, the `if` became `cmp` and `cset`, with no branch.\n- In `describe`, one `if` became a branch, for `gradient > 10`, and the other became a `csel`, for `gradient < -10`.\n- In `maybe_beep`, which runs `beep` only when `litres` is zero, the `if` became a branch, `cbz`.\n\nThe optional note above shows the start of the `maybe_beep` listing.\n\n" +
     "`csel` chooses between register values. `cset` writes 0 or 1. Neither can decide whether another function runs. In `maybe_beep`, the branch decides whether execution reaches the instructions that run `beep`.\n\n" +
     "These examples show what GCC produced at this setting. They do not tell us why GCC chose each instruction.",
 

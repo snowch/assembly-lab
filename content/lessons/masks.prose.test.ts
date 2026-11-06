@@ -120,7 +120,9 @@ describe("the closed notes, the held-back texts and the feedback", () => {
 
   it("keep the answer to the closing question out of the section's prose, in the closed note", () => {
     const reflection = lesson.sections.find((s) => s.kind === "reflection")!;
-    expect(reflection.prose).toContain("What does `ubfx x0, x0, 4, 3` give");
+    expect(reflection.prose).toContain("Start with that value separately for each instruction.");
+    expect(reflection.prose).toContain("- `ubfx x0, x0, 4, 3`");
+    expect(reflection.prose).toContain("- `eor w0, w0, 4`");
     expect(reflection.prose).not.toContain("0x43");
     expect(reflection.details?.prose).toContain("0x43");
     expect(lesson.sections.at(-1)?.title).toBe("What you now know");

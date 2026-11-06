@@ -7,6 +7,7 @@ import { VIEW_STRINGS, createBook, grade } from "@al/views";
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
 import { checkLesson, testCount } from "@platform/lesson-schema";
 import { LESSONS } from ".";
+import { COPY } from "./pacing-1-4.copy";
 
 const lesson = LESSONS.find((l) => l.id === "same-bits-two-readings")!;
 const units = [
@@ -38,6 +39,7 @@ it("teaches hexadecimal before the two readings and keeps their practice togethe
     rightType: "unsigned",
     workedReadings: true,
     tripContext: true,
+    intro: COPY.arithmeticBits.callIntro,
   });
 });
 

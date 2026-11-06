@@ -30,7 +30,14 @@ GCC 16.1 with `-O1`, as in Module 0.
 
 A **loop** repeats part of a program while a condition holds. The repeated part is its **body**. Each execution of that body is one **iteration**. Here, the body halves `brightness`.
 
-The `for` first sets `tick` to `start`. It tests `tick < end` before running the body. After the body, `tick++` adds 1 to `tick`. It repeats the test before each later iteration. If the first test is false, the body never runs.
+The `for` loop follows this sequence:
+
+1. Set `tick` to `start`.
+2. Test `tick < end`. If the test is false, leave the loop.
+3. Run the body.
+4. Add 1 to `tick` with `tick++`, then return to the test.
+
+If the first test is false, the body never runs.
 
 These endpoints use ordinary unsigned ordering. They do not describe elapsed time across a counter wrap: if `start` is at or above `end`, there is no dimming to do.
 
@@ -50,7 +57,13 @@ The brightness changes from 128 to 64, then 32, then 16. Each `lsr` writes the n
 
 ## 4. Follow the branch backwards
 
-`brightness` arrives in `w0`, `start` in `w1` and `end` in `w2`. `w1` then holds the changing value of `tick`.
+The inputs arrive in these registers:
+
+- `brightness` in `w0`.
+- `start` in `w1`.
+- `end` in `w2`.
+
+`w1` then holds the changing value of `tick`.
 
 The first `cmp` compares `start` with `end`. `bcs .L2` goes straight to `ret` when `start` is at or above `end`, using the unsigned condition `cs`. This first test prevents an unwanted iteration.
 
@@ -110,7 +123,12 @@ The order of the operands in the final `cmp` does not change whether they are eq
 
 A branch can go to an earlier instruction just as it can go to a later one. Returning to an earlier instruction lets a small listing do repeated work.
 
-To understand a loop, first check whether it tests before the first iteration. Find the instructions that do the work and the change that lets the loop stop. Then follow the branch that decides whether to repeat.
+To follow a loop:
+
+1. Check whether it tests before the first iteration.
+2. Find the instructions that do the work.
+3. Find the change that lets the loop stop.
+4. Follow the branch that decides whether to repeat.
 
 ## 9. Count three runs
 
@@ -266,9 +284,20 @@ The final `subs` produces zero, so it sets Z to 1. `bne` is then not taken, and 
 
 ## 4. Let subs test the remaining count
 
-`brightness` arrives in `w0`, and `ticks` arrives in `w1`. `cbz` checks the initial tick count without reading or changing the flags.
+The inputs arrive in these registers:
 
-Each iteration runs `lsr` to dim the display, then `subs w1, w1, #1` to reduce the count. `bne .L3` reads the flags that `subs` just set. It repeats the body when Z is 0, because ticks remain. When the count reaches zero, Z is 1 and the function returns.
+- `brightness` in `w0`.
+- `ticks` in `w1`.
+
+`cbz` checks the initial tick count without reading or changing the flags.
+
+Each iteration follows these steps:
+
+1. `lsr` dims the display.
+2. `subs w1, w1, #1` reduces the count and sets the flags.
+3. `bne .L3` reads those flags. It repeats the body when Z is 0, because ticks remain.
+
+When the count reaches zero, Z is 1 and the function returns.
 
 Choose a tick count in the figure. A zero count skips the body. The other runs show the brightness changing after each dimming operation.
 
@@ -311,7 +340,12 @@ The stepper shows the remaining count in `w1`, alongside the brightness in `w0` 
 
 ## 7. Testing before or after the body
 
-A `while` loop tests before its first iteration. A `do` loop tests after its first iteration, so its body always runs at least once. That difference matters when the requested count is zero.
+The two loops place their first test differently:
+
+- A `while` loop tests before its first iteration.
+- A `do` loop tests after its first iteration, so its body always runs at least once.
+
+That difference matters when the requested count is zero.
 
 With a positive count, these two functions perform the same number of dimming operations and return the same brightness. With a zero count, `dim_down` skips the body. `dim_do` runs the body anyway: it shifts the brightness, then subtracts from zero.
 

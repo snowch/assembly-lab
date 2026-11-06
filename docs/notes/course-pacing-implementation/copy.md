@@ -88,7 +88,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "objectives": [
       "choose a condition that matches the signed or unsigned order."
     ],
-    "coreConditions": "After `cmp a, b`, `cs` means higher or same, unsigned: C is 1. Its opposite, `cc`, means lower: C is 0. For signed order, `ge` means greater than or equal: N equals V. Its opposite, `lt`, means less than: N differs from V.",
+    "coreConditions": "After `cmp a, b`, choose the condition for the reading you need:\n\n- `cs` means higher or same, unsigned: C is 1.\n- Its opposite, `cc`, means lower, unsigned: C is 0.\n- `ge` means greater than or equal, signed: N equals V.\n- Its opposite, `lt`, means less than, signed: N differs from V.",
     "reminder": "After subtraction, C records whether no unsigned borrow was needed, while V records signed overflow. [Subtraction flags and negation](#/lesson/subtraction-flags-and-negation) explains these separate tests."
   },
   "conditions": {
@@ -101,7 +101,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "reminder": "A condition reads flags using a signed or unsigned rule. [Choosing a signed or unsigned result](#/lesson/compare-and-choose) follows the compare and selection together."
   },
   "addition": {
-    "explanation": "The same result bits have signed and unsigned readings. After addition, C reports whether the unsigned sum is too large. V reports signed **overflow**: the mathematical signed sum is outside the signed range. These are separate tests.",
+    "explanation": "The same result bits have signed and unsigned readings. After addition:\n\n- C reports whether the unsigned sum is too large.\n- V reports signed **overflow**: the mathematical signed sum is outside the signed range.\n\nThese are separate tests.",
     "title": "Addition and its flags",
     "objectives": [
       "calculate result bits and flags for an addition."
@@ -110,7 +110,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
   },
   "subtraction": {
     "drilldownTitle": "How an adder subtracts",
-    "explanation": "N and Z describe the result bits. V reports whether the signed difference is outside the signed range. After `subs`, C is 1 when no unsigned borrow was needed. The counter result gives the forward distance only while fewer than a full turn has passed and the counter advances normally.",
+    "explanation": "After `subs`:\n\n- N and Z describe the result bits.\n- V reports whether the signed difference is outside the signed range.\n- C is 1 when no unsigned borrow was needed.\n\nThe counter result gives the forward distance only while fewer than a full turn has passed and the counter advances normally.",
     "title": "Measuring elapsed ticks",
     "objectives": [
       "use subtraction to measure elapsed ticks across a counter wrap."
@@ -124,7 +124,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "objectives": [
       "choose C types and checks that match what a trip’s returned distance should mean."
     ],
-    "intro": "The trip computer should show how much distance remains and how far you have gone beyond the plan. You planned 3 km and travelled 5 km. Can the returned distance express that you are beyond the plan?\n\nCompare two C functions that subtract the distance travelled from the planned distance. Their parameter and return types differ. You have already calculated this subtraction with four bits.\n\nOn this AArch64 target, `int` and `unsigned int` both use 32 bits. `int` uses the signed reading; `unsigned int` uses the unsigned reading. In C, `unsigned` on its own means `unsigned int`.",
+    "intro": "The trip computer should show how much distance remains and how far you have gone beyond the plan. You planned 3 km and travelled 5 km. Can the returned distance express that you are beyond the plan?\n\nCompare two C functions that subtract the distance travelled from the planned distance. Their parameter and return types differ. You have already calculated this subtraction with four bits.\n\nOn this AArch64 target, both types use 32 bits:\n\n- `int` uses the signed reading.\n- `unsigned int` uses the unsigned reading.\n\nIn C, `unsigned` on its own means `unsigned int`.",
     "caption": "Two independent calls with planned = 3 km and travelled = 5 km. Predict the instructions, then call both functions to compare their returned bits and C values.",
     "question": "Does changing these C types from `int` to `unsigned` change the instructions in the recorded GCC output?",
     "options": [
@@ -137,7 +137,8 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
         "label": "The instructions differ."
       }
     ],
-    "explain": "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.\n\nPress **Call both functions**. Compare the returned bits and the calculation beneath them. It shows how each C return value comes from those bits.",
+    "explain": "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.",
+    "callIntro": "After checking your prediction, press **Call both functions**. Compare the returned bits and the calculation beneath them. It shows how each C return value comes from those bits.",
     "boundsTitle": "C arithmetic has type rules",
     "bounds": "C applies different rules to these two types:\n\n- **A negative `int` result can be valid.** Here `int` ranges from −2147483648 to 2147483647. A mathematical result outside that range is signed **overflow**. A negative value within this range does not overflow.\n- **Unsigned arithmetic wraps into range.** Here the range is 0 to 4294967295. A mathematical result below zero or above that maximum wraps back into range. Subtraction below zero follows this rule too.\n- **Signed arithmetic outside its range has no C guarantee.** For signed addition, subtraction and multiplication, an out-of-range result has **undefined behaviour**: C places no requirements on that case. For example, adding 1 to 2147483647 exceeds this `int` range. C guarantees neither wrapping nor an error.\n\nFor compiler examples and ways to check the bounds, see [C overflow and machine results](#/lesson/c-and-overflow).",
     "contract": "Decide what the function should return when the trip exceeds its plan: a negative distance, zero, or a separate error report. That choice determines the C types and any checks the function needs. Changing the types alone does not add a check.",
@@ -257,7 +258,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
       "extend a value already held in a register before using it at a wider width."
     ],
     "intro": "A wider calculation may need a value extended without reading memory again. Compare the register-only extensions with the casts that request them.",
-    "activity": "Compare the input bits with each extended result. Identify whether the added bits are zeros or copies of the original top bit. Then follow the wider calculation that uses the value."
+    "activity": "1. Compare the input bits with each extended result.\n2. Identify whether the added bits are zeros or copies of the original top bit.\n3. Follow the wider calculation that uses the value."
   },
   "array-addresses": {
     "reminder": "A left shift multiplies by a power of two and discards bits that leave the register, as in [Choosing a shift](#/lesson/shifts).",
@@ -285,7 +286,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
       "compare the low and high halves of signed and unsigned products."
     ],
     "intro": "The same register bits can produce different high halves under signed and unsigned multiplication. The low half alone does not show that difference.",
-    "activity": "Run the two multiplications with the same inputs. Compare their low halves, then their high halves. Use each input’s signed or unsigned reading to explain the difference."
+    "activity": "1. Run the two multiplications with the same inputs.\n2. Compare their low halves, then their high halves.\n3. Use each input’s signed or unsigned reading to explain the difference."
   },
   "division-and-remainders": {
     "title": "Division and remainders",
@@ -300,7 +301,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
       "follow a recorded multiplication-and-shift implementation of unsigned division."
     ],
     "intro": "A constant divisor can let a compiler choose a different instruction sequence. This record shows GCC’s choice for `groups_of_ten`.",
-    "activity": "Step through the multiply and shift. Compare the returned value with unsigned division of the same input by ten. Identify which instructions produce the quotient; keep this compiler choice separate from the rule for division."
+    "activity": "1. Step through the multiply and shift.\n2. Compare the returned value with unsigned division of the same input by ten.\n3. Identify which instructions produce the quotient.\n\nKeep this compiler choice separate from the rule for division."
   },
   "calls-and-returns": {
     "title": "Saving a return address",
@@ -486,7 +487,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
       "capture a deliberate failure and a restored boot, then diagnose from the earliest evidence."
     ],
     "intro": "Keep the first capture from [Capturing the first Pi boot](#/lesson/capture-pi-boot) as your baseline. Change the calculation, rebuild and replace the card’s image, then capture the new boot. Restore the source and repeat the full build and boot sequence. Hardware verification remains pending; expected messages are source-selected expectations, not recorded Pi output.",
-    "checkpoint": "Record your Pi model, EEPROM version, source revision, image checksum, terminal settings and actual serial capture. Use the optional Raspberry Pi OS commands from the preparation page for board and EEPROM details, or record unknown. Copy the commit shown in the course footer as the source revision. Run `sha256sum assembly-lab-pi5.img` in the source directory for the image’s fingerprint. Keep the working, broken and restored runs separate. Repeat the restored image from a fresh power-on.\n\nWhich observation shows that our code ran? Which shows that the arithmetic check rejected the deliberate error? If a stage is still unobserved, record it as unverified. Your hardware test completes the evidence that a build alone cannot provide."
+    "checkpoint": "Keep a test record with:\n\n- Your Pi model and EEPROM version.\n- The source revision and image checksum.\n- The terminal settings and actual serial capture.\n\nUse the optional Raspberry Pi OS commands from the preparation page for board and EEPROM details, or record unknown. Copy the commit shown in the course footer as the source revision. Run `sha256sum assembly-lab-pi5.img` in the source directory for the image’s fingerprint. Keep the working, broken and restored runs separate. Repeat the restored image from a fresh power-on.\n\nWhich observation shows that our code ran? Which shows that the arithmetic check rejected the deliberate error? If a stage is still unobserved, record it as unverified. Your hardware test completes the evidence that a build alone cannot provide."
   },
   "a32Orientation": {
     "title": "A32 registers and returns",
@@ -540,7 +541,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "objectives": [
       "distinguish a recorded helper call from an A64 division instruction."
     ],
-    "task": "Open the recorded average pair, then run the A64 average with distance 95 and trip count 4. Enter the A32 division helper’s name, the A64 division mnemonic and the A64 result. For the helper, give the name after the call instruction.",
+    "task": "Open the recorded average pair, then run the A64 average with distance 95 and trip count 4. Enter:\n\n- The A32 division helper’s name, given after the call instruction.\n- The A64 division mnemonic.\n- The A64 result.",
     "challengeTitle": "Compare the division paths",
     "hints": [
       "Use the average pair for the names and the A64 stepper for the result.",
@@ -610,6 +611,9 @@ UI labels were drafted in a separate drafting agent from the engineer’s checke
 
 // Drafted separately from the interaction implementation from its checked-facts brief.
 export const CALL_COMPARISON_STRINGS = {
+  sourceHeading: "Inspect the functions",
+  predictionHeading: "Predict the instructions",
+  callHeading: "Call and compare",
   startingInputs: (argsText: string) =>
     `Starting arguments for each independent call: ${argsText}.`,
   callBoth: "Call both functions",

@@ -73,6 +73,41 @@ describe("paced compiler, native and target-comparison activities", () => {
       "Restore the subtraction, rebuild, replace the image and boot once more",
     );
   });
+  it("keeps terminal roles and build guidance complete across Markdown page boundaries", () => {
+    const text = (id: string) =>
+      lessons
+        .find((lesson) => lesson.id === id)!
+        .sections.map((section) => section.prose)
+        .join("\n\n");
+    for (const id of ["stepping-native-function", "diagnosing-native-failure"]) {
+      const page = text(id);
+      expect(page).toContain("- Terminal 1 will run QEMU.\n- Terminal 2 will run GDB.");
+      expect(page).toContain("Keep both open while stepping.");
+      expect(page.indexOf("Keep both open while stepping.")).toBeLessThan(
+        page.indexOf("qemu-system-aarch64"),
+      );
+      expect(page).toContain("gdb-multiarch ./boot.elf");
+      expect(page).toContain("target remote 127.0.0.1:1234");
+    }
+    const build = text("from-function-to-executable");
+    expect(build).toContain("- `-T boot.ld` selects the **linker script**");
+    expect(build).toContain("1. Change only the third instruction in `trip_distance.s`.");
+    expect(build).toContain("3. Restore the subtraction and rebuild before the next lesson.");
+    const layout = text("loading-and-startup");
+    expect(layout).toContain("- `.stack` reserves stack space.");
+    expect(layout).toContain("- `.skip` reserves space.");
+    expect(layout).toContain("[Finding and repairing a native error]");
+    expect(layout).not.toContain("Assemble the startup code and the function separately");
+    const startup = text("runtime-startup");
+    expect(startup).toContain("Follow `_start` in `boot.s`.");
+    expect(startup).not.toContain("To reproduce the arithmetic failure");
+    expect(text("diagnosing-native-failure")).toContain(
+      "- `-g` includes information that lets a debugger relate machine code to source names and lines.",
+    );
+    expect(text("diagnosing-native-failure")).toContain(
+      "aarch64-linux-gnu-as -g boot.s -o boot.o\naarch64-linux-gnu-as -g trip_distance.s -o trip_distance.o\naarch64-linux-gnu-ld -T boot.ld boot.o trip_distance.o -o boot.elf",
+    );
+  });
   it("records the separately drafted strings exactly", () => {
     const canonical = readFileSync(
       new NodeURL("../../docs/notes/course-pacing-implementation/copy.md", import.meta.url),

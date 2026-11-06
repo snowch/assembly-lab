@@ -140,6 +140,14 @@ const checkedUnits = splitLesson(checked, [
 
 const nativeInvestigation = s(native, "investigation");
 const nativeExplanation = s(native, "explanation");
+// Page boundaries follow named content, so Markdown lists can add paragraph breaks.
+const nativeLayoutStart = nativeInvestigation.prose.indexOf("Open `boot.ld`.");
+const nativeBuild = nativeInvestigation.prose.slice(0, nativeLayoutStart).trim();
+const nativeLayout = nativeInvestigation.prose.slice(nativeLayoutStart);
+const nativeRebuild = nativeBuild.slice(nativeBuild.indexOf("```sh"));
+const nativeRepairStart = nativeExplanation.prose.indexOf("To reproduce the arithmetic failure");
+const nativeStartup = nativeExplanation.prose.slice(0, nativeRepairStart).trim();
+const nativeRepair = nativeExplanation.prose.slice(nativeRepairStart);
 const nativeSource = {
   ...native,
   challenges: native.challenges?.map((challenge) => ({
@@ -156,20 +164,20 @@ const nativeUnits = splitLesson(nativeSource, [
     s(native, "prediction"),
     {
       ...nativeInvestigation,
-      prose: paras(nativeInvestigation, 0, 3),
+      prose: nativeBuild,
       interactives: nativeInvestigation.interactives?.filter((f) => f.id === "native-model-trip"),
     },
     s(native, "construction"),
     s(native, "failureExperiment"),
-    text("explanation", COPY.nativeBoot.repairTitle, paras(nativeExplanation, -1)),
+    text("explanation", COPY.nativeBoot.repairTitle, nativeRepair),
     s(native, "challenge"),
   ]),
   part("loading-and-startup", COPY.nativeLayout, [
     context(COPY.nativeLayout),
     ungated({
       ...nativeInvestigation,
-      prose: paras(nativeInvestigation, 3).replace(
-        nativeInvestigation.prose.split("\n\n")[7]!,
+      prose: nativeLayout.replace(
+        nativeLayout.split("\n\n").find((paragraph) => paragraph.startsWith("In `boot.s`,"))!,
         COPY.nativeLayout.conditionalAssembly,
       ),
       interactives: nativeInvestigation.interactives?.filter((f) => f.id === "native-elf-memory"),
@@ -184,7 +192,7 @@ const nativeUnits = splitLesson(nativeSource, [
   ]),
   part("runtime-startup", COPY.nativeRuntime, [
     context(COPY.nativeRuntime),
-    ungated({ ...nativeExplanation, prose: paras(nativeExplanation, 0, -1) }),
+    ungated({ ...nativeExplanation, prose: nativeStartup }),
     ungated({ ...s(native, "generalisation"), prose: COPY.nativeRuntime.loading }),
     checkpoint(COPY.nativeRuntime),
   ]),
@@ -196,6 +204,9 @@ const freshConnection = DEBUG_PROSE.connection
   .trim();
 const closeSession = DEBUG_PROSE.construction.slice(
   DEBUG_PROSE.construction.indexOf("To close this session"),
+);
+const debugTerminals = DEBUG_PROSE.motivation.slice(
+  DEBUG_PROSE.motivation.indexOf("Open two Linux terminals"),
 );
 const debugSource = {
   ...debug,
@@ -221,7 +232,7 @@ const debugUnits = splitLesson(debugSource, [
     text(
       "motivation",
       COPY.debugStep.title,
-      [COPY.debugStep.intro, DEBUG_PROSE.motivation.split("\n\n")[1], freshConnection].join("\n\n"),
+      [COPY.debugStep.intro, debugTerminals, freshConnection].join("\n\n"),
     ),
     s(debug, "prediction"),
     s(debug, "investigation"),
@@ -234,8 +245,8 @@ const debugUnits = splitLesson(debugSource, [
       COPY.debugRepair.title,
       [
         COPY.debugRepair.intro,
-        paras(nativeInvestigation, 1, 2),
-        DEBUG_PROSE.motivation.split("\n\n")[1]!,
+        nativeRebuild,
+        debugTerminals,
         freshConnection,
         DEBUG_PROSE.functionInputs,
       ].join("\n\n"),

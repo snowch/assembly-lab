@@ -10,6 +10,29 @@
 
 /* ---- The register to read, with the top bit's table ---- */
 
+/* Source, instruction prediction and independent calls stay in three sibling sections. */
+.al-compare-stages > .al-compare-stage {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-3);
+  margin: 0;
+}
+.al-compare-stages > .al-compare-stage + .al-compare-stage {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+.al-compare-stage > h3 {
+  margin: 0;
+  font-size: var(--text-md);
+}
+.al-compare-stage > .al-compare-inputs,
+.al-compare-stage > .al-compare-summary {
+  margin: 0;
+}
+.al-compare-stage > .al-prediction {
+  gap: var(--space-3);
+}
+
 /* C-type comparisons reveal paired source first, then run two independent calls together. */
 .al-compare-calls,
 .al-compare-call-results {

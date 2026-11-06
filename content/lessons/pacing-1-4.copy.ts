@@ -85,7 +85,7 @@ export const COPY = {
     title: "Choosing a signed or unsigned result",
     objectives: ["choose a condition that matches the signed or unsigned order."],
     coreConditions:
-      "After `cmp a, b`, `cs` means higher or same, unsigned: C is 1. Its opposite, `cc`, means lower: C is 0. For signed order, `ge` means greater than or equal: N equals V. Its opposite, `lt`, means less than: N differs from V.",
+      "After `cmp a, b`, choose the condition for the reading you need:\n\n- `cs` means higher or same, unsigned: C is 1.\n- Its opposite, `cc`, means lower, unsigned: C is 0.\n- `ge` means greater than or equal, signed: N equals V.\n- Its opposite, `lt`, means less than, signed: N differs from V.",
   },
   conditions: {
     reminder:
@@ -100,14 +100,14 @@ export const COPY = {
     reminder:
       "The same bits can represent different signed and unsigned numbers. [Signed and unsigned readings](#/lesson/same-bits-two-readings) shows how to calculate each reading.",
     explanation:
-      "The same result bits have signed and unsigned readings. After addition, C reports whether the unsigned sum is too large. V reports signed **overflow**: the mathematical signed sum is outside the signed range. These are separate tests.",
+      "The same result bits have signed and unsigned readings. After addition:\n\n- C reports whether the unsigned sum is too large.\n- V reports signed **overflow**: the mathematical signed sum is outside the signed range.\n\nThese are separate tests.",
     title: "Addition and its flags",
     objectives: ["calculate result bits and flags for an addition."],
   },
   subtraction: {
     drilldownTitle: "How an adder subtracts",
     explanation:
-      "N and Z describe the result bits. V reports whether the signed difference is outside the signed range. After `subs`, C is 1 when no unsigned borrow was needed. The counter result gives the forward distance only while fewer than a full turn has passed and the counter advances normally.",
+      "After `subs`:\n\n- N and Z describe the result bits.\n- V reports whether the signed difference is outside the signed range.\n- C is 1 when no unsigned borrow was needed.\n\nThe counter result gives the forward distance only while fewer than a full turn has passed and the counter advances normally.",
     title: "Measuring elapsed ticks",
     objectives: ["use subtraction to measure elapsed ticks across a counter wrap."],
     reflection:
@@ -122,7 +122,7 @@ export const COPY = {
       "choose C types and checks that match what a trip’s returned distance should mean.",
     ],
     intro:
-      "The trip computer should show how much distance remains and how far you have gone beyond the plan. You planned 3 km and travelled 5 km. Can the returned distance express that you are beyond the plan?\n\nCompare two C functions that subtract the distance travelled from the planned distance. Their parameter and return types differ. You have already calculated this subtraction with four bits.\n\nOn this AArch64 target, `int` and `unsigned int` both use 32 bits. `int` uses the signed reading; `unsigned int` uses the unsigned reading. In C, `unsigned` on its own means `unsigned int`.",
+      "The trip computer should show how much distance remains and how far you have gone beyond the plan. You planned 3 km and travelled 5 km. Can the returned distance express that you are beyond the plan?\n\nCompare two C functions that subtract the distance travelled from the planned distance. Their parameter and return types differ. You have already calculated this subtraction with four bits.\n\nOn this AArch64 target, both types use 32 bits:\n\n- `int` uses the signed reading.\n- `unsigned int` uses the unsigned reading.\n\nIn C, `unsigned` on its own means `unsigned int`.",
     caption:
       "Two independent calls with planned = 3 km and travelled = 5 km. Predict the instructions, then call both functions to compare their returned bits and C values.",
     question:
@@ -132,7 +132,9 @@ export const COPY = {
       { value: "different", label: "The instructions differ." },
     ],
     explain:
-      "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.\n\nPress **Call both functions**. Compare the returned bits and the calculation beneath them. It shows how each C return value comes from those bits.",
+      "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.",
+    callIntro:
+      "After checking your prediction, press **Call both functions**. Compare the returned bits and the calculation beneath them. It shows how each C return value comes from those bits.",
     boundsTitle: "C arithmetic has type rules",
     bounds:
       "C applies different rules to these two types:\n\n- **A negative `int` result can be valid.** Here `int` ranges from −2147483648 to 2147483647. A mathematical result outside that range is signed **overflow**. A negative value within this range does not overflow.\n- **Unsigned arithmetic wraps into range.** Here the range is 0 to 4294967295. A mathematical result below zero or above that maximum wraps back into range. Subtraction below zero follows this rule too.\n- **Signed arithmetic outside its range has no C guarantee.** For signed addition, subtraction and multiplication, an out-of-range result has **undefined behaviour**: C places no requirements on that case. For example, adding 1 to 2147483647 exceeds this `int` range. C guarantees neither wrapping nor an error.\n\nFor compiler examples and ways to check the bounds, see [C overflow and machine results](#/lesson/c-and-overflow).",

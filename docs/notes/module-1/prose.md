@@ -165,7 +165,12 @@ Unsigned 2147483649: the top bit, 2147483648, plus 1. Signed −2147483647: minu
 
 The trip computer's service interval is 30000 kilometres. The odometer's limit is 1000000.
 
-For `return 30000;`, GCC loads the result with one instruction: `mov w0, 30000`. For `return 1000000;`, it needs two instructions to load the result. In both cases, `ret` then returns to the code that called the function.
+GCC loads the two results differently:
+
+- For `return 30000;`, it uses one instruction: `mov w0, 30000`.
+- For `return 1000000;`, it needs two instructions.
+
+In both cases, `ret` then returns to the code that called the function.
 
 The C listing uses `int service_interval(void)`. The `void` inside the brackets means the function takes no arguments.
 
@@ -238,7 +243,10 @@ The full rule is longer than this course needs. The figure checks any number.
 
 With a `w` name, `movk` replaces one 16-bit half of the 32 bits and keeps the other half. `mov` replaces all 32 bits.
 
-`lsl 16` after the number tells `movk` to put it in the upper half, bits 16 to 31. Without `lsl 16`, `movk` puts it in the lower half.
+For `movk` with a `w` name:
+
+- `lsl 16` after the number puts it in the upper half, bits 16 to 31.
+- Without `lsl 16`, the number goes in the lower half.
 
 For example, `mov w0, 3` gives `0x0000 0003`. Then `movk w0, 2, lsl 16` gives `0x0002 0003`, which is 131075. The upper half is new, and the lower half is kept. The figure draws each step.
 
@@ -272,7 +280,12 @@ Step through your solution below to see the two halves of `w0` after each instru
 
 The `w` names in the earlier arithmetic examples selected 32 bits. Each register holds 64 bits, and it has two names.
 
-The `x` name, `x3`, names all 64 bits. The `w` name, `w3`, names the lower 32 bits of the same register. They are not two registers.
+For the same register:
+
+- The `x` name, `x3`, names all 64 bits.
+- The `w` name, `w3`, names the lower 32 bits.
+
+They are not two registers.
 
 The figure runs `mov x3, -1`, which sets all 64 bits, then `mov w3, -1`.
 

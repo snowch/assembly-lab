@@ -5,7 +5,7 @@ export const PROSE = {
   question:
     "The trip computer keeps a distance reading in memory. To use that reading in a calculation, the processor must copy it into a register. **How does an instruction find the right bytes?**\n\n" +
     "Memory holds **bytes**. On this machine, a byte contains 8 bits. Each byte has a numbered location called its **address**. Consecutive addresses identify consecutive bytes.\n\n" +
-    "In the C below, `unsigned *distance` declares a **pointer**: `distance` holds the address of an unsigned value. `*distance` reads the value at that address. `const` says this function cannot change the value through this pointer.",
+    "In the C below:\n\n- `unsigned *distance` declares a **pointer**: `distance` holds the address of an unsigned value.\n- `*distance` reads the value at that address.\n- `const` says this function cannot change the value through this pointer.",
   questionNoteSummary: "The compiler and C sizes",
   questionNote:
     "These listings use GCC 16.1 with `-O1`, as in Module 0. They target AArch64 Linux: the 64-bit Arm instruction set running with the Linux operating system. The target uses little-endian byte order. Here, `char` occupies 8 bits, `short` 16, `int` 32, and `long` and pointers 64. These are this target's choices, not sizes guaranteed by C on every machine.\n\n" +
@@ -21,7 +21,7 @@ export const PROSE = {
     "`w0` becomes `0x12345678`. The byte `78` supplies the lowest 8 bits, followed by `56`, `34` and `12`. The load reads memory without changing those bytes.\n\n" +
     "Writing `w0` replaces the low half of `x0` and clears its upper half. After the load, register 0 holds the distance reading. It no longer holds the pointer.\n\nStep through the load. The figure marks the bytes it reads and shows where their bits go in the register. The address identifies the first byte; the destination `w0` makes this `ldr` read four bytes.",
   investigation:
-    "A **load** copies bits from memory into a register. A **store** copies bits from a register into memory. `str w1, [x0]` writes the four bytes from `w1`, starting at the address in `x0`. It leaves the source register unchanged.\n\n" +
+    "The transfer direction distinguishes these instructions:\n\n- A **load** copies bits from memory into a register.\n- A **store** copies bits from a register into memory.\n\n`str w1, [x0]` writes the four bytes from `w1`, starting at the address in `x0`. It leaves the source register unchanged.\n\n" +
     "In `save_distance`, `distance` arrives in `x0` and `value` in `w1`. The C assignment `*distance = value` changes the value at the pointer's address. `void` means this function returns no value.",
   construction:
     "Store a new distance reading without changing the bytes that follow it. The address tells you where to start; the instruction's width tells you where to stop.",
@@ -43,12 +43,12 @@ export const PROSE = {
     "Memory contains `78 56 34 12`. `str w1, [x0]` writes all four bytes of `w1`, so it overwrites the three neighbouring bytes as well.\n\n" +
     "`strb w1, [x0]` writes only the low byte, leaving `78 bb cc dd`. `strh w1, [x0]` writes the low two bytes, leaving `78 56 cc dd`. The letters `b` and `h` select a byte and a halfword. A halfword here contains two bytes.",
   explanation:
-    "A narrow store takes only the low bits it needs. `strb` takes 8 bits and `strh` takes 16 bits. Neither instruction changes `w1`, and neither writes beyond its selected bytes.\n\n" +
+    "A narrow store takes only the low bits it needs:\n\n- `strb` takes 8 bits.\n- `strh` takes 16 bits.\n\nNeither instruction changes `w1`, and neither writes beyond its selected bytes.\n\n" +
     "For GCC's target, `unsigned char` occupies one byte and `unsigned short` occupies two. The recorded C functions store those types with `strb` and `strh`.\n\n" +
-    "The address register and the transferred value can have different widths. `strb w1, [x0]` uses a 64-bit address but writes one byte. `str w1, [x0]` uses a 64-bit address and writes four bytes.\n\n" +
+    "The address register and the transferred value can have different widths:\n\n- `strb w1, [x0]` uses a 64-bit address but writes one byte.\n- `str w1, [x0]` uses a 64-bit address and writes four bytes.\n\n" +
     "Using an `x` register for the value makes ordinary `ldr` or `str` transfer eight bytes. The next figures load and store an eight-byte value. Follow which memory address supplies each part of the register.",
   generalisation:
-    "Read a memory instruction in three parts: which register holds the value, which register holds the address, and how many bytes the instruction transfers.\n\n" +
+    "Read a memory instruction in three parts:\n\n- Which register holds the value?\n- Which register holds the address?\n- How many bytes does the instruction transfer?\n\n" +
     "The load and store instructions shown here leave their address register unchanged unless it is also the load's destination. In `ldr w0, [x0]`, the destination overlaps the address register. Keep the address elsewhere if you will need it again.",
   finalTask:
     "Copy a four-byte distance reading to a second location.\n\n- `x0` holds the source address.\n- `x1` holds the destination address, immediately after the source's four bytes.\n\n" +

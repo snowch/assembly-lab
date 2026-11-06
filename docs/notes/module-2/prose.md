@@ -18,7 +18,12 @@ In Module 1, the same 32 bits could represent different signed and unsigned numb
 
 Every addition in this lesson uses a `w` name, so it keeps 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.
 
-`add` writes the result and leaves the flags unchanged. `adds` writes the same result and also records four facts about the addition. Each fact is stored in a **flag**: a single bit that is either 0 or 1. The four flags are named N, Z, C and V.
+The two instructions write the same result bits:
+
+- `add` writes the result and leaves the flags unchanged.
+- `adds` writes the result and also records four facts about the addition.
+
+Each fact is stored in a **flag**: a single bit that is either 0 or 1. The four flags are named N, Z, C and V.
 
 Neither instruction stops the program or reports an error when the sum does not fit. To detect this, the program must read a flag.
 
@@ -112,7 +117,12 @@ The figure runs `sum_flags` with:
 - `w1` = 1.
 - `w2` = `0xffffffff`.
 
-It runs `adds w3, w2, w2` first, which adds `0xffffffff` to itself. Then it runs `add w0, w0, w1`, which adds `0x7fffffff` and 1. After each step, the figure marks the registers that were written and the flags whose values changed.
+It runs these instructions in order:
+
+1. `adds w3, w2, w2` adds `0xffffffff` to itself.
+2. `add w0, w0, w1` adds `0x7fffffff` and 1.
+
+After each step, the figure marks the registers that were written and the flags whose values changed.
 
 **After `add`, what do the flags show?**
 
@@ -192,7 +202,10 @@ Each count is a **tick**. Going back to 0 is a **wrap**.
 
 One full turn of the counter, 4294967296 ticks, is about 49.71 days.
 
-Throughout this lesson, assume the counter advances one tick per millisecond without being reset. Fewer than 4294967296 ticks pass between the two readings.
+Throughout this lesson, assume:
+
+- The counter advances one tick per millisecond without being reset.
+- Fewer than 4294967296 ticks pass between the two readings.
 
 How can you work out the elapsed time if the counter wraps between the two readings?
 
@@ -218,7 +231,10 @@ The answer is 2000. Counting forward from 4294966296, 1000 ticks reach the wrap 
 
 `subs` does the same subtraction as `sub` and also replaces all four flags, N, Z, C and V. `sub` leaves the flags unchanged.
 
-The subtraction `a - b` needs a **borrow** when `a` is less than `b` under the unsigned reading. After `adds`, C = 1 means a carry left the top bit. After `subs`, C = 1 means no borrow was needed, and C = 0 means one was.
+The subtraction `a - b` needs a **borrow** when `a` is less than `b` under the unsigned reading. The meaning of C depends on the instruction:
+
+- After `adds`, C = 1 means a carry left the top bit.
+- After `subs`, C = 1 means no borrow was needed, and C = 0 means one was.
 
 After 4294967295 comes 0, so the counter's values form a ring. The figure draws them that way. The counter counts forward, clockwise.
 
@@ -234,7 +250,10 @@ The figures below use this calculation to explain the result and flags of 32-bit
 
 A carry leaves the top exactly when `a` is at least `b`, so C = 1 also means no borrow was needed.
 
-The two figures below show the final states of two subtractions, each of which can be stepped column by column. One needs a borrow: 1000 minus 4294966296 leaves C 0. The other does not: 9000 minus 2500 leaves C 1 and the result 6500.
+The two figures below show the final states of two subtractions. Each can be stepped column by column:
+
+- 1000 minus 4294966296 needs a borrow and leaves C 0.
+- 9000 minus 2500 needs no borrow and leaves C 1 and the result 6500.
 
 ## 5. Writing elapsed yourself
 

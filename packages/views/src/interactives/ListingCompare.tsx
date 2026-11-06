@@ -10,7 +10,7 @@ import { useCallback, useMemo } from "react";
 import { z } from "zod";
 
 import { assemble, type Instruction } from "@al/machine";
-import { useSlot } from "@platform/lesson-runtime";
+import { Prose, useSlot } from "@platform/lesson-runtime";
 
 import { assemblyOf, cLinesOf, parseListing, programLines } from "../listing";
 import { ListingView } from "../parts";
@@ -33,6 +33,8 @@ const Props = z.object({
   /** Call both listings independently after the prediction, then read their returned w0 bits. */
   callComparison: z
     .object({
+      /** Markdown introducing the independent calls, visible before the prediction is checked. */
+      intro: z.string().default(""),
       args: z.array(z.number().int()).max(8),
       leftType: z.enum(["signed", "unsigned"]),
       rightType: z.enum(["signed", "unsigned"]),
@@ -315,125 +317,151 @@ export const ListingCompare = withProps(
         };
       });
     }, [committed, called, data.callComparison, data.left, data.right]);
-    return (
-      <div
-        className="al-figure al-compare"
-        data-figure="listing-compare"
-        data-call-state={
-          data.callComparison
-            ? !committed
-              ? "unpredicted"
-              : called
-                ? "returned"
-                : "ready"
-            : undefined
-        }
-      >
-        <div className={data.callComparison && committed ? "al-pair-sides" : "al-compare-c"}>
-          {data.callComparison && committed ? (
-            [data.left, data.right].map((recorded, i) => (
-              <div key={i}>
-                <p>
-                  <code>{names[i]}</code>
-                </p>
-                <ListingView cLines={cLinesOf(recorded.c)} lines={programLines(recorded)} />
-              </div>
-            ))
-          ) : (
-            <>
-              <CPane recorded={data.left} />
-              <CPane recorded={data.right} />
-            </>
-          )}
+    const prediction = (
+      <PredictionBox
+        id={interactive.id}
+        store={store}
+        question={data.question}
+        options={data.options}
+        explain={data.explain}
+        measure={measure}
+        kind="listing-compare-prediction"
+      />
+    );
+    if (data.callComparison) {
+      const comparison = data.callComparison;
+      return (
+        <div
+          className="al-figure al-compare al-compare-stages"
+          data-figure="listing-compare"
+          data-call-state={!committed ? "unpredicted" : called ? "returned" : "ready"}
+        >
+          <section
+            className="al-compare-stage"
+            role="group"
+            data-comparison-stage="source"
+            aria-labelledby={`${interactive.id}-source-heading`}
+          >
+            <h3 id={`${interactive.id}-source-heading`}>{C.sourceHeading}</h3>
+            <div className={committed ? "al-pair-sides" : "al-compare-c"}>
+              {committed ? (
+                [data.left, data.right].map((recorded, i) => (
+                  <div key={i}>
+                    <p>
+                      <code>{names[i]}</code>
+                    </p>
+                    <ListingView cLines={cLinesOf(recorded.c)} lines={programLines(recorded)} />
+                  </div>
+                ))
+              ) : (
+                <>
+                  <CPane recorded={data.left} />
+                  <CPane recorded={data.right} />
+                </>
+              )}
+            </div>
+            <p className="al-compare-inputs">{C.startingInputs(comparison.args.join(", "))}</p>
+          </section>
+          <section
+            className="al-compare-stage"
+            role="group"
+            data-comparison-stage="prediction"
+            aria-labelledby={`${interactive.id}-prediction-heading`}
+          >
+            <h3 id={`${interactive.id}-prediction-heading`}>{C.predictionHeading}</h3>
+            {prediction}
+            {committed && (
+              <p role="status" className="al-compare-summary">
+                {rows.every((r) => r.same) ? S.compare.allSame(rows.length) : S.compare.notAllSame}
+              </p>
+            )}
+          </section>
+          <section
+            className="al-compare-stage al-compare-calls"
+            role="group"
+            data-comparison-stage="calls"
+            aria-labelledby={`${interactive.id}-call-heading`}
+          >
+            <h3 id={`${interactive.id}-call-heading`}>{C.callHeading}</h3>
+            <Prose markdown={comparison.intro} />
+            <div className="al-compare-call-controls">
+              <button
+                type="button"
+                className="button primary"
+                disabled={!committed || called === true}
+                onClick={() => {
+                  if (!committed || called) return;
+                  setCalled(true);
+                }}
+              >
+                {C.callBoth}
+              </button>
+              {committed && called && (
+                <button
+                  type="button"
+                  className="button secondary"
+                  onClick={() => setCalled(undefined)}
+                >
+                  {C.resetCalls}
+                </button>
+              )}
+            </div>
+            {calls && (
+              <CallResults
+                calls={calls}
+                workedReadings={comparison.workedReadings}
+                tripContext={comparison.tripContext}
+                tripDifference={
+                  comparison.args.length === 2 &&
+                  comparison.args.every((arg) => arg >= 0 && arg < 2 ** 31)
+                    ? comparison.args[0]! - comparison.args[1]!
+                    : null
+                }
+              />
+            )}
+          </section>
         </div>
-        {data.callComparison && (
-          <p className="al-compare-inputs">
-            {C.startingInputs(data.callComparison.args.join(", "))}
-          </p>
-        )}
-        <PredictionBox
-          id={interactive.id}
-          store={store}
-          question={data.question}
-          options={data.options}
-          explain={data.explain}
-          measure={measure}
-          kind="listing-compare-prediction"
-        />
+      );
+    }
+    return (
+      <div className="al-figure al-compare" data-figure="listing-compare">
+        <div className="al-compare-c">
+          <CPane recorded={data.left} />
+          <CPane recorded={data.right} />
+        </div>
+        {prediction}
         {committed && (
           <div className="al-compare-result">
-            {!data.callComparison && (
-              <ol className="al-compare-rows" aria-label={S.compare.table}>
-                {rows.map((r, i) => (
-                  <li key={i} className="al-compare-row" data-same={r.same}>
-                    <span className="al-cmp-n">{i + 1}</span>
-                    <span className="al-cmp-side" data-side="left">
-                      <span className="al-cmp-name">{names[0]}</span>
-                      <code>{r.left}</code>
-                    </span>
-                    <span className="al-cmp-side" data-side="right">
-                      <span className="al-cmp-name">{names[1]}</span>
-                      <code>{r.right}</code>
-                    </span>
-                    <span className="al-cmp-mark">
-                      {r.same ? S.compare.same : S.compare.differs}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            )}
+            <ol className="al-compare-rows" aria-label={S.compare.table}>
+              {rows.map((r, i) => (
+                <li key={i} className="al-compare-row" data-same={r.same}>
+                  <span className="al-cmp-n">{i + 1}</span>
+                  <span className="al-cmp-side" data-side="left">
+                    <span className="al-cmp-name">{names[0]}</span>
+                    <code>{r.left}</code>
+                  </span>
+                  <span className="al-cmp-side" data-side="right">
+                    <span className="al-cmp-name">{names[1]}</span>
+                    <code>{r.right}</code>
+                  </span>
+                  <span className="al-cmp-mark">{r.same ? S.compare.same : S.compare.differs}</span>
+                </li>
+              ))}
+            </ol>
             <p role="status" className="al-compare-summary">
               {rows.every((r) => r.same) ? S.compare.allSame(rows.length) : S.compare.notAllSame}
             </p>
-            {!data.callComparison && (
-              <details className="al-source-connections">
-                <summary>{S.listing.sourceConnections}</summary>
-                <div className="al-pair-sides">
-                  {[data.left, data.right].map((recorded, i) => (
-                    <div key={i}>
-                      <p>{names[i]}</p>
-                      <ListingView cLines={cLinesOf(recorded.c)} lines={programLines(recorded)} />
-                    </div>
-                  ))}
-                </div>
-              </details>
-            )}
-            {data.callComparison && (
-              <div className="al-compare-calls">
-                <div className="al-compare-call-controls">
-                  <button
-                    type="button"
-                    className="button primary"
-                    disabled={called === true}
-                    onClick={() => setCalled(true)}
-                  >
-                    {C.callBoth}
-                  </button>
-                  {called && (
-                    <button
-                      type="button"
-                      className="button secondary"
-                      onClick={() => setCalled(undefined)}
-                    >
-                      {C.resetCalls}
-                    </button>
-                  )}
-                </div>
-                {calls && (
-                  <CallResults
-                    calls={calls}
-                    workedReadings={data.callComparison.workedReadings}
-                    tripContext={data.callComparison.tripContext}
-                    tripDifference={
-                      data.callComparison.args.length === 2 &&
-                      data.callComparison.args.every((arg) => arg >= 0 && arg < 2 ** 31)
-                        ? data.callComparison.args[0]! - data.callComparison.args[1]!
-                        : null
-                    }
-                  />
-                )}
+            <details className="al-source-connections">
+              <summary>{S.listing.sourceConnections}</summary>
+              <div className="al-pair-sides">
+                {[data.left, data.right].map((recorded, i) => (
+                  <div key={i}>
+                    <p>{names[i]}</p>
+                    <ListingView cLines={cLinesOf(recorded.c)} lines={programLines(recorded)} />
+                  </div>
+                ))}
               </div>
-            )}
+            </details>
           </div>
         )}
       </div>

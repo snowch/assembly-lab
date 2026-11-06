@@ -10,7 +10,7 @@ export const PROSE = {
   questionNote: "GCC 16.1 with `-O1`, as in Module 0.",
   motivation:
     "A **loop** repeats part of a program while a condition holds. The repeated part is its **body**. Each execution of that body is one **iteration**. Here, the body halves `brightness`.\n\n" +
-    "The `for` first sets `tick` to `start`. It tests `tick < end` before running the body. After the body, `tick++` adds 1 to `tick`. It repeats the test before each later iteration. If the first test is false, the body never runs.\n\n" +
+    "The `for` loop follows this sequence:\n\n1. Set `tick` to `start`.\n2. Test `tick < end`. If the test is false, leave the loop.\n3. Run the body.\n4. Add 1 to `tick` with `tick++`, then return to the test.\n\nIf the first test is false, the body never runs.\n\n" +
     "These endpoints use ordinary unsigned ordering. They do not describe elapsed time across a counter wrap: if `start` is at or above `end`, there is no dimming to do.",
   prediction:
     "The stepper runs `dim_up(128, 2, 5)` on GCC's listing. Count only the instructions that execute, including `ret`.\n\nThese counts measure executed instructions, not elapsed time. A **trace** records the instructions that ran. The simulator limits its length; reaching that limit does not establish whether the function would eventually return.",
@@ -19,7 +19,7 @@ export const PROSE = {
     "The run executes 15 instructions. The first `cmp` and `bcs` run once. Then the four instructions under `.L3` run three times, as `tick` advances from 2 to 5. Finally, `ret` runs.\n\n" +
     "The brightness changes from 128 to 64, then 32, then 16. Each `lsr` writes the next brightness back to `w0`.",
   investigation:
-    "`brightness` arrives in `w0`, `start` in `w1` and `end` in `w2`. `w1` then holds the changing value of `tick`.\n\n" +
+    "The inputs arrive in these registers:\n\n- `brightness` in `w0`.\n- `start` in `w1`.\n- `end` in `w2`.\n\n`w1` then holds the changing value of `tick`.\n\n" +
     "The first `cmp` compares `start` with `end`. `bcs .L2` goes straight to `ret` when `start` is at or above `end`, using the unsigned condition `cs`. This first test prevents an unwanted iteration.\n\n" +
     "When `start` is below `end`, execution reaches `.L3`. `lsr` halves the brightness in `w0`. `add` advances the tick in `w1`. `cmp` then tests whether the tick has reached `end`.\n\n" +
     "`bne .L3` goes backwards to the same `lsr` when the tick and `end` are unequal. That branch runs the body again. When they are equal, the branch is not taken and `ret` follows.\n\n" +
@@ -50,7 +50,7 @@ export const PROSE = {
     "The order of the operands in the final `cmp` does not change whether they are equal. It would matter for a condition that asks which value is larger.",
   generalisation:
     "A branch can go to an earlier instruction just as it can go to a later one. Returning to an earlier instruction lets a small listing do repeated work.\n\n" +
-    "To understand a loop, first check whether it tests before the first iteration. Find the instructions that do the work and the change that lets the loop stop. Then follow the branch that decides whether to repeat.",
+    "To follow a loop:\n\n1. Check whether it tests before the first iteration.\n2. Find the instructions that do the work.\n3. Find the change that lets the loop stop.\n4. Follow the branch that decides whether to repeat.",
   finalTask:
     "For GCC's original `dim_up` listing, give the returned brightness and the number of instructions that run for each separate call:\n\n- `dim_up(128, 7, 7)`\n- `dim_up(128, 7, 8)`\n- `dim_up(128, 7, 9)`\n\nEnter decimal numbers.\n\n" +
     "Count every executed instruction, including `ret`. Do not count labels.",

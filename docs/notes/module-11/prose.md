@@ -263,7 +263,11 @@ Write `fuel_fits`. An unsigned fuel value arrives in `w0`. Return 1 if it is in 
 
 ## 6. Using carry to report signed overflow
 
-This course-written assembly attempts to report signed addition overflow. It adds a signed distance and adjustment, stores the low 32 result bits, then uses the carry flag for its report. Its inputs are `INT_MAX` and 1. The result pointer in `x2` identifies a valid four-byte output slot.
+This course-written assembly attempts to report signed addition overflow. It adds a signed distance and adjustment, stores the low 32 result bits, then uses the carry flag for its report. It starts with:
+
+- Signed distance `INT_MAX` in `w0`.
+- Signed adjustment 1 in `w1`.
+- A result pointer in `x2` that identifies a valid four-byte output slot.
 
 **What overflow flag does this function return in `w0`?**
 
@@ -285,7 +289,12 @@ _Bool checked_trip(int distance, int adjustment, int *result)
 }
 ```
 
-The return value is a boolean: true, represented by 1, means the sum does not fit; false, represented by 0, means it fits exactly. The `_Bool` type in the recorded function holds such a value. The operation writes a destination-width result even when it reports overflow, so do not use that stored value as a valid mathematical sum without checking the report.
+The return value is a boolean:
+
+- True, represented by 1, means the sum does not fit.
+- False, represented by 0, means it fits exactly.
+
+The `_Bool` type in the recorded function holds such a value. The operation writes a destination-width result even when it reports overflow, so do not use that stored value as a valid mathematical sum without checking the report.
 
 For the signed 32-bit destination here, GCC can use `adds` to obtain both the low result bits and the overflow flag. A store can save those bits without changing the flags. A following `cset` can then turn the signed-overflow condition into the boolean return value. No external library call is needed in this recorded example.
 
@@ -328,7 +337,12 @@ Leave the four bytes following the result slot unchanged. Store the sum before r
 
 *Closed note: Formatting and run-time checks*
 
-The C function `printf` prints formatted text. Its first argument is a format string: text containing codes that describe how to print the following arguments. The code `%d` expects an `int`, and `%u` expects an `unsigned int`. They are not switches for interpreting an arbitrary argument's bits. Use a deliberate conversion when the argument type needs to change. For example, `printf("%u", (unsigned)gradient)` passes an unsigned value; a negative gradient is converted by the unsigned conversion rule.
+The C function `printf` prints formatted text. Its first argument is a format string: text containing codes that describe how to print the following arguments.
+
+- `%d` expects an `int`.
+- `%u` expects an `unsigned int`.
+
+They are not switches for interpreting an arbitrary argument's bits. Use a deliberate conversion when the argument type needs to change. For example, `printf("%u", (unsigned)gradient)` passes an unsigned value; a negative gradient is converted by the unsigned conversion rule.
 
 A narrow integer is promoted when passed to `printf`. A signed-byte value of −2 becomes `int` −2, so `%u` without a cast is not a defined way to print its byte pattern as 254. To request that byte value, convert first to `unsigned char`, then to `unsigned` for `%u`.
 

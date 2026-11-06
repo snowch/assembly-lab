@@ -42,7 +42,10 @@ Assembly Lab’s offline save includes this page and starter. Prepare the playgr
 
 The playground starts this program at `main`, with a prepared stack and a return destination. Our supplied caller saves that return address before calling `trip_distance`, then restores it before returning, as in Module 9.
 
-The lines beginning with a dot are **directives** for the tool preparing the program. They do not execute on the processor. `.text` begins a group of instructions. `.global main` exposes the function name `main`, which the playground uses to find where to start.
+The lines beginning with a dot are **directives** for the tool preparing the program. They do not execute on the processor.
+
+- `.text` begins a group of instructions.
+- `.global main` exposes the function name `main`, which the playground uses to find where to start.
 
 ## playground.caption
 
@@ -76,11 +79,20 @@ After trip_distance returns, main's ldp runs next. Find X0 in the register list,
 
 The caller supplies the same trip inputs as the course example. The playground labels the full register `X0`; `w0` selects its lower 32 bits. The returned result here fits in those bits.
 
-When `main` returns, its value becomes the program’s **exit status**, the number reported when the program finishes. Open the console tab: this starter deliberately returns the trip result, so `exit 232` is expected. It does not print the answer. Keep the saved return address and stack setup while experimenting.
+When `main` returns, its value becomes the program’s **exit status**, the number reported when the program finishes.
+
+Open the console tab: this starter deliberately returns the trip result, so `exit 232` is expected. It does not print the answer. Keep the saved return address and stack setup while experimenting.
 
 ## limits.prose
 
-The playground runs its own emulator. Library calls such as `printf` are emulated, and the terminal's `gcc` command assembles assembly; it does not compile C. It runs user programs. Use the native paths below for board startup and code that talks directly to hardware devices. Instruction counts also do not measure real processor speed. Use [Arm’s instruction reference](https://support.arm.com/documentation/ddi0602/2026-09/Base-Instructions/ADD--shifted-register---Add-optionally-shifted-register-) and the GNU/QEMU tools in Module 12 to investigate unexpected instruction results. See the project's [documented limits](https://github.com/Abdalla-Eldoumani/aarch64-playground#what-it-does-not-do).
+The playground runs its own emulator:
+
+- Library calls such as `printf` are emulated.
+- The terminal's `gcc` command assembles assembly; it does not compile C.
+- It runs user programs. Use the native paths below for board startup and code that talks directly to hardware devices.
+- Instruction counts do not measure real processor speed.
+
+Use [Arm’s instruction reference](https://support.arm.com/documentation/ddi0602/2026-09/Base-Instructions/ADD--shifted-register---Add-optionally-shifted-register-) and the GNU/QEMU tools in Module 12 to investigate unexpected instruction results. See the project's [documented limits](https://github.com/Abdalla-Eldoumani/aarch64-playground#what-it-does-not-do).
 
 ## extend.title
 
@@ -88,9 +100,18 @@ Build and check your own program
 
 ## extend.prose
 
-The starter sets its trip inputs with `mov`. A check can supply text input and command-line arguments, values provided when a program starts. The starter reads neither, so those fields do not change its trip. First change the values loaded by `main`, predict the result, then assemble and step again.
+The starter sets its trip inputs with `mov`. A check can supply text input and command-line arguments, values provided when a program starts. The starter reads neither, so those fields do not change its trip.
 
-To check the unchanged starter, open checks; on a phone, choose more, then checks. Press add check, leave arguments, input and expected output empty, set exit code (optional) to 232, then press run checks. The starter prints no output and returns that exit status.
+First change the values loaded by `main`, predict the result, then assemble and step again.
+
+To check the unchanged starter:
+
+1. Open checks; on a phone, choose more, then checks.
+2. Press add check.
+3. Leave arguments, input and expected output empty. Set exit code (optional) to 232.
+4. Press run checks.
+
+The starter prints no output and returns that exit status.
 
 For a program that reads input, make it read a trip and print its result. Use the playground’s [reference](https://aarch64-playground.com/reference) to learn the library-call conventions. Once your code reads input, write checks for several inputs and their expected printed outputs in the checks tab. If you add printing while keeping its inputs fixed, begin with one check of the printed output.
 

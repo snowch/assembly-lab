@@ -11,7 +11,7 @@
 export const PROSE = {
   question:
     "C writes a shift right as `>>` and a shift left as `<<`. `g >> 1` shifts the bits of `g` one place right.\n\n" +
-    "GCC 16.1 at `-O1` turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns the same expression into `lsr w0, w0, 1`. Both types use the same register width here. Their signed and unsigned readings lead GCC to choose different right shifts.\n\n" +
+    "GCC 16.1 at `-O1` chooses a right shift for `g >> 1` according to the C type:\n\n- With `int`, it uses `asr w0, w0, 1`.\n- With `unsigned`, it uses `lsr w0, w0, 1`.\n\nBoth types use the same register width here. Their signed and unsigned readings lead GCC to choose different right shifts.\n\n" +
     "What does each instruction do differently?",
   questionNote: {
     summary: "What C says",

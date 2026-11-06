@@ -2,6 +2,9 @@
 
 // Drafted separately from the interaction implementation from its checked-facts brief.
 export const CALL_COMPARISON_STRINGS = {
+  sourceHeading: "Inspect the functions",
+  predictionHeading: "Predict the instructions",
+  callHeading: "Call and compare",
   startingInputs: (argsText: string) =>
     `Starting arguments for each independent call: ${argsText}.`,
   callBoth: "Call both functions",

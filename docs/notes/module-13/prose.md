@@ -346,13 +346,25 @@ make card-files
 
 `make` runs the GNU assembler, linker and `objcopy`. The last tool converts `boot.elf` into the raw bytes in `assembly-lab-pi5.img`. No C compiler is used. `make card-files` stages the two boot files and writes `SHA256SUMS`, a record of their SHA-256 checksums. Each checksum is a fingerprint of the file's bytes. Neither command writes to a card. Stop if a build command fails.
 
-Compare [boot.ld](native/pi5/boot.ld) with [config.txt](native/pi5/config.txt). Both select `0x200000` as the image's address. `kernel=assembly-lab-pi5.img` selects our filename; it does not turn our program into Linux. The `.img` file has no ELF entry or loading information for firmware to read. Keep these address and filename choices together. `device_tree=` disables loading a device-description file, which this small bare-metal image does not use.
+Compare [boot.ld](native/pi5/boot.ld) with [config.txt](native/pi5/config.txt):
+
+- Both select `0x200000` as the image's address.
+- `kernel=assembly-lab-pi5.img` selects our filename; it does not turn our program into Linux.
+- `device_tree=` disables loading a device-description file, which this small bare-metal image does not use.
+
+The `.img` file has no ELF entry or loading information for firmware to read. Keep these address and filename choices together.
 
 The unchanged [trip_distance.s](native/pi5/trip_distance.s) is linked with [boot.s](native/pi5/boot.s), which supplies this board's startup and UART output. Keep the supplied device setup unchanged for the first hardware test. `uart_2ndstage=1` requests firmware diagnostics on the serial connection. This example depends on firmware preparing that UART path; its clock and connector routing still need confirmation on the physical board.
 
 ## PI_BOOT_PROSE.construction
 
-Use a spare card whose first partition, a separately formatted region, uses the FAT32 filesystem the bootloader can read. Preparing or formatting a card can erase it; check that you have selected the spare card in your computer's disk utility. In Ubuntu Disks, select the spare card by its capacity and device name. Select its first partition and use the partition-format action to choose FAT. This erases that partition. Check that the result is FAT32 before copying files. If you cannot identify or prepare that partition, stop before erasing anything.
+Use a spare card whose first partition, a separately formatted region, uses the FAT32 filesystem the bootloader can read. Preparing or formatting a card can erase it; check that you have selected the spare card in your computer's disk utility. In Ubuntu Disks:
+
+1. Select the spare card by its capacity and device name.
+2. Select its first partition and use the partition-format action to choose FAT. This erases that partition.
+3. Check that the result is FAT32 before copying files.
+
+If you cannot identify or prepare that partition, stop before erasing anything.
 
 Copy these two files from `card-files/` into the partition's root, its top-level folder:
 
@@ -374,7 +386,15 @@ PORT=/dev/serial/by-id/replace-with-your-probe-entry
 picocom --baud 115200 --databits 8 --parity n --stopbits 1 --flow n "$PORT"
 ```
 
-These settings mean 115200 bits per second, eight data bits, no parity, one stop bit and no flow control. If access is denied, close this attempt and repeat the `picocom` command with `sudo` before it. This USB-device sequence is for Linux; a Windows WSL terminal does not automatically receive the probe's USB connection.
+These settings mean:
+
+- 115200 bits per second.
+- Eight data bits.
+- No parity.
+- One stop bit.
+- No flow control.
+
+If access is denied, close this attempt and repeat the `picocom` command with `sudo` before it. This USB-device sequence is for Linux; a Windows WSL terminal does not automatically receive the probe's USB connection.
 
 With the cable already connected to the Pi's UART connector and the terminal listening, power the Pi normally. Firmware diagnostics may appear first. Our program is written to print its measured entry **exception level**, which controls access to processor-management operations, followed by its trip check:
 
@@ -386,7 +406,12 @@ The caller supplies the same four inputs as Module 12, calls the function and co
 
 ## PI_BOOT_PROSE.failureExperiment
 
-Power the Pi off and return the card to your computer. Change the third arithmetic instruction in `trip_distance.s` from `sub w0, w0, w3` to `add w0, w0, w3`. Run `make` and `make card-files` again. Replace the card's image with the newly built `assembly-lab-pi5.img`, safely eject it and repeat the boot with the serial terminal already open.
+To test the deliberate error:
+
+1. Power the Pi off and return the card to your computer.
+2. Change the third arithmetic instruction in `trip_distance.s` from `sub w0, w0, w3` to `add w0, w0, w3`.
+3. Run `make` and `make card-files` again.
+4. Replace the card's image with the newly built `assembly-lab-pi5.img`, safely eject it and repeat the boot with the serial terminal already open.
 
 The expected source-selected report is now `Assembly Lab Pi 5: trip check failed`. Capture what the board actually sends. Restore the subtraction, rebuild, replace the image and boot once more. A fresh passing report after restoration helps establish that you tested the new image each time. Editing the source on your computer does not change the card or the running Pi.
 

@@ -205,6 +205,7 @@ const readings = splitLesson(onePatternThreeReadings, [
               options: COPY.arithmeticBits.options,
               explain: COPY.arithmeticBits.explain,
               callComparison: {
+                intro: COPY.arithmeticBits.callIntro,
                 args: [3, 5],
                 leftType: "signed",
                 rightType: "unsigned",

@@ -13,7 +13,7 @@ export const PROSE = {
     "Each count is a **tick**. Going back to 0 is a **wrap**.\n\n" +
     "`elapsed(now, then)` returns `now - then`. GCC makes it one subtraction and a `ret`.\n\n" +
     "One full turn of the counter, 4294967296 ticks, is about 49.71 days.\n\n" +
-    "Throughout this lesson, assume the counter advances one tick per millisecond without being reset. Fewer than 4294967296 ticks pass between the two readings.\n\n" +
+    "Throughout this lesson, assume:\n\n- The counter advances one tick per millisecond without being reset.\n- Fewer than 4294967296 ticks pass between the two readings.\n\n" +
     "How can you work out the elapsed time if the counter wraps between the two readings?",
 
   motivation:
@@ -27,7 +27,7 @@ export const PROSE = {
 
   investigation:
     "`subs` does the same subtraction as `sub` and also replaces all four flags, N, Z, C and V. `sub` leaves the flags unchanged.\n\n" +
-    "The subtraction `a - b` needs a **borrow** when `a` is less than `b` under the unsigned reading. After `adds`, C = 1 means a carry left the top bit. After `subs`, C = 1 means no borrow was needed, and C = 0 means one was.\n\n" +
+    "The subtraction `a - b` needs a **borrow** when `a` is less than `b` under the unsigned reading. The meaning of C depends on the instruction:\n\n- After `adds`, C = 1 means a carry left the top bit.\n- After `subs`, C = 1 means no borrow was needed, and C = 0 means one was.\n\n" +
     "After 4294967295 comes 0, so the counter's values form a ring. The figure draws them that way. The counter counts forward, clockwise.\n\n" +
     "Two readings close together sit at almost one spot on a ring of 4294967296 values. So the strip under the ring enlarges the stretch round the wrap. The strip shows `then`, the wrap from 4294967295 to 0, `now`, the ticks before the wrap, the ticks after it, and their total.",
 
@@ -37,7 +37,7 @@ export const PROSE = {
     "For 32 bits, changing every bit of `b` gives 4294967295 minus `b`. The adder adds that value to `a`, then adds 1. The full sum is `a + 4294967296 - b`, before keeping only the low 32 bits. When `b` is 0, the full sum is `a + 4294967296`: the low 32 bits hold `a`, and a carry leaves the top bit.\n\n" +
     "The figures below use this calculation to explain the result and flags of 32-bit `subs`: the input being subtracted, its bits changed, the carry in of 1, the result and the carry out.\n\n" +
     "A carry leaves the top exactly when `a` is at least `b`, so C = 1 also means no borrow was needed.\n\n" +
-    "The two figures below show the final states of two subtractions, each of which can be stepped column by column. One needs a borrow: 1000 minus 4294966296 leaves C 0. The other does not: 9000 minus 2500 leaves C 1 and the result 6500.",
+    "The two figures below show the final states of two subtractions. Each can be stepped column by column:\n\n- 1000 minus 4294966296 needs a borrow and leaves C 0.\n- 9000 minus 2500 needs no borrow and leaves C 1 and the result 6500.",
 
   construction: "Earlier, GCC wrote `elapsed` for you. Here you write it yourself.",
   elapsedTask:
