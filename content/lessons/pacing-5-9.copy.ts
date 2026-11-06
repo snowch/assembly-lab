@@ -43,7 +43,7 @@ export const pacing5To9 = {
     intro:
       "A wider calculation may need a value extended without reading memory again. Compare the register-only extensions with the casts that request them.",
     activity:
-      "Compare the input bits with each extended result. Identify whether the added bits are zeros or copies of the original top bit. Then follow the wider calculation that uses the value.",
+      "1. Compare the input bits with each extended result.\n2. Identify whether the added bits are zeros or copies of the original top bit.\n3. Follow the wider calculation that uses the value.",
   },
   "array-addresses": {
     reminder:
@@ -67,7 +67,7 @@ export const pacing5To9 = {
     intro:
       "The same register bits can produce different high halves under signed and unsigned multiplication. The low half alone does not show that difference.",
     activity:
-      "Run the two multiplications with the same inputs. Compare their low halves, then their high halves. Use each input’s signed or unsigned reading to explain the difference.",
+      "1. Run the two multiplications with the same inputs.\n2. Compare their low halves, then their high halves.\n3. Use each input’s signed or unsigned reading to explain the difference.",
   },
   "division-and-remainders": {
     title: "Division and remainders",
@@ -81,7 +81,7 @@ export const pacing5To9 = {
     intro:
       "A constant divisor can let a compiler choose a different instruction sequence. This record shows GCC’s choice for `groups_of_ten`.",
     activity:
-      "Step through the multiply and shift. Compare the returned value with unsigned division of the same input by ten. Identify which instructions produce the quotient; keep this compiler choice separate from the rule for division.",
+      "1. Step through the multiply and shift.\n2. Compare the returned value with unsigned division of the same input by ten.\n3. Identify which instructions produce the quotient.\n\nKeep this compiler choice separate from the rule for division.",
   },
   "calls-and-returns": {
     title: "Saving a return address",

@@ -18,8 +18,8 @@ export const PROSE = {
     "The dimming operation runs three times. The remaining tick count falls from 3 to 2, then 1, then 0. The brightness falls from 128 to 64, then 32, then 16.\n\n" +
     "The final `subs` produces zero, so it sets Z to 1. `bne` is then not taken, and `ret` returns 16.",
   investigation:
-    "`brightness` arrives in `w0`, and `ticks` arrives in `w1`. `cbz` checks the initial tick count without reading or changing the flags.\n\n" +
-    "Each iteration runs `lsr` to dim the display, then `subs w1, w1, #1` to reduce the count. `bne .L3` reads the flags that `subs` just set. It repeats the body when Z is 0, because ticks remain. When the count reaches zero, Z is 1 and the function returns.\n\n" +
+    "The inputs arrive in these registers:\n\n- `brightness` in `w0`.\n- `ticks` in `w1`.\n\n`cbz` checks the initial tick count without reading or changing the flags.\n\n" +
+    "Each iteration follows these steps:\n\n1. `lsr` dims the display.\n2. `subs w1, w1, #1` reduces the count and sets the flags.\n3. `bne .L3` reads those flags. It repeats the body when Z is 0, because ticks remain.\n\nWhen the count reaches zero, Z is 1 and the function returns.\n\n" +
     "Choose a tick count in the figure. A zero count skips the body. The other runs show the brightness changing after each dimming operation.",
   construction:
     "Write a countdown loop that uses the flags from subtraction. Preserve the initial test so a zero count leaves the brightness unchanged.",
@@ -43,7 +43,7 @@ export const PROSE = {
     "This call is very long, but finite. Repeated subtraction eventually brings the count back to zero. It takes 2³² iterations in total, including the first one.\n\n" +
     "The stepper shows the remaining count in `w1`, alongside the brightness in `w0` and the flags. The trace contains only the first 20 instructions. Its limit is not evidence that a loop runs forever; the count's changes tell us why this one eventually stops.",
   explanation:
-    "A `while` loop tests before its first iteration. A `do` loop tests after its first iteration, so its body always runs at least once. That difference matters when the requested count is zero.\n\n" +
+    "The two loops place their first test differently:\n\n- A `while` loop tests before its first iteration.\n- A `do` loop tests after its first iteration, so its body always runs at least once.\n\nThat difference matters when the requested count is zero.\n\n" +
     "With a positive count, these two functions perform the same number of dimming operations and return the same brightness. With a zero count, `dim_down` skips the body. `dim_do` runs the body anyway: it shifts the brightness, then subtracts from zero.\n\n" +
     "Unsigned subtraction wraps, as Module 2 showed. It does not produce a negative count that could stop the loop.",
   wrongComparison:

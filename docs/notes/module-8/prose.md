@@ -51,7 +51,13 @@ It holds `0x00000000`. The full product is 4294967296, which needs a bit above t
 
 Step through the multiplication and inspect the destination bits. A wider mathematical product does not make the instruction widen its destination.
 
-A common calculation multiplies a new reading and adds it to a running total. `madd w0, w0, w1, w2` performs both operations: multiply the values in its second and third operands, then add the fourth. It keeps the low 32 bits of that result.
+A common calculation multiplies a new reading and adds it to a running total. In `madd w0, w0, w1, w2`:
+
+- The first operand, `w0`, is the destination.
+- The second and third operands, `w0` and `w1`, supply the factors.
+- The fourth operand, `w2`, supplies the value to add.
+
+The instruction multiplies the factors, then adds the fourth operand. It keeps the low 32 bits of that result.
 
 GCC uses `madd` for `scaled_total`. Follow the inputs 7, 6 and 10 through the example: the scale applies to the pulses, and the existing total is added afterwards. `mul` and `madd` leave the condition flags unchanged.
 
@@ -101,7 +107,11 @@ Compare the signed and unsigned examples. The 32-bit pattern with every bit set 
 
 ## 8. Read both halves of a product
 
-A product of two 64-bit inputs can need 128 bits. Split that product into a **low half**, bits 0 to 63, and a **high half**, bits 64 to 127. `mul` supplies the low half. `umulh` supplies the high half for unsigned inputs; `smulh` supplies it for signed inputs.
+A product of two 64-bit inputs can need 128 bits. Split that product into a **low half**, bits 0 to 63, and a **high half**, bits 64 to 127:
+
+- `mul` supplies the low half.
+- `umulh` supplies the high half for unsigned inputs.
+- `smulh` supplies the high half for signed inputs.
 
 This diagram runs course-written assembly; the earlier C listings are recorded GCC output. It uses the same input bits for both interpretations. Follow how the low half stays the same while the high half changes. The high half comes from the full multiplication; it is not found by sign-extending the low half.
 
@@ -212,7 +222,14 @@ Compare the completed high and low halves for the same input bits.
 
 The trip computer divides a total by a count to calculate an average. Integer division can leave part of the total unused. **How do you obtain both the whole answer and what remains?**
 
-The number being divided is the **dividend**. The number you divide it by is the **divisor**. The whole-number answer is the **quotient**; the amount left after subtracting the quotient times the divisor is the **remainder**. In C, `/` produces the quotient and `%` produces the remainder.
+The calculation has four parts:
+
+- The **dividend** is the number being divided.
+- The **divisor** is the number you divide it by.
+- The **quotient** is the whole-number answer.
+- The **remainder** is the amount left after subtracting the quotient times the divisor.
+
+In C, `/` produces the quotient and `%` produces the remainder.
 
 *Closed note: Defined C division*
 
@@ -245,7 +262,10 @@ The remainder is −2, because `−17 = (−3 × 5) + (−2)`.
 
 ## 4. Recover the remainder
 
-The recorded remainder function first uses `sdiv` to put the quotient in `w2`. It then uses `msub w0, w2, w1, w0` to subtract `quotient × divisor` from the original dividend.
+The recorded remainder function uses two steps:
+
+1. `sdiv` puts the quotient in `w2`.
+2. `msub w0, w2, w1, w0` subtracts `quotient × divisor` from the original dividend.
 
 Follow the registers and the division diagram. For the negative example, the drawing shows the size of the dividend, ignoring its sign. It divides that size into whole groups and a remaining part. The values below show the signed quotient and remainder.
 
@@ -288,13 +308,23 @@ The later subtraction cannot correct the choice made at the division. The same b
 
 ## 7. Separate C rules from instruction results
 
-A64 gives its division instructions results even in cases where C division is undefined. With a zero divisor, `sdiv` and `udiv` write a zero quotient. For the minimum signed value divided by −1, `sdiv` returns that minimum value's bit pattern. These instructions do not signal those cases through the condition flags.
+A64 gives its division instructions results even in cases where C division is undefined:
+
+- With a zero divisor, `sdiv` and `udiv` write a zero quotient.
+- For the minimum signed value divided by −1, `sdiv` returns that minimum value's bit pattern.
+
+These instructions do not signal those cases through the condition flags.
 
 Inspect the two assembly-only experiments. Their hardware results are observable, but a C compiler is not required to preserve the behaviour of an undefined C expression. Check a divisor or an overflow case before performing the C operation.
 
 ## 8. Division by a constant
 
-GCC can also replace division by a constant with other arithmetic. For unsigned division by ten, this recorded GCC version uses multiplication by `0xcccccccd` and a right shift by 35. It uses the full widened product, so the relevant higher bits survive. The example returns the same quotient as division; the instruction sequence is this compiler's choice, not a timing claim.
+GCC can also replace division by a constant with other arithmetic. For unsigned division by ten, this recorded GCC version uses these steps:
+
+1. Multiply by `0xcccccccd`, keeping the full widened product.
+2. Shift that product right by 35.
+
+Using the full product keeps the relevant higher bits. The example returns the same quotient as division; the instruction sequence is this compiler's choice, not a timing claim.
 
 ## 9. Calculate fuel consumption
 

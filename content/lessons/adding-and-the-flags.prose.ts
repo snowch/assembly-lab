@@ -11,7 +11,7 @@ export const PROSE = {
 
   motivation:
     "Every addition in this lesson uses a `w` name, so it keeps 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.\n\n" +
-    "`add` writes the result and leaves the flags unchanged. `adds` writes the same result and also records four facts about the addition. Each fact is stored in a **flag**: a single bit that is either 0 or 1. The four flags are named N, Z, C and V.\n\n" +
+    "The two instructions write the same result bits:\n\n- `add` writes the result and leaves the flags unchanged.\n- `adds` writes the result and also records four facts about the addition.\n\nEach fact is stored in a **flag**: a single bit that is either 0 or 1. The four flags are named N, Z, C and V.\n\n" +
     "Neither instruction stops the program or reports an error when the sum does not fit. To detect this, the program must read a flag.",
 
   prediction:
@@ -57,7 +57,7 @@ export const PROSE = {
 
   failureExperiment:
     "The figure runs `sum_flags` with:\n\n- `w0` = `0x7fffffff`.\n- `w1` = 1.\n- `w2` = `0xffffffff`.\n\n" +
-    "It runs `adds w3, w2, w2` first, which adds `0xffffffff` to itself. Then it runs `add w0, w0, w1`, which adds `0x7fffffff` and 1. After each step, the figure marks the registers that were written and the flags whose values changed.",
+    "It runs these instructions in order:\n\n1. `adds w3, w2, w2` adds `0xffffffff` to itself.\n2. `add w0, w0, w1` adds `0x7fffffff` and 1.\n\nAfter each step, the figure marks the registers that were written and the flags whose values changed.",
   failureQuestion: "**After `add`, what do the flags show?**",
   failureExplain:
     "N and C are still 1, as `adds` left them. `add` wrote `0x80000000` to `w0` and left the flags alone.\n\n" +

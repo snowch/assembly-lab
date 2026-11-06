@@ -68,7 +68,7 @@ export const FUNDAMENTALS_PROSE = {
       investigation:
         "The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call.\n\nRun the function one instruction at a time. Watch where the argument arrives and where the result is left. On a narrow screen, scroll sideways within the listing to see the C and instructions.",
       construction:
-        "`add_ints` takes two integer arguments. For this function, the first arrives in `w0` and the second in `w1`. The C names those inputs `a` and `b`.\n\nThe figure starts a separate call, `add_ints(7, 5)`. Its integer result is left in `w0`, just as for `increment_int`.",
+        "`add_ints` takes two integer arguments:\n\n- `a`, the first argument, arrives in `w0`.\n- `b`, the second argument, arrives in `w1`.\n\nThe figure starts a separate call, `add_ints(7, 5)`. Its integer result is left in `w0`, just as for `increment_int`.",
       challenge:
         "Trace `add_ints` with fresh arguments. Identify the result register and the input register that keeps its value.",
     },
@@ -154,7 +154,7 @@ export const FUNDAMENTALS_PROSE = {
       prose: "Run the addition, then the subtraction. The second uses the state left by the first.",
     },
     challenge: {
-      task: "Start with:\n\n- `w0` holding 10.\n- `w1` holding 4.\n- `w2` holding 0.\n\nRun `add w2, w0, w1`, then `sub w2, w2, w1`, in that order.\n\nWhat do `w2` and `w1` hold after both instructions?",
+      task: "Start with:\n\n- `w0` holding 10.\n- `w1` holding 4.\n- `w2` holding 0.\n\nRun these instructions in order:\n\n1. `add w2, w0, w1`\n2. `sub w2, w2, w1`\n\nWhat do `w2` and `w1` hold after both instructions?",
       hints: [
         "Write down the registers after the first instruction before tracing the second.",
         "The subtraction reads the value the addition left in `w2`.",

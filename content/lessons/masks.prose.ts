@@ -13,7 +13,7 @@
 export const PROSE = {
   question:
     "The trip computer keeps its warnings in one `unsigned` number. This course calls it the **warning word**. A 32-bit value like this is called a **word**.\n\n" +
-    "Each of the lowest four bits is one warning. Bits are counted from the right, starting at 0, and bit n is worth 2 to the power n. Bit 0 means fuel is low. Bit 1 means service is due. Bit 2 means a door is open. Bit 3 means the lights are on.\n\n" +
+    "Each of the lowest four bits is one warning. Bits are counted from the right, starting at 0, and bit n is worth 2 to the power n:\n\n- Bit 0 means fuel is low.\n- Bit 1 means service is due.\n- Bit 2 means a door is open.\n- Bit 3 means the lights are on.\n\n" +
     "Bits 4 to 6 hold the selected gear, a number from 0 to 7.\n\n" +
     "Each warning is on or off on its own. How can the program change one warning without changing the others?",
 
@@ -114,7 +114,7 @@ export const PROSE = {
     "- A field holds a small number across several bits.\n" +
     "- Writing a field means clearing it, moving the new value into place and combining, so the bits around it are kept.\n" +
     "- `ubfx` reads a field, and `bfi` writes one.\n\n" +
-    "The warning word is `0x47`. Start with that value separately for each instruction. What does `ubfx x0, x0, 4, 3` give, and what does `eor w0, w0, 4` give?",
+    "The warning word is `0x47`. Start with that value separately for each instruction. Give the result of each:\n\n- `ubfx x0, x0, 4, 3`\n- `eor w0, w0, 4`",
   reflectionNote: {
     summary: "Answer",
     prose:

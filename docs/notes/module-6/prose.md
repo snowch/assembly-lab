@@ -18,7 +18,11 @@ The trip computer keeps a distance reading in memory. To use that reading in a c
 
 Memory holds **bytes**. On this machine, a byte contains 8 bits. Each byte has a numbered location called its **address**. Consecutive addresses identify consecutive bytes.
 
-In the C below, `unsigned *distance` declares a **pointer**: `distance` holds the address of an unsigned value. `*distance` reads the value at that address. `const` says this function cannot change the value through this pointer.
+In the C below:
+
+- `unsigned *distance` declares a **pointer**: `distance` holds the address of an unsigned value.
+- `*distance` reads the value at that address.
+- `const` says this function cannot change the value through this pointer.
 
 *Closed note: The compiler and C sizes*
 
@@ -54,7 +58,12 @@ Step through the load. The figure marks the bytes it reads and shows where their
 
 ## 4. Move bits between memory and registers
 
-A **load** copies bits from memory into a register. A **store** copies bits from a register into memory. `str w1, [x0]` writes the four bytes from `w1`, starting at the address in `x0`. It leaves the source register unchanged.
+The transfer direction distinguishes these instructions:
+
+- A **load** copies bits from memory into a register.
+- A **store** copies bits from a register into memory.
+
+`str w1, [x0]` writes the four bytes from `w1`, starting at the address in `x0`. It leaves the source register unchanged.
 
 In `save_distance`, `distance` arrives in `x0` and `value` in `w1`. The C assignment `*distance = value` changes the value at the pointer's address. `void` means this function returns no value.
 
@@ -100,17 +109,29 @@ Memory contains `78 56 34 12`. `str w1, [x0]` writes all four bytes of `w1`, so 
 
 ## 7. Choose how many bytes to write
 
-A narrow store takes only the low bits it needs. `strb` takes 8 bits and `strh` takes 16 bits. Neither instruction changes `w1`, and neither writes beyond its selected bytes.
+A narrow store takes only the low bits it needs:
+
+- `strb` takes 8 bits.
+- `strh` takes 16 bits.
+
+Neither instruction changes `w1`, and neither writes beyond its selected bytes.
 
 For GCC's target, `unsigned char` occupies one byte and `unsigned short` occupies two. The recorded C functions store those types with `strb` and `strh`.
 
-The address register and the transferred value can have different widths. `strb w1, [x0]` uses a 64-bit address but writes one byte. `str w1, [x0]` uses a 64-bit address and writes four bytes.
+The address register and the transferred value can have different widths:
+
+- `strb w1, [x0]` uses a 64-bit address but writes one byte.
+- `str w1, [x0]` uses a 64-bit address and writes four bytes.
 
 Using an `x` register for the value makes ordinary `ldr` or `str` transfer eight bytes. The next figures load and store an eight-byte value. Follow which memory address supplies each part of the register.
 
 ## 8. Keep track of the value and its address
 
-Read a memory instruction in three parts: which register holds the value, which register holds the address, and how many bytes the instruction transfers.
+Read a memory instruction in three parts:
+
+- Which register holds the value?
+- Which register holds the address?
+- How many bytes does the instruction transfer?
 
 The load and store instructions shown here leave their address register unchanged unless it is also the load's destination. In `ldr w0, [x0]`, the destination overlaps the address register. Keep the address elsewhere if you will need it again.
 
@@ -254,7 +275,12 @@ The full `x0` register holds `0x00000000fffffff9`. Its upper 32 bits are zero be
 
 ## 4. Compare the width and the extension
 
-Choose a load in the comparison, then press Next. Switch between `ldrb w0` and `ldrsb w0` to compare the same byte at the same step. Both copy the stored bits into the low end of `w0`. Above those bits, `ldrb` adds zeros and `ldrsb` copies the sign bit. Neither instruction changes memory.
+Use the comparison at the same instruction step:
+
+1. Choose a load, then press Next.
+2. Switch between `ldrb w0` and `ldrsb w0` to compare the same byte at the same step.
+
+Both copy the stored bits into the low end of `w0`. Above those bits, `ldrb` adds zeros and `ldrsb` copies the sign bit. Neither instruction changes memory.
 
 The same distinction applies to two-byte values. `ldrh` reads two bytes and zero-extends them. `ldrsh` reads two bytes and sign-extends them. In these listings, `unsigned short` selects `ldrh` and signed `short` selects `ldrsh`.
 
@@ -304,7 +330,12 @@ The error happens at the load. The addition cannot recover the byte's intended s
 
 ## 7. Extend bits already in a register
 
-Extension can also work on bits already in a register. `sxtb w0, w0` takes the low byte and sign-extends it to 32 bits. `uxtb w0, w0` takes the low byte and zero-extends it to 32 bits. Neither instruction reads memory.
+Extension can also work on bits already in a register:
+
+- `sxtb w0, w0` takes the low byte and sign-extends it to 32 bits.
+- `uxtb w0, w0` takes the low byte and zero-extends it to 32 bits.
+
+Neither instruction reads memory.
 
 A C **cast** requests a conversion: `(signed char)value` converts `value` to `signed char`. In the recorded GCC listing, that cast becomes `sxtb`. For `(unsigned char)value`, this GCC version uses `and` with 255, which keeps the low byte. The separate `uxtb` example is course-written assembly with the same effect on the register.
 

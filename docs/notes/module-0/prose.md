@@ -33,7 +33,13 @@ Each instruction uses the register values left by the previous one. [Instruction
 
 GCC 16.1.0 at `-O1` made the four instructions below for 64-bit Arm. Follow the C variable `total` through the calculation: the instructions update `w0`, then `ret` returns with the result already there.
 
-Run `trip_distance(120, 85, 42, 15)` with Next. The C statement and instruction that just ran are highlighted together; ▸ marks the next instruction. An outlined register was written by the last instruction. Back undoes a step; Reset starts again.
+Run `trip_distance(120, 85, 42, 15)` with Next. Read the marks after each step:
+
+- The C statement and instruction that just ran are highlighted together.
+- ▸ marks the next instruction.
+- An outlined register was written by the last instruction.
+
+Back undoes a step; Reset starts again.
 
 On a narrow screen, swipe sideways within the listing to see the C and instructions.
 

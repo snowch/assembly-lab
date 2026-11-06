@@ -28,7 +28,16 @@ These listings use GCC 16.1 with `-O1` for little-endian AArch64 Linux. An `unsi
 
 The log contains the unsigned values `12, 25, 7, 40`. Index zero selects the first value. Each element occupies four bytes, so each increase in the index moves the address forward by four bytes.
 
-In `ldr w0, [x0, x1, lsl #2]`, `x0` holds the array's starting address and `x1` holds the index. The load shifts the index left by two places, which multiplies it by four, then adds it to the starting address. It reads four bytes from that address.
+In `ldr w0, [x0, x1, lsl #2]`:
+
+- `x0` holds the array's starting address.
+- `x1` holds the index.
+
+The load calculates its address in this order:
+
+1. Shift the index left by two places, multiplying it by four.
+2. Add that byte offset to the starting address.
+3. Read four bytes from that address.
 
 The shift is part of calculating the address. It does not change `x1`. The load replaces register 0 with the value it reads, so `x0` no longer holds the array's starting address afterwards.
 
@@ -51,9 +60,9 @@ It returns `0x00000007`, or 7. Index 2 selects the third element. The scaled ind
 
 Press Next in the comparison, then choose another addressing form. The view keeps the same instruction step so you can compare the address used and `x0` before and after. The three loads use different rules for updating the pointer.
 
-`[x0, #4]` accesses memory four bytes after `x0` and leaves `x0` unchanged. `[x0, #4]!` first adds four to `x0`, then accesses memory at the updated address. This is **pre-index** addressing.
-
-`[x0], #4` accesses memory at the old address, then adds four to `x0`. This is **post-index** addressing. The number after the brackets is still a byte count.
+- `[x0, #4]` accesses memory four bytes after `x0` and leaves `x0` unchanged.
+- `[x0, #4]!` first adds four to `x0`, then accesses memory at the updated address. This is **pre-index** addressing.
+- `[x0], #4` accesses memory at the old address, then adds four to `x0`. This is **post-index** addressing. The number after the brackets is still a byte count.
 
 All three examples load into `w2`, keeping the loaded value separate from the pointer. Compare both registers, not just the value loaded.
 

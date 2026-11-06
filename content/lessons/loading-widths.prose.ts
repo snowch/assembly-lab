@@ -20,7 +20,7 @@ export const PROSE = {
     "`w0` holds `0xfffffff9`, which represents −7 as a signed 32-bit value. The load copies the byte `f9` and fills the next 24 bits with ones. An unsigned `ldrb` of the same byte would produce `0x000000f9`, or 249.\n\n" +
     "The full `x0` register holds `0x00000000fffffff9`. Its upper 32 bits are zero because the instruction wrote `w0`. That 64-bit pattern does not represent −7 as a signed 64-bit value.",
   investigation:
-    "Choose a load in the comparison, then press Next. Switch between `ldrb w0` and `ldrsb w0` to compare the same byte at the same step. Both copy the stored bits into the low end of `w0`. Above those bits, `ldrb` adds zeros and `ldrsb` copies the sign bit. Neither instruction changes memory.\n\n" +
+    "Use the comparison at the same instruction step:\n\n1. Choose a load, then press Next.\n2. Switch between `ldrb w0` and `ldrsb w0` to compare the same byte at the same step.\n\nBoth copy the stored bits into the low end of `w0`. Above those bits, `ldrb` adds zeros and `ldrsb` copies the sign bit. Neither instruction changes memory.\n\n" +
     "The same distinction applies to two-byte values. `ldrh` reads two bytes and zero-extends them. `ldrsh` reads two bytes and sign-extends them. In these listings, `unsigned short` selects `ldrh` and signed `short` selects `ldrsh`.\n\n" +
     "The destination also matters. `ldrsb x0, [x0]` sign-extends its byte through all 64 bits. `ldrsw x0, [x0]` reads four bytes and sign-extends that 32-bit value to 64 bits. GCC uses the latter when returning a stored `int` as a `long` on this target.\n\n" +
     "Use the comparison to separate three regions: the bits read from memory, the bits added by extension, and any upper bits cleared by a write through a `w` register name.",
@@ -43,7 +43,7 @@ export const PROSE = {
     "The changed program returns `0x00000103`, or 259. `ldrb` zero-extends `f9` to 249, then the addition adds 10. The signed load would have produced −7, giving a result of 3.\n\n" +
     "The error happens at the load. The addition cannot recover the byte's intended signed interpretation after zero extension has changed its value.",
   explanation:
-    "Extension can also work on bits already in a register. `sxtb w0, w0` takes the low byte and sign-extends it to 32 bits. `uxtb w0, w0` takes the low byte and zero-extends it to 32 bits. Neither instruction reads memory.\n\n" +
+    "Extension can also work on bits already in a register:\n\n- `sxtb w0, w0` takes the low byte and sign-extends it to 32 bits.\n- `uxtb w0, w0` takes the low byte and zero-extends it to 32 bits.\n\nNeither instruction reads memory.\n\n" +
     "A C **cast** requests a conversion: `(signed char)value` converts `value` to `signed char`. In the recorded GCC listing, that cast becomes `sxtb`. For `(unsigned char)value`, this GCC version uses `and` with 255, which keeps the low byte. The separate `uxtb` example is course-written assembly with the same effect on the register.",
   explanationNoteSummary: "When a signed cast is out of range",
   explanationNote:

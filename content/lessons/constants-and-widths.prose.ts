@@ -7,7 +7,7 @@
 export const PROSE = {
   question:
     "The trip computer's service interval is 30000 kilometres. The odometer's limit is 1000000.\n\n" +
-    "For `return 30000;`, GCC loads the result with one instruction: `mov w0, 30000`. For `return 1000000;`, it needs two instructions to load the result. In both cases, `ret` then returns to the code that called the function.\n\n" +
+    "GCC loads the two results differently:\n\n- For `return 30000;`, it uses one instruction: `mov w0, 30000`.\n- For `return 1000000;`, it needs two instructions.\n\nIn both cases, `ret` then returns to the code that called the function.\n\n" +
     "The C listing uses `int service_interval(void)`. The `void` inside the brackets means the function takes no arguments.",
   questionDetailsSummary: "Which compiler?",
   questionDetails:
@@ -41,7 +41,7 @@ export const PROSE = {
 
   construction:
     "With a `w` name, `movk` replaces one 16-bit half of the 32 bits and keeps the other half. `mov` replaces all 32 bits.\n\n" +
-    "`lsl 16` after the number tells `movk` to put it in the upper half, bits 16 to 31. Without `lsl 16`, `movk` puts it in the lower half.\n\n" +
+    "For `movk` with a `w` name:\n\n- `lsl 16` after the number puts it in the upper half, bits 16 to 31.\n- Without `lsl 16`, the number goes in the lower half.\n\n" +
     "For example, `mov w0, 3` gives `0x0000 0003`. Then `movk w0, 2, lsl 16` gives `0x0002 0003`, which is 131075. The upper half is new, and the lower half is kept. The figure draws each step.\n\n" +
     "To split a non-negative 32-bit integer into halves:\n\n1. Divide it by 65536, the value of the lowest bit in the upper half.\n2. Take the result without its fractional part for the upper half.\n3. Take the amount left after this whole-number division for the lower half. This amount is the **remainder**.\n\nIn the example above, 131075 = 2 × 65536 + 3, so the upper half is 2 and the lower half is 3.\n\n" +
     "Writing `#` before a number is optional. `mov w0, 30000` and `mov w0, #30000` are the same instruction.",
@@ -60,7 +60,7 @@ export const PROSE = {
 
   failureExperiment:
     "The `w` names in the earlier arithmetic examples selected 32 bits. Each register holds 64 bits, and it has two names.\n\n" +
-    "The `x` name, `x3`, names all 64 bits. The `w` name, `w3`, names the lower 32 bits of the same register. They are not two registers.\n\n" +
+    "For the same register:\n\n- The `x` name, `x3`, names all 64 bits.\n- The `w` name, `w3`, names the lower 32 bits.\n\nThey are not two registers.\n\n" +
     "The figure runs `mov x3, -1`, which sets all 64 bits, then `mov w3, -1`.",
   failureQuestion: "**After `mov w3, -1`, what does `x3` hold?**",
   failureExplain:

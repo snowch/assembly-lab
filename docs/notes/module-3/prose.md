@@ -16,7 +16,12 @@ Revised on 17 October 2026 in a separate Codex drafting pass from checked findin
 
 The trip computer keeps its warnings in one `unsigned` number. This course calls it the **warning word**. A 32-bit value like this is called a **word**.
 
-Each of the lowest four bits is one warning. Bits are counted from the right, starting at 0, and bit n is worth 2 to the power n. Bit 0 means fuel is low. Bit 1 means service is due. Bit 2 means a door is open. Bit 3 means the lights are on.
+Each of the lowest four bits is one warning. Bits are counted from the right, starting at 0, and bit n is worth 2 to the power n:
+
+- Bit 0 means fuel is low.
+- Bit 1 means service is due.
+- Bit 2 means a door is open.
+- Bit 3 means the lights are on.
 
 Bits 4 to 6 hold the selected gear, a number from 0 to 7.
 
@@ -205,7 +210,10 @@ Field labels: "after `orr`"; "after `and`"; "the gear".
 - Writing a field means clearing it, moving the new value into place and combining, so the bits around it are kept.
 - `ubfx` reads a field, and `bfi` writes one.
 
-The warning word is `0x47`. Start with that value separately for each instruction. What does `ubfx x0, x0, 4, 3` give, and what does `eor w0, w0, 4` give?
+The warning word is `0x47`. Start with that value separately for each instruction. Give the result of each:
+
+- `ubfx x0, x0, 4, 3`
+- `eor w0, w0, 4`
 
 *Closed note: Answer*
 
@@ -223,7 +231,12 @@ The warning word is `0x47`. Start with that value separately for each instructio
 
 C writes a shift right as `>>` and a shift left as `<<`. `g >> 1` shifts the bits of `g` one place right.
 
-GCC 16.1 at `-O1` turns `g >> 1` into `asr w0, w0, 1` when `g` is an `int`. When `g` is an `unsigned`, it turns the same expression into `lsr w0, w0, 1`. Both types use the same register width here. Their signed and unsigned readings lead GCC to choose different right shifts.
+GCC 16.1 at `-O1` chooses a right shift for `g >> 1` according to the C type:
+
+- With `int`, it uses `asr w0, w0, 1`.
+- With `unsigned`, it uses `lsr w0, w0, 1`.
+
+Both types use the same register width here. Their signed and unsigned readings lead GCC to choose different right shifts.
 
 What does each instruction do differently?
 

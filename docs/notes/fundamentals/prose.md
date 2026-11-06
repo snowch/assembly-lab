@@ -326,7 +326,10 @@ Run the function one instruction at a time. Watch where the argument arrives and
 
 ### function / sections / construction
 
-`add_ints` takes two integer arguments. For this function, the first arrives in `w0` and the second in `w1`. The C names those inputs `a` and `b`.
+`add_ints` takes two integer arguments:
+
+- `a`, the first argument, arrives in `w0`.
+- `b`, the second argument, arrives in `w1`.
 
 The figure starts a separate call, `add_ints(7, 5)`. Its integer result is left in `w0`, just as for `increment_int`.
 
@@ -642,7 +645,10 @@ Start with:
 - `w1` holding 4.
 - `w2` holding 0.
 
-Run `add w2, w0, w1`, then `sub w2, w2, w1`, in that order.
+Run these instructions in order:
+
+1. `add w2, w0, w1`
+2. `sub w2, w2, w1`
 
 What do `w2` and `w1` hold after both instructions?
 

@@ -123,7 +123,7 @@ export const pacing10A = {
     intro:
       "Keep the first capture from [Capturing the first Pi boot](#/lesson/capture-pi-boot) as your baseline. Change the calculation, rebuild and replace the card’s image, then capture the new boot. Restore the source and repeat the full build and boot sequence. Hardware verification remains pending; expected messages are source-selected expectations, not recorded Pi output.",
     checkpoint:
-      "Record your Pi model, EEPROM version, source revision, image checksum, terminal settings and actual serial capture. Use the optional Raspberry Pi OS commands from the preparation page for board and EEPROM details, or record unknown. Copy the commit shown in the course footer as the source revision. Run `sha256sum assembly-lab-pi5.img` in the source directory for the image’s fingerprint. Keep the working, broken and restored runs separate. Repeat the restored image from a fresh power-on.\n\nWhich observation shows that our code ran? Which shows that the arithmetic check rejected the deliberate error? If a stage is still unobserved, record it as unverified. Your hardware test completes the evidence that a build alone cannot provide.",
+      "Keep a test record with:\n\n- Your Pi model and EEPROM version.\n- The source revision and image checksum.\n- The terminal settings and actual serial capture.\n\nUse the optional Raspberry Pi OS commands from the preparation page for board and EEPROM details, or record unknown. Copy the commit shown in the course footer as the source revision. Run `sha256sum assembly-lab-pi5.img` in the source directory for the image’s fingerprint. Keep the working, broken and restored runs separate. Repeat the restored image from a fresh power-on.\n\nWhich observation shows that our code ran? Which shows that the arithmetic check rejected the deliberate error? If a stage is still unobserved, record it as unverified. Your hardware test completes the evidence that a build alone cannot provide.",
   },
   a32Orientation: {
     title: "A32 registers and returns",
@@ -175,7 +175,7 @@ export const pacing10A = {
   a32Division: {
     title: "A32 division helpers",
     objectives: ["distinguish a recorded helper call from an A64 division instruction."],
-    task: "Open the recorded average pair, then run the A64 average with distance 95 and trip count 4. Enter the A32 division helper’s name, the A64 division mnemonic and the A64 result. For the helper, give the name after the call instruction.",
+    task: "Open the recorded average pair, then run the A64 average with distance 95 and trip count 4. Enter:\n\n- The A32 division helper’s name, given after the call instruction.\n- The A64 division mnemonic.\n- The A64 result.",
     challengeTitle: "Compare the division paths",
     hints: [
       "Use the average pair for the names and the A64 stepper for the result.",

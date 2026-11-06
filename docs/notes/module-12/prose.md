@@ -38,7 +38,13 @@ unzip assembly-lab-native.zip -d assembly-lab-native
 cd assembly-lab-native
 ```
 
-Open [boot.s](native/boot.s), [trip_distance.s](native/trip_distance.s) and [boot.ld](native/boot.ld) in a text editor. The first file supplies startup and output. The second contains the familiar trip function. The last tells the linker where to place the program in memory. Keep the files together. No C compiler or online compiler is needed for this path.
+Open these files in a text editor:
+
+- [boot.s](native/boot.s) supplies startup and output.
+- [trip_distance.s](native/trip_distance.s) contains the familiar trip function.
+- [boot.ld](native/boot.ld) tells the linker where to place the program in memory.
+
+Keep the files together. No C compiler or online compiler is needed for this path.
 
 ## PROSE.prediction
 
@@ -71,15 +77,38 @@ aarch64-linux-gnu-as -g trip_distance.s -o trip_distance.o
 aarch64-linux-gnu-ld -T boot.ld boot.o trip_distance.o -o boot.elf
 ```
 
-`as` is the GNU assembler; `ld` is the GNU linker. `-o` names each output file. `-g` includes information that lets a debugger relate machine code to source names and lines. `-T boot.ld` selects the **linker script**, the file that defines the memory layout and first instruction.
+`as` is the GNU assembler; `ld` is the GNU linker. Their options here are:
+
+- `-o` names each output file.
+- `-g` includes information that lets a debugger relate machine code to source names and lines.
+- `-T boot.ld` selects the **linker script**, the file that defines the memory layout and first instruction.
 
 Open `boot.ld`. `ENTRY(_start)` selects the executable's **entry point**, the address at which our startup begins. The script places the program at `0x40080000`, inside this QEMU machine's RAM, its working memory. This placement belongs to this example; it is not an ARM64 reset address.
 
 The executable uses **ELF**, a file format that records machine code, data and loading information. Object files can use ELF too; not every ELF file is executable.
 
-The script groups instructions in `.text`, fixed message bytes in `.rodata`, initialised writable data in `.data`, zero-initialised storage in `.bss` and stack space in `.stack`. These are **sections**, groups of related content. It reserves the stack and names its upper address `stack_top`. It aligns the stack region to 16 bytes and reserves a multiple of 16 bytes, so `stack_top` is also aligned as the calling convention requires.
+The script groups related content into **sections**:
 
-The lines beginning with a dot in the assembly are **directives** for the assembler. They do not execute on the processor. `.section` selects a section; `.global` exposes a name to the linker; `.type` identifies a function; `.p2align 2` aligns to a multiple of four bytes. `.size` records a function's size. `.word` supplies a stored value, `.asciz` stores message bytes followed by zero, and `.skip` reserves space. Keep these lines and the function label when editing the trip instructions.
+- `.text` holds instructions.
+- `.rodata` holds fixed message bytes.
+- `.data` holds initialised writable data.
+- `.bss` holds zero-initialised storage.
+- `.stack` reserves stack space.
+
+The script names the stack's upper address `stack_top`. It aligns the stack region to 16 bytes and reserves a multiple of 16 bytes, so `stack_top` is also aligned as the calling convention requires.
+
+The lines beginning with a dot in the assembly are **directives** for the assembler. They do not execute on the processor.
+
+- `.section` selects a section.
+- `.global` exposes a name to the linker.
+- `.type` identifies a function.
+- `.p2align 2` aligns to a multiple of four bytes.
+- `.size` records a function's size.
+- `.word` supplies a stored value.
+- `.asciz` stores message bytes followed by zero.
+- `.skip` reserves space.
+
+Keep these lines and the function label when editing the trip instructions.
 
 In `boot.s`, `.ifdef CHALLENGE`, `.else` and `.endif` choose which source block the assembler includes. With the ordinary build, `CHALLENGE` is not defined, so it includes the single-call block after `.else`. These directives do not create a runtime choice. The next lesson selects the other block for its test caller.
 
@@ -93,7 +122,13 @@ Boot the linked program:
 qemu-system-aarch64 -M virt -cpu cortex-a53 -m 128M -nographic -kernel boot.elf
 ```
 
-`-M virt` selects QEMU's machine design. `-cpu cortex-a53` selects the emulated processor and `-m 128M` its RAM size. `-kernel` supplies the image to load; this option's name does not make the image a Linux kernel. `-nographic` connects the serial console and QEMU's control interface to this terminal.
+The QEMU command selects:
+
+- `-M virt`: QEMU's machine design.
+- `-cpu cortex-a53`: the emulated processor.
+- `-m 128M`: its RAM size.
+- `-kernel boot.elf`: the image to load. This option's name does not make the image a Linux kernel.
+- `-nographic`: the serial console and QEMU's control interface in this terminal.
 
 The reference GNU/QEMU build produces this serial output:
 
@@ -131,7 +166,13 @@ The recorded startup figure shows stops before setup, after stack preparation an
 
 After output, `wfi` waits for an interrupt, a request that can divert execution to other code. `b halt` keeps execution in the waiting loop if it resumes. `ret` would be wrong at the program entry: no caller supplied an address to return to.
 
-To reproduce the arithmetic failure, change only the third instruction in `trip_distance.s`. Repeat the assembly and link commands, then boot the new image. Restore the subtraction and rebuild before the next lesson. Editing source does not change the executable already on disk or the running machine.
+To reproduce the arithmetic failure:
+
+1. Change only the third instruction in `trip_distance.s`.
+2. Repeat the assembly and link commands, then boot the new image.
+3. Restore the subtraction and rebuild before the next lesson.
+
+Editing source does not change the executable already on disk or the running machine.
 
 ## PROSE.deviceNoteSummary
 
@@ -141,7 +182,20 @@ Inspect the supplied device and exception setup
 
 `msr daifset, #0xf` sets the mask bits for debug, SError, IRQ and FIQ exceptions. SError is a system-error exception; IRQ and FIQ are interrupt requests. A handler is code that responds to an exception. Masking prevents the selected exceptions from being taken while their mask bits are set. This small program supplies no interrupt handlers. It uses **polling**: repeatedly reading device status to decide when to act.
 
-The PL011 UART's device registers appear at memory addresses on this machine. This is **memory-mapped input/output**: a load or store at a device address talks to the device. The base address here is `0x09000000`. The setup stores configure the UART: offset `0x30` is its control register, written with zero while configuring and `0x301` to enable the UART, transmitter and receiver. Offsets `0x24` and `0x28` hold the integer and fractional baud-rate divisors; this source writes 1 and 0. A divisor sets the serial bit rate from the device’s clock. This QEMU run does not verify physical clock settings, serial timing or realistic transmit-buffer pressure. Offset `0x2c` controls the line format; `0x60` selects eight data bits. These values describe this experiment, not a board-independent serial-speed recipe. `adr` obtains the address of a nearby message label. `ldrb` reads each message byte; `cbz` detects its zero terminator. The output loop reads the UART flag register at offset `0x18`. `tbnz` tests bit 5 and branches while the transmit buffer is full. `strb` writes an available byte to the data register at offset zero.
+The PL011 UART's device registers appear at memory addresses on this machine. This is **memory-mapped input/output**: a load or store at a device address talks to the device. The base address here is `0x09000000`. The setup stores configure these registers:
+
+- Offset `0x30` is the control register, written with zero while configuring and `0x301` to enable the UART, transmitter and receiver.
+- Offsets `0x24` and `0x28` hold the integer and fractional baud-rate divisors; this source writes 1 and 0. A divisor sets the serial bit rate from the device’s clock.
+- Offset `0x2c` controls the line format; `0x60` selects eight data bits.
+
+This QEMU run does not verify physical clock settings, serial timing or realistic transmit-buffer pressure. These values describe this experiment, not a board-independent serial-speed recipe.
+
+The output routine uses:
+
+- `adr` to obtain the address of a nearby message label.
+- `ldrb` to read each message byte and `cbz` to detect its zero terminator.
+- A read of the UART flag register at offset `0x18`, followed by `tbnz` to test bit 5 and branch while the transmit buffer is full.
+- `strb` to write an available byte to the data register at offset zero.
 
 `uart_puts` uses `stp` and `ldp` to save and restore its frame pointer and return address. Startup prepares the aligned stack before calling code that uses it.
 
@@ -402,7 +456,12 @@ Use the working `boot.elf` from the previous lesson. Restore the subtraction and
 
 A **debugger** inspects a running machine and controls when it stops. GDB is the GNU debugger. QEMU exposes a connection through which GDB controls the emulated processor. A **breakpoint** asks it to stop when execution reaches a chosen location.
 
-Open two Linux terminals in the directory containing `boot.elf`. Terminal 1 will run QEMU. Terminal 2 will run GDB. Keep both open while stepping.
+Open two Linux terminals in the directory containing `boot.elf`:
+
+- Terminal 1 will run QEMU.
+- Terminal 2 will run GDB.
+
+Keep both open while stepping.
 
 ## PROSE.connection
 
@@ -430,7 +489,11 @@ info registers pc sp
 x/i $pc
 ```
 
-`target remote` connects GDB to QEMU. `info registers` prints the named registers. For this direct-loaded ELF, the initial program counter points at `_start`. The **program counter**, `pc`, holds the address of the next instruction. `x/i $pc` displays that instruction without executing it. GDB's `$pc` expression means the current value of the register.
+For this direct-loaded ELF, the initial program counter points at `_start`. The **program counter**, `pc`, holds the address of the next instruction. The commands above let you inspect it:
+
+- `target remote` connects GDB to QEMU.
+- `info registers` prints the named registers.
+- `x/i $pc` displays the next instruction without executing it. GDB's `$pc` expression means the current value of the register.
 
 Check the displayed instruction before continuing. The processor is still paused at entry; no guest instruction has run.
 

@@ -22,7 +22,13 @@ The A64 records use GCC 16.1 with `-O1`. A64 uses Arm's 64-bit execution state e
 
 ## PROSE.motivation
 
-You already know how an unsigned comparison selects a result and how a function returns. Use those ideas to read the new syntax. In these A32 functions, the first arguments arrive in `r0` and `r1`, and the result leaves in `r0`. These are 32-bit registers, not `w` views of wider A64 `x` registers.
+You already know how an unsigned comparison selects a result and how a function returns. Use those ideas to read the new syntax. In these A32 functions:
+
+- The first argument arrives in `r0`.
+- The second argument arrives in `r1`.
+- The result leaves in `r0`.
+
+These are 32-bit registers, not `w` views of wider A64 `x` registers.
 
 A32's `lr` names its link register, also called `r14`. In this leaf function, `bx lr` returns to the saved address. The A64 listing uses `ret` for its return. Similar purposes do not imply identical register names or instruction spellings.
 
@@ -30,7 +36,12 @@ The A32 listings are static compiler records. Interactive execution uses A64 onl
 
 ## PROSE.prediction
 
-Predict the result for distance 80 and limit 50 from the C function and its comparison. After checking your prediction, run the A64 version in the stepper below.
+Predict the result from the C function and its comparison, using:
+
+- Distance 80.
+- Limit 50.
+
+After checking your prediction, run the A64 version in the stepper below.
 
 ## PROSE.predictionQuestion
 
