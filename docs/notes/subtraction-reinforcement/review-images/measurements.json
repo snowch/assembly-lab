@@ -1,0 +1,466 @@
+[
+  {
+    "width": 1280,
+    "theme": "light",
+    "choice": "identical",
+    "text": "Subtraction in bitsThese rows break down a single sub instruction with 32 places. Keep the lowest 32 bits after each addition.Bits run from 31 on the left to 0 on the right.Second input: 500000000000000000000000000000101Invert every bit11111111111111111111111111111010Add 1: Opposite pattern11111111111111111111111111111011First input: 300000000000000000000000000000011Opposite pattern+11111111111111111111111111111011Final w0 bits from both calls=w00xfffffffe11111111111111111111111111111110For the smaller example, revisit Module 1, lesson 3: Arithmetic with four bits.",
+    "rows": [
+      {
+        "row": "second",
+        "value": "5",
+        "pattern": "00000000000000000000000000000101"
+      },
+      {
+        "row": "inverted",
+        "value": "4294967290",
+        "pattern": "11111111111111111111111111111010"
+      },
+      {
+        "row": "opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "first",
+        "value": "3",
+        "pattern": "00000000000000000000000000000011"
+      },
+      {
+        "row": "add-opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "result",
+        "value": "4294967294",
+        "pattern": ""
+      }
+    ],
+    "result": "11111111111111111111111111111110",
+    "maxDelta": 0,
+    "scroll": [
+      {
+        "client": 942,
+        "scroll": 942
+      }
+    ],
+    "font": "12px",
+    "height": 544.125,
+    "pageWidth": 1280,
+    "scrollWidth": 1280,
+    "link": [
+      {
+        "href": "#/lesson/four-bit-arithmetic",
+        "label": "Module 1, lesson 3: Arithmetic with four bits"
+      }
+    ],
+    "beforeCards": true,
+    "errors": []
+  },
+  {
+    "width": 1280,
+    "theme": "light",
+    "choice": "differ",
+    "text": "Subtraction in bitsThese rows break down a single sub instruction with 32 places. Keep the lowest 32 bits after each addition.Bits run from 31 on the left to 0 on the right.Second input: 500000000000000000000000000000101Invert every bit11111111111111111111111111111010Add 1: Opposite pattern11111111111111111111111111111011First input: 300000000000000000000000000000011Opposite pattern+11111111111111111111111111111011Final w0 bits from both calls=w00xfffffffe11111111111111111111111111111110For the smaller example, revisit Module 1, lesson 3: Arithmetic with four bits.",
+    "rows": [
+      {
+        "row": "second",
+        "value": "5",
+        "pattern": "00000000000000000000000000000101"
+      },
+      {
+        "row": "inverted",
+        "value": "4294967290",
+        "pattern": "11111111111111111111111111111010"
+      },
+      {
+        "row": "opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "first",
+        "value": "3",
+        "pattern": "00000000000000000000000000000011"
+      },
+      {
+        "row": "add-opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "result",
+        "value": "4294967294",
+        "pattern": ""
+      }
+    ],
+    "result": "11111111111111111111111111111110",
+    "maxDelta": 0,
+    "scroll": [
+      {
+        "client": 942,
+        "scroll": 942
+      }
+    ],
+    "font": "12px",
+    "height": 544.125,
+    "pageWidth": 1280,
+    "scrollWidth": 1280,
+    "link": [
+      {
+        "href": "#/lesson/four-bit-arithmetic",
+        "label": "Module 1, lesson 3: Arithmetic with four bits"
+      }
+    ],
+    "beforeCards": true,
+    "errors": []
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "choice": "identical",
+    "text": "Subtraction in bitsThese rows break down a single sub instruction with 32 places. Keep the lowest 32 bits after each addition.Bits run from 31 on the left to 0 on the right.Second input: 500000000000000000000000000000101Invert every bit11111111111111111111111111111010Add 1: Opposite pattern11111111111111111111111111111011First input: 300000000000000000000000000000011Opposite pattern+11111111111111111111111111111011Final w0 bits from both calls=w00xfffffffe11111111111111111111111111111110For the smaller example, revisit Module 1, lesson 3: Arithmetic with four bits.",
+    "rows": [
+      {
+        "row": "second",
+        "value": "5",
+        "pattern": "00000000000000000000000000000101"
+      },
+      {
+        "row": "inverted",
+        "value": "4294967290",
+        "pattern": "11111111111111111111111111111010"
+      },
+      {
+        "row": "opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "first",
+        "value": "3",
+        "pattern": "00000000000000000000000000000011"
+      },
+      {
+        "row": "add-opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "result",
+        "value": "4294967294",
+        "pattern": ""
+      }
+    ],
+    "result": "11111111111111111111111111111110",
+    "maxDelta": 0,
+    "scroll": [
+      {
+        "client": 942,
+        "scroll": 942
+      }
+    ],
+    "font": "12px",
+    "height": 544.125,
+    "pageWidth": 1280,
+    "scrollWidth": 1280,
+    "link": [
+      {
+        "href": "#/lesson/four-bit-arithmetic",
+        "label": "Module 1, lesson 3: Arithmetic with four bits"
+      }
+    ],
+    "beforeCards": true,
+    "errors": []
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "choice": "differ",
+    "text": "Subtraction in bitsThese rows break down a single sub instruction with 32 places. Keep the lowest 32 bits after each addition.Bits run from 31 on the left to 0 on the right.Second input: 500000000000000000000000000000101Invert every bit11111111111111111111111111111010Add 1: Opposite pattern11111111111111111111111111111011First input: 300000000000000000000000000000011Opposite pattern+11111111111111111111111111111011Final w0 bits from both calls=w00xfffffffe11111111111111111111111111111110For the smaller example, revisit Module 1, lesson 3: Arithmetic with four bits.",
+    "rows": [
+      {
+        "row": "second",
+        "value": "5",
+        "pattern": "00000000000000000000000000000101"
+      },
+      {
+        "row": "inverted",
+        "value": "4294967290",
+        "pattern": "11111111111111111111111111111010"
+      },
+      {
+        "row": "opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "first",
+        "value": "3",
+        "pattern": "00000000000000000000000000000011"
+      },
+      {
+        "row": "add-opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "result",
+        "value": "4294967294",
+        "pattern": ""
+      }
+    ],
+    "result": "11111111111111111111111111111110",
+    "maxDelta": 0,
+    "scroll": [
+      {
+        "client": 942,
+        "scroll": 942
+      }
+    ],
+    "font": "12px",
+    "height": 544.125,
+    "pageWidth": 1280,
+    "scrollWidth": 1280,
+    "link": [
+      {
+        "href": "#/lesson/four-bit-arithmetic",
+        "label": "Module 1, lesson 3: Arithmetic with four bits"
+      }
+    ],
+    "beforeCards": true,
+    "errors": []
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "choice": "identical",
+    "text": "Subtraction in bitsThese rows break down a single sub instruction with 32 places. Keep the lowest 32 bits after each addition.Bits run from 31 on the left to 0 on the right.Second input: 500000000000000000000000000000101Invert every bit11111111111111111111111111111010Add 1: Opposite pattern11111111111111111111111111111011First input: 300000000000000000000000000000011Opposite pattern+11111111111111111111111111111011Final w0 bits from both calls=w00xfffffffe11111111111111111111111111111110For the smaller example, revisit Module 1, lesson 3: Arithmetic with four bits.",
+    "rows": [
+      {
+        "row": "second",
+        "value": "5",
+        "pattern": "00000000000000000000000000000101"
+      },
+      {
+        "row": "inverted",
+        "value": "4294967290",
+        "pattern": "11111111111111111111111111111010"
+      },
+      {
+        "row": "opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "first",
+        "value": "3",
+        "pattern": "00000000000000000000000000000011"
+      },
+      {
+        "row": "add-opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "result",
+        "value": "4294967294",
+        "pattern": ""
+      }
+    ],
+    "result": "11111111111111111111111111111110",
+    "maxDelta": 0,
+    "scroll": [
+      {
+        "client": 317,
+        "scroll": 317
+      }
+    ],
+    "font": "12px",
+    "height": 595.265625,
+    "pageWidth": 375,
+    "scrollWidth": 375,
+    "link": [
+      {
+        "href": "#/lesson/four-bit-arithmetic",
+        "label": "Module 1, lesson 3: Arithmetic with four bits"
+      }
+    ],
+    "beforeCards": true,
+    "errors": []
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "choice": "differ",
+    "text": "Subtraction in bitsThese rows break down a single sub instruction with 32 places. Keep the lowest 32 bits after each addition.Bits run from 31 on the left to 0 on the right.Second input: 500000000000000000000000000000101Invert every bit11111111111111111111111111111010Add 1: Opposite pattern11111111111111111111111111111011First input: 300000000000000000000000000000011Opposite pattern+11111111111111111111111111111011Final w0 bits from both calls=w00xfffffffe11111111111111111111111111111110For the smaller example, revisit Module 1, lesson 3: Arithmetic with four bits.",
+    "rows": [
+      {
+        "row": "second",
+        "value": "5",
+        "pattern": "00000000000000000000000000000101"
+      },
+      {
+        "row": "inverted",
+        "value": "4294967290",
+        "pattern": "11111111111111111111111111111010"
+      },
+      {
+        "row": "opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "first",
+        "value": "3",
+        "pattern": "00000000000000000000000000000011"
+      },
+      {
+        "row": "add-opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "result",
+        "value": "4294967294",
+        "pattern": ""
+      }
+    ],
+    "result": "11111111111111111111111111111110",
+    "maxDelta": 0,
+    "scroll": [
+      {
+        "client": 317,
+        "scroll": 317
+      }
+    ],
+    "font": "12px",
+    "height": 595.265625,
+    "pageWidth": 375,
+    "scrollWidth": 375,
+    "link": [
+      {
+        "href": "#/lesson/four-bit-arithmetic",
+        "label": "Module 1, lesson 3: Arithmetic with four bits"
+      }
+    ],
+    "beforeCards": true,
+    "errors": []
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "choice": "identical",
+    "text": "Subtraction in bitsThese rows break down a single sub instruction with 32 places. Keep the lowest 32 bits after each addition.Bits run from 31 on the left to 0 on the right.Second input: 500000000000000000000000000000101Invert every bit11111111111111111111111111111010Add 1: Opposite pattern11111111111111111111111111111011First input: 300000000000000000000000000000011Opposite pattern+11111111111111111111111111111011Final w0 bits from both calls=w00xfffffffe11111111111111111111111111111110For the smaller example, revisit Module 1, lesson 3: Arithmetic with four bits.",
+    "rows": [
+      {
+        "row": "second",
+        "value": "5",
+        "pattern": "00000000000000000000000000000101"
+      },
+      {
+        "row": "inverted",
+        "value": "4294967290",
+        "pattern": "11111111111111111111111111111010"
+      },
+      {
+        "row": "opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "first",
+        "value": "3",
+        "pattern": "00000000000000000000000000000011"
+      },
+      {
+        "row": "add-opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "result",
+        "value": "4294967294",
+        "pattern": ""
+      }
+    ],
+    "result": "11111111111111111111111111111110",
+    "maxDelta": 0,
+    "scroll": [
+      {
+        "client": 317,
+        "scroll": 317
+      }
+    ],
+    "font": "12px",
+    "height": 595.265625,
+    "pageWidth": 375,
+    "scrollWidth": 375,
+    "link": [
+      {
+        "href": "#/lesson/four-bit-arithmetic",
+        "label": "Module 1, lesson 3: Arithmetic with four bits"
+      }
+    ],
+    "beforeCards": true,
+    "errors": []
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "choice": "differ",
+    "text": "Subtraction in bitsThese rows break down a single sub instruction with 32 places. Keep the lowest 32 bits after each addition.Bits run from 31 on the left to 0 on the right.Second input: 500000000000000000000000000000101Invert every bit11111111111111111111111111111010Add 1: Opposite pattern11111111111111111111111111111011First input: 300000000000000000000000000000011Opposite pattern+11111111111111111111111111111011Final w0 bits from both calls=w00xfffffffe11111111111111111111111111111110For the smaller example, revisit Module 1, lesson 3: Arithmetic with four bits.",
+    "rows": [
+      {
+        "row": "second",
+        "value": "5",
+        "pattern": "00000000000000000000000000000101"
+      },
+      {
+        "row": "inverted",
+        "value": "4294967290",
+        "pattern": "11111111111111111111111111111010"
+      },
+      {
+        "row": "opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "first",
+        "value": "3",
+        "pattern": "00000000000000000000000000000011"
+      },
+      {
+        "row": "add-opposite",
+        "value": "4294967291",
+        "pattern": "11111111111111111111111111111011"
+      },
+      {
+        "row": "result",
+        "value": "4294967294",
+        "pattern": ""
+      }
+    ],
+    "result": "11111111111111111111111111111110",
+    "maxDelta": 0,
+    "scroll": [
+      {
+        "client": 317,
+        "scroll": 317
+      }
+    ],
+    "font": "12px",
+    "height": 595.265625,
+    "pageWidth": 375,
+    "scrollWidth": 375,
+    "link": [
+      {
+        "href": "#/lesson/four-bit-arithmetic",
+        "label": "Module 1, lesson 3: Arithmetic with four bits"
+      }
+    ],
+    "beforeCards": true,
+    "errors": []
+  }
+]

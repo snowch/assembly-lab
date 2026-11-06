@@ -38,6 +38,7 @@ it("teaches hexadecimal before the two readings and keeps their practice togethe
     leftType: "signed",
     rightType: "unsigned",
     workedReadings: true,
+    workedSubtraction: true,
     tripContext: true,
     intro: COPY.arithmeticBits.callIntro,
   });

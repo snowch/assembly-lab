@@ -210,6 +210,7 @@ const readings = splitLesson(onePatternThreeReadings, [
                 leftType: "signed",
                 rightType: "unsigned",
                 workedReadings: true,
+                workedSubtraction: true,
                 tripContext: true,
               },
             },
