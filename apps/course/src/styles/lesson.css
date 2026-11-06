@@ -351,6 +351,15 @@ figure.interactive > :not(figcaption):not(.figure-lead):not(.figure-after) {
   background: var(--bg-raised);
   box-shadow: var(--shadow-sm);
 }
+/* A call comparison contains several activities. Its own panels provide the
+   boundaries; one enclosing card would join them back into a single block. */
+figure.interactive:has(.al-compare-stages) > :not(figcaption):not(.figure-lead):not(.figure-after) {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
 .interactive-problem,
 .interactive-missing {
   color: var(--warn);

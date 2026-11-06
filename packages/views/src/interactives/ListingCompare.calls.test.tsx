@@ -199,6 +199,31 @@ describe("comparing the C return types by calling both listings", () => {
     callBoth();
     const work = container.querySelector("[data-subtraction-work]")!;
     expect(work).not.toBeNull();
+    const calls = container.querySelector('[data-comparison-stage="calls"]')!;
+    const results = container.querySelector(".al-compare-call-results")!;
+    expect(calls.parentElement).toBe(results.parentElement);
+    expect(calls).not.toContainElement(work as HTMLElement);
+    const arithmetic = work.closest('[data-comparison-section="arithmetic"]')!;
+    expect(
+      within(arithmetic as HTMLElement).getByRole("heading", { name: C.subtraction.heading }),
+    ).toBeInTheDocument();
+    expect(
+      within(work as HTMLElement).getByRole("heading", { name: C.subtraction.oppositeHeading }),
+    ).toBeInTheDocument();
+    expect(
+      within(work as HTMLElement).getByRole("heading", { name: C.subtraction.sumHeading }),
+    ).toBeInTheDocument();
+    const interpretation = container.querySelector(".al-compare-interpretation")!;
+    expect(interpretation.parentElement).toBe(arithmetic.parentElement);
+    expect(
+      within(interpretation as HTMLElement).getByRole("heading", { name: C.readingsHeading }),
+    ).toBeInTheDocument();
+    expect(
+      within(interpretation as HTMLElement).getByRole("heading", { name: C.weightsHeading }),
+    ).toBeInTheDocument();
+    expect(interpretation).toContainElement(
+      container.querySelector("[data-return-explanation]") as HTMLElement,
+    );
     const expected = {
       second: 5,
       inverted: 4294967290,

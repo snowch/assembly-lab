@@ -10,45 +10,62 @@
 
 /* ---- The register to read, with the top bit's table ---- */
 
-/* Source, instruction prediction and independent calls stay in three sibling sections. */
-.al-compare-stages > .al-compare-stage {
-  display: grid;
-  min-width: 0;
-  gap: var(--space-3);
-  margin: 0;
-}
-.al-compare-stages > .al-compare-stage + .al-compare-stage {
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--border);
-}
-.al-compare-stage > h3 {
-  margin: 0;
-  font-size: var(--text-md);
-}
-.al-compare-stage > .al-compare-inputs,
-.al-compare-stage > .al-compare-summary {
-  margin: 0;
-}
-.al-compare-stage > .al-prediction {
-  gap: var(--space-3);
-}
-
-/* C-type comparisons reveal paired source first, then run two independent calls together. */
-.al-compare-calls,
+/* The composite comparison sits on the page canvas. Each action has a local panel;
+   the returned calculation and its C interpretation have their own sections. */
+.al-compare-stages.al-figure,
 .al-compare-call-results {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-7);
+}
+.al-compare-stages > .al-compare-stage,
+.al-compare-output-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: var(--space-4);
+  margin: 0;
+}
+.al-compare-stage > h3,
+.al-compare-output-section > h3 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.al-compare-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-sm);
+}
+.al-compare-source-panel > .al-pair-sides,
+.al-compare-source-panel > .al-compare-c {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  min-width: 0;
+}
+.al-compare-source-panel > .al-pair-sides > *,
+.al-compare-source-panel .al-listing,
+.al-compare-source-panel .al-c {
+  min-width: 0;
+  max-width: 100%;
+}
+.al-compare-panel > .al-compare-inputs,
+.al-compare-panel > .al-compare-summary {
+  margin: 0;
+}
+.al-compare-prediction-panel > .al-prediction {
   gap: var(--space-3);
-  margin-top: var(--space-3);
 }
 .al-compare-call-controls {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-}
-.al-compare-call-results > .al-compare-shared-word {
-  min-width: 0;
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--border);
 }
 .al-compare-call-results p {
   margin: 0;
@@ -57,16 +74,35 @@
   margin-bottom: var(--space-2);
   font-weight: 600;
 }
-/* The same returned word closes the subtraction working. Every byte occupies
-   the same columns, including when its label takes more than one line. */
+/* The opposite is constructed before it is added. The two chunks explain one
+   instruction, with aligned bytes and a single returned word closing the sum. */
 .al-subtraction-work {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
-  gap: var(--space-2);
-  padding-top: var(--space-3);
+  gap: var(--space-3);
+}
+.al-subtraction-chunks {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+}
+.al-subtraction-chunk {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  min-width: 0;
+  gap: var(--space-4);
+}
+.al-subtraction-chunk + .al-subtraction-chunk {
+  padding-top: var(--space-5);
   border-top: 1px solid var(--border);
 }
-.al-subtraction-heading,
+.al-subtraction-chunk > h4,
+.al-compare-weights > h4 {
+  margin: 0;
+  font-size: var(--text-md);
+}
 .al-subtraction-result > p {
   font-weight: 600;
 }
@@ -75,15 +111,21 @@
   font-size: var(--text-sm);
   color: var(--fg-muted);
 }
+.al-subtraction-panel > .al-subtraction-reminder {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
 .al-subtraction-scroll {
   min-width: 0;
+  max-width: 100%;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 .al-subtraction-calculation {
   display: grid;
   min-width: 17rem;
   max-width: 38rem;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 .al-subtraction-row {
   display: grid;
@@ -118,14 +160,8 @@
   letter-spacing: 0;
   text-align: center;
 }
-.al-subtraction-sum {
-  display: grid;
-  gap: var(--space-2);
-  padding-top: var(--space-2);
-  border-top: 1px dashed var(--border-strong);
-}
 .al-subtraction-result {
-  padding-top: var(--space-2);
+  padding-top: var(--space-3);
   border-top: 2px solid var(--border-strong);
 }
 .al-subtraction-returned {
@@ -171,14 +207,16 @@
 }
 .al-compare-readings {
   display: grid;
-  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
 }
 .al-compare-reading {
   min-width: 0;
-  padding: var(--space-3);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   background: var(--bg-raised);
+  box-shadow: var(--shadow-sm);
 }
 .al-compare-reading .al-compare-reading-function {
   margin-bottom: var(--space-1);
@@ -189,7 +227,7 @@
   font-weight: 600;
 }
 .al-compare-reading .al-compare-reading-value {
-  margin-top: var(--space-1);
+  margin-top: var(--space-2);
   font-family: var(--font-mono);
   font-size: clamp(1.35rem, 4vw, 1.75rem);
   font-weight: 650;
@@ -197,14 +235,14 @@
   overflow-wrap: anywhere;
 }
 .al-compare-reading .al-compare-reading-meaning {
-  margin-top: var(--space-2);
+  margin-top: var(--space-3);
 }
 .al-compare-reading .al-compare-reading-range {
   margin-top: var(--space-2);
   color: var(--fg-muted);
   font-size: var(--text-sm);
 }
-.al-compare-calls .al-compare-summary {
+.al-compare-interpretation > .al-compare-summary {
   margin: 0;
   font-size: var(--text-sm);
   font-weight: 400;
@@ -212,26 +250,42 @@
 }
 .al-compare-weights {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
-  gap: var(--space-3);
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--border);
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}
+/* Reminder links remain reachable when their text fits on one phone line. */
+.al-subtraction-reminder a,
+.al-compare-weights > p a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  max-width: 100%;
+}
+.al-compare-weight-panel {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: var(--space-3);
 }
 .al-compare-weight-table {
   width: 100%;
+  min-width: 18.75rem;
   border-collapse: collapse;
   table-layout: fixed;
 }
+.al-compare-weight-label {
+  width: 26%;
+}
 .al-compare-weight-table th,
 .al-compare-weight-table td {
-  padding: var(--space-2) var(--space-1);
+  padding: var(--space-3) var(--space-1);
   text-align: right;
   vertical-align: top;
   border-bottom: 1px solid var(--border);
 }
 .al-compare-weight-table th:first-child,
 .al-compare-weight-table thead td {
-  width: 24%;
   text-align: left;
 }
 .al-compare-weight-table th {
@@ -242,10 +296,16 @@
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow-wrap: normal;
 }
 .al-compare-weight-table td span {
   display: inline-block;
   white-space: nowrap;
+}
+.al-compare-weight-table thead th + th,
+.al-compare-weight-table tbody td + td {
+  border-left: 1px solid var(--border);
 }
 .al-compare-weight-table [data-weight-row="lower"] td,
 .al-compare-weight-table [data-weight-row="top-bit"] td {
@@ -257,11 +317,26 @@
   border-bottom: 0;
 }
 @media (min-width: 36rem) {
+  .al-compare-panel,
+  .al-compare-reading {
+    padding: var(--space-5);
+  }
   .al-compare-readings {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .al-compare-weight-table td {
     font-size: var(--text-sm);
+  }
+}
+@media (min-width: 62rem) {
+  .al-subtraction-chunks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .al-subtraction-chunk + .al-subtraction-chunk {
+    padding-top: 0;
+    padding-left: var(--space-5);
+    border-top: 0;
+    border-left: 1px solid var(--border);
   }
 }
 

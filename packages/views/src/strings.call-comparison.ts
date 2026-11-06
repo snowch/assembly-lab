@@ -15,6 +15,8 @@ export const CALL_COMPARISON_STRINGS = {
   differentBits: "The calls returned different bits in w0.",
   subtraction: {
     heading: "Subtraction in bits",
+    oppositeHeading: "Construct the opposite pattern",
+    sumHeading: "Add the opposite pattern",
     calculationNote: (width: number) =>
       `These rows break down a single \`sub\` instruction with ${width} places. Keep the lowest ${width} bits after each addition.`,
     second: (value: string) => `Second input: ${value}`,
@@ -28,6 +30,8 @@ export const CALL_COMPARISON_STRINGS = {
     reminder: "For the smaller example, revisit",
     link: "Arithmetic with four bits",
   },
+  readingsHeading: "C return values",
+  weightsHeading: "How the bits give the C values",
   signedType: "int (signed)",
   unsignedType: "unsigned int",
   distanceValue: (value: string) => `${value} km`,
