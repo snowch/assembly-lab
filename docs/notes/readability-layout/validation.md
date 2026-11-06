@@ -4,6 +4,8 @@ Copyright © 2026 Christopher Snow
 
 ## Coverage and source fidelity
 
+The course-wide content counts below describe commit `7838858`, before the subsequent comparison-stage UI change. That follow-up and its separately authored strings are recorded in [comparison-stage validation](../comparison-stages/validation.md).
+
 Audited all 75 published lesson routes exactly once:27 early,22 middle,26 late; recorded change/no-change reasons. The exported final course has 52 changed lesson objects and 23 retained. The course plan was retained after review; Where next was reformatted. All 77 routes therefore have decisions.
 
 Independent recursive baseline/final comparison found only 70 changed string leaves:65 prose,4 tasks,1 figure intro. Lesson/section/interactive counts and ordering, module positions, programs, original compiler references, checked sourceLines, model inputs, tests, hints, answers and gate identifiers are unchanged. Five interim native pacing-boundary issues were corrected and verified in the final exported objects, with regression assertions for complete lists, terminal guidance and command blocks.
@@ -21,3 +23,5 @@ The first exact npm run check passed format, copyright, platform integrity and t
 The third affected file passed all 32 tests in its focused serial rerun. The original full-run timeouts remain recorded above; no component or test code was changed to obtain these focused passes.
 
 The fresh exact-check run passed all 184 unit/integration files and all 3203 tests, built successfully, and proceeded to its full educational browser suite. Fresh CI on the final commit remains the merge gate; this success does not alter the earlier timeout run.
+
+The local browser continuation of that successful unit/build run was stopped when the user requested comparison-stage separation. A fresh exact check covers the combined final change; its result is recorded with the comparison-stage validation. No complete browser pass is claimed for the interrupted run.

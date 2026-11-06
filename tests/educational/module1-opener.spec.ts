@@ -30,8 +30,31 @@ for (const width of [360, 375, 416, 1280]) {
         ),
       ).toHaveCount(0);
       await expect(figure.locator(".al-compare-inputs")).toHaveText(C.startingInputs("3, 5"));
+      const source = figure.locator('[data-comparison-stage="source"]');
+      const prediction = figure.locator('[data-comparison-stage="prediction"]');
+      const calls = figure.locator('[data-comparison-stage="calls"]');
+      await expect(source.getByRole("heading")).toHaveText(C.sourceHeading);
+      await expect(prediction.getByRole("heading")).toHaveText(C.predictionHeading);
+      await expect(calls.getByRole("heading")).toHaveText(C.callHeading);
+      await expect(calls.getByRole("button", { name: C.callBoth, exact: true })).toBeDisabled();
+      const separated = async () => {
+        const boxes = await Promise.all(
+          [source, prediction, calls].map((stage) => stage.boundingBox()),
+        );
+        expect(boxes.every(Boolean)).toBe(true);
+        for (let i = 1; i < boxes.length; i++) {
+          const heading = await [source, prediction, calls][i]!.getByRole("heading").boundingBox();
+          // Include the stage's top padding: the heading needs a full 32px from the previous stage.
+          expect(heading!.y - (boxes[i - 1]!.y + boxes[i - 1]!.height)).toBeGreaterThanOrEqual(32);
+        }
+      };
+      await separated();
       await commit(page, "compare-int-unsigned", "The instructions are identical.");
-      await expect(figure.locator(".al-listing")).toHaveCount(2);
+      await expect(source.locator(".al-listing")).toHaveCount(2);
+      await expect(prediction).toContainText("Both listings use");
+      await expect(prediction).not.toContainText("After checking your prediction");
+      await expect(calls).toContainText("After checking your prediction");
+      await separated();
       await expect(
         figure.locator("[data-call-side], [data-return-bits], [data-return-explanation]"),
       ).toHaveCount(0);

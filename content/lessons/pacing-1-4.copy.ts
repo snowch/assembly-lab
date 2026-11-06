@@ -132,7 +132,9 @@ export const COPY = {
       { value: "different", label: "The instructions differ." },
     ],
     explain:
-      "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.\n\nPress **Call both functions**. Compare the returned bits and the calculation beneath them. It shows how each C return value comes from those bits.",
+      "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.",
+    callIntro:
+      "After checking your prediction, press **Call both functions**. Compare the returned bits and the calculation beneath them. It shows how each C return value comes from those bits.",
     boundsTitle: "C arithmetic has type rules",
     bounds:
       "C applies different rules to these two types:\n\n- **A negative `int` result can be valid.** Here `int` ranges from −2147483648 to 2147483647. A mathematical result outside that range is signed **overflow**. A negative value within this range does not overflow.\n- **Unsigned arithmetic wraps into range.** Here the range is 0 to 4294967295. A mathematical result below zero or above that maximum wraps back into range. Subtraction below zero follows this rule too.\n- **Signed arithmetic outside its range has no C guarantee.** For signed addition, subtraction and multiplication, an out-of-range result has **undefined behaviour**: C places no requirements on that case. For example, adding 1 to 2147483647 exceeds this `int` range. C guarantees neither wrapping nor an error.\n\nFor compiler examples and ways to check the bounds, see [C overflow and machine results](#/lesson/c-and-overflow).",

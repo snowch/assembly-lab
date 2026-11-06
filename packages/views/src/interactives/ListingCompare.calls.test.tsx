@@ -63,12 +63,22 @@ function callBoth() {
 
 describe("comparing the C return types by calling both listings", () => {
   it("gates instructions on the prediction and gates every returned value on the explicit call", () => {
-    const { container } = comparison();
+    const { container, store } = comparison();
+    const stages = [C.sourceHeading, C.predictionHeading, C.callHeading].map((name) =>
+      screen.getByRole("group", { name }),
+    );
+    for (let i = 1; i < stages.length; i++) {
+      expect(
+        stages[i - 1]!.compareDocumentPosition(stages[i]!) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+    }
     expect(container.querySelectorAll(".al-pane.al-c")).toHaveLength(2);
     expect(container).toHaveTextContent(C.startingInputs("3, 5"));
     expect(container.querySelector(".al-listing")).toBeNull();
     expect(container).not.toHaveTextContent("sub w0, w0, w1");
-    expect(screen.queryByRole("button", { name: C.callBoth })).toBeNull();
+    expect(screen.getByRole("button", { name: C.callBoth })).toBeDisabled();
+    callBoth();
+    expect(store.slot("typed-subtraction:calls")).toBeUndefined();
     expect(container.querySelector("[data-call-result]")).toBeNull();
     expect(container.querySelector("[data-return-explanation]")).toBeNull();
     fireEvent.click(screen.getByRole("radio", { name: "Same" }));
@@ -89,6 +99,10 @@ describe("comparing the C return types by calling both listings", () => {
       ]);
     }
     expect(container.querySelector(".al-source-connections")).toBeNull();
+    expect(stages[0]).toContainElement(listings[0] as HTMLElement);
+    expect(stages[1]).toContainElement(prediction as HTMLElement);
+    expect(stages[2]).toContainElement(screen.getByRole("button", { name: C.callBoth }));
+    expect(stages[1]).toHaveTextContent(S.compare.allSame(2));
     expect(screen.getByRole("button", { name: C.callBoth })).toBeEnabled();
     expect(container.querySelector("[data-call-result]")).toBeNull();
     expect(container.querySelector("[data-return-explanation]")).toBeNull();
@@ -317,6 +331,6 @@ describe("comparing the C return types by calling both listings", () => {
     expect(container.querySelector(".al-listing")).toBeNull();
     expect(container.querySelector("[data-call-result]")).toBeNull();
     expect(container.querySelector("[data-return-explanation]")).toBeNull();
-    expect(screen.queryByRole("button", { name: C.callBoth })).toBeNull();
+    expect(screen.getByRole("button", { name: C.callBoth })).toBeDisabled();
   });
 });

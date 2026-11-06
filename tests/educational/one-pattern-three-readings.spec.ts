@@ -77,7 +77,14 @@ test.describe("one subtraction with two C types", () => {
         ".al-insn, .al-outcome, [data-call-side], [data-return-bits], [data-return-explanation]",
       ),
     ).toHaveCount(0);
-    await expect(f.getByRole("button", { name: C.callBoth })).toHaveCount(0);
+    await expect(f.getByRole("button", { name: C.callBoth })).toBeDisabled();
+    const stages = f.locator('[data-comparison-stage][role="group"]');
+    await expect(stages).toHaveCount(3);
+    await expect(stages.getByRole("heading", { level: 3 })).toHaveText([
+      C.sourceHeading,
+      C.predictionHeading,
+      C.callHeading,
+    ]);
     await f.getByRole("radio", { name: "The instructions are identical.", exact: true }).check();
     await expect(
       f.locator(
