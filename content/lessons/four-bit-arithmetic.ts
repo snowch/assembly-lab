@@ -14,7 +14,7 @@ export const fourBitArithmetic: LessonInput = {
   sectionLayout: "selected",
   showTimeModelNotes: false,
   objectives: [...P.objectives],
-  introduces: ["carry", "invert", "flag", "ALU"],
+  introduces: ["carry", "invert", "flag"],
   sections: [
     {
       kind: "motivation",
@@ -77,22 +77,6 @@ export const fourBitArithmetic: LessonInput = {
           caption: P.practice.title,
           props: { afterChallenge: "subtract-four-bits", text: P.practice.solved },
           after: P.bridge,
-        },
-      ],
-    },
-    {
-      kind: "generalisation",
-      title: P.architecture.title,
-      prose: P.architecture.before,
-      interactives: [
-        {
-          id: "add-architecture",
-          kind: "add-architecture",
-          timeModel: "steps",
-          role: "experiment",
-          caption: P.architecture.caption,
-          props: {},
-          after: P.architecture.after,
         },
       ],
     },

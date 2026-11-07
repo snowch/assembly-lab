@@ -360,14 +360,6 @@ figure.interactive:has(.al-compare-stages) > :not(figcaption):not(.figure-lead):
   background: none;
   box-shadow: none;
 }
-figure.interactive:has(.al-add-architecture)
-  > :not(figcaption):not(.figure-lead):not(.figure-after) {
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  box-shadow: none;
-}
 .interactive-problem,
 .interactive-missing {
   color: var(--warn);

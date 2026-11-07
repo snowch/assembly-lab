@@ -7,12 +7,11 @@ export const FOUR_BIT_PROSE = {
     "Add bit patterns one column at a time.",
     "Subtract by inverting the second input, adding one, then adding that opposite to the first input.",
     "Keep the available bits when an extra carry appears.",
-    "Trace a 32-bit add from its input registers to its destination and inspect one column.",
   ],
   addition: {
     title: "Adding columns",
     before:
-      "These four-bit miniatures are not Arm registers.\n\n- Unsigned weights are 8, 4, 2, 1.\n- Signed weights are −8, 4, 2, 1.\n- The signed range is −8 to 7.\n\nAdd `0011` (3) and `0011` (3). A **carry** is a bit passed left from the previous column.\n\n1. Start at the right with carry 0.\n2. Add both bits and the incoming carry.\n3. Keep the rightmost bit of the sum. Pass the carry to the next column on the left, then repeat.\n\nFor example:\n\n- Binary `1 + 1 = 10`: keep 0, carry 1.\n- Binary `1 + 1 + 1 = 11`: keep 1, carry 1.\n\nPress Next column to reveal each calculation. Revealing a column does not execute another instruction.",
+      "These four-bit miniatures are not Arm registers.\n\n- Unsigned weights are 8, 4, 2, 1.\n- Signed weights are −8, 4, 2, 1.\n- The signed range is −8 to 7.\n\nAdd `0011` (3) and `0011` (3). A **carry** is a bit passed left from the previous column.\n\n1. Start at the right with carry 0.\n2. Add both bits and the incoming carry.\n3. Keep the rightmost bit of the sum. Pass the carry to the next column on the left, then repeat.\n\nIn the rightmost column, binary `1 + 1 + 0 = 10`: keep 0 and carry 1 left.\n\nAt bit 1, A and B are both 1, and the incoming carry adds a third 1: `1 + 1 + 1 = 11` in binary.\n\n- Keep the right-hand 1 in this column.\n- Carry the left-hand 1 one column left, where its place has twice the weight.\n\nPress Next column to reveal each calculation. Revealing a column does not execute another instruction.",
     caption: "Add 0011 and 0011, starting at the right.",
     after: "",
   },
@@ -62,16 +61,8 @@ export const FOUR_BIT_PROSE = {
     solved:
       "The opposite of `0011` is `1101`. Adding `0110` gives `10011`. Keeping the low four bits gives `0011`, read as 3. Discard the extra carry.",
   },
-  architecture: {
-    title: "An add instruction uses the ALU",
-    before:
-      "An arithmetic logic unit (ALU) performs arithmetic and logic operations. This instruction selects addition.\n\n`add w2, w0, w1` reads the 32-bit values in w0 and w1, adds them and writes the low 32 result bits to w2. Decimal values here use the unsigned reading.\n\nRun the instruction, then select a column to inspect its inputs, result bit and carry. Selecting a column changes the view without executing another instruction.",
-    caption: "One 32-bit add, from the input registers through the ALU to the destination.",
-    after:
-      "The next page applies subtraction with 32 places. Its `sub` instruction performs the subtraction as one instruction.",
-  },
   bridge:
-    "The arithmetic now uses 32 places. Follow one `add` instruction from its input registers to its destination.",
+    "The next page applies subtraction with 32 places. Its `sub` instruction performs the subtraction as one instruction.",
   fuelBridge:
     "The same rule now uses 32 places. The `sub` instruction performs the subtraction as one instruction.",
   laterBridge:
