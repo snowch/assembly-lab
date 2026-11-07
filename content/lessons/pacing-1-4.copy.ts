@@ -124,7 +124,7 @@ export const COPY = {
     intro:
       "The trip computer should show how much distance remains and how far you have gone beyond the plan. You planned 3 km and travelled 5 km. Can the returned distance express that you are beyond the plan?\n\nCompare two C functions that subtract the distance travelled from the planned distance. Their parameter and return types differ. You have already calculated this subtraction with four bits.\n\nOn this AArch64 target, both types use 32 bits:\n\n- `int` uses the signed reading.\n- `unsigned int` uses the unsigned reading.\n\nIn C, `unsigned` on its own means `unsigned int`.",
     caption:
-      "Two independent calls with planned = 3 km and travelled = 5 km. Predict the instructions, then call both functions to compare their returned bits and C values.",
+      "Two independent calls with planned = 3 km and travelled = 5 km. Predict the instructions, then press Run comparison to compare their returned bits and C values.",
     question:
       "Does changing these C types from `int` to `unsigned` change the instructions in the recorded GCC output?",
     options: [
@@ -134,7 +134,7 @@ export const COPY = {
     explain:
       "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.",
     callIntro:
-      "After checking your prediction, press **Call both functions**. Compare the returned bits and the calculation beneath them. It shows how each C return value comes from those bits.",
+      "After checking your prediction, press **Run comparison**. The simulator runs each function independently from the same starting arguments. Their matching returned bits appear once, with a separate C reading for each return type.",
     boundsTitle: "C arithmetic has type rules",
     bounds:
       "C applies different rules to these two types:\n\n- **A negative `int` result can be valid.** Here `int` ranges from −2147483648 to 2147483647. A mathematical result outside that range is signed **overflow**. A negative value within this range does not overflow.\n- **Unsigned arithmetic wraps into range.** Here the range is 0 to 4294967295. A mathematical result below zero or above that maximum wraps back into range. Subtraction below zero follows this rule too.\n- **Signed arithmetic outside its range has no C guarantee.** For signed addition, subtraction and multiplication, an out-of-range result has **undefined behaviour**: C places no requirements on that case. For example, adding 1 to 2147483647 exceeds this `int` range. C guarantees neither wrapping nor an error.\n\nFor compiler examples and ways to check the bounds, see [C overflow and machine results](#/lesson/c-and-overflow).",

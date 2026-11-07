@@ -138,8 +138,8 @@ export const VIEW_STRINGS = {
     table: "The two listings, line by line",
     same: "Same",
     differs: "Different",
-    allSame: (n: number) => `All ${n} instructions are the same.`,
-    notAllSame: "The instructions are not all the same.",
+    allSame: "Both listings have the same machine instructions.",
+    notAllSame: "The machine instructions differ between the listings.",
     /** The simulator's result for a question about two listings. */
     resultSame: "Both listings give the same instructions.",
     resultDiffer: "The two listings do not give the same instructions.",

@@ -123,7 +123,7 @@ test.describe("one subtraction with two C types", () => {
         f.locator("[data-call-side], [data-return-bits], [data-return-explanation]"),
       ).toHaveCount(0);
       await expect(f.getByRole("button", { name: C.callBoth })).toBeEnabled();
-      await expect(f.locator(".al-compare-summary")).toHaveText(V.compare.allSame(2));
+      await expect(f.locator(".al-compare-summary")).toHaveText(V.compare.allSame);
     });
   }
 

@@ -411,9 +411,7 @@ export const ListingCompare = withProps(
               {prediction}
               {committed && (
                 <p role="status" className="al-compare-summary">
-                  {rows.every((r) => r.same)
-                    ? S.compare.allSame(rows.length)
-                    : S.compare.notAllSame}
+                  {rows.every((r) => r.same) ? S.compare.allSame : S.compare.notAllSame}
                 </p>
               )}
             </div>
@@ -499,7 +497,7 @@ export const ListingCompare = withProps(
               ))}
             </ol>
             <p role="status" className="al-compare-summary">
-              {rows.every((r) => r.same) ? S.compare.allSame(rows.length) : S.compare.notAllSame}
+              {rows.every((r) => r.same) ? S.compare.allSame : S.compare.notAllSame}
             </p>
             <details className="al-source-connections">
               <summary>{S.listing.sourceConnections}</summary>

@@ -105,7 +105,7 @@ describe("comparing the C return types by calling both listings", () => {
     expect(stages[0]).toContainElement(listings[0] as HTMLElement);
     expect(stages[1]).toContainElement(prediction as HTMLElement);
     expect(stages[2]).toContainElement(screen.getByRole("button", { name: C.callBoth }));
-    expect(stages[1]).toHaveTextContent(S.compare.allSame(2));
+    expect(stages[1]).toHaveTextContent(S.compare.allSame);
     expect(screen.getByRole("button", { name: C.callBoth })).toBeEnabled();
     expect(container.querySelector("[data-call-result]")).toBeNull();
     expect(container.querySelector("[data-return-explanation]")).toBeNull();

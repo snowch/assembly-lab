@@ -125,7 +125,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
       "choose C types and checks that match what a trip’s returned distance should mean."
     ],
     "intro": "The trip computer should show how much distance remains and how far you have gone beyond the plan. You planned 3 km and travelled 5 km. Can the returned distance express that you are beyond the plan?\n\nCompare two C functions that subtract the distance travelled from the planned distance. Their parameter and return types differ. You have already calculated this subtraction with four bits.\n\nOn this AArch64 target, both types use 32 bits:\n\n- `int` uses the signed reading.\n- `unsigned int` uses the unsigned reading.\n\nIn C, `unsigned` on its own means `unsigned int`.",
-    "caption": "Two independent calls with planned = 3 km and travelled = 5 km. Predict the instructions, then call both functions to compare their returned bits and C values.",
+    "caption": "Two independent calls with planned = 3 km and travelled = 5 km. Predict the instructions, then press Run comparison to compare their returned bits and C values.",
     "question": "Does changing these C types from `int` to `unsigned` change the instructions in the recorded GCC output?",
     "options": [
       {
@@ -138,7 +138,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
       }
     ],
     "explain": "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.",
-    "callIntro": "After checking your prediction, press **Call both functions**. Compare the returned bits and the calculation beneath them. It shows how each C return value comes from those bits.",
+    "callIntro": "After checking your prediction, press **Run comparison**. The simulator runs each function independently from the same starting arguments. Their matching returned bits appear once, with a separate C reading for each return type.",
     "boundsTitle": "C arithmetic has type rules",
     "bounds": "C applies different rules to these two types:\n\n- **A negative `int` result can be valid.** Here `int` ranges from −2147483648 to 2147483647. A mathematical result outside that range is signed **overflow**. A negative value within this range does not overflow.\n- **Unsigned arithmetic wraps into range.** Here the range is 0 to 4294967295. A mathematical result below zero or above that maximum wraps back into range. Subtraction below zero follows this rule too.\n- **Signed arithmetic outside its range has no C guarantee.** For signed addition, subtraction and multiplication, an out-of-range result has **undefined behaviour**: C places no requirements on that case. For example, adding 1 to 2147483647 exceeds this `int` range. C guarantees neither wrapping nor an error.\n\nFor compiler examples and ways to check the bounds, see [C overflow and machine results](#/lesson/c-and-overflow).",
     "contract": "Decide what the function should return when the trip exceeds its plan: a negative distance, zero, or a separate error report. That choice determines the C types and any checks the function needs. Changing the types alone does not add a check.",
@@ -597,7 +597,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
 - C source: N3096 section 6.2.5 paragraph 11 defines unsigned arithmetic modulo the type range. Section 6.5 paragraph 5 gives undefined behaviour when an expression result is outside its type’s representable range. Minus 2 fits signed `int` here.
 - Proposed misconception checks: the instruction prediction distinguishes a belief in separate signed subtraction instructions. The visible returned bits and typed values distinguish arithmetic from interpretation. Local bounds prose distinguishes a negative result from signed overflow, and defined unsigned wrap from undefined signed arithmetic. These are design hypotheses, not observed learner findings.
 - Scope: one comparison, two independent calls, and a short application asking what to check before subtraction when the function must return zero beyond the plan. No assembly branches are introduced. Flags, overflow-checking code, mixed-type conversions and compiler optimisation examples remain later.
-- State: prediction reveals listings, then Call both functions runs both independently. The result’s practical meaning, unsigned-wrap explanation, lack of an error report and bit-weight calculations appear only after the call. Reset calls removes these results and retains the checked prediction; restored calls recompute from current inputs.
+- State: prediction reveals listings, then Run comparison runs both independently. The result’s practical meaning, unsigned-wrap explanation, lack of an error report and bit-weight calculations appear only after the call. Reset comparison removes these results and retains the checked prediction; restored calls recompute from current inputs.
 - Technical scope: the recorded `sub` and `ret` leave condition flags unchanged, pinned with both initial flag patterns in the facts test. The page says in plain language that neither instruction reports an arithmetic error, avoiding an early flags lesson. The returned unsigned number has no automatic wrap indicator; the same value can be legitimate elsewhere. Parameter types determine the subtraction in these two functions, while the return type determines the caller’s reading. A return type alone does not generally determine an expression’s arithmetic type.
 - Terms: the published page first defines overflow and undefined behaviour. Published addition keeps carry and flag as its new terms. Legacy source lessons retain their original metadata.
 - Inspection: source and recorded listings read; browser review and independent technical/learner review pending. No beginner observation has taken place.
@@ -613,12 +613,12 @@ UI labels were drafted in a separate drafting agent from the engineer’s checke
 export const CALL_COMPARISON_STRINGS = {
   sourceHeading: "Inspect the functions",
   predictionHeading: "Predict the instructions",
-  callHeading: "Call and compare",
+  callHeading: "Run and compare",
   startingInputs: (argsText: string) =>
     `Starting arguments for each independent call: ${argsText}.`,
-  callBoth: "Call both functions",
-  resetCalls: "Reset calls",
-  sharedReturnedBits: "Final w0 bits from both calls",
+  callBoth: "Run comparison",
+  resetCalls: "Reset comparison",
+  sharedReturnedBits: "Returned w0 bits shared by both calls",
   returnedBits: (functionName: string) => `Final w0 bits when ${functionName} returns`,
   sameBits: "Both calls returned the same bits in w0.",
   differentBits: "The calls returned different bits in w0.",

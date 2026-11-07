@@ -71,7 +71,9 @@ export const MODULE0_STRINGS = {
     map: "The C parameters and the registers they arrive in",
     // DRAFT: `count` is how many arguments the function takes.
     caption: (count: number) =>
-      `Each \`int\` is 32 bits. The ${count} arguments are placed in registers in order.`,
+      count === 1
+        ? "Each `int` is 32 bits. The argument is placed in a register."
+        : `Each \`int\` is 32 bits. The ${count} arguments are placed in registers in order.`,
     // DRAFT: `instruction` is the first instruction, already in backticks.
     says: (instruction: string) => `The first instruction is ${instruction}.`,
     // DRAFT

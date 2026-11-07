@@ -324,6 +324,26 @@ describe("one compare, every condition", () => {
 });
 
 describe("the prediction about how many instructions run", () => {
+  it("reports a one-instruction return without a plural noun, after the prediction", () => {
+    const { container } = figure("count-prediction", "one", {
+      question: "How many instructions run?",
+      options: [
+        { value: "1", label: "One" },
+        { value: "2", label: "Two" },
+      ],
+      program: { c: "void finish(void) {}", listing: "finish:\n  ret C1" },
+      call: { entry: "finish", args: [] },
+    });
+    expect(container.querySelector(".al-outcome")).toBeNull();
+    fireEvent.click(screen.getByRole("radio", { name: /^One$/ }));
+    fireEvent.click(screen.getByRole("button", { name: S.prediction.commit }));
+    expect(container.querySelector(".al-match")).toBeVisible();
+    expect(container.querySelector(".al-outcome")).toHaveTextContent(
+      /1 instruction, including ret/,
+    );
+    expect(container.querySelector(".al-outcome")).not.toHaveTextContent("1 instructions");
+  });
+
   const props = {
     question: "**How many?**",
     options: [
