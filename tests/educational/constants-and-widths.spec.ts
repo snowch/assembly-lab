@@ -112,12 +112,25 @@ test.describe("the prediction about which numbers fit", () => {
       await expect(figure.locator(match ? ".al-match" : ".al-nomatch")).toContainText(
         match ? V.prediction.match : V.prediction.noMatch,
       );
-      // The model's own result: the assembler took 65536, and refused the other three.
-      await expect(figure.locator(".al-outcome")).toContainText(
-        V.fits.one("65536", 3).replace(/`/g, ""),
+      await expect(figure.locator(match ? ".al-match" : ".al-nomatch")).toContainText(
+        V.fits.selected(option, match).replace(/`/g, ""),
       );
+      await expect(figure.locator(".al-prediction-detail")).toContainText(
+        match ? V.fits.guaranteed : V.fits.notGuaranteed,
+      );
+      if (!match)
+        await expect(figure.locator(".al-prediction-detail")).toContainText(
+          V.fits.one("65536").replace(/`/g, ""),
+        );
       await expect(figure.locator(".al-outcome .prose")).toContainText(
         PROSE.predictionExplain.replace(/`/g, ""),
+      );
+      await page.reload();
+      await expect(figure.locator(match ? ".al-match" : ".al-nomatch")).toContainText(
+        V.fits.selected(option, match).replace(/`/g, ""),
+      );
+      await expect(figure.locator(".al-prediction-detail")).toContainText(
+        match ? V.fits.guaranteed : V.fits.notGuaranteed,
       );
     });
   }

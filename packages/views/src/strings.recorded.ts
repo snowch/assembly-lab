@@ -7,4 +7,5 @@ export const RECORDED_STRINGS = {
   token: (value: string) => `The recorded listing contains ${value}.`,
   result: (value: string) => `The A64 simulator returns ${value}.`,
   wrong: "Check the specified listing or run, then try this field again.",
+  numberRequired: "Enter a whole number in decimal, or in hexadecimal beginning with `0x`.",
 } as const;

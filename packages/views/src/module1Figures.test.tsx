@@ -175,7 +175,7 @@ describe("the prediction about which constant fits", () => {
     expect(container.querySelector(".al-outcome")).toBeNull();
     await user.click(screen.getByRole("button", { name: S.prediction.commit }));
     expect(container.querySelector(".al-match")).toHaveTextContent(
-      S.fits.one("65536", 3).replaceAll("`", ""),
+      S.fits.selected("65536", true).replaceAll("`", ""),
     );
   });
 
@@ -185,9 +185,16 @@ describe("the prediction about which constant fits", () => {
     await user.click(screen.getByRole("radio", { name: "1000000" }));
     await user.click(screen.getByRole("button", { name: S.prediction.commit }));
     expect(container.querySelector(".al-nomatch")).toHaveTextContent(
-      S.fits.one("65536", 3).replaceAll("`", ""),
+      S.fits.selected("1000000", false).replaceAll("`", ""),
     );
     expect(container.querySelector(".al-chose")).toHaveTextContent("1000000");
+    expect(container.querySelector(".al-prediction-detail")).toHaveTextContent(
+      S.fits.notGuaranteed,
+    );
+    expect(container.querySelector(".al-prediction-detail")).toHaveTextContent("0x000f 4240");
+    expect(container.querySelector(".al-prediction-detail")).toHaveTextContent(
+      S.fits.one("65536").replaceAll("`", ""),
+    );
   });
 });
 

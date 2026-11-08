@@ -137,7 +137,7 @@ describe("bit-readings", () => {
     expect(v.failures.map((f) => f.label)).toEqual(["the bits"]);
     const w = grade(bits, { answers: { bits: "1".repeat(32), unsigned: "4294967284" } });
     expect(w.failures.map((f) => f.label)).toEqual(["its unsigned reading"]);
-    expect(w.failures[0]?.detail).toBe(S.readings.notThis);
+    expect(w.failures[0]?.detail).toBe(S.readings.notThis("its unsigned reading", "unsigned"));
   });
 });
 
@@ -166,9 +166,12 @@ describe("pattern-readings", () => {
     expect(v.failures.map((f) => f.label)).toEqual(["u1"]);
   });
 
-  it("answers a wrong reading with a sentence that is the same for every wrong answer", () => {
+  it("identifies each wrong field and the reading to recheck without disclosing its value", () => {
     const v = grade(patterns, { answers: { u1: "1", s1: "2", u2: "42", s2: "42" } });
-    expect(v.failures.map((f) => f.detail)).toEqual([S.readings.notThis, S.readings.notThis]);
+    expect(v.failures.map((f) => f.detail)).toEqual([
+      S.readings.notThis("field u1", "unsigned"),
+      S.readings.notThis("field s1", "signed"),
+    ]);
     expect(JSON.stringify(v)).not.toContain("4294967096");
   });
 

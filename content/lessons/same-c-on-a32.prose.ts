@@ -27,8 +27,12 @@ export const PROSE = {
     "For the return, enter the instruction name before `lr`, not the register name itself.",
     "Enter `movcs` for the conditional move and `bx` for the return instruction.",
   ],
-  readFeedback:
-    "The answers are checked against instruction tokens in the recorded compiler output.",
+  readFeedback: {
+    return:
+      "Find the return line on the A32 side of the recorded limit function. Enter its instruction name only, without the register operand. The A64 return uses a different instruction.",
+    conditional:
+      "Find the conditional move on the A32 side of the recorded limit function. Enter its complete instruction name, including the condition suffix, without registers.",
+  },
   failureExperiment:
     "Take the conditional-move line from the A32 record and give it to the course's A64 assembler. The source still belongs to the A32 listing.\n\nThis checks whether the assembler accepts the line; it does not execute it.",
   failureQuestion: "**Will the course A64 assembler accept this recorded line?**",
@@ -50,8 +54,16 @@ export const PROSE = {
     "The A64 average divides two unsigned integers. Its whole-number quotient discards the fractional part.",
     "Enter `movw` for the A32 constant instruction, `__aeabi_uidiv` for the helper and `udiv` for the A64 division. The result for inputs 95 and 4 is 23.",
   ],
-  finalFeedback:
-    "Instruction and helper names are checked against the records. The numerical answer is checked against the A64 simulator.",
+  finalFeedback: {
+    constant:
+      "Find the instruction that loads the marker constant on the A32 side. Enter its instruction name only. Keep the letters that identify its 16-bit constant form.",
+    helper:
+      "Find the call in the recorded A32 average function. Enter the helper function name written after `bl`.",
+    divide:
+      "Find the division operation on the A64 side of the recorded average function. Enter its instruction name only, without registers.",
+    result:
+      "Run the A64 average with the stated inputs. Read `w0` when the function returns. Unsigned integer division discards the fractional part.",
+  },
   reflection:
     "- The same C calculation can use different instruction forms on different targets.\n- A32 register names are not narrower views of A64 registers.\n- An A32 condition suffix can control an instruction such as a move.\n- Target features can decide whether division uses an instruction or a helper call.\n- A recorded listing is evidence of one compiler configuration.\n\nWhen reading another architecture, begin with the values, the branches and the call boundaries you understand. Check its register rules and instruction syntax before treating familiar names as interchangeable.",
   modelVsReality: "",

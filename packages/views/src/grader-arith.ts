@@ -18,6 +18,7 @@
 // it does not (or is 0), which for the lesson's operand is the only such number.
 
 import { fieldList } from "./fields";
+import { wholeNumber } from "./readings";
 import type { Verdict, VerdictFailure } from "@platform/lesson-runtime";
 import type { AnswerField, Artifact, Challenge } from "@platform/lesson-schema";
 
@@ -53,12 +54,6 @@ function argsOf(given: Case["given"]): number[] {
 /** The answers to grade: the challenge's starting answers, then the learner's. */
 function answersOf(challenge: Challenge, artifact: Artifact): Record<string, string> {
   return { ...(challenge.initial.answers ?? {}), ...(artifact.answers ?? {}) };
-}
-
-/** A whole number written in decimal (no sign but a minus, no point); null if it is not one. */
-function wholeNumber(answer: string | undefined): bigint | null {
-  if (answer === undefined || !/^\s*-?\d+\s*$/.test(answer)) return null;
-  return BigInt(answer.trim());
 }
 
 function programOf(challenge: Challenge) {
@@ -184,8 +179,9 @@ export function gradeSmallest(challenge: Challenge, artifact: Artifact): Verdict
     };
     const answer = wholeNumber(answers[field]) ?? 0n;
     let detail: string | undefined;
-    if (answer < 1n || answer >= 2n ** 32n || !setsFlag(answer))
-      detail = A.grader.flagClear(flag.toUpperCase());
+    if (answer < 1n || answer >= 2n ** 32n)
+      detail = A.grader.operandRange((2n ** 32n).toLocaleString("en-GB"));
+    else if (!setsFlag(answer)) detail = A.grader.flagClear(flag.toUpperCase());
     else if (answer > 1n && setsFlag(answer - 1n)) detail = A.grader.notSmallest;
     if (detail !== undefined)
       failures.push({ index, label: plain(c.label), inputs: {}, actual: {}, expected: {}, detail });

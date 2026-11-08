@@ -285,6 +285,7 @@ export const shifts: LessonInput = {
           {
             label: LABELS.challenges.compare.tests.asr21,
             given: {
+              reading: "signed",
               entry: "asr_by_2",
               w0: 21,
               "feedback.asr21": PROSE.compareFeedback.asr,
@@ -294,6 +295,7 @@ export const shifts: LessonInput = {
           {
             label: LABELS.challenges.compare.tests.lsr21,
             given: {
+              reading: "signed",
               entry: "lsr_by_2",
               w0: 21,
               "feedback.lsr21": PROSE.compareFeedback.lsr,
@@ -303,6 +305,7 @@ export const shifts: LessonInput = {
           {
             label: LABELS.challenges.compare.tests.div21,
             given: {
+              reading: "signed",
               entry: "div_by_4",
               w0: 21,
               "feedback.div21": PROSE.compareFeedback.div,
@@ -312,6 +315,7 @@ export const shifts: LessonInput = {
           {
             label: LABELS.challenges.compare.tests.asrNeg,
             given: {
+              reading: "signed",
               entry: "asr_by_2",
               w0: -21,
               "feedback.asr_neg": PROSE.compareFeedback.asr,
@@ -321,6 +325,7 @@ export const shifts: LessonInput = {
           {
             label: LABELS.challenges.compare.tests.lsrNeg,
             given: {
+              reading: "signed",
               entry: "lsr_by_2",
               w0: -21,
               "feedback.lsr_neg": PROSE.compareFeedback.lsr,
@@ -330,6 +335,7 @@ export const shifts: LessonInput = {
           {
             label: LABELS.challenges.compare.tests.divNeg,
             given: {
+              reading: "signed",
               entry: "div_by_4",
               w0: -21,
               "feedback.div_neg": PROSE.compareFeedback.div,
@@ -369,17 +375,21 @@ export const shifts: LessonInput = {
         cases: [
           {
             label: LABELS.challenges.pick.tests.shrInt,
-            given: { entry: "shr3_int", w0: 1 },
+            given: { entry: "shr3_int", w0: 1, "feedback.shr_int": PROSE.pickFeedback.shr_int },
             expect: { shr_int: "instruction" },
           },
           {
             label: LABELS.challenges.pick.tests.shrUnsigned,
-            given: { entry: "shr3_unsigned", w0: 1 },
+            given: {
+              entry: "shr3_unsigned",
+              w0: 1,
+              "feedback.shr_unsigned": PROSE.pickFeedback.shr_unsigned,
+            },
             expect: { shr_unsigned: "instruction" },
           },
           {
             label: LABELS.challenges.pick.tests.shl,
-            given: { entry: "shl3_int", w0: 1 },
+            given: { entry: "shl3_int", w0: 1, "feedback.shl": PROSE.pickFeedback.shl },
             expect: { shl: "instruction" },
           },
         ],

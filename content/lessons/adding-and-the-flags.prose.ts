@@ -61,7 +61,7 @@ export const PROSE = {
   failureQuestion: "**After `add`, what do the flags show?**",
   failureExplain:
     "N and C are still 1, as `adds` left them. `add` wrote `0x80000000` to `w0` and left the flags alone.\n\n" +
-    "Had `add` calculated new flag values, they would be N 1, Z 0, C 0 and V 1. That is what `adds` gives for `0x7fffffff` plus 1 earlier in this lesson. Had `add` cleared them, all four would be 0.\n\n" +
+    "Had `add` calculated new flag values, they would be N 1, Z 0, C 0 and V 1. That is what `adds` gives for `0x7fffffff` plus 1 in [the earlier addition](#/lesson/adding-and-the-flags). Had `add` cleared them, all four would be 0.\n\n" +
     "Of `add`, `adds` and `sub`, only `adds` writes the flags.",
 
   explanation:

@@ -24,10 +24,12 @@ import type { AnswerField, Artifact, Challenge } from "@platform/lesson-schema";
 
 import { compareResult } from "./branch";
 import { failureDetail, fieldList } from "./fields";
+import { wholeNumber } from "./readings";
+import { flagDigits } from "./arith";
 import { RecordedSchema } from "./interactives/props";
 import { stopSentence } from "./messages";
 import { VIEW_STRINGS as S, plain } from "./strings";
-import { BRANCH_STRINGS as B } from "./strings.branch";
+import { BRANCH_STRINGS as B, CONDITION_ROWS } from "./strings.branch";
 import { traceOf, wValue } from "./trace";
 
 export const BRANCH_OUTCOMES = "branch-outcomes";
@@ -49,12 +51,6 @@ function argsOf(given: Case["given"]): number[] {
     args.push(Number(v));
   }
   return args;
-}
-
-/** A whole number written in decimal (no sign but a minus, no point); null if it is not one. */
-function wholeNumber(answer: string | undefined): bigint | null {
-  if (answer === undefined || !/^\s*-?\d+\s*$/.test(answer)) return null;
-  return BigInt(answer.trim());
 }
 
 export function gradeBranchOutcomes(challenge: Challenge, artifact: Artifact): Verdict {
@@ -98,9 +94,32 @@ export function gradeBranchOutcomes(challenge: Challenge, artifact: Artifact): V
       throw new Error(`${challenge.id}: ${kind} is neither w0, steps nor holds:<condition>`);
     });
     if (wrong.length === 0) return;
+    const given = { ...c.given };
+    for (const [field, what] of wrong) {
+      const own = String(c.given[`feedback.${field}`] ?? "");
+      const kind = String(what);
+      if (kind.startsWith("holds:")) {
+        const condition = kind.slice("holds:".length);
+        const measured = compareResult(args[0] ?? 0, args[1] ?? 0, [condition]);
+        const [n, z, carry, v] = flagDigits(measured.flags);
+        const rule = CONDITION_ROWS.find((row) => row.name === condition);
+        const action = own || (rule ? B.grader.conditionAction(condition, rule.reads) : "");
+        given[`feedback.${field}`] =
+          `${B.grader.conditionObservation(named(field), n, z, carry, v)} ${action}`;
+      } else if (kind === "steps") {
+        const program = RecordedSchema.parse(challenge.initial.data?.["program"]);
+        const trace = traceOf(program, { entry: String(c.given["entry"] ?? ""), args });
+        const submitted = wholeNumber(answers[field]) as bigint;
+        const lower = submitted < BigInt(trace.result.steps.length);
+        const observation = B.grader.countDirection(named(field), answers[field]!.trim(), lower);
+        given[`feedback.${field}`] = `${observation} ${own || B.grader.countAction}`;
+      } else if (!own) {
+        given[`feedback.${field}`] = B.grader.returnAction(named(field));
+      }
+    }
     const detail = failureDetail(
       wrong.map(([field]) => field),
-      c.given,
+      given,
       named,
       plain,
     );

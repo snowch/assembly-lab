@@ -110,7 +110,7 @@ export function gradeBitReadings(challenge: Challenge, artifact: Artifact): Verd
         if (!isPattern(bits)) throw new Error(`${challenge.id}: ${spec} is not 32 bits`);
         const want = BigInt(readingsOfPattern(bits)[way]);
         if (wholeNumber(answers[field]) !== want)
-          failures.push(failure(index, c, S.readings.notThis));
+          failures.push(failure(index, c, S.readings.notThis(nameOf(challenge, field), way)));
       }
     }
   });
@@ -131,7 +131,7 @@ export function gradePatternReadings(challenge: Challenge, artifact: Artifact): 
       if (way !== "unsigned" && way !== "signed")
         throw new Error(`${challenge.id}: ${String(way)} is not a reading`);
       if (wholeNumber(answers[field]) !== BigInt(readings[way]))
-        failures.push(failure(index, c, S.readings.notThis));
+        failures.push(failure(index, c, S.readings.notThis(nameOf(challenge, field), way)));
     }
   });
   return { passed: failures.length === 0, total, failures };

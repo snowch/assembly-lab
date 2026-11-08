@@ -4,11 +4,20 @@ import type { Artifact, Challenge } from "@platform/lesson-schema";
 import type { Verdict, VerdictFailure } from "@platform/lesson-runtime";
 import { z } from "zod";
 import { RecordedQuerySchema, recordedAnswer } from "./recorded";
-import { VIEW_STRINGS as S, plain } from "./strings";
+import { VIEW_STRINGS as S, plain, quoted } from "./strings";
+import { wholeNumber } from "./readings";
 import { RECORDED_STRINGS as R } from "./strings.recorded";
 
 export const RECORDED_TOKENS = "recorded-tokens";
 const normal = (value: string) => value.replaceAll("`", "").trim().toLowerCase();
+
+function numericAnswer(value: string): bigint | null {
+  const text = normal(value);
+  const decimal = wholeNumber(text.startsWith("+") ? text.slice(1) : text);
+  if (decimal !== null) return decimal;
+  const hex = /^([+-]?)(0x[0-9a-f]+)$/.exec(text.replaceAll("−", "-").replace(/\s/g, ""));
+  return hex ? (hex[1] === "-" ? -1n : 1n) * BigInt(hex[2] as string) : null;
+}
 export function gradeRecorded(challenge: Challenge, artifact: Artifact): Verdict {
   if (challenge.tests.kind !== "answers") throw new Error("Recorded queries require answer cases");
   const queries = z
@@ -35,14 +44,24 @@ export function gradeRecorded(challenge: Challenge, artifact: Artifact): Verdict
       const query = queries[String(key)];
       if (!query) throw new Error("Missing recorded query");
       const expected = recordedAnswer(query);
-      if (normal(answers[field] ?? "") !== normal(expected))
+      const answer = answers[field] ?? "";
+      const value = query.kind === "a64-result" ? numericAnswer(answer) : null;
+      const matches =
+        query.kind === "a64-result"
+          ? value !== null && value === BigInt(expected)
+          : normal(answer) === normal(expected);
+      if (!matches)
         failures.push({
           index,
           label: plain(c.label),
           inputs: {},
           actual: {},
           expected: {},
-          detail: String(c.given[`feedback.${field}`] ?? R.wrong),
+          detail: quoted(
+            query.kind === "a64-result" && value === null
+              ? R.numberRequired
+              : String(c.given[`feedback.${field}`] ?? R.wrong),
+          ),
         });
     }
   });

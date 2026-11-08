@@ -150,11 +150,15 @@ export const ARITH_STRINGS = {
   grader: {
     /** A flag that is 0 for the number the learner gave. */
     flagClear: (flag: string) => `${flag} is 0 for the number you gave.`,
+    operandRange: (maxExclusive: string) =>
+      `Use a positive whole number less than ${maxExclusive}. Your answer is outside this range, so the flag calculation was not run.`,
     notSmallest: "A smaller number also makes V 1.",
     /** The sentence for a wrong flag when the case gives none of its own. It names no flag. */
-    flagWrong: "At least one flag you gave is wrong.",
+    flagWrong:
+      "At least one flag you gave is wrong. Find the last instruction that writes the flags and work out the flags from that operation.",
     /** The same for a wrong register value. It names no value. */
-    valueWrong: "That answer is not right.",
+    valueWrong:
+      "That answer is not right. Trace the result through the instructions to the return, including any later write to the same register.",
     /** In place of the list of fields, when every unanswered field is a choice. */
     chooseFirst: "Choose 0 or 1 for every flag first.",
     /** What is said for a wrong flag, when a case asks for it (`given.feedback` is "rule"). */

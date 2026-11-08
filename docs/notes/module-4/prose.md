@@ -436,7 +436,7 @@ A label goes on its own line, followed by a colon, before the instruction it nam
 
 > The returned value is wrong. Follow the instructions that ran and check where they last wrote `w0`. Do your tests select the required result for this input?
 
-> An input was overwritten. Does a `mov` into `w0` run before the last test? It would replace `litres`, which is in `w0`.
+> A `mov` writes `w0` before a later test. Check whether that test still reads the incoming `litres` value.
 
 ## 6. Changing `bgt` to `bge`
 

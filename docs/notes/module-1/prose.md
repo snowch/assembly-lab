@@ -215,7 +215,7 @@ The fourth, 1000000, is the odometer limit from the first section, which GCC nee
 
 *Shown after the answer is checked.*
 
-The rule guarantees that 65536 fits. Its only set bit is in the upper half, so its lower half is `0000`. The other three numbers have set bits in both halves, so the rule does not tell us whether they fit. The assembler rejects all three; you can check them in the next figure.
+The one-half rule guarantees some constants fit. Other patterns can fit too. Try the candidates in the next figure to check what the assembler accepts.
 
 ## 4. Trying a number
 

@@ -250,7 +250,7 @@ export const sameCOnA32: LessonInput = {
         grader: "recorded-tokens",
         cases: (Object.keys(readQueries) as (keyof typeof readQueries)[]).map((id) => ({
           label: LABELS.challenges.read.fields[id],
-          given: { [`feedback.${id}`]: PROSE.readFeedback },
+          given: { [`feedback.${id}`]: PROSE.readFeedback[id] },
           expect: { [id]: id },
         })),
       },
@@ -273,7 +273,7 @@ export const sameCOnA32: LessonInput = {
         grader: "recorded-tokens",
         cases: (Object.keys(finalQueries) as (keyof typeof finalQueries)[]).map((id) => ({
           label: LABELS.challenges.final.fields[id],
-          given: { [`feedback.${id}`]: PROSE.finalFeedback },
+          given: { [`feedback.${id}`]: PROSE.finalFeedback[id] },
           expect: { [id]: id },
         })),
       },

@@ -146,11 +146,20 @@ export const VIEW_STRINGS = {
   },
 
   fits: {
-    /** The result for a question about which constants one `mov` can hold. */
-    one: (accepted: string, refused: number) =>
-      `\`mov w0, ${accepted}\` is one instruction. The other numbers give an error: ${refused} of them.`,
-    none: "Every one of these gives an error.",
-    several: (accepted: string) => `More than one of these is a single instruction: ${accepted}.`,
+    selected: (value: string, accepted: boolean) =>
+      accepted
+        ? `The assembler accepts \`mov w0, ${value}\` as one instruction.`
+        : `The assembler rejects \`mov w0, ${value}\` as one instruction.`,
+    halves: (hex: string, upper: string, lower: string) =>
+      `Its 32-bit pattern is \`${hex}\`: upper half \`${upper}\`, lower half \`${lower}\`.`,
+    guaranteed: "All its set bits lie in one half, so the one-half rule guarantees it fits.",
+    notGuaranteed:
+      "Both halves contain set bits. The one-half rule does not decide whether it fits.",
+    one: (accepted: string) =>
+      `Of these candidates, only \`mov w0, ${accepted}\` is accepted as one instruction.`,
+    none: "The assembler rejects every candidate.",
+    several: (accepted: string) =>
+      `The assembler accepts these candidates as one instruction each: ${accepted}.`,
   },
 
   tester: {
@@ -174,9 +183,12 @@ export const VIEW_STRINGS = {
   readings: {
     bitsRead: (value: string) =>
       `Your bits have a signed reading of ${value}, and that is not the number asked for.`,
-    notThis: "That is not what these bits give when read this way.",
+    notThis: (field: string, reading: "unsigned" | "signed") =>
+      reading === "unsigned"
+        ? `Your answer for ‘${field}’ does not match the unsigned reading. Add the positive weights of the set bits, including the top bit.`
+        : `Your answer for ‘${field}’ does not match the signed reading. Give the top bit its negative weight and add the positive weights of the other set bits.`,
     registerWrong: (name: string) =>
-      `${name} does not hold that number once all the instructions have run.`,
+      `${name} does not hold that number once all the instructions have run. Trace the last instruction that writes this register and check which bits it keeps or replaces.`,
   },
 
   editor: {
@@ -224,6 +236,10 @@ export const VIEW_STRINGS = {
     // The failure card's sentence for a wrong field that has no sentence of its own. It names
     // the field and never the value. Without it the card prints its labels with nothing under them.
     fieldNotRight: (field: string) => `Your answer for ‘${field}’ is not right.`,
+    registerAtReturnWrong: (field: string, register: string) =>
+      `Your answer for ‘${field}’ does not match ${register} when the function returns. Trace the last write to this register before the return.`,
+    instructionAtEntryWrong: (field: string) =>
+      `Your answer for ‘${field}’ is not right. Check which operation the question asks the instruction to perform.`,
   },
 
   // The words of Module 3's figures and graders, redrafted by Haiku and checked for meaning
