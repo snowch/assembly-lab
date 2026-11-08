@@ -130,6 +130,7 @@ export const constantsAndWidths: LessonInput = {
         {
           id: "build-1000000",
           kind: "challenge",
+          lead: [PROSE.constructionMethod, PROSE.constructionSyntax].join("\n\n"),
           timeModel: STEPS,
           role: "exercise",
           caption: LABELS.captions.build,
