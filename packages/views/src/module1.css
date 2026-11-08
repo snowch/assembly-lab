@@ -268,18 +268,49 @@
   overscroll-behavior-x: contain;
   padding: var(--space-3);
 }
-.al-compare-pattern-note {
-  padding: var(--space-3) var(--space-4);
+.al-compare-bit-reference {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-3);
+  padding: var(--space-3);
   border-radius: var(--radius);
   background: var(--note-bg);
 }
-.al-compare-pattern-note > p,
-.al-compare-pattern-note > .prose p {
+.al-compare-bit-reference > p {
   margin: 0;
-}
-.al-compare-pattern-note > p {
-  margin-top: var(--space-2);
   font-size: var(--text-sm);
+}
+.al-compare-bit-reference .al-reg.al-bitrow {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "name value" "bits bits";
+  gap: var(--space-2);
+  padding: 0;
+  border: 0;
+}
+.al-compare-bit-reference .al-reg-value {
+  justify-self: end;
+}
+.al-compare-bit-reference .al-bits {
+  max-width: none;
+}
+.al-compare-bit-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  align-items: center;
+  font-size: var(--text-sm);
+}
+.al-compare-top-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.al-compare-top-label::before {
+  content: "";
+  width: 0.6rem;
+  height: 0.8rem;
+  border: 2px dotted var(--fg);
+  border-radius: 2px;
 }
 .al-compare-weight-table caption {
   padding: 0 var(--space-1) var(--space-3);

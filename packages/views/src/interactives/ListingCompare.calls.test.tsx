@@ -153,8 +153,20 @@ describe("comparing the C return types by calling both listings", () => {
     const word = wValue(models[0]!.final, 0);
     const lower = word % 2 ** 31;
     const top = Math.floor(word / 2 ** 31);
-    expect(container.querySelectorAll("[data-return-bits]")).toHaveLength(1);
-    expect(container.querySelectorAll(".al-bit")).toHaveLength(32);
+    expect(container.querySelectorAll("[data-return-bits]")).toHaveLength(2);
+    expect(container.querySelectorAll(".al-bit")).toHaveLength(64);
+    const reference = bridge.querySelector('[data-return-bits="reference"]')!;
+    expect([...reference.querySelectorAll(".al-bit")].map((bit) => bit.textContent).join("")).toBe(
+      bitsOf(word),
+    );
+    expect(reference.querySelector("[data-return-hex]")).toHaveTextContent(hex(word));
+    expect(reference.querySelectorAll('[data-picked="true"]')).toHaveLength(1);
+    expect(reference.querySelector('[data-bit="31"]')).toHaveAttribute("data-picked", "true");
+    expect(reference.querySelectorAll('[role="button"], input, button')).toHaveLength(0);
+    expect(bridge).toHaveTextContent(C.returnedReferenceCaption);
+    expect(bridge).toHaveTextContent(C.returnedReferenceTop);
+    expect(bridge).toHaveTextContent(C.returnedReferenceLower);
+    expect(bridge.firstElementChild!.nextElementSibling).toHaveAttribute("data-return-reference");
     expect(bridge).toHaveTextContent(C.noArithmeticError);
     expect(bridge).toHaveTextContent(C.readingTypes);
     expect(bridge).toHaveTextContent(C.topWeightDiffers);
@@ -164,7 +176,6 @@ describe("comparing the C return types by calling both listings", () => {
     expect(cells("lower")).toEqual(Array(2).fill(lower ? `+${decimal(lower)}` : "0"));
     expect(cells("top-bit")).toEqual([]);
     expect(bridge).toHaveTextContent(C.topBitState(top));
-    expect(bridge).toHaveTextContent(C.sharedPattern(hex(word)).replaceAll("`", ""));
     expect(cells("top-contribution")).toEqual(
       top ? [decimal(-(2 ** 31)), `+${decimal(2 ** 31)}`] : ["0", "0"],
     );
@@ -321,6 +332,11 @@ describe("comparing the C return types by calling both listings", () => {
     expect(restored.container.querySelector("[data-return-explanation]")).not.toHaveTextContent(
       "2147483646",
     );
+    const reference = restored.container.querySelector('[data-return-bits="reference"]')!;
+    expect([...reference.querySelectorAll(".al-bit")].map((bit) => bit.textContent).join("")).toBe(
+      bitsOf(5),
+    );
+    expect(reference.querySelector("[data-return-hex]")).toHaveTextContent(hex(5));
     expect(restored.container.querySelector("[data-trip-overrun]")).toBeNull();
     expect(restored.container).not.toHaveTextContent(C.unsignedMeaning);
     expect(
@@ -337,7 +353,7 @@ describe("comparing the C return types by calling both listings", () => {
     const { container } = comparison([8, 2], undefined, true, right, "signed");
     predict();
     callBoth();
-    expect(container.querySelectorAll("[data-return-bits]")).toHaveLength(1);
+    expect(container.querySelectorAll("[data-return-bits]")).toHaveLength(2);
     for (const [i, program] of [TRIP_REMAINING, right].entries()) {
       const name = i === 0 ? "trip_remaining" : "trip_remaining_copy";
       const model = traceOf(program, { entry: name, args: [8, 2] }).result;

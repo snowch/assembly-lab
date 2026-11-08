@@ -147,8 +147,13 @@ test.describe("one subtraction with two C types", () => {
       );
     }
     await expect(f.locator('[data-return-bits="shared"]')).toHaveCount(1);
-    await expect(f.locator("[data-return-bits] .al-bit")).toHaveText([..."1".repeat(31), "0"]);
-    await expect(f.locator("[data-return-hex]")).toHaveText("0xfffffffe");
+    for (const row of ["shared", "reference"]) {
+      await expect(f.locator(`[data-return-bits="${row}"] .al-bit`)).toHaveText([
+        ..."1".repeat(31),
+        "0",
+      ]);
+    }
+    await expect(f.locator("[data-return-hex]")).toHaveText(["0xfffffffe", "0xfffffffe"]);
     await expect(f.locator('[data-same-bits="true"]')).toHaveText(C.sameBits);
     const explanation = f.locator("[data-return-explanation]");
     await expect(explanation.locator("table")).toBeVisible();
@@ -210,10 +215,12 @@ test.describe("one subtraction with two C types", () => {
     await expect(figure(page).locator(".al-match")).toBeVisible();
     await expect(figure(page).locator(".al-listing")).toHaveCount(2);
     await expect(figure(page).locator('[data-return-bits="shared"]')).toHaveCount(1);
-    await expect(figure(page).locator("[data-return-bits] .al-bit")).toHaveText([
-      ..."1".repeat(31),
-      "0",
-    ]);
+    for (const row of ["shared", "reference"]) {
+      await expect(figure(page).locator(`[data-return-bits="${row}"] .al-bit`)).toHaveText([
+        ..."1".repeat(31),
+        "0",
+      ]);
+    }
     await expect(figure(page).locator("[data-call-side] [data-return-bits]")).toHaveCount(0);
     await expect(figure(page).locator('[data-return-reading="signed"]')).toHaveAttribute(
       "data-return-value",

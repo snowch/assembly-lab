@@ -642,8 +642,9 @@ export const CALL_COMPARISON_STRINGS = {
   sameWeightsHeading: "How the bits give the returned values",
   contributionHeading: "Contributions to each C value",
   sumsHeading: "Add the contributions",
-  sharedPattern: (hex: string) =>
-    `Both functions return \`${hex}\` in w0. The C return types determine how these bits are read.`,
+  returnedReferenceCaption: "The same returned w0 bits, shown again.",
+  returnedReferenceTop: "Bit 31 (highest bit)",
+  returnedReferenceLower: "Bits 30–0 (lower 31 bits)",
   topBitState: (top: number) =>
     top === 0
       ? "Bit 31 is clear, so its contribution is zero in both readings."
