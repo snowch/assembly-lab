@@ -115,7 +115,7 @@ for (const width of [360, 375, 416, 1280]) {
       }
       const reminder = work.getByRole("link");
       await expect(reminder).toHaveAttribute("href", "#/lesson/four-bit-arithmetic");
-      await expect(reminder).toHaveText("Module 1, lesson 3: Arithmetic with four bits");
+      await expect(reminder).toHaveText("M1, L3: Arithmetic with four bits");
       await expect(figure.locator('[data-return-bits="shared"]')).toHaveCount(1);
       for (const row of ["shared", "reference"]) {
         await expect(figure.locator(`[data-return-bits="${row}"] .al-bit`)).toHaveText([

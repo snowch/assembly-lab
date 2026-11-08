@@ -17,7 +17,10 @@ export function lessonPosition(id: string): string {
 export function lessonLabel(id: string, title?: string): string {
   const lesson = LESSONS.find((item) => item.id === id);
   if (!lesson) throw new Error(`No published lesson: ${id}`);
-  return `${lessonPosition(id)}: ${title ?? lesson.title}`;
+  const position = lessonPosition(id)
+    .replace(/^Module /, "M")
+    .replace(", lesson ", ", L");
+  return `${position}: ${title ?? lesson.title}`;
 }
 
 /** Compact labels only within an already named module on the plan. */

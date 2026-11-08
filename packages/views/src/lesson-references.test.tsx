@@ -22,9 +22,10 @@ const lessons = [
 const references = createLessonReferences(lessons, { 14: "A", 15: "B" });
 
 it("derives one-based ordinals from published module order, including insertion and reordering", () => {
-  expect(references.label("later")).toBe("Module 1, lesson 2: Later reading");
-  expect(references.label("appendix-a")).toBe("Module A, lesson 1: Optional A");
+  expect(references.label("later")).toBe("M1, L2: Later reading");
+  expect(references.label("appendix-a")).toBe("MA, L1: Optional A");
   expect(references.position("appendix-b")).toBe("Module B, lesson 1");
+  expect(references.linkPosition("appendix-b")).toBe("MB, L1");
   const reordered = createLessonReferences([
     ...lessons,
     { id: "new", title: "New", module: 1, order: 50 },
@@ -41,16 +42,25 @@ it("derives one-based ordinals from published module order, including insertion 
 it("numbers actual Markdown links without changing URLs, code, external links or authored wording", () => {
   const source =
     "[**Read** it](#/lesson/later?view=bits#section) [Elsewhere](https://example.com/#/lesson/later) [Unknown](#/lesson/missing) ` [Code](#/lesson/later) `\n\n```md\n[Fenced](#/lesson/later)\n```";
-  const expected = source.replace("[**Read** it]", "[Module 1, lesson 2: **Read** it]");
+  const expected = source.replace("[**Read** it]", "[M1, L2: **Read** it]");
   expect(references.markdown(source)).toBe(expected);
   expect(references.markdown(expected)).toBe(expected);
+  expect(references.markdown("[Module 1, lesson 2: **Read** it](#/lesson/later)")).toBe(
+    "[M1, L2: **Read** it](#/lesson/later)",
+  );
+  for (const title of ["More", "M1", "Module 1"]) {
+    const source = `[${title}](#/lesson/later), L2: keep this wording`;
+    expect(references.markdown(source)).toBe(
+      `[M1, L2: ${title}](#/lesson/later), L2: keep this wording`,
+    );
+  }
   const { container } = render(
     <LessonReferenceProvider references={references}>
       <LessonLink href="#/lesson/later#section">Read it</LessonLink>
       <LessonLink href="https://example.com/#/lesson/later">External</LessonLink>
     </LessonReferenceProvider>,
   );
-  expect(screen.getByRole("link", { name: "Module 1, lesson 2: Read it" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: "M1, L2: Read it" })).toHaveAttribute(
     "href",
     "#/lesson/later#section",
   );
@@ -61,7 +71,7 @@ it("keeps reference-link targets when their visible labels change", () => {
   for (const link of ["[Reading][readings]", "[readings]", "[readings][]"]) {
     const source = `${link}\n\n[readings]: #/lesson/later#section`;
     const numbered = references.markdown(source);
-    expect(numbered).toContain("[Module 1, lesson 2: ");
+    expect(numbered).toContain("[M1, L2: ");
     expect(numbered).toContain("[readings]: #/lesson/later#section");
     expect(references.markdown(numbered)).toBe(numbered);
   }
@@ -72,7 +82,7 @@ it("replaces legacy module-only appendix labels with one complete position", () 
     "[Return to Module 1: Signed and unsigned readings](#/lesson/later)\n[Module 1: Subtraction flags and negation](#/lesson/earlier)";
   const numbered = references.markdown(source);
   expect(numbered).toBe(
-    "[Module 1, lesson 2: Signed and unsigned readings](#/lesson/later)\n[Module 1, lesson 1: Subtraction flags and negation](#/lesson/earlier)",
+    "[M1, L2: Signed and unsigned readings](#/lesson/later)\n[M1, L1: Subtraction flags and negation](#/lesson/earlier)",
   );
   expect(references.markdown(numbered)).toBe(numbered);
 });
@@ -109,9 +119,9 @@ it("clones Markdown render fields while preserving lesson identity, artifacts an
   const numbered = numberLessonMarkdown(lesson, references);
   expect(numbered.title).toBe(lesson.title);
   expect(numbered.id).toBe(lesson.id);
-  expect(numbered.sections[0]?.details?.prose).toContain("Module 1, lesson 2");
+  expect(numbered.sections[0]?.details?.prose).toContain("M1, L2");
   const props = numbered.sections[0]!.interactives[0]!.props;
-  expect(props.text).toContain("Module 1, lesson 2");
+  expect(props.text).toContain("M1, L2");
   expect(props.id).toBe(link);
   expect(props.nested).toEqual({
     body: references.markdown(link),
