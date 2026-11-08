@@ -738,7 +738,7 @@ test.describe("the halves of sixteen", () => {
     await expect(figure.locator("[role=status]")).toContainText("Ran mov w0, 30000.");
   });
 
-  test("draws the worked example: both halves new after the mov, then the upper new and the lower kept after the movk", async ({
+  test("draws the worked example: both halves written after mov, then the upper written and the lower kept after movk", async ({
     page,
   }) => {
     await openLesson(page, "building-constants");
@@ -752,28 +752,37 @@ test.describe("the halves of sixteen", () => {
     await expect(figure.locator(".al-pane.al-c")).toHaveCount(0);
     await press(page, next(figure));
     expect((await halves(figure)).map((h) => [h.digits, h.tag])).toEqual([
-      ["0000", "new"],
-      ["0003", "new"],
+      ["0000", "Written"],
+      ["0003", "Written"],
     ]);
     expect(w0After(MOVK_EXAMPLE.listing, 1)).toBe(3n);
     await press(page, next(figure));
     expect((await halves(figure)).map((h) => [h.digits, h.tag])).toEqual([
-      ["0002", "new"],
-      ["0003", "kept"],
+      ["0002", "Written"],
+      ["0003", "Kept"],
     ]);
     expect(hex4(w0After(MOVK_EXAMPLE.listing, 2))).toBe("00020003");
     await expect(figure.locator(".al-reg-hex")).toHaveText("0x00020003");
     await expect(registerValue(figure, "w0")).toHaveText("131075");
     await expect(figure.locator("[role=status]")).toContainText("Ran movk w0, 2, lsl 16.");
-    // A new half has a solid outline and a kept one a dashed outline, besides their words.
+    await expect(figure.locator(".al-h16-value")).toHaveText(["0x0002", "0x0003"]);
+    await expect(figure.locator(".al-h16-mark")).toHaveText(["Written", "Kept"]);
+    await expect(figure.locator(".al-h16-detail")).not.toHaveAttribute("open");
+    // Essential write marks stay visible with the individual bits closed.
+    await expect(figure.locator(".al-h16-summary").first()).toBeVisible();
+    const disclosure = figure.locator(".al-h16-detail > summary");
+    await disclosure.focus();
+    await page.keyboard.press("Enter");
+    await expect(figure.locator(".al-h16-detail")).toHaveAttribute("open", "");
+    // A written half has a solid outline and a kept one a dashed outline, besides their words.
     const lines = await figure
-      .locator(".al-h16-groups")
+      .locator(".al-h16-summary")
       .evaluateAll((els) => els.map((e) => getComputedStyle(e).borderTopStyle));
     expect(lines).toEqual(["solid", "dashed"]);
     await press(page, figure.getByRole("button", { name: V.stepper.back }));
     expect((await halves(figure)).map((h) => [h.digits, h.tag])).toEqual([
-      ["0000", "new"],
-      ["0003", "new"],
+      ["0000", "Written"],
+      ["0003", "Written"],
     ]);
     await press(page, figure.getByRole("button", { name: V.stepper.reset }));
     expect((await halves(figure)).map((h) => h.tag)).toEqual(["", ""]);
@@ -809,33 +818,18 @@ test.describe("the halves of sixteen", () => {
     ]);
   });
 
-  test("puts the halves side by side on a desk and one above the other on a phone, with a rule between them", async ({
+  test("keeps both compact halves adjacent on a desk and phone without horizontal overflow", async ({
     page,
-  }, info) => {
+  }) => {
     await openLesson(page, "building-constants");
     const figure = figureOf(page, "movk-halves");
     await figure.scrollIntoViewIfNeeded();
     const [upper, lower] = await figure
-      .locator(".al-h16")
+      .locator(".al-h16-summary")
       .evaluateAll((els) => els.map((e) => e.getBoundingClientRect().toJSON()));
-    if (info.project.name === "phone") {
-      expect(lower.y).toBeGreaterThan(upper.y + upper.height - 1);
-      expect(Math.abs(lower.x - upper.x)).toBeLessThan(2);
-    } else {
-      expect(lower.x).toBeGreaterThan(upper.x + upper.width - 1);
-      expect(Math.abs(lower.y - upper.y)).toBeLessThan(2);
-    }
-    const phone = info.project.name === "phone";
-    const rule = await figure
-      .locator(".al-h16")
-      .nth(1)
-      .evaluate((e, onPhone) => {
-        const cs = getComputedStyle(e);
-        return onPhone
-          ? [cs.borderTopStyle, cs.borderTopWidth]
-          : [cs.borderLeftStyle, cs.borderLeftWidth];
-      }, phone);
-    expect(rule).toEqual(["solid", "2px"]);
+    expect(lower.x).toBeGreaterThan(upper.x + upper.width - 1);
+    expect(Math.abs(lower.y - upper.y)).toBeLessThan(2);
+    await expect(figure.locator(".al-h16-position")).toHaveText(["Bits 31–16", "Bits 15–0"]);
     expect(await figureOverflow(page)).toEqual([]);
   });
 
@@ -902,7 +896,7 @@ test.describe("the stepper through the learner's own solution", () => {
     await expect(stepper(page)).not.toContainText("0xf");
   });
 
-  test("opens when the usual solution passes, and steps it: the upper half new, the lower kept", async ({
+  test("opens when the usual solution passes, and steps it: the upper half written, the lower kept", async ({
     page,
   }) => {
     const errors = watchErrors(page);
@@ -921,9 +915,9 @@ test.describe("the stepper through the learner's own solution", () => {
     expect(await halves(f)).toEqual(["0000 ", "0000 "]);
     const next = f.getByRole("button", { name: V.stepper.next });
     await press(page, next);
-    expect(await halves(f)).toEqual(["0000 new", "4240 new"]);
+    expect(await halves(f)).toEqual(["0000 Written", "4240 Written"]);
     await press(page, next);
-    expect(await halves(f)).toEqual(["000f new", "4240 kept"]);
+    expect(await halves(f)).toEqual(["000f Written", "4240 Kept"]);
     await expect(registerValue(f, "w0")).toHaveText("1000000");
     await expect(f.locator(".al-reg-hex")).toHaveText("0x000f4240");
     await expect(f.locator("[role=status]")).toContainText("Ran movk w0, 0xf, lsl 16.");
@@ -955,9 +949,9 @@ test.describe("the stepper through the learner's own solution", () => {
       seen.push(await halves(f));
     }
     expect(seen).toEqual([
-      ["0000 new", "0001 new"],
-      ["000f new", "0001 kept"],
-      ["000f kept", "4240 new"],
+      ["0000 Written", "0001 Written"],
+      ["000f Written", "0001 Kept"],
+      ["000f Kept", "4240 Written"],
     ]);
   });
 
@@ -971,9 +965,9 @@ test.describe("the stepper through the learner's own solution", () => {
     await f.scrollIntoViewIfNeeded();
     const next = f.getByRole("button", { name: V.stepper.next });
     await press(page, next);
-    expect(await halves(f)).toEqual(["0000 kept", "4240 new"]);
+    expect(await halves(f)).toEqual(["0000 Kept", "4240 Written"]);
     await press(page, next);
-    expect(await halves(f)).toEqual(["000f new", "4240 kept"]);
+    expect(await halves(f)).toEqual(["000f Written", "4240 Kept"]);
     await expect(registerValue(f, "w0")).toHaveText("1000000");
   });
 

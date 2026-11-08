@@ -504,12 +504,10 @@ describe("every number the lesson states", () => {
     expect([...new Set(hexes)].sort()).toEqual(
       [
         "0x00000000ffffffff",
-        "0x00000003",
         "0x00007530",
         "0x00010000",
         "0x00011170",
         "0x000186a0",
-        "0x00020003",
         "0x000f4240",
         "0x000fffff",
         "0x00010001",

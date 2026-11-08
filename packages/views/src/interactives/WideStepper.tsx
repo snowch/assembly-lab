@@ -17,7 +17,8 @@ import { useHandoffState } from "../update-handoff";
 //     16 bits, with the boundary between them, and after a step each half tagged new or kept. The
 //     program may be a recorded one, or the learner's own saved work for a challenge (`fromChallenge`),
 //     which is then assembled with that challenge's gate and run; the figure stays shut until the
-//     saved work passes the challenge's tests, graded afresh.
+//     saved work passes the challenge's tests, graded afresh. With halfOverview, the two halves
+//     are compact labelled blocks above the instructions; individual bits are optional detail.
 
 import { useMemo } from "react";
 import { z } from "zod";
@@ -50,6 +51,8 @@ const Props = z
      * text for it, and the figure stays shut until that text passes the challenge's tests.
      */
     fromChallenge: z.string().optional(),
+    /** In w16 mode, show two compact half blocks first, with individual bits in details. */
+    halfOverview: z.boolean().default(false),
   })
   .refine((d) => d.program !== undefined || (d.mode === "w16" && d.fromChallenge !== undefined), {
     message: "needs a program, or a challenge to take the learner's program from",
@@ -122,25 +125,35 @@ function Half16({
   bits,
   digits,
   tag,
+  explicitWrite = false,
 }: {
   name: string;
   which: "upper" | "lower";
   bits: string;
   digits: string;
   tag: HalfTag | null;
+  explicitWrite?: boolean;
 }) {
+  const mark =
+    tag === null
+      ? ""
+      : explicitWrite
+        ? tag === "new"
+          ? M1.halves.written
+          : M1.halves.summaryKept
+        : M1.halves[tag];
   return (
     <div
       className="al-h16"
       role="group"
-      aria-label={`${name} ${digits}${tag === null ? "" : `, ${M1.halves[tag]}`}`}
+      aria-label={`${name} ${digits}${tag === null ? "" : `, ${mark}`}`}
       data-half={which}
       data-tag={tag ?? "none"}
     >
       <span className="al-h16-head">
         <span className="al-half-name">{name}</span>
         <span className="al-h16-tag" data-tag={tag ?? "none"}>
-          {tag === null ? " " : M1.halves[tag]}
+          {mark || "\u00a0"}
         </span>
       </span>
       <span className="al-h16-groups" aria-hidden="true">
@@ -157,6 +170,37 @@ function Half16({
           </span>
         ))}
       </span>
+    </div>
+  );
+}
+
+/** Two adjacent slices of the same w register, using the same model state as the bit detail. */
+function HalfOverview({
+  name,
+  which,
+  digits,
+  tag,
+}: {
+  name: string;
+  which: "upper" | "lower";
+  digits: string;
+  tag: HalfTag | null;
+}) {
+  const mark = tag === null ? "" : tag === "new" ? M1.halves.written : M1.halves.summaryKept;
+  return (
+    <div
+      className="al-h16-summary"
+      role="group"
+      aria-label={`${name}, 0x${digits}${mark ? `, ${mark}` : ""}`}
+      data-half={which}
+      data-tag={tag ?? "none"}
+    >
+      <span className="al-half-name">{name}</span>
+      <span className="al-h16-position">
+        {which === "upper" ? M1.halves.upperPosition : M1.halves.lowerPosition}
+      </span>
+      <code className="al-h16-value">0x{digits}</code>
+      <span className="al-h16-mark">{mark || "\u00a0"}</span>
     </div>
   );
 }
@@ -212,16 +256,28 @@ function Stepping({ data, trace }: { data: Data; trace: Trace }) {
   if (data.mode === "w16") {
     const h = halves16(trace, view.k, n);
     const name = `w${n}`;
-    return (
-      <div
-        className="al-figure al-stepper"
-        data-figure="wide-stepper"
-        data-mode="w16"
-        data-k={view.k}
-      >
-        {listing}
-        {controls}
-        {status}
+    const pair = (
+      <div className="al-h16-pair">
+        <Half16
+          name={M1.register.upperHalf}
+          which="upper"
+          bits={h.bits.slice(0, 16)}
+          digits={h.upper}
+          tag={h.tag?.upper ?? null}
+          explicitWrite={data.halfOverview}
+        />
+        <Half16
+          name={M1.register.lowerHalf}
+          which="lower"
+          bits={h.bits.slice(16)}
+          digits={h.lower}
+          tag={h.tag?.lower ?? null}
+          explicitWrite={data.halfOverview}
+        />
+      </div>
+    );
+    const register = (
+      <>
         <RegisterStateLabel trace={trace} view={view} />
         <div
           className="al-wide al-wide16"
@@ -229,8 +285,9 @@ function Stepping({ data, trace }: { data: Data; trace: Trace }) {
           aria-label={M1.halves.group(name)}
           data-register={name}
           data-changed={view.written.has(n)}
+          data-overview={data.halfOverview || undefined}
         >
-          <span className="al-reg-name">{name}</span>
+          <span className="al-reg-name">{data.halfOverview ? M1.halves.heading(name) : name}</span>
           <code className="al-reg-hex" title={M1.halves.whole}>
             0x<span className="al-reg-hex-half">{h.upper}</span>
             <span className="al-reg-hex-gap" />
@@ -242,23 +299,46 @@ function Stepping({ data, trace }: { data: Data; trace: Trace }) {
           >
             {wValue(view.state, n)}
           </span>
-          <div className="al-h16-pair">
-            <Half16
-              name={M1.register.upperHalf}
-              which="upper"
-              bits={h.bits.slice(0, 16)}
-              digits={h.upper}
-              tag={h.tag?.upper ?? null}
-            />
-            <Half16
-              name={M1.register.lowerHalf}
-              which="lower"
-              bits={h.bits.slice(16)}
-              digits={h.lower}
-              tag={h.tag?.lower ?? null}
-            />
-          </div>
+          {data.halfOverview ? (
+            <div className="al-h16-overview">
+              <HalfOverview
+                name={M1.register.upperHalf}
+                which="upper"
+                digits={h.upper}
+                tag={h.tag?.upper ?? null}
+              />
+              <HalfOverview
+                name={M1.register.lowerHalf}
+                which="lower"
+                digits={h.lower}
+                tag={h.tag?.lower ?? null}
+              />
+            </div>
+          ) : (
+            pair
+          )}
         </div>
+      </>
+    );
+    return (
+      <div
+        className="al-figure al-stepper"
+        data-figure="wide-stepper"
+        data-mode="w16"
+        data-k={view.k}
+      >
+        {data.halfOverview && register}
+        {listing}
+        {controls}
+        {status}
+        {data.halfOverview ? (
+          <details className="al-h16-detail">
+            <summary>{M1.halves.showBits}</summary>
+            {pair}
+          </details>
+        ) : (
+          register
+        )}
       </div>
     );
   }

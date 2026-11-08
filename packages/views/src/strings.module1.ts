@@ -68,6 +68,13 @@ export const MODULE1_STRINGS = {
 
   // A `w` register drawn as two halves of 16 bits (the wide stepper's `w16` mode).
   halves: {
+    // Drafted separately from checked facts; see constant-halves-overview notes.
+    heading: (name: string) => `${name}: 32 bits`,
+    upperPosition: "Bits 31–16",
+    lowerPosition: "Bits 15–0",
+    written: "Written",
+    summaryKept: "Kept",
+    showBits: "Show individual bits",
     /** The name of the figure for a screen reader. */
     // DRAFT
     group: (name: string) => `${name} as two halves of 16 bits`,

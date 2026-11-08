@@ -3,8 +3,8 @@
 // What the wide stepper's two Module 1 modes read out of a run: a `w` register as two halves of 16
 // bits, each tagged by the last instruction as new or kept, and an `x` register as two halves of 32
 // bits, tagged when a write to its `w` name cleared the upper half. Every bit is the simulator's
-// own value for the register before and after the last step, and every tag compares those two
-// states with the instruction the step ran.
+// own value for the register after the step. Every tag follows the decoded instruction's write,
+// including a write whose bits stay the same.
 
 import { bitsOf, viewAt, wValue, type Trace } from "./trace";
 
@@ -27,8 +27,8 @@ const hex4 = (bits: string): string =>
 
 /**
  * The register `w<register>` as two halves of 16 bits after `k` instructions have run. A half is
- * "new" when the last instruction wrote the register whole (any instruction but `movk`) or when its
- * bits differ from what they were before; a half is "kept" when the instruction left it alone, or
+ * "new" when the last instruction wrote the register whole (any instruction but `movk`) or when
+ * `movk` selects that half; a half is "kept" when the instruction left it alone, or
  * wrote the other half of the register only.
  */
 export function halves16(trace: Trace, k: number, register: number): Halves16 {
@@ -36,7 +36,6 @@ export function halves16(trace: Trace, k: number, register: number): Halves16 {
   const bits = bitsOf(wValue(after.state, register));
   const base = { bits, upper: hex4(bits.slice(0, 16)), lower: hex4(bits.slice(16)) };
   if (after.k === 0) return { ...base, tag: null };
-  const before = bitsOf(wValue(viewAt(trace, after.k - 1).state, register));
   const step = trace.result.steps[after.k - 1];
   const ins = trace.program.instructions.find((i) => i.address === step?.address);
   if (!after.written.has(register)) return { ...base, tag: { upper: "kept", lower: "kept" } };
@@ -45,8 +44,8 @@ export function halves16(trace: Trace, k: number, register: number): Halves16 {
   return {
     ...base,
     tag: {
-      upper: bits.slice(0, 16) === before.slice(0, 16) ? "kept" : "new",
-      lower: bits.slice(16) === before.slice(16) ? "kept" : "new",
+      upper: ins.op.shift === 16 ? "new" : "kept",
+      lower: ins.op.shift === 0 ? "new" : "kept",
     },
   };
 }

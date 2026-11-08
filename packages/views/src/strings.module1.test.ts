@@ -24,7 +24,7 @@ describe("Module 1's added figure words", () => {
   const all = strings(MODULE1_STRINGS);
 
   it("are none of them empty, and have no em dash", () => {
-    expect(all.length).toBe(35);
+    expect(all.length).toBe(41);
     expect(all.filter(([, s]) => s.trim() === "").map(([p]) => p)).toEqual([]);
     expect(all.filter(([, s]) => s.includes("—")).map(([p]) => p)).toEqual([]);
   });
@@ -33,8 +33,13 @@ describe("Module 1's added figure words", () => {
     const source = readFileSync(new URL("./strings.module1.ts", import.meta.url), "utf8");
     // Issue #18 labels completed separate drafting, learner and technical review.
     // Keep the remaining legacy marks rather than marking reviewed copy as a new draft.
-    const reviewed = strings(MODULE1_STRINGS.opener);
-    expect(reviewed).toHaveLength(13);
+    const { heading, upperPosition, lowerPosition, written, summaryKept, showBits } =
+      MODULE1_STRINGS.halves;
+    const reviewed = [
+      ...strings(MODULE1_STRINGS.opener),
+      ...strings({ heading, upperPosition, lowerPosition, written, summaryKept, showBits }),
+    ];
+    expect(reviewed).toHaveLength(19);
     expect(source).toContain("see the lesson review notes");
     expect(source.match(/^\s*\/\/ DRAFT$/gm) ?? []).toHaveLength(all.length - reviewed.length);
   });

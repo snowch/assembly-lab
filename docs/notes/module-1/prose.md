@@ -243,12 +243,7 @@ The full rule is longer than this course needs. The figure checks any number.
 
 Start with `mov`, which replaces all 32 bits of `w0`. Then use `movk` to replace one 16-bit half and keep the other.
 
-Step through these instructions in the figure:
-
-1. `mov w0, 3` leaves `0x0000 0003`: upper half 0, lower half 3.
-2. `movk w0, 2, lsl 16` puts 2 in the upper half. The ending `lsl 16` selects that half. The lower half stays 3, giving `0x0002 0003`.
-
-Without `lsl 16`, `movk w0, 3` replaces the lower half and keeps the upper half.
+For `movk`, `lsl 16` selects the upper half. Leaving it out selects the lower half.
 
 ### Find the two halves
 
@@ -279,7 +274,7 @@ Choose Text to type one instruction per line. Choose Tap to select a line and ed
 
 *Shown once Build 1000000 has passed.*
 
-Step through your solution below to see the two halves of `w0` after each instruction. Watch which half changes and which is kept.
+Step through your solution below. Watch which halves of `w0` are written or kept.
 
 ## 6. Two names, one register
 
