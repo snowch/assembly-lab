@@ -268,6 +268,25 @@
   overscroll-behavior-x: contain;
   padding: var(--space-3);
 }
+.al-compare-pattern-note {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--note-bg);
+}
+.al-compare-pattern-note > p,
+.al-compare-pattern-note > .prose p {
+  margin: 0;
+}
+.al-compare-pattern-note > p {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+}
+.al-compare-weight-table caption {
+  padding: 0 var(--space-1) var(--space-3);
+  color: var(--accent);
+  font-weight: 650;
+  text-align: left;
+}
 .al-compare-weight-table {
   width: 100%;
   min-width: 18.75rem;
@@ -299,29 +318,58 @@
   white-space: nowrap;
   overflow-wrap: normal;
 }
-.al-compare-weight-table td span {
-  display: inline-block;
-  white-space: nowrap;
-}
 .al-compare-weight-table thead th + th,
 .al-compare-weight-table tbody td + td {
   border-left: 1px solid var(--border);
-}
-.al-compare-weight-table [data-weight-row="lower"] td,
-.al-compare-weight-table [data-weight-row="top-bit"] td {
-  text-align: center;
 }
 .al-compare-weight-table [data-weight-row="total"] th,
 .al-compare-weight-table [data-weight-row="total"] td {
   border-top: 2px solid var(--border-strong);
   border-bottom: 0;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 650;
+}
+.al-compare-sums {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+.al-compare-sum h5 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-sm);
+}
+.al-compare-sum h5 span {
+  padding: 0 var(--space-2);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.al-compare-sum dl {
+  max-width: 20ch;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(1.1rem, 3vw, 1.35rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.7;
+}
+.al-compare-sum dd {
+  margin: 0;
+  text-align: right;
+}
+.al-compare-sum [data-sum-row="total"] {
+  margin-top: var(--space-1);
+  border-top: 1px solid var(--border-strong);
+  color: var(--accent);
+  font-weight: 650;
 }
 @media (min-width: 36rem) {
   .al-compare-panel,
   .al-compare-reading {
     padding: var(--space-5);
   }
-  .al-compare-readings {
+  .al-compare-readings,
+  .al-compare-sums {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .al-compare-weight-table td {
