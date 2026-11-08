@@ -55,8 +55,8 @@ describe("the lesson", () => {
     expect([lesson.module, lesson.order]).toEqual([2, 0]);
   });
 
-  it("keeps carry and flag vocabulary after the earlier C overflow definition, and passes the term gate", () => {
-    expect(lesson.introduces).toEqual(["carry", "flag"]);
+  it("introduces overflow with the addition flags, and passes the term gate", () => {
+    expect(lesson.introduces).toEqual(["carry", "flag", "overflow"]);
     expect(termProblems(LESSONS)).toEqual([]);
   });
 

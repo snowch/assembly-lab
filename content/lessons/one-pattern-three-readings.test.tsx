@@ -22,7 +22,7 @@ it("teaches hexadecimal before the two readings and keeps their practice togethe
   expect(units.map((unit) => unit.introduces)).toEqual([
     ["hexadecimal"],
     ["unsigned reading", "signed reading", "top bit", "two’s complement"],
-    ["overflow", "undefined behaviour", "wrap"],
+    ["wrap"],
   ]);
   expect(units.map((unit) => unit.challenges.map((c) => c.id))).toEqual([
     [],

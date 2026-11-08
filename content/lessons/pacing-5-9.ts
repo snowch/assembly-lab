@@ -253,7 +253,7 @@ const productParts = splitLesson(productsAndWidths, [
   {
     id: "products-and-widths",
     ...copy("products-and-widths"),
-    introduces: ["product"],
+    introduces: ["product", "undefined behaviour"],
     sections: [
       s(productsAndWidths, "question"),
       s(productsAndWidths, "motivation"),

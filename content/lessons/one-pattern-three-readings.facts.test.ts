@@ -385,7 +385,7 @@ describe("every number the lesson states", () => {
     // numbers and groups of bits, which are held to the model below.
     const plain = text
       // Standard section identifiers are references, not arithmetic claims.
-      .replace(/sections 6\.2\.5 and 6\.5 paragraph 5/g, " ")
+      .replace(/section 6\.2\.5 paragraph 11/g, " ")
       .replace(/(?:[01]{4} ){7}[01]{4}/g, " ")
       .replace(/0x[0-9a-f]+/g, " ")
       .replace(/(?<=\d),(?=\d{3}(?:\D|$))/g, "")
