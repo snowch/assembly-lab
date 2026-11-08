@@ -4,12 +4,12 @@
 export const CALL_COMPARISON_STRINGS = {
   sourceHeading: "Inspect the functions",
   predictionHeading: "Predict the instructions",
-  callHeading: "Call and compare",
+  callHeading: "Run and compare",
   startingInputs: (argsText: string) =>
     `Starting arguments for each independent call: ${argsText}.`,
-  callBoth: "Call both functions",
-  resetCalls: "Reset calls",
-  sharedReturnedBits: "Final w0 bits from both calls",
+  callBoth: "Run comparison",
+  resetCalls: "Reset comparison",
+  sharedReturnedBits: "Returned w0 bits shared by both calls",
   returnedBits: (functionName: string) => `Final w0 bits when ${functionName} returns`,
   sameBits: "Both calls returned the same bits in w0.",
   differentBits: "The calls returned different bits in w0.",

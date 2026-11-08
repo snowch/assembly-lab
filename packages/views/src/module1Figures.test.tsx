@@ -143,7 +143,7 @@ describe("the two listings compared", () => {
     expect(rows.map((r) => r.getAttribute("data-same"))).toEqual(["true", "true"]);
     expect(within(rows[0] as HTMLElement).getAllByText("sub w0, w1, w0")).toHaveLength(2);
     expect(container.querySelector(".al-match")).toHaveTextContent(S.compare.resultSame);
-    expect(container.querySelector(".al-compare-summary")).toHaveTextContent(S.compare.allSame(2));
+    expect(container.querySelector(".al-compare-summary")).toHaveTextContent(S.compare.allSame);
   });
 
   it("says a prediction does not match when the listings differ, and marks the line", async () => {

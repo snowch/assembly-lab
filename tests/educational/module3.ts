@@ -7,7 +7,8 @@ import { expect, type Locator, type Page } from "@playwright/test";
 import { LESSONS } from "@al/content";
 
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
-import { DEFAULT_STRINGS as S, format } from "../../platform/lesson-runtime/src/strings";
+import { format } from "../../platform/lesson-runtime/src/strings";
+import { RUNTIME_STRINGS as S } from "../../apps/course/src/runtime-strings";
 
 /** Everything the page logs as an error, or throws, until the test ends. */
 export function watchErrors(page: Page): string[] {

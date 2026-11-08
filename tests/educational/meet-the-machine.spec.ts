@@ -9,7 +9,8 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { LESSONS } from "@al/content";
 import { VIEW_STRINGS as V, quoted } from "../../packages/views/src/strings";
 import { traceOf, viewAt, wValue } from "../../packages/views/src/trace";
-import { DEFAULT_STRINGS as S, format } from "../../platform/lesson-runtime/src/strings";
+import { format } from "../../platform/lesson-runtime/src/strings";
+import { RUNTIME_STRINGS as S } from "../../apps/course/src/runtime-strings";
 
 import { MODULE0_STRINGS as M0 } from "../../packages/views/src/strings.module0";
 import { FUNCTION_COMPILER_NOTES as NOTES } from "../../content/lessons/function-compiler-notes.prose";

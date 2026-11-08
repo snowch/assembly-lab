@@ -532,6 +532,22 @@ describe("the arguments figure", () => {
     expect(container.textContent).not.toContain("120");
     expect(container.textContent).not.toContain("205");
   });
+  it.each([1, 2, 4])("describes %i argument mappings with the matching grammar", (count) => {
+    const { container } = figure(ArgsFigure, "a", "arg-registers", {
+      ...props,
+      params: props.params.slice(0, count),
+    });
+    expect(container.querySelectorAll(".al-arg")).toHaveLength(count);
+    const caption = flat(container.querySelector(".al-args-caption"));
+    if (count === 1) {
+      expect(caption).toMatch(/argument.*is placed/);
+      expect(caption).not.toContain("arguments");
+    } else {
+      expect(caption).toContain(`${count} arguments are placed`);
+    }
+    expect(container.querySelector(".al-args-reveal")).toBeNull();
+  });
+
   it("shows the register before and after only once the prediction has been checked", async () => {
     const user = userEvent.setup();
     // One store holds both figures, so the reveal waits on the prediction's own commitment.

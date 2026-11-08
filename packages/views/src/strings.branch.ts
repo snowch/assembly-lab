@@ -155,7 +155,7 @@ export const BRANCH_STRINGS = {
 
   count: {
     ran: (n: number) =>
-      `The simulator ran the function. It ran ${n} instructions, including \`ret\`.`,
+      `The simulator ran the function. It ran ${n} ${n === 1 ? "instruction" : "instructions"}, including \`ret\`.`,
   },
 
   arrows: {

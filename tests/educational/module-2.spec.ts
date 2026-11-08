@@ -17,7 +17,8 @@ import { ARITH_STRINGS as A } from "../../packages/views/src/strings.arith";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { additionSteps, bitAt, flagDigits } from "../../packages/views/src/arith";
 import { traceOf, viewAt, wValue } from "../../packages/views/src/trace";
-import { DEFAULT_STRINGS as S, format } from "../../platform/lesson-runtime/src/strings";
+import { format } from "../../platform/lesson-runtime/src/strings";
+import { RUNTIME_STRINGS as S } from "../../apps/course/src/runtime-strings";
 
 import { PLUS, SUM_FLAGS } from "../../content/lessons/adding-and-the-flags.listings";
 import {

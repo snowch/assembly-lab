@@ -8,6 +8,11 @@ import { DEFAULT_STRINGS, type Strings } from "@platform/lesson-runtime";
 
 export const RUNTIME_STRINGS: Strings = {
   ...DEFAULT_STRINGS,
+  challenge: {
+    ...DEFAULT_STRINGS.challenge,
+    passing: "Tests passed: {total} of {total}.",
+    failing: "Tests passed: {passed} of {total}.",
+  },
   lesson: {
     ...DEFAULT_STRINGS.lesson,
     timeModel: { ...DEFAULT_STRINGS.lesson.timeModel, steps: VIEW_STRINGS.modelBadge },
