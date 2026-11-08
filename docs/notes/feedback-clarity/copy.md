@@ -50,7 +50,7 @@ Separate drafting: GPT-6.1 Sol Medium, early/shared and branch/A32 passes. Accur
     // the field and never the value. Without it the card prints its labels with nothing under them.
     fieldNotRight: (field: string) => `Your answer for ‘${field}’ is not right.`,
     registerAtReturnWrong: (field: string, register: string) =>
-      `Your answer for ‘${field}’ does not match ${register} when the function returns. Trace the last write to this register before the return.`,
+      `Your answer for ‘${field}’ does not match ${register} at the moment the field asks about. Trace the last write to this register before that moment. Later instructions that do not write it leave its value unchanged.`,
     instructionAtEntryWrong: (field: string) =>
       `Your answer for ‘${field}’ is not right. Check which operation the question asks the instruction to perform.`,
   },

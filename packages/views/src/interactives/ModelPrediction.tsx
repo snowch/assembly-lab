@@ -122,28 +122,31 @@ function measureRegister(m: Extract<Measured, { kind: "register-at-end" }>): Out
 export const ModelPrediction = withProps(
   Props,
   function ModelPrediction({ data, interactive, store }) {
-    const measure = useCallback((choice: string) => {
-      const m = data.measure;
-      if (m.kind === "constant-fits") return measureConstants(data.options, choice);
-      if (m.kind === "register-at-end") return measureRegister(m);
-      const trace = traceOf(m.program, m.call);
-      if (m.kind === "register-at-step") {
-        const value = wValue(viewAt(trace, m.step).state, m.register);
-        return {
-          value: String(value),
-          said:
-            data.options.find((option) => option.value === String(value))?.label ?? String(value),
-        };
-      }
-      const other = traceOf(m.other, m.call);
-      const first = trace.result.steps.findIndex(
-        (_, index) =>
-          wValue(viewAt(trace, index + 1).state, m.register) !==
-          wValue(viewAt(other, index + 1).state, m.register),
-      );
-      const value = String(first + 1);
-      return { value, said: data.options.find((option) => option.value === value)?.label ?? value };
-    }, [data.measure, data.options]);
+    const measure = useCallback(
+      (choice: string) => {
+        const m = data.measure;
+        if (m.kind === "constant-fits") return measureConstants(data.options, choice);
+        if (m.kind === "register-at-end") return measureRegister(m);
+        const trace = traceOf(m.program, m.call);
+        if (m.kind === "register-at-step") {
+          const value = wValue(viewAt(trace, m.step).state, m.register);
+          return {
+            value: String(value),
+            said:
+              data.options.find((option) => option.value === String(value))?.label ?? String(value),
+          };
+        }
+        const other = traceOf(m.other, m.call);
+        const first = trace.result.steps.findIndex(
+          (_, index) =>
+            wValue(viewAt(trace, index + 1).state, m.register) !==
+            wValue(viewAt(other, index + 1).state, m.register),
+        );
+        const value = String(first + 1);
+        return { value, said: data.options.find((option) => option.value === value)?.label ?? value };
+      },
+      [data.measure, data.options],
+    );
     return (
       <PredictionBox
         id={interactive.id}

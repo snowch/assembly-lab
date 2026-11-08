@@ -55,8 +55,7 @@ export const PROSE = {
   compareFeedback: {
     asr: "`asr` rounds down, towards the more negative whole number.",
     div: "C's `/` rounds towards zero.",
-    lsr:
-      "`lsr` reads the bits as unsigned and fills with zeros, so a negative value becomes a large positive one.",
+    lsr: "`lsr` reads the bits as unsigned and fills with zeros, so a negative value becomes a large positive one.",
   },
 
   failureExperiment:
@@ -87,8 +86,7 @@ export const PROSE = {
       "For this right shift of an int, check which instruction fills the gap with copies of the old top bit.",
     shr_unsigned:
       "For this right shift of an unsigned value, check which instruction fills the gap with zeros.",
-    shl:
-      "Check the shift direction. Both types use an instruction that moves bits left and fills the gap on the right with zeros.",
+    shl: "Check the shift direction. Both types use an instruction that moves bits left and fills the gap on the right with zeros.",
   },
 
   pickHints: [

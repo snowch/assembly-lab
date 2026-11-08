@@ -64,6 +64,26 @@ describe("feedback from the submitted value and the requested reading", () => {
 });
 
 describe("field-specific feedback after submission", () => {
+  it.each(["one-addition", "returning-to-caller"])(
+    "uses the question’s moment for register feedback on %s",
+    (id) => {
+      const lesson = LESSONS.find((item) => item.id === id);
+      const challenge = lesson?.challenges.find((item) =>
+        Object.hasOwn(item.reference.answers ?? {}, "w1"),
+      );
+      if (!challenge) throw new Error(`Missing w1 activity on ${id}`);
+      const answers = { ...challenge.reference.answers };
+      answers["w1"] = String(BigInt(answers["w1"] as string) + 1n);
+      const verdict = grade(challenge, { answers });
+      expect(verdict.failures).toHaveLength(1);
+      expect(verdict.failures[0]?.detail).toContain("at the moment the field asks about");
+      expect(verdict.failures[0]?.detail).toContain("last write");
+      expect(verdict.failures[0]?.detail).not.toContain("before the return");
+      expect(verdict.failures[0]?.detail).not.toContain("when the function returns");
+      expect(verdict.failures[0]?.expected).toEqual({});
+    },
+  );
+
   it("shows observed flags and their condition rule without returning the answer", () => {
     const challenge = exercise("read-four-conditions");
     const answers = { ...reference(challenge.id) };
