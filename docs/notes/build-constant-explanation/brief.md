@@ -10,7 +10,7 @@ The outcome is to construct a fresh positive constant in w0 using mov and movk, 
 
 - One addition already defines and illustrates the x/w naming relationship in its visible register-view caption. The next width lesson develops write effects. Concrete w0 wording is a clarity improvement here, not a remedy for a wholly missing definition.
 - Loading a constant defines w0's 32 bits, the upper and lower 16-bit halves, their four-digit hexadecimal forms, and constants fitting one mov. It includes 65536 as the lowest set bit in the upper half. Read the published prerequisite, not only the unsplit source lesson.
-- The current page defines movk, both operand placements, a worked sequence, a division method, remainder and optional # notation before showing its figure. Its reminder repeats the mov definition. Readers must hold these rules while waiting to see them in use.
+- The baseline page defines movk, both operand placements, a worked sequence, a division method, remainder and optional # notation before showing its figure. Its reminder repeats the mov definition. Readers must hold these rules while waiting to see them in use.
 - Existing MOVK_EXAMPLE is mov w0, 3; movk w0, 2, lsl 16; ret. The model gives 0x0000 0003, then 0x0002 0003, or 131075. The second instruction retains the low half.
 - With w0, movk replaces one 16-bit half. Its optional lsl 16 selects the upper half; omitting it selects the lower half. This local syntax can be explained without assuming the learner knows general shift instructions.
 - The unsigned value is upper half times 65536 plus lower half. Thus the existing example is 2 times 65536 plus 3. For a positive number fitting w0, whole groups of 65536 give the upper half and the remainder gives the lower half.
