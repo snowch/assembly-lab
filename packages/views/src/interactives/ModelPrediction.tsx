@@ -143,7 +143,10 @@ export const ModelPrediction = withProps(
             wValue(viewAt(other, index + 1).state, m.register),
         );
         const value = String(first + 1);
-        return { value, said: data.options.find((option) => option.value === value)?.label ?? value };
+        return {
+          value,
+          said: data.options.find((option) => option.value === value)?.label ?? value,
+        };
       },
       [data.measure, data.options],
     );
