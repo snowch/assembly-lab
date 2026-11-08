@@ -5,7 +5,7 @@ import { LESSONS } from "@al/content";
 import { CALL_COMPARISON_STRINGS as C } from "../../packages/views/src/strings.call-comparison";
 import { STRINGS } from "../../apps/course/src/strings";
 import { designProblems } from "./design";
-import { lessonLabel, lessonPosition } from "./lesson-references";
+import { lessonLabel } from "./lesson-references";
 import { commit, openLesson, press, watchErrors } from "./module1";
 
 /** Each rendered internal reference must name the destination's current published position. */
@@ -19,8 +19,8 @@ async function expectNumberedReferences(page: Page) {
   expect(links.length).toBeGreaterThan(0);
   for (const link of links) {
     const id = link.href.slice("#/lesson/".length);
-    expect(link.text, link.href).toMatch(new RegExp(`^${lessonPosition(id)}: `));
-    expect(link.text.match(/Module [^,]+, lesson \d+: /g), link.href).toHaveLength(1);
+    expect(link.text, link.href).toMatch(new RegExp(`^${lessonLabel(id, "")}`));
+    expect(link.text.match(/M[^,]+, L\d+: /g), link.href).toHaveLength(1);
   }
 }
 
@@ -54,10 +54,10 @@ for (const theme of ["light", "dark"] as const) {
       expect(new URL(page.url()).hash).toBe("#/lesson/same-bits-two-readings");
       const nav = page.getByRole("navigation", { name: STRINGS.lessonNav });
       await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
-        "Module 1, lesson 1: Reading hexadecimal",
+        "M1, L1: Reading hexadecimal",
       );
       await expect(nav.locator('[data-direction="next"] .lesson-nav-title')).toHaveText(
-        "Module 1, lesson 3: Arithmetic with four bits",
+        "M1, L3: Arithmetic with four bits",
       );
       await expectNumberedReferences(page);
       await press(page, nav.locator('[data-direction="next"]'));
@@ -95,7 +95,7 @@ for (const theme of ["light", "dark"] as const) {
       expect(new URL(page.url()).hash).toBe("#/lesson/register-widths");
       await openLesson(page, "masks");
       const backward = page.locator('article a[href="#/lesson/same-bits-two-readings"]');
-      await expect(backward).toHaveText("Module 1, lesson 2: Signed and unsigned readings");
+      await expect(backward).toHaveText("M1, L2: Signed and unsigned readings");
       await expectNumberedReferences(page);
       await press(page, backward);
       await expect(page.locator(".lesson-position")).toHaveText("Module 1, lesson 2");
@@ -130,10 +130,10 @@ for (const theme of ["light", "dark"] as const) {
       const nav = page.getByRole("navigation", { name: STRINGS.lessonNav });
       await expect(nav.locator('[data-direction="next"]')).toHaveCount(0);
       await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
-        "Module A, lesson 4: A32 division helpers",
+        "MA, L4: A32 division helpers",
       );
       const backward = page.locator('article a[href="#/lesson/same-bits-two-readings"]');
-      await expect(backward).toHaveText("Module 1, lesson 2: Signed and unsigned readings");
+      await expect(backward).toHaveText("M1, L2: Signed and unsigned readings");
       expect(await designProblems(page, isMobile)).toEqual([]);
       await press(page, backward);
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(
@@ -154,12 +154,12 @@ for (const theme of ["light", "dark"] as const) {
       await commit(page, "compare-int-unsigned", "The instructions are identical.");
       await expect(link).toHaveCount(0);
       await press(page, figure.getByRole("button", { name: C.callBoth, exact: true }));
-      await expect(link).toHaveText("Module 1, lesson 2: Signed and unsigned readings");
-      await expect(link).toHaveAccessibleName("Module 1, lesson 2: Signed and unsigned readings");
+      await expect(link).toHaveText("M1, L2: Signed and unsigned readings");
+      await expect(link).toHaveAccessibleName("M1, L2: Signed and unsigned readings");
       await expectNumberedReferences(page);
       expect(await designProblems(page, isMobile)).toEqual([]);
       await page.reload();
-      await expect(link).toHaveText("Module 1, lesson 2: Signed and unsigned readings");
+      await expect(link).toHaveText("M1, L2: Signed and unsigned readings");
       await press(page, link);
       await expect(page.locator(".lesson-position")).toHaveText("Module 1, lesson 2");
       expect(new URL(page.url()).hash).toBe("#/lesson/same-bits-two-readings");

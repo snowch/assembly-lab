@@ -21,8 +21,9 @@ export function orderLessons<T extends { module: number; order: number }>(
   return [...lessons].sort((a, b) => a.module - b.module || a.order - b.order);
 }
 
-// Older appendix labels named only the module. Replace that prefix when the full position is shown.
-const numberedPrefix = /^(?:Module [^,\n]+, lesson \d+|(?:Return to )?Module (?:\d+|[AB])):\s*/;
+// Replace legacy and already formatted prefixes with the destination's current position.
+const numberedPrefix =
+  /^(?:M[^,\n]+, L\d+|Module [^,\n]+, lesson \d+|(?:Return to )?Module (?:\d+|[AB])):\s*/;
 const lessonId = (href: string): string | undefined =>
   /^#\/lesson\/([a-z][a-z0-9-]*)\/?(?=$|[?#])/.exec(href)?.[1];
 
@@ -36,12 +37,21 @@ export function createLessonReferences(
       const number = (ordinal.get(lesson.module) ?? 0) + 1;
       ordinal.set(lesson.module, number);
       const module = moduleLabels[lesson.module] ?? String(lesson.module);
-      return [lesson.id, { ...lesson, number, position: S.position(module, number) }];
+      return [
+        lesson.id,
+        {
+          ...lesson,
+          number,
+          position: S.position(module, number),
+          linkPosition: S.linkPosition(module, number),
+        },
+      ];
     }),
   );
   const position = (id: string) => byId.get(id)?.position;
+  const linkPosition = (id: string) => byId.get(id)?.linkPosition;
   const label = (id: string, title = byId.get(id)?.title ?? id): string => {
-    const at = position(id);
+    const at = linkPosition(id);
     return at ? S.label(at, title.replace(numberedPrefix, "")) : title;
   };
   const markdown = (source: string): string => {
@@ -65,7 +75,7 @@ export function createLessonReferences(
             ? definitions.get(node.identifier)
             : undefined;
       const id = href && lessonId(href);
-      const at = id && position(id);
+      const at = id && linkPosition(id);
       if (!at || node.position?.start.offset === undefined) return;
       const start = node.position.start.offset + 1;
       const existing = numberedPrefix.exec(source.slice(start))?.[0] ?? "";
@@ -86,7 +96,7 @@ export function createLessonReferences(
       .sort((a, b) => b.start - a.start)
       .reduce((text, edit) => text.slice(0, edit.start) + edit.text + text.slice(edit.end), source);
   };
-  return { byId, position, label, markdown };
+  return { byId, position, linkPosition, label, markdown };
 }
 
 export type LessonReferences = ReturnType<typeof createLessonReferences>;
@@ -176,7 +186,7 @@ export function LessonReferenceProvider({
 export function LessonLink({ href, children, ...props }: ComponentProps<"a">) {
   const references = useContext(ReferencesContext);
   const id = href && lessonId(href);
-  const at = id && references?.position(id);
+  const at = id && references?.linkPosition(id);
   const words = typeof children === "string" ? children.replace(numberedPrefix, "") : children;
   return (
     <a {...props} href={href}>
