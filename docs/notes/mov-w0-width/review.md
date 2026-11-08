@@ -27,7 +27,7 @@ It checked the model and independently retrieved Arm DDI0602 2025-12 MOVZ, MOVN,
 
 Additional seeded model executions confirmed replacement by mov, preservation of the other 16-bit half by both movk forms, clearing of x0's upper bits and no write to a separately seeded x1. The reviewer's first model harness used the wrong Call.args shape and exited 1; its corrected harness succeeded. This was a reviewer-script failure, not a failed course test.
 
-The reviewer independently checked the built page, normal hint controls, worked example and adjacent lessons at both widths and in both themes. It found no page errors, overflow, hint-order or gate problem. Its four focused test files passed all 173 tests. Local GNU/QEMU tools were unavailable to the reviewer; their full CI job remains separate evidence.
+The reviewer independently checked the built page, normal hint controls and worked example at both widths and in both themes. It followed the prerequisite link and inspected the next width lesson at desktop size in the light theme. It found no page errors, overflow, hint-order or gate problem. Its four focused test files passed all 173 tests. Local GNU/QEMU tools were unavailable to the reviewer; their full CI job remains separate evidence.
 
 ## Managing-session verification
 
