@@ -89,7 +89,9 @@ Enter `movcs` for the conditional move and `bx` for the return instruction.
 
 ## PROSE.readFeedback
 
-The answers are checked against instruction tokens in the recorded compiler output.
+Find the return line on the A32 side of the recorded limit function. Enter its instruction name only, without the register operand. The A64 return uses a different instruction.
+
+Find the conditional move on the A32 side of the recorded limit function. Enter its complete instruction name, including the condition suffix, without registers.
 
 ## PROSE.failureExperiment
 
@@ -173,7 +175,13 @@ Enter `movw` for the A32 constant instruction, `__aeabi_uidiv` for the helper an
 
 ## PROSE.finalFeedback
 
-Instruction and helper names are checked against the records. The numerical answer is checked against the A64 simulator.
+Find the instruction that loads the marker constant on the A32 side. Enter its instruction name only. Keep the letters that identify its 16-bit constant form.
+
+Find the call in the recorded A32 average function. Enter the helper function name written after `bl`.
+
+Find the division operation on the A64 side of the recorded average function. Enter its instruction name only, without registers.
+
+Run the A64 average with the stated inputs. Read `w0` when the function returns. Unsigned integer division discards the fractional part.
 
 ## PROSE.reflection
 
@@ -379,3 +387,5 @@ Recorded average function for this exercise
 ## LABELS.references.marker
 
 Recorded service-marker function for this exercise
+
+Enter a whole number in decimal, or in hexadecimal beginning with `0x`.

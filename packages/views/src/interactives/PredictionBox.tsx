@@ -23,6 +23,7 @@ export interface Option {
 export interface Outcome {
   readonly value: string;
   readonly said: string;
+  readonly detail?: string;
 }
 
 interface Stored {
@@ -47,11 +48,11 @@ export function PredictionBox({
   /** Markdown, shown once the prediction is checked. */
   explain: string;
   /** Asked once, after the commit. */
-  measure: () => Outcome;
+  measure: (choice: string) => Outcome;
   kind: string;
 }) {
   const [stored, setStored] = useSlot<Stored>(store, id);
-  const outcome = useMemo(() => (stored ? measure() : undefined), [stored, measure]);
+  const outcome = useMemo(() => (stored ? measure(stored.choice) : undefined), [stored, measure]);
   const labelOf = (value: string) => options.find((o) => o.value === value)?.label ?? value;
   return (
     <div
@@ -78,6 +79,7 @@ export function PredictionBox({
             {withCode(outcome.said)}{" "}
             {outcome.value === stored.choice ? S.prediction.match : S.prediction.noMatch}
           </p>
+          {outcome.detail && <p className="al-prediction-detail">{withCode(outcome.detail)}</p>}
           {explain && <Prose markdown={explain} />}
         </div>
       )}

@@ -23,6 +23,7 @@ import { FOUR_BIT_SUBTRACTION, gradeFourBitSubtraction } from "./grader-four-bit
 import { RUN_C, gradeC } from "./grader-c";
 import { RECORDED_TOKENS, gradeRecorded } from "./grader-recorded";
 import { failureDetail, fieldList } from "./fields";
+import { wholeNumber } from "./readings";
 import { TEXT_BASE, assemble, run } from "@al/machine";
 import type { Verdict, VerdictFailure } from "@platform/lesson-runtime";
 import type { AnswerField, Artifact, Challenge } from "@platform/lesson-schema";
@@ -182,11 +183,11 @@ export function gradeWritten(challenge: Challenge, artifact: Artifact): Verdict 
 function answerPattern(answer: string | undefined, radix: 10 | 16 = 10): bigint | null {
   if (answer === undefined) return null;
   if (radix === 16) {
-    const m = /^\s*(?:0x)?([0-9a-f]{1,8})\s*$/i.exec(answer);
+    const m = /^(?:0x)?([0-9a-f]{1,8})$/i.exec(answer.replace(/\s/g, ""));
     return m ? BigInt(`0x${m[1] as string}`) : null;
   }
-  if (!/^\s*-?\d+\s*$/.test(answer)) return null;
-  return pattern(answer.trim());
+  const value = wholeNumber(answer);
+  return value === null ? null : BigInt.asUintN(32, value);
 }
 
 /** The program a case of an answers challenge runs: the one it shows, or one it keeps to itself. */
@@ -275,16 +276,34 @@ export function gradeAnswers(
     const wrong = Object.entries(c.expect).filter(([field, reg]) => {
       const n = registerNumber(String(reg));
       if (n === null) throw new Error(`${challenge.id}: ${String(reg)} is not a w register`);
+      const required = c.given[`reading.${field}`] ?? c.given["reading"];
+      if (radix === 10 && required === "signed")
+        return wholeNumber(answers[field]) !== BigInt(wValueAsInt(trace.result.final, n));
+      if (radix === 10 && required === "unsigned")
+        return wholeNumber(answers[field]) !== BigInt(wValue(trace.result.final, n));
       return answerPattern(answers[field], radix) !== BigInt(wValue(trace.result.final, n));
     });
     if (wrong.length === 0) return;
     // The case's own sentence for each wrong field, with its code in quotes (a verdict shows no
     // code marks). It says what to look at, never the value.
+    let given = chainedGiven(c.given, wrong, program, answers, radix);
+    for (const [field, register] of wrong) {
+      const required = c.given[`reading.${field}`] ?? c.given["reading"];
+      const n = registerNumber(String(register));
+      if (
+        radix === 10 &&
+        (required === "signed" || required === "unsigned") &&
+        n !== null &&
+        answerPattern(answers[field]) === BigInt(wValue(trace.result.final, n))
+      )
+        given = { ...given, [`feedback.${field}`]: S.readings.notThis(named(field), required) };
+    }
     const detail = failureDetail(
       wrong.map(([field]) => field),
-      chainedGiven(c.given, wrong, program, answers, radix),
+      given,
       named,
       quoted,
+      (field) => S.grader.registerAtReturnWrong(named(field), String(c.expect[field])),
     );
     failures.push({ index, label: plain(c.label), inputs: {}, actual: {}, expected: {}, detail });
   });
@@ -318,7 +337,9 @@ export function gradeInstructions(challenge: Challenge, artifact: Artifact): Ver
     const ran = mnemonicOf(trace.result.steps[0]?.text ?? "");
     const wrong = Object.keys(c.expect).filter((field) => mnemonicOf(answers[field] ?? "") !== ran);
     if (wrong.length === 0) return;
-    const detail = failureDetail(wrong, c.given, named, plain);
+    const detail = failureDetail(wrong, c.given, named, plain, (field) =>
+      S.grader.instructionAtEntryWrong(named(field)),
+    );
     failures.push({ index, label: plain(c.label), inputs: {}, actual: {}, expected: {}, detail });
   });
   return { passed: failures.length === 0, total, failures };

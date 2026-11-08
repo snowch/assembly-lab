@@ -403,7 +403,11 @@ test.describe("lesson 2: the path, the sentence after a branch, two conditions o
       await counts.locator(`[data-field="${id}"] input`).fill(value);
     await press(page, run(counts));
     await expect(counts.locator(".verdict-failure")).toHaveCount(1);
-    await expect(counts.locator(".verdict-detail")).toHaveText(P2.countsFeedback);
+    const detail = counts.locator(".verdict-detail");
+    await expect(detail).toContainText("your count of 6 is too high");
+    await expect(detail).toContainText(P2.countsFeedback);
+    await expect(detail).not.toContainText(new RegExp(`\\b${answers["steps11"]}\\b`));
+    await expect(counts.locator(".verdict")).not.toContainText(/\bExpected\b/);
   });
 });
 

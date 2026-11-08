@@ -11,6 +11,7 @@ import { z } from "zod";
 import { assemble } from "@al/machine";
 
 import { stopSentence } from "../messages";
+import { readingsOfValue } from "../readings";
 import { traceText } from "../traceText";
 import { VIEW_STRINGS as S } from "../strings";
 import { PredictionBox, type Outcome } from "./PredictionBox";
@@ -61,16 +62,51 @@ type Option = { value: string; label: string };
 /** The 64 bits of a register, as sixteen hexadecimal digits. */
 const hex64 = (x: bigint) => `0x${BigInt.asUintN(64, x).toString(16).padStart(16, "0")}`;
 
-function measureConstants(options: readonly Option[]): Outcome {
-  const accepted = options.filter((o) => assemble(`mov w0, ${o.value}\nret\n`).program !== null);
+function measureConstants(options: readonly Option[], choice: string): Outcome {
+  const attempts = options.map((option) => ({
+    option,
+    result: assemble(`mov w0, ${option.value}\nret\n`),
+  }));
+  const accepted = attempts.filter((attempt) => attempt.result.program !== null);
   const [only] = accepted;
   if (accepted.length === 1 && only) {
-    return { value: only.value, said: S.fits.one(only.value, options.length - 1) };
+    const selected = attempts.find((attempt) => attempt.option.value === choice);
+    let detail = S.fits.one(only.option.value);
+    if (selected) {
+      const validNumber =
+        selected.result.program !== null ||
+        selected.result.errors.every((error) => error.key === "immediate.move");
+      if (validNumber) {
+        try {
+          const value = BigInt(choice.replace(/\s/g, "").replace(/^#/, ""));
+          if (value >= 0n && value <= 0xffffffffn) {
+            const digits = readingsOfValue(value).digits;
+            const upper = digits.slice(0, 4);
+            const lower = digits.slice(4);
+            const rule =
+              upper === "0000" || lower === "0000" ? S.fits.guaranteed : S.fits.notGuaranteed;
+            const summary = choice === only.option.value ? "" : ` ${S.fits.one(only.option.value)}`;
+            detail = `${S.fits.halves(`0x${upper} ${lower}`, upper, lower)} ${rule}${summary}`;
+          }
+        } catch {
+          // Other assembler expressions retain the measured result without a numeric half rule.
+        }
+      }
+    }
+    return {
+      value: only.option.value,
+      said: selected
+        ? S.fits.selected(choice, selected.result.program !== null)
+        : S.fits.one(only.option.value),
+      detail,
+    };
   }
   if (accepted.length === 0) return { value: "none", said: S.fits.none };
-  return { value: "several", said: S.fits.several(accepted.map((o) => o.value).join(", ")) };
+  return {
+    value: "several",
+    said: S.fits.several(accepted.map((attempt) => attempt.option.value).join(", ")),
+  };
 }
-
 function measureRegister(m: Extract<Measured, { kind: "register-at-end" }>): Outcome {
   const trace = traceText(m.program.listing);
   if (trace.result.stop.kind !== "returned")
@@ -86,28 +122,34 @@ function measureRegister(m: Extract<Measured, { kind: "register-at-end" }>): Out
 export const ModelPrediction = withProps(
   Props,
   function ModelPrediction({ data, interactive, store }) {
-    const measure = useCallback(() => {
-      const m = data.measure;
-      if (m.kind === "constant-fits") return measureConstants(data.options);
-      if (m.kind === "register-at-end") return measureRegister(m);
-      const trace = traceOf(m.program, m.call);
-      if (m.kind === "register-at-step") {
-        const value = wValue(viewAt(trace, m.step).state, m.register);
+    const measure = useCallback(
+      (choice: string) => {
+        const m = data.measure;
+        if (m.kind === "constant-fits") return measureConstants(data.options, choice);
+        if (m.kind === "register-at-end") return measureRegister(m);
+        const trace = traceOf(m.program, m.call);
+        if (m.kind === "register-at-step") {
+          const value = wValue(viewAt(trace, m.step).state, m.register);
+          return {
+            value: String(value),
+            said:
+              data.options.find((option) => option.value === String(value))?.label ?? String(value),
+          };
+        }
+        const other = traceOf(m.other, m.call);
+        const first = trace.result.steps.findIndex(
+          (_, index) =>
+            wValue(viewAt(trace, index + 1).state, m.register) !==
+            wValue(viewAt(other, index + 1).state, m.register),
+        );
+        const value = String(first + 1);
         return {
-          value: String(value),
-          said:
-            data.options.find((option) => option.value === String(value))?.label ?? String(value),
+          value,
+          said: data.options.find((option) => option.value === value)?.label ?? value,
         };
-      }
-      const other = traceOf(m.other, m.call);
-      const first = trace.result.steps.findIndex(
-        (_, index) =>
-          wValue(viewAt(trace, index + 1).state, m.register) !==
-          wValue(viewAt(other, index + 1).state, m.register),
-      );
-      const value = String(first + 1);
-      return { value, said: data.options.find((option) => option.value === value)?.label ?? value };
-    }, [data.measure, data.options]);
+      },
+      [data.measure, data.options],
+    );
     return (
       <PredictionBox
         id={interactive.id}

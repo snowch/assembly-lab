@@ -86,7 +86,7 @@ describe("the failure cards", () => {
     expect(tried, `${c.id}: no program reached a failure`).toBeGreaterThan(0);
   });
 
-  it("name the field, and never the value, when a case has no sentence of its own", () => {
+  it("name the field and give its condition rule without the expected answer", () => {
     const holds = LESSONS.find((l) => l.id === "compare-and-choose")!.challenges.find(
       (c) => c.id === "read-four-conditions",
     )!;
@@ -94,7 +94,11 @@ describe("the failure cards", () => {
     const verdict = grade(holds, {
       answers: { ...reference, ge: String(1 - Number(reference.ge)) },
     });
-    expect(verdict.failures.map((f) => f.detail)).toEqual(["Your answer for ‘ge’ is not right."]);
+    expect(verdict.failures).toHaveLength(1);
+    expect(verdict.failures[0]?.detail).toContain("ge:");
+    expect(verdict.failures[0]?.detail).toMatch(/N=[01], Z=[01], C=[01], V=[01]/);
+    expect(verdict.failures[0]?.detail).toContain("N equals V");
+    expect(verdict.failures[0]?.expected).toEqual({});
   });
 });
 

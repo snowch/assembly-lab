@@ -81,6 +81,14 @@ export const PROSE = {
   challenge: "This challenge uses the type alone to pick the instruction.",
   pickTask:
     "Say which instruction GCC uses for each:\n\n- `x >> 3` with `int x`\n- `x >> 3` with `unsigned x`\n- `x << 3` with either",
+  pickFeedback: {
+    shr_int:
+      "For this right shift of an int, check which instruction fills the gap with copies of the old top bit.",
+    shr_unsigned:
+      "For this right shift of an unsigned value, check which instruction fills the gap with zeros.",
+    shl: "Check the shift direction. Both types use an instruction that moves bits left and fills the gap on the right with zeros.",
+  },
+
   pickHints: [
     "On a right shift, the fill depends on the reading. A left shift fills with zeros either way.",
     "Do not choose a different left shift for each type. Both use `lsl` for the C expressions here.",

@@ -88,6 +88,7 @@ describe("branch-outcomes, for what a run gives", () => {
     expect(
       grade(runs, { answers: { ...runs.reference.answers, small: "4294967294" } }).passed,
     ).toBe(true);
+    expect(grade(runs, { answers: { ...runs.reference.answers, small: "−2" } }).passed).toBe(true);
     expect(grade(runs, { answers: { ...runs.reference.answers, small: "2" } }).passed).toBe(false);
     expect(grade(runs, { answers: { ...runs.reference.answers, smallSteps: "-4" } }).passed).toBe(
       false,
@@ -99,7 +100,8 @@ describe("branch-outcomes, for what a run gives", () => {
     expect(v.failures.map((f) => f.label)).toEqual(["f(3) steps", "f(30) returns"]);
     expect(v.failures[1]!.detail).toBe("Look at the branch.");
     // A field with no sentence of its own is named, never given its value.
-    expect(v.failures[0]!.detail).toMatch(/^Your answer for \u2018.+\u2019 is not right\.$/);
+    expect(v.failures[0]!.detail).toContain("your count of 5 is too high");
+    expect(v.failures[0]!.detail).toContain("including each branch and ret");
     expect(JSON.stringify(v)).not.toMatch(/"(4|2|-2)"/);
   });
 

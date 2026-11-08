@@ -15,11 +15,14 @@ export function failureDetail(
   given: Readonly<Record<string, unknown>>,
   fieldName: (id: string) => string,
   format: (text: string) => string,
+  fallback?: (field: string) => string,
 ): string {
   return wrong
     .map((field) => {
       const own = format(String(given[`feedback.${field}`] ?? ""));
-      return own !== "" ? own : S.grader.fieldNotRight(fieldName(field));
+      return own !== ""
+        ? own
+        : format(fallback?.(field) ?? S.grader.fieldNotRight(fieldName(field)));
     })
     .join(" ");
 }

@@ -182,6 +182,16 @@ export const BRANCH_STRINGS = {
 
   grader: {
     cannotRun: "The grader could not run this challenge.",
+    conditionObservation: (field: string, n: number, z: number, c: number, v: number) =>
+      `${field}: \`cmp w0, w1\` leaves N=${n}, Z=${z}, C=${c}, V=${v}.`,
+    conditionAction: (condition: string, rule: string) =>
+      `Apply the rule for \`${condition}\`: ${rule}. Check whether those flags satisfy it.`,
+    countDirection: (field: string, submitted: string, lower: boolean) =>
+      `${field}: your count of ${submitted} is too ${lower ? "low" : "high"}.`,
+    countAction:
+      "Count executed instructions, including each branch and `ret`. Do not count labels.",
+    returnAction: (field: string) =>
+      `${field}: follow the instructions that ran and find the last write to \`w0\` before \`ret\`.`,
   },
 } as const;
 

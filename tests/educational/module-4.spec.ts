@@ -512,9 +512,7 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
       await expect(c.locator(".answer-field")).toHaveCount(4);
     });
 
-    test("rejects a wrong answer, naming which condition, and never saying the value", async ({
-      page,
-    }) => {
+    test("explains wrong conditions without revealing their answers", async ({ page }) => {
       await openLesson(page, ONE);
       const c = challenge(page, HOLDS);
       await c.scrollIntoViewIfNeeded();
@@ -526,7 +524,23 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
       await press(page, run(c));
       await expect(c.locator(".verdict-failure h4")).toHaveCount(4);
       await expect(c.locator(".challenge-complete")).toHaveCount(0);
-      await expect(c.locator(".verdict")).not.toContainText(/\b1\b.*\b0\b/);
+      const activity = lesson(ONE).challenges.find((item) => item.id === HOLDS)!;
+      if (activity.tests.kind !== "answers") throw new Error("Answer cases required");
+      for (const [index, item] of activity.tests.cases.entries()) {
+        const condition = String(Object.values(item.expect)[0]).replace("holds:", "");
+        const first = Number(item.given["w0"]);
+        const second = Number(item.given["w1"]);
+        const flags = compareResult(first, second, [condition]).flags;
+        const detail = c.locator(".verdict-detail").nth(index);
+        await expect(detail).toContainText(
+          `N=${Number(flags.n)}, Z=${Number(flags.z)}, C=${Number(flags.c)}, V=${Number(flags.v)}`,
+        );
+        await expect(detail).toContainText(
+          CONDITION_ROWS.find((row) => row.name === condition)!.reads,
+        );
+      }
+      await expect(c.locator(".verdict")).not.toContainText(/\bExpected\b/);
+      await expect(c.locator(".verdict")).not.toContainText(/\b(?:ge|cs|lt|cc) (?:is|=) [01]\b/);
     });
 
     test("asks for every number before it grades anything", async ({ page }) => {

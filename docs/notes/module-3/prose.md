@@ -387,3 +387,11 @@ For `int g = -9`, what do `g / 2` and `asr` by 1 give?
 *Closed note: Answer*
 
 `g / 2` is −4, rounding towards zero. `asr` by 1 gives −5, rounding down. GCC's extra `add` of 1 makes −8 first, and `asr` of −8 by 1 is −4.
+
+*Shown after a wrong answer in the instruction-choice exercise.*
+
+For this right shift of an int, check which instruction fills the gap with copies of the old top bit.
+
+For this right shift of an unsigned value, check which instruction fills the gap with zeros.
+
+Check the shift direction. Both types use an instruction that moves bits left and fills the gap on the right with zeros.

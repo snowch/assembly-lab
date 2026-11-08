@@ -499,14 +499,18 @@ describe("what the graders say for a failed call", () => {
     for (const sentence of Object.values(said)) expect(sentence).not.toMatch(/\bexpected\b/);
   });
 
-  it("tells a wrong count where to look, and a wrong result nothing it did not before", () => {
+  it("gives count direction and corrective actions without the expected answers", () => {
     const right = counts.reference.answers!;
     const wrongSteps = grade(counts, { answers: { ...right, steps11: "6" } });
-    expect(wrongSteps.failures.map((f) => f.detail)).toEqual([PROSE.countsFeedback]);
+    expect(wrongSteps.failures).toHaveLength(1);
+    expect(wrongSteps.failures[0]?.detail).toContain("your count of 6 is too high");
+    expect(wrongSteps.failures[0]?.detail).toContain(PROSE.countsFeedback);
+    expect(wrongSteps.failures[0]?.expected).toEqual({});
     const wrongResult = grade(counts, { answers: { ...right, result11: "0" } });
-    expect(wrongResult.failures.map((f) => f.detail)).toEqual([
-      "Your answer for ‘describe(11) returns’ is not right.",
-    ]);
+    expect(wrongResult.failures).toHaveLength(1);
+    expect(wrongResult.failures[0]?.detail).toContain("describe(11) returns");
+    expect(wrongResult.failures[0]?.detail).toContain("last write to w0");
+    expect(wrongResult.failures[0]?.expected).toEqual({});
     expect(JSON.stringify(wrongSteps)).not.toContain('"5"');
   });
 });

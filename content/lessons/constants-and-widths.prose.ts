@@ -26,7 +26,7 @@ export const PROSE = {
   predictionQuestion:
     "**Which number does the rule above guarantee will fit in one `mov` to `w0`?**",
   predictionExplain:
-    "The rule guarantees that 65536 fits. Its only set bit is in the upper half, so its lower half is `0000`. The other three numbers have set bits in both halves, so the rule does not tell us whether they fit. The assembler rejects all three; you can check them in the next figure.",
+    "The one-half rule guarantees some constants fit. Other patterns can fit too. Try the candidates in the next figure to check what the assembler accepts.",
 
   investigation:
     "The figure assembles `mov w0,` followed by the number you type. Assembling turns that text into an instruction.\n\n" +
