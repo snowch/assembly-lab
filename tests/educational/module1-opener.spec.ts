@@ -117,11 +117,13 @@ for (const width of [360, 375, 416, 1280]) {
       await expect(reminder).toHaveAttribute("href", "#/lesson/four-bit-arithmetic");
       await expect(reminder).toHaveText("Module 1, lesson 3: Arithmetic with four bits");
       await expect(figure.locator('[data-return-bits="shared"]')).toHaveCount(1);
-      await expect(figure.locator("[data-return-bits] .al-bit")).toHaveText([
-        ..."1".repeat(31),
-        "0",
-      ]);
-      await expect(figure.locator("[data-return-hex]")).toHaveText("0xfffffffe");
+      for (const row of ["shared", "reference"]) {
+        await expect(figure.locator(`[data-return-bits="${row}"] .al-bit`)).toHaveText([
+          ..."1".repeat(31),
+          "0",
+        ]);
+      }
+      await expect(figure.locator("[data-return-hex]")).toHaveText(["0xfffffffe", "0xfffffffe"]);
       await expect(figure.locator("[data-call-side] [data-return-bits]")).toHaveCount(0);
       await expect(figure.locator("[data-call-side]")).toHaveCount(2);
       await expect(figure.locator('[data-return-reading="signed"]')).toContainText("−2 km");

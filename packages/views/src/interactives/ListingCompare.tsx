@@ -110,7 +110,15 @@ const read = (call: CallResult): number =>
 const typeLabel = (type: CallResult["type"]): string =>
   type === "signed" ? C.signedType : C.unsignedType;
 
-function ReturnedWord({ value, row }: { value: number; row: string }) {
+function ReturnedWord({
+  value,
+  row,
+  markTop = false,
+}: {
+  value: number;
+  row: string;
+  markTop?: boolean;
+}) {
   return (
     <div data-return-bits={row}>
       <BitRow
@@ -118,6 +126,7 @@ function ReturnedWord({ value, row }: { value: number; row: string }) {
         value={value}
         text={<span data-return-hex>{hex(value)}</span>}
         row={`return-${row}`}
+        marks={markTop ? { picked: new Set([31]) } : undefined}
       />
     </div>
   );
@@ -247,14 +256,19 @@ function CallResults({
             aria-label={C.readingGroup}
           >
             <h4>{readingsDiffer ? C.weightsHeading : C.sameWeightsHeading}</h4>
+            <div className="al-compare-bit-reference" data-return-reference>
+              <p>{C.returnedReferenceCaption}</p>
+              <ReturnedWord value={word} row="reference" markTop />
+              <div className="al-compare-bit-labels">
+                <span className="al-compare-top-label">{C.returnedReferenceTop}</span>
+                <span>{C.returnedReferenceLower}</span>
+              </div>
+              <p>{C.topBitState(top)}</p>
+            </div>
             <p>
               {C.bitWeights}
               {calls[0]?.type !== calls[1]?.type && <> {C.topWeightDiffers}</>}
             </p>
-            <div className="al-compare-pattern-note">
-              <Prose markdown={C.sharedPattern(hex(word))} />
-              <p>{C.topBitState(top)}</p>
-            </div>
             <div className="al-compare-weight-panel al-compare-panel">
               <table className="al-compare-weight-table">
                 <caption>{C.contributionHeading}</caption>
