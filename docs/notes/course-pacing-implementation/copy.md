@@ -138,7 +138,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
       }
     ],
     "explain": "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.",
-    "callIntro": "After checking your prediction, press **Run comparison**. The simulator runs each function independently from the same starting arguments. Their matching returned bits appear once, with a separate C reading for each return type.",
+    "callIntro": "After checking your prediction, press **Run comparison**. The simulator runs each function independently from the same starting arguments. Their matching returned bits appear with a separate C reading for each return type.",
     "contract": "Decide what the function should return when the trip exceeds its plan: a negative distance, zero, or a separate error report. That choice determines the C types and any checks the function needs. Changing the types alone does not add a check.",
     "reflectionTitle": "Return zero beyond the plan",
     "reflection": "If the function must return zero once the planned distance is exceeded, what check must it make before subtracting?",
