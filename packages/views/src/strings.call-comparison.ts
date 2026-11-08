@@ -31,7 +31,16 @@ export const CALL_COMPARISON_STRINGS = {
     link: "Arithmetic with four bits",
   },
   readingsHeading: "C return values",
-  weightsHeading: "How the bits give the C values",
+  weightsHeading: "Why the same bits mean different numbers",
+  sameWeightsHeading: "How the bits give the returned values",
+  contributionHeading: "Contributions to each C value",
+  sumsHeading: "Add the contributions",
+  sharedPattern: (hex: string) =>
+    `Both functions return \`${hex}\` in w0. The C return types determine how these bits are read.`,
+  topBitState: (top: number) =>
+    top === 0
+      ? "Bit 31 is clear, so its contribution is zero in both readings."
+      : "Bit 31 is set, so its contribution equals its weight in each reading.",
   signedType: "int (signed)",
   unsignedType: "unsigned int",
   distanceValue: (value: string) => `${value} km`,
@@ -40,12 +49,11 @@ export const CALL_COMPARISON_STRINGS = {
   unsignedMeaning:
     "C defines this wrap. This value does not express the trip overrun. It can be valid in another calculation.",
   lowerBits: "Lower 31 bits",
-  topBitValue: "Top bit",
-  topBitWeight: "Top-bit weight",
-  topBitContribution: "Top-bit contribution",
+  topBitContribution: "Highest bit (bit 31)",
   total: "Returned value",
-  bitWeights: "Add the lower 31 bits’ contribution to the top bit’s contribution.",
-  topWeightDiffers: "Only the top-bit weight changes sign.",
+  bitWeights: "The lower 31 bits have the same positive weights in both readings.",
+  topWeightDiffers:
+    "Bit 31 has a negative weight for int (signed) and a positive weight for unsigned int.",
   readingGroup: "How the returned bits give these values",
   noArithmeticError:
     "These functions return the bits without checking for a trip overrun. There is no automatic overrun warning.",

@@ -152,8 +152,12 @@ test.describe("one subtraction with two C types", () => {
     await expect(f.locator('[data-same-bits="true"]')).toHaveText(C.sameBits);
     const explanation = f.locator("[data-return-explanation]");
     await expect(explanation.locator("table")).toBeVisible();
-    await expect(explanation.locator('[data-weight-row="lower"] td')).toHaveText("2,147,483,646");
-    await expect(explanation.locator('[data-weight-row="top-bit"] td')).toHaveText("1");
+    await expect(explanation.locator('[data-weight-row="lower"] td')).toHaveText([
+      "+2,147,483,646",
+      "+2,147,483,646",
+    ]);
+    await expect(explanation.locator('[data-weight-row="top-bit"]')).toHaveCount(0);
+    await expect(explanation).toContainText(C.topBitState(1));
     await expect(explanation.locator('[data-weight-row="top-weight"]')).toHaveCount(0);
     await expect(explanation.locator('[data-weight-row="top-contribution"] td')).toHaveText([
       "−2,147,483,648",
@@ -161,6 +165,16 @@ test.describe("one subtraction with two C types", () => {
     ]);
     await expect(explanation.locator('[data-weight-row="total"] td')).toHaveText([
       "−2",
+      "4,294,967,294",
+    ]);
+    await expect(explanation.locator('[data-reading-sum="signed"] dd')).toHaveText([
+      "+2,147,483,646",
+      "−2,147,483,648",
+      "−2",
+    ]);
+    await expect(explanation.locator('[data-reading-sum="unsigned"] dd')).toHaveText([
+      "+2,147,483,646",
+      "+2,147,483,648",
       "4,294,967,294",
     ]);
     await expect(explanation).toContainText(C.bitWeights);

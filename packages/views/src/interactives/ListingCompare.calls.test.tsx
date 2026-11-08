@@ -9,6 +9,7 @@ import { Interactive, type Lesson } from "@platform/lesson-schema";
 
 import { TRIP_REMAINING, TRIP_REMAINING_U } from "../../../../content/lessons/module-1.listings";
 import { bitsOf, traceOf, wValue, wValueAsInt } from "../trace";
+import { hex } from "../bits";
 import { CALL_COMPARISON_STRINGS as C } from "../strings.call-comparison";
 import { VIEW_STRINGS as S } from "../strings";
 import { ListingCompare } from "./ListingCompare";
@@ -116,6 +117,7 @@ describe("comparing the C return types by calling both listings", () => {
   it.each([
     [3, 5],
     [8, 2],
+    [5, 5],
   ])("reads each independent model call with its C type for args %j", (...args) => {
     const { container, store } = comparison(args);
     predict();
@@ -159,12 +161,34 @@ describe("comparing the C return types by calling both listings", () => {
     const decimal = (n: number) => n.toLocaleString("en-GB").replace("-", "−");
     const cells = (row: string) =>
       [...bridge.querySelectorAll(`[data-weight-row="${row}"] td`)].map((cell) => cell.textContent);
-    expect(cells("lower")).toEqual([decimal(lower)]);
-    expect(cells("top-bit")).toEqual([String(top)]);
+    expect(cells("lower")).toEqual(Array(2).fill(lower ? `+${decimal(lower)}` : "0"));
+    expect(cells("top-bit")).toEqual([]);
+    expect(bridge).toHaveTextContent(C.topBitState(top));
+    expect(bridge).toHaveTextContent(C.sharedPattern(hex(word)).replaceAll("`", ""));
     expect(cells("top-contribution")).toEqual(
       top ? [decimal(-(2 ** 31)), `+${decimal(2 ** 31)}`] : ["0", "0"],
     );
     expect(cells("total")).toEqual([decimal(wValueAsInt(models[0]!.final, 0)), decimal(word)]);
+    expect(bridge.querySelectorAll("tbody tr")).toHaveLength(3);
+    const sums = within(bridge).getByRole("group", { name: C.sumsHeading });
+    const sumCards = [...sums.querySelectorAll("[data-reading-sum]")];
+    expect(sumCards).toHaveLength(2);
+    for (const [i, card] of sumCards.entries()) {
+      const topValue = top === 0 ? 0 : i === 0 ? -(2 ** 31) : 2 ** 31;
+      const reading = i === 0 ? wValueAsInt(models[i]!.final, 0) : wValue(models[i]!.final, 0);
+      expect(card.querySelector('[data-sum-row="lower"] dd')).toHaveTextContent(
+        lower ? `+${decimal(lower)}` : "0",
+      );
+      expect(card.querySelector('[data-sum-row="top-contribution"] dd')).toHaveTextContent(
+        `${topValue > 0 ? "+" : ""}${decimal(topValue)}`,
+      );
+      expect(card.querySelector('[data-sum-row="total"] dd')).toHaveTextContent(decimal(reading));
+    }
+    expect(
+      within(bridge).getByRole("heading", {
+        name: wValueAsInt(models[0]!.final, 0) !== word ? C.weightsHeading : C.sameWeightsHeading,
+      }),
+    ).toBeVisible();
     if (args[0]! < args[1]!) {
       expect(container.querySelector('[data-call-side="left"]')).toHaveTextContent(
         C.signedMeaning(decimal(Math.abs(wValueAsInt(models[0]!.final, 0)))),
@@ -177,7 +201,7 @@ describe("comparing the C return types by calling both listings", () => {
     } else {
       expect(container.querySelector("[data-trip-overrun]")).toBeNull();
       expect(container).not.toHaveTextContent(C.unsignedMeaning);
-      expect(cells("top-weight")).toEqual([decimal(-(2 ** 31)), `+${decimal(2 ** 31)}`]);
+      expect(cells("top-weight")).toHaveLength(0);
     }
     expect(within(bridge).getByRole("link")).toHaveAttribute(
       "href",
@@ -331,6 +355,9 @@ describe("comparing the C return types by calling both listings", () => {
     const explanation = container.querySelector("[data-return-explanation]")!;
     expect(explanation).toHaveTextContent(C.bitWeights);
     expect(explanation).not.toHaveTextContent(C.topWeightDiffers);
+    expect(
+      within(explanation as HTMLElement).getByRole("heading", { name: C.sameWeightsHeading }),
+    ).toBeVisible();
     expect(
       [...explanation.querySelectorAll('[data-weight-row="total"] td')].map(
         (cell) => cell.textContent,

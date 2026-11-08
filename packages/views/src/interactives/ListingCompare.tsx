@@ -150,6 +150,10 @@ function CallResults({
   const weight = 2 ** 31;
   const lower = word === undefined ? 0 : unsignedOf(word) % weight;
   const top = word === undefined ? 0 : Math.floor(unsignedOf(word) / weight);
+  const readingsDiffer = shared && calls.some((call) => read(call) !== read(first!));
+  const topContribution = (call: CallResult) => top * (call.type === "signed" ? -weight : weight);
+  const contribution = (value: number) =>
+    value === 0 ? "0" : `${value > 0 ? "+" : ""}${decimal(value)}`;
   const overrun =
     workedReadings &&
     tripContext &&
@@ -242,13 +246,18 @@ function CallResults({
             role="group"
             aria-label={C.readingGroup}
           >
-            <h4>{C.weightsHeading}</h4>
+            <h4>{readingsDiffer ? C.weightsHeading : C.sameWeightsHeading}</h4>
             <p>
               {C.bitWeights}
               {calls[0]?.type !== calls[1]?.type && <> {C.topWeightDiffers}</>}
             </p>
+            <div className="al-compare-pattern-note">
+              <Prose markdown={C.sharedPattern(hex(word))} />
+              <p>{C.topBitState(top)}</p>
+            </div>
             <div className="al-compare-weight-panel al-compare-panel">
               <table className="al-compare-weight-table">
+                <caption>{C.contributionHeading}</caption>
                 <colgroup>
                   <col className="al-compare-weight-label" />
                   <col />
@@ -267,46 +276,51 @@ function CallResults({
                 <tbody>
                   <tr data-weight-row="lower">
                     <th scope="row">{C.lowerBits}</th>
-                    <td colSpan={calls.length}>{decimal(lower)}</td>
+                    {calls.map((_call, i) => (
+                      <td key={i}>{contribution(lower)}</td>
+                    ))}
                   </tr>
-                  <tr data-weight-row="top-bit">
-                    <th scope="row">{C.topBitValue}</th>
-                    <td colSpan={calls.length}>{top}</td>
-                  </tr>
-                  {top === 0 && (
-                    <tr data-weight-row="top-weight">
-                      <th scope="row">{C.topBitWeight}</th>
-                      {calls.map((call, i) => (
-                        <td key={i}>
-                          <span>
-                            {call.type === "signed" ? "−" : "+"}
-                            {decimal(weight)}
-                          </span>
-                        </td>
-                      ))}
-                    </tr>
-                  )}
                   <tr data-weight-row="top-contribution">
                     <th scope="row">{C.topBitContribution}</th>
                     {calls.map((call, i) => (
-                      <td key={i}>
-                        <span>
-                          {top !== 0 ? (call.type === "signed" ? "−" : "+") : ""}
-                          {decimal(top * weight)}
-                        </span>
-                      </td>
+                      <td key={i}>{contribution(topContribution(call))}</td>
                     ))}
                   </tr>
                   <tr data-weight-row="total">
                     <th scope="row">{C.total}</th>
                     {calls.map((call, i) => (
-                      <td key={i}>
-                        <span>{decimal(read(call))}</span>
-                      </td>
+                      <td key={i}>{decimal(read(call))}</td>
                     ))}
                   </tr>
                 </tbody>
               </table>
+            </div>
+            <div className="al-compare-sums" role="group" aria-label={C.sumsHeading}>
+              {calls.map((call, i) => (
+                <div
+                  className="al-compare-sum al-compare-panel"
+                  key={i}
+                  data-reading-sum={call.type}
+                >
+                  <h5>
+                    <span>{typeLabel(call.type)}</span>
+                  </h5>
+                  <dl>
+                    <div data-sum-row="lower">
+                      <dt className="visually-hidden">{C.lowerBits}</dt>
+                      <dd>{contribution(lower)}</dd>
+                    </div>
+                    <div data-sum-row="top-contribution">
+                      <dt className="visually-hidden">{C.topBitContribution}</dt>
+                      <dd>{contribution(topContribution(call))}</dd>
+                    </div>
+                    <div data-sum-row="total">
+                      <dt className="visually-hidden">{C.total}</dt>
+                      <dd>{decimal(read(call))}</dd>
+                    </div>
+                  </dl>
+                </div>
+              ))}
             </div>
             <p className="al-compare-types">{C.readingTypes}</p>
             {tripContext && <p>{C.noArithmeticError}</p>}
