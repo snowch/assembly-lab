@@ -37,7 +37,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
       "combine mov and movk to construct a constant."
     ],
     "intro": "A constant that does not fit one instruction can be built in parts. Use movk to replace a part while keeping the other bits.",
-    "reminder": "`mov` to `w0` replaces all 32 bits, including both 16-bit halves. [Loading a constant](#/lesson/constants-and-widths) shows which constants fit one instruction."
+    "reminder": "[Loading a constant](#/lesson/constants-and-widths) shows which numbers fit one `mov`."
   },
   "registerWidths": {
     "title": "Writing w and x registers",

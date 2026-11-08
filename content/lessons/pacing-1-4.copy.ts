@@ -29,7 +29,7 @@ export const COPY = {
   },
   buildConstant: {
     reminder:
-      "`mov` to `w0` replaces all 32 bits, including both 16-bit halves. [Loading a constant](#/lesson/constants-and-widths) shows which constants fit one instruction.",
+      "[Loading a constant](#/lesson/constants-and-widths) shows which numbers fit one `mov`.",
     title: "Building a constant",
     objectives: ["combine mov and movk to construct a constant."],
     intro:

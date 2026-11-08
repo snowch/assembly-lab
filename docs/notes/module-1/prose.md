@@ -241,24 +241,29 @@ The full rule is longer than this course needs. The figure checks any number.
 
 ## 5. Building 1000000
 
-With a `w` name, `movk` replaces one 16-bit half of the 32 bits and keeps the other half. `mov` replaces all 32 bits.
+Start with `mov`, which replaces all 32 bits of `w0`. Then use `movk` to replace one 16-bit half and keep the other.
 
-For `movk` with a `w` name:
+Step through these instructions in the figure:
 
-- `lsl 16` after the number puts it in the upper half, bits 16 to 31.
-- Without `lsl 16`, the number goes in the lower half.
+1. `mov w0, 3` leaves `0x0000 0003`: upper half 0, lower half 3.
+2. `movk w0, 2, lsl 16` puts 2 in the upper half. The ending `lsl 16` selects that half. The lower half stays 3, giving `0x0002 0003`.
 
-For example, `mov w0, 3` gives `0x0000 0003`. Then `movk w0, 2, lsl 16` gives `0x0002 0003`, which is 131075. The upper half is new, and the lower half is kept. The figure draws each step.
+Without `lsl 16`, `movk w0, 3` replaces the lower half and keeps the upper half.
 
-To split a non-negative 32-bit integer into halves:
+### Find the two halves
 
-1. Divide it by 65536, the value of the lowest bit in the upper half.
-2. Take the result without its fractional part for the upper half.
-3. Take the amount left after this whole-number division for the lower half. This amount is the **remainder**.
+An upper-half value of 1 contributes 65536 to the whole number. In the worked example:
 
-In the example above, 131075 = 2 × 65536 + 3, so the upper half is 2 and the lower half is 3.
+**131075 = 2 × 65536 + 3**
 
-Writing `#` before a number is optional. `mov w0, 30000` and `mov w0, #30000` are the same instruction.
+Two whole groups of 65536 give the upper half, 2. The remaining 3 goes in the lower half.
+
+For another positive number that fits in `w0`, you can use a calculator:
+
+1. Divide the number by 65536. Ignore any digits after the decimal point. The whole-number result is the upper half.
+2. Multiply that result by 65536. Subtract that amount from your original number. The amount left, called the **remainder**, is the lower half.
+
+`#` before a number is optional: `mov w0, #3` means the same as `mov w0, 3`.
 
 **Build 1000000**
 

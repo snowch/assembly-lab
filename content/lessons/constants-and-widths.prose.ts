@@ -40,11 +40,21 @@ export const PROSE = {
     "The full rule is longer than this course needs. The figure checks any number.",
 
   construction:
-    "With a `w` name, `movk` replaces one 16-bit half of the 32 bits and keeps the other half. `mov` replaces all 32 bits.\n\n" +
-    "For `movk` with a `w` name:\n\n- `lsl 16` after the number puts it in the upper half, bits 16 to 31.\n- Without `lsl 16`, the number goes in the lower half.\n\n" +
-    "For example, `mov w0, 3` gives `0x0000 0003`. Then `movk w0, 2, lsl 16` gives `0x0002 0003`, which is 131075. The upper half is new, and the lower half is kept. The figure draws each step.\n\n" +
-    "To split a non-negative 32-bit integer into halves:\n\n1. Divide it by 65536, the value of the lowest bit in the upper half.\n2. Take the result without its fractional part for the upper half.\n3. Take the amount left after this whole-number division for the lower half. This amount is the **remainder**.\n\nIn the example above, 131075 = 2 × 65536 + 3, so the upper half is 2 and the lower half is 3.\n\n" +
-    "Writing `#` before a number is optional. `mov w0, 30000` and `mov w0, #30000` are the same instruction.",
+    "Start with `mov`, which replaces all 32 bits of `w0`. Then use `movk` to replace one 16-bit half and keep the other.\n\n" +
+    "Step through these instructions in the figure:\n\n" +
+    "1. `mov w0, 3` leaves `0x0000 0003`: upper half 0, lower half 3.\n" +
+    "2. `movk w0, 2, lsl 16` puts 2 in the upper half. The ending `lsl 16` selects that half. The lower half stays 3, giving `0x0002 0003`.\n\n" +
+    "Without `lsl 16`, `movk w0, 3` replaces the lower half and keeps the upper half.",
+  constructionMethod:
+    "### Find the two halves\n\n" +
+    "An upper-half value of 1 contributes 65536 to the whole number. In the worked example:\n\n" +
+    "**131075 = 2 × 65536 + 3**\n\n" +
+    "Two whole groups of 65536 give the upper half, 2. The remaining 3 goes in the lower half.\n\n" +
+    "For another positive number that fits in `w0`, you can use a calculator:\n\n" +
+    "1. Divide the number by 65536. Ignore any digits after the decimal point. The whole-number result is the upper half.\n" +
+    "2. Multiply that result by 65536. Subtract that amount from your original number. The amount left, called the **remainder**, is the lower half.",
+  constructionSyntax:
+    "`#` before a number is optional: `mov w0, #3` means the same as `mov w0, 3`.",
   /** Shown once Build 1000000 has passed, above the stepper through the learner's own solution. */
   constructionSolved:
     "Step through your solution below to see the two halves of `w0` after each instruction. Watch which half changes and which is kept.",
