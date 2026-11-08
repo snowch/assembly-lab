@@ -52,7 +52,7 @@ export const PROSE = {
     "Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The starting text, `mov w0, 1000000` then `ret`, does not assemble.\n\nChoose Text to type one instruction per line. Choose Tap to select a line and edit it with buttons. Press Run tests to check your program.",
   buildHints: [
     "One `mov` holds a number whose bits fall in one 16-bit half. `movk` writes the other half without touching the first.",
-    "A second `mov` replaces the whole register. Only `movk` keeps the other half.",
+    "A second `mov` to `w0` replaces both 16-bit halves. `movk` replaces one half and keeps the other.",
     "`mov w0, 1` then `movk w0, 1, lsl 16` leaves 65537 in `w0`.",
     "The lower half is 16960, and `mov w0, 16960` puts it there.",
     "`mov w0, 16960`, then `movk w0, 0xf, lsl 16`, then `ret`.",
