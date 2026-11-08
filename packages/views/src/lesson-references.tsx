@@ -23,7 +23,7 @@ export function orderLessons<T extends { module: number; order: number }>(
 
 // Replace legacy and already formatted prefixes with the destination's current position.
 const numberedPrefix =
-  /^(?:M[^,\n]+, L\d+|Module [^,\n]+, lesson \d+|(?:Return to )?Module (?:\d+|[AB])):\s*/;
+  /^(?:M(?:\d+|[AB]), L\d+|Module (?:\d+|[AB]), lesson \d+|(?:Return to )?Module (?:\d+|[AB])):\s*/;
 const lessonId = (href: string): string | undefined =>
   /^#\/lesson\/([a-z][a-z0-9-]*)\/?(?=$|[?#])/.exec(href)?.[1];
 

@@ -48,6 +48,12 @@ it("numbers actual Markdown links without changing URLs, code, external links or
   expect(references.markdown("[Module 1, lesson 2: **Read** it](#/lesson/later)")).toBe(
     "[M1, L2: **Read** it](#/lesson/later)",
   );
+  for (const title of ["More", "M1", "Module 1"]) {
+    const source = `[${title}](#/lesson/later), L2: keep this wording`;
+    expect(references.markdown(source)).toBe(
+      `[M1, L2: ${title}](#/lesson/later), L2: keep this wording`,
+    );
+  }
   const { container } = render(
     <LessonReferenceProvider references={references}>
       <LessonLink href="#/lesson/later#section">Read it</LessonLink>

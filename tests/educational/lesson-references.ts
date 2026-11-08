@@ -17,7 +17,9 @@ export function lessonPosition(id: string): string {
 export function lessonLabel(id: string, title?: string): string {
   const lesson = LESSONS.find((item) => item.id === id);
   if (!lesson) throw new Error(`No published lesson: ${id}`);
-  const position = lessonPosition(id).replace(/^Module /, "M").replace(", lesson ", ", L");
+  const position = lessonPosition(id)
+    .replace(/^Module /, "M")
+    .replace(", lesson ", ", L");
   return `${position}: ${title ?? lesson.title}`;
 }
 
