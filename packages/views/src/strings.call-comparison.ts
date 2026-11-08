@@ -45,9 +45,9 @@ export const CALL_COMPARISON_STRINGS = {
   unsignedType: "unsigned int",
   distanceValue: (value: string) => `${value} km`,
   signedMeaning: (overrun: string) => `${overrun} km beyond the plan.`,
-  signedRange: "This result fits int, so this call has no signed overflow.",
+  signedRange: "This negative result fits int.",
   unsignedMeaning:
-    "C defines this wrap. This value does not express the trip overrun. It can be valid in another calculation.",
+    "The unsigned subtraction wraps: it keeps the low result bits and reads them as an unsigned value. C defines this behaviour. This value does not express the trip overrun. It can be valid in another calculation.",
   lowerBits: "Lower 31 bits",
   topBitContribution: "Highest bit (bit 31)",
   total: "Returned value",

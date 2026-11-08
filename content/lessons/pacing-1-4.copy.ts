@@ -135,9 +135,6 @@ export const COPY = {
       "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.",
     callIntro:
       "After checking your prediction, press **Run comparison**. The simulator runs each function independently from the same starting arguments. Their matching returned bits appear once, with a separate C reading for each return type.",
-    boundsTitle: "C arithmetic has type rules",
-    bounds:
-      "C applies different rules to these two types:\n\n- **A negative `int` result can be valid.** Here `int` ranges from −2147483648 to 2147483647. A mathematical result outside that range is signed **overflow**. A negative value within this range does not overflow.\n- **Unsigned arithmetic wraps into range.** Here the range is 0 to 4294967295. A mathematical result below zero or above that maximum wraps back into range. Subtraction below zero follows this rule too.\n- **Signed arithmetic outside its range has no C guarantee.** For signed addition, subtraction and multiplication, an out-of-range result has **undefined behaviour**: C places no requirements on that case. For example, adding 1 to 2147483647 exceeds this `int` range. C guarantees neither wrapping nor an error.\n\nFor compiler examples and ways to check the bounds, see [C overflow and machine results](#/lesson/c-and-overflow).",
     contract:
       "Decide what the function should return when the trip exceeds its plan: a negative distance, zero, or a separate error report. That choice determines the C types and any checks the function needs. Changing the types alone does not add a check.",
     reflectionTitle: "Return zero beyond the plan",
@@ -148,7 +145,7 @@ export const COPY = {
       "Check whether `travelled > planned`. If so, return zero; otherwise subtract `travelled` from `planned`. Make this check before subtracting so the unsigned subtraction cannot wrap below zero.",
     compilerSummary: "Which compiler?",
     compiler:
-      "These are recorded GCC 16.1.0 listings for AArch64 Linux, compiled with `-O1 -g`. `-O1` enables compiler optimisations; `-g` records source-line information. Other compiler settings may choose different instructions. The C rules here follow draft N3096, sections 6.2.5 and 6.5 paragraph 5.",
+      "These are recorded GCC 16.1.0 listings for AArch64 Linux, compiled with `-O1 -g`. `-O1` enables compiler optimisations; `-g` records source-line information. Other compiler settings may choose different instructions. The unsigned arithmetic rule follows draft N3096, section 6.2.5 paragraph 11.",
     originality: {
       textbookExample:
         "A signed-versus-unsigned puzzle that changes the source, the arithmetic and the displayed interpretation at once.",

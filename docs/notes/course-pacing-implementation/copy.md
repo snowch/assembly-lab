@@ -139,15 +139,13 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     ],
     "explain": "Both listings use `sub w0, w0, w1` followed by `ret`. The subtraction keeps the low 32 result bits. It needs no separate signed or unsigned form.",
     "callIntro": "After checking your prediction, press **Run comparison**. The simulator runs each function independently from the same starting arguments. Their matching returned bits appear once, with a separate C reading for each return type.",
-    "boundsTitle": "C arithmetic has type rules",
-    "bounds": "C applies different rules to these two types:\n\n- **A negative `int` result can be valid.** Here `int` ranges from −2147483648 to 2147483647. A mathematical result outside that range is signed **overflow**. A negative value within this range does not overflow.\n- **Unsigned arithmetic wraps into range.** Here the range is 0 to 4294967295. A mathematical result below zero or above that maximum wraps back into range. Subtraction below zero follows this rule too.\n- **Signed arithmetic outside its range has no C guarantee.** For signed addition, subtraction and multiplication, an out-of-range result has **undefined behaviour**: C places no requirements on that case. For example, adding 1 to 2147483647 exceeds this `int` range. C guarantees neither wrapping nor an error.\n\nFor compiler examples and ways to check the bounds, see [C overflow and machine results](#/lesson/c-and-overflow).",
     "contract": "Decide what the function should return when the trip exceeds its plan: a negative distance, zero, or a separate error report. That choice determines the C types and any checks the function needs. Changing the types alone does not add a check.",
     "reflectionTitle": "Return zero beyond the plan",
     "reflection": "If the function must return zero once the planned distance is exceeded, what check must it make before subtracting?",
     "reflectionSummary": "Check your reasoning",
     "reflectionAnswer": "Check whether `travelled > planned`. If so, return zero; otherwise subtract `travelled` from `planned`. Make this check before subtracting so the unsigned subtraction cannot wrap below zero.",
     "compilerSummary": "Which compiler?",
-    "compiler": "These are recorded GCC 16.1.0 listings for AArch64 Linux, compiled with `-O1 -g`. `-O1` enables compiler optimisations; `-g` records source-line information. Other compiler settings may choose different instructions. The C rules here follow draft N3096, sections 6.2.5 and 6.5 paragraph 5.",
+    "compiler": "These are recorded GCC 16.1.0 listings for AArch64 Linux, compiled with `-O1 -g`. `-O1` enables compiler optimisations; `-g` records source-line information. Other compiler settings may choose different instructions. The unsigned arithmetic rule follows draft N3096, section 6.2.5 paragraph 11.",
     "originality": {
       "textbookExample": "A signed-versus-unsigned puzzle that changes the source, the arithmetic and the displayed interpretation at once.",
       "howThisDiffers": "Continues the earlier four-bit 3 minus 5 subtraction with two recorded 32-bit trip functions. The learner predicts whether their instructions differ, then compares model-derived returns against the trip’s purpose and chooses a check for a different return rule."
@@ -592,15 +590,15 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
 ## Arithmetic comparison revision: checked-facts brief
 
 - Outcome: choose types and checks from the meaning the trip function promises to return. The planned 3 km and travelled 5 km should be able to express a 2 km overrun; the model supplies every displayed return value.
-- Preparation: signed and unsigned readings already establish bit weights and both 32-bit ranges. Four-bit arithmetic already demonstrates wrap, inversion plus one, and 3 minus 5 equals minus 2. This page does not repeat those calculations.
+- Preparation: signed and unsigned readings already establish bit weights and both 32-bit ranges. Four-bit arithmetic already demonstrates retained result bits, inversion plus one, and 3 minus 5 equals minus 2. This page applies those mechanisms to recorded 32-bit functions.
 - Recorded evidence: `TRIP_REMAINING` and `TRIP_REMAINING_U`, GCC 16.1.0 for AArch64 Linux at `-O1 -g`, both contain `sub w0, w0, w1` and `ret`. Calls with arguments 3 and 5 return `0xfffffffe`; the model reads those bits as signed −2 and unsigned 4294967294.
 - C source: N3096 section 6.2.5 paragraph 11 defines unsigned arithmetic modulo the type range. Section 6.5 paragraph 5 gives undefined behaviour when an expression result is outside its type’s representable range. Minus 2 fits signed `int` here.
-- Proposed misconception checks: the instruction prediction distinguishes a belief in separate signed subtraction instructions. The visible returned bits and typed values distinguish arithmetic from interpretation. Local bounds prose distinguishes a negative result from signed overflow, and defined unsigned wrap from undefined signed arithmetic. These are design hypotheses, not observed learner findings.
-- Scope: one comparison, two independent calls, and a short application asking what to check before subtraction when the function must return zero beyond the plan. No assembly branches are introduced. Flags, overflow-checking code, mixed-type conversions and compiler optimisation examples remain later.
+- Proposed misconception checks: the instruction prediction distinguishes a belief in separate signed subtraction instructions. The visible returned bits and typed values distinguish arithmetic from interpretation. The result cards explain that the negative value is valid and define unsigned wrapping locally. The closing application asks which check matches a different returned-distance rule. These are design hypotheses, not observed learner findings.
+- Scope: one comparison, two independent calls, and a short application asking what to check before subtraction when the function must return zero beyond the plan. No assembly branches are introduced. General C arithmetic limits and undefined-behaviour rules, flags, overflow-checking code, mixed-type conversions and compiler optimisation examples remain later.
 - State: prediction reveals listings, then Run comparison runs both independently. The result’s practical meaning, unsigned-wrap explanation, lack of an error report and bit-weight calculations appear only after the call. Reset comparison removes these results and retains the checked prediction; restored calls recompute from current inputs.
 - Technical scope: the recorded `sub` and `ret` leave condition flags unchanged, pinned with both initial flag patterns in the facts test. The page says in plain language that neither instruction reports an arithmetic error, avoiding an early flags lesson. The returned unsigned number has no automatic wrap indicator; the same value can be legitimate elsewhere. Parameter types determine the subtraction in these two functions, while the return type determines the caller’s reading. A return type alone does not generally determine an expression’s arithmetic type.
-- Terms: the published page first defines overflow and undefined behaviour. Published addition keeps carry and flag as its new terms. Legacy source lessons retain their original metadata.
-- Inspection: source and recorded listings read; browser review and independent technical/learner review pending. No beginner observation has taken place.
+- Terms: the published page introduces wrap. Published addition introduces overflow where its existing explanation defines it; the published products page introduces undefined behaviour where its existing motivation defines it. Legacy source lessons retain their original metadata.
+- Inspection: source and recorded listings checked. Current integration and independent review outcomes are recorded in the arithmetic-lesson-focus notes. No beginner observation has taken place.
 
 UI labels were drafted in a separate drafting agent from the engineer’s checked-facts brief and are held in `packages/views/src/strings.call-comparison.ts`.
 
@@ -654,9 +652,9 @@ export const CALL_COMPARISON_STRINGS = {
   unsignedType: "unsigned int",
   distanceValue: (value: string) => `${value} km`,
   signedMeaning: (overrun: string) => `${overrun} km beyond the plan.`,
-  signedRange: "This result fits int, so this call has no signed overflow.",
+  signedRange: "This negative result fits int.",
   unsignedMeaning:
-    "C defines this wrap. This value does not express the trip overrun. It can be valid in another calculation.",
+    "The unsigned subtraction wraps: it keeps the low result bits and reads them as an unsigned value. C defines this behaviour. This value does not express the trip overrun. It can be valid in another calculation.",
   lowerBits: "Lower 31 bits",
   topBitContribution: "Highest bit (bit 31)",
   total: "Returned value",

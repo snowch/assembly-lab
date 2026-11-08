@@ -180,7 +180,7 @@ const readings = splitLesson(onePatternThreeReadings, [
     id: "arithmetic-on-register-bits",
     title: COPY.arithmeticBits.title,
     objectives: [...COPY.arithmeticBits.objectives],
-    introduces: ["overflow", "undefined behaviour", "wrap"],
+    introduces: ["wrap"],
     originalityNote: COPY.arithmeticBits.originality,
     sections: [
       {
@@ -218,14 +218,9 @@ const readings = splitLesson(onePatternThreeReadings, [
         ],
       },
       {
-        kind: "explanation",
-        title: COPY.arithmeticBits.boundsTitle,
-        prose: [COPY.arithmeticBits.bounds, COPY.arithmeticBits.contract].join("\n\n"),
-      },
-      {
         kind: "reflection",
         title: COPY.arithmeticBits.reflectionTitle,
-        prose: COPY.arithmeticBits.reflection,
+        prose: [COPY.arithmeticBits.contract, COPY.arithmeticBits.reflection].join("\n\n"),
         details: {
           summary: COPY.arithmeticBits.reflectionSummary,
           prose: COPY.arithmeticBits.reflectionAnswer,
@@ -286,7 +281,7 @@ const addition = splitLesson(addingAndTheFlags, [
     id: addingAndTheFlags.id,
     title: COPY.addition.title,
     objectives: [...COPY.addition.objectives],
-    introduces: ["carry", "flag"],
+    introduces: ["carry", "flag", "overflow"],
     sections: [
       {
         ...section(addingAndTheFlags, "motivation"),
