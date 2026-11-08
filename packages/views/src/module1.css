@@ -866,6 +866,11 @@
 .al-h16-summary[data-tag="kept"] {
   border-style: dashed;
 }
+.al-h16-detail > summary {
+  min-height: 2.75rem;
+  padding: var(--space-2) 0;
+  cursor: pointer;
+}
 .al-h16-detail > .al-h16-pair {
   margin-top: var(--space-3);
 }

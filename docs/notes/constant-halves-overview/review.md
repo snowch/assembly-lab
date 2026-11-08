@@ -20,3 +20,11 @@ Inspection found that halves16 inferred movk's selected half by comparing values
 - Production browser regression: 22 desktop/phone cases passed, covering worked stepping, bit disclosure keyboard operation, mobile layout, solution gating, alternative passing programs and restored work. Theme checks in this command cover the prior detailed figure; the independent reviews check the compact display in both actual themes. Full CI/publication evidence is recorded in the pull request.
 
 Separate GPT-6.1 Sol High learner/UX and Extra High technical reviewers inspect the built lesson, prerequisites, sources and affected states without drafting the change. Their results must be resolved before merge. Agent checks are not observed novice learning. No screen-reader user study or physical hardware execution is claimed.
+
+## Full-suite touch-target finding
+
+The first push CI completed with 188 unit files / 3243 unit tests passing, then 1425 browser cases passing, 20 existing skips and one phone layout failure. The new native disclosure summary was 28 pixels tall, below the existing 40-pixel control minimum. The initial focused browser selection did not include that broad post-interaction layout case, and both reviewers missed the size. This is a product defect, not a stale expectation.
+
+The correction gives the summary a minimum height of 44 pixels and padding while preserving its native disclosure marker and keyboard behaviour. The worked-example browser case now measures its minimum target size explicitly; the existing design assertion remains unchanged. Recheck the broad page-layout cases alongside the state/gate regressions and obtain independent targeted browser verification before merging. Final rerun and publication evidence is recorded in the pull request.
+
+The rebuilt focused browser run passed 28 cases across desktop and phone, including all three broad layout cases per viewport. The learner/UX reviewer independently measured exactly 44 pixels in closed/open/reclosed states at 1440 by 1000 and 390 by 844 in actual light/dark themes. Native list-item markers, Enter/Space toggling, visible focus and zero overflow were preserved. The technical follow-up and final CI outcomes are recorded in the pull request.

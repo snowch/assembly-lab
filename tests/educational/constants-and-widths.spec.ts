@@ -771,6 +771,7 @@ test.describe("the halves of sixteen", () => {
     // Essential write marks stay visible with the individual bits closed.
     await expect(figure.locator(".al-h16-summary").first()).toBeVisible();
     const disclosure = figure.locator(".al-h16-detail > summary");
+    expect((await disclosure.boundingBox())!.height).toBeGreaterThanOrEqual(44);
     await disclosure.focus();
     await page.keyboard.press("Enter");
     await expect(figure.locator(".al-h16-detail")).toHaveAttribute("open", "");
