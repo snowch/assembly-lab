@@ -512,9 +512,7 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
       await expect(c.locator(".answer-field")).toHaveCount(4);
     });
 
-    test("explains wrong conditions with observed flags and rules, withholding their answers", async ({
-      page,
-    }) => {
+    test("explains wrong conditions without revealing their answers", async ({ page }) => {
       await openLesson(page, ONE);
       const c = challenge(page, HOLDS);
       await c.scrollIntoViewIfNeeded();
@@ -530,9 +528,9 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
       if (activity.tests.kind !== "answers") throw new Error("Answer cases required");
       for (const [index, item] of activity.tests.cases.entries()) {
         const condition = String(Object.values(item.expect)[0]).replace("holds:", "");
-        const flags = compareResult(Number(item.given["w0"]), Number(item.given["w1"]), [
-          condition,
-        ]).flags;
+        const first = Number(item.given["w0"]);
+        const second = Number(item.given["w1"]);
+        const flags = compareResult(first, second, [condition]).flags;
         const detail = c.locator(".verdict-detail").nth(index);
         await expect(detail).toContainText(
           `N=${Number(flags.n)}, Z=${Number(flags.z)}, C=${Number(flags.c)}, V=${Number(flags.v)}`,
