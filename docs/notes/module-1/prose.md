@@ -318,7 +318,7 @@ The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x0000000
 
 **Multiply the constant before adding**
 
-This form of `add` lets you add a larger constant in one instruction, without first loading it into another register.
+A compiler can choose this form of `add` for an addition by a fixed amount such as 4096. You can also choose it when writing assembly. The constant goes in the instruction, so you do not need another register to hold it.
 
 `lsl #12` multiplies the constant `#1` by 4096 before the addition. The instruction writes `w2` and leaves `w0` unchanged.
 

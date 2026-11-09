@@ -21,6 +21,97 @@
 .al-primitive-registers .al-dreg {
   min-width: 4.25rem;
 }
+.al-instruction-choice {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.4fr) minmax(4.5rem, 0.8fr) minmax(0, 1fr) minmax(4rem, 0.7fr)
+    minmax(0, 0.9fr);
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  border-block: 1px solid var(--border);
+}
+.al-instruction-choice-node {
+  grid-row: 2;
+  min-width: 0;
+  padding: var(--space-2);
+  text-align: center;
+  font-size: var(--text-sm);
+}
+.al-instruction-choice-chooser {
+  grid-column: 1;
+}
+.al-instruction-choice-instruction {
+  grid-column: 3;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+}
+.al-instruction-choice-processor {
+  grid-column: 5;
+}
+.al-instruction-choice-edge {
+  display: contents;
+}
+.al-instruction-choice-edge > span:first-child {
+  grid-row: 1;
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+}
+.al-instruction-choice-choose > span {
+  grid-column: 2;
+}
+.al-instruction-choice-execute > span {
+  grid-column: 4;
+}
+.al-instruction-choice-arrow {
+  grid-row: 2;
+  justify-self: center;
+  color: var(--fg);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.al-instruction-choice-arrow::before {
+  content: "→";
+}
+@media (max-width: 40rem) {
+  .al-instruction-choice {
+    grid-template-columns: minmax(0, 1fr) 1.5rem minmax(0, 1fr);
+    justify-items: center;
+    gap: var(--space-1);
+  }
+  .al-instruction-choice-node {
+    grid-column: 1 / -1;
+    padding: var(--space-1) var(--space-2);
+  }
+  .al-instruction-choice-chooser {
+    grid-row: 1;
+  }
+  .al-instruction-choice-instruction {
+    grid-row: 3;
+  }
+  .al-instruction-choice-processor {
+    grid-row: 5;
+  }
+  .al-instruction-choice-edge > span:first-child {
+    grid-column: 1;
+    justify-self: end;
+    text-align: right;
+  }
+  .al-instruction-choice-edge.al-instruction-choice-choose > span {
+    grid-row: 2;
+  }
+  .al-instruction-choice-edge.al-instruction-choice-execute > span {
+    grid-row: 4;
+  }
+  .al-instruction-choice-edge > .al-instruction-choice-arrow {
+    grid-column: 2;
+  }
+  .al-instruction-choice-arrow::before {
+    content: "↓";
+  }
+}
 .al-primitive-caller {
   display: grid;
   gap: var(--space-1);

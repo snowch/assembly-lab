@@ -7,6 +7,8 @@ import { describe, expect, it } from "vitest";
 import { LessonStore, memoryStorage } from "@platform/lesson-runtime";
 import { Interactive, type Lesson } from "@platform/lesson-schema";
 import { PrimitiveOperation } from "./interactives/PrimitiveOperation";
+import { PRIMITIVE_STRINGS as S } from "./strings.primitive";
+import { PROSE } from "../../../content/lessons/constants-and-widths.prose";
 import {
   SHIFTED_IMMEDIATE_ADD,
   SHIFTED_REGISTER_ADD,
@@ -48,6 +50,9 @@ describe("one addition with an input modifier", () => {
         stage: {
           title: item.entry,
           prose: "",
+          ...(item.entry === "add_scaled_constant"
+            ? { instructionChoice: PROSE.immediateAdd.instructionChoice }
+            : {}),
           program: item.program,
           call: { entry: item.entry, args: item.args },
           registers: item.registers,
@@ -57,6 +62,23 @@ describe("one addition with an input modifier", () => {
     const props = { lesson: {} as Lesson, interactive, store };
     const view = render(<PrimitiveOperation {...props} />);
     const user = userEvent.setup();
+    const checkChoice = () => {
+      const diagram = screen.queryByRole("img", { name: S.instructionChoice.description });
+      if (item.entry === "add_scaled_constant") {
+        expect(diagram).toBeVisible();
+        expect(diagram).toHaveTextContent(S.instructionChoice.chooser);
+        expect(diagram).toHaveTextContent(S.instructionChoice.processor);
+        expect(diagram!.querySelector("button")).toBeNull();
+        expect(
+          diagram!.compareDocumentPosition(
+            view.container.querySelector(".al-primitive-preview, .al-primitive-result")!,
+          ) & Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
+      } else {
+        expect(diagram).toBeNull();
+      }
+    };
+    checkChoice();
     const preview = view.container.querySelector(".al-primitive-preview")!;
     expect(preview).toHaveTextContent(item.input);
     expect(
@@ -70,11 +92,18 @@ describe("one addition with an input modifier", () => {
     await user.click(screen.getByRole("button", { name: "Run the instruction" }));
     expect(screen.getByRole("status")).toHaveTextContent(item.result);
     expect(screen.getByRole("status")).toHaveTextContent(item.kept);
+    checkChoice();
     view.unmount();
     const restored = render(<PrimitiveOperation {...props} />);
     expect(screen.getByRole("status")).toHaveTextContent(item.result);
+    expect(restored.queryAllByRole("img", { name: S.instructionChoice.description })).toHaveLength(
+      item.entry === "add_scaled_constant" ? 1 : 0,
+    );
     await user.click(screen.getByRole("button", { name: "Start again" }));
     expect(restored.container.querySelector(".al-primitive-preview")).toHaveTextContent("w2 = ?");
+    expect(restored.queryAllByRole("img", { name: S.instructionChoice.description })).toHaveLength(
+      item.entry === "add_scaled_constant" ? 1 : 0,
+    );
     expect(screen.queryByRole("status")).toBeNull();
     restored.unmount();
   });
