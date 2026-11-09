@@ -511,6 +511,59 @@ describe("a w register as two halves of 16 bits", () => {
     );
   });
 
+  it("keeps the overview, optional bit detail and step controls on the same model state", async () => {
+    const user = userEvent.setup({ delay: null });
+    const { container } = figure(WideStepper, "w", "wide-stepper", {
+      program: WORKED,
+      register: 0,
+      mode: "w16",
+      halfOverview: true,
+    });
+    const summary = () =>
+      [...container.querySelectorAll(".al-h16-summary")].map((h) => [
+        h.querySelector(".al-h16-value")?.textContent,
+        h.querySelector(".al-h16-mark")?.textContent?.trim(),
+      ]);
+    expect(summary()).toEqual([
+      ["0x0000", ""],
+      ["0x0000", ""],
+    ]);
+    const detail = container.querySelector("details")!;
+    expect(detail).not.toHaveAttribute("open");
+    await next(user);
+    expect(summary()).toEqual([
+      ["0x0000", "Written"],
+      ["0x0003", "Written"],
+    ]);
+    await user.click(screen.getByText(M1.halves.showBits));
+    expect(detail).toHaveAttribute("open");
+    await next(user);
+    expect(summary()).toEqual([
+      ["0x0002", "Written"],
+      ["0x0003", "Kept"],
+    ]);
+    expect(halves(container).map((h) => [h.digits, h.tag])).toEqual([
+      ["0002", "Written"],
+      ["0003", "Kept"],
+    ]);
+    await next(user);
+    expect(summary()).toEqual([
+      ["0x0002", "Kept"],
+      ["0x0003", "Kept"],
+    ]);
+    await user.click(screen.getByRole("button", { name: S.stepper.back }));
+    expect(summary()).toEqual([
+      ["0x0002", "Written"],
+      ["0x0003", "Kept"],
+    ]);
+    await user.click(screen.getByRole("button", { name: S.stepper.reset }));
+    expect(summary()).toEqual([
+      ["0x0000", ""],
+      ["0x0000", ""],
+    ]);
+    expect(halves(container).map((h) => h.bits)).toEqual(["0".repeat(16), "0".repeat(16)]);
+  });
+
   it("stays shut until the prediction it names is checked", () => {
     const { container } = figure(WideStepper, "w", "wide-stepper", {
       program: WORKED,

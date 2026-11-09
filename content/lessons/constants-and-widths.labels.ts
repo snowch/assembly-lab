@@ -33,9 +33,8 @@ export const LABELS = {
     // been through the prose process.
     // DRAFT
     serviceHalves: "Step through mov w0, 30000 and inspect w0 in two halves of 16 bits.",
-    // DRAFT
-    workedHalves:
-      "w0 in two halves of 16 bits, through mov w0, 3 and movk w0, 2, lsl 16. A half is new or kept after each step.",
+    // Reviewed compact figure caption: constant-halves-overview notes.
+    workedHalves: "Step through the instructions to see which halves of w0 are written or kept.",
     // DRAFT
     solutionHalves:
       "Your solution to Build 1000000, one instruction at a time, with w0 in two halves of 16 bits.",

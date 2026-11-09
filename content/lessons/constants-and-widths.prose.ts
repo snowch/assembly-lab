@@ -41,10 +41,7 @@ export const PROSE = {
 
   construction:
     "Start with `mov`, which replaces all 32 bits of `w0`. Then use `movk` to replace one 16-bit half and keep the other.\n\n" +
-    "Step through these instructions in the figure:\n\n" +
-    "1. `mov w0, 3` leaves `0x0000 0003`: upper half 0, lower half 3.\n" +
-    "2. `movk w0, 2, lsl 16` puts 2 in the upper half. The ending `lsl 16` selects that half. The lower half stays 3, giving `0x0002 0003`.\n\n" +
-    "Without `lsl 16`, `movk w0, 3` replaces the lower half and keeps the upper half.",
+    "For `movk`, `lsl 16` selects the upper half. Leaving it out selects the lower half.",
   constructionMethod:
     "### Find the two halves\n\n" +
     "An upper-half value of 1 contributes 65536 to the whole number. In the worked example:\n\n" +
@@ -57,7 +54,7 @@ export const PROSE = {
     "`#` before a number is optional: `mov w0, #3` means the same as `mov w0, 3`.",
   /** Shown once Build 1000000 has passed, above the stepper through the learner's own solution. */
   constructionSolved:
-    "Step through your solution below to see the two halves of `w0` after each instruction. Watch which half changes and which is kept.",
+    "Step through your solution below. Watch which halves of `w0` are written or kept.",
   buildTask:
     "Put 1000000 in `w0` and return it, using only `mov`, `movk` and `ret`. The starting text, `mov w0, 1000000` then `ret`, does not assemble.\n\nChoose Text to type one instruction per line. Choose Tap to select a line and edit it with buttons. Press Run tests to check your program.",
   buildHints: [
