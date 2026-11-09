@@ -39,7 +39,7 @@ export const constantsAndWidths: LessonInput = {
   module: 1,
   order: 1,
   objectives: [...LABELS.objectives],
-  introduces: ["remainder"],
+  introduces: ["remainder", "shift", "logical shift"],
   sections: [
     {
       kind: "question",

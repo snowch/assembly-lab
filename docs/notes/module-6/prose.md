@@ -60,8 +60,8 @@ Step through the load. The figure marks the bytes it reads and shows where their
 
 The transfer direction distinguishes these instructions:
 
-- A **load** copies bits from memory into a register.
-- A **store** copies bits from a register into memory.
+- `ldr` means **load register**: a load copies bits from memory into a register.
+- `str` means **store register**: a store copies bits from a register into memory.
 
 `str w1, [x0]` writes the four bytes from `w1`, starting at the address in `x0`. It leaves the source register unchanged.
 
@@ -255,9 +255,9 @@ The return type can be wider than the value in memory. Returning an `unsigned ch
 
 ## 2. Fill with zeros or copies of the sign bit
 
-`ldrb w0, [x0]` reads one byte. It puts that byte in the low 8 bits of `w0` and fills the remaining bits with zeros. This is **zero extension**: adding zero bits above the original value.
+`ldrb` means **load register byte**: `ldrb w0, [x0]` reads one byte. It puts that byte in the low 8 bits of `w0` and fills the remaining bits with zeros. This is **zero extension**: adding zero bits above the original value.
 
-`ldrsb w0, [x0]` also reads one byte. It fills the remaining bits of `w0` with copies of the byte's highest bit, its sign bit. This is **sign extension**. A non-negative byte gets zeros above it; a negative byte gets ones. The wider signed value stays the same.
+`ldrsb` means **load register signed byte**: `ldrsb w0, [x0]` also reads one byte. It fills the remaining bits of `w0` with copies of the byte's highest bit, its sign bit. This is **sign extension**. A non-negative byte gets zeros above it; a negative byte gets ones. The wider signed value stays the same.
 
 Both instructions write a `w` register, so both clear the upper 32 bits of the corresponding `x` register. Extending a byte into `w0` and clearing the upper half of `x0` are separate parts of the instruction's effect.
 
@@ -282,9 +282,9 @@ Use the comparison at the same instruction step:
 
 Both copy the stored bits into the low end of `w0`. Above those bits, `ldrb` adds zeros and `ldrsb` copies the sign bit. Neither instruction changes memory.
 
-The same distinction applies to two-byte values. `ldrh` reads two bytes and zero-extends them. `ldrsh` reads two bytes and sign-extends them. In these listings, `unsigned short` selects `ldrh` and signed `short` selects `ldrsh`.
+The same distinction applies to two-byte values. `ldrh`, **load register halfword**, reads two bytes and zero-extends them. `ldrsh`, **load register signed halfword**, reads two bytes and sign-extends them. In these listings, `unsigned short` selects `ldrh` and signed `short` selects `ldrsh`.
 
-The destination also matters. `ldrsb x0, [x0]` sign-extends its byte through all 64 bits. `ldrsw x0, [x0]` reads four bytes and sign-extends that 32-bit value to 64 bits. GCC uses the latter when returning a stored `int` as a `long` on this target.
+The destination also matters. `ldrsb x0, [x0]` sign-extends its byte through all 64 bits. `ldrsw` means **load register signed word**: `ldrsw x0, [x0]` reads four bytes and sign-extends that 32-bit value to 64 bits. GCC uses the latter when returning a stored `int` as a `long` on this target.
 
 Use the comparison to separate three regions: the bits read from memory, the bits added by extension, and any upper bits cleared by a write through a `w` register name.
 
@@ -332,8 +332,8 @@ The error happens at the load. The addition cannot recover the byte's intended s
 
 Extension can also work on bits already in a register:
 
-- `sxtb w0, w0` takes the low byte and sign-extends it to 32 bits.
-- `uxtb w0, w0` takes the low byte and zero-extends it to 32 bits.
+- `sxtb`, **signed extend byte**, takes the low byte and sign-extends it to 32 bits: `sxtb w0, w0`.
+- `uxtb`, **unsigned extend byte**, takes the low byte and zero-extends it to 32 bits: `uxtb w0, w0`.
 
 Neither instruction reads memory.
 
@@ -351,7 +351,7 @@ Conversion to an unsigned integer type follows the unsigned range's wrapping rul
 
 ## 8. Choose the width needed by the next operation
 
-Choose extension from the source value's interpretation and the width you need next. `sxtw x0, w0` sign-extends a 32-bit value to 64 bits. It can turn a signed `int` result into the matching `long` value on this target.
+Choose extension from the source value's interpretation and the width you need next. `sxtw` means **sign extend word**: `sxtw x0, w0` sign-extends a 32-bit value to 64 bits. It can turn a signed `int` result into the matching `long` value on this target.
 
 An instruction can combine extension with arithmetic. In `add x0, x0, w1, sxtw`, the processor sign-extends `w1` to 64 bits before adding it to `x0`. It does not change `w1`. The recorded C function uses this form to add an `int` adjustment to a `long` total.
 

@@ -109,7 +109,7 @@ C pointer arithmetic uses the pointed-to type. For an `unsigned *` here, `trips 
 
 In the C loop, `total += *trips++` adds the value read to `total`. For an ordinary variable, `total += value` means `total = total + value`.
 
-The recorded `sum_trips` uses a post-index load to advance by four bytes after each read. Its end address comes from `add x3, x0, w1, uxtw 2`: zero-extend the count in `w1`, shift it left by two, then add the starting address. `uxtw` selects zero extension from 32 to 64 bits.
+The recorded `sum_trips` uses a post-index load to advance by four bytes after each read. Its end address comes from `add x3, x0, w1, uxtw 2`: zero-extend the count in `w1`, shift it left by two, then add the starting address. `uxtw` means **unsigned extend word**: it selects zero extension from the 32-bit source to 64 bits.
 
 After calculating the end address, this listing no longer needs the count in `w1`. The load reuses `w1` for each array element. GCC has replaced the C loop's decreasing count with a comparison of the moving pointer in `x2` against the end address in `x3`. There is no separate instruction for `count--` in this listing.
 

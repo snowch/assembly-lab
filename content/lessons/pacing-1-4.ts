@@ -247,7 +247,7 @@ const constants = splitLesson(constantsAndWidths, [
     id: "building-constants",
     title: COPY.buildConstant.title,
     objectives: [...COPY.buildConstant.objectives],
-    introduces: ["remainder"],
+    introduces: ["remainder", "shift", "logical shift"],
     sections: [
       {
         ...section(constantsAndWidths, "construction"),
@@ -596,7 +596,7 @@ const comparisons = splitLesson(compareAndChoose, [
 const branchWrite = branches.challenges!.find((part) => part.id === "write-fuel-warning")!;
 const cbzDefinition = branchWrite.task
   .split("\n\n")
-  .find((paragraph) => paragraph.startsWith("`cbz w0, label`"))!;
+  .find((paragraph) => paragraph.startsWith("`cbz`"))!;
 const branchSource = {
   ...branches,
   challenges: branches.challenges!.map((part) =>

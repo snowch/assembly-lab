@@ -11,7 +11,7 @@ export const PROSE = {
 
   motivation:
     "Every addition in this lesson uses a `w` name, so it keeps 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.\n\n" +
-    "The two instructions write the same result bits:\n\n- `add` writes the result and leaves the flags unchanged.\n- `adds` writes the result and also records four facts about the addition.\n\nEach fact is stored in a **flag**: a single bit that is either 0 or 1. The four flags are named N, Z, C and V.\n\n" +
+    "The two instructions write the same result bits:\n\n- `add` writes the result and leaves the flags unchanged.\n- `adds` writes the result and also records four facts about the addition.\n\nEach fact is stored in a **flag**: a single bit that is either 0 or 1. The four flags are named N, Z, C and V. The final `s` in `adds` means **setting flags**.\n\n" +
     "Neither instruction stops the program or reports an error when the sum does not fit. To detect this, the program must read a flag.",
 
   prediction:

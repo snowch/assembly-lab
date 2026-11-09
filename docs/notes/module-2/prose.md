@@ -23,7 +23,7 @@ The two instructions write the same result bits:
 - `add` writes the result and leaves the flags unchanged.
 - `adds` writes the result and also records four facts about the addition.
 
-Each fact is stored in a **flag**: a single bit that is either 0 or 1. The four flags are named N, Z, C and V.
+Each fact is stored in a **flag**: a single bit that is either 0 or 1. The four flags are named N, Z, C and V. The final `s` in `adds` means **setting flags**.
 
 Neither instruction stops the program or reports an error when the sum does not fit. To detect this, the program must read a flag.
 

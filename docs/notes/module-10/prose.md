@@ -33,7 +33,7 @@ The generated instructions copy inputs into working registers, perform the multi
 
 The compiler builds constants with `movz` and, when needed, `movk`. An **immediate** is a constant written in an instruction.
 
-- `movz` places a 16-bit immediate in a selected part of the destination and clears the other bits.
+- `movz`, **move wide with zero**, places a 16-bit immediate in a selected part of the destination and clears the other bits.
 - `movk`, introduced in Module 1, replaces a selected part while keeping the other bits.
 
 For some constants, `mov` is a shorter way to write `movz`. Both forms produce the same instruction bit pattern for the processor. This compiler writes `movz` explicitly.
