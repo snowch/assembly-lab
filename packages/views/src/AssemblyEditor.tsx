@@ -12,10 +12,12 @@ import { useHandoffState } from "./update-handoff";
 // changes and each error is shown against its line, in the machine's own sentence.
 
 import { useLayoutEffect, useMemo, useRef, type ComponentType, type ReactNode } from "react";
+import { z } from "zod";
 
 import { assemble, type AsmError } from "@al/machine";
 import type { ChallengeEditorProps } from "@platform/lesson-runtime";
 
+import { Calculator } from "./Calculator";
 import { EditorKeysSchema, introducedOf } from "./interactives/props";
 import { errorSentence } from "./messages";
 import { withCode } from "./parts";
@@ -544,6 +546,8 @@ function TapMode({
   );
 }
 
+const CalculatorSchema = z.object({ division: z.literal("whole") });
+
 export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
   challenge,
   artifact,
@@ -571,6 +575,8 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
     () => assemble(text, { allowed: new Set(allowed), introduced }).errors,
     [text, allowed, introduced],
   );
+  // This optional scratch area has no access to the artifact, expected result or setText.
+  const calculator = CalculatorSchema.safeParse(challenge.initial.data?.["calculator"]);
   const setText = (next: string) => onChange({ ...artifact, text: next });
   const choose = (next: Mode) => {
     setMode(next);
@@ -578,6 +584,7 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
   };
   return (
     <div className="asm-editor" data-mode={mode}>
+      {calculator.success && <Calculator handoffKey={challenge.id} division="whole" />}
       <div className="asm-mode" role="group" aria-label={S.editor.mode}>
         <span className="asm-mode-label">{S.editor.mode}</span>
         {(["text", "tap"] as const).map((m) => (

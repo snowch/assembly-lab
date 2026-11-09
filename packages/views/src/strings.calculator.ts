@@ -7,6 +7,10 @@ export const CALCULATOR = {
   help: "Type your own calculation using the weights you chose.",
   format:
     "Use decimal whole numbers, `+`, `-`, `*`, `/`, `^` and parentheses. Write powers as `2^8`, with a non-negative whole number after `^`. Commas between groups of three digits are accepted. Division must give a whole number.",
+  // Separately drafted for constant building; the original exact-division help remains above.
+  halvesHelp: "Use the steps above to find the two halves.",
+  halvesFormat:
+    "Use decimal whole numbers, `+`, `-`, `*`, `/`, `^` and parentheses. Write powers as `2^8`, with a non-negative whole number after `^`. Commas between groups of three digits are accepted. Division discards any fractional part, keeping the whole-number part towards zero.",
   calculate: "Calculate",
   result: "Result",
   errors: {

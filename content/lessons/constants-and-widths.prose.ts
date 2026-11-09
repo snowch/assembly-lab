@@ -44,11 +44,12 @@ export const PROSE = {
     "For `movk`, `lsl 16` selects the upper half. Leaving it out selects the lower half.",
   constructionMethod:
     "### Find the two halves\n\n" +
-    "An upper-half value of 1 contributes 65536 to the whole number. In the worked example:\n\n" +
+    "Bit 0 has weight 1. Each position to the left doubles the weight. The upper half starts at bit 16. Doubling 1 sixteen times gives that bit's weight, 65536.\n\n" +
+    "An upper-half value of 1 therefore contributes 65536 to the whole number. In the worked example:\n\n" +
     "**131075 = 2 × 65536 + 3**\n\n" +
     "Two whole groups of 65536 give the upper half, 2. The remaining 3 goes in the lower half.\n\n" +
-    "For another positive number that fits in `w0`, you can use a calculator:\n\n" +
-    "1. Divide the number by 65536. Ignore any digits after the decimal point. The whole-number result is the upper half.\n" +
+    "For another positive number that fits in `w0`, you can use the calculator below. Division keeps the whole-number part: the part before the decimal point.\n\n" +
+    "1. Divide the number by 65536. The calculator's whole-number result is the upper half.\n" +
     "2. Multiply that result by 65536. Subtract that amount from your original number. The amount left, called the **remainder**, is the lower half.",
   constructionSyntax:
     "`#` before a number is optional: `mov w0, #3` means the same as `mov w0, 3`.",

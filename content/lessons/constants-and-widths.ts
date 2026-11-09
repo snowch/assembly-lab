@@ -240,7 +240,10 @@ export const constantsAndWidths: LessonInput = {
       // needs a number pad (the tap mode builds `mov` and `movk` from numbers).
       initial: {
         text: ODOMETER_LIMIT_START_TEXT,
-        data: { editor: { symbols: [",", "w"], registers: ["w0"], numberPad: true } },
+        data: {
+          calculator: { division: "whole" },
+          editor: { symbols: [",", "w"], registers: ["w0"], numberPad: true },
+        },
       },
       tests: {
         kind: "answers",
