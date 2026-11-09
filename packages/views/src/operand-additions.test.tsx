@@ -7,7 +7,6 @@ import { describe, expect, it } from "vitest";
 import { LessonStore, memoryStorage } from "@platform/lesson-runtime";
 import { Interactive, type Lesson } from "@platform/lesson-schema";
 import { PrimitiveOperation } from "./interactives/PrimitiveOperation";
-import { PRIMITIVE_STRINGS as S } from "./strings.primitive";
 import { PROSE } from "../../../content/lessons/constants-and-widths.prose";
 import {
   SHIFTED_IMMEDIATE_ADD,
@@ -49,36 +48,25 @@ describe("one addition with an input modifier", () => {
       props: {
         stage: {
           title: item.entry,
-          prose: "",
-          ...(item.entry === "add_scaled_constant"
-            ? { instructionChoice: PROSE.immediateAdd.instructionChoice }
-            : {}),
+          prose: item.entry === "add_scaled_constant" ? PROSE.immediateAdd.prose : "",
           program: item.program,
           call: { entry: item.entry, args: item.args },
           registers: item.registers,
         },
+        notes: item.entry === "add_scaled_constant" ? [PROSE.immediateAddNote] : [],
       },
     });
     const props = { lesson: {} as Lesson, interactive, store };
     const view = render(<PrimitiveOperation {...props} />);
     const user = userEvent.setup();
-    const checkChoice = () => {
-      const diagram = screen.queryByRole("img", { name: S.instructionChoice.description });
-      if (item.entry === "add_scaled_constant") {
-        expect(diagram).toBeVisible();
-        expect(diagram).toHaveTextContent(S.instructionChoice.chooser);
-        expect(diagram).toHaveTextContent(S.instructionChoice.processor);
-        expect(diagram!.querySelector("button")).toBeNull();
-        expect(
-          diagram!.compareDocumentPosition(
-            view.container.querySelector(".al-primitive-preview, .al-primitive-result")!,
-          ) & Node.DOCUMENT_POSITION_FOLLOWING,
-        ).toBeTruthy();
-      } else {
-        expect(diagram).toBeNull();
-      }
-    };
-    checkChoice();
+    expect(view.container.querySelector(".al-instruction-choice")).toBeNull();
+    const note = view.container.querySelector("details");
+    if (item.entry === "add_scaled_constant") {
+      expect(note).not.toBeNull();
+      expect(note).not.toHaveAttribute("open");
+    } else {
+      expect(note).toBeNull();
+    }
     const preview = view.container.querySelector(".al-primitive-preview")!;
     expect(preview).toHaveTextContent(item.input);
     expect(
@@ -92,18 +80,24 @@ describe("one addition with an input modifier", () => {
     await user.click(screen.getByRole("button", { name: "Run the instruction" }));
     expect(screen.getByRole("status")).toHaveTextContent(item.result);
     expect(screen.getByRole("status")).toHaveTextContent(item.kept);
-    checkChoice();
     view.unmount();
     const restored = render(<PrimitiveOperation {...props} />);
     expect(screen.getByRole("status")).toHaveTextContent(item.result);
-    expect(restored.queryAllByRole("img", { name: S.instructionChoice.description })).toHaveLength(
-      item.entry === "add_scaled_constant" ? 1 : 0,
-    );
+
     await user.click(screen.getByRole("button", { name: "Start again" }));
     expect(restored.container.querySelector(".al-primitive-preview")).toHaveTextContent("w2 = ?");
-    expect(restored.queryAllByRole("img", { name: S.instructionChoice.description })).toHaveLength(
-      item.entry === "add_scaled_constant" ? 1 : 0,
-    );
+    if (item.entry === "add_scaled_constant") {
+      const restoredNote = restored.container.querySelector("details")!;
+      expect(restoredNote).not.toHaveAttribute("open");
+      await user.click(screen.getByText(PROSE.immediateAddNote.summary, { exact: true }));
+      expect(restoredNote).toHaveAttribute("open");
+      expect(screen.getByRole("link", { name: "Arm’s ADD (immediate) reference" })).toHaveAttribute(
+        "href",
+        "https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ADD--immediate---Add-immediate-value-",
+      );
+      await user.click(screen.getByText(PROSE.immediateAddNote.summary, { exact: true }));
+      expect(restoredNote).not.toHaveAttribute("open");
+    }
     expect(screen.queryByRole("status")).toBeNull();
     restored.unmount();
   });

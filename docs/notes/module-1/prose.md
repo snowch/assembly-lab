@@ -314,19 +314,25 @@ First, `mov x3, -1` sets all 64 bits to 1. Then `mov w3, -1` runs. Predict what 
 
 The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x00000000ffffffff`. Writing a `w` name always clears the upper 32 bits of the `x` register.
 
-## 7. Multiply a constant before adding
+## 7. Add a route leg
 
-**Multiply the constant before adding**
+**Add a route leg**
 
-A compiler can choose this form of `add` for an addition by a fixed amount such as 4096. You can also choose it when writing assembly. The constant goes in the instruction, so you do not need another register to hold it.
+Suppose a known route leg is 4096 metres long. Add it to the trip total: `trip_metres + 4096`.
 
-`lsl #12` multiplies the constant `#1` by 4096 before the addition. The instruction writes `w2` and leaves `w0` unchanged.
+A compiler or assembly programmer can do this with one `add` instruction. Here, `lsl #12` turns the constant 1 into 4096.
+
+Here, `w0` holds `trip_metres`; `add` writes the new total to `w2`.
+
+*Closed note.*
+
+**Constant range and shift limits**
 
 In this form of `add`, the constant before `lsl` ranges from 0 to 4095. The only optional `lsl` amounts are 0 and 12; omitting `lsl` uses the constant unchanged. These options differ from those of `mov` and `movk`.
 
 See [Arm’s ADD (immediate) reference](https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ADD--immediate---Add-immediate-value-).
 
-*One addition with its constant multiplied before use.*
+*One add instruction adds the route leg to the trip total.*
 
 ## 8. Constants and C types
 

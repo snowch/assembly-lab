@@ -163,17 +163,3 @@ Third argument
 ## argumentPathAt(3)
 
 Argument 4
-
-## Choosing and executing an instruction
-
-Compiler or assembly programmer
-
-chooses a suitable form
-
-`add` instruction
-
-executed by
-
-Processor
-
-A compiler or a person writing assembly chooses a suitable form of the add instruction before the processor executes it.

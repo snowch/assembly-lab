@@ -4,7 +4,7 @@ import { lessonForFigure } from "./pacing";
 import { expect, test } from "@playwright/test";
 import { designProblems } from "./design";
 import { watchErrors } from "./module3";
-import { PRIMITIVE_STRINGS as S } from "../../packages/views/src/strings.primitive";
+import { PROSE } from "../../content/lessons/constants-and-widths.prose";
 
 for (const theme of ["light", "dark"] as const) {
   for (const item of [
@@ -40,49 +40,26 @@ for (const theme of ["light", "dark"] as const) {
       await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       const figure = page.locator(`#ix-${item.figure}`);
-      const choice = figure.getByRole("img", { name: S.instructionChoice.description });
-      let choiceMarkup: string | null = null;
+      await expect(figure.locator(".al-instruction-choice")).toHaveCount(0);
+      const note = figure.locator(".al-notes details");
       if (item.lesson === "constants-and-widths") {
-        await expect(choice).toBeVisible();
-        choiceMarkup = await choice.innerHTML();
-        const nodes = await choice.locator(".al-instruction-choice-node").all();
-        const arrows = await choice.locator(".al-instruction-choice-arrow").all();
-        const boxes = await Promise.all(nodes.map((node) => node.boundingBox()));
-        const bounds = (await choice.boundingBox())!;
-        for (const box of boxes) {
-          expect(box!.x).toBeGreaterThanOrEqual(bounds.x);
-          expect(box!.x + box!.width).toBeLessThanOrEqual(bounds.x + bounds.width + 1);
-        }
-        for (const [index, arrow] of arrows.entries()) {
-          const box = (await arrow.boundingBox())!;
-          expect(await arrow.evaluate((el) => getComputedStyle(el, "::before").content)).toBe(
-            isMobile ? '"↓"' : '"→"',
-          );
-          expect(box.x).toBeGreaterThanOrEqual(bounds.x);
-          expect(box.x + box.width).toBeLessThanOrEqual(bounds.x + bounds.width + 1);
-          if (isMobile) {
-            expect(
-              Math.abs(box.x + box.width / 2 - (boxes[1]!.x + boxes[1]!.width / 2)),
-            ).toBeLessThan(1);
-            expect(box.y).toBeGreaterThan(boxes[index]!.y + boxes[index]!.height);
-            expect(box.y + box.height).toBeLessThan(boxes[index + 1]!.y);
-          } else {
-            expect(
-              Math.abs(box.y + box.height / 2 - (boxes[1]!.y + boxes[1]!.height / 2)),
-            ).toBeLessThan(1);
-            expect(box.x).toBeGreaterThan(boxes[index]!.x + boxes[index]!.width);
-            expect(box.x + box.width).toBeLessThan(boxes[index + 1]!.x);
-          }
-        }
-        const mechanics = figure.locator(".prose").filter({ hasText: "lsl #12 multiplies" });
-        expect((await mechanics.boundingBox())!.y).toBeGreaterThanOrEqual(bounds.y + bounds.height);
+        await expect(note).toHaveJSProperty("open", false);
+        await note.locator("summary").click();
+        await expect(note).toHaveJSProperty("open", true);
+        await expect(note).toContainText("0 to 4095");
+        await expect(note).toContainText("0 and 12");
       } else {
-        await expect(choice).toHaveCount(0);
+        await expect(note).toHaveCount(0);
       }
       await expect(figure.getByRole("link", { name: item.link, exact: true })).toHaveAttribute(
         "href",
         `https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/${item.path}`,
       );
+      if (item.lesson === "constants-and-widths") {
+        await expect(note.locator("summary")).toHaveText(PROSE.immediateAddNote.summary);
+        await note.locator("summary").click();
+        await expect(note).toHaveJSProperty("open", false);
+      }
       const lockedBefore = await page.locator(".al-locked").count();
       const preview = figure.locator(".al-primitive-preview");
       await expect(preview).toContainText(item.input);
@@ -96,7 +73,6 @@ for (const theme of ["light", "dark"] as const) {
       await figure.getByRole("button", { name: "Run the instruction", exact: true }).click();
       await expect(figure.getByRole("status")).toContainText(item.result);
       await expect(figure.getByRole("status")).toContainText(item.kept);
-      if (choiceMarkup !== null) expect(await choice.innerHTML()).toBe(choiceMarkup);
       await expect(figure.locator('[data-register="w0"] .al-dreg-value')).toHaveText(
         item.lesson === "shifts" ? "12" : "7",
       );
@@ -104,11 +80,11 @@ for (const theme of ["light", "dark"] as const) {
         await expect(figure.locator('[data-register="w1"] .al-dreg-value')).toHaveText("7");
       await page.reload();
       await expect(figure.getByRole("status")).toContainText(item.result);
-      if (choiceMarkup !== null) expect(await choice.innerHTML()).toBe(choiceMarkup);
+      if (item.lesson === "constants-and-widths")
+        await expect(note).toHaveJSProperty("open", false);
       await figure.getByRole("button", { name: "Start again", exact: true }).click();
       await expect(figure.locator(".al-primitive-preview")).toContainText("w2 = ?");
       await expect(figure.getByRole("status")).toHaveCount(0);
-      if (choiceMarkup !== null) expect(await choice.innerHTML()).toBe(choiceMarkup);
       await expect(page.locator(".al-locked")).toHaveCount(lockedBefore);
       expect(await designProblems(page, isMobile)).toEqual([]);
       expect(errors).toEqual([]);

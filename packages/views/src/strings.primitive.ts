@@ -3,15 +3,6 @@
 // Opening activity copy, separately drafted from checked arithmetic and call traces.
 // Canonical shared labels: docs/notes/fundamentals/primitive-prose.md.
 export const PRIMITIVE_STRINGS = {
-  instructionChoice: {
-    chooser: "Compiler or assembly programmer",
-    choice: "chooses a suitable form",
-    instruction: "`add` instruction",
-    execution: "executed by",
-    processor: "Processor",
-    description:
-      "A compiler or a person writing assembly chooses a suitable form of the add instruction before the processor executes it.",
-  },
   before: "Before the instruction",
   current: "Registers now",
   instruction: "Instruction",
