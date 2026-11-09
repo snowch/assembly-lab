@@ -73,7 +73,7 @@ export const PROSE = {
   failureExperiment:
     "The `w` names in the earlier arithmetic examples selected 32 bits. Each register holds 64 bits, and it has two names.\n\n" +
     "For the same register:\n\n- The `x` name, `x3`, names all 64 bits.\n- The `w` name, `w3`, names the lower 32 bits.\n\nThey are not two registers.\n\n" +
-    "The figure runs `mov x3, -1`, which sets all 64 bits, then `mov w3, -1`.",
+    "First, `mov x3, -1` sets all 64 bits to 1. Then `mov w3, -1` runs. Predict what `x3` holds after the second instruction. Choose an answer and press **Check your prediction** to open the step-by-step display.",
   failureQuestion: "**After `mov w3, -1`, what does `x3` hold?**",
   failureExplain:
     "The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x00000000ffffffff`. Writing a `w` name always clears the upper 32 bits of the `x` register.",
