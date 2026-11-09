@@ -47,8 +47,8 @@ export function instructionsNamedIn(text: string): string[] {
 /**
  * Instructions a lesson may name before it teaches them, with the reason, decided here:
  *
- * - Module 1 says `lsl 16` in `movk`, "which Module 3 explains": `lsl` is the shift that names the
- *   upper half there, and the lesson says so.
+ * - Module 1 names logical shift left in the `movk` operand modifier `lsl 16`, which
+ *   positions the constant in the upper half. Standalone shifts are taught in Module 3.
  * - Module 2's first lesson shows `cmn` and `cset` in a recorded listing in a closed note that says a
  *   later module explains them. They are read, not written, and the gate does not count them as met
  *   there: `cmn w0, w1` typed in Module 2 still says "not met yet".

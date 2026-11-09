@@ -21,7 +21,7 @@ export const PROSE = {
     "`w0` becomes `0x12345678`. The byte `78` supplies the lowest 8 bits, followed by `56`, `34` and `12`. The load reads memory without changing those bytes.\n\n" +
     "Writing `w0` replaces the low half of `x0` and clears its upper half. After the load, register 0 holds the distance reading. It no longer holds the pointer.\n\nStep through the load. The figure marks the bytes it reads and shows where their bits go in the register. The address identifies the first byte; the destination `w0` makes this `ldr` read four bytes.",
   investigation:
-    "The transfer direction distinguishes these instructions:\n\n- A **load** copies bits from memory into a register.\n- A **store** copies bits from a register into memory.\n\n`str w1, [x0]` writes the four bytes from `w1`, starting at the address in `x0`. It leaves the source register unchanged.\n\n" +
+    "The transfer direction distinguishes these instructions:\n\n- `ldr` means **load register**: a load copies bits from memory into a register.\n- `str` means **store register**: a store copies bits from a register into memory.\n\n`str w1, [x0]` writes the four bytes from `w1`, starting at the address in `x0`. It leaves the source register unchanged.\n\n" +
     "In `save_distance`, `distance` arrives in `x0` and `value` in `w1`. The C assignment `*distance = value` changes the value at the pointer's address. `void` means this function returns no value.",
   construction:
     "Store a new distance reading without changing the bytes that follow it. The address tells you where to start; the instruction's width tells you where to stop.",

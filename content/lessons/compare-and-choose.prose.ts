@@ -34,7 +34,7 @@ export const PROSE = {
   investigation:
     "The compare comes first. `w0` holds `a`, and `w1` holds `b`. `cmp w1, w0` sets the flags of `b` minus `a`.\n\n" +
     "The condition comes next. The last operand of `csel` names a yes-or-no question about the flags. That question is a **condition**. `ge` (greater than or equal, signed) is yes when N equals V. `cs` (higher or same, unsigned) is yes when C is 1.\n\n" +
-    "Last comes the select. The first register in `csel` is the destination: the register it writes. The next two registers hold the values to choose between. When the condition is yes, `csel` copies the first source; when it is no, it copies the second.\n\nHere, `csel w0, w1, w0, ge` writes to `w0`. It copies `w1` when `ge` is yes, and `w0` when `ge` is no. The second source is also the destination, so the no case leaves `w0` unchanged. No instruction is skipped.\n\n" +
+    "Last comes `csel`, **conditional select**. Its first register is the destination: the register it writes. The next two registers hold the values to choose between. When the condition is yes, `csel` copies the first source; when it is no, it copies the second.\n\nHere, `csel w0, w1, w0, ge` writes to `w0`. It copies `w1` when `ge` is yes, and `w0` when `ge` is no. The second source is also the destination, so the no case leaves `w0` unchanged. No instruction is skipped.\n\n" +
     "So both functions return `b` when `b` is at least `a`, and `a` otherwise. That is the larger value.\n\n" +
     "The figure shows the three stages for `0xffffffff` and 1, from the run.\n\n" +
     "The signed names are *greater* and *less*. The unsigned names are *higher* and *lower*. For these two functions, the difference between `int` and `unsigned` is in the condition GCC chose.",
@@ -99,7 +99,7 @@ export const PROSE = {
   generalisation:
     "`bool` is a C type that holds 0 or 1. A comparison, such as `litres < reserve`, gives 1 if it is true and 0 if it is not.\n\n`fuel_low` returns the result of this comparison:\n\n```c\nbool fuel_low(unsigned litres,\n              unsigned reserve)\n{\n    return litres < reserve;\n}\n```\n\nGCC 16.1 at `-O1` compiled it to these three instructions:\n\n" +
     "```\nfuel_low:\n        cmp     w0, w1\n        cset    w0, cc\n        ret\n```\n\n" +
-    "`cset w0, cc` writes 1 to `w0` when `cc` is yes, and 0 when it is no. `csel` selects between register values. `cset` writes 0 or 1.\n\n" +
+    "`cset` means **conditional set**: `cset w0, cc` writes 1 to `w0` when `cc` is yes, and 0 when it is no. `csel` selects between register values. `cset` writes 0 or 1.\n\n" +
     "`fuel_low(5, 8)` is 1, and `fuel_low(8, 8)` is 0.\n\n" +
     'Not every C `if` makes the processor skip instructions. `warning_light` is written with `if (litres < reserve) return 1;` and then `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing, which runs every instruction. The closed note "`warning_light`, and `tst` and `ands`" shows that listing and its two results.\n\n' +
     "`downhill` is `bool downhill(int gradient) { return gradient < 0; }`. GCC 16.1 at `-O1` compiled it to two instructions:\n\n" +

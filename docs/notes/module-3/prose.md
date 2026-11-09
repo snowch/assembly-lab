@@ -86,7 +86,7 @@ A run of bits that together hold one number is called a **field**. The gear is a
 
 `lsl` moves every bit towards the top by a number of places. `lsl w1, w1, 4` moves each bit of `w1` up four places. Zeros fill the four lowest bits. Bits moved past bit 31 are lost. So bits 0 to 2 move to bits 4 to 6. The `lsl 16` in `movk`, from Module 1, moved a number into the upper half the same way.
 
-GCC reads the gear with `ubfx x0, x0, 4, 3`. This takes 3 bits, starting at bit 4, and moves them to the lowest three places. The result is their unsigned value.
+GCC reads the gear with `ubfx x0, x0, 4, 3`. `ubfx` means **unsigned bitfield extract**: it takes 3 bits, starting at bit 4, and moves them to the lowest three places. The result is their unsigned value.
 
 `gear_of` returns the gear. Its C uses `>> 4` to move the bits four places right, then `& 7` to keep the lowest three. GCC uses `ubfx` to do both operations, then `ret` to return. For `0x35`, which is `0011 0101`, bits 6 to 4 are `011`. So `gear_of(0x35)` is 3.
 
@@ -142,7 +142,7 @@ Step through your own instructions below. When an instruction writes a register,
 
 Only the low 3 bits of `g` may land in the field. A value larger than 7 must not spill out of it. 13 is `1101` in its low four bits. Without keeping only the low 3 bits, its bit 3 would land in bit 7 of the word, outside the field.
 
-GCC writes the field in one instruction, `bfi w0, w1, 4, 3`, then returns with `ret`. `w0` holds the word, and `w1` holds the new gear. The 4 is the first bit of the field, and the 3 is its width. The instruction puts the low 3 bits of `w1` into bits 4 to 6 of `w0`, and keeps every other bit. Your code and GCC's both return `0x55` for `set_gear(0x35, 5)`.
+GCC writes the field with `bfi`, **bitfield insert**, in one instruction: `bfi w0, w1, 4, 3`. It then returns with `ret`. `w0` holds the word, and `w1` holds the new gear. The 4 is the first bit of the field, and the 3 is its width. The instruction puts the low 3 bits of `w1` into bits 4 to 6 of `w0`, and keeps every other bit. Your code and GCC's both return `0x55` for `set_gear(0x35, 5)`.
 
 `ubfx` and `bfi` are Arm’s names for two cases of more general instructions. The course uses the names GCC prints.
 
@@ -269,9 +269,9 @@ The figure takes −7, which is `0xfffffff9`. For an `int`, the top bit is fille
 
 Moving every bit along by a number of places is a **shift**. Bits that move past the end are lost.
 
-- `lsl` moves bits left and fills the gap on the right with zeros.
-- `lsr`, a **logical shift**, moves bits right and fills the gap on the left with zeros. A shift by one place halves the unsigned reading and drops any remainder.
-- `asr`, an **arithmetic shift**, moves bits right and fills the gap on the left with copies of the old top bit. A shift by one place halves the signed reading and rounds down to the next whole number if needed.
+- `lsl`, **logical shift left**, moves bits left and fills the gap on the right with zeros.
+- `lsr`, **logical shift right**, moves bits right and fills the gap on the left with zeros. A shift by one place halves the unsigned reading and drops any remainder.
+- `asr`, **arithmetic shift right**, moves bits right and fills the gap on the left with copies of the old top bit. A shift by one place halves the signed reading and rounds down to the next whole number if needed.
 
 For either right shift, repeat that halving once for each place moved. A shift by two places divides by 4, with the same rounding rule. The figure shifts a word by the instruction and distance you choose. Arrows show the direction, the bits lost and the bits filled.
 

@@ -8,7 +8,7 @@ export const PROSE = {
   questionNote:
     "These listings use GCC 16.1 with `-O1` for little-endian AArch64 Linux. C draft N3096 defines integer division by discarding the fractional part, which rounds towards zero.\n\nThe divisor must be nonzero, and the quotient must be representable in its result type. Otherwise both `/` and `%` have undefined behaviour. The assembly experiments later on this page show what A64 instructions do in those cases; they do not give the C expressions defined results.",
   motivation:
-    "`sdiv w0, w0, w1` divides the signed value in `w0` by the signed value in `w1`. `udiv` interprets both inputs as unsigned. Both instructions write the quotient and leave the flags unchanged.\n\nFor a negative signed result, rounding towards zero discards the fraction without making the integer more negative. The remainder can therefore be negative. When C division is defined, the relation is `dividend = quotient * divisor + remainder`.",
+    "`sdiv` means **signed divide**: `sdiv w0, w0, w1` divides the signed value in `w0` by the signed value in `w1`. `udiv`, **unsigned divide**, interprets both inputs as unsigned. Both instructions write the quotient and leave the flags unchanged.\n\nFor a negative signed result, rounding towards zero discards the fraction without making the integer more negative. The remainder can therefore be negative. When C division is defined, the relation is `dividend = quotient * divisor + remainder`.",
   prediction:
     "- The signed dividend is −17.\n- The divisor is 5.\n\nThe function uses `sdiv` and returns the quotient in `w0`.",
   predictionQuestion: "**Which hexadecimal quotient does it return?**",

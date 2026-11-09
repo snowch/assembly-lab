@@ -52,8 +52,11 @@ describe("the lesson", () => {
     expect([lesson.module, lesson.order]).toEqual([3, 2]);
   });
 
-  it("introduces shift, logical shift and arithmetic shift, and passes the term gate with every lesson written", () => {
-    expect(lesson.introduces).toEqual(["shift", "logical shift", "arithmetic shift"]);
+  it("introduces arithmetic shift after the earlier logical-shift name, and passes the term gate", () => {
+    expect(lesson.introduces).toEqual(["arithmetic shift"]);
+    expect(LESSONS.find((l) => l.id === "building-constants")!.introduces).toContain(
+      "logical shift",
+    );
     expect(termProblems(LESSONS)).toEqual([]);
     // The first lesson of the module comes first, and does not use the word.
     const first = LESSONS.find((l) => l.id === "masks")!;

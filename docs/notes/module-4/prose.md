@@ -91,7 +91,7 @@ The compare comes first. `w0` holds `a`, and `w1` holds `b`. `cmp w1, w0` sets t
 
 The condition comes next. The last operand of `csel` names a yes-or-no question about the flags. That question is a **condition**. `ge` (greater than or equal, signed) is yes when N equals V. `cs` (higher or same, unsigned) is yes when C is 1.
 
-Last comes the select. The first register in `csel` is the destination: the register it writes. The next two registers hold the values to choose between. When the condition is yes, `csel` copies the first source; when it is no, it copies the second.
+Last comes `csel`, **conditional select**. Its first register is the destination: the register it writes. The next two registers hold the values to choose between. When the condition is yes, `csel` copies the first source; when it is no, it copies the second.
 
 Here, `csel w0, w1, w0, ge` writes to `w0`. It copies `w1` when `ge` is yes, and `w0` when `ge` is no. The second source is also the destination, so the no case leaves `w0` unchanged. No instruction is skipped.
 
@@ -225,7 +225,7 @@ fuel_low:
         ret
 ```
 
-`cset w0, cc` writes 1 to `w0` when `cc` is yes, and 0 when it is no. `csel` selects between register values. `cset` writes 0 or 1.
+`cset` means **conditional set**: `cset w0, cc` writes 1 to `w0` when `cc` is yes, and 0 when it is no. `csel` selects between register values. `cset` writes 0 or 1.
 
 `fuel_low(5, 8)` is 1, and `fuel_low(8, 8)` is 0.
 
@@ -414,7 +414,7 @@ Use only `cmp`, a branch with a condition, `cbz`, `b`, `mov` and `ret`. Five cal
 
 The answer leaves in `w0`.
 
-`cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags.
+`cbz` means **compare and branch on zero**: `cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags.
 
 Choose a different name for each label. A simple convention is to use letters and underscores, starting with a letter. Do not use a register name. You can also use GCC's `.L` prefix, but it is not required.
 
@@ -464,9 +464,9 @@ The boundary moved: 10 now returns 2. The values on either side did not change. 
 Four branches test a register, not the flags.
 
 - `cbz` goes when the register is 0.
-- `cbnz` goes when the register is not 0.
-- `tbz w0, 1, label` goes when bit 1 of `w0` is 0.
-- `tbnz` goes when that bit is 1.
+- `cbnz`, **compare and branch on nonzero**, goes when the register is not 0.
+- `tbz` means **test bit and branch if zero**: `tbz w0, 1, label` goes when bit 1 of `w0` is 0.
+- `tbnz`, **test bit and branch if nonzero**, goes when that bit is 1.
 
 None of them reads or changes the flags. `bgt` reads them.
 

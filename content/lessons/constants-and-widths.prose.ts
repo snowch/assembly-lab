@@ -40,8 +40,8 @@ export const PROSE = {
     "The full rule is longer than this course needs. The figure checks any number.",
 
   construction:
-    "Start with `mov`, which replaces all 32 bits of `w0`. Then use `movk` to replace one 16-bit half and keep the other.\n\n" +
-    "For `movk`, `lsl 16` selects the upper half. Leaving it out selects the lower half.",
+    "`mov w0, 1000000` cannot assemble: 1000000 does not match any constant pattern that one `mov` can encode. Build it in halves instead. Use `mov` to load the first part. A second `mov` would replace all 32 bits of `w0`, losing that part.\n\n`movk` means **move wide with keep**: here it replaces one 16-bit half and keeps the other.\n\n" +
+    "`lsl` means **logical shift left**. In `movk`, `lsl 16` places the new constant in the upper half; it does not shift the value already in `w0`. Leaving it out selects the lower half.",
   constructionMethod:
     "### Find the two halves\n\n" +
     "Bit 0 has weight 1. Each position to the left doubles the weight. The upper half starts at bit 16. Doubling 1 sixteen times gives that bit's weight, 65536.\n\n" +

@@ -97,7 +97,7 @@ The full unsigned product is 8589934590. Reading the narrow result through `x0` 
 
 ## 7. Preserve the full product
 
-`umull x0, w0, w1` multiplies two unsigned 32-bit values and writes their full 64-bit product. `smull` does the same for signed 32-bit values. The input interpretation matters because the result now includes the higher bits.
+`umull` means **unsigned multiply long**: `umull x0, w0, w1` multiplies two unsigned 32-bit values and writes their full 64-bit product. `smull`, **signed multiply long**, does the same for signed 32-bit values. The input interpretation matters because the result now includes the higher bits.
 
 The C expression `(unsigned long)pulses * scale` converts an operand before multiplying. On this target, that makes the multiplication 64-bit unsigned. GCC uses `umull` for the recorded function. Converting the result of an already completed 32-bit multiplication would be too late.
 
@@ -110,8 +110,8 @@ Compare the signed and unsigned examples. The 32-bit pattern with every bit set 
 A product of two 64-bit inputs can need 128 bits. Split that product into a **low half**, bits 0 to 63, and a **high half**, bits 64 to 127:
 
 - `mul` supplies the low half.
-- `umulh` supplies the high half for unsigned inputs.
-- `smulh` supplies the high half for signed inputs.
+- `umulh`, **unsigned multiply high**, supplies the high half for unsigned inputs.
+- `smulh`, **signed multiply high**, supplies the high half for signed inputs.
 
 This diagram runs course-written assembly; the earlier C listings are recorded GCC output. It uses the same input bits for both interpretations. Follow how the low half stays the same while the high half changes. The high half comes from the full multiplication; it is not found by sign-extending the low half.
 
@@ -241,7 +241,7 @@ The divisor must be nonzero, and the quotient must be representable in its resul
 
 ## 2. Choose the interpretation before dividing
 
-`sdiv w0, w0, w1` divides the signed value in `w0` by the signed value in `w1`. `udiv` interprets both inputs as unsigned. Both instructions write the quotient and leave the flags unchanged.
+`sdiv` means **signed divide**: `sdiv w0, w0, w1` divides the signed value in `w0` by the signed value in `w1`. `udiv`, **unsigned divide**, interprets both inputs as unsigned. Both instructions write the quotient and leave the flags unchanged.
 
 For a negative signed result, rounding towards zero discards the fraction without making the integer more negative. The remainder can therefore be negative. When C division is defined, the relation is `dividend = quotient * divisor + remainder`.
 

@@ -43,7 +43,7 @@ export const shifts: LessonInput = {
   module: 3,
   order: 1,
   objectives: [...LABELS.objectives],
-  introduces: ["shift", "logical shift", "arithmetic shift"],
+  introduces: ["arithmetic shift"],
   sections: [
     {
       kind: "question",

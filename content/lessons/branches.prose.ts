@@ -42,7 +42,7 @@ export const PROSE = {
     "1. If `litres` is 0, return 2.\n2. Otherwise, if `litres` is below `reserve`, return 1.\n3. Otherwise, return 0.\n\n" +
     "Use only `cmp`, a branch with a condition, `cbz`, `b`, `mov` and `ret`. Five calls test it. One has `litres` equal to `reserve`. One has the top bit of `litres` set.\n\n" +
     "- `litres` arrives in `w0`.\n- `reserve` arrives in `w1`.\n\nThe answer leaves in `w0`.\n\n" +
-    "`cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags.\n\n" +
+    "`cbz` means **compare and branch on zero**: `cbz w0, label` goes to the label when `w0` is 0. It neither reads nor changes the flags.\n\n" +
     "Choose a different name for each label. A simple convention is to use letters and underscores, starting with a letter. Do not use a register name. You can also use GCC's `.L` prefix, but it is not required.\n\n" +
     "A label goes on its own line, followed by a colon, before the instruction it names.",
 
@@ -78,7 +78,7 @@ export const PROSE = {
 
   explanation:
     "Four branches test a register, not the flags.\n\n" +
-    "- `cbz` goes when the register is 0.\n- `cbnz` goes when the register is not 0.\n- `tbz w0, 1, label` goes when bit 1 of `w0` is 0.\n- `tbnz` goes when that bit is 1.\n\n" +
+    "- `cbz` goes when the register is 0.\n- `cbnz`, **compare and branch on nonzero**, goes when the register is not 0.\n- `tbz` means **test bit and branch if zero**: `tbz w0, 1, label` goes when bit 1 of `w0` is 0.\n- `tbnz`, **test bit and branch if nonzero**, goes when that bit is 1.\n\n" +
     "None of them reads or changes the flags. `bgt` reads them.\n\n" +
     "GCC did not use `cbnz`, `tbz` or `tbnz` in any listing here. So `service` is the course's own example, not GCC's. Its listing is below. Bit 1 of the warning word is the service-due bit, as Module 3 showed.\n\n" +
     "```\nservice:\n        tbz     w0, 1, .Lno\n        mov     w0, 1\n        ret\n.Lno:\n        mov     w0, 0\n        ret\n```\n\n" +

@@ -135,6 +135,9 @@ describe("the lesson", () => {
   it("gives the construction challenge the gate cmp, b.cond, cbz, b, mov and ret, and a tap editor that can build labels", () => {
     const c = challenge("write-fuel-warning");
     expect(c.allowedConstructs).toEqual(["cmp", "b.cond", "cbz", "b", "mov", "ret"]);
+    const page = LESSONS.find((part) => part.id === "zero-and-threshold-branches")!;
+    expect(page.sections[0]!.prose).toContain("`cbz w0, label`");
+    expect(page.challenges.find((part) => part.id === c.id)!.task).not.toContain("`cbz w0, label`");
     expect(c.palette).toEqual(["w0", "w1"]);
     expect(c.initial.text).toBe(FUEL_WARNING_STARTING_TEXT);
     expect(c.reference.text).toBe(FUEL_WARNING_TEXT);
