@@ -20,6 +20,9 @@ describe("one addition with an input modifier", () => {
       entry: "add_scaled_register",
       args: [12, 7, 0],
       registers: [0, 1, 2],
+      destination: "w2",
+      source: "w0",
+      sourceValue: "12",
       input: "w1 = 7",
       formed: "14",
       modifier: "lsl #1",
@@ -29,13 +32,30 @@ describe("one addition with an input modifier", () => {
     {
       program: SHIFTED_IMMEDIATE_ADD,
       entry: "add_scaled_constant",
-      args: [7, 0, 0],
+      args: [{ value: 65536, width: 64 }, 0, 0],
       registers: [0, 2],
-      input: "Constant 1",
-      formed: "4096",
+      destination: "x2",
+      source: "x0",
+      sourceValue: "65536",
+      input: "Constant 3",
+      formed: "12288",
       modifier: "lsl #12",
-      result: "w2 = 4103",
-      kept: "w0 keeps its value",
+      result: "x2 = 77824",
+      kept: "x0 keeps its value",
+    },
+    {
+      program: SHIFTED_IMMEDIATE_ADD,
+      entry: "add_scaled_constant",
+      args: [{ value: "9007199254740993", width: 64 }, 0, 0],
+      registers: [0, 2],
+      destination: "x2",
+      source: "x0",
+      sourceValue: "9007199254740993",
+      input: "Constant 3",
+      formed: "12288",
+      modifier: "lsl #12",
+      result: "x2 = 9007199254753281",
+      kept: "x0 keeps its value",
     },
   ])("keeps the stored input distinct from the formed operand in $entry", async (item) => {
     const storage = memoryStorage();
@@ -75,7 +95,10 @@ describe("one addition with an input modifier", () => {
         (code) => code.textContent,
       ),
     ).toEqual([item.modifier, item.formed]);
-    expect(preview).toHaveTextContent("w2 = ?");
+    expect(preview).toHaveTextContent(`${item.destination} = ?`);
+    expect(
+      view.container.querySelector(`[data-register="${item.source}"] .al-dreg-value`),
+    ).toHaveTextContent(item.sourceValue);
     expect(view.container).not.toHaveTextContent(item.result);
     await user.click(screen.getByRole("button", { name: "Run the instruction" }));
     expect(screen.getByRole("status")).toHaveTextContent(item.result);
@@ -85,7 +108,9 @@ describe("one addition with an input modifier", () => {
     expect(screen.getByRole("status")).toHaveTextContent(item.result);
 
     await user.click(screen.getByRole("button", { name: "Start again" }));
-    expect(restored.container.querySelector(".al-primitive-preview")).toHaveTextContent("w2 = ?");
+    expect(restored.container.querySelector(".al-primitive-preview")).toHaveTextContent(
+      `${item.destination} = ?`,
+    );
     if (item.entry === "add_scaled_constant") {
       const restoredNote = restored.container.querySelector("details")!;
       expect(restoredNote).not.toHaveAttribute("open");

@@ -6,5 +6,9 @@ add_scaled_register:
   ret
 .global add_scaled_constant
 add_scaled_constant:
-  add w2, w0, #1, lsl #12
+  add x2, x0, #3, lsl #12
+  ret
+.global add_plain_constant
+add_plain_constant:
+  add x2, x0, #12288
   ret

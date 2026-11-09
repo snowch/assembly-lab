@@ -38,7 +38,7 @@ it("separates testing a constant, building it and predicting register writes", (
     "investigation",
   ]);
   expect(lesson.sections.map((part) => part.kind)).toEqual(["construction"]);
-  expect(widths.introduces).toEqual([]);
+  expect(widths.introduces).toEqual(["byte", "address"]);
 });
 
 it.each(units)("renders $id with its own local controls and gates", (unit) => {

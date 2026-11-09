@@ -9,9 +9,10 @@ import { useHandoffState } from "../update-handoff";
 import { useMemo } from "react";
 import { z } from "zod";
 import { Prose, useSlot } from "@platform/lesson-runtime";
+import { ArgumentSchema } from "../call";
 import { flowAt } from "../flow";
 import { cLinesOf } from "../listing";
-import { DecimalRegister, ListingView } from "../parts";
+import { DecimalRegister, ListingView, RegisterSummary } from "../parts";
 import { PRIMITIVE_STRINGS as S } from "../strings.primitive";
 import { traceOf, viewAt, wValue } from "../trace";
 import { CallSchema, RecordedSchema, withProps } from "./props";
@@ -21,7 +22,7 @@ const Stage = z.object({
   title: z.string(),
   prose: z.string(),
   program: RecordedSchema,
-  call: CallSchema,
+  call: CallSchema.extend({ args: z.array(ArgumentSchema) }),
   registers: z.array(z.number().int().min(0).max(30)).min(1).max(3),
   steps: z.number().int().min(1).max(2).default(1),
   predict: z.boolean().default(false),
@@ -51,6 +52,16 @@ export const PrimitiveOperation = withProps(
     const complete = position === stage.steps;
     const returned = isFunction && view.stop?.kind === "returned";
     const nextFlow = flowAt(trace, position + 1, { shiftedOperands: true });
+    // Published operation activities use one arithmetic width throughout; introductory
+    // function activities retain their w-register argument/result presentation.
+    const firstFlow = flowAt(trace, 1, { shiftedOperands: true });
+    const prefix =
+      !isFunction && firstFlow?.kind === "arith" && firstFlow.destination.name.startsWith("x")
+        ? "x"
+        : "w";
+    const registerName = (n: number) => `${prefix}${n}`;
+    const registerValue = (state: typeof view.state, n: number) =>
+      prefix === "x" ? BigInt.asUintN(64, state.x[n] ?? 0n).toString() : wValue(state, n);
     const target = nextFlow?.kind === "arith" ? nextFlow.destination.name : "";
     const matches =
       flow?.kind === "arith" && stored?.prediction !== undefined
@@ -59,7 +70,7 @@ export const PrimitiveOperation = withProps(
     const shownLines = trace.result.steps.slice(0, stage.steps);
     const unchanged =
       flow?.kind === "arith"
-        ? stage.registers.map((n) => `w${n}`).filter((name) => name !== flow.destination.name)
+        ? stage.registers.map(registerName).filter((name) => name !== flow.destination.name)
         : [];
     function reset() {
       setStored({ step: 0 });
@@ -126,11 +137,12 @@ export const PrimitiveOperation = withProps(
               aria-label={stage.steps > 1 ? S.current : S.before}
             >
               {stage.registers.map((n) => (
-                <DecimalRegister
+                <RegisterSummary
                   key={n}
-                  name={`w${n}`}
-                  value={wValue(stage.steps > 1 ? view.state : viewAt(trace, 0).state, n)}
-                  changed={stage.steps > 1 && view.written.has(n)}
+                  name={registerName(n)}
+                  value={registerValue(stage.steps > 1 ? view.state : viewAt(trace, 0).state, n)}
+                  written={stage.steps > 1 && view.written.has(n)}
+                  className="al-dreg"
                 />
               ))}
             </div>

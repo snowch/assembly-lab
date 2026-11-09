@@ -39,7 +39,7 @@ export const constantsAndWidths: LessonInput = {
   module: 1,
   order: 1,
   objectives: [...LABELS.objectives],
-  introduces: ["remainder", "shift", "logical shift"],
+  introduces: ["remainder", "shift", "logical shift", "byte", "address"],
   sections: [
     {
       kind: "question",
@@ -195,7 +195,7 @@ export const constantsAndWidths: LessonInput = {
       prose: "",
       interactives: [
         {
-          id: "add-shifted-immediate",
+          id: "logger-page-address",
           kind: "primitive-operation",
           timeModel: STEPS,
           caption: LABELS.captions.immediateAdd,
@@ -203,7 +203,10 @@ export const constantsAndWidths: LessonInput = {
             stage: {
               ...PROSE.immediateAdd,
               program: SHIFTED_IMMEDIATE_ADD,
-              call: { entry: "add_scaled_constant", args: [7, 0, 0] },
+              call: {
+                entry: "add_scaled_constant",
+                args: [{ value: 65536, width: 64 }, 0, 0],
+              },
               registers: [0, 2],
             },
             notes: [PROSE.immediateAddNote],
