@@ -2,8 +2,8 @@
 
 // Lesson: Constants and widths (module 1, the second of its two lessons). The learner finds out
 // which numbers one `mov` can put in a register, builds 1000000 with `mov` and `movk`, sees that
-// `-1` and `4294967295` are the same instruction, and finds that writing a `w` name clears the
-// upper half of the `x` register.
+// writing a `w` name clears the upper half of the `x` register. The optional C type comparisons
+// are in c-integer-types.ts.
 //
 // The structure is here; the words are in constants-and-widths.prose.ts and .labels.ts (kept from
 // docs/notes/module-1/prose.md), and the compiler listings are in module-1.listings.ts. The plan
@@ -211,7 +211,6 @@ export const constantsAndWidths: LessonInput = {
         },
       ],
     },
-    { kind: "generalisation", title: LABELS.titles.generalisation, prose: PROSE.generalisation },
     {
       kind: "challenge",
       title: LABELS.titles.challenge,

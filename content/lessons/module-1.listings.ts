@@ -19,6 +19,25 @@ export const SERVICE_INTERVAL = {
   sourceLines: [[1], [1]],
 } as const;
 
+/** The C type appendix's extracts: recorded lines 4, 5 and 6, each displayed as line 1. */
+export const INT_MINUS_ONE = {
+  c: "int no_reading(void) { return -1; }",
+  listing: ["no_reading:", "  mov w0, -1 C1", "  ret C1"].join("\n"),
+  sourceLines: [[1], [1]],
+} as const;
+
+export const UNSIGNED_ALL_ONES = {
+  c: "unsigned all_ones(void) { return 4294967295u; }",
+  listing: ["all_ones:", "  mov w0, -1 C1", "  ret C1"].join("\n"),
+  sourceLines: [[1], [1]],
+} as const;
+
+export const LONG_MINUS_ONE = {
+  c: "long no_reading_long(void) { return -1; }",
+  listing: ["no_reading_long:", "  mov x0, -1 C1", "  ret C1"].join("\n"),
+  sourceLines: [[1], [1]],
+} as const;
+
 /** The C and the listing of `service_interval` and `odometer_limit`: recorded lines 2 and 3. */
 export const SERVICE_AND_ODOMETER = {
   c: [

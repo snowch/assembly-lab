@@ -25,7 +25,8 @@ describe("Raspberry Pi 5 physical-board extension", () => {
     expect(ids.indexOf("raspberry-pi-5")).toBe(ids.indexOf("diagnosing-native-failure") + 1);
     expect(ids.indexOf("same-c-on-a32")).toBe(ids.indexOf("restore-pi-boot") + 1);
     expect(ids.indexOf("twos-complement")).toBe(ids.indexOf("a32-division-helper") + 1);
-    expect(ids.at(-1)).toBe("twos-complement");
+    expect(ids.indexOf("c-integer-types")).toBe(ids.indexOf("twos-complement") + 1);
+    expect(ids.at(-1)).toBe("c-integer-types");
     expect(moduleByNumber(13)?.label).toBe("13");
     expect(lessonsOf(moduleByNumber(14)!, LESSONS).map((l) => l.id)).toEqual([
       "same-c-on-a32",

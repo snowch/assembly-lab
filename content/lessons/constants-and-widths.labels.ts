@@ -9,7 +9,6 @@
 export const LABELS = {
   objectives: [
     "say which numbers one `mov` can put in a register, and build the rest with `movk`;",
-    "explain why `-1` and `4294967295` give the same instruction;",
     "use the `x` and `w` names of one register, and say what writing the `w` name does to the rest.",
   ],
   titles: {
@@ -20,7 +19,6 @@ export const LABELS = {
     construction: "Building 1000000",
     failureExperiment: "Two names, one register",
     explanation: "Add a route leg",
-    generalisation: "Constants and C types",
     challenge: "Four instructions",
     reflection: "What you now know",
   },

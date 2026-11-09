@@ -52,6 +52,8 @@ export const MODULE_ICONS: Readonly<Record<string, ReactNode>> = {
   "the-same-programs-on-32-bit-arm": <path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4" />,
   // One row of bits, with positive and negative weights.
   "twos-complement": <path d="M3 10h18v8H3zM7.5 10v8M12 10v8M16.5 10v8M3 5h5M14 3v4M12 5h4" />,
+  // A whole register above its lower half.
+  "c-integer-types": <path d="M3 4h18v6H3zM12 15h9v6h-9zM12 4v6M16.5 15v6" />,
 };
 
 /**
