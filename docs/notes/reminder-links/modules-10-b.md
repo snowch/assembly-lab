@@ -1,4 +1,4 @@
-# Reminder links: Modules 10 to Appendix B
+# Reminder links: Modules 10 to Appendix C
 
 Source review covers every published route in the exported lesson order, not just the unsplit source lessons. Guidance: `CLAUDE.md`, `docs/style.md`, `docs/authoring.md`, and the learning-design skill. These are retrieval aids for previously practised mechanisms; essential explanations remain visible. No interface or teaching sequence changes are proposed. Independent learner and technical review, and final browser verification, remain separate.
 
@@ -32,6 +32,7 @@ Outcome: learners can retrieve the earlier machine rule needed to trace generate
 | `a32-constants` | Accepted: retrieve A64 `movk`’s partial replacement rule from `building-constants` before comparing A32 `movw`/`movt`. |
 | `a32-division-helper` | Accepted: retrieve whole-number unsigned quotient behaviour from `division-and-remainders` before the fresh average calculation. Helper calls are explained locally. |
 | `twos-complement` | Existing: its bridge already links exact `same-bits-two-readings` and `subtraction-flags-and-negation` routes with their conceptual purpose. The appendix defines weights/negation locally; no additional reminder needed. |
+| `c-integer-types` | Added in the register-width relocation review: the optional reference identifies `register-widths` as its preparation and return route, and links `same-bits-two-readings` for the previously practised bit-reading rule. Target widths, suffix spelling and each recorded compiler example are explained locally; no later C conversion or overflow knowledge is required. |
 
 ## Implementation and checks
 

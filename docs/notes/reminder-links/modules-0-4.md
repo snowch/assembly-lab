@@ -29,7 +29,7 @@ Existing links below include forward and optional references; they are recorded 
 | 1 | `arithmetic-on-register-bits` | `c-and-overflow` (forward) | No new prerequisite link: the opening recalls the earlier four-bit subtraction and states both C widths/types locally; the worked returned-bit calculation is handled in the separate arithmetic change. |
 | 1 | `constants-and-widths` | None | No new link: the local explanation already maps hexadecimal digits onto the two halves used by `mov`. |
 | 1 | `building-constants` | None | Added `constants-and-widths`: recall whole-value replacement by `mov` before combining it with `movk`’s partial replacement. |
-| 1 | `register-widths` | None | No new link: both register views and the effect of a `w` write are taught in the local experiment and explanation. |
+| 1 | `register-widths` | `c-integer-types` (optional appendix) | The register-width relocation adds a reference after the existing recap. Both register views and the effect of a `w` write remain taught locally; no required explanation moves behind the link. |
 | 2 | `adding-and-the-flags` | None | Added `same-bits-two-readings`: retrieve how signed and unsigned values come from the same bits before separating their range checks. |
 | 2 | `flags-and-overflow` | None | Added `adding-and-the-flags`: recall `add`/`adds` flag behaviour before tracking which operation the displayed flags describe. |
 | 2 | `subtracting-and-the-tick-counter` | None | No new link: local counter arithmetic and the wrap limit explain the elapsed-time calculation; a generic flags link would not support that task. |

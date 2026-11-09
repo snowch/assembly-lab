@@ -197,13 +197,14 @@ test("each lesson foot names the lesson before it and the one after, in course o
   await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
     lessonLabel(LESSONS[0]!.id),
   );
-  // The Pi extension follows QEMU, then A32 and Appendix B; B has no next.
+  // The Pi extension follows QEMU, then A32 and Appendices B/C; C has no next.
   const tail = LESSONS.filter((lesson) => lesson.module >= 12);
   expect(tail[0]!.id).toBe("from-function-to-executable");
-  expect(tail.at(-2)!.id).toBe("a32-division-helper");
-  expect(tail.at(-1)!.id).toBe("twos-complement");
+  expect(tail.at(-3)!.id).toBe("a32-division-helper");
+  expect(tail.at(-2)!.id).toBe("twos-complement");
+  expect(tail.at(-1)!.id).toBe("c-integer-types");
   expect(tail.map((lesson) => lesson.module)).toEqual([
-    12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15,
+    12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 16,
   ]);
   await page.goto(`#/lesson/${tail[0]!.id}`);
   for (const lesson of tail.slice(1)) {

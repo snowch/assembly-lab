@@ -103,7 +103,7 @@ for (const theme of ["light", "dark"] as const) {
       expect(errors).toEqual([]);
     });
 
-    test("optional modules use A and B consistently in the plan, page and navigation", async ({
+    test("optional modules use A to C consistently in the plan, page and navigation", async ({
       page,
       isMobile,
     }) => {
@@ -111,6 +111,7 @@ for (const theme of ["light", "dark"] as const) {
       for (const [id, label] of [
         ["same-c-on-a32", "A"],
         ["twos-complement", "B"],
+        ["c-integer-types", "C"],
       ] as const) {
         await page.goto("#/");
         const plan = page.locator(`.plan-module a[href="#/lesson/${id}"]`);
@@ -129,6 +130,14 @@ for (const theme of ["light", "dark"] as const) {
       }
       const nav = page.getByRole("navigation", { name: STRINGS.lessonNav });
       await expect(nav.locator('[data-direction="next"]')).toHaveCount(0);
+      await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
+        "MB, L1: Two’s complement",
+      );
+      await press(page, nav.locator('[data-direction="previous"]'));
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText("Two’s complement");
+      await expect(nav.locator('[data-direction="next"] .lesson-nav-title')).toHaveText(
+        "MC, L1: C integer types and register widths",
+      );
       await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
         "MA, L4: A32 division helpers",
       );
