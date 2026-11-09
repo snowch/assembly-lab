@@ -56,10 +56,15 @@ for (const theme of ["light", "dark"] as const) {
     await expect(input).toHaveValue("2 / 0");
     await input.fill("2^16");
     await input.press("Enter");
-    await expect(calculator.getByRole("status")).toHaveText("Result: 65,536");
+    await expect(calculator.getByRole("status")).toHaveText("Result: 65536");
     await exercise.getByRole("button", { name: "Text", exact: true }).click();
     await expect(assembly).toHaveValue(initial);
     expect(await designProblems(page, isMobile)).toEqual([]);
+    // A reader can use the displayed result as a numeric operand without stripping commas.
+    const number = await calculator.getByRole("status").locator("code").innerText();
+    await assembly.fill(`mov w0, ${number}\nret`);
+    await expect(assembly).toHaveAttribute("aria-invalid", "false");
+    await expect(exercise.getByText("No tests run yet", { exact: true })).toBeVisible();
     await assembly.fill("mov w0, 16960\nmovk w0, 15, lsl 16\nret");
     await exercise.getByRole("button", { name: "Run tests", exact: true }).click();
     await expect(exercise.locator(".challenge-complete")).toBeVisible();

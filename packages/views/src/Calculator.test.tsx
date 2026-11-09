@@ -3,6 +3,7 @@
 
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
+import { assemble } from "@al/machine";
 import { Calculator } from "./Calculator";
 import { AssemblyEditor } from "./AssemblyEditor";
 import { written } from "./testing";
@@ -112,4 +113,14 @@ it("does not add a calculator to an assembly challenge without the opt-in", () =
     <AssemblyEditor challenge={written} lesson={{} as Lesson} artifact={{}} onChange={vi.fn()} />,
   );
   expect(view.queryByText("Calculator", { selector: "summary" })).toBeNull();
+});
+
+it("shows whole-mode results as valid assembly numbers without grouping commas", () => {
+  const view = render(<Calculator handoffKey="operand" division="whole" />);
+  open(view.container);
+  fireEvent.change(view.getByLabelText("Calculation"), { target: { value: "2^16" } });
+  fireEvent.click(view.getByRole("button", { name: "Calculate" }));
+  expect(view.getByRole("status")).toHaveTextContent("Result: 65536");
+  const number = view.getByRole("status").querySelector("code")!.textContent!;
+  expect(assemble(`mov w0, ${number}\nret`).program).not.toBeNull();
 });

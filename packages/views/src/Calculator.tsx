@@ -60,7 +60,12 @@ export function Calculator({
               <p>{error}</p>
             ) : work.result && "value" in work.result ? (
               <p>
-                {S.result}: <code>{BigInt(work.result.value).toLocaleString("en-GB")}</code>
+                {S.result}:{" "}
+                <code>
+                  {division === "whole"
+                    ? work.result.value
+                    : BigInt(work.result.value).toLocaleString("en-GB")}
+                </code>
               </p>
             ) : null}
           </div>
