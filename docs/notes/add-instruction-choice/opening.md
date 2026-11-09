@@ -1,0 +1,1 @@
+A compiler can choose this form of `add` for an addition by a fixed amount such as 4096. You can also choose it when writing assembly. The constant goes in the instruction, so you do not need another register to hold it.

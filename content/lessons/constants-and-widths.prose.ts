@@ -80,8 +80,10 @@ export const PROSE = {
 
   immediateAdd: {
     title: "Multiply the constant before adding",
+    instructionChoice:
+      "A compiler can choose this form of `add` for an addition by a fixed amount such as 4096. You can also choose it when writing assembly. The constant goes in the instruction, so you do not need another register to hold it.",
     prose:
-      "This form of `add` lets you add a larger constant in one instruction, without first loading it into another register.\n\n`lsl #12` multiplies the constant `#1` by 4096 before the addition. The instruction writes `w2` and leaves `w0` unchanged.\n\nIn this form of `add`, the constant before `lsl` ranges from 0 to 4095. The only optional `lsl` amounts are 0 and 12; omitting `lsl` uses the constant unchanged. These options differ from those of `mov` and `movk`.\n\nSee [Arm’s ADD (immediate) reference](https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ADD--immediate---Add-immediate-value-).",
+      "`lsl #12` multiplies the constant `#1` by 4096 before the addition. The instruction writes `w2` and leaves `w0` unchanged.\n\nIn this form of `add`, the constant before `lsl` ranges from 0 to 4095. The only optional `lsl` amounts are 0 and 12; omitting `lsl` uses the constant unchanged. These options differ from those of `mov` and `movk`.\n\nSee [Arm’s ADD (immediate) reference](https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ADD--immediate---Add-immediate-value-).",
   },
 
   generalisation:

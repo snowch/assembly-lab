@@ -13,6 +13,7 @@ const flat = (s: string) => s.replace(/[`*]/g, "").replace(/\s+/g, " ").trim();
 describe("primitive figure prose record", () => {
   it("keeps all fixed labels and representative generated messages in the review copy", () => {
     const samples = [
+      ...Object.values(S.instructionChoice),
       ...Object.values(S).flatMap((v) => (typeof v === "string" ? [v] : [])),
       S.question("w0"),
       S.question("w1"),
