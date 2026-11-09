@@ -9,16 +9,17 @@
 
 import { FUNDAMENTALS_MODULE } from "../lessons/fundamentals.prose";
 import { COMPLEMENT_PROSE } from "../lessons/twos-complement.prose";
+import { LABELS as C_TYPES } from "../lessons/c-integer-types.labels";
 
 export const STATUSES = ["planned", "drafting", "published"] as const;
 export type ModuleStatus = (typeof STATUSES)[number];
 
 export interface PlannedModule {
-  /** Numeric lesson-schema key; optional chapters use 14/15 while displaying A/B. */
+  /** Numeric lesson-schema key; optional chapters use 14–16 while displaying A–C. */
   readonly lessonModule: number;
   /** Unique, lower-case, and the stem a lesson's id may start with. */
   readonly id: string;
-  /** What the module is called: "0" to "13", or "A"/"B" for optional chapters. */
+  /** What the module is called: "0" to "13", or "A" to "C" for optional chapters. */
   readonly label: string;
   readonly title: string;
   /** One line on what the learner does in the module. */
@@ -32,7 +33,7 @@ export interface PlanPart {
 }
 
 const M = (label: string, id: string, title: string, line: string): PlannedModule => ({
-  lessonModule: label === "A" ? 14 : label === "B" ? 15 : Number(label),
+  lessonModule: label === "A" ? 14 : label === "B" ? 15 : label === "C" ? 16 : Number(label),
   id,
   label,
   title,
@@ -153,6 +154,7 @@ export const OPTIONAL_PART: PlanPart = {
       "Compare the course's A64 programs with recorded 32-bit Arm compiler output.",
     ),
     M("B", "twos-complement", COMPLEMENT_PROSE.title, COMPLEMENT_PROSE.line),
+    M("C", "c-integer-types", C_TYPES.title, C_TYPES.line),
   ],
 };
 

@@ -266,7 +266,6 @@ const constants = splitLesson(constantsAndWidths, [
     sections: [
       section(constantsAndWidths, "failureExperiment"),
       section(constantsAndWidths, "explanation"),
-      section(constantsAndWidths, "generalisation"),
       section(constantsAndWidths, "challenge"),
       {
         ...section(constantsAndWidths, "reflection"),

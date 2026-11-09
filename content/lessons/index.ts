@@ -41,6 +41,7 @@ import { loadingWidths } from "./loading-widths";
 import { onePatternThreeReadings } from "./one-pattern-three-readings";
 import { fourBitArithmetic } from "./four-bit-arithmetic";
 import { twosComplement } from "./twos-complement";
+import { cIntegerTypes } from "./c-integer-types";
 import { shifts } from "./shifts";
 import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
 
@@ -76,6 +77,7 @@ export const SOURCE_LESSONS: readonly Lesson[] = [
   raspberryPiBoot,
   sameCOnA32,
   twosComplement,
+  cIntegerTypes,
 ]
   .map(withIntroduced)
   .map(parseLesson);
@@ -91,6 +93,7 @@ export const LESSONS: readonly Lesson[] = [
   ...paced5To9,
   ...paced10ToA,
   twosComplement,
+  cIntegerTypes,
 ]
   .map((lesson, index, lessons) => ({
     ...lesson,

@@ -16,10 +16,13 @@ import {
   FUEL_USED_WRONG,
   FUEL_USED_WRONG_PLUS_12,
   FUEL_USED_WRONG_U,
+  INT_MINUS_ONE,
+  LONG_MINUS_ONE,
   MOVK_EXAMPLE,
   ODOMETER_LIMIT_TEXT,
   SERVICE_AND_ODOMETER,
   SERVICE_INTERVAL,
+  UNSIGNED_ALL_ONES,
   WIDTHS,
   X5_QUESTION,
 } from "./module-1.listings";
@@ -100,6 +103,14 @@ describe("the recorded file", () => {
 });
 
 describe("the listings the lessons show", () => {
+  it.each([
+    [INT_MINUS_ONE, "no_reading"],
+    [UNSIGNED_ALL_ONES, "all_ones"],
+    [LONG_MINUS_ONE, "no_reading_long"],
+  ] as const)("shows the C type appendix extract %j as recorded for %s", (shown, name) => {
+    expectShown(shown, [name]);
+  });
+
   it("show service_interval and odometer_limit as recorded, C line numbers one less", () => {
     expectShown(SERVICE_AND_ODOMETER, ["service_interval", "odometer_limit"]);
   });

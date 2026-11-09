@@ -138,7 +138,7 @@ Field labels, in order: "unsigned reading of `0x0000002a`"; "signed reading of `
 4. `0x0000002a` has its top bit 0, so both readings are 42.
 5. The answers, unsigned first in each pair: 42 and 42; 2147483648 and −2147483648; 4294967096 and −200.
 
-## 10. What you now know
+## 9. What you now know
 
 - Hexadecimal is a compact way to write bits: four bits per digit.
 - One 32-bit pattern has an unsigned reading and a signed reading.
@@ -158,7 +158,6 @@ Unsigned 2147483649: the top bit, 2147483648, plus 1. Signed −2147483647: minu
 ## 0. Objectives
 
 - say which numbers one `mov` can put in a register, and build the rest with `movk`;
-- explain why `-1` and `4294967295` give the same instruction;
 - use the `x` and `w` names of one register, and say what writing the `w` name does to the rest.
 
 ## 1. Why can one instruction not hold 1000000?
@@ -334,19 +333,7 @@ See [Arm’s ADD (immediate) reference](https://developer.arm.com/documentation/
 
 *One add instruction adds the route leg to the trip total.*
 
-## 8. Constants and C types
-
-A `long` in C is an integer type. It is 64 bits on the system GCC compiles for here.
-
-For a function returning `long`, GCC 16.1 at `-O1` loads the result of `return -1;` with `mov x0, -1`. The `x` name gives the instruction access to all 64 bits.
-
-The `u` in `4294967295u` marks the constant as `unsigned`.
-
-GCC 16.1 at `-O1` turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.
-
-Every constant in these listings is a pattern of bits. The C type affects how many bits the instructions use and how the program interprets those bits.
-
-## 9. Four instructions
+## 8. Four instructions
 
 Follow the four instructions in the listing. Track the two register values separately.
 
@@ -362,12 +349,14 @@ Field labels: "`x1` at the end"; "`w2` at the end".
 4. `w2` ends as `0x000f4240`.
 5. `x1` is 5 and `w2` is 1000000.
 
-## 10. What you now know
+## 9. What you now know
 
 - Not every constant fits in a single `mov`.
 - With a `w` name, `movk` replaces one 16-bit half of the 32 bits and keeps the other half.
 - `wN` names the lower 32 bits of `xN`.
 - Writing `wN` clears the upper 32 bits of `xN`.
+
+For an optional comparison of C return types and these register widths, see [C integer types and register widths](#/lesson/c-integer-types).
 
 **`x5` holds `0xffffffffffffffff`. Then `mov w5, 7` runs. What does `x5` hold?**
 

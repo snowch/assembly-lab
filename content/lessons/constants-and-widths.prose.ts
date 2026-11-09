@@ -88,13 +88,6 @@ export const PROSE = {
     body: "In this form of `add`, the constant before `lsl` ranges from 0 to 4095. The only optional `lsl` amounts are 0 and 12; omitting `lsl` uses the constant unchanged. These options differ from those of `mov` and `movk`.\n\nSee [Arm’s ADD (immediate) reference](https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ADD--immediate---Add-immediate-value-).",
   },
 
-  generalisation:
-    "A `long` in C is an integer type. It is 64 bits on the system GCC compiles for here.\n\n" +
-    "For a function returning `long`, GCC 16.1 at `-O1` loads the result of `return -1;` with `mov x0, -1`. The `x` name gives the instruction access to all 64 bits.\n\n" +
-    "The `u` in `4294967295u` marks the constant as `unsigned`.\n\n" +
-    "GCC 16.1 at `-O1` turns `return -1;` with `int` and `return 4294967295u;` with `unsigned` into the same instruction, `mov w0, -1`: the same 32 bits, read two ways.\n\n" +
-    "Every constant in these listings is a pattern of bits. The C type affects how many bits the instructions use and how the program interprets those bits.",
-
   challenge:
     "Follow the four instructions in the listing. Track the two register values separately.",
 
@@ -112,6 +105,7 @@ export const PROSE = {
     "- With a `w` name, `movk` replaces one 16-bit half of the 32 bits and keeps the other half.\n" +
     "- `wN` names the lower 32 bits of `xN`.\n" +
     "- Writing `wN` clears the upper 32 bits of `xN`.\n\n" +
+    "For an optional comparison of C return types and these register widths, see [C integer types and register widths](#/lesson/c-integer-types).\n\n" +
     "**`x5` holds `0xffffffffffffffff`. Then `mov w5, 7` runs. What does `x5` hold?**",
   reflectionDetailsSummary: "Answer",
   reflectionDetails:
