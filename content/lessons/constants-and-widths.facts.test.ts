@@ -259,7 +259,7 @@ describe("the worked example, mov w0, 3 then movk w0, 2, lsl 16", () => {
 
     // The displayed arrows omit intermediate doublings, but each stated value comes from
     // the same model calculation. Bit 16 begins the upper half; its next place is twice as much.
-    const doublings = runText("mov w0, 1\n" + "add w0, w0, w0\n".repeat(17) + "ret\n");
+    const doublings = runText("mov w0, 1\n" + "add w0, w0, w0\n".repeat(31) + "ret\n");
     expect([0, 1, 2, 14, 15, 16, 17].map((bit) => x(stateAfter(doublings, bit), 0))).toEqual([
       1n,
       2n,
@@ -269,6 +269,10 @@ describe("the worked example, mov w0, 3 then movk w0, 2, lsl 16", () => {
       65536n,
       131072n,
     ]);
+    for (let bit = 16; bit < 32; bit++) {
+      expect(x(stateAfter(doublings, bit), 0) % 65536n).toBe(0n);
+    }
+    expect(x(runText("mov w0, 65535\nret\n").final, 0)).toBeLessThan(65536n);
   });
 
   it("draws 0000 0003 after the mov, both halves new, then 0002 0003 with the upper new and the lower kept", () => {

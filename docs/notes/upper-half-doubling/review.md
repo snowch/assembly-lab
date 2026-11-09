@@ -25,3 +25,13 @@ Evidence: /tmp/doubling-reader.md, /tmp/doubling-technical.md, their screenshots
 - Existing browser cases: 6 passed, no skips or failures, covering worked halves, the locked solution and legibility on desktop/phone.
 
 Full required CI, merge/tree equivalence, exact-commit Pages deployment and live verification are recorded in the pull request when complete. Focused checks above do not imply those release results.
+
+## Final common-unit refinement
+
+The user then asked to explain the common-factor reasoning to readers. A second separate Medium copy pass added the visible connection: upper-bit values are multiples of 65536, the upper half counts whole groups, the lower half contributes less than one group, and whole-number division therefore separates them. No GCD/LCD vocabulary is introduced. Existing worked values and the calculator procedure remain.
+
+The model assertion now runs through bit 31 and checks that every upper-position contribution is divisible by 65536. It also checks the largest lower-half value remains below one group. The numeric guard and shown values are unchanged from the first draft.
+
+Both independent reviewers rechecked the final build in all four actual viewport/theme contexts and updated their reports with distinct final-revision evidence. No actionable findings. The final reader found the reason for division explicit; the final technical review verified all 32 bit values, upper multiples and the lower bound. Calculator, worked step/reset, wrapping and the locked gate were rechecked. The managing editor inspected representative revised-copy screenshots. Earlier review evidence remains separately labelled as superseded.
+
+Final focused checks passed again: 5 files / 81 tests, TypeScript, production build, formatting and diff whitespace; existing browser cases 6 passed with no skips. Independent final facts/canonical rerun: 2 files / 51 passed. These overlapping reruns are not additional unique tests. Superseded-head CI is not release evidence; final workflow, merge and public verification belong to the final PR record.
