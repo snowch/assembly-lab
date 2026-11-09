@@ -20,7 +20,6 @@ const Stage = z.object({
   kind: z.enum(["operation", "function"]).default("operation"),
   title: z.string(),
   prose: z.string(),
-  instructionChoice: z.string().min(1).optional(),
   program: RecordedSchema,
   call: CallSchema,
   registers: z.array(z.number().int().min(0).max(30)).min(1).max(3),
@@ -76,49 +75,6 @@ export const PrimitiveOperation = withProps(
     return (
       <div className="al-figure al-primitive" data-figure="primitive-operation" data-k={position}>
         <h4>{stage.title}</h4>
-        {stage.instructionChoice && (
-          <>
-            <Prose markdown={stage.instructionChoice} />
-            <div
-              className="al-instruction-choice"
-              role="img"
-              aria-label={S.instructionChoice.description}
-            >
-              <div
-                className="al-instruction-choice-node al-instruction-choice-chooser"
-                aria-hidden="true"
-              >
-                {S.instructionChoice.chooser}
-              </div>
-              <div
-                className="al-instruction-choice-edge al-instruction-choice-choose"
-                aria-hidden="true"
-              >
-                <span>{S.instructionChoice.choice}</span>
-                <span className="al-instruction-choice-arrow" />
-              </div>
-              <div
-                className="al-instruction-choice-node al-instruction-choice-instruction"
-                aria-hidden="true"
-              >
-                <Prose markdown={S.instructionChoice.instruction} />
-              </div>
-              <div
-                className="al-instruction-choice-edge al-instruction-choice-execute"
-                aria-hidden="true"
-              >
-                <span>{S.instructionChoice.execution}</span>
-                <span className="al-instruction-choice-arrow" />
-              </div>
-              <div
-                className="al-instruction-choice-node al-instruction-choice-processor"
-                aria-hidden="true"
-              >
-                {S.instructionChoice.processor}
-              </div>
-            </div>
-          </>
-        )}
         <Prose markdown={stage.prose} />
         {isFunction ? (
           <div

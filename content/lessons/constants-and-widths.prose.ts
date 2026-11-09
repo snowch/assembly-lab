@@ -79,11 +79,13 @@ export const PROSE = {
     "The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x00000000ffffffff`. Writing a `w` name always clears the upper 32 bits of the `x` register.",
 
   immediateAdd: {
-    title: "Multiply the constant before adding",
-    instructionChoice:
-      "A compiler can choose this form of `add` for an addition by a fixed amount such as 4096. You can also choose it when writing assembly. The constant goes in the instruction, so you do not need another register to hold it.",
+    title: "Add a route leg",
     prose:
-      "`lsl #12` multiplies the constant `#1` by 4096 before the addition. The instruction writes `w2` and leaves `w0` unchanged.\n\nIn this form of `add`, the constant before `lsl` ranges from 0 to 4095. The only optional `lsl` amounts are 0 and 12; omitting `lsl` uses the constant unchanged. These options differ from those of `mov` and `movk`.\n\nSee [Arm’s ADD (immediate) reference](https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ADD--immediate---Add-immediate-value-).",
+      "Suppose a known route leg is 4096 metres long. Add it to the trip total: `trip_metres + 4096`.\n\nA compiler or assembly programmer can do this with one `add` instruction. Here, `lsl #12` turns the constant 1 into 4096.\n\nHere, `w0` holds `trip_metres`; `add` writes the new total to `w2`.",
+  },
+  immediateAddNote: {
+    summary: "Constant range and shift limits",
+    body: "In this form of `add`, the constant before `lsl` ranges from 0 to 4095. The only optional `lsl` amounts are 0 and 12; omitting `lsl` uses the constant unchanged. These options differ from those of `mov` and `movk`.\n\nSee [Arm’s ADD (immediate) reference](https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ADD--immediate---Add-immediate-value-).",
   },
 
   generalisation:

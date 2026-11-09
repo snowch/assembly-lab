@@ -206,6 +206,7 @@ export const constantsAndWidths: LessonInput = {
               call: { entry: "add_scaled_constant", args: [7, 0, 0] },
               registers: [0, 2],
             },
+            notes: [PROSE.immediateAddNote],
           },
         },
       ],
