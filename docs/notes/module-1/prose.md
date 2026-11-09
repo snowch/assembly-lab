@@ -299,7 +299,7 @@ For the same register:
 
 They are not two registers.
 
-The figure runs `mov x3, -1`, which sets all 64 bits, then `mov w3, -1`.
+First, `mov x3, -1` sets all 64 bits to 1. Then `mov w3, -1` runs. Predict what `x3` holds after the second instruction. Choose an answer and press **Check your prediction** to open the step-by-step display.
 
 *`x3` drawn as two halves of 32 bits, with `w3` its lower half.*
 
@@ -317,6 +317,8 @@ The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x0000000
 ## 7. Multiply a constant before adding
 
 **Multiply the constant before adding**
+
+This form of `add` lets you add a larger constant in one instruction, without first loading it into another register.
 
 `lsl #12` multiplies the constant `#1` by 4096 before the addition. The instruction writes `w2` and leaves `w0` unchanged.
 
