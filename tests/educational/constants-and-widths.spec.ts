@@ -698,12 +698,14 @@ test.describe("the answers challenge", () => {
 test.describe("the halves of sixteen", () => {
   const figureOf = (page: Page, id: string) => page.locator(`#ix-${id}`);
   const halves = (figure: Locator) =>
-    figure.locator(".al-h16").evaluateAll((els) =>
+    figure.locator(".al-h16, .al-h16-summary[data-contributions]").evaluateAll((els) =>
       els.map((h) => ({
         half: h.getAttribute("data-half"),
-        digits: [...h.querySelectorAll(".al-h16-digit")].map((d) => d.textContent).join(""),
+        digits: h.classList.contains("al-h16-summary")
+          ? (h.querySelector(".al-h16-value")?.textContent ?? "").replace(/^0x/, "")
+          : [...h.querySelectorAll(".al-h16-digit")].map((d) => d.textContent).join(""),
         bits: [...h.querySelectorAll(".al-bit")].map((b) => b.textContent).join(""),
-        tag: (h.querySelector(".al-h16-tag")?.textContent ?? "").trim(),
+        tag: (h.querySelector(".al-h16-mark, .al-h16-tag")?.textContent ?? "").trim(),
       })),
     );
   const next = (figure: Locator) => figure.getByRole("button", { name: V.stepper.next });
@@ -756,6 +758,8 @@ test.describe("the halves of sixteen", () => {
       ["0003", "Written"],
     ]);
     expect(w0After(MOVK_EXAMPLE.listing, 1)).toBe(3n);
+    await page.evaluate(() => document.fonts.ready);
+    const totalHeight = (await figure.locator(".al-h16-total").boundingBox())!.height;
     await press(page, next(figure));
     expect((await halves(figure)).map((h) => [h.digits, h.tag])).toEqual([
       ["0002", "Written"],
@@ -767,14 +771,30 @@ test.describe("the halves of sixteen", () => {
     await expect(figure.locator("[role=status]")).toContainText("Ran movk w0, 2, lsl 16.");
     await expect(figure.locator(".al-h16-value")).toHaveText(["0x0002", "0x0003"]);
     await expect(figure.locator(".al-h16-mark")).toHaveText(["Written", "Kept"]);
-    await expect(figure.locator(".al-h16-detail")).not.toHaveAttribute("open");
-    // Essential write marks stay visible with the individual bits closed.
+    await expect(figure.locator(".al-h16-count")).toHaveText([
+      "2 groups of 65536",
+      "3 extra units",
+    ]);
+    await expect(figure.locator(".al-h16-amount")).toHaveText(["131072", "3"]);
+    await expect(figure.locator(".al-h16-total code")).toHaveText("131072 + 3 = 131075");
+    expect((await figure.locator(".al-h16-total").boundingBox())!.height).toBeCloseTo(
+      totalHeight,
+      1,
+    );
+    await expect(figure.locator(".al-h16-detail")).toHaveCount(0);
+    // Every bit and its position is now primary in the worked explanation.
+    await expect(figure.locator(".al-h16-numbered .al-bit")).toHaveCount(32);
+    await expect(figure.locator(".al-h16-bit-index")).toHaveText(
+      Array.from({ length: 32 }, (_, i) => String(31 - i)),
+    );
+    expect(await figure.locator(".al-h16-numbered .al-bit").allTextContents()).toEqual(
+      ("0000000000000010" + "0000000000000011").split(""),
+    );
+    await expect(figure.locator(".al-h16-base-worth")).toHaveText([
+      "Bit 16 is worth 65536",
+      "Bit 0 is worth 1",
+    ]);
     await expect(figure.locator(".al-h16-summary").first()).toBeVisible();
-    const disclosure = figure.locator(".al-h16-detail > summary");
-    expect((await disclosure.boundingBox())!.height).toBeGreaterThanOrEqual(44);
-    await disclosure.focus();
-    await page.keyboard.press("Enter");
-    await expect(figure.locator(".al-h16-detail")).toHaveAttribute("open", "");
     // A written half has a solid outline and a kept one a dashed outline, besides their words.
     const lines = await figure
       .locator(".al-h16-summary")
@@ -819,7 +839,7 @@ test.describe("the halves of sixteen", () => {
     ]);
   });
 
-  test("keeps both compact halves adjacent on a desk and phone without horizontal overflow", async ({
+  test("keeps both labelled halves and all 32 bits readable without horizontal overflow", async ({
     page,
   }) => {
     await openLesson(page, "building-constants");
@@ -828,8 +848,13 @@ test.describe("the halves of sixteen", () => {
     const [upper, lower] = await figure
       .locator(".al-h16-summary")
       .evaluateAll((els) => els.map((e) => e.getBoundingClientRect().toJSON()));
-    expect(lower.x).toBeGreaterThan(upper.x + upper.width - 1);
-    expect(Math.abs(lower.y - upper.y)).toBeLessThan(2);
+    if (page.viewportSize()!.width < 768) {
+      expect(lower.y).toBeGreaterThanOrEqual(upper.y + upper.height);
+    } else {
+      expect(lower.x).toBeGreaterThan(upper.x + upper.width - 1);
+      expect(Math.abs(lower.y - upper.y)).toBeLessThan(2);
+    }
+    await expect(figure.locator(".al-h16-numbered .al-bit")).toHaveCount(32);
     await expect(figure.locator(".al-h16-position")).toHaveText(["Bits 31–16", "Bits 15–0"]);
     expect(await figureOverflow(page)).toEqual([]);
   });

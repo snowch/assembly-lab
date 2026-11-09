@@ -75,6 +75,16 @@ export const MODULE1_STRINGS = {
     written: "Written",
     summaryKept: "Kept",
     showBits: "Show individual bits",
+    // Separately drafted contribution labels; see upper-half-doubling review notes.
+    upperGroups: (count: number) => `${count} ${count === 1 ? "group" : "groups"} of 65536`,
+    lowerUnits: (count: number) => `${count} extra ${count === 1 ? "unit" : "units"}`,
+    contribution: "Contributes",
+    upperBaseWorth: "Bit 16 is worth 65536",
+    lowerBaseWorth: "Bit 0 is worth 1",
+    bitPattern: (bits: string) => `Bit pattern: ${bits}`,
+    wholeValue: (name: string) => `Whole value of ${name}`,
+    wholeEquation: (upper: number, lower: number, whole: number) =>
+      `${upper} + ${lower} = ${whole}`,
     /** The name of the figure for a screen reader. */
     // DRAFT
     group: (name: string) => `${name} as two halves of 16 bits`,

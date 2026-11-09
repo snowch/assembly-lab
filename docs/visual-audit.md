@@ -127,3 +127,9 @@ its explanation inline and does not execute native code. See
 [the checked figure facts](notes/module-12/figure-facts.md) and the independent
 [learner](notes/module-12/figures-learner-review.md) and
 [technical](notes/module-12/figures-technical-review.md) records for findings and verification.
+
+## Module 1: visible bits and upper-half contributions (9 November 2026)
+
+**Refine existing:** Building a constant opts its worked WideStepper into a complete numbered 32-bit view, with four byte groups in two labelled halves. The halves are adjacent on wide screens and stack on phones. Bit 16 and bit 0 are anchored to their worth of 65536 and 1. Hexadecimal values are secondary; Written/Kept marks and model-derived group/unit contributions lead to a whole-value sum. Default siblings and the gated learner-solution view retain their prior presentations.
+
+The caption introduces the representation before use. All worked bits are primary, so its duplicate hidden-bit disclosure and repeated static contribution examples were removed. Independent actual phone/desktop light/dark reviews verified every bit and model state, no overflow, stable controls and simultaneous bit/contribution/Next visibility. The earlier 32px phone footer jump remains fixed by its stable two-row layout. Source/model, calculator, gate, sibling and coverage limits are recorded in [the upper-half review](notes/upper-half-doubling/review.md); exact final CI and live evidence belong to its PR. This entry does not certify unrelated backlog items.

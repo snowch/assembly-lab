@@ -249,9 +249,17 @@ The full rule is longer than this course needs. The figure checks any number.
 
 ### Find the two halves
 
-Bit 0 has weight 1. Each position to the left doubles the weight. The upper half starts at bit 16. Doubling 1 sixteen times gives that bit's weight, 65536.
+Bit 0 is worth 1. Each position to the left is worth twice as much.
 
-An upper-half value of 1 therefore contributes 65536 to the whole number. In the worked example:
+The upper half starts at bit 16, so double 1 sixteen times:
+
+**Double each time:** 1 → 2 → 4 → … → 16384 → 32768 → 65536
+
+Each upper-half bit is worth a multiple of 65536, so the upper half counts whole groups of 65536.
+
+The lower half contributes less than one group. To find the upper-half value, divide the number you want to build by 65536 and keep the whole-number part. The amount left over goes in the lower half.
+
+In the worked example:
 
 **131075 = 2 × 65536 + 3**
 

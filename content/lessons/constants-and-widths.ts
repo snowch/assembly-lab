@@ -125,7 +125,13 @@ export const constantsAndWidths: LessonInput = {
           kind: "wide-stepper",
           timeModel: STEPS,
           caption: LABELS.captions.workedHalves,
-          props: { program: MOVK_EXAMPLE, register: 0, mode: "w16", halfOverview: true },
+          props: {
+            program: MOVK_EXAMPLE,
+            register: 0,
+            mode: "w16",
+            halfOverview: true,
+            halfContributions: true,
+          },
         },
         {
           id: "build-1000000",

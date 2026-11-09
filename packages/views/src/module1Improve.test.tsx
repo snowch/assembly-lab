@@ -528,6 +528,7 @@ describe("a w register as two halves of 16 bits", () => {
       ["0x0000", ""],
       ["0x0000", ""],
     ]);
+    expect(container.querySelector(".al-h16-contribution")).toBeNull();
     const detail = container.querySelector("details")!;
     expect(detail).not.toHaveAttribute("open");
     await next(user);
@@ -562,6 +563,90 @@ describe("a w register as two halves of 16 bits", () => {
       ["0x0000", ""],
     ]);
     expect(halves(container).map((h) => h.bits)).toEqual(["0".repeat(16), "0".repeat(16)]);
+  });
+
+  it("connects model-derived half counts, contributions and whole value through stepping", async () => {
+    const user = userEvent.setup({ delay: null });
+    const { container } = figure(WideStepper, "w", "wide-stepper", {
+      program: WORKED,
+      register: 0,
+      mode: "w16",
+      halfOverview: true,
+      halfContributions: true,
+    });
+    const counts = () => [...container.querySelectorAll(".al-h16-count")].map((n) => n.textContent);
+    const amounts = () =>
+      [...container.querySelectorAll(".al-h16-amount")].map((n) => n.textContent);
+    const sum = () => container.querySelector(".al-h16-total code")?.textContent;
+    expect(counts()).toEqual(["0 groups of 65536", "0 extra units"]);
+    expect(amounts()).toEqual(["0", "0"]);
+    expect(sum()).toBe("0 + 0 = 0");
+    const shownBits = () =>
+      [...container.querySelectorAll(".al-h16-numbered .al-bit")]
+        .map((b) => b.textContent)
+        .join("");
+    expect(shownBits()).toBe("0".repeat(32));
+    expect(container.querySelectorAll(".al-h16-byte")).toHaveLength(4);
+    expect([...container.querySelectorAll(".al-h16-bit-index")].map((b) => b.textContent)).toEqual(
+      Array.from({ length: 32 }, (_, i) => String(31 - i)),
+    );
+    expect(
+      [...container.querySelectorAll('.al-h16-bit[data-base="true"]')].map((b) =>
+        b.getAttribute("data-position"),
+      ),
+    ).toEqual(["16", "0"]);
+    expect(container.querySelector(".al-h16-detail")).toBeNull();
+    expect(container.querySelector(".al-h16-contribution")?.closest("details")).toBeNull();
+    await next(user);
+    expect(counts()).toEqual(["0 groups of 65536", "3 extra units"]);
+    expect(amounts()).toEqual(["0", "3"]);
+    expect(sum()).toBe("0 + 3 = 3");
+    await next(user);
+    expect(counts()).toEqual(["2 groups of 65536", "3 extra units"]);
+    expect(amounts()).toEqual(["131072", "3"]);
+    expect(sum()).toBe("131072 + 3 = 131075");
+    expect(shownBits()).toBe("0000000000000010" + "0000000000000011");
+    await next(user);
+    expect(sum()).toBe("131072 + 3 = 131075");
+    await user.click(screen.getByRole("button", { name: S.stepper.back }));
+    await user.click(screen.getByRole("button", { name: S.stepper.back }));
+    expect(sum()).toBe("0 + 3 = 3");
+    await user.click(screen.getByRole("button", { name: S.stepper.reset }));
+    expect(counts()).toEqual(["0 groups of 65536", "0 extra units"]);
+    expect(sum()).toBe("0 + 0 = 0");
+  });
+
+  it("keeps one-group labels and the maximum unsigned contributions exact", async () => {
+    const user = userEvent.setup({ delay: null });
+    const { container } = figure(WideStepper, "w", "wide-stepper", {
+      program: { c: "", listing: "mov w0, 1\nmovk w0, 1, lsl 16\nmov w0, -1\nret" },
+      register: 0,
+      mode: "w16",
+      halfOverview: true,
+      halfContributions: true,
+    });
+    await next(user);
+    expect(container.querySelector('[data-half="lower"] .al-h16-count')).toHaveTextContent(
+      "1 extra unit",
+    );
+    await next(user);
+    expect(container.querySelector('[data-half="upper"] .al-h16-count')).toHaveTextContent(
+      "1 group of 65536",
+    );
+    expect(container.querySelector(".al-h16-total code")).toHaveTextContent("65536 + 1 = 65537");
+    await next(user);
+    expect([...container.querySelectorAll(".al-h16-amount")].map((n) => n.textContent)).toEqual([
+      "4294901760",
+      "65535",
+    ]);
+    expect(container.querySelector(".al-h16-total code")).toHaveTextContent(
+      "4294901760 + 65535 = 4294967295",
+    );
+    expect(
+      [...container.querySelectorAll(".al-h16-numbered .al-bit")]
+        .map((b) => b.textContent)
+        .join(""),
+    ).toBe("1".repeat(32));
   });
 
   it("stays shut until the prediction it names is checked", () => {
