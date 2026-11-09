@@ -249,9 +249,15 @@ The full rule is longer than this course needs. The figure checks any number.
 
 ### Find the two halves
 
-Bit 0 has weight 1. Each position to the left doubles the weight. The upper half starts at bit 16. Doubling 1 sixteen times gives that bit's weight, 65536.
+Bit 0 is worth 1. Each position to the left is worth twice as much.
 
-An upper-half value of 1 therefore contributes 65536 to the whole number. In the worked example:
+The upper half starts at bit 16, so double 1 sixteen times:
+
+**Double each time:** 1 → 2 → 4 → … → 16384 → 32768 → 65536
+
+So an upper-half value of 1 contributes 65536 to the whole number. An upper-half value of 2 contributes 131072.
+
+In the worked example:
 
 **131075 = 2 × 65536 + 3**
 

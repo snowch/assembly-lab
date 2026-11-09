@@ -44,8 +44,11 @@ export const PROSE = {
     "`lsl` means **logical shift left**. In `movk`, `lsl 16` places the new constant in the upper half; it does not shift the value already in `w0`. Leaving it out selects the lower half.",
   constructionMethod:
     "### Find the two halves\n\n" +
-    "Bit 0 has weight 1. Each position to the left doubles the weight. The upper half starts at bit 16. Doubling 1 sixteen times gives that bit's weight, 65536.\n\n" +
-    "An upper-half value of 1 therefore contributes 65536 to the whole number. In the worked example:\n\n" +
+    "Bit 0 is worth 1. Each position to the left is worth twice as much.\n\n" +
+    "The upper half starts at bit 16, so double 1 sixteen times:\n\n" +
+    "**Double each time:** 1 → 2 → 4 → … → 16384 → 32768 → 65536\n\n" +
+    "So an upper-half value of 1 contributes 65536 to the whole number. An upper-half value of 2 contributes 131072.\n\n" +
+    "In the worked example:\n\n" +
     "**131075 = 2 × 65536 + 3**\n\n" +
     "Two whole groups of 65536 give the upper half, 2. The remaining 3 goes in the lower half.\n\n" +
     "For another positive number that fits in `w0`, you can use the calculator below. Division keeps the whole-number part: the part before the decimal point.\n\n" +

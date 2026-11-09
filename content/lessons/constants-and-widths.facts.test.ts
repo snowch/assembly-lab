@@ -256,6 +256,19 @@ describe("the worked example, mov w0, 3 then movk w0, 2, lsl 16", () => {
     expect(Math.floor(value / 65536)).toBe(2);
     expect(value % 65536).toBe(3);
     expect(readingsOfValue(131075).digits).toBe("00020003");
+
+    // The displayed arrows omit intermediate doublings, but each stated value comes from
+    // the same model calculation. Bit 16 begins the upper half; its next place is twice as much.
+    const doublings = runText("mov w0, 1\n" + "add w0, w0, w0\n".repeat(17) + "ret\n");
+    expect([0, 1, 2, 14, 15, 16, 17].map((bit) => x(stateAfter(doublings, bit), 0))).toEqual([
+      1n,
+      2n,
+      4n,
+      16384n,
+      32768n,
+      65536n,
+      131072n,
+    ]);
   });
 
   it("draws 0000 0003 after the mov, both halves new, then 0002 0003 with the upper new and the lower kept", () => {
@@ -466,6 +479,8 @@ describe("every number the lesson states", () => {
     // The worked example: mov w0, 3, movk w0, 2, lsl 16, which leaves 131075 (the tests above), and
     // bits 16 to 31 of a register, whose upper half they are.
     2, 3, 131075, 31,
+    // Positional values shown by the doubling arrows, pinned to the model states above.
+    4, 16384, 32768, 131072,
     // Seven, which mov w5, 7 puts in x5 (the tests above).
     7,
     // A 16-bit half, a register's 32 bits and its 64.
