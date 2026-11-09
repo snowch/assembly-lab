@@ -61,3 +61,30 @@ it("reports empty, unbounded, zero-divisor and nonintegral work without rounding
   expect(calculate("(2^4096)^3 * 2^4095")).toEqual({ value: (2n ** 16383n).toString() });
   expect(calculate("(2^4096)^3 * 2^4095 * 2")).toEqual({ error: "large" });
 });
+
+it.each([
+  ["131075 / 65536", "2"],
+  ["131075 - 2 * 65536", "3"],
+  ["65535 / 65536", "0"],
+  ["65536 / 65536", "1"],
+  ["4294967295 / 65536", "65535"],
+  ["4294967295 - 65535 * 65536", "65535"],
+  ["7 / 2", "3"],
+  ["-7 / 2", "-3"],
+  ["7 / -2", "-3"],
+  ["-7 / -2", "3"],
+  ["1 / 2 * 2", "0"],
+  ["2^(7 / 2)", "8"],
+])("keeps the whole-number part of each division only when opted in: %s", (text, value) => {
+  expect(calculate(text, { division: "whole" })).toEqual({ value });
+});
+
+it("preserves validation and exact default division alongside the opt-in mode", () => {
+  expect(calculate("7 / 2")).toEqual({ error: "fraction" });
+  expect(calculate("7 / 2", { division: "exact" })).toEqual({ error: "fraction" });
+  expect(calculate("7 / 0", { division: "whole" })).toEqual({ error: "zeroDivision" });
+  expect(calculate("7 /", { division: "whole" })).toEqual({ error: "invalid" });
+  expect(calculate("1.5", { division: "whole" })).toEqual({ error: "invalid" });
+  expect(calculate("2^-1", { division: "whole" })).toEqual({ error: "negativePower" });
+  expect(calculate("2^4097", { division: "whole" })).toEqual({ error: "large" });
+});

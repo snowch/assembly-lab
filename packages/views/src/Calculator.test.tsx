@@ -3,7 +3,11 @@
 
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
+import { assemble } from "@al/machine";
 import { Calculator } from "./Calculator";
+import { AssemblyEditor } from "./AssemblyEditor";
+import { written } from "./testing";
+import { VIEW_STRINGS as S } from "./strings";
 import { AnswerEditor } from "./AnswerEditor";
 import { Challenge, type Lesson } from "@platform/lesson-schema";
 
@@ -70,4 +74,53 @@ it("is opt-in per answer field and cannot change the answer artifact", () => {
     />,
   );
   expect(view.queryByText("Calculator", { selector: "summary" })).toBeNull();
+});
+
+it("opts an assembly editor into whole division without changing its code or submitting the form", () => {
+  const change = vi.fn();
+  const submit = vi.fn((e: { preventDefault: () => void }) => e.preventDefault());
+  const challenge = {
+    ...written,
+    initial: { ...written.initial, data: { calculator: { division: "whole" } } },
+  };
+  const artifact = { text: written.initial.text };
+  const view = render(
+    <form onSubmit={submit}>
+      <AssemblyEditor
+        challenge={challenge}
+        lesson={{} as Lesson}
+        artifact={artifact}
+        onChange={change}
+      />
+    </form>,
+  );
+  expect(view.container.querySelector("details")).not.toHaveAttribute("open");
+  open(view.container);
+  const calculation = view.getByLabelText("Calculation");
+  expect(calculation).toHaveValue("");
+  fireEvent.change(calculation, { target: { value: "131075 / 65536" } });
+  fireEvent.keyDown(calculation, { key: "Enter" });
+  expect(view.getByRole("status")).toHaveTextContent("Result: 2");
+  fireEvent.click(view.getByRole("button", { name: S.editor.text }));
+  expect(view.getByLabelText(S.editor.textLabel)).toHaveValue(artifact.text);
+  expect(change).not.toHaveBeenCalled();
+  expect(submit).not.toHaveBeenCalled();
+  expect(view.getByText(/Division discards any fractional part/)).toBeVisible();
+});
+
+it("does not add a calculator to an assembly challenge without the opt-in", () => {
+  const view = render(
+    <AssemblyEditor challenge={written} lesson={{} as Lesson} artifact={{}} onChange={vi.fn()} />,
+  );
+  expect(view.queryByText("Calculator", { selector: "summary" })).toBeNull();
+});
+
+it("shows whole-mode results as valid assembly numbers without grouping commas", () => {
+  const view = render(<Calculator handoffKey="operand" division="whole" />);
+  open(view.container);
+  fireEvent.change(view.getByLabelText("Calculation"), { target: { value: "2^16" } });
+  fireEvent.click(view.getByRole("button", { name: "Calculate" }));
+  expect(view.getByRole("status")).toHaveTextContent("Result: 65536");
+  const number = view.getByRole("status").querySelector("code")!.textContent!;
+  expect(assemble(`mov w0, ${number}\nret`).program).not.toBeNull();
 });

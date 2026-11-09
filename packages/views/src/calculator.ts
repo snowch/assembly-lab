@@ -7,8 +7,10 @@ export type Calculation =
 const MAX_POWER = 4096n;
 const MAX_MAGNITUDE = (1n << 16384n) - 1n;
 
-/** Exact whole-number scratch arithmetic. No JavaScript evaluation or exercise state. */
-export function calculate(source: string): Calculation {
+export type DivisionMode = "exact" | "whole";
+
+/** Bounded whole-number scratch arithmetic; exact division by default. No eval or exercise state. */
+export function calculate(source: string, options: { division?: DivisionMode } = {}): Calculation {
   if (!source.trim()) return { error: "empty" };
   // Bound tokens, nesting and BigInt work before parsing untrusted input.
   if (source.length > 200) return { error: "large" };
@@ -72,7 +74,7 @@ export function calculate(source: string): Calculation {
       if (op === "*") value = bounded(value * right);
       else {
         if (right === 0n) fail("zeroDivision");
-        if (value % right !== 0n) fail("fraction");
+        if (options.division !== "whole" && value % right !== 0n) fail("fraction");
         value /= right;
       }
     }
