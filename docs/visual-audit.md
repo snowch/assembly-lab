@@ -127,3 +127,9 @@ its explanation inline and does not execute native code. See
 [the checked figure facts](notes/module-12/figure-facts.md) and the independent
 [learner](notes/module-12/figures-learner-review.md) and
 [technical](notes/module-12/figures-technical-review.md) records for findings and verification.
+
+## Module 1: upper-half contributions (9 November 2026)
+
+**Refine existing:** Building a constant opts its worked WideStepper into model-derived group/unit contributions and their whole-value sum. Two adjacent half cards retain hexadecimal values and Written/Kept marks; other modes and the gated learner-solution view keep existing defaults. The caption defines groups and units before use, and duplicate static examples were removed.
+
+Independent phone/desktop light/dark reviews found and verified a fix for a 32px phone footer reflow that moved Next. The footer now reserves its two-row phone layout throughout the worked states, with readable text, no overflow and stable controls. Source/model, gate, sibling and review limits are recorded in [the upper-half review](notes/upper-half-doubling/review.md); exact final CI and live evidence belong to its pull request. This entry does not certify unrelated backlog items.

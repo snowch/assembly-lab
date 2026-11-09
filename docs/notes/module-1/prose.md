@@ -255,7 +255,7 @@ The upper half starts at bit 16, so double 1 sixteen times:
 
 **Double each time:** 1 → 2 → 4 → … → 16384 → 32768 → 65536
 
-So an upper-half value of 1 contributes 65536 to the whole number. An upper-half value of 2 contributes 131072. Each upper-half bit is worth a multiple of 65536, so the upper half counts whole groups of 65536.
+Each upper-half bit is worth a multiple of 65536, so the upper half counts whole groups of 65536.
 
 The lower half contributes less than one group. To find the upper-half value, divide the number you want to build by 65536 and keep the whole-number part. The amount left over goes in the lower half.
 

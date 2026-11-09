@@ -756,6 +756,8 @@ test.describe("the halves of sixteen", () => {
       ["0003", "Written"],
     ]);
     expect(w0After(MOVK_EXAMPLE.listing, 1)).toBe(3n);
+    await page.evaluate(() => document.fonts.ready);
+    const totalHeight = (await figure.locator(".al-h16-total").boundingBox())!.height;
     await press(page, next(figure));
     expect((await halves(figure)).map((h) => [h.digits, h.tag])).toEqual([
       ["0002", "Written"],
@@ -767,6 +769,16 @@ test.describe("the halves of sixteen", () => {
     await expect(figure.locator("[role=status]")).toContainText("Ran movk w0, 2, lsl 16.");
     await expect(figure.locator(".al-h16-value")).toHaveText(["0x0002", "0x0003"]);
     await expect(figure.locator(".al-h16-mark")).toHaveText(["Written", "Kept"]);
+    await expect(figure.locator(".al-h16-count")).toHaveText([
+      "2 groups of 65536",
+      "3 extra units",
+    ]);
+    await expect(figure.locator(".al-h16-amount")).toHaveText(["131072", "3"]);
+    await expect(figure.locator(".al-h16-total code")).toHaveText("131072 + 3 = 131075");
+    expect((await figure.locator(".al-h16-total").boundingBox())!.height).toBeCloseTo(
+      totalHeight,
+      1,
+    );
     await expect(figure.locator(".al-h16-detail")).not.toHaveAttribute("open");
     // Essential write marks stay visible with the individual bits closed.
     await expect(figure.locator(".al-h16-summary").first()).toBeVisible();

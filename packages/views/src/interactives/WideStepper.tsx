@@ -53,6 +53,8 @@ const Props = z
     fromChallenge: z.string().optional(),
     /** In w16 mode, show two compact half blocks first, with individual bits in details. */
     halfOverview: z.boolean().default(false),
+    /** Explain each half's decimal contribution within the w16 overview. */
+    halfContributions: z.boolean().default(false),
   })
   .refine((d) => d.program !== undefined || (d.mode === "w16" && d.fromChallenge !== undefined), {
     message: "needs a program, or a challenge to take the learner's program from",
@@ -180,13 +182,17 @@ function HalfOverview({
   which,
   digits,
   tag,
+  showContribution = false,
 }: {
   name: string;
   which: "upper" | "lower";
   digits: string;
   tag: HalfTag | null;
+  showContribution?: boolean;
 }) {
   const mark = tag === null ? "" : tag === "new" ? M1.halves.written : M1.halves.summaryKept;
+  const count = parseInt(digits, 16);
+  const contribution = which === "upper" ? count * 65536 : count;
   return (
     <div
       className="al-h16-summary"
@@ -201,6 +207,15 @@ function HalfOverview({
       </span>
       <code className="al-h16-value">0x{digits}</code>
       <span className="al-h16-mark">{mark || "\u00a0"}</span>
+      {showContribution && (
+        <div className="al-h16-contribution">
+          <span className="al-h16-count">
+            {which === "upper" ? M1.halves.upperGroups(count) : M1.halves.lowerUnits(count)}
+          </span>
+          <span>{M1.halves.contribution}</span>
+          <code className="al-h16-amount">{contribution}</code>
+        </div>
+      )}
     </div>
   );
 }
@@ -306,16 +321,30 @@ function Stepping({ data, trace }: { data: Data; trace: Trace }) {
                 which="upper"
                 digits={h.upper}
                 tag={h.tag?.upper ?? null}
+                showContribution={data.halfContributions}
               />
               <HalfOverview
                 name={M1.register.lowerHalf}
                 which="lower"
                 digits={h.lower}
                 tag={h.tag?.lower ?? null}
+                showContribution={data.halfContributions}
               />
             </div>
           ) : (
             pair
+          )}
+          {data.halfOverview && data.halfContributions && (
+            <div className="al-h16-total">
+              <span>{M1.halves.wholeValue(name)}</span>
+              <code>
+                {M1.halves.wholeEquation(
+                  parseInt(h.upper, 16) * 65536,
+                  parseInt(h.lower, 16),
+                  wValue(view.state, n),
+                )}
+              </code>
+            </div>
           )}
         </div>
       </>
