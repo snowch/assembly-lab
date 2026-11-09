@@ -27,3 +27,15 @@ Evidence: /tmp/width-directions-reader.md and /tmp/width-directions-technical.md
 - Existing focused browser cases and required CI/release outcomes are recorded in the PR after completion.
 
 Review harness setup first encountered an unavailable preview port and ambiguous/missing selectors. Correcting the preview startup and harness selectors completed both four-context reviews without app changes. Failed setup attempts are not application test passes.
+
+## Final revision: explain the benefit of shifted ADD
+
+The user's next observation concerns the same lesson. A second separate GPT-6.1 Sol Medium draft supplied the purpose: add a larger constant in one instruction without first loading it into another register. The managing editor names add in the sentence and places it before the existing mechanism and range. Canonical prose matches. No executable program or control changed.
+
+Both independent reviewers rechecked the final production build at phone/desktop sizes in actual light/dark themes. The learner review confirmed that prior Adding a constant already establishes the unshifted range, while the new essential paragraph gives the purpose before Run. The technical review read Arm's immediate ADD encoding/operation and checked its direct constant operand, permitted shift and range against the model and native corpus. It rejected a potential unsupported claim that a plain larger-immediate spelling cannot assemble: GNU as and the model can infer the shift, and the lesson makes no such rejection claim.
+
+All four contexts passed initial, Run, Start again and restored reload states; the opening prediction stayed locked independently of the ADD activity and still unlocks when an incorrect prediction is submitted. No overflow or browser errors were observed. The managing editor inspected the new purpose in the phone build. Earlier evidence and the separately scoped recap observation remain distinct.
+
+Final local validation: production build, TypeScript, edited-source formatting and diff whitespace passed. Five focused files / 72 tests passed, followed by the actual operand-additions facts file / 4 tests; an initially specified nonexistent test filename was ignored by Vitest, so these are the actual executed counts. Independent facts/canonical rerun: 2 files / 12 tests passed (overlaps). Existing shifted-ADD browser tests: 4 passed, no skips, both sizes/themes including restore/reset. The initial directions-only browser run passed 22 cases; it predates this purpose paragraph and is not represented as final whole-lesson coverage. The full 188-file / 3,261-test local result also predates this added paragraph. Required full final-head CI and release verification are recorded in PR #114, with superseded-head evidence kept separate.
+
+Final independent reports append revision sections to /tmp/width-directions-reader.md and /tmp/width-directions-technical.md. Their earlier limitations remain, with unchanged challenge grading, keyboard/screen-reader and physical-device coverage not repeated. Final revision browser/source checks are bounded agent reviews, not human learning validation.

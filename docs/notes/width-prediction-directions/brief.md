@@ -17,3 +17,7 @@ Correct the opening of Writing w and x registers. The existing phrase “The fig
 Apply docs/style.md. A separate GPT-6.1 Sol Medium drafting pass works from checked facts. The managing editor checks the whole affected lesson and both closing passes. Keep canonical prose synchronised. Obtain independent learner High and technical Extra High reviews on the final built page, phone/desktop and actual light/dark themes. Check initial, submitted, stepped, reset and restored states. Reuse existing facts/canonical tests and prediction-gate browser coverage; do not add tests that merely mirror the sentence.
 
 This is a bounded wording correction, not evidence of learning effectiveness. Reviewers should distinguish new regressions from unrelated existing course findings and record missing coverage.
+
+## Added purpose for shifted ADD
+
+The user's next correction concerns the same lesson: the shifted-constant example explains how but not why. Add a purpose paragraph before the mechanics. Arm ADD (immediate) and docs/machine.md establish a 12-bit constant optionally scaled by 4096; the existing operand-additions listing/model tests pin the current example. The benefit is a larger encoded fixed amount in one ADD without first loading it into another register. Do not imply arbitrary constants fit, infer specific processor timing, or claim that an unshifted-looking source spelling for 4096 cannot assemble: GNU as can infer the shift. Existing range and shift restrictions remain visible. Obtain a separate draft and final independent learner/technical rechecks.

@@ -318,6 +318,8 @@ The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x0000000
 
 **Multiply the constant before adding**
 
+This form of `add` lets you add a larger constant in one instruction, without first loading it into another register.
+
 `lsl #12` multiplies the constant `#1` by 4096 before the addition. The instruction writes `w2` and leaves `w0` unchanged.
 
 In this form of `add`, the constant before `lsl` ranges from 0 to 4095. The only optional `lsl` amounts are 0 and 12; omitting `lsl` uses the constant unchanged. These options differ from those of `mov` and `movk`.
