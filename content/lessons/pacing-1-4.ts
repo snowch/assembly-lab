@@ -262,7 +262,7 @@ const constants = splitLesson(constantsAndWidths, [
     id: "register-widths",
     title: COPY.registerWidths.title,
     objectives: [...COPY.registerWidths.objectives],
-    introduces: [],
+    introduces: ["byte", "address"],
     sections: [
       section(constantsAndWidths, "failureExperiment"),
       section(constantsAndWidths, "explanation"),

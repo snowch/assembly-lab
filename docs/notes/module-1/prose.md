@@ -313,25 +313,31 @@ First, `mov x3, -1` sets all 64 bits to 1. Then `mov w3, -1` runs. Predict what 
 
 The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x00000000ffffffff`. Writing a `w` name always clears the upper 32 bits of the `x` register.
 
-## 7. Add a route leg
+## 7. Advance through logger pages
 
-**Add a route leg**
+**Advance through logger pages**
 
-Suppose a known route leg is 4096 metres long. Add it to the trip total: `trip_metres + 4096`.
+This vehicle logger groups its data into pages of 4096 bytes. A **byte** contains 8 bits; an **address** identifies a byte's location in memory. Adding 1 to an address gives the next byte's address.
 
-A compiler or assembly programmer can do this with one `add` instruction. Here, `lsl #12` turns the constant 1 into 4096.
+`x0` holds 65536, the address at the start of a page. Find the address **three pages ahead**, keeping the starting address in `x0`.
 
-Here, `w0` holds `trip_metres`; `add` writes the new total to `w2`.
+`#3` is the page count. `lsl #12` multiplies it by 4096, giving 12288 bytes. `add` adds that distance to `x0` and writes the new address to `x2`.
+
+`add x2, x0, #12288` encodes the same single instruction. The explicit `#3, lsl #12` keeps the page count visible.
+
+Press **Run the instruction** to follow the calculation. It computes an address without reading or writing stored data.
 
 *Closed note.*
 
 **Constant range and shift limits**
 
-In this form of `add`, the constant before `lsl` ranges from 0 to 4095. The only optional `lsl` amounts are 0 and 12; omitting `lsl` uses the constant unchanged. These options differ from those of `mov` and `movk`.
+ADD's immediate form holds a 12-bit constant, from 0 to 4095. When you write an explicit `lsl`, the constant before it must fit that range. The only shift amounts are 0 and 12. These options differ from those of `mov` and `movk`.
+
+Without an explicit `lsl`, the assembler can choose the shifted form for a larger plain constant, as it does for `#12288`. The plain constant must still fit one of ADD's two forms.
 
 See [Arm’s ADD (immediate) reference](https://developer.arm.com/documentation/ddi0602/2025-12/Base-Instructions/ADD--immediate---Add-immediate-value-).
 
-*One add instruction adds the route leg to the trip total.*
+*One add instruction finds the address three logger pages later.*
 
 ## 8. Four instructions
 

@@ -10,18 +10,24 @@ for (const theme of ["light", "dark"] as const) {
   for (const item of [
     {
       lesson: "constants-and-widths",
-      figure: "add-shifted-immediate",
-      input: "Constant 1",
+      figure: "logger-page-address",
+      destination: "x2",
+      source: "x0",
+      sourceValue: "65536",
+      input: "Constant 3",
       modifier: "lsl #12",
-      effective: "4096",
-      result: "w2 = 4103",
-      kept: "w0 keeps its value",
+      effective: "12288",
+      result: "x2 = 77824",
+      kept: "x0 keeps its value",
       link: "Arm’s ADD (immediate) reference",
       path: "ADD--immediate---Add-immediate-value-",
     },
     {
       lesson: "shifts",
       figure: "add-shifted-register",
+      destination: "w2",
+      source: "w0",
+      sourceValue: "12",
       input: "w1 = 7",
       modifier: "lsl #1",
       effective: "14",
@@ -67,14 +73,14 @@ for (const theme of ["light", "dark"] as const) {
         item.modifier,
         item.effective,
       ]);
-      await expect(preview).toContainText("w2 = ?");
+      await expect(preview).toContainText(`${item.destination} = ?`);
       await expect(figure).not.toContainText(item.result);
       await expect(page.locator(".al-locked")).toHaveCount(lockedBefore);
       await figure.getByRole("button", { name: "Run the instruction", exact: true }).click();
       await expect(figure.getByRole("status")).toContainText(item.result);
       await expect(figure.getByRole("status")).toContainText(item.kept);
-      await expect(figure.locator('[data-register="w0"] .al-dreg-value')).toHaveText(
-        item.lesson === "shifts" ? "12" : "7",
+      await expect(figure.locator(`[data-register="${item.source}"] .al-dreg-value`)).toHaveText(
+        item.sourceValue,
       );
       if (item.lesson === "shifts")
         await expect(figure.locator('[data-register="w1"] .al-dreg-value')).toHaveText("7");
@@ -83,7 +89,9 @@ for (const theme of ["light", "dark"] as const) {
       if (item.lesson === "constants-and-widths")
         await expect(note).toHaveJSProperty("open", false);
       await figure.getByRole("button", { name: "Start again", exact: true }).click();
-      await expect(figure.locator(".al-primitive-preview")).toContainText("w2 = ?");
+      await expect(figure.locator(".al-primitive-preview")).toContainText(
+        `${item.destination} = ?`,
+      );
       await expect(figure.getByRole("status")).toHaveCount(0);
       await expect(page.locator(".al-locked")).toHaveCount(lockedBefore);
       expect(await designProblems(page, isMobile)).toEqual([]);

@@ -487,8 +487,8 @@ describe("every number the lesson states", () => {
     4, 16384, 32768, 131072,
     // Seven, which mov w5, 7 puts in x5 (the tests above).
     7,
-    // A 16-bit half, a register's 32 bits and its 64.
-    16, 32, 64,
+    // A byte's 8 bits (AAPCS64 and memory.facts.test.ts), a 16-bit half, and register widths.
+    8, 16, 32, 64,
     // 65537, and the 1 of the hint that builds it, and 4294967295 (the same bits as -1).
     65537, 1, 4294967295,
     // mov w1, 5, and x1 at the end.
@@ -499,7 +499,8 @@ describe("every number the lesson states", () => {
     0,
     // ADD immediate's imm12 field and optional scaling, checked against Arm DDI0602;
     // operand-additions.facts.test.ts pins the shown computation and accepted forms.
-    4095, 4096, 12,
+    // Three logger pages form 12288 bytes; operand-additions.facts.test.ts pins the trace.
+    4095, 4096, 12, 12288,
   ]);
 
   // Reference issue dates identify documents; they are not numeric claims about the program.

@@ -9,5 +9,5 @@ export const SHIFTED_REGISTER_ADD = {
 
 export const SHIFTED_IMMEDIATE_ADD = {
   c: "",
-  listing: "add_scaled_constant:\n  add w2, w0, #1, lsl #12\n  ret",
+  listing: "add_scaled_constant:\n  add x2, x0, #3, lsl #12\n  ret",
 } as const;
