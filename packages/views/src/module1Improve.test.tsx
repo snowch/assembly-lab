@@ -581,6 +581,21 @@ describe("a w register as two halves of 16 bits", () => {
     expect(counts()).toEqual(["0 groups of 65536", "0 extra units"]);
     expect(amounts()).toEqual(["0", "0"]);
     expect(sum()).toBe("0 + 0 = 0");
+    const shownBits = () =>
+      [...container.querySelectorAll(".al-h16-numbered .al-bit")]
+        .map((b) => b.textContent)
+        .join("");
+    expect(shownBits()).toBe("0".repeat(32));
+    expect(container.querySelectorAll(".al-h16-byte")).toHaveLength(4);
+    expect([...container.querySelectorAll(".al-h16-bit-index")].map((b) => b.textContent)).toEqual(
+      Array.from({ length: 32 }, (_, i) => String(31 - i)),
+    );
+    expect(
+      [...container.querySelectorAll('.al-h16-bit[data-base="true"]')].map((b) =>
+        b.getAttribute("data-position"),
+      ),
+    ).toEqual(["16", "0"]);
+    expect(container.querySelector(".al-h16-detail")).toBeNull();
     expect(container.querySelector(".al-h16-contribution")?.closest("details")).toBeNull();
     await next(user);
     expect(counts()).toEqual(["0 groups of 65536", "3 extra units"]);
@@ -590,6 +605,7 @@ describe("a w register as two halves of 16 bits", () => {
     expect(counts()).toEqual(["2 groups of 65536", "3 extra units"]);
     expect(amounts()).toEqual(["131072", "3"]);
     expect(sum()).toBe("131072 + 3 = 131075");
+    expect(shownBits()).toBe("0000000000000010" + "0000000000000011");
     await next(user);
     expect(sum()).toBe("131072 + 3 = 131075");
     await user.click(screen.getByRole("button", { name: S.stepper.back }));
@@ -626,6 +642,11 @@ describe("a w register as two halves of 16 bits", () => {
     expect(container.querySelector(".al-h16-total code")).toHaveTextContent(
       "4294901760 + 65535 = 4294967295",
     );
+    expect(
+      [...container.querySelectorAll(".al-h16-numbered .al-bit")]
+        .map((b) => b.textContent)
+        .join(""),
+    ).toBe("1".repeat(32));
   });
 
   it("stays shut until the prediction it names is checked", () => {

@@ -35,7 +35,7 @@ export const LABELS = {
     serviceHalves: "Step through mov w0, 30000 and inspect w0 in two halves of 16 bits.",
     // Reviewed compact figure caption: constant-halves-overview notes.
     workedHalves:
-      "The upper half counts groups of 65536. The lower half adds extra units. Press Next to see what each half contributes to w0 and which half is written or kept.",
+      "All 32 bits of w0 are shown in two halves. The upper half starts at bit 16 and counts groups of 65536. The lower half adds extra units. Press Next to see what each half contributes to w0 and which half is written or kept.",
     // DRAFT
     solutionHalves:
       "Your solution to Build 1000000, one instruction at a time, with w0 in two halves of 16 bits.",

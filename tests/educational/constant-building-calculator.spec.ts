@@ -14,7 +14,12 @@ for (const theme of ["light", "dark"] as const) {
     await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
     await openLesson(page, "building-constants");
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-    await expect(page.getByText(/Doubling 1 sixteen times/)).toBeVisible();
+    await expect(
+      page.getByText(/The upper half starts at bit 16, so double 1 sixteen times:/),
+    ).toBeVisible();
+    await expect(page.locator("#ix-build-1000000 .figure-lead")).toContainText(
+      "the upper half counts whole groups of 65536",
+    );
     const exercise = page.locator('section.challenge[data-challenge="build-1000000"]');
     const calculator = exercise.locator(".al-calculator");
     const summary = calculator.locator("summary");

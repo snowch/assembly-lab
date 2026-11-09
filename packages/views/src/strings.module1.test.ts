@@ -24,7 +24,7 @@ describe("Module 1's added figure words", () => {
   const all = strings(MODULE1_STRINGS);
 
   it("are none of them empty, and have no em dash", () => {
-    expect(all.length).toBe(46);
+    expect(all.length).toBe(49);
     expect(all.filter(([, s]) => s.trim() === "").map(([p]) => p)).toEqual([]);
     expect(all.filter(([, s]) => s.includes("—")).map(([p]) => p)).toEqual([]);
   });
@@ -40,6 +40,9 @@ describe("Module 1's added figure words", () => {
       written,
       summaryKept,
       showBits,
+      upperBaseWorth,
+      lowerBaseWorth,
+      bitPattern,
       upperGroups,
       lowerUnits,
       contribution,
@@ -55,6 +58,9 @@ describe("Module 1's added figure words", () => {
         written,
         summaryKept,
         showBits,
+        upperBaseWorth,
+        lowerBaseWorth,
+        bitPattern,
         upperGroups,
         lowerUnits,
         contribution,
@@ -62,7 +68,7 @@ describe("Module 1's added figure words", () => {
         wholeEquation,
       }),
     ];
-    expect(reviewed).toHaveLength(24);
+    expect(reviewed).toHaveLength(27);
     expect(source).toContain("see the lesson review notes");
     expect(source.match(/^\s*\/\/ DRAFT$/gm) ?? []).toHaveLength(all.length - reviewed.length);
   });

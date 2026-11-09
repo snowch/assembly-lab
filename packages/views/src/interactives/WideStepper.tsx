@@ -19,6 +19,7 @@ import { useHandoffState } from "../update-handoff";
 //     which is then assembled with that challenge's gate and run; the figure stays shut until the
 //     saved work passes the challenge's tests, graded afresh. With halfOverview, the two halves
 //     are compact labelled blocks above the instructions; individual bits are optional detail.
+//     halfContributions makes all numbered bits and their decimal contributions primary.
 
 import { useMemo } from "react";
 import { z } from "zod";
@@ -53,7 +54,7 @@ const Props = z
     fromChallenge: z.string().optional(),
     /** In w16 mode, show two compact half blocks first, with individual bits in details. */
     halfOverview: z.boolean().default(false),
-    /** Explain each half's decimal contribution within the w16 overview. */
+    /** Show all numbered bits and each half's decimal contribution in the w16 overview. */
     halfContributions: z.boolean().default(false),
   })
   .refine((d) => d.program !== undefined || (d.mode === "w16" && d.fromChallenge !== undefined), {
@@ -183,12 +184,14 @@ function HalfOverview({
   digits,
   tag,
   showContribution = false,
+  bits,
 }: {
   name: string;
   which: "upper" | "lower";
   digits: string;
   tag: HalfTag | null;
   showContribution?: boolean;
+  bits: string;
 }) {
   const mark = tag === null ? "" : tag === "new" ? M1.halves.written : M1.halves.summaryKept;
   const count = parseInt(digits, 16);
@@ -200,6 +203,7 @@ function HalfOverview({
       aria-label={`${name}, 0x${digits}${mark ? `, ${mark}` : ""}`}
       data-half={which}
       data-tag={tag ?? "none"}
+      data-contributions={showContribution || undefined}
     >
       <span className="al-half-name">{name}</span>
       <span className="al-h16-position">
@@ -208,13 +212,40 @@ function HalfOverview({
       <code className="al-h16-value">0x{digits}</code>
       <span className="al-h16-mark">{mark || "\u00a0"}</span>
       {showContribution && (
-        <div className="al-h16-contribution">
-          <span className="al-h16-count">
-            {which === "upper" ? M1.halves.upperGroups(count) : M1.halves.lowerUnits(count)}
+        <>
+          <div className="al-h16-numbered" role="img" aria-label={M1.halves.bitPattern(bits)}>
+            {[0, 8].map((start) => (
+              <span className="al-h16-byte" aria-hidden="true" key={start}>
+                {[...bits.slice(start, start + 8)].map((bit, i) => {
+                  const position = (which === "upper" ? 31 : 15) - start - i;
+                  return (
+                    <span
+                      className="al-h16-bit"
+                      data-position={position}
+                      data-base={position === (which === "upper" ? 16 : 0)}
+                      key={position}
+                    >
+                      <code className="al-h16-bit-index">{position}</code>
+                      <code className="al-bit" data-on={bit === "1"}>
+                        {bit}
+                      </code>
+                    </span>
+                  );
+                })}
+              </span>
+            ))}
+          </div>
+          <span className="al-h16-base-worth">
+            {which === "upper" ? M1.halves.upperBaseWorth : M1.halves.lowerBaseWorth}
           </span>
-          <span>{M1.halves.contribution}</span>
-          <code className="al-h16-amount">{contribution}</code>
-        </div>
+          <div className="al-h16-contribution">
+            <span className="al-h16-count">
+              {which === "upper" ? M1.halves.upperGroups(count) : M1.halves.lowerUnits(count)}
+            </span>
+            <span>{M1.halves.contribution}</span>
+            <code className="al-h16-amount">{contribution}</code>
+          </div>
+        </>
       )}
     </div>
   );
@@ -315,13 +346,17 @@ function Stepping({ data, trace }: { data: Data; trace: Trace }) {
             {wValue(view.state, n)}
           </span>
           {data.halfOverview ? (
-            <div className="al-h16-overview">
+            <div
+              className="al-h16-overview"
+              data-contributions={data.halfContributions || undefined}
+            >
               <HalfOverview
                 name={M1.register.upperHalf}
                 which="upper"
                 digits={h.upper}
                 tag={h.tag?.upper ?? null}
                 showContribution={data.halfContributions}
+                bits={h.bits.slice(0, 16)}
               />
               <HalfOverview
                 name={M1.register.lowerHalf}
@@ -329,6 +364,7 @@ function Stepping({ data, trace }: { data: Data; trace: Trace }) {
                 digits={h.lower}
                 tag={h.tag?.lower ?? null}
                 showContribution={data.halfContributions}
+                bits={h.bits.slice(16)}
               />
             </div>
           ) : (
@@ -360,14 +396,14 @@ function Stepping({ data, trace }: { data: Data; trace: Trace }) {
         {listing}
         {controls}
         {status}
-        {data.halfOverview ? (
-          <details className="al-h16-detail">
-            <summary>{M1.halves.showBits}</summary>
-            {pair}
-          </details>
-        ) : (
-          register
-        )}
+        {data.halfOverview
+          ? !data.halfContributions && (
+              <details className="al-h16-detail">
+                <summary>{M1.halves.showBits}</summary>
+                {pair}
+              </details>
+            )
+          : register}
       </div>
     );
   }

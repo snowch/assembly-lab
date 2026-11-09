@@ -79,6 +79,9 @@ export const MODULE1_STRINGS = {
     upperGroups: (count: number) => `${count} ${count === 1 ? "group" : "groups"} of 65536`,
     lowerUnits: (count: number) => `${count} extra ${count === 1 ? "unit" : "units"}`,
     contribution: "Contributes",
+    upperBaseWorth: "Bit 16 is worth 65536",
+    lowerBaseWorth: "Bit 0 is worth 1",
+    bitPattern: (bits: string) => `Bit pattern: ${bits}`,
     wholeValue: (name: string) => `Whole value of ${name}`,
     wholeEquation: (upper: number, lower: number, whole: number) =>
       `${upper} + ${lower} = ${whole}`,

@@ -27,3 +27,23 @@ Separately drafted from the checked visual brief. The editor shortened the share
   }
 }
 ```
+
+## Visible-bit refinement
+
+All 32 bits are now primary; the worked figure no longer needs its duplicate bit disclosure. Default siblings retain their existing disclosures.
+
+```json
+{
+  "strings": {
+    "upperBaseWorth": "Bit 16 is worth 65536",
+    "lowerBaseWorth": "Bit 0 is worth 1"
+  },
+  "templates": {
+    "bitPattern": "Bit pattern: {bits}"
+  },
+  "caption": {
+    "old": "The upper half counts groups of 65536. The lower half adds extra units. Press Next to see what each half contributes to w0 and which half is written or kept.",
+    "new": "All 32 bits of w0 are shown in two halves. The upper half starts at bit 16 and counts groups of 65536. The lower half adds extra units. Press Next to see what each half contributes to w0 and which half is written or kept."
+  }
+}
+```
