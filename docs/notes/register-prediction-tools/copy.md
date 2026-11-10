@@ -1,5 +1,7 @@
 # Current optional prediction tools copy
 
+Historical aid layout/caption for PR #120. Current external-aid copy: ../programmer-calculator-link/copy.md. Working-notes and decimal/hex task copy remain in use.
+
 {
   "status": "Current reviewed copy; independent review evidence is in review.md.",
   "scope": "Only the register prediction exercise opts into this copy. Preserve all existing calculator help, result labels, errors and default division behaviour in earlier integrations.",
