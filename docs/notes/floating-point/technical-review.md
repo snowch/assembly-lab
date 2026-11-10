@@ -261,6 +261,17 @@ nine exact-bit QEMU cases and FPCR=0. Also ran
 exit 0, four files and 157 tests passed. No skips or failures in that focused run.
 Full-suite results belong to the managing session's validation record, not this review.
 
+Separately assembled a scratch A64 harness for the fresh conversion/copy input, set FPCR
+to zero, ran FCVTZS and FMOV against the same s-register bits under cortex-a53 QEMU, and
+compared both raw returned patterns with the corrected feedback. Both exact-bit checks
+passed. This independent two-result check is additional to the nine retained recording
+cases, not a claim that the retained checker contains extra cases. Reproducible scratch
+source: `/workspace/scratch/fp-review/fresh-conversion.s`.
+
+Finally read the completed learning-design brief and added Module D sources entry after
+the independent pass. Their technical boundaries and distinction between designed
+evidence, agent review and novice observation agree with the implementation and this review.
+
 Not established here: physical Arm hardware behaviour, other FPCR modes, NaN payload
 propagation, traps/exception flags, screen-reader output, non-Chromium engines, touch
 accuracy with a person, or novice learning. These remain outside the stated evidence.
