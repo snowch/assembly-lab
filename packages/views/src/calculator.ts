@@ -10,12 +10,15 @@ const MAX_MAGNITUDE = (1n << 16384n) - 1n;
 export type DivisionMode = "exact" | "whole";
 
 /** Bounded whole-number scratch arithmetic; exact division by default. No eval or exercise state. */
-export function calculate(source: string, options: { division?: DivisionMode } = {}): Calculation {
+export function calculate(
+  source: string,
+  options: { division?: DivisionMode; hexadecimal?: boolean } = {},
+): Calculation {
   if (!source.trim()) return { error: "empty" };
   // Bound tokens, nesting and BigInt work before parsing untrusted input.
   if (source.length > 200) return { error: "large" };
   const input = source.replaceAll("−", "-").replaceAll("×", "*").replaceAll("÷", "/");
-  const tokens = input.match(/\d[\d,]*|[()+*/^\-]|[^\s]/g) ?? [];
+  const tokens = input.match(/0[xX][0-9a-fA-F]+|\d[\d,]*|[()+*/^\-]|[^\s]/g) ?? [];
   let index = 0;
   const fail = (error: Exclude<Calculation, { value: string }>["error"]): never => {
     throw error;
@@ -44,6 +47,7 @@ export function calculate(source: string, options: { division?: DivisionMode } =
       if (tokens[index++] !== ")") fail("invalid");
       return value;
     }
+    if (options.hexadecimal && token && /^0[xX][0-9a-fA-F]+$/.test(token)) return BigInt(token);
     if (!token || !/^(?:\d+|\d{1,3}(?:,\d{3})+)$/.test(token)) return fail("invalid");
     return BigInt(token.replaceAll(",", ""));
   };

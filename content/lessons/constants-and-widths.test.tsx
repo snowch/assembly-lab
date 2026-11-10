@@ -172,16 +172,25 @@ describe("the challenges", () => {
     expect(wrapped.failures.map((f) => f.label)).toEqual(["w2 at the end"]);
   });
 
-  it("predict-two-registers: a hexadecimal answer is refused as a number not written in decimal, not as 'not a whole number'", () => {
+  it("predict-two-registers: accepts decimal, explicit hexadecimal and mixed notation exactly", () => {
     const c = challenge("predict-two-registers");
-    const verdict = grade(c, { answers: { x1: "0x5", w2: "1000000" } });
-    expect(verdict.passed).toBe(false);
-    expect(verdict.blocked).toBe(VIEW_STRINGS.grader.notWhole("x1 at the end"));
-    expect(verdict.blocked).toBe(
-      "The answer for x1 at the end must be a whole number written in decimal.",
+    for (const answers of [
+      { x1: "0x5", w2: "1000000" },
+      { x1: "5", w2: "0x000f4240" },
+      { x1: "0X0005", w2: "0XF4240" },
+    ])
+      expect(grade(c, { answers }).passed).toBe(true);
+    expect(
+      grade(c, { answers: { x1: "0xffffffff00000005", w2: "0xf4240" } }).failures.map(
+        (f) => f.label,
+      ),
+    ).toEqual(["x1 at the end"]);
+    expect(
+      grade(c, { answers: { x1: "0x5", w2: "0x1000f4240" } }).failures.map((f) => f.label),
+    ).toEqual(["w2 at the end"]);
+    expect(grade(c, { answers: { x1: "0xG", w2: "1000000" } }).blocked).toContain(
+      "decimal or hexadecimal beginning with 0x",
     );
-    // Hexadecimal is still not accepted.
-    expect(grade(c, { answers: { x1: "0x5", w2: "0x000f4240" } }).passed).toBe(false);
   });
 
   it("predict-two-registers: asks for both numbers before it grades anything", () => {

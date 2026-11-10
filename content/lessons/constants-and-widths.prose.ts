@@ -94,7 +94,8 @@ export const PROSE = {
   challenge:
     "Follow the four instructions in the listing. Track the two register values separately.",
 
-  predictTask: "Without running them, give `x1` and `w2` after all four, as decimal numbers.",
+  predictTask:
+    "Without running the instructions, give `x1` and `w2` after all four. Use decimal numbers or hexadecimal numbers beginning with `0x`.",
   predictHints: [
     "Writing `w1` clears the upper 32 bits of `x1`.",
     "`mov w1, 5` does not keep the 1s that `mov x1, -1` set in the upper 32 bits.",

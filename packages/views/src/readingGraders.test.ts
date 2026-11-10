@@ -212,3 +212,28 @@ describe("registers-after", () => {
     });
   });
 });
+
+it("only opts register prediction into hexadecimal, keeping exact 64-bit comparisons", () => {
+  expect(grade(registers, { answers: { x1: "0x5", w2: "1000000" } }).blocked).toBe(
+    S.grader.notWhole("x1 at the end"),
+  );
+  const wide = {
+    ...registers,
+    initial: {
+      data: {
+        ...registers.initial.data,
+        numberFormat: "decimal-or-hex",
+        program: { c: "", listing: "mov x1, 1\nmovk x1, 32, lsl 48" },
+      },
+    },
+    tests: {
+      grader: "registers-after",
+      kind: "answers" as const,
+      cases: [{ label: "x1", given: {}, expect: { x1: "x1" } }],
+    },
+  };
+  expect(grade(wide, { answers: { x1: "0x20000000000001" } }).passed).toBe(true);
+  expect(grade(wide, { answers: { x1: "9007199254740993" } }).passed).toBe(true);
+  expect(grade(wide, { answers: { x1: "0x20000000000000" } }).passed).toBe(false);
+  expect(grade(wide, { answers: { x1: "0x10020000000000001" } }).passed).toBe(false);
+});

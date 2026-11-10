@@ -35,9 +35,11 @@ import {
   readingsOfValue,
   shown,
   wholeNumber,
+  wholeNumberOrHex,
 } from "./readings";
 import { VIEW_STRINGS as S, plain } from "./strings";
 import { traceText } from "./traceText";
+import { PREDICTION_TOOLS } from "./strings.prediction-tools";
 
 export const BIT_READINGS = "bit-readings";
 export const PATTERN_READINGS = "pattern-readings";
@@ -62,12 +64,14 @@ function blockedBy(
   challenge: Challenge,
   answers: Record<string, string>,
   ids: readonly string[],
+  parse = wholeNumber,
+  invalid = S.grader.notWhole,
 ): string | undefined {
   const empty = ids.filter((id) => (answers[id] ?? "").trim() === "");
   if (empty.length > 0)
     return S.grader.unanswered(fieldList(empty.map((id) => nameOf(challenge, id))), empty.length);
-  const bad = ids.find((id) => wholeNumber(answers[id]) === null);
-  if (bad !== undefined) return S.grader.notWhole(nameOf(challenge, bad));
+  const bad = ids.find((id) => parse(answers[id]) === null);
+  if (bad !== undefined) return invalid(nameOf(challenge, bad));
   return undefined;
 }
 
@@ -149,7 +153,15 @@ export function gradeRegistersAfter(challenge: Challenge, artifact: Artifact): V
   const total = cases.length;
   const answers = answersOf(challenge, artifact);
   const fields = [...new Set(cases.flatMap((c) => Object.keys(c.expect)))];
-  const blocked = blockedBy(challenge, answers, fields);
+  const hexadecimal = challenge.initial.data?.["numberFormat"] === "decimal-or-hex";
+  const parse = hexadecimal ? wholeNumberOrHex : wholeNumber;
+  const blocked = blockedBy(
+    challenge,
+    answers,
+    fields,
+    parse,
+    hexadecimal ? PREDICTION_TOOLS.invalidNumber : S.grader.notWhole,
+  );
   if (blocked !== undefined) return { passed: false, total, failures: [], blocked };
   const program = RecordedSchema.safeParse(challenge.initial.data?.["program"]);
   if (!program.success) throw new Error(`${challenge.id}: ${S.grader.noProgram}`);
@@ -161,7 +173,7 @@ export function gradeRegistersAfter(challenge: Challenge, artifact: Artifact): V
       const { n, wide } = registerNamed(String(register));
       const bits = wide ? 64 : 32;
       const held = BigInt.asUintN(bits, state.x[n] ?? 0n);
-      const given = wholeNumber(answers[field]);
+      const given = parse(answers[field]);
       const right = given !== null && (given === held || given === BigInt.asIntN(bits, held));
       if (!right) failures.push(failure(index, c, S.readings.registerWrong(String(register))));
     }

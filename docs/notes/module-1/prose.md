@@ -345,7 +345,7 @@ Follow the four instructions in the listing. Track the two register values separ
 
 **Predict two registers**
 
-Without running them, give `x1` and `w2` after all four, as decimal numbers.
+Without running the instructions, give `x1` and `w2` after all four. Use decimal numbers or hexadecimal numbers beginning with `0x`.
 
 Field labels: "`x1` at the end"; "`w2` at the end".
 

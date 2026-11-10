@@ -47,3 +47,18 @@
 .al-calculator [role="status"] code {
   overflow-wrap: anywhere;
 }
+
+.al-working-notes textarea {
+  display: block;
+  width: 100%;
+  min-height: 8rem;
+  max-width: 100%;
+  resize: vertical;
+  margin-block: var(--space-2);
+  padding: var(--space-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  color: var(--fg);
+  font: inherit;
+}

@@ -88,3 +88,31 @@ it("preserves validation and exact default division alongside the opt-in mode", 
   expect(calculate("2^-1", { division: "whole" })).toEqual({ error: "negativePower" });
   expect(calculate("2^4097", { division: "whole" })).toEqual({ error: "large" });
 });
+
+it.each([
+  ["0xff + 1", "256"],
+  ["0X1000000000000000 + 3", "1152921504606846979"],
+  ["0xffffffffffffffff", "18446744073709551615"],
+  ["0xffffffffffffffff + 1", "18446744073709551616"],
+  ["2^64 - 1", "18446744073709551615"],
+  ["-0x10 + 3", "-13"],
+  ["0x10^2", "256"],
+  ["0x20 / 0x8", "4"],
+])(
+  "evaluates optional exact hex scratch arithmetic without register wrapping: %s",
+  (source, value) => {
+    expect(calculate(source, { hexadecimal: true })).toEqual({ value });
+  },
+);
+it.each(["0x", "0xG", "0xff,ff", "1.5", "0x1p3", "0xff 1", "0x10junk", "0x1.2"])(
+  "rejects malformed integer scratch input: %s",
+  (source) => {
+    expect(calculate(source, { hexadecimal: true })).toEqual({ error: "invalid" });
+  },
+);
+it("retains exact division and power/error limits in hex mode", () => {
+  expect(calculate("0x5/2", { hexadecimal: true })).toEqual({ error: "fraction" });
+  expect(calculate("0x5/0", { hexadecimal: true })).toEqual({ error: "zeroDivision" });
+  expect(calculate("2^-1", { hexadecimal: true })).toEqual({ error: "negativePower" });
+  expect(calculate("2^4097", { hexadecimal: true })).toEqual({ error: "large" });
+});

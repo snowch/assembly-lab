@@ -614,18 +614,13 @@ test.describe("the answers challenge", () => {
     await expect(c.locator(".verdict.blocked")).toContainText("w2 at the end");
   });
 
-  test("refuses a hexadecimal answer by saying the answer is written in decimal", async ({
-    page,
-  }) => {
+  test("accepts mixed decimal and hexadecimal register answers", async ({ page }) => {
     await openLesson(page, "register-widths");
     await fill(page, "0x5", "1000000");
     const c = challenge(page, TWO);
     await press(page, runTests(c));
-    await expect(status(c)).toHaveText(blocked);
-    await expect(c.locator(".verdict.blocked")).toHaveText(
-      "The answer for x1 at the end must be a whole number written in decimal.",
-    );
-    await expect(c.locator(".challenge-complete")).toHaveCount(0);
+    await expect(status(c)).toHaveText(passing(2));
+    await expect(c.locator(".challenge-complete")).toHaveCount(1);
   });
 
   test("rejects x1 as it would be if writing w1 kept the upper half, a number of 64 bits", async ({
