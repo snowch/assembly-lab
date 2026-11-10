@@ -275,3 +275,43 @@ evidence, agent review and novice observation agree with the implementation and 
 Not established here: physical Arm hardware behaviour, other FPCR modes, NaN payload
 propagation, traps/exception flags, screen-reader output, non-Chromium engines, touch
 accuracy with a person, or novice learning. These remain outside the stated evidence.
+
+## Post-CI navigation-test correction
+
+The managing session reported that required core CI run
+[42864330737](https://github.com/snowch/assembly-lab/actions/runs/42864330737)
+for `e528d7ed7ec425c462d559828deccdeb4b16efd5` ended **failure**: 3,453 unit tests
+passed; 1,469 browser tests passed, 21 skipped and two failed. Both failures were the
+desktop/phone copies of the shell's terminal-lesson navigation test. The stale assertion
+expected `tail.at(-3)` to be the final A32 lesson; adding four D lessons moved that index
+into Module D. The full CI outcome remains failed even if a focused corrected rerun passes.
+All new floating-point browser tests passed in that CI run, according to the same report.
+
+Independently reviewed the subsequent minimal diff in `tests/educational/shell.spec.ts`.
+It changes only the explanatory comment and terminal-course expectations. An exact
+seven-ID suffix retains the old A32/B/C assertions and adds all four D lessons in order;
+the expected module list adds exactly four entries of 17. The entire browser Next
+traversal, final missing-Next assertion, final Previous label and reverse click remain
+unchanged. The traversal now reaches D4 before checking the course endpoint. This
+preserves the meaningful original assertions rather than deleting the stale checks.
+No learner prose, numeric implementation or product build changed for this correction.
+
+Independent focused verification uses a separate server on port 4265 and output directory:
+
+```sh
+AL_PORT=4265 npx playwright test tests/educational/shell.spec.ts \
+  --grep 'each lesson foot names the lesson before it and the one after, in course order' \
+  --output /tmp/fp-tail-review-results
+```
+
+The command completed with **exit 0: two passed, no failures or skips**. Desktop took
+59.5s and phone 5.2s; total command time was 1.5 minutes under concurrent local checks.
+The desktop result has little margin against the existing 60s test timeout, which was
+reported to the managing session. This reviewer changed neither timeout nor product
+behaviour. Complete output is retained at `/tmp/fp-tail-review.log`, with isolated
+artifacts under `/tmp/fp-tail-review-results`. `git diff --check` also passed.
+
+The corrected assertions and focused browser result are independently accepted. The
+managing session is responsible for the requested new full check and later CI result;
+neither is implied by this two-test pass. The earlier final content/browser review remains
+applicable because this correction changes only the test's expectations and its comment.
