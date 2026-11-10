@@ -54,9 +54,12 @@ import { StackStepper } from "./StackStepper";
 import { RegisterViews } from "./RegisterViews";
 import { ReturningToCaller } from "./ReturningToCaller";
 import { ProgrammerCalculatorFigure } from "./ProgrammerCalculatorFigure";
+import { FloatingPoint, FloatingPointCheck } from "./FloatingPoint";
 import { PrimitiveOperation } from "./PrimitiveOperation";
 
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
+  "floating-point": FloatingPoint,
+  "floating-point-check": FloatingPointCheck,
   "programmer-calculator": ProgrammerCalculatorFigure,
   "primitive-operation": PrimitiveOperation,
   "returning-to-caller": ReturningToCaller,

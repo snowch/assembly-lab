@@ -65,5 +65,8 @@ jobs:
       - name: Assembly boot, startup, debugger stops and native challenges
         run: python3 scripts/native/check.py
 
+      - name: Recorded GCC floating-point functions against GNU as and QEMU
+        run: python3 scripts/floating-point/check.py
+
       - name: Raspberry Pi 5 assembly and raw-image layout (no physical-board claim)
         run: python3 scripts/pi5/check.py

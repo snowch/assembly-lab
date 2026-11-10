@@ -1,0 +1,211 @@
+/* Copyright © 2026 Christopher Snow */
+
+.al-fp-explorer,
+.al-fp-native,
+.al-fp-check {
+  container-type: inline-size;
+}
+.al-fp-inputs {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.al-fp-inputs input {
+  min-width: 0;
+  width: 12rem;
+  max-width: 100%;
+}
+.al-fp-values {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1rem;
+}
+.al-fp-values dd,
+.al-fp-fields dd {
+  margin: 0.35rem 0;
+}
+.al-fp-values dd:first-of-type {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  overflow-wrap: anywhere;
+}
+.al-fp-values dt {
+  color: var(--fg-muted);
+}
+.al-fp-bit-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 0.2rem;
+  margin-block: 1rem;
+}
+.al-fp-bit {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  display: flex;
+  min-width: 0;
+  min-height: 40px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.al-fp-bit small {
+  font-size: 11px;
+  line-height: 12px;
+}
+.al-fp-bit span {
+  width: 26px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-size: 16px;
+  line-height: 1;
+  font-family: var(--font-mono);
+  background: var(--bg-sunken);
+}
+.al-fp-bit[aria-pressed="true"] span {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+.al-fp-bit.al-fp-sign span {
+  border-bottom-width: 4px;
+}
+.al-fp-bit.al-fp-exponent span {
+  border-bottom-style: double;
+  border-bottom-width: 4px;
+}
+.al-fp-fields {
+  display: grid;
+  gap: 0.75rem;
+}
+.al-fp-fields > div {
+  padding: 0.75rem;
+  border-inline-start: 3px solid var(--border);
+  background: var(--bg-sunken);
+  min-width: 0;
+}
+.al-fp-fields > .al-fp-sign {
+  border-inline-start-color: var(--accent);
+}
+.al-fp-fields > .al-fp-exponent {
+  border-inline-start-style: double;
+  border-inline-start-width: 5px;
+}
+.al-fp-fields dt {
+  font-weight: 700;
+}
+.al-fp-long,
+.al-fp-formula {
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+}
+.al-fp-calculation {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  margin-block: 1rem;
+}
+.al-fp-calculation dl {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.al-fp-calculation dd {
+  margin: 0.3rem 0;
+}
+.al-fp-rounding {
+  margin-block: 1.5rem;
+  border-block-start: 1px solid var(--border);
+}
+.al-fp-native > select {
+  display: block;
+  max-width: 100%;
+  margin-block: 0.6rem 1rem;
+}
+.al-fp-recorded-result {
+  margin-block: 1rem;
+  padding: 1rem;
+  border-inline-start: 4px solid var(--accent);
+  background: var(--bg-sunken);
+}
+.al-fp-check {
+  display: grid;
+  gap: 1rem;
+}
+.al-fp-check input,
+.al-fp-check select {
+  width: min(100%, 25rem);
+}
+.al-fp-check button {
+  justify-self: start;
+}
+.al-fp-check output {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+@container (min-width: 520px) {
+  .al-fp-bit-grid {
+    grid-template-columns: repeat(16, minmax(0, 1fr));
+  }
+}
+@container (min-width: 1000px) {
+  .al-fp-bit-grid {
+    grid-template-columns: repeat(32, minmax(0, 1fr));
+  }
+}
+@container (min-width: 700px) {
+  .al-fp-fields {
+    grid-template-columns: 1fr 1.5fr 2fr;
+  }
+}
+
+.al-fp-explorer :is(button, input, select),
+.al-fp-native :is(button, input, select),
+.al-fp-check :is(button, input, select) {
+  min-height: 40px;
+  max-width: 100%;
+  color: var(--fg);
+  font: inherit;
+}
+.al-fp-explorer :is(input, select),
+.al-fp-native select,
+.al-fp-check :is(input, select) {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  min-width: 0;
+}
+.al-fp-explorer :is(button, input, select):focus-visible,
+.al-fp-native :is(button, input, select):focus-visible,
+.al-fp-check :is(button, input, select):focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.al-fp-explorer button:not(.al-fp-bit),
+.al-fp-native button,
+.al-fp-check button {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+}
+.al-fp-explorer button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.al-fp-scroll-hint {
+  color: var(--fg-muted);
+  font-size: 0.875rem;
+}
+@container (min-width: 700px) {
+  .al-fp-scroll-hint {
+    display: none;
+  }
+}

@@ -1,0 +1,344 @@
+{
+  "compiler": {
+    "id": "carm64g1610",
+    "name": "ARM64 GCC 16.1.0",
+    "lang": "c",
+    "compilerType": "",
+    "semver": "16.1.0",
+    "instructionSet": "aarch64"
+  },
+  "sources": {
+    "route_distance": {
+      "sha256": "1e4e67408a5f1764acd59db949390ef9c25290fda9c9c848c405aeea454e1c92",
+      "requestSha256": "c2bc349e0af4f288f5ef4f9c5f93682efce906efcc458ea5507d77f592d8c47a",
+      "responseSha256": "3420c9ee4ebee8d5cf016776ea838f89188c7c61dbda62af2939f839107ddc8e",
+      "assembly": "route_distance:\n        fadd    s0, s0, s1\n        ret\n"
+    },
+    "route_distance64": {
+      "sha256": "12ce1beb4ae2b2f451f9352921945ff7bf177843a0be0bded0283565217b863b",
+      "requestSha256": "ac0f4286b1db4694f5dc39bfb1315728791089f0ea44e2988cd22b545784ea0f",
+      "responseSha256": "0f79008138178061b4041502299fe20b900a51e97be218eecf5bb57cd58b3110",
+      "assembly": "route_distance64:\n        fadd    d0, d0, d1\n        ret\n"
+    },
+    "fuel_cost": {
+      "sha256": "bdc09b9e4ef9f24e942b0a784ad9a997be32a5ef18f6511cf24969b3a1c90853",
+      "requestSha256": "dce8a9bcd80b735cc13b03b24482fd2644f9b068491ad59009b2cc8f504767ed",
+      "responseSha256": "a4b9962eeba5a529d97d3c84dc99cdf3d49ee60284e0302c4eb0a3af0b7d6d0f",
+      "assembly": "fuel_cost:\n        fmul    s0, s0, s1\n        ret\n"
+    },
+    "distance_as_float": {
+      "sha256": "d1610dbe38db8bc7a6b032e14b1118fc4298f0688328f684f1a6f1ea3104064e",
+      "requestSha256": "fa19f28bf85e645350e6808535661b448c123a443e04794dbe02413cfb3de39a",
+      "responseSha256": "131ead1ac10bf24cf490bd8140afc9bed36b07721b0e0b1e9d7d7069a7e9841e",
+      "assembly": "distance_as_float:\n        scvtf   s0, w0\n        ret\n"
+    },
+    "whole_distance": {
+      "sha256": "4467779bbdb29a86c5393b1df67f05a64b258b130c44b17b323ef19965a2695d",
+      "requestSha256": "983f350a29d5ddb55348c4dc446f187b18545100ce8eaf78c0f2a48576d6e142",
+      "responseSha256": "b49dfaa8adcb9f4d7bcdcea300e1728f863e4c0bf21c61b4c90cac297177b490",
+      "assembly": "whole_distance:\n        fcvtzs  w0, s0\n        ret\n"
+    },
+    "widen_distance": {
+      "sha256": "b78cce33c252a65bab3fc1cf3e72f845b780054a3a7457c0c6ceb4abcb7e2d6a",
+      "requestSha256": "3f88341f804ac31e1f2139b07679d0bd988ad83e5888211489734fa89648f72a",
+      "responseSha256": "57c63879e62db45e594318cb8e5dbb1c9c841b63e63e6c61bc24901b86065774",
+      "assembly": "widen_distance:\n        fcvt    d0, s0\n        ret\n"
+    },
+    "float_pattern": {
+      "sha256": "df03677e7162db85e82ffec5165d99ea71b6c5ab6234c2bbda3fe776e4b2440e",
+      "requestSha256": "f771a235a9fc53828774fdab4ee80f49aa833c18d9c7683de7c8f98a256365a3",
+      "responseSha256": "71b67e17f7e6da353b6b8b0ed0b217fe223c7ed9a9b77bf7eae370a486c4546f",
+      "assembly": "float_pattern:\n        fmov    w0, s0\n        ret\n"
+    }
+  },
+  "harnessSha256": "790b4df07339e7d1d8c31c4c7faeae6cf306c5f0cfdc28de8492c5c0a6eea88a",
+  "outputLittleEndianHex": "000000000000000000002c410000804b0000001000007041000096410000804b09000000f7ffffff0000004033b3284000001841",
+  "cases": [
+    {
+      "id": "add32-exact",
+      "operation": "add",
+      "resultType": "float",
+      "inputs": [
+        {
+          "name": "distance",
+          "width": 32,
+          "hex": "0x41180000"
+        },
+        {
+          "name": "detour",
+          "width": 32,
+          "hex": "0x3fa00000"
+        }
+      ],
+      "result": {
+        "width": 32,
+        "hex": "0x412c0000"
+      },
+      "program": {
+        "c": "float route_distance(float distance, float detour)\n{\n    return distance + detour;\n}",
+        "listing": "route_distance:\n        fadd    s0, s0, s1 C5\n        ret C5",
+        "sourceLines": [[3], [3]]
+      },
+      "machine": {
+        "architecture": "aarch64",
+        "compilerId": "carm64g1610",
+        "compilerVersion": "16.1.0",
+        "options": "-O1",
+        "fpcr": "0x00000000"
+      }
+    },
+    {
+      "id": "add32-rounding",
+      "operation": "add",
+      "resultType": "float",
+      "inputs": [
+        {
+          "name": "distance",
+          "width": 32,
+          "hex": "0x4b800000"
+        },
+        {
+          "name": "detour",
+          "width": 32,
+          "hex": "0x3f800000"
+        }
+      ],
+      "result": {
+        "width": 32,
+        "hex": "0x4b800000"
+      },
+      "program": {
+        "c": "float route_distance(float distance, float detour)\n{\n    return distance + detour;\n}",
+        "listing": "route_distance:\n        fadd    s0, s0, s1 C5\n        ret C5",
+        "sourceLines": [[3], [3]]
+      },
+      "machine": {
+        "architecture": "aarch64",
+        "compilerId": "carm64g1610",
+        "compilerVersion": "16.1.0",
+        "options": "-O1",
+        "fpcr": "0x00000000"
+      }
+    },
+    {
+      "id": "add64-exact",
+      "operation": "add",
+      "resultType": "float",
+      "inputs": [
+        {
+          "name": "distance",
+          "width": 64,
+          "hex": "0x4170000000000000"
+        },
+        {
+          "name": "detour",
+          "width": 64,
+          "hex": "0x3ff0000000000000"
+        }
+      ],
+      "result": {
+        "width": 64,
+        "hex": "0x4170000010000000"
+      },
+      "program": {
+        "c": "double route_distance64(double distance, double detour)\n{\n    return distance + detour;\n}",
+        "listing": "route_distance64:\n        fadd    d0, d0, d1 C5\n        ret C5",
+        "sourceLines": [[3], [3]]
+      },
+      "machine": {
+        "architecture": "aarch64",
+        "compilerId": "carm64g1610",
+        "compilerVersion": "16.1.0",
+        "options": "-O1",
+        "fpcr": "0x00000000"
+      }
+    },
+    {
+      "id": "mul32-exact",
+      "operation": "multiply",
+      "resultType": "float",
+      "inputs": [
+        {
+          "name": "litres",
+          "width": 32,
+          "hex": "0x41480000"
+        },
+        {
+          "name": "price",
+          "width": 32,
+          "hex": "0x3fc00000"
+        }
+      ],
+      "result": {
+        "width": 32,
+        "hex": "0x41960000"
+      },
+      "program": {
+        "c": "float fuel_cost(float litres, float price)\n{\n    return litres * price;\n}",
+        "listing": "fuel_cost:\n        fmul    s0, s0, s1 C5\n        ret C5",
+        "sourceLines": [[3], [3]]
+      },
+      "machine": {
+        "architecture": "aarch64",
+        "compilerId": "carm64g1610",
+        "compilerVersion": "16.1.0",
+        "options": "-O1",
+        "fpcr": "0x00000000"
+      }
+    },
+    {
+      "id": "int32-to-float",
+      "operation": "int-to-float",
+      "resultType": "float",
+      "inputs": [
+        {
+          "name": "distance",
+          "width": 32,
+          "hex": "0x01000001"
+        }
+      ],
+      "result": {
+        "width": 32,
+        "hex": "0x4b800000"
+      },
+      "program": {
+        "c": "float distance_as_float(int distance)\n{\n    return (float)distance;\n}",
+        "listing": "distance_as_float:\n        scvtf   s0, w0 C5\n        ret C5",
+        "sourceLines": [[3], [3]]
+      },
+      "machine": {
+        "architecture": "aarch64",
+        "compilerId": "carm64g1610",
+        "compilerVersion": "16.1.0",
+        "options": "-O1",
+        "fpcr": "0x00000000"
+      }
+    },
+    {
+      "id": "float-to-int-positive",
+      "operation": "float-to-int",
+      "resultType": "int",
+      "inputs": [
+        {
+          "name": "distance",
+          "width": 32,
+          "hex": "0x411c0000"
+        }
+      ],
+      "result": {
+        "width": 32,
+        "hex": "0x00000009"
+      },
+      "program": {
+        "c": "int whole_distance(float distance)\n{\n    return (int)distance;\n}",
+        "listing": "whole_distance:\n        fcvtzs  w0, s0 C5\n        ret C5",
+        "sourceLines": [[3], [3]]
+      },
+      "machine": {
+        "architecture": "aarch64",
+        "compilerId": "carm64g1610",
+        "compilerVersion": "16.1.0",
+        "options": "-O1",
+        "fpcr": "0x00000000"
+      }
+    },
+    {
+      "id": "float-to-int-negative",
+      "operation": "float-to-int",
+      "resultType": "int",
+      "inputs": [
+        {
+          "name": "distance",
+          "width": 32,
+          "hex": "0xc11c0000"
+        }
+      ],
+      "result": {
+        "width": 32,
+        "hex": "0xfffffff7"
+      },
+      "program": {
+        "c": "int whole_distance(float distance)\n{\n    return (int)distance;\n}",
+        "listing": "whole_distance:\n        fcvtzs  w0, s0 C5\n        ret C5",
+        "sourceLines": [[3], [3]]
+      },
+      "machine": {
+        "architecture": "aarch64",
+        "compilerId": "carm64g1610",
+        "compilerVersion": "16.1.0",
+        "options": "-O1",
+        "fpcr": "0x00000000"
+      }
+    },
+    {
+      "id": "widen-float",
+      "operation": "widen",
+      "resultType": "float",
+      "inputs": [
+        {
+          "name": "distance",
+          "width": 32,
+          "hex": "0x4145999a"
+        }
+      ],
+      "result": {
+        "width": 64,
+        "hex": "0x4028b33340000000"
+      },
+      "program": {
+        "c": "double widen_distance(float distance)\n{\n    return distance;\n}",
+        "listing": "widen_distance:\n        fcvt    d0, s0 C5\n        ret C5",
+        "sourceLines": [[3], [3]]
+      },
+      "machine": {
+        "architecture": "aarch64",
+        "compilerId": "carm64g1610",
+        "compilerVersion": "16.1.0",
+        "options": "-O1",
+        "fpcr": "0x00000000"
+      }
+    },
+    {
+      "id": "copy-float-bits",
+      "operation": "copy-bits",
+      "resultType": "bits",
+      "inputs": [
+        {
+          "name": "distance",
+          "width": 32,
+          "hex": "0x41180000"
+        }
+      ],
+      "result": {
+        "width": 32,
+        "hex": "0x41180000"
+      },
+      "program": {
+        "c": "unsigned float_pattern(float distance)\n{\n    unsigned pattern;\n    __builtin_memcpy(&pattern, &distance, sizeof pattern);\n    return pattern;\n}",
+        "listing": "float_pattern:\n        fmov    w0, s0 C6\n        ret C7",
+        "sourceLines": [[4], [5]]
+      },
+      "machine": {
+        "architecture": "aarch64",
+        "compilerId": "carm64g1610",
+        "compilerVersion": "16.1.0",
+        "options": "-O1",
+        "fpcr": "0x00000000"
+      }
+    }
+  ],
+  "recordedAt": "2026-11-10",
+  "tools": {
+    "aarch64-linux-gnu-as": "GNU assembler (GNU Binutils for Debian) 2.44",
+    "aarch64-linux-gnu-ld": "GNU ld (GNU Binutils for Debian) 2.44",
+    "aarch64-linux-gnu-objdump": "GNU objdump (GNU Binutils for Debian) 2.44",
+    "qemu-aarch64": "qemu-aarch64 version 10.0.13 (Debian 1:10.0.13+ds-0+deb13u1)"
+  },
+  "execution": {
+    "cpu": "cortex-a53",
+    "system": "Linux user mode",
+    "fpcr": "0x00000000",
+    "command": "qemu-aarch64 -cpu cortex-a53 native.elf"
+  },
+  "disassembly": "\nnative.elf:     file format elf64-littleaarch64\n\n\nDisassembly of section .text:\n\n00000000004000b0 <_start>:\n  4000b0:\td51b441f \tmsr\tfpcr, xzr\n  4000b4:\td51b443f \tmsr\tfpsr, xzr\n  4000b8:\td5033fdf \tisb\n  4000bc:\t10080cb4 \tadr\tx20, 410250 <__bss_start>\n  4000c0:\td53b4409 \tmrs\tx9, fpcr\n  4000c4:\tf8008689 \tstr\tx9, [x20], #8\n  4000c8:\td51b443f \tmsr\tfpsr, xzr\n  4000cc:\t10080a29 \tadr\tx9, 410210 <input_0_0>\n  4000d0:\tbd400120 \tldr\ts0, [x9]\n  4000d4:\t10080a09 \tadr\tx9, 410214 <input_0_1>\n  4000d8:\tbd400121 \tldr\ts1, [x9]\n  4000dc:\t9400003f \tbl\t4001d8 <route_distance>\n  4000e0:\t1e260000 \tfmov\tw0, s0\n  4000e4:\tb8004680 \tstr\tw0, [x20], #4\n  4000e8:\td51b443f \tmsr\tfpsr, xzr\n  4000ec:\t10080969 \tadr\tx9, 410218 <input_1_0>\n  4000f0:\tbd400120 \tldr\ts0, [x9]\n  4000f4:\t10080949 \tadr\tx9, 41021c <input_1_1>\n  4000f8:\tbd400121 \tldr\ts1, [x9]\n  4000fc:\t94000037 \tbl\t4001d8 <route_distance>\n  400100:\t1e260000 \tfmov\tw0, s0\n  400104:\tb8004680 \tstr\tw0, [x20], #4\n  400108:\td51b443f \tmsr\tfpsr, xzr\n  40010c:\t100808a9 \tadr\tx9, 410220 <input_2_0>\n  400110:\tfd400120 \tldr\td0, [x9]\n  400114:\t100808a9 \tadr\tx9, 410228 <input_2_1>\n  400118:\tfd400121 \tldr\td1, [x9]\n  40011c:\t94000031 \tbl\t4001e0 <route_distance64>\n  400120:\t9e660000 \tfmov\tx0, d0\n  400124:\tf8008680 \tstr\tx0, [x20], #8\n  400128:\td51b443f \tmsr\tfpsr, xzr\n  40012c:\t10080829 \tadr\tx9, 410230 <input_3_0>\n  400130:\tbd400120 \tldr\ts0, [x9]\n  400134:\t10080809 \tadr\tx9, 410234 <input_3_1>\n  400138:\tbd400121 \tldr\ts1, [x9]\n  40013c:\t9400002b \tbl\t4001e8 <fuel_cost>\n  400140:\t1e260000 \tfmov\tw0, s0\n  400144:\tb8004680 \tstr\tw0, [x20], #4\n  400148:\td51b443f \tmsr\tfpsr, xzr\n  40014c:\t10080769 \tadr\tx9, 410238 <input_4_0>\n  400150:\tb9400120 \tldr\tw0, [x9]\n  400154:\t94000027 \tbl\t4001f0 <distance_as_float>\n  400158:\t1e260000 \tfmov\tw0, s0\n  40015c:\tb8004680 \tstr\tw0, [x20], #4\n  400160:\td51b443f \tmsr\tfpsr, xzr\n  400164:\t100806c9 \tadr\tx9, 41023c <input_5_0>\n  400168:\tbd400120 \tldr\ts0, [x9]\n  40016c:\t94000023 \tbl\t4001f8 <whole_distance>\n  400170:\tb8004680 \tstr\tw0, [x20], #4\n  400174:\td51b443f \tmsr\tfpsr, xzr\n  400178:\t10080649 \tadr\tx9, 410240 <input_6_0>\n  40017c:\tbd400120 \tldr\ts0, [x9]\n  400180:\t9400001e \tbl\t4001f8 <whole_distance>\n  400184:\tb8004680 \tstr\tw0, [x20], #4\n  400188:\td51b443f \tmsr\tfpsr, xzr\n  40018c:\t100805c9 \tadr\tx9, 410244 <input_7_0>\n  400190:\tbd400120 \tldr\ts0, [x9]\n  400194:\t9400001b \tbl\t400200 <widen_distance>\n  400198:\t9e660000 \tfmov\tx0, d0\n  40019c:\tf8008680 \tstr\tx0, [x20], #8\n  4001a0:\td51b443f \tmsr\tfpsr, xzr\n  4001a4:\t10080529 \tadr\tx9, 410248 <input_8_0>\n  4001a8:\tbd400120 \tldr\ts0, [x9]\n  4001ac:\t94000017 \tbl\t400208 <float_pattern>\n  4001b0:\tb8004680 \tstr\tw0, [x20], #4\n  4001b4:\td2800020 \tmov\tx0, #0x1                   \t// #1\n  4001b8:\t100804c1 \tadr\tx1, 410250 <__bss_start>\n  4001bc:\td2800682 \tmov\tx2, #0x34                  \t// #52\n  4001c0:\td2800808 \tmov\tx8, #0x40                  \t// #64\n  4001c4:\td4000001 \tsvc\t#0x0\n  4001c8:\teb02001f \tcmp\tx0, x2\n  4001cc:\t9a9f07e0 \tcset\tx0, ne\t// ne = any\n  4001d0:\td2800ba8 \tmov\tx8, #0x5d                  \t// #93\n  4001d4:\td4000001 \tsvc\t#0x0\n\n00000000004001d8 <route_distance>:\n  4001d8:\t1e212800 \tfadd\ts0, s0, s1\n  4001dc:\td65f03c0 \tret\n\n00000000004001e0 <route_distance64>:\n  4001e0:\t1e612800 \tfadd\td0, d0, d1\n  4001e4:\td65f03c0 \tret\n\n00000000004001e8 <fuel_cost>:\n  4001e8:\t1e210800 \tfmul\ts0, s0, s1\n  4001ec:\td65f03c0 \tret\n\n00000000004001f0 <distance_as_float>:\n  4001f0:\t1e220000 \tscvtf\ts0, w0\n  4001f4:\td65f03c0 \tret\n\n00000000004001f8 <whole_distance>:\n  4001f8:\t1e380000 \tfcvtzs\tw0, s0\n  4001fc:\td65f03c0 \tret\n\n0000000000400200 <widen_distance>:\n  400200:\t1e22c000 \tfcvt\td0, s0\n  400204:\td65f03c0 \tret\n\n0000000000400208 <float_pattern>:\n  400208:\t1e260000 \tfmov\tw0, s0\n  40020c:\td65f03c0 \tret\n"
+}

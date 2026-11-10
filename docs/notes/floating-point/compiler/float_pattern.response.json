@@ -1,0 +1,58 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 72,
+  "processExecutionResultTime": 0.0021509993821382523,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 3622,
+  "asm": [
+    {
+      "text": "float_pattern:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        fmov    w0, s0",
+      "source": {
+        "file": null,
+        "line": 6,
+        "column": 12
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 7,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "float_pattern": 1
+  },
+  "parsingTime": 1,
+  "filteredCount": 232,
+  "popularArguments": {},
+  "queueTime": 4
+}

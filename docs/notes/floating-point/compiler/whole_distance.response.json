@@ -1,0 +1,58 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 640,
+  "processExecutionResultTime": 0.03113300004042685,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 2958,
+  "asm": [
+    {
+      "text": "whole_distance:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        fcvtzs  w0, s0",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "whole_distance": 1
+  },
+  "parsingTime": 0,
+  "filteredCount": 190,
+  "popularArguments": {},
+  "queueTime": 4
+}

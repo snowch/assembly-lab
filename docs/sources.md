@@ -93,3 +93,23 @@ wraps the unchanged recorded increment_int body. The browser and GNU/QEMU execut
 the same complete wrapper; the teaching view starts before BL, after the earlier save, and stops after
 the caller uses the result. See [the checked facts](notes/returning-to-caller/facts.md)
 for primary references, step boundaries and differential results.
+
+## Optional floating point (Module D)
+
+The selected target uses the single- and double-precision formats and floating-point register
+conventions in [AAPCS64 2025Q4](https://github.com/ARM-software/abi-aa/blob/2025Q4/aapcs64/aapcs64.rst),
+sections 5.1 and 6.1.2. The field widths, biases, implicit leading digits, reserved encodings and nearest-even rule
+were checked directly against [Arm DDI0602 2025-12 shared floating-point pseudocode](https://developer.arm.com/documentation/ddi0602/2025-12/Shared-Pseudocode/shared-functions-float?lang=en),
+notably `FPUnpackBase` and `FPRoundBase`. The format terminology follows IEEE 754 binary32 and binary64.
+[The independent source review](notes/floating-point/technical-review.md) records the retrieved
+official documentation-service content hashes and exact anchors; it does not claim a full IEEE standard review.
+The course's exact rational model checks field decoding, nearest-even rounding, subnormals,
+reserved encodings and conversions, independently of JavaScript decimal parsing.
+
+C conversion qualifications are checked against N3096, 6.3.1.4 and 6.3.1.5. They distinguish
+finite in-range truncation, implementation choices for integer-to-floating rounding, and
+value-preserving widening. The recorded functions use GCC 16.1 at `-O1`; unchanged output,
+original references and nine executed GNU/QEMU cases are retained under
+[the floating-point evidence](../scripts/floating-point/README.md). The required native checker
+sets and verifies FPCR zero. This evidence applies to the named cases and settings; it is not
+an implementation of the floating-point ISA in the browser or proof of physical hardware behaviour.

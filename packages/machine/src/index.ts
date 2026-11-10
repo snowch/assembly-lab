@@ -33,3 +33,21 @@ export type {
   CalculatorOperation,
   CalculatorParseResult,
 } from "./programmer-calculator.ts";
+export {
+  FP_INPUT_LIMIT,
+  fpDecode,
+  fpParse,
+  fpNext,
+  fpOperate,
+  fpFromInt32,
+  fpToInt32,
+} from "./floating-point.ts";
+export type {
+  FpWidth,
+  FpKind,
+  FpOperation,
+  FpDirection,
+  FpParseResult,
+  FpInt32Result,
+  FpDecoded,
+} from "./floating-point.ts";

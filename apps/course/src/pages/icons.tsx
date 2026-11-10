@@ -14,6 +14,7 @@ import { STRINGS } from "../strings";
 
 /** One mark per module, by the module's id in content/plan/plan.ts. */
 export const MODULE_ICONS: Readonly<Record<string, ReactNode>> = {
+  "floating-point": <path d="M3 6h18v12H3zM7 6v12M13 6v12M10 10h.01M16 10h3M16 14h3" />,
   // A listing, with the marker at the line that runs next.
   "meet-the-machine": <path d="M10 6h10M10 12h10M10 18h10M3.5 9l3.5 3-3.5 3" />,
   // A register: one row of cells.

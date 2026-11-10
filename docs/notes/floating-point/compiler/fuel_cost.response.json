@@ -1,0 +1,58 @@
+{
+  "inputFilename": "example.c",
+  "code": 0,
+  "okToCache": true,
+  "timedOut": false,
+  "stdout": [],
+  "stderr": [],
+  "truncated": false,
+  "execTime": 181,
+  "processExecutionResultTime": 0.0021710004657506943,
+  "instructionSet": "aarch64",
+  "compilationOptions": [
+    "-g",
+    "-o",
+    "/app/output.s",
+    "-fno-verbose-asm",
+    "-S",
+    "-fdiagnostics-color=always",
+    "-O1",
+    "/app/example.c"
+  ],
+  "downloads": [],
+  "tools": [],
+  "asmSize": 3607,
+  "asm": [
+    {
+      "text": "fuel_cost:",
+      "source": null,
+      "labels": []
+    },
+    {
+      "text": "        fmul    s0, s0, s1",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    },
+    {
+      "text": "        ret",
+      "source": {
+        "file": null,
+        "line": 5,
+        "column": 1
+      },
+      "labels": []
+    }
+  ],
+  "optOutput": [],
+  "labelDefinitions": {
+    "fuel_cost": 1
+  },
+  "parsingTime": 1,
+  "filteredCount": 235,
+  "popularArguments": {},
+  "queueTime": 4
+}

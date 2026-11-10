@@ -1,0 +1,8 @@
+{
+  "id": "carm64g1610",
+  "name": "ARM64 GCC 16.1.0",
+  "lang": "c",
+  "compilerType": "",
+  "semver": "16.1.0",
+  "instructionSet": "aarch64"
+}
