@@ -101,3 +101,6 @@ export { prepareViewHandoff, clearViewHandoff } from "./update-handoff";
 export { READING_SEQUENCE } from "./strings.reading-sequence";
 
 export { fourBitAddition, fourBitSubtraction, FOUR_BIT_EXAMPLES } from "./four-bit-arithmetic";
+
+export { PROGRAMMER_CALCULATOR } from "./strings.programmer-calculator";
+export { ProgrammerCalculator } from "./ProgrammerCalculator";

@@ -17,3 +17,19 @@ export {
   TEXT_BASE,
 } from "./layout.ts";
 export type * from "./types.ts";
+export {
+  calculatorMask,
+  calculatorPattern,
+  calculatorReading,
+  calculatorParse,
+  calculatorCompute,
+  calculatorHalves,
+  calculatorSetHalf,
+} from "./programmer-calculator.ts";
+export type {
+  CalculatorWidth,
+  CalculatorReading,
+  CalculatorFormat,
+  CalculatorOperation,
+  CalculatorParseResult,
+} from "./programmer-calculator.ts";

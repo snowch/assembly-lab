@@ -23,6 +23,7 @@
 @import "./four-bit-arithmetic.css";
 @import "./reading-sequence.css";
 @import "./calculator.css";
+@import "./programmer-calculator.css";
 
 .al-figure {
   display: grid;
