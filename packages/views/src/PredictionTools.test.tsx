@@ -39,19 +39,19 @@ function editor(lesson = "tools-test", change = vi.fn()) {
     />
   );
 }
-it("starts optional tools blank and never changes or submits answers", () => {
+it("offers a separate calculator and keeps notes out of answer artifacts", () => {
   const change = vi.fn(),
     submit = vi.fn((e) => e.preventDefault());
   const view = render(<form onSubmit={submit}>{editor("tools-test", change)}</form>);
   expect(view.container.querySelectorAll("details[open]")).toHaveLength(0);
   expect(view.getByLabelText("Register value")).toHaveAttribute("inputmode", "text");
-  open(view, "Calculator");
-  const input = view.getByLabelText("Calculation");
-  expect(input).toHaveValue("");
-  fireEvent.change(input, { target: { value: "0xffffffffffffffff + 1" } });
-  fireEvent.keyDown(input, { key: "Enter" });
-  expect(view.getByRole("status")).toHaveTextContent("18,446,744,073,709,551,616");
-  expect(view.getByRole("status")).toHaveTextContent("0x10000000000000000");
+  const link = view.getByRole("link", { name: S.programmerCalculator.label });
+  expect(link).toHaveAttribute("href", S.programmerCalculator.href);
+  expect(link).toHaveAttribute("target", "_blank");
+  expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  expect(link).toHaveAccessibleDescription(S.programmerCalculator.newTab);
+  expect(view.queryByLabelText("Calculation")).toBeNull();
+  expect(view.getByText(S.programmerCalculator.help)).toBeVisible();
   open(view, S.summary);
   const notes = view.getByLabelText(S.label);
   expect(notes).toHaveValue("");
