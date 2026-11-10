@@ -10,9 +10,10 @@ export const PROSE = {
     "In Module 1, the same 32 bits could represent different signed and unsigned numbers. The processor adds these bits without knowing which reading the program uses. The sum may not fit that reading's range. How can the processor tell us when that happens?",
 
   motivation:
-    "Every addition in this lesson uses a `w` name, so it keeps 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.\n\n" +
-    "The two instructions write the same result bits:\n\n- `add` writes the result and leaves the flags unchanged.\n- `adds` writes the result and also records four facts about the addition.\n\nEach fact is stored in a **flag**: a single bit that is either 0 or 1. The four flags are named N, Z, C and V. The final `s` in `adds` means **setting flags**.\n\n" +
-    "Neither instruction stops the program or reports an error when the sum does not fit. To detect this, the program must read a flag.",
+    "Every addition in this lesson uses 32-bit register names such as `w0`, so it keeps 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.\n\n" +
+    "A **flag** is a single bit stored by the processor, separate from the result in a register. Its value is either 0 or 1. The four flags used here are named N, Z, C and V.\n\n" +
+    "With the same 32-bit inputs, these two instructions write the same result bits:\n\n- `add` writes the result and leaves the flags at their previous values.\n- `adds` writes the result and updates all four flags to record facts about the addition.\n\nThe final `s` in `adds` means **setting flags**: calculating a new 0 or 1 value for each flag.\n\n" +
+    "Neither instruction stops the program or reports an error when the sum does not fit. After `adds`, the program can read a flag to check whether the sum fits.",
 
   prediction:
     "The figure adds 2147483647 and 1 with `adds w0, w0, w1`, which is `0x7fffffff` plus `0x00000001` in hexadecimal.",
