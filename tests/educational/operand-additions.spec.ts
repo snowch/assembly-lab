@@ -50,6 +50,24 @@ for (const theme of ["light", "dark"] as const) {
       const note = figure.locator(".al-notes details");
       if (item.lesson === "constants-and-widths") {
         await expect(note).toHaveJSProperty("open", false);
+        const section = figure.locator("xpath=ancestor::section[1]");
+        await expect(
+          section.getByRole("heading", { name: "Advance through logger pages", exact: true }),
+        ).toHaveCount(1);
+        await expect(figure.getByRole("heading")).toHaveCount(0);
+        await expect(section.locator(":scope > .prose > ul > li")).toHaveCount(3);
+        await expect(figure).toContainText("add x2, x0, #12288");
+        const run = figure.getByRole("button", { name: "Run the instruction", exact: true });
+        expect(
+          await run.evaluate((button) =>
+            Boolean(
+              button.compareDocumentPosition(
+                button.closest(".al-primitive")!.querySelector("details")!,
+              ) & Node.DOCUMENT_POSITION_FOLLOWING,
+            ),
+          ),
+        ).toBe(true);
+
         await note.locator("summary").click();
         await expect(note).toHaveJSProperty("open", true);
         await expect(note).toContainText("0 to 4095");

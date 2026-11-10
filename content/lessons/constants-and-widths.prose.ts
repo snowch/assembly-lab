@@ -79,9 +79,12 @@ export const PROSE = {
     "The lower 32 bits are set and the upper 32 are cleared, so `x3` holds `0x00000000ffffffff`. Writing a `w` name always clears the upper 32 bits of the `x` register.",
 
   immediateAdd: {
-    title: "Advance through logger pages",
     prose:
-      "This vehicle logger groups its data into pages of 4096 bytes. A **byte** contains 8 bits; an **address** identifies a byte's location in memory. Adding 1 to an address gives the next byte's address.\n\n`x0` holds 65536, the address at the start of a page. Find the address **three pages ahead**, keeping the starting address in `x0`.\n\n`#3` is the page count. `lsl #12` multiplies it by 4096, giving 12288 bytes. `add` adds that distance to `x0` and writes the new address to `x2`.\n\n`add x2, x0, #12288` encodes the same single instruction. The explicit `#3, lsl #12` keeps the page count visible.\n\nPress **Run the instruction** to follow the calculation. It computes an address without reading or writing stored data.",
+      "This vehicle logger groups its data into pages of 4,096 bytes. A **byte** contains 8 bits. An **address** identifies a byte's location in memory. Adding 1 to an address gives the next byte's address.\n\nFind the address **three pages ahead**, keeping the starting address in `x0`.\n\n- `x0` holds 65,536, the address at the start of a page.\n- `#3, lsl #12` forms the byte distance: `#3` counts the pages, and `lsl #12` multiplies that count by 4,096, giving 12,288 bytes.\n- `x2` receives the new address when `add` adds the byte distance to the starting address in `x0`.",
+    instructionNote:
+      "`add x2, x0, #12288` encodes the same single instruction. Writing `#3, lsl #12` keeps the page count visible.",
+    actionProse:
+      "Press **Run the instruction** to follow the calculation. It computes an address without reading or writing stored data.",
   },
   immediateAddNote: {
     summary: "Constant range and shift limits",

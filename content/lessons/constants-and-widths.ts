@@ -192,7 +192,7 @@ export const constantsAndWidths: LessonInput = {
     {
       kind: "explanation",
       title: LABELS.titles.explanation,
-      prose: "",
+      prose: PROSE.immediateAdd.prose,
       interactives: [
         {
           id: "logger-page-address",
@@ -201,7 +201,10 @@ export const constantsAndWidths: LessonInput = {
           caption: LABELS.captions.immediateAdd,
           props: {
             stage: {
-              ...PROSE.immediateAdd,
+              title: "",
+              prose: "",
+              instructionNote: PROSE.immediateAdd.instructionNote,
+              actionProse: PROSE.immediateAdd.actionProse,
               program: SHIFTED_IMMEDIATE_ADD,
               call: {
                 entry: "add_scaled_constant",

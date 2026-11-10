@@ -2,7 +2,8 @@
 .al-primitive {
   gap: var(--space-3);
 }
-.al-primitive p,
+.al-primitive > p,
+.al-primitive-result > p,
 .al-primitive h4 {
   margin: 0;
 }

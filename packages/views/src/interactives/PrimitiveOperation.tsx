@@ -21,6 +21,8 @@ const Stage = z.object({
   kind: z.enum(["operation", "function"]).default("operation"),
   title: z.string(),
   prose: z.string(),
+  instructionNote: z.string().optional(),
+  actionProse: z.string().optional(),
   program: RecordedSchema,
   call: CallSchema.extend({ args: z.array(ArgumentSchema) }),
   registers: z.array(z.number().int().min(0).max(30)).min(1).max(3),
@@ -85,8 +87,8 @@ export const PrimitiveOperation = withProps(
     }
     return (
       <div className="al-figure al-primitive" data-figure="primitive-operation" data-k={position}>
-        <h4>{stage.title}</h4>
-        <Prose markdown={stage.prose} />
+        {stage.title && <h4>{stage.title}</h4>}
+        {stage.prose && <Prose markdown={stage.prose} />}
         {isFunction ? (
           <div
             className="al-primitive-call-flow"
@@ -175,6 +177,7 @@ export const PrimitiveOperation = withProps(
             ))}
           </ol>
         )}
+        {stage.instructionNote && <Prose markdown={stage.instructionNote} />}
         {!isFunction && position === 0 && nextFlow?.kind === "arith" && (
           <div className="al-primitive-flow al-primitive-preview" aria-label={S.instruction}>
             <div className="al-primitive-inputs">
@@ -204,16 +207,6 @@ export const PrimitiveOperation = withProps(
             <div className="al-primitive-output" data-pending="true">
               <small>{S.outputPending}</small> <code>{nextFlow.destination.name} = ?</code>
             </div>
-          </div>
-        )}
-        {data.notes.length > 0 && (
-          <div className="al-notes">
-            {data.notes.map((note) => (
-              <details className="lesson-details" key={note.summary}>
-                <summary>{note.summary}</summary>
-                <Prose markdown={note.body} />
-              </details>
-            ))}
           </div>
         )}
         {isFunction && (
@@ -285,6 +278,7 @@ export const PrimitiveOperation = withProps(
             />
           </label>
         )}
+        {stage.actionProse && <Prose markdown={stage.actionProse} />}
         <div className="al-controls">
           {!complete && (
             <button
@@ -303,6 +297,16 @@ export const PrimitiveOperation = withProps(
           )}
         </div>
         {complete && !isFunction && <p className="al-primitive-stopped">{S.stopped}</p>}
+        {data.notes.length > 0 && (
+          <div className="al-notes">
+            {data.notes.map((note) => (
+              <details className="lesson-details" key={note.summary}>
+                <summary>{note.summary}</summary>
+                <Prose markdown={note.body} />
+              </details>
+            ))}
+          </div>
+        )}
       </div>
     );
   },

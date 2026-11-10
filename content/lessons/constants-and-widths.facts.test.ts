@@ -506,6 +506,8 @@ describe("every number the lesson states", () => {
   // Reference issue dates identify documents; they are not numeric claims about the program.
   const text = learnerText(lesson)
     .join("\n")
+    // Grouped decimal prose denotes one integer, not separate numeric fragments.
+    .replace(/\b\d{1,3}(?:,\d{3})+\b/g, (number) => number.replaceAll(",", ""))
     .replace(/https?:\/\/[^\s)]+/g, " ");
   // A number written with a space between its halves (`0x0001 1170`) is one number.
   const HEX = /0x[0-9a-f]{4} [0-9a-f]{4}|0x[0-9a-f]+/g;
