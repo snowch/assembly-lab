@@ -1,5 +1,7 @@
 # Edited logger page example
 
+Historical wording for PR #118. Current layout and canonical copy: ../logger-layout/copy.md and ../module-1/prose.md.
+
 Drafted separately; edited for the exact control name and shorter visible explanation.
 
 {

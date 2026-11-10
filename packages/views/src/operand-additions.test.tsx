@@ -67,8 +67,14 @@ describe("one addition with an input modifier", () => {
       caption: "Input formation",
       props: {
         stage: {
-          title: item.entry,
-          prose: item.entry === "add_scaled_constant" ? PROSE.immediateAdd.prose : "",
+          title: item.entry === "add_scaled_constant" ? "" : item.entry,
+          prose: "",
+          ...(item.entry === "add_scaled_constant"
+            ? {
+                instructionNote: PROSE.immediateAdd.instructionNote,
+                actionProse: PROSE.immediateAdd.actionProse,
+              }
+            : {}),
           program: item.program,
           call: { entry: item.entry, args: item.args },
           registers: item.registers,
