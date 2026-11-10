@@ -90,7 +90,7 @@ test.describe("lesson 1, the adder by column, by group and all at once", () => {
     page,
   }) => {
     await openLesson(page, "adding-and-the-flags");
-    await commit(page, "predict-readings", "Only the unsigned");
+    await commit(page, "predict-readings", "Unsigned only");
     const adder = page.locator("#ix-add-columns");
     await adder.scrollIntoViewIfNeeded();
     const group = adder.getByRole("button", { name: A.adder.nextGroup });
@@ -114,7 +114,7 @@ test.describe("lesson 1, the adder by column, by group and all at once", () => {
     page,
   }) => {
     await openLesson(page, "adding-and-the-flags");
-    await commit(page, "predict-readings", "Only the unsigned");
+    await commit(page, "predict-readings", "Unsigned only");
     const adder = page.locator("#ix-add-columns");
     await adder.scrollIntoViewIfNeeded();
     const next = adder.getByRole("button", { name: A.adder.next });
@@ -135,7 +135,7 @@ test.describe("lesson 1, the adder by column, by group and all at once", () => {
     page,
   }) => {
     await openLesson(page, "adding-and-the-flags");
-    await commit(page, "predict-readings", "Only the unsigned");
+    await commit(page, "predict-readings", "Unsigned only");
     const adder = page.locator("#ix-add-columns");
     await adder.scrollIntoViewIfNeeded();
     await expect(adder.locator(".al-adder-final")).toHaveCount(0);
@@ -164,7 +164,7 @@ test.describe("lesson 1, the adder by column, by group and all at once", () => {
   }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     await openLesson(page, "adding-and-the-flags");
-    await commit(page, "predict-readings", "Only the unsigned");
+    await commit(page, "predict-readings", "Unsigned only");
     const adder = page.locator("#ix-add-columns");
     await adder.scrollIntoViewIfNeeded();
     for (let i = 0; i < 3; i++)
@@ -199,7 +199,7 @@ test.describe("lesson 1, the adder by column, by group and all at once", () => {
       await page.reload();
       await openLesson(page, "adding-and-the-flags");
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-      await commit(page, "predict-readings", "Only the unsigned");
+      await commit(page, "predict-readings", "Unsigned only");
       const adder = page.locator("#ix-add-columns");
       await press(page, adder.getByRole("button", { name: A.adder.all }));
       const colours = await adder.evaluate((el) => {

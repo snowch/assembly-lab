@@ -16,10 +16,12 @@ export const PROSE = {
     "Neither instruction stops the program or reports an error when the sum does not fit. After `adds`, the program can read a flag to check whether the sum fits.",
 
   prediction:
+    "For 32-bit additions, `add` and `adds` add bit patterns without choosing a signed or unsigned reading. The reading depends on how the program uses the bits.\n\n" +
     "The figure adds 2147483647 and 1 with `adds w0, w0, w1`, which is `0x7fffffff` plus `0x00000001` in hexadecimal.",
-  predictionQuestion: "**Which readings of the answer are right?**",
+  predictionQuestion:
+    "**For which reading can the 32-bit result represent the exact sum of 2147483647 and 1?**",
   predictionExplain:
-    "The answer is `0x80000000`. Unsigned, it reads 2147483648, which is right. Signed, it reads −2147483648, which is wrong. 2147483647 plus 1 should be 2147483648. The signed reading cannot hold that number. The largest signed reading is 2147483647 (Module 1).",
+    "The exact sum is 2147483648. The 32-bit result is `0x80000000`: 2147483648 unsigned, or −2147483648 signed. Both are valid readings of those bits. Only the unsigned reading represents the exact sum. The sum is outside the signed 32-bit range, whose largest value is 2147483647 (Module 1).",
 
   investigation:
     "The part of the processor that adds is the **adder**. The figure works the addition column by column, from the right, as on paper. It explains the arithmetic, not a processor’s circuit. A column adds its two bits and the 1 carried in from the right, if there is one. The total is 0, 1, 2 or 3.\n\nThe column keeps the total's lowest bit as its result bit. It passes the total's other bit, the **carry**, to the next column on the left.\n\nYou can step through the figure one column at a time, jump over a group of columns, or show them all.\n\nAfter `adds`, four flags record facts about the answer:\n\n- N is the top bit of the result.\n- Z is 1 when all 32 result bits are 0.\n- C is the carry out of bit 31, for an addition.\n- V is 1 when the carry into bit 31 differs from the carry out of it.\n\nThe figure's last column, bit 31, shows the carry into bit 31 and the carry out of it. Those two carries give C and V.",

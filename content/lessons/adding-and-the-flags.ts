@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
-// Lesson 1 of Module 2: Adding, and the four flags. The learner predicts which readings of an
-// answer are right, watches an addition column by column with the carry into each column, predicts
+// Lesson 1 of Module 2: Adding, and the four flags. The learner predicts which readings represent
+// an exact sum, watches an addition column by column with the carry into each column, predicts
 // the four flags for three more additions, sees that `add` leaves the flags alone, and finds the
 // smallest number that sets V.
 //
@@ -287,6 +287,6 @@ export const addingAndTheFlags: LessonInput = {
     textbookExample:
       "The obvious example for the flags is an 8-bit addition table that runs through every overflow case, or a car odometer rolling over from 999999 to 0.",
     howThisDiffers:
-      "This lesson adds in 32 bits and draws the carry into every column from the simulator's own record, so the learner sees where C and V come from. Its prediction asks which readings of one answer are right, not for a table of cases. It checks GCC's `__builtin_add_overflow` listing, which reads V, and shows that `add` leaves the flags alone. The trip computer's counter, not an odometer, is the running situation that lesson 2 builds on.",
+      "This lesson adds in 32 bits and draws the carry into every column from the simulator's own record, so the learner sees where C and V come from. Its prediction asks which reading can represent one exact sum in 32 bits, rather than judging the validity of a bit interpretation. It checks GCC's `__builtin_add_overflow` listing, which reads V, and shows that `add` leaves the flags alone. The trip computer's counter, not an odometer, is the running situation that lesson 2 builds on.",
   },
 };

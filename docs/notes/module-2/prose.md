@@ -31,18 +31,20 @@ Neither instruction stops the program or reports an error when the sum does not 
 
 ## 3. Two readings of one addition
 
+For 32-bit additions, `add` and `adds` add bit patterns without choosing a signed or unsigned reading. The reading depends on how the program uses the bits.
+
 The figure adds 2147483647 and 1 with `adds w0, w0, w1`, which is `0x7fffffff` plus `0x00000001` in hexadecimal.
 
-**Which readings of the answer are right?**
+**For which reading can the 32-bit result represent the exact sum of 2147483647 and 1?**
 
-- Both
-- Only the unsigned
-- Only the signed
-- Neither
+- Both readings
+- Unsigned only
+- Signed only
+- Neither reading
 
 *Shown after the answer is checked.*
 
-The answer is `0x80000000`. Unsigned, it reads 2147483648, which is right. Signed, it reads −2147483648, which is wrong. 2147483647 plus 1 should be 2147483648. The signed reading cannot hold that number. The largest signed reading is 2147483647 (Module 1).
+The exact sum is 2147483648. The 32-bit result is `0x80000000`: 2147483648 unsigned, or −2147483648 signed. Both are valid readings of those bits. Only the unsigned reading represents the exact sum. The sum is outside the signed 32-bit range, whose largest value is 2147483647 (Module 1).
 
 ## 4. Carries and the four flags
 

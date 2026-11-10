@@ -28,7 +28,7 @@ export const LABELS = {
     // Visible while the follow-up figure is locked, so it must not reveal the answer.
     adderCarryOut:
       "Step through the addition column by column to inspect the result bits, carries and flags.",
-    predictReadings: "A prediction about which readings of the answer are right.",
+    predictReadings: "Predict which reading of the 32-bit result can represent the exact sum.",
     predictAdd: "A prediction about what the flags show after add.",
     stepAdd:
       "The two additions one instruction at a time, with the flags under the registers. An outlined register was written by the last instruction. An outlined flag changed value.",
@@ -37,10 +37,10 @@ export const LABELS = {
   },
   options: {
     readings: [
-      { value: "both", label: "Both" },
-      { value: "unsigned", label: "Only the unsigned" },
-      { value: "signed", label: "Only the signed" },
-      { value: "neither", label: "Neither" },
+      { value: "both", label: "Both readings" },
+      { value: "unsigned", label: "Unsigned only" },
+      { value: "signed", label: "Signed only" },
+      { value: "neither", label: "Neither reading" },
     ],
     // Placeholders for the failure experiment's four options: the prose process replaces them.
     // The right one is the one the model computes (value "c": N and C are 1, V is 0).

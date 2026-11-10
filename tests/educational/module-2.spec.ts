@@ -133,16 +133,21 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     page,
   }) => {
     await openLesson(page, "adding-and-the-flags");
-    await predictionCommitsBeforeItReveals(page, "predict-readings", "Only the unsigned", "Both");
+    await predictionCommitsBeforeItReveals(
+      page,
+      "predict-readings",
+      "Unsigned only",
+      "Both readings",
+    );
     const readings = page.locator("#ix-predict-readings .al-match");
-    // The unsigned reading is right and the signed reading wrong, because the model's answer is.
+    // The exact sum fits in the unsigned range and exceeds the signed range, as the model shows.
     const record = additionSteps(traceOf(PLUS, { entry: "plus", args: [0x7fffffff, 1] }))[0]!
       .addition!;
     expect(record.carryOut).toBe(0);
     expect(record.result).toBe(0x80000000n);
     await page
       .locator("#ix-predict-readings")
-      .getByRole("radio", { name: "Only the unsigned" })
+      .getByRole("radio", { name: "Unsigned only" })
       .check();
     await press(
       page,
@@ -175,7 +180,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
 
   test("a commitment is kept, and is still there after a reload", async ({ page }) => {
     await openLesson(page, "adding-and-the-flags");
-    await commit(page, "predict-readings", "Only the unsigned");
+    await commit(page, "predict-readings", "Unsigned only");
     await page.reload();
     await expect(page.locator("#ix-predict-readings .al-match")).toBeVisible();
     await expect(page.locator("#ix-add-columns .al-locked")).toHaveCount(0);
@@ -192,7 +197,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       const adder = page.locator("#ix-add-columns");
       await expect(adder.locator(".al-locked")).toBeVisible();
       await expect(adder.getByRole("button", { name: A.adder.next })).toHaveCount(0);
-      await commit(page, "predict-readings", "Only the unsigned");
+      await commit(page, "predict-readings", "Unsigned only");
       await expect(adder.locator(".al-locked")).toHaveCount(0);
     });
 
@@ -200,7 +205,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       page,
     }) => {
       await openLesson(page, "adding-and-the-flags");
-      await commit(page, "predict-readings", "Only the unsigned");
+      await commit(page, "predict-readings", "Unsigned only");
       const adder = page.locator("#ix-add-columns");
       await adder.scrollIntoViewIfNeeded();
       // The two numbers are whole at the start; the answer and the flags are not.
@@ -239,7 +244,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
 
     test("goes back a column, shows every column at once, and starts again", async ({ page }) => {
       await openLesson(page, "adding-and-the-flags");
-      await commit(page, "predict-readings", "Only the unsigned");
+      await commit(page, "predict-readings", "Unsigned only");
       const adder = page.locator("#ix-add-columns");
       await adder.scrollIntoViewIfNeeded();
       await press(page, adder.getByRole("button", { name: A.adder.all }));
@@ -536,7 +541,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     }, info) => {
       const phone = info.project.name === "phone";
       await openLesson(page, "adding-and-the-flags");
-      await commit(page, "predict-readings", "Both");
+      await commit(page, "predict-readings", "Both readings");
       const adder = page.locator("#ix-add-columns");
       for (let k = 0; k < 6; k++)
         await press(page, adder.getByRole("button", { name: A.adder.next }));
@@ -561,7 +566,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
 
     test("the adder's 33 places fit the screen, on a phone and on a desk", async ({ page }) => {
       await openLesson(page, "adding-and-the-flags");
-      await commit(page, "predict-readings", "Both");
+      await commit(page, "predict-readings", "Both readings");
       const adder = page.locator("#ix-add-columns");
       await adder.scrollIntoViewIfNeeded();
       const box = (await adder.locator('[data-row="carry"] .al-adder-cells').boundingBox())!;
@@ -583,7 +588,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
       await page.reload();
       await openLesson(page, "adding-and-the-flags");
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-      await commit(page, "predict-readings", "Only the unsigned");
+      await commit(page, "predict-readings", "Unsigned only");
       const adder = page.locator("#ix-add-columns");
       await press(page, adder.getByRole("button", { name: A.adder.all }));
       const colours = await adder.evaluate((el) => {

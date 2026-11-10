@@ -305,12 +305,12 @@ describe("the prediction about a run", () => {
   };
 
   const readings = {
-    question: "**Which readings are right?**",
+    question: "**For which readings can the 32-bit result represent the exact sum?**",
     options: [
-      { value: "both", label: "Both" },
-      { value: "unsigned", label: "Only the unsigned" },
-      { value: "signed", label: "Only the signed" },
-      { value: "neither", label: "Neither" },
+      { value: "both", label: "Both readings" },
+      { value: "unsigned", label: "Unsigned only" },
+      { value: "signed", label: "Signed only" },
+      { value: "neither", label: "Neither reading" },
     ],
     explain: "The answer is `0x80000000`.",
     program: PLUS,
@@ -333,38 +333,40 @@ describe("the prediction about a run", () => {
     expect(screen.getByRole("button", { name: S.prediction.commit })).toBeDisabled();
   });
 
-  it("takes the right readings from the run: unsigned right, signed wrong", async () => {
+  it("checks exact-sum representability from the run: unsigned fits, signed does not", async () => {
     const { container } = figure(RunPrediction, "run-prediction", readings);
-    await choose("Only the unsigned");
+    await choose("Unsigned only");
     expect(container.querySelector(".al-match")).toHaveTextContent(
-      "Read as unsigned, the answer is right. Read as signed, the answer is wrong.",
+      "With unsigned inputs, the 32-bit result represents the exact sum. With signed inputs, the 32-bit result cannot represent the exact sum.",
     );
     expect(container.querySelector(".al-outcome")).toHaveTextContent("The answer is 0x80000000.");
   });
 
-  it("says no match for another option, and for both readings right when nothing overflowed", async () => {
+  it("rejects a nonmatching option, and accepts both readings when neither sum overflows", async () => {
     const wrong = figure(RunPrediction, "run-prediction", readings);
-    await choose("Both");
+    await choose("Both readings");
     expect(wrong.container.querySelector(".al-nomatch")).toHaveTextContent(S.prediction.noMatch);
     wrong.unmount();
     const small = figure(RunPrediction, "run-prediction", {
       ...readings,
       call: { entry: "plus", args: [5, 3] },
+      explain: "",
     });
-    await choose("Both");
+    await choose("Both readings");
     expect(small.container.querySelector(".al-match")).toHaveTextContent(
-      "right. Read as signed, the answer is right",
+      "With unsigned inputs, the 32-bit result represents the exact sum. With signed inputs, the 32-bit result represents the exact sum.",
     );
   });
 
-  it("reads 0xffffffff plus 1 as wrong unsigned and right signed", async () => {
+  it("checks that 0xffffffff plus 1 fits only when the inputs are read as signed", async () => {
     const { container } = figure(RunPrediction, "run-prediction", {
       ...readings,
       call: { entry: "plus", args: [0xffffffff, 1] },
+      explain: "",
     });
-    await choose("Only the signed");
+    await choose("Signed only");
     expect(container.querySelector(".al-match")).toHaveTextContent(
-      "Read as unsigned, the answer is wrong. Read as signed, the answer is right.",
+      "With unsigned inputs, the 32-bit result cannot represent the exact sum. With signed inputs, the 32-bit result represents the exact sum.",
     );
   });
 
