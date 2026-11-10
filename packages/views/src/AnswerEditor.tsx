@@ -11,6 +11,7 @@ import type { ChallengeEditorProps } from "@platform/lesson-runtime";
 
 import { BitToggles } from "./BitToggles";
 import { Calculator } from "./Calculator";
+import { PredictionTools } from "./PredictionTools";
 import { HexEntry } from "./HexEntry";
 import { RecordedSchema } from "./interactives/props";
 import { cLinesOf, programLines } from "./listing";
@@ -36,6 +37,7 @@ const GroupsSchema = z.object({
 
 export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
   challenge,
+  lesson,
   artifact,
   onChange,
 }) => {
@@ -68,7 +70,11 @@ export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
               // A number keypad has no minus sign on every phone: a field that takes a negative
               // number (it says so with a `min` below 0) gets the full keyboard.
               inputMode={
-                f.kind === "number" && !(f.min !== undefined && f.min < 0) ? "numeric" : "text"
+                f.kind === "number" &&
+                challenge.initial.data?.["numberFormat"] !== "decimal-or-hex" &&
+                !(f.min !== undefined && f.min < 0)
+                  ? "numeric"
+                  : "text"
               }
               autoComplete="off"
               autoCapitalize="off"
@@ -90,6 +96,13 @@ export const AnswerEditor: ComponentType<ChallengeEditorProps> = ({
     <div className="answer-editor">
       {program.success && (
         <ListingView cLines={cLinesOf(program.data.c)} lines={programLines(program.data)} />
+      )}
+      {challenge.initial.data?.["predictionTools"] === true && (
+        <PredictionTools
+          key={`${lesson.id}:${challenge.id}`}
+          lessonId={lesson.id}
+          challengeId={challenge.id}
+        />
       )}
       {groups.length > 0 && (
         <div className="answer-groups">

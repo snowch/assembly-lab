@@ -276,7 +276,9 @@ export const constantsAndWidths: LessonInput = {
       ],
       // The program the editor shows and the grader runs. The expected values are what the run
       // leaves in the registers each case names, never numbers in this file.
-      initial: { data: { program: FOUR_INSTRUCTIONS } },
+      initial: {
+        data: { program: FOUR_INSTRUCTIONS, numberFormat: "decimal-or-hex", predictionTools: true },
+      },
       tests: {
         kind: "answers",
         grader: REGISTERS_AFTER,

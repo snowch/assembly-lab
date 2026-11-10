@@ -172,3 +172,12 @@ export function wholeNumber(answer: string | undefined): bigint | null {
   const text = answer.trim().replaceAll(MINUS, "-");
   return /^-?(?:\d+|\d{1,3}(?:,\d{3})+)$/.test(text) ? BigInt(text.replaceAll(",", "")) : null;
 }
+
+/** Decimal whole numbers or explicitly prefixed hexadecimal, without truncation or wrapping. */
+export function wholeNumberOrHex(answer: string | undefined): bigint | null {
+  const decimal = wholeNumber(answer);
+  if (decimal !== null) return decimal;
+  const text = answer?.trim().replaceAll(MINUS, "-") ?? "";
+  const hex = /^(-?)(0[xX][0-9a-fA-F]+)$/.exec(text);
+  return hex ? (hex[1] === "-" ? -1n : 1n) * BigInt(hex[2]!) : null;
+}

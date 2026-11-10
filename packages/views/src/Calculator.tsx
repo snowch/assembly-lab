@@ -10,24 +10,27 @@ import { useHandoffState } from "./update-handoff";
 export function Calculator({
   handoffKey,
   division = "exact",
+  hexadecimal = false,
 }: {
   handoffKey: string;
   division?: DivisionMode;
+  hexadecimal?: boolean;
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
   const [work, setWork] = useHandoffState<{ text: string; result: Calculation | null }>(
-    division === "exact" ? `Calculator.${handoffKey}` : `Calculator.${handoffKey}.whole`,
+    (division === "exact" ? `Calculator.${handoffKey}` : `Calculator.${handoffKey}.whole`) +
+      (hexadecimal ? ".hex" : ""),
     { text: "", result: null },
   );
-  const run = () => setWork({ ...work, result: calculate(work.text, { division }) });
+  const run = () => setWork({ ...work, result: calculate(work.text, { division, hexadecimal }) });
   const error = work.result && "error" in work.result ? S.errors[work.result.error] : null;
   return (
     <details className="al-calculator" open={open} onToggle={(e) => setOpen(e.currentTarget.open)}>
       <summary>{S.title}</summary>
       {open && (
         <div className="al-calculator-panel">
-          <p>{division === "whole" ? S.halvesHelp : S.help}</p>
+          <p>{hexadecimal ? S.hexHelp : division === "whole" ? S.halvesHelp : S.help}</p>
           <label htmlFor={id}>{S.calculation}</label>
           <div className="al-calculator-entry">
             <input
@@ -53,20 +56,34 @@ export function Calculator({
             </button>
           </div>
           <p className="al-calculator-format" id={`${id}-format`}>
-            {withCode(division === "whole" ? S.halvesFormat : S.format)}
+            {withCode(hexadecimal ? S.hexFormat : division === "whole" ? S.halvesFormat : S.format)}
           </p>
           <div id={`${id}-result`} role="status" aria-live="polite">
             {error ? (
               <p>{error}</p>
             ) : work.result && "value" in work.result ? (
-              <p>
-                {S.result}:{" "}
-                <code>
-                  {division === "whole"
-                    ? work.result.value
-                    : BigInt(work.result.value).toLocaleString("en-GB")}
-                </code>
-              </p>
+              <>
+                <p>
+                  {hexadecimal ? S.decimalResult : S.result}:{" "}
+                  <code>
+                    {division === "whole"
+                      ? work.result.value
+                      : BigInt(work.result.value).toLocaleString("en-GB")}
+                  </code>
+                </p>
+                {hexadecimal && (
+                  <p>
+                    {S.hexadecimalResult}:{" "}
+                    <code>
+                      {BigInt(work.result.value) < 0n ? "-" : ""}0x
+                      {(BigInt(work.result.value) < 0n
+                        ? -BigInt(work.result.value)
+                        : BigInt(work.result.value)
+                      ).toString(16)}
+                    </code>
+                  </p>
+                )}
+              </>
             ) : null}
           </div>
         </div>

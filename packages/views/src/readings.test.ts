@@ -16,6 +16,7 @@ import {
   shown,
   stateHolding,
   wholeNumber,
+  wholeNumberOrHex,
   worths,
 } from "./readings";
 
@@ -168,3 +169,18 @@ describe("numbers as the page and the learner write them", () => {
     }
   });
 });
+
+it.each([
+  ["0xffffffffffffffff", 18446744073709551615n],
+  ["18,446,744,073,709,551,615", 18446744073709551615n],
+  ["0X20000000000001", 9007199254740993n],
+  ["-0x80", -128n],
+  ["−0x80", -128n],
+  [" 0x0000 ", 0n],
+])("reads exact decimal/hex values without coercion: %s", (text, value) =>
+  expect(wholeNumberOrHex(text)).toBe(value),
+);
+it.each(["0x", "0xg", "ff", "1e3", "1.0", "0xff,ff", "0x1 2", "0x1junk"])(
+  "rejects malformed decimal/hex answers: %s",
+  (text) => expect(wholeNumberOrHex(text)).toBeNull(),
+);

@@ -44,7 +44,7 @@ export const LABELS = {
       "The assembly editor starts with text the assembler refuses: one mov with a number it cannot hold. Write instructions that put that number in w0.",
     predictWidth: "A prediction about what all 64 bits of x3 hold after mov w3, -1.",
     predictTwo:
-      "Work out by hand what x1 and w2 hold after the short listing, then type a number for each.",
+      "Predict the two register values after the listing. Calculator and Working notes are optional.",
   },
   options: {
     fits: [
