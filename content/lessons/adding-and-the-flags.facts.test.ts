@@ -96,11 +96,11 @@ describe("0x7fffffff plus 1", () => {
     expect(plus(0x7fffffff, 1).w0).toBe(0x80000000);
   });
 
-  it("reads 2147483648 unsigned, which is right, and −2147483648 signed, which is wrong", () => {
+  it("decodes both readings and checks which represents the exact sum", () => {
     const { w0 } = plus(0x7fffffff, 1);
     expect(w0).toBe(2147483648);
     expect(signed(w0)).toBe(-2147483648);
-    // Right unsigned: the sum of the two numbers is the answer. Wrong signed: it is not.
+    // Both readings decode the stored bits. Only the unsigned value equals this exact sum.
     expect(0x7fffffff + 1).toBe(w0);
     expect(2147483647 + 1).not.toBe(signed(w0));
     expect(2147483647 + 1).toBe(2147483648);

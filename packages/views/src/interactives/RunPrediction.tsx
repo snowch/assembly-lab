@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 // Predict, commit, see, for a question about the answer of an addition or subtraction: which
-// readings of the answer are right, which flags a run leaves, what a register holds when it ends.
+// readings can represent the exact sum, which flags a run leaves, what a register holds when it ends.
 // As with the other predictions, nothing is worked out before the learner commits, and the right
 // option is what the run gave, never the lesson's words. The figure shows the program and the
 // registers it starts with, which the lesson's text has already told the learner.
@@ -22,7 +22,7 @@ import { CallSchema, RecordedSchema, withProps } from "./props";
 
 const Measure = z.discriminatedUnion("kind", [
   /**
-   * Which readings of the first addition's answer are right. The right option's value is `both`,
+   * Which readings of the first addition's result represent the exact sum. The matching option is `both`,
    * `unsigned`, `signed` or `neither`.
    */
   z.object({ kind: z.literal("readings") }),
@@ -73,19 +73,19 @@ export const RunPrediction = withProps(Props, function RunPrediction({ data, int
       if (!record || record.width !== 32 || record.subtraction)
         return { value: "error", said: S.prediction.endedWithError };
       const signed = (v: bigint) => BigInt.asIntN(32, v);
-      const unsignedRight = record.a + record.b + BigInt(record.carryIn) === record.result;
-      const signedRight =
+      const unsignedFits = record.a + record.b + BigInt(record.carryIn) === record.result;
+      const signedFits =
         signed(record.a) + signed(record.b) + BigInt(record.carryIn) === signed(record.result);
       return {
         value:
-          unsignedRight && signedRight
+          unsignedFits && signedFits
             ? "both"
-            : unsignedRight
+            : unsignedFits
               ? "unsigned"
-              : signedRight
+              : signedFits
                 ? "signed"
                 : "neither",
-        said: A.prediction.readings(unsignedRight, signedRight),
+        said: A.prediction.readings(unsignedFits, signedFits),
       };
     }
     const returned = trace.result.stop.kind === "returned";

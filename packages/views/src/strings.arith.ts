@@ -111,9 +111,9 @@ export const ARITH_STRINGS = {
 
   prediction: {
     registers: "Registers before the run",
-    /** The simulator's result for a question about which readings of an answer are right. */
+    /** Whether the 32-bit result represents the exact sum under each input reading. */
     readings: (unsigned: boolean, signed: boolean) =>
-      `The simulator ran the addition. Read as unsigned, the answer is ${unsigned ? "right" : "wrong"}. Read as signed, the answer is ${signed ? "right" : "wrong"}.`,
+      `The simulator ran the addition. With unsigned inputs, the 32-bit result ${unsigned ? "represents" : "cannot represent"} the exact sum. With signed inputs, the 32-bit result ${signed ? "represents" : "cannot represent"} the exact sum.`,
     /** The simulator's result for a question about the flags at the end of a run. */
     flagsAt: (n: number, z: number, c: number, v: number) =>
       `The simulator ran the program. When it ended, N was ${n}, Z was ${z}, C was ${c} and V was ${v}.`,
