@@ -53,9 +53,11 @@ import { RecordedPrediction } from "./RecordedPrediction";
 import { StackStepper } from "./StackStepper";
 import { RegisterViews } from "./RegisterViews";
 import { ReturningToCaller } from "./ReturningToCaller";
+import { ProgrammerCalculatorFigure } from "./ProgrammerCalculatorFigure";
 import { PrimitiveOperation } from "./PrimitiveOperation";
 
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
+  "programmer-calculator": ProgrammerCalculatorFigure,
   "primitive-operation": PrimitiveOperation,
   "returning-to-caller": ReturningToCaller,
   "register-views": RegisterViews,

@@ -1,5 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
+import { PROGRAMMER_CALCULATOR as PC } from "@al/views";
 import type { LessonInput } from "@platform/lesson-schema";
 import { fourBitSubtraction } from "@al/views";
 import { FOUR_BIT_PROSE as P } from "./four-bit-arithmetic.prose";
@@ -45,6 +46,14 @@ export const fourBitArithmetic: LessonInput = {
           caption: P.width.caption,
           props: { mode: "width" },
           after: P.width.after,
+        },
+        {
+          id: "four-bit-calculator",
+          kind: "programmer-calculator",
+          timeModel: "none",
+          role: "experiment",
+          caption: PC.help,
+          props: { preset: "arithmetic" },
         },
       ],
     },

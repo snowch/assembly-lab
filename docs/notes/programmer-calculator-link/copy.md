@@ -1,3 +1,5 @@
+Historical external-only aid from PR #121. The local lesson-specific calculator now replaces that aid; see [current integration copy](../lesson-programmer-calculator/copy.md).
+
 # Current programmer-calculator aid copy
 
 {

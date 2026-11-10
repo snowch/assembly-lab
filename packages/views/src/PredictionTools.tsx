@@ -1,6 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 import { useEffect, useId, useState } from "react";
+import { ProgrammerCalculator } from "./ProgrammerCalculator";
 import { PREDICTION_TOOLS as S } from "./strings.prediction-tools";
 import { useHandoffState } from "./update-handoff";
 
@@ -47,21 +48,7 @@ export function PredictionTools({
   }
   return (
     <div className="al-prediction-tools">
-      <div className="al-programmer-aid">
-        <div className="al-programmer-link">
-          <a
-            className="button secondary"
-            href={S.programmerCalculator.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-describedby={`${id}-calculator-tab`}
-          >
-            {S.programmerCalculator.label}
-          </a>
-          <span id={`${id}-calculator-tab`}>{S.programmerCalculator.newTab}</span>
-        </div>
-        <p>{S.programmerCalculator.help}</p>
-      </div>
+      <ProgrammerCalculator preset="widths" handoffKey={`${lessonId}.${challengeId}`} />
       <details
         className="al-calculator al-working-notes"
         open={open}

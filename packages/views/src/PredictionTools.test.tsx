@@ -5,6 +5,7 @@ import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { Challenge, type Lesson } from "@platform/lesson-schema";
 import { AnswerEditor } from "./AnswerEditor";
+import { PROGRAMMER_CALCULATOR as PC } from "./strings.programmer-calculator";
 import { PREDICTION_TOOLS as S } from "./strings.prediction-tools";
 
 const challenge = Challenge.parse({
@@ -45,13 +46,18 @@ it("offers a separate calculator and keeps notes out of answer artifacts", () =>
   const view = render(<form onSubmit={submit}>{editor("tools-test", change)}</form>);
   expect(view.container.querySelectorAll("details[open]")).toHaveLength(0);
   expect(view.getByLabelText("Register value")).toHaveAttribute("inputmode", "text");
-  const link = view.getByRole("link", { name: S.programmerCalculator.label });
-  expect(link).toHaveAttribute("href", S.programmerCalculator.href);
+  open(view, PC.title);
+  const link = view.getByRole("link", { name: PC.full });
+  expect(link).toHaveAttribute("href", "https://snowch.github.io/programmer-calculator/");
   expect(link).toHaveAttribute("target", "_blank");
   expect(link).toHaveAttribute("rel", "noopener noreferrer");
-  expect(link).toHaveAccessibleDescription(S.programmerCalculator.newTab);
   expect(view.queryByLabelText("Calculation")).toBeNull();
-  expect(view.getByText(S.programmerCalculator.help)).toBeVisible();
+  const entry = view.getByLabelText(PC.entry);
+  fireEvent.change(entry, { target: { value: "17" } });
+  fireEvent.keyDown(entry, { key: "Enter" });
+  expect(view.getByLabelText("Register value")).toHaveValue("17");
+  expect(change).not.toHaveBeenCalled();
+  expect(submit).not.toHaveBeenCalled();
   open(view, S.summary);
   const notes = view.getByLabelText(S.label);
   expect(notes).toHaveValue("");

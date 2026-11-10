@@ -14,7 +14,8 @@ for (const theme of ["light", "dark"] as const) {
     await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     const c = page.locator("#ix-predict-two-registers"),
-      link = c.getByRole("link", { name: "Open programmer calculator", exact: true }),
+      calc = c.locator(".al-programmer-calculator"),
+      link = c.getByRole("link", { name: "Open full calculator", exact: true }),
       notes = c.locator(".al-working-notes");
     const x = c.locator('[data-field="x1"] input'),
       w = c.locator('[data-field="w2"] input');
@@ -26,6 +27,8 @@ for (const theme of ["light", "dark"] as const) {
     await expect(c.getByLabel("Calculation", { exact: true })).toHaveCount(0);
     await expect(notes).toHaveJSProperty("open", false);
     await expect(c).toContainText("hexadecimal numbers beginning with");
+    await expect(calc).toHaveJSProperty("open", false);
+    await calc.locator(":scope > summary").click();
     await expect(link).toHaveAttribute("href", "https://snowch.github.io/programmer-calculator/");
     await expect(link).toHaveAttribute("target", "_blank");
     await expect(link).toHaveAttribute("rel", "noopener noreferrer");
@@ -38,6 +41,8 @@ for (const theme of ["light", "dark"] as const) {
       }),
     );
     const openCalculator = async () => {
+      if (!(await calc.evaluate((el) => (el as HTMLDetailsElement).open)))
+        await calc.locator(":scope > summary").click();
       const original = page.url();
       const opened = page.waitForEvent("popup");
       await link.focus();

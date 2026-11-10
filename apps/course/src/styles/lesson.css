@@ -517,3 +517,11 @@ figure.interactive > .figure-after {
   max-width: var(--measure);
   margin-inline: auto;
 }
+
+/* The optional calculator owns its open panel; a second figure card would box its disclosure. */
+figure.interactive > details.al-programmer-calculator[data-preset] {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}

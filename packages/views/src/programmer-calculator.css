@@ -1,0 +1,287 @@
+/* Copyright © 2026 Christopher Snow */
+
+.al-programmer-calculator {
+  min-width: 0;
+  margin-block: var(--space-2) var(--space-4);
+}
+.al-programmer-calculator > summary,
+.al-programmer-guide > summary {
+  min-height: 44px;
+  padding: var(--space-2);
+  cursor: pointer;
+  width: fit-content;
+}
+.al-programmer-calculator > summary {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+}
+.al-programmer-panel {
+  container: programmer / inline-size;
+  min-width: 0;
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+}
+.al-programmer-panel > p:first-child {
+  margin-top: 0;
+}
+.al-programmer-panel button,
+.al-programmer-panel select,
+.al-programmer-panel input {
+  max-width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: var(--space-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  color: var(--fg);
+  font: inherit;
+}
+.al-programmer-panel button {
+  cursor: pointer;
+}
+.al-programmer-panel button:hover {
+  background: var(--accent-soft);
+}
+.al-programmer-panel button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+.al-programmer-calculator :is(button, input, select, summary, a):focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.al-programmer-panel input {
+  width: 100%;
+  font-family: var(--font-mono);
+}
+.al-programmer-panel label {
+  display: block;
+  min-width: 0;
+}
+.al-programmer-panel label :is(input, select) {
+  display: block;
+  margin-top: var(--space-1);
+}
+.al-programmer-switches,
+.al-programmer-switches > div,
+.al-programmer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: end;
+}
+.al-programmer-switches {
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.al-programmer-switches > div > span {
+  flex-basis: 100%;
+}
+.al-programmer-readouts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+.al-programmer-readouts > div {
+  min-width: 0;
+  border-radius: var(--radius-sm);
+  background: var(--bg-sunken);
+  padding: var(--space-2) var(--space-3);
+}
+.al-programmer-readouts :is(output, strong) {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  overflow-wrap: anywhere;
+}
+.al-programmer-readouts span,
+.al-programmer-help,
+.al-programmer-qualifier,
+.al-programmer-full span {
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+.al-programmer-entry {
+  margin-top: var(--space-3);
+}
+.al-programmer-entry > label {
+  margin-bottom: var(--space-1);
+}
+.al-programmer-entry input {
+  flex: 1 1 6rem;
+  width: 0;
+}
+.al-programmer-entry select {
+  flex: 0 1 auto;
+}
+.al-programmer-bit-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: space-between;
+  margin-block: var(--space-3) var(--space-1);
+  font-size: var(--text-sm);
+}
+.al-programmer-bits {
+  --bit-target: 40px;
+  display: grid;
+  grid-template-columns: repeat(4, var(--bit-target));
+  gap: 1px;
+  max-width: 100%;
+}
+.al-programmer-panel .al-programmer-bit,
+.al-programmer-panel .al-programmer-bit[aria-pressed="true"] {
+  width: var(--bit-target);
+  height: 40px;
+  min-height: 40px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0;
+  padding: 0;
+  background: transparent;
+  border-color: transparent;
+  color: var(--fg);
+}
+.al-programmer-bit small {
+  font: 11px/12px var(--font-mono);
+}
+.al-programmer-bit b {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 26px;
+  height: 24px;
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  background: var(--bg-sunken);
+  font: 600 16px/20px var(--font-mono);
+}
+.al-programmer-bit[aria-pressed="true"] b {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+.al-programmer-bit:hover b {
+  outline: 1px solid var(--accent);
+}
+.al-programmer-inspector {
+  min-height: 3em;
+  font-size: var(--text-sm);
+}
+.al-programmer-section,
+.al-programmer-guide {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+.al-programmer-section h4 {
+  margin-top: 0;
+}
+.al-programmer-controls > label {
+  flex: 1 1 8rem;
+}
+.al-programmer-shift {
+  margin-top: var(--space-3);
+}
+.al-programmer-shift > label {
+  flex: 0 1 10rem;
+}
+.al-programmer-result {
+  background: var(--bg-sunken);
+  padding: var(--space-2);
+  margin-top: var(--space-3);
+}
+.al-programmer-result code {
+  overflow-wrap: anywhere;
+}
+.al-programmer-message {
+  color: var(--accent);
+}
+.al-programmer-error {
+  color: var(--bad);
+}
+.al-programmer-message:empty {
+  display: none;
+}
+.al-programmer-worked {
+  margin-block: var(--space-3);
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--accent);
+}
+.al-programmer-guide-answers {
+  display: grid;
+  gap: var(--space-2);
+  margin-block: var(--space-3);
+}
+.al-programmer-return {
+  margin-block: var(--space-1);
+}
+.al-programmer-full {
+  margin-bottom: 0;
+}
+.al-programmer-full a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+@container programmer (min-width: 327px) {
+  .al-programmer-bits:not(.al-programmer-four) {
+    grid-template-columns: repeat(8, var(--bit-target));
+  }
+}
+@container programmer (min-width: 655px) {
+  .al-programmer-bits:not(.al-programmer-four) {
+    grid-template-columns: repeat(16, var(--bit-target));
+  }
+}
+@container programmer (min-width: 1311px) {
+  .al-programmer-bits:not(.al-programmer-four) {
+    grid-template-columns: repeat(32, var(--bit-target));
+  }
+}
+@container programmer (min-width: 600px) {
+  .al-programmer-readouts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (pointer: fine) {
+  @container programmer (min-width: 478px) {
+    .al-programmer-bits {
+      --bit-target: 28px;
+      gap: 2px;
+    }
+  }
+  @container programmer (min-width: 478px) {
+    .al-programmer-bits:not(.al-programmer-four) {
+      grid-template-columns: repeat(16, var(--bit-target));
+    }
+  }
+  @container programmer (min-width: 958px) {
+    .al-programmer-bits:not(.al-programmer-four) {
+      grid-template-columns: repeat(32, var(--bit-target));
+    }
+  }
+}
+
+@media (max-width: 40rem) {
+  .al-programmer-panel {
+    padding: var(--space-1);
+  }
+}
+
+.al-programmer-readouts .al-programmer-number-group,
+.al-programmer-result .al-programmer-number-group {
+  white-space: nowrap;
+  color: inherit;
+  font: inherit;
+}
+.al-programmer-readouts output[data-long="true"] {
+  font-size: 1rem;
+  overflow-wrap: normal;
+}
