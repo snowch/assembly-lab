@@ -191,3 +191,10 @@ as its own job (it installs `qemu-user` and `binutils-aarch64-linux-gnu`); local
 those tools are installed or unpacked, found through `AL_TOOLS`. A second check runs every line in
 `scripts/real-tools/lines/` through GNU as and through the course's assembler, and fails where one
 accepts a line the other rejects.
+
+## Optional floating-point models
+
+Module D uses a separate exact binary32/binary64 numeric model, with direct decimal-to-format
+rounding to nearest, ties to even. It is not an extension of the integer assembler or CPU state.
+FPCR, FPSR, traps and architecture-specific NaN propagation are not simulated. Real Arm examples
+are labelled GCC/QEMU recordings checked by `scripts/floating-point/check.py` in native CI.

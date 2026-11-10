@@ -190,6 +190,7 @@ the list from the listings its lessons show.
 | A The same programs on 32-bit ARM | the course's programs compiled for A32, as recorded listings: conditional execution, `movw`, and the library call for division on baseline Armv7-A |
 | B Two’s complement | optional four-bit diagrams for signed weights, fixed-width negation, zero and the signed limits; linked directly from Module 1 |
 | C C integer types and register widths | optional recorded GCC examples of int, unsigned int and long; linked from Module 1's register-width recap |
+| D Floating-point values and instructions | optional binary32/binary64 bit and rounding explorers, recorded Arm floating-point arithmetic and C conversions; exact numeric models and checked GCC/QEMU records, separate from the integer simulator |
 
 ## The model
 

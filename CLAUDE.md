@@ -47,6 +47,10 @@ trace. It is never a scripted animation and never a hand-drawn picture of someth
 could compute. If a lesson needs a figure the model cannot compute, the model is where the work
 goes first.
 
+Optional Module D uses exact binary32/binary64 numeric models and explicitly labelled GCC/QEMU
+recordings checked by `scripts/floating-point/check.py`. These do not extend the browser ISA or
+simulate FPCR, FPSR or floating-point exceptions. Never present these recordings as browser execution.
+
 Module 12 may compare model states with explicitly labelled, recorded GNU/QEMU/GDB output.
 Its assembly-only startup and UART capstone, and optional Linux syscall comparison, run outside
 the browser model and must pass

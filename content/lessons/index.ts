@@ -42,6 +42,10 @@ import { onePatternThreeReadings } from "./one-pattern-three-readings";
 import { fourBitArithmetic } from "./four-bit-arithmetic";
 import { twosComplement } from "./twos-complement";
 import { cIntegerTypes } from "./c-integer-types";
+import { floatingPointBits } from "./floating-point-bits";
+import { floatingPointRounding } from "./floating-point-rounding";
+import { floatingPointArm } from "./floating-point-arm";
+import { floatingPointConversions } from "./floating-point-conversions";
 import { shifts } from "./shifts";
 import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
 
@@ -78,6 +82,10 @@ export const SOURCE_LESSONS: readonly Lesson[] = [
   sameCOnA32,
   twosComplement,
   cIntegerTypes,
+  floatingPointBits,
+  floatingPointRounding,
+  floatingPointArm,
+  floatingPointConversions,
 ]
   .map(withIntroduced)
   .map(parseLesson);
@@ -94,6 +102,10 @@ export const LESSONS: readonly Lesson[] = [
   ...paced10ToA,
   twosComplement,
   cIntegerTypes,
+  floatingPointBits,
+  floatingPointRounding,
+  floatingPointArm,
+  floatingPointConversions,
 ]
   .map((lesson, index, lessons) => ({
     ...lesson,

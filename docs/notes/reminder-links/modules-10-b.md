@@ -33,6 +33,10 @@ Outcome: learners can retrieve the earlier machine rule needed to trace generate
 | `a32-division-helper` | Accepted: retrieve whole-number unsigned quotient behaviour from `division-and-remainders` before the fresh average calculation. Helper calls are explained locally. |
 | `twos-complement` | Existing: its bridge already links exact `same-bits-two-readings` and `subtraction-flags-and-negation` routes with their conceptual purpose. The appendix defines weights/negation locally; no additional reminder needed. |
 | `c-integer-types` | Added in the register-width relocation review: the optional reference identifies `register-widths` as its preparation and return route, and links `same-bits-two-readings` for the previously practised bit-reading rule. Target widths, suffix spelling and each recorded compiler example are explained locally; no later C conversion or overflow knowledge is required. |
+| `floating-point-bits` | New optional D preparation links the practised binary weights/readings and register-width routes. Binary fractions, normalisation and floating fields are taught locally. |
+| `floating-point-rounding` | Immediately follows D1; its input/format explanations retrieve the field and fraction rule locally before introducing nearest-even rounding and spacing. |
+| `floating-point-arm` | Immediately follows D2; register bank/target formats/calling conventions are defined before the checked recorded cases. Numeric rounding preparation is repeated beside the examples. |
+| `floating-point-conversions` | Immediately follows D3; cast syntax, finite/range conditions and byte-copy arguments are explained locally. The recorded-case guide retrieves arithmetic precision without assuming integer bit-copy means numeric conversion. |
 
 ## Implementation and checks
 

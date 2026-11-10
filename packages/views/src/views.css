@@ -24,6 +24,7 @@
 @import "./reading-sequence.css";
 @import "./calculator.css";
 @import "./programmer-calculator.css";
+@import "./floating-point.css";
 
 .al-figure {
   display: grid;

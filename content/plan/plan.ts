@@ -15,11 +15,11 @@ export const STATUSES = ["planned", "drafting", "published"] as const;
 export type ModuleStatus = (typeof STATUSES)[number];
 
 export interface PlannedModule {
-  /** Numeric lesson-schema key; optional chapters use 14–16 while displaying A–C. */
+  /** Numeric lesson-schema key; optional chapters use 14–17 while displaying A–D. */
   readonly lessonModule: number;
   /** Unique, lower-case, and the stem a lesson's id may start with. */
   readonly id: string;
-  /** What the module is called: "0" to "13", or "A" to "C" for optional chapters. */
+  /** What the module is called: "0" to "13", or "A" to "D" for optional chapters. */
   readonly label: string;
   readonly title: string;
   /** One line on what the learner does in the module. */
@@ -33,7 +33,16 @@ export interface PlanPart {
 }
 
 const M = (label: string, id: string, title: string, line: string): PlannedModule => ({
-  lessonModule: label === "A" ? 14 : label === "B" ? 15 : label === "C" ? 16 : Number(label),
+  lessonModule:
+    label === "A"
+      ? 14
+      : label === "B"
+        ? 15
+        : label === "C"
+          ? 16
+          : label === "D"
+            ? 17
+            : Number(label),
   id,
   label,
   title,
@@ -155,6 +164,12 @@ export const OPTIONAL_PART: PlanPart = {
     ),
     M("B", "twos-complement", COMPLEMENT_PROSE.title, COMPLEMENT_PROSE.line),
     M("C", "c-integer-types", C_TYPES.title, C_TYPES.line),
+    M(
+      "D",
+      "floating-point",
+      "Floating-point values and instructions",
+      "Read floating-point bits, investigate rounding and compare recorded Arm arithmetic and conversions.",
+    ),
   ],
 };
 
