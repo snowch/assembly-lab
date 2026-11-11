@@ -30,6 +30,14 @@ export const ARITH_STRINGS = {
   },
 
   adder: {
+    instructionLabel: "Instruction",
+    calculationReminder: "These columns are parts of one instruction's calculation.",
+    addMeaning: (a: string, b: string, destination: string) =>
+      `Add \`${a}\` and \`${b}\`; write the low 32 result bits to \`${destination}\`.`,
+    subtractMeaning: (a: string, b: string, destination: string) =>
+      `Subtract \`${b}\` from \`${a}\`; write the low 32 result bits to \`${destination}\`.`,
+    updatesFlags: "Update N, Z, C and V.",
+    keepsFlags: "Keep N, Z, C and V unchanged.",
     controls: "Step through the addition",
     enlargeGroup: "Enlarge the selected group",
     groupBits: (high: number, low: number) => `Bits ${high} to ${low}`,

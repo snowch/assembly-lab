@@ -20,7 +20,12 @@ In Module 1, the same 32 bits could represent different signed and unsigned numb
 
 Every addition in this lesson uses 32-bit register names such as `w0`, so it keeps 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.
 
-A **flag** is a single bit stored by the processor, separate from the result in a register. Its value is either 0 or 1. The four flags used here are named N, Z, C and V.
+A **flag** is a single bit stored by the processor, separate from the result in a register. Its value is either 0 or 1. The four flags are:
+
+- N means **Negative**, for the signed reading.
+- Z means **Zero**.
+- C means **Carry**.
+- V means **Overflow**, for signed arithmetic. Remember the **v** in “overflow”.
 
 With the same 32-bit inputs, these two instructions write the same result bits:
 
@@ -61,7 +66,7 @@ The part of the processor that adds is the **adder**. The figure uses the carryi
 
 Press **Next column** to reveal one column, starting at bit 0 on the right. **Next group of four** reveals through the end of that group. **Show all** reveals the complete addition, and **Reset** hides the calculation again. These controls reveal parts of one addition; they do not execute more instructions.
 
-*`adds w0, w0, w1` column by column, with the carry into each column above it, and the four flags after it.*
+*Result bits and carries for the addition, with the four flags.*
 
 After this 32-bit `adds`, use the result bits and the two carry marks at bit 31 to find the four flags:
 
@@ -363,7 +368,7 @@ Use this pair of counter readings:
 
 # Interface strings
 
-The words the figures and the graders say, which are not part of a lesson's text. Each is in `packages/views/src/strings.arith.ts`, marked DRAFT, and `module-2.prose.test.ts` holds those strings to the lines here. A word `{in}` stands for the carry into bit 31 and `{out}` for the carry out of it.
+The words the figures and the graders say, which are not part of a lesson's text. Each is in `packages/views/src/strings.arith.ts`, and `module-2.prose.test.ts` holds those strings to the lines here. Strings awaiting review are marked DRAFT. A word `{in}` stands for the carry into bit 31 and `{out}` for the carry out of it.
 
 ## The carries at bit 31 (lesson 1, section 4; lesson 2, section 4)
 
@@ -396,3 +401,19 @@ V: Compare the carry into the top bit with the carry out of it.
 - Bits {high} to {low}
 
 The enlargement uses the same already revealed columns as the overview. The input, complemented input, carry and result cells come from the recorded addition. It does not advance execution.
+
+## Instruction context in the adder
+
+Drafted in a separate Codex pass on 11 November 2026 from the checked instruction-context brief. These approved additions have no DRAFT marker. Independent review and built-page verification are recorded separately. `{a}` and `{b}` name the selected instruction's first and second source operands; `{destination}` names its destination.
+
+Instruction
+
+These columns are parts of one instruction's calculation.
+
+Add `{a}` and `{b}`; write the low 32 result bits to `{destination}`.
+
+Subtract `{b}` from `{a}`; write the low 32 result bits to `{destination}`.
+
+Update N, Z, C and V.
+
+Keep N, Z, C and V unchanged.
