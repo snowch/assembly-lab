@@ -88,10 +88,6 @@ export const addingAndTheFlags: LessonInput = {
       kind: "investigation",
       title: LABELS.titles.investigation,
       prose: PROSE.investigation,
-      details: {
-        summary: PROSE.investigationDetailsSummary,
-        prose: PROSE.investigationDetails,
-      },
       interactives: [
         {
           id: "add-columns",
@@ -99,7 +95,14 @@ export const addingAndTheFlags: LessonInput = {
           timeModel: STEPS,
           role: "calculation",
           caption: LABELS.captions.adder,
-          props: { program: PLUS, call: PLUS_CALL, after: "predict-readings", detail: true },
+          after: PROSE.explanation,
+          props: {
+            program: PLUS,
+            call: PLUS_CALL,
+            after: "predict-readings",
+            detail: true,
+            guidance: PROSE.investigationControls,
+          },
         },
       ],
     },
@@ -173,7 +176,11 @@ export const addingAndTheFlags: LessonInput = {
     {
       kind: "explanation",
       title: LABELS.titles.explanation,
-      prose: [PROSE.explanation, PROSE.generalisation].join("\n\n"),
+      prose: PROSE.generalisation,
+      details: {
+        summary: PROSE.investigationDetailsSummary,
+        prose: PROSE.investigationDetails,
+      },
     },
     {
       kind: "challenge",

@@ -133,12 +133,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     page,
   }) => {
     await openLesson(page, "adding-and-the-flags");
-    await predictionCommitsBeforeItReveals(
-      page,
-      "predict-readings",
-      "Unsigned only",
-      "Both readings",
-    );
+    await predictionCommitsBeforeItReveals(page, "predict-readings", "Unsigned only", "Both");
     const readings = page.locator("#ix-predict-readings .al-match");
     // The exact sum fits in the unsigned range and exceeds the signed range, as the model shows.
     const record = additionSteps(traceOf(PLUS, { entry: "plus", args: [0x7fffffff, 1] }))[0]!
@@ -541,7 +536,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     }, info) => {
       const phone = info.project.name === "phone";
       await openLesson(page, "adding-and-the-flags");
-      await commit(page, "predict-readings", "Both readings");
+      await commit(page, "predict-readings", "Both");
       const adder = page.locator("#ix-add-columns");
       for (let k = 0; k < 6; k++)
         await press(page, adder.getByRole("button", { name: A.adder.next }));
@@ -566,7 +561,7 @@ test.describe("lesson 1, Adding, and the four flags", () => {
 
     test("the adder's 33 places fit the screen, on a phone and on a desk", async ({ page }) => {
       await openLesson(page, "adding-and-the-flags");
-      await commit(page, "predict-readings", "Both readings");
+      await commit(page, "predict-readings", "Both");
       const adder = page.locator("#ix-add-columns");
       await adder.scrollIntoViewIfNeeded();
       const box = (await adder.locator('[data-row="carry"] .al-adder-cells').boundingBox())!;

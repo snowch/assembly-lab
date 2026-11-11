@@ -20,7 +20,7 @@ import { useMemo } from "react";
 import { z } from "zod";
 
 import type { Addition, Step } from "@al/machine";
-import { useSlot, useStored } from "@platform/lesson-runtime";
+import { Prose, useSlot, useStored } from "@platform/lesson-runtime";
 
 import {
   additionSteps,
@@ -62,6 +62,8 @@ const Props = z.object({
   opensAtEnd: z.boolean().default(false),
   /** Words under the figure, shown once it is open (so a note after a challenge waits for the pass). */
   note: z.string().optional(),
+  /** Lesson-specific calculation guidance, immediately beside the stepping controls. */
+  guidance: z.string().optional(),
 });
 
 /** The columns, left to right: the 33rd place for the carry out, then the groups the figure draws. */
@@ -487,6 +489,7 @@ export const AdderFigure = withProps(Props, function AdderFigure({ data, store, 
       ) : (
         flagsRow
       )}
+      {data.guidance && <Prose markdown={data.guidance} className="al-adder-guidance" />}
       <div className="al-controls" role="group" aria-label={A.adder.controls}>
         <button
           type="button"

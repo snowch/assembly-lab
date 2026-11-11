@@ -473,6 +473,7 @@ describe("the numbers the improved text states", () => {
       [2147483646, "0x7ffffffe, read as unsigned"],
       [2147483647, "0x7fffffff, read as unsigned"],
       [2147483648, "0x80000000, read as unsigned"],
+      [4294967295, "0xffffffff, the largest unsigned 32-bit reading"],
     ]);
     expect(stated.decimal.filter((n) => !decimal.has(n))).toEqual([]);
     expect(stated.binary).toEqual([]);
@@ -493,6 +494,8 @@ describe("the numbers the improved text states", () => {
     expect(signed(0x80000000)).toBe(-2147483648);
     expect(signed(0x7fffffff)).toBe(2147483647);
     expect(signed(0x7ffffffe)).toBe(2147483646);
+    expect(plus(0xffffffff, 0).w0).toBe(4294967295);
+    expect(plus(0xffffffff, 1).w0).toBe(0);
     expect(0x7ffffffe).toBe(2147483646);
     expect(recorded).toContain("ARM64 GCC 16.1.0");
     // 2147483647 plus 1 is 2147483648 as an unsigned number.
