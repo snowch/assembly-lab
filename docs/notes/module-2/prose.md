@@ -20,11 +20,11 @@ In Module 1, the same 32 bits could represent different signed and unsigned numb
 
 Every addition in this lesson uses 32-bit register names such as `w0`, so it keeps 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.
 
-A **flag** is a single bit stored by the processor, separate from the result in a register. Its value is either 0 or 1. The four flags are:
+A **flag** is a single bit stored by the processor, separate from the result in a register. Its value is either 0 or 1. Arm conventionally lists the four flags in **NZCV** order:
 
 - N means **Negative**, for the signed reading.
-- Z means **Zero**.
-- C means **Carry**.
+- Z means **Zero**, for both signed and unsigned readings.
+- C means **Carry**, for checking whether an addition’s sum fits the unsigned range.
 - V means **Overflow**, for signed arithmetic. Remember the **v** in “overflow”.
 
 With the same 32-bit inputs, these two instructions write the same result bits:
