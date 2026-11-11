@@ -57,7 +57,7 @@ The exact sum is 2147483648. The 32-bit result is `0x80000000`: 2147483648 unsig
 
 ## 4. Carries and the four flags
 
-The part of the processor that adds is the **adder**. The figure uses the carrying rule you practised with four bits, now across 32 columns. Each column keeps its result bit and passes its carry to the next column on the left. The figure explains the arithmetic, not a processor’s circuit.
+The part of the processor that adds is the **adder**. The figure uses the carrying rule you practised in [Arithmetic with four bits](#/lesson/four-bit-arithmetic), now across 32 columns. Each column keeps its result bit and passes its carry to the next column on the left. The figure explains the arithmetic, not a processor’s circuit.
 
 Press **Next column** to reveal one column, starting at bit 0 on the right. **Next group of four** reveals through the end of that group. **Show all** reveals the complete addition, and **Reset** hides the calculation again. These controls reveal parts of one addition; they do not execute more instructions.
 
@@ -73,6 +73,8 @@ After this 32-bit `adds`, use the result bits and the two carry marks at bit 31 
 The adder produces the same 32 result bits for both readings. C tells you whether the exact sum of the unsigned inputs exceeds the unsigned 32-bit range. V reports signed **overflow**: the exact sum of the signed inputs is outside the signed 32-bit range. A value of 1 means the sum does not fit that range; 0 means it fits.
 
 C and V are separate tests. Either can be 1 without the other.
+
+For optional hardware background, explore [Bit Lab’s four-bit arithmetic and logic circuit](https://snowch.github.io/bit-lab/#/lesson/alu). It is a teaching model, not an Arm processor’s circuit.
 
 ## 5. Three additions to predict
 
