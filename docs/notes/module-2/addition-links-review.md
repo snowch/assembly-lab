@@ -26,9 +26,19 @@ return. This is the existing transient-selection contract: only commitment is sa
 prediction component. Committed choices and their unlocked gate were verified after return
 and reload. Expanding selection persistence is outside this link-only correction.
 
-Existing focused checks passed: three files, 97 tests, including canonical fidelity,
-numerical facts, vocabulary and rendering. No new tests were added for this reversible
-copy change. The independent technical browser harness initially used a nonmatching theme
+Initial focused checks passed: three files, 97 tests, including canonical fidelity,
+numerical facts, vocabulary and rendering. The first full check then failed one test
+with 3,452 passing: its reminder validator searched every occurrence of a lesson fragment
+and mistook the external Bit Lab route for an Assembly Lab destination. The check now
+parses complete Markdown destinations and checks only local fragment URLs, while retaining
+standalone href props and the existing published-route assertion. One regression fixture
+keeps a missing local destination visible to that assertion and excludes external fragments;
+there is no ALU exception, skipped check or new dependency. The independent technical
+reviewer verified this correction and typechecking. The final focused rerun passed four
+files and 100 tests. The original full-check failure remains recorded separately.
+
+No new UI tests were added for the reversible copy change. The independent technical
+browser harness initially used a nonmatching theme
 label and the unsplit source title/section assumptions; its corrected built-page checks
 are recorded separately from those tooling failures. Full checks, exact-tree CI and public
 release verification are recorded in the pull request. Browser/agent review is not a novice
