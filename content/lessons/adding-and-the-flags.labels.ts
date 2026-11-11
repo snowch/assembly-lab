@@ -23,8 +23,7 @@ export const LABELS = {
     reflection: "What you now know",
   },
   captions: {
-    adder:
-      "adds w0, w0, w1 column by column, with the carry into each column above it, and the four flags after it.",
+    adder: "Result bits and carries for the addition, with the four flags.",
     // Visible while the follow-up figure is locked, so it must not reveal the answer.
     adderCarryOut:
       "Step through the addition column by column to inspect the result bits, carries and flags.",

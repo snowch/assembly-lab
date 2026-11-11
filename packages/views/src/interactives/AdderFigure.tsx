@@ -283,6 +283,22 @@ export const AdderFigure = withProps(Props, function AdderFigure({ data, store, 
   const record = step?.addition;
   if (!step || !record) throw new Error(A.adder.noAddition);
   const names = namesOf(trace, step);
+  const instruction = trace.program.instructions.find((i) => i.address === step.address);
+  const operation = instruction?.op;
+  // Explain the simple register form used by these lessons. Other forms still show their exact
+  // instruction, without pretending that an immediate, shift or alias is a source register.
+  const plainRegisters =
+    operation?.k === "addsub" &&
+    operation.w === 32 &&
+    operation.src.t === "shifted" &&
+    operation.src.amount === 0 &&
+    instruction !== undefined &&
+    instruction.operands.length === 3 &&
+    instruction.operands.every((o) => o.kind === "reg" && o.role === "general");
+  const meaning =
+    plainRegisters && names
+      ? `${record.subtraction ? A.adder.subtractMeaning(names.a, names.b, names.answer) : A.adder.addMeaning(names.a, names.b, names.answer)} ${operation.setFlags ? A.adder.updatesFlags : A.adder.keepsFlags}`
+      : null;
 
   const go = (to: number) => {
     setMoved(null);
@@ -353,6 +369,12 @@ export const AdderFigure = withProps(Props, function AdderFigure({ data, store, 
       role="group"
       aria-label={A.adder.rows}
     >
+      <div className="al-adder-instruction">
+        <p className="al-adder-instruction-label">{A.adder.instructionLabel}</p>
+        <code className="al-adder-instruction-code">{step.text}</code>
+        {meaning && <p>{withCode(meaning)}</p>}
+        <p className="al-adder-instruction-reminder">{A.adder.calculationReminder}</p>
+      </div>
       {data.summary && final}
       <div className="al-adder-main">
         <div className="al-adder-rows">
