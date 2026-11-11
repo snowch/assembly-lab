@@ -11,8 +11,8 @@ export const PROSE = {
 
   motivation:
     "Every addition in this lesson uses 32-bit register names such as `w0`, so it keeps 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.\n\n" +
-    "A **flag** is a single bit stored by the processor, separate from the result in a register. Its value is either 0 or 1. The four flags are:\n\n" +
-    "- N means **Negative**, for the signed reading.\n- Z means **Zero**.\n- C means **Carry**.\n- V means **Overflow**, for signed arithmetic. Remember the **v** in “overflow”.\n\n" +
+    "A **flag** is a single bit stored by the processor, separate from the result in a register. Its value is either 0 or 1. Arm conventionally lists the four flags in **NZCV** order:\n\n" +
+    "- N means **Negative**, for the signed reading.\n- Z means **Zero**, for both signed and unsigned readings.\n- C means **Carry**, for checking whether an addition’s sum fits the unsigned range.\n- V means **Overflow**, for signed arithmetic. Remember the **v** in “overflow”.\n\n" +
     "With the same 32-bit inputs, these two instructions write the same result bits:\n\n- `add` writes the result and leaves the flags at their previous values.\n- `adds` writes the result and updates all four flags to record facts about the addition.\n\nThe final `s` in `adds` means **setting flags**: calculating a new 0 or 1 value for each flag.\n\n" +
     "Neither instruction stops the program or reports an error when the sum does not fit. After `adds`, the program can read a flag to check whether the sum fits.",
 
