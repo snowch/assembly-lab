@@ -25,7 +25,7 @@ export const PROSE = {
     "The exact sum is 2147483648. The 32-bit result is `0x80000000`: 2147483648 unsigned, or −2147483648 signed. Both are valid readings of those bits. Only the unsigned reading represents the exact sum. The sum is outside the signed 32-bit range, whose largest value is 2147483647 (Module 1).",
 
   investigation:
-    "The part of the processor that adds is the **adder**. The figure uses the carrying rule you practised with four bits, now across 32 columns. Each column keeps its result bit and passes its carry to the next column on the left. The figure explains the arithmetic, not a processor’s circuit.",
+    "The part of the processor that adds is the **adder**. The figure uses the carrying rule you practised in [Arithmetic with four bits](#/lesson/four-bit-arithmetic), now across 32 columns. Each column keeps its result bit and passes its carry to the next column on the left. The figure explains the arithmetic, not a processor’s circuit.",
 
   investigationControls:
     "Press **Next column** to reveal one column, starting at bit 0 on the right. **Next group of four** reveals through the end of that group. **Show all** reveals the complete addition, and **Reset** hides the calculation again. These controls reveal parts of one addition; they do not execute more instructions.",
@@ -71,7 +71,7 @@ export const PROSE = {
     "Of `add`, `adds` and `sub`, only `adds` writes the flags.",
 
   explanation:
-    "After this 32-bit `adds`, use the result bits and the two carry marks at bit 31 to find the four flags:\n\n- N is the top bit of the result, bit 31.\n- Z is 1 if all 32 result bits are 0; otherwise it is 0.\n- C is the carry out of bit 31. It is 1 if a carry leaves that column; otherwise it is 0.\n- V is 1 if the carry into bit 31 differs from the carry out; it is 0 if they match.\n\nThe adder produces the same 32 result bits for both readings. C tells you whether the exact sum of the unsigned inputs exceeds the unsigned 32-bit range. V reports signed **overflow**: the exact sum of the signed inputs is outside the signed 32-bit range. A value of 1 means the sum does not fit that range; 0 means it fits.\n\nC and V are separate tests. Either can be 1 without the other.",
+    "After this 32-bit `adds`, use the result bits and the two carry marks at bit 31 to find the four flags:\n\n- N is the top bit of the result, bit 31.\n- Z is 1 if all 32 result bits are 0; otherwise it is 0.\n- C is the carry out of bit 31. It is 1 if a carry leaves that column; otherwise it is 0.\n- V is 1 if the carry into bit 31 differs from the carry out; it is 0 if they match.\n\nThe adder produces the same 32 result bits for both readings. C tells you whether the exact sum of the unsigned inputs exceeds the unsigned 32-bit range. V reports signed **overflow**: the exact sum of the signed inputs is outside the signed 32-bit range. A value of 1 means the sum does not fit that range; 0 means it fits.\n\nC and V are separate tests. Either can be 1 without the other.\n\nFor optional hardware background, explore [Bit Lab’s four-bit arithmetic and logic circuit](https://snowch.github.io/bit-lab/#/lesson/alu). It is a teaching model, not an Arm processor’s circuit.",
 
   generalisation:
     "Every `adds` writes all four flags. The flags keep their values until another instruction writes them. `add` and `sub` do not write the flags.\n\n" +
