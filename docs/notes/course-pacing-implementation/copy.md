@@ -2,6 +2,8 @@
 
 Drafted separately from checked facts supplied by the three implementation agents. Existing canonical paragraphs remain in their original records. These exact strings are additions or replacements for page boundaries and local activities. The arithmetic comparison revision adds fresh compiler records and model-backed return values, described in its checked-facts brief below.
 
+The addition sequence revision on 11 November 2026 replaces the pacing-only C/V explanation with a heading for the full, visible flag explanation recorded in `docs/notes/module-2/prose.md`. Its named figure controls and essential rules were drafted in a separate Codex pass from checked facts; previous canonical records remain intact.
+
 Sentence and idea passes: one goal per title/objective; instructions name the local action; no answer appears in an initial task. Native checkpoints distinguish file inspection from physical execution. Independent reviews remain pending.
 
 ## pacing-1-4.copy.ts
@@ -101,7 +103,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "reminder": "A condition reads flags using a signed or unsigned rule. [Choosing a signed or unsigned result](#/lesson/compare-and-choose) follows the compare and selection together."
   },
   "addition": {
-    "explanation": "The same result bits have signed and unsigned readings. After addition:\n\n- C reports whether the unsigned sum is too large.\n- V reports signed **overflow**: the mathematical signed sum is outside the signed range.\n\nThese are separate tests.",
+    "flagsTitle": "Reading the four flags",
     "title": "Addition and its flags",
     "objectives": [
       "calculate result bits and flags for an addition."

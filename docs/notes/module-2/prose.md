@@ -1,5 +1,7 @@
 # Module 2: the lessons' words, as drafted
 
+The addition sequence revision on 11 November 2026 uses a separate Codex drafting pass from checked model facts. It asks for separate unsigned and signed input sums, places the carry reminder before the figure and its named controls beside it, and keeps all four flag rules and their range meanings visible before the fresh exercise. Existing motivation and GCC listing are retained. Independent review and built-page verification are recorded separately.
+
 The clarity revision on 17 October 2026 uses a separate Codex drafting pass and independent review, with the session's model and inherited effort. The earlier drafting history follows.
 
 Drafted by Haiku from the fact brief in `docs/notes/module-2/brief.md`, a part at a time; checked for facts by the managing session, which narrowed two sentences the brief had overstated (which instructions set the flags; how a real processor adds), cut one repeat, and set the answers' explanations in plain type as Module 0's are. After the build, Haiku replaced the generic titles of parts 2 to 10 with titles that name each section's content (16 October 2026). After the module's review, Haiku redrafted the parts its sceptic upheld (the failure experiment's new program, the subtraction drawn bit by bit, the ungated answer moved into the prediction's explanation, the meaning of C after a subtraction), from facts the simulator produced. Every number was produced by the simulator before the brief went out. On 17 October 2026 the author asked for the carries to be drawn where they matter. Lesson 1's sections 1, 2, 4 to 8 and 10 and lesson 2's sections 1 to 8 and 10 now carry improved text, checked for facts, and each section 10 is "What you now know". The interface lines at the end are the words the figures and graders say.
@@ -33,14 +35,21 @@ Neither instruction stops the program or reports an error when the sum does not 
 
 For 32-bit additions, `add` and `adds` add bit patterns without choosing a signed or unsigned reading. The reading depends on how the program uses the bits.
 
-The figure adds 2147483647 and 1 with `adds w0, w0, w1`, which is `0x7fffffff` plus `0x00000001` in hexadecimal.
+The figure adds the inputs `0x7fffffff` and `0x00000001` with `adds w0, w0, w1`.
 
-**For which reading can the 32-bit result represent the exact sum of 2147483647 and 1?**
+Read both inputs as unsigned numbers and work out their sum. Then read both inputs as signed numbers and work out their sum.
 
-- Both readings
+The 32-bit ranges are:
+
+- Unsigned: 0 to 4294967295.
+- Signed: −2147483648 to 2147483647.
+
+**For which input readings does the exact sum fit in the corresponding 32-bit range?**
+
+- Both
 - Unsigned only
 - Signed only
-- Neither reading
+- Neither
 
 *Shown after the answer is checked.*
 
@@ -48,46 +57,26 @@ The exact sum is 2147483648. The 32-bit result is `0x80000000`: 2147483648 unsig
 
 ## 4. Carries and the four flags
 
-The part of the processor that adds is the **adder**. The figure works the addition column by column, from the right, as on paper. It explains the arithmetic, not a processor’s circuit. A column adds its two bits and the 1 carried in from the right, if there is one. The total is 0, 1, 2 or 3.
+The part of the processor that adds is the **adder**. The figure uses the carrying rule you practised with four bits, now across 32 columns. Each column keeps its result bit and passes its carry to the next column on the left. The figure explains the arithmetic, not a processor’s circuit.
 
-The column keeps the total's lowest bit as its result bit. It passes the total's other bit, the **carry**, to the next column on the left.
-
-You can step through the figure one column at a time, jump over a group of columns, or show them all.
-
-After `adds`, four flags record facts about the answer:
-
-- N is the top bit of the result.
-- Z is 1 when all 32 result bits are 0.
-- C is the carry out of bit 31, for an addition.
-- V is 1 when the carry into bit 31 differs from the carry out of it.
-
-The figure's last column, bit 31, shows the carry into bit 31 and the carry out of it. Those two carries give C and V.
+Press **Next column** to reveal one column, starting at bit 0 on the right. **Next group of four** reveals through the end of that group. **Show all** reveals the complete addition, and **Reset** hides the calculation again. These controls reveal parts of one addition; they do not execute more instructions.
 
 *`adds w0, w0, w1` column by column, with the carry into each column above it, and the four flags after it.*
 
-**How GCC checks for overflow**
+After this 32-bit `adds`, use the result bits and the two carry marks at bit 31 to find the four flags:
 
-`__builtin_add_overflow` is a function built into GCC. It adds two numbers and reports whether the result did not fit. For two `int`s, GCC 16.1 with `-O1`, as in Module 0, compiles a call to it into this:
+- N is the top bit of the result, bit 31.
+- Z is 1 if all 32 result bits are 0; otherwise it is 0.
+- C is the carry out of bit 31. It is 1 if a carry leaves that column; otherwise it is 0.
+- V is 1 if the carry into bit 31 differs from the carry out; it is 0 if they match.
 
-```
-add_overflows:
-        cmn     w0, w1
-        cset    w0, vs
-        ret
-```
+The adder produces the same 32 result bits for both readings. C tells you whether the exact sum of the unsigned inputs exceeds the unsigned 32-bit range. V reports signed **overflow**: the exact sum of the signed inputs is outside the signed 32-bit range. A value of 1 means the sum does not fit that range; 0 means it fits.
 
-The first line, `add_overflows:`, is the function's name and a colon. The two instructions before `ret` return 1 exactly when V is set. A later module explains them.
+C and V are separate tests. Either can be 1 without the other.
 
 ## 5. Three additions to predict
 
-Earlier, you predicted one addition. Now you predict three.
-
-For these 32-bit additions:
-
-- N is the result's top bit.
-- Z is 1 when the result bits are all zero.
-- C is the carry out of bit 31.
-- V is 1 when the carry into bit 31 differs from the carry out.
+Now predict the four flags for three fresh 32-bit additions.
 
 **Predict the four flags**
 
@@ -145,17 +134,22 @@ Of `add`, `adds` and `sub`, only `adds` writes the flags.
 
 ## 7. Unsigned carry and signed overflow
 
-The adder produces the same 32 result bits for both readings. N records the top bit, and Z records whether all the result bits are zero.
-
-C records the carry out of bit 31. After an addition, C is 1 when the sum of the unsigned numbers is too large for 32 bits.
-
-V reports signed **overflow**: the sum of the signed numbers is outside the signed range. V is 1 when the carry into bit 31 differs from the carry out of it.
-
-C and V are separate tests.
-
 Every `adds` writes all four flags. The flags keep their values until another instruction writes them. `add` and `sub` do not write the flags.
 
 To check whether an addition fits, a program reads C for unsigned numbers or V for signed numbers. Later modules show instructions that read the flags.
+
+**How GCC checks for overflow**
+
+`__builtin_add_overflow` is a function built into GCC. It adds two numbers and reports whether the result did not fit. For two `int`s, GCC 16.1 with `-O1`, as in Module 0, compiles a call to it into this:
+
+```
+add_overflows:
+        cmn     w0, w1
+        cset    w0, vs
+        ret
+```
+
+The first line, `add_overflows:`, is the function's name and a colon. The two instructions before `ret` return 1 exactly when V is set. A later module explains them.
 
 ## 9. The smallest signed overflow
 

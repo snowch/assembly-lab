@@ -99,8 +99,7 @@ export const COPY = {
   addition: {
     reminder:
       "The same bits can represent different signed and unsigned numbers. [Signed and unsigned readings](#/lesson/same-bits-two-readings) shows how to calculate each reading.",
-    explanation:
-      "The same result bits have signed and unsigned readings. After addition:\n\n- C reports whether the unsigned sum is too large.\n- V reports signed **overflow**: the mathematical signed sum is outside the signed range.\n\nThese are separate tests.",
+    flagsTitle: "Reading the four flags",
     title: "Addition and its flags",
     objectives: ["calculate result bits and flags for an addition."],
   },

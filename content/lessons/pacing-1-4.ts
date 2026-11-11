@@ -306,11 +306,21 @@ const addition = splitLesson(addingAndTheFlags, [
       section(addingAndTheFlags, "prediction"),
       {
         ...section(addingAndTheFlags, "investigation"),
-        prose: [section(addingAndTheFlags, "investigation").prose, COPY.addition.explanation].join(
-          "\n\n",
+        // The published lesson puts the flag meanings at the start of the following section;
+        // the unsplit source carries the same text directly after its calculation.
+        interactives: (section(addingAndTheFlags, "investigation").interactives ?? []).map(
+          (part) => ({ ...part, after: undefined }),
         ),
       },
-      section(addingAndTheFlags, "construction"),
+      {
+        ...section(addingAndTheFlags, "construction"),
+        title: COPY.addition.flagsTitle,
+        prose: ADD.explanation,
+        details: section(addingAndTheFlags, "explanation").details,
+        interactives: (section(addingAndTheFlags, "construction").interactives ?? []).map((part) =>
+          part.id === "predict-the-flags" ? { ...part, lead: ADD.construction } : part,
+        ),
+      },
     ],
   },
   {
@@ -326,7 +336,11 @@ const addition = splitLesson(addingAndTheFlags, [
         interactives: [],
       },
       section(addingAndTheFlags, "failureExperiment"),
-      { ...section(addingAndTheFlags, "explanation"), prose: ADD.generalisation },
+      {
+        ...section(addingAndTheFlags, "explanation"),
+        prose: ADD.generalisation,
+        details: undefined,
+      },
       section(addingAndTheFlags, "challenge"),
       section(addingAndTheFlags, "reflection"),
     ],

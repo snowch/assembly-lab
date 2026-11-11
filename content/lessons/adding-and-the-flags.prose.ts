@@ -16,15 +16,19 @@ export const PROSE = {
     "Neither instruction stops the program or reports an error when the sum does not fit. After `adds`, the program can read a flag to check whether the sum fits.",
 
   prediction:
-    "For 32-bit additions, `add` and `adds` add bit patterns without choosing a signed or unsigned reading. The reading depends on how the program uses the bits.\n\n" +
-    "The figure adds 2147483647 and 1 with `adds w0, w0, w1`, which is `0x7fffffff` plus `0x00000001` in hexadecimal.",
+    "For 32-bit additions, `add` and `adds` add bit patterns without choosing a signed or unsigned reading. The reading depends on how the program uses the bits.\n\nThe figure adds the inputs `0x7fffffff` and `0x00000001` with `adds w0, w0, w1`.",
+
   predictionQuestion:
-    "**For which reading can the 32-bit result represent the exact sum of 2147483647 and 1?**",
+    "Read both inputs as unsigned numbers and work out their sum. Then read both inputs as signed numbers and work out their sum.\n\nThe 32-bit ranges are:\n\n- Unsigned: 0 to 4294967295.\n- Signed: −2147483648 to 2147483647.\n\n**For which input readings does the exact sum fit in the corresponding 32-bit range?**",
+
   predictionExplain:
     "The exact sum is 2147483648. The 32-bit result is `0x80000000`: 2147483648 unsigned, or −2147483648 signed. Both are valid readings of those bits. Only the unsigned reading represents the exact sum. The sum is outside the signed 32-bit range, whose largest value is 2147483647 (Module 1).",
 
   investigation:
-    "The part of the processor that adds is the **adder**. The figure works the addition column by column, from the right, as on paper. It explains the arithmetic, not a processor’s circuit. A column adds its two bits and the 1 carried in from the right, if there is one. The total is 0, 1, 2 or 3.\n\nThe column keeps the total's lowest bit as its result bit. It passes the total's other bit, the **carry**, to the next column on the left.\n\nYou can step through the figure one column at a time, jump over a group of columns, or show them all.\n\nAfter `adds`, four flags record facts about the answer:\n\n- N is the top bit of the result.\n- Z is 1 when all 32 result bits are 0.\n- C is the carry out of bit 31, for an addition.\n- V is 1 when the carry into bit 31 differs from the carry out of it.\n\nThe figure's last column, bit 31, shows the carry into bit 31 and the carry out of it. Those two carries give C and V.",
+    "The part of the processor that adds is the **adder**. The figure uses the carrying rule you practised with four bits, now across 32 columns. Each column keeps its result bit and passes its carry to the next column on the left. The figure explains the arithmetic, not a processor’s circuit.",
+
+  investigationControls:
+    "Press **Next column** to reveal one column, starting at bit 0 on the right. **Next group of four** reveals through the end of that group. **Show all** reveals the complete addition, and **Reset** hides the calculation again. These controls reveal parts of one addition; they do not execute more instructions.",
   investigationDetailsSummary: "How GCC checks for overflow",
   investigationDetails:
     "`__builtin_add_overflow` is a function built into GCC. It adds two numbers and reports whether the result did not fit. For two `int`s, GCC 16.1 with `-O1`, as in Module 0, compiles a call to it into this:\n\n" +
@@ -36,8 +40,7 @@ export const PROSE = {
     "```\n\n" +
     "The first line, `add_overflows:`, is the function's name and a colon. The two instructions before `ret` return 1 exactly when V is set. A later module explains them.",
 
-  construction:
-    "Earlier, you predicted one addition. Now you predict three.\n\nFor these 32-bit additions:\n\n- N is the result's top bit.\n- Z is 1 when the result bits are all zero.\n- C is the carry out of bit 31.\n- V is 1 when the carry into bit 31 differs from the carry out.",
+  construction: "Now predict the four flags for three fresh 32-bit additions.",
 
   flagsTask:
     "Give N, Z, C and V for each of three additions with `adds`. Each addition has its own group of four boxes, N, Z, C and V. Each box takes 0 or 1.\n\n" +
@@ -68,10 +71,7 @@ export const PROSE = {
     "Of `add`, `adds` and `sub`, only `adds` writes the flags.",
 
   explanation:
-    "The adder produces the same 32 result bits for both readings. N records the top bit, and Z records whether all the result bits are zero.\n\n" +
-    "C records the carry out of bit 31. After an addition, C is 1 when the sum of the unsigned numbers is too large for 32 bits.\n\n" +
-    "V reports signed **overflow**: the sum of the signed numbers is outside the signed range. V is 1 when the carry into bit 31 differs from the carry out of it.\n\n" +
-    "C and V are separate tests.",
+    "After this 32-bit `adds`, use the result bits and the two carry marks at bit 31 to find the four flags:\n\n- N is the top bit of the result, bit 31.\n- Z is 1 if all 32 result bits are 0; otherwise it is 0.\n- C is the carry out of bit 31. It is 1 if a carry leaves that column; otherwise it is 0.\n- V is 1 if the carry into bit 31 differs from the carry out; it is 0 if they match.\n\nThe adder produces the same 32 result bits for both readings. C tells you whether the exact sum of the unsigned inputs exceeds the unsigned 32-bit range. V reports signed **overflow**: the exact sum of the signed inputs is outside the signed 32-bit range. A value of 1 means the sum does not fit that range; 0 means it fits.\n\nC and V are separate tests. Either can be 1 without the other.",
 
   generalisation:
     "Every `adds` writes all four flags. The flags keep their values until another instruction writes them. `add` and `sub` do not write the flags.\n\n" +
