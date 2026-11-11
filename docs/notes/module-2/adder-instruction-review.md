@@ -43,3 +43,17 @@ header-before-summary ordering and no page overflow or browser errors. The instr
 18 px in every measured case. These are automated browser checks; screen-reader testing and
 observation of a new learner were not performed. Full-suite results, exact-tree CI, merge and
 public deployment verification are recorded separately in the pull request.
+
+The author then requested flag-name mnemonic bullets after the first definition of a flag.
+A separate Sol Medium drafting pass added the names Negative, Zero, Carry and Overflow,
+with signed-reading qualifications for N and V and a memory aid using the v in “overflow”.
+The introduction was shortened in editing. Detailed bit/flag rules remain beside the worked
+result. The canonical motivation matches. The two independent reviewers checked this follow-up
+separately; their final findings and built-page checks are recorded in the pull request.
+
+Validation of the earlier instruction-only head was stopped when this user-requested scope
+was added. Its local full check passed 3,454 unit tests in 194 files, then stopped with exit 130
+after 23 browser passes, one interrupted test and 1,468 tests not run; it was not a full pass.
+Its CI run was cancelled after native-lessons and real-tools passed, with check still queued.
+The final focused rerun after adding the bullets again passed six files and 207 tests.
+Final-head full check and CI results are recorded independently in the pull request.
