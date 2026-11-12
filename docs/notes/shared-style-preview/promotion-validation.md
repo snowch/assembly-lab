@@ -27,4 +27,34 @@ Enter/Space and subsequent summary-focus assertions; it requires the extra comma
 stop only when the command actually overflows. Independent measurements confirm both
 branches. The original run remains separate from the corrected committed-source check.
 
+That same first full run also exposed a page-wide disclosure selector in the optional
+A32 layout audit. It tried to click the new mobile outline summary while that outline
+was hidden on desktop. Scope this audit to lesson teaching panels and App status,
+retaining all original content, containment and legibility checks. The production
+outline suite separately exercises the responsive navigation. Superseded local runs
+were stopped gracefully and retain their own logs/results rather than being counted
+as passing full checks.
+
+After the shared control fix, all 16 affected optional-A32 cases passed independently.
+Both published recorded-reference summaries also passed 8 width/theme states for
+native markers, pointer/keyboard activation, containment and 44px-or-greater hit areas.
+
+Once the optional-A32 audit reached the teaching panels, its existing size check found
+a real phone hit-area defect: the shared recorded-source summary was only 26.39px high
+in `a32-conditions`. Canonical source defines two further references in
+`a32-division-helper`, but its published pacing omits one. The shared class covers
+both published controls and every canonical instance.
+Give `.al-recorded-reference > summary` a 44px minimum height and block padding in the
+shared view stylesheet, preserving its native disclosure marker and all existing
+legibility/containment assertions. The pre-fix affected run exited 1 with 14 passed
+and 2 phone/theme failures; that failed result remains separate from the fix checks.
+
+The interrupted `adfdc4b` browser stage reported 529 passed, 6 failed, 14 skipped,
+1 interrupted and 940 not run. Its failures were the stale desktop compiler-command
+Tab expectation and the page-wide optional-A32 disclosure selector. The superseded
+`9493edd` run had passed static checks and 3,471 unit/integration tests, then stopped
+with 102 browser tests passed, 1 skipped, 1 interrupted and 1,386 not run. Both full
+commands exited 130 after graceful cancellation. Their logs and traces are retained
+separately; neither is a passing full run.
+
 Final committed-source checks, independent reviews, merge and publication results are recorded in the implementation PR. Historical interrupted or stale-artifact checks must not be counted as a passing full final suite.

@@ -43,7 +43,11 @@ for (const lesson of lessons) {
         await commit(page, "predict-a32-limit", "50");
         await commit(page, "predict-a32-syntax", LABELS.options.syntax[0].label);
       }
-      for (const summary of await page.locator("details summary").all()) await summary.click();
+      // Open teaching panels and app status; the responsive page outline is tested separately.
+      for (const summary of await page
+        .locator(".lesson details > summary, .app-status > summary")
+        .all())
+        await summary.click();
       expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
       expect(await figureOverflow(page)).toEqual([]);
       expect(errors).toEqual([]);
