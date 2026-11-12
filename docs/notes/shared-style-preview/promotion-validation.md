@@ -18,4 +18,13 @@ strict TypeScript and all 3,471 unit/integration tests. The test-migration recor
 the separate 54-pass broad layout/flags run and 18-pass v4 follow-up. These preliminary
 results are not substituted for the final stable-commit full check.
 
+The first committed-source full check on `adfdc4b` exposed one further stale keyboard
+expectation in the compiler-note test. At 1280px the command now fits: its client and
+scroll widths are both 636px, so Chromium tabs directly to the second note summary.
+At 375px it still scrolls (281px client width, 613px scroll width), and Chromium gives
+the command its own keyboard stop. The correction retains all note-opening, content,
+Enter/Space and subsequent summary-focus assertions; it requires the extra command
+stop only when the command actually overflows. Independent measurements confirm both
+branches. The original run remains separate from the corrected committed-source check.
+
 Final committed-source checks, independent reviews, merge and publication results are recorded in the implementation PR. Historical interrupted or stale-artifact checks must not be counted as a passing full final suite.
