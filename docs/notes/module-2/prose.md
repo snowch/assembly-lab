@@ -18,7 +18,7 @@ Drafted by Haiku from the fact brief in `docs/notes/module-2/brief.md`, a part a
 
 In Module 1, the same 32 bits could represent different signed and unsigned numbers. The processor adds these bits without knowing which reading the program uses. The sum may not fit that reading's range. How can the processor tell us when that happens?
 
-Every addition in this lesson uses 32-bit register names such as `w0`, so it keeps 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.
+The Arm additions in this lesson use 32-bit register names such as `w0`, so they keep 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.
 
 A **flag** is a single bit stored by the processor, separate from the result in a register. Its value is either 0 or 1. Arm conventionally lists the four flags in **NZCV** order:
 
@@ -36,7 +36,19 @@ The final `s` in `adds` means **setting flags**: calculating a new 0 or 1 value 
 
 Neither instruction stops the program or reports an error when the sum does not fit. After `adds`, the program can read a flag to check whether the sum fits.
 
+## Four-bit flag miniatures
+
+*Four worked four-bit additions show what N, Z, C and V record.*
+
+*Predict N, Z, C and V for a fresh four-bit addition.*
+
+First use four-bit calculations to read the flags. These are teaching miniatures, not Arm registers or instructions. They illustrate the flag rules without changing the processor’s flags. The unsigned range is 0 to 15; the signed range is −8 to 7.
+
+Use the same rules for a fresh four-bit addition. The result bits are supplied; choose the four flag values they would produce.
+
 ## 3. Two readings of one addition
+
+Now apply the rules to a real Arm addition with 32 result bits. The top bit changes from bit 3 to bit 31. The unsigned range becomes 0 to 4294967295; the signed range becomes −2147483648 to 2147483647. Predict which readings fit before opening the calculation.
 
 For 32-bit additions, `add` and `adds` add bit patterns without choosing a signed or unsigned reading. The reading depends on how the program uses the bits.
 
@@ -68,16 +80,14 @@ Press **Next column** to reveal one column, starting at bit 0 on the right. **Ne
 
 *Result bits and carries for the addition, with the four flags.*
 
-After this 32-bit `adds`, use the result bits and the two carry marks at bit 31 to find the four flags:
+After this 32-bit `adds`, read the flags from the result and the carry marks at bit 31:
 
-- N is the top bit of the result, bit 31.
+- N is the result’s top bit, bit 31.
 - Z is 1 if all 32 result bits are 0; otherwise it is 0.
-- C is the carry out of bit 31. It is 1 if a carry leaves that column; otherwise it is 0.
-- V is 1 if the carry into bit 31 differs from the carry out; it is 0 if they match.
+- C is the carry out of bit 31.
+- V is 1 if the carry into bit 31 differs from the carry out; otherwise it is 0.
 
-The adder produces the same 32 result bits for both readings. C tells you whether the exact sum of the unsigned inputs exceeds the unsigned 32-bit range. V reports signed **overflow**: the exact sum of the signed inputs is outside the signed 32-bit range. A value of 1 means the sum does not fit that range; 0 means it fits.
-
-C and V are separate tests. Either can be 1 without the other.
+The carry test for V reports the same signed-range check as the miniatures: 1 means the exact signed sum does not fit. C reports whether the exact unsigned sum is too large.
 
 For optional hardware background, explore [Bit Lab’s four-bit arithmetic and logic circuit](https://snowch.github.io/bit-lab/#/lesson/alu). It is a teaching model, not an Arm processor’s circuit.
 
@@ -417,3 +427,98 @@ Subtract `{b}` from `{a}`; write the low 32 result bits to `{destination}`.
 Update N, Z, C and V.
 
 Keep N, Z, C and V unchanged.
+
+## Four-bit flag primer strings
+
+Drafted in a separate Codex pass from checked four-bit model facts. These calculations are teaching miniatures. Their flag values do not describe execution of an Arm instruction. `{name}` is a flag name. `{a}`, `{b}` and `{total}` are computed numbers; negative numbers use a minus sign, and a negative second operand is enclosed in parentheses.
+
+N and Z read the result
+
+C and V check the two ranges
+
+Four-bit teaching calculation
+
+N: the top result bit
+
+Z: an all-zero result
+
+C: the unsigned sum is too large
+
+V: the signed sum is outside the range
+
+N copies the top result bit. A 1 means the retained result has a negative signed reading. N alone does not tell you whether the signed sum fits.
+
+Z is 1 when every result bit is 0. If any result bit is 1, Z is 0.
+
+C is the carry out of the top bit. For addition, C is 1 when the exact unsigned sum is too large for the available bits.
+
+V is 1 when the exact signed sum is outside the signed range. The retained bits then represent a different signed number.
+
+Result bits
+
+First input
+
+Second input
+
+Bit positions
+
+Unsigned reading
+
+Signed reading
+
+the unsigned range, 0 to 15.
+
+the signed range, −8 to 7.
+
+Fits
+
+Outside
+
+Exact sum
+
+Retained result
+
+All four flags
+
+Each calculation gives all four flag values. The title names the flag to inspect first. C and V check separate readings: either, both or neither can be 1.
+
+Read four flags for a fresh addition
+
+The four-bit addition below has its result bits supplied. Choose 0 or 1 for each flag, then press Check flags.
+
+Check flags
+
+Clear
+
+Choose 0 or 1 for all four flags before checking.
+
+All four flags are correct.
+
+Some flags need another look. Compare your choices with the explanation.
+
+*Shown after Check flags with a complete answer.*
+
+N is 0 because the top result bit is 0.
+
+Z is 0 because the result is not all zero.
+
+C is 1: the exact unsigned sum is 8 + 9 = 17, outside 0 to 15.
+
+V is 1: the signed inputs are −8 and −7. Their exact sum is −15, outside −8 to 7.
+
+The retained result is 0001, which reads as 1 under either reading. Both C and V are 1 even though N is 0.
+
+Flag {name}
+
+{a} + {b} = {total}
+
+
+Four worked four-bit additions show what N, Z, C and V record.
+
+Predict N, Z, C and V for a fresh four-bit addition.
+
+Retained result: {unsigned} unsigned; {signed} signed.
+
+Carry out past bit 3: {value}
+
+`{unsigned}` and `{signed}` are the model’s readings of the retained result. `{value}` is the model’s carry out of bit 3.

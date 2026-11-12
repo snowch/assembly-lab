@@ -11,6 +11,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { additionSteps, bitAt, columnWork, parseListing, topCarries, traceOf } from "@al/views";
+import { fourBitReadings } from "@al/views";
 import { learnerText } from "@platform/lesson-schema";
 
 import { LESSONS } from ".";
@@ -142,6 +143,9 @@ describe("the three additions the challenge predicts", () => {
   });
 
   it("give 5 plus 3 an answer of 8, with all four flags 0 and no carry reaching the top bit", () => {
+    expect(fourBitReadings("0111").signed).toBe(7);
+    expect(fourBitReadings("1000").signed).toBe(-8);
+    expect(fourBitReadings("1111").unsigned).toBe(15);
     expect(plus(5, 3).w0).toBe(8);
     expect(flagsOf(5, 3)).toBe("0000");
     const record = additionSteps(traceOf(PLUS, { entry: "plus", args: [5, 3] }))[0]!.addition!;
@@ -465,6 +469,8 @@ describe("the numbers the improved text states", () => {
       [2, "a total of a column, and the smallest overflow"],
       [3, "the largest total of a column, and an argument"],
       [5, "an argument of 5 plus 3"],
+      [7, "0111, the largest signed four-bit reading"],
+      [15, "1111, the largest unsigned four-bit reading"],
       [8, "5 plus 3"],
       [16.1, "the compiler's version"],
       [31, "the top bit"],
@@ -489,6 +495,9 @@ describe("the numbers the improved text states", () => {
   });
 
   it("agrees with the model on each: 5 plus 3 is 8, the signed readings, and the compiler's version", () => {
+    expect(fourBitReadings("0111").signed).toBe(7);
+    expect(fourBitReadings("1000").signed).toBe(-8);
+    expect(fourBitReadings("1111").unsigned).toBe(15);
     expect(plus(5, 3).w0).toBe(8);
     expect(signed(0xc0000000)).toBe(-1073741824);
     expect(signed(0x80000000)).toBe(-2147483648);

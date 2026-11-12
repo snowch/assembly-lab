@@ -11,6 +11,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { ARITH_STRINGS as A } from "@al/views";
+import { FLAG_PRIMER_STRINGS as PRIMER } from "../../packages/views/src/strings.flag-primer";
 import { learnerText, termProblems } from "@platform/lesson-schema";
 
 import { SOURCE_LESSONS as LESSONS } from ".";
@@ -58,7 +59,12 @@ const cases = [
     labelsFile: "./adding-and-the-flags.labels.ts",
     // The captions, field labels and test names the file does not give: each was drafted for the
     // page, and the file's parts name none of them.
-    canonicalCaptions: [L1.captions.adder, L1.captions.adderCarryOut],
+    canonicalCaptions: [
+      PRIMER.exampleCaption,
+      PRIMER.practiceCaption,
+      L1.captions.adder,
+      L1.captions.adderCarryOut,
+    ],
     own: [
       L1.captions.predictReadings,
       L1.captions.predictAdd,

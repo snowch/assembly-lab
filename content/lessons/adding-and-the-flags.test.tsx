@@ -75,7 +75,7 @@ describe("the lesson", () => {
 
   it("carries an originality note that names the textbook example", () => {
     expect(lesson.originalityNote.textbookExample).toContain("8-bit");
-    expect(lesson.originalityNote.howThisDiffers).toContain("32 bits");
+    expect(lesson.originalityNote.howThisDiffers).toMatch(/32[- ]bits?/);
   });
 
   it("names only figures the book has, and only the model the book has a note for", () => {

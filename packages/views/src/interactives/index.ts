@@ -19,6 +19,7 @@ import { ListingCompare } from "./ListingCompare";
 import { ModelPrediction } from "./ModelPrediction";
 import { ReadingSequence } from "./ReadingSequence";
 import { RegisterReader } from "./RegisterReader";
+import { FlagPrimer } from "./FlagPrimer";
 import { FourBitArithmetic } from "./FourBitArithmetic";
 import { ComplementExplorer } from "./ComplementExplorer";
 import { BitOpsFigure } from "./BitOpsFigure";
@@ -73,6 +74,7 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   "reading-sequence": ReadingSequence,
   "complement-explorer": ComplementExplorer,
   "four-bit-arithmetic": FourBitArithmetic,
+  "flag-primer": FlagPrimer,
   stepper: StepperFigure,
   "constant-tester": ConstantTester,
   "trace-prediction": TracePrediction,
