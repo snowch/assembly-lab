@@ -14,7 +14,7 @@ Production prose was drafted separately by `flag_primer_draft` (`gpt-6.1-sol`, M
 
 No learner/UX correction remained in the final independent review. Rejected suspicions and their evidence remain in that report.
 
-## Commands and outcomes before the full check
+## Commands and outcomes before the final full check
 
 - First focused build/unit attempt failed because the two new interactive records omitted required `timeModel`; corrected to `none`.
 - First type check found union-tuple spread typing errors; corrected with explicit tuple indexes.
@@ -25,4 +25,6 @@ No learner/UX correction remained in the final independent review. Rejected susp
 - Final focused Playwright run: 4 passed, covering desktop/phone and actual saved light/dark themes, worked values, incomplete/wrong/correct mini answers, restoration, Clear, 44px targets, no document overflow, and both independent Arm gates.
 - Type check and production build passed. GNU/QEMU targeted corpus check and official-source evidence are recorded in the technical review.
 
-The complete committed-head `npm run check`, required pull-request CI, merge-tree comparison, Pages deployment and public revision checks follow this record. Their exact revision and outcomes belong in the pull request, so this file does not claim they have already passed.
+The first committed-head `npm run check` passed formatting, copyright, platform integrity and type checks, then failed one unit assertion: 3458 passed and one failed. The originality-note test expected the exact phrase “32 bits”; the separately drafted note uses “32-bit”. Its width assertion now accepts either spelling while preserving the textbook-example check. No product code changed for this correction.
+
+The final committed-head `npm run check`, required pull-request CI, merge-tree comparison, Pages deployment and public revision checks follow this record. Their exact revision and outcomes belong in the pull request, so this file does not claim they have already passed.
