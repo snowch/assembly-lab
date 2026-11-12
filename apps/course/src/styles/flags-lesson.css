@@ -161,6 +161,7 @@
   margin: 0 0 18px 13px;
 }
 .al-flags-lesson .side-link {
+  min-height: 44px;
   display: flex;
   gap: 12px;
   align-items: center;

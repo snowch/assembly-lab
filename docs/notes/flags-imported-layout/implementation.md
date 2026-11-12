@@ -29,3 +29,5 @@ The local `npm run check` passed formatting, copyright, platform integrity, Type
 An earlier local full-check attempt stopped on formatting of the new browser spec. That was corrected before the run above; the original format failure is not represented as a passing command.
 
 The repaired offline batch passed on desktop and phone (2 tests, 47.1 seconds). Formatting, TypeScript, copyright and platform-integrity checks passed again after that test-only correction. A complete green CI run remains the release gate; the partial local run above is not substituted for it.
+
+The first completed push CI run (`43283556942`) passed 1,440 browser tests, skipped 21 and failed one strict hit-region check: the first desktop sidebar link measured 39px against the 40px minimum. The scoped sidebar rule now sets an explicit 44px minimum without changing the test. The focused geometry, outline, navigation and keyboard rerun passed eight tests. Independent browser review also checked actual and Arial font metrics; its full record is in the technical review. The original failed CI run remains a failed run; the replacement commit requires its own complete CI result.
