@@ -1,0 +1,48 @@
+# Independent technical review of recovered preview
+
+Reviewed 12 November 2026 against recovered commit `7b20869f04a46afb69c3f4c653ce2b900d28b5bd`. The reviewer did not write the implementation. This review uses the recovered source and fresh browser evidence, not the earlier environment's observations.
+
+Verdict: no technical blocker found in the reviewed scope. The private preview is suitable for author review, subject to the managing session's complete course-wide checks. This is not approval to replace the published course.
+
+## Browser evidence
+
+An independent Playwright script drove the actual preview build at `http://localhost:4440/`, with service workers blocked for layout checks and reduced motion enabled. It checked register widths, flags and memory (`memory-and-addresses`) at 320, 375, 834 and 1280 pixels, in both light and dark themes: 24 lesson/theme/width combinations.
+
+- The same `.lesson` DOM node remained mounted across Current/New. Its DOM text remained identical; the flags sidebar was intentionally hidden in New. No horizontal page overflow or page errors occurred in these states.
+- All generated outline entries resolved to exactly one real section: four for register widths, seven for flags and five for memory. Selecting the final entry kept the lesson hash, focused the section heading, closed the mobile disclosure and left the heading below the sticky header. Standard headings landed approximately 156px from the viewport top; flags headings landed at 232–237px, below their section kicker. The header bottom was 122px on phones and 128px on tablet/desktop. Root `scroll-padding-top` was `auto`, so the root does not add the former duplicate offset.
+- The toolbar measured exactly 60px high. Preview help stayed inside the viewport at every width. Focused skip links were actually above neighbouring content by hit testing, and Enter focused `#main` without changing the lesson hash. These popup/skip checks also passed separately in Current for register widths and flags across all widths and themes, 16 states.
+- Register-width challenge inputs retained DOM identity and their values through both switches. Calculator scratch value 42 survived both switches. A successful grade survived both switches and ordinary reload. Ordinary reload closed/reset the independent calculator, matching its existing contract.
+- The flags page exposed one visible outline in New; its original sidebar was hidden. Its prediction gate initially withheld the explorer. After a prediction attempt, a selected reading survived Current/New and reload.
+- System theme followed an emulated light-to-dark change, explicit Light overrode a dark system, and selecting System restored the dark appearance. Actual body backgrounds were checked, not just the picker value.
+- Screenshots were visually inspected at 320px/light and 1280px/dark for register widths and at 320px for the restored flags explorer. The compact header, toolbar and mobile content were legible and contained.
+
+A separate normal build used `BASE_PATH=/ VITE_STYLE_PREVIEW=0 npm run build -w @al/course -- --outDir /tmp/assembly-review-normal`. It succeeded without writing to either course `dist` or `.style-preview-build`. At all four widths and both themes, register widths and flags ignored both `?style=new` and saved `style-preview=new`: no comparison controls, preview data attribute or preview wrapper appeared. Sixteen comparisons found Current's lesson x coordinate, width, font family, size, line height and colour equal to the normal build. Its y coordinate differed by exactly the reserved 60px toolbar.
+
+A separate IPv4-bound read-only preview server on port 4446 supported a fresh service-worker check. Downloading for offline use gave scope `/`. Offline reload retained a register-width answer; changing appearance and opening the flags route worked offline. The flags prediction gate and selected reading survived appearance changes and reload. Returning online, a second origin (`127.0.0.1` versus `localhost`) had neither the first origin's storage canary nor its challenge answer. This establishes local origin isolation and root-base offline behaviour; the deployed Site's privacy and origin identity still need the managing session's hosting check.
+
+## Source review
+
+Read `CLAUDE.md`, the preview brief and recovery note, `StylePreview.tsx`, the preview CSS, the App integration, theme implementation, Vite configuration, preview build script, browser test configuration, focused course/offline tests, comparison report generator and preview workflow. Read the existing flags section list and navigation code for the specialised route.
+
+- Enablement uses exact build-time equality with `"1"`. URL and saved style are read only after that guard. Normal builds do not mount the controls or layout, and the new palette is scoped to the preview data attribute.
+- The preview wrapper remains in the same React tree in both appearances; only its style prop and scoped root attribute change. Lesson keys depend on lesson ID, not appearance. Flags and standard lessons keep their actual interactive components and storage integration.
+- Standard outline entries derive from `lesson.sections`; flags entries derive from the seven exported real flags sections. Click handling prevents the section anchor from replacing the hash route, focuses the heading with `preventScroll`, scrolls the section, and closes the mobile disclosure.
+- The new shell uses the compact flags header. Its sticky top is 60px when preview-enabled, matching the reserved toolbar. Preview CSS does not change model, grader, hint or storage code.
+- The recovered work test now checks calculator scratch across style switches and persisted challenge answers across reload; it explicitly recognises that ordinary reload resets calculator scratch. The offline test uses a dedicated origin canary, and the test server binds to `0.0.0.0`, enabling its IPv4 second origin. These are the intended harness corrections, not course behaviour changes.
+- Root preview builds set both `BASE_PATH=/` and `VITE_STYLE_PREVIEW=1`. The preview workflow builds/tests and uploads comparison artifacts; it contains no live-course deployment step. `.openai/hosting.json` retains one project identity.
+
+## Test accounting and limits
+
+The focused independent scripts passed after correcting reviewer harness assumptions. The first layout attempt compared visible flags sidebar text across styles; this failed because New deliberately hides that duplicate navigation. The final check compares unchanged DOM text and separately checks sidebar visibility. One offline attempt reached its origin check but failed to connect to IPv4 port 4440, whose existing review server was IPv6-only. A later reviewer assertion expected no worker registration on the second origin; that was invalid because the app registers a worker automatically. The final IPv4-server run checks absence of the canary and answer instead and passed. These failed attempts remain failures; the passing reruns do not reclassify their exit status.
+
+This review did not independently run the full repository suite or the complete 80-lesson screenshot matrix. It did not inspect every lesson's initial/committed/stepped/reset state or validate private Site access settings. Those results must be recorded separately by the managing session. The preview code and course model were not edited during this review; only this report was added.
+
+## Follow-up: duplicate section rules
+
+The managing session's final screenshot spot-check identified a low-severity UX defect missed in the initial visual pass. Confirmed in the actual pre-fix preview: New's standard section has a 1px top border, while its direct h2 retains the baseline 1px top border and 24px top padding. This draws two nearby horizontal rules and adds redundant space before the heading. Current correctly has only its baseline h2 rule.
+
+The smallest correction is to set `border-top: 0` and `padding-top: 0` on the existing New-only `.style-preview-content .lesson-section > h2` rule, retaining the section's border and padding. This selector does not match flags section headings: all seven are inside `.step-head`, with zero direct `.lesson-section > h2` matches. Their computed heading border/padding is already 0px. The reviewer has not edited implementation code; rebuilt-site verification is pending.
+
+Rebuilt-site verification passed at `http://localhost:4447/`, using the separate immutable build containing only the scoped heading correction. The focused follow-up covered register widths, memory and flags at 320, 375 and 1280px, light/dark, Current/New: 36 states, with no assertion failures. Every standard New section retained its 1px divider and 32px top padding; its h2 had 0px top border/padding and began 33px below the section edge. Current retained its original 1px h2 border and 24px top padding, with no section border. Visually inspected phone/light register widths and desktop light/dark register widths/memory: one divider remained, with clear spacing before the heading.
+
+Keyboard Enter on the first and final outline links focused an h2 below the sticky header, preserved the lesson route and closed the mobile outline in all 18 New states. All seven flags heading/section bounding rectangles and relevant computed styles exactly matched the previous preview build at `:4440` across the six width/theme combinations. The direct-child heading selector still matched none of the flags headings. The finding is corrected and independently verified; no technical blocker remains from this follow-up. This focused rerun does not replace the managing session's final complete matrix results.

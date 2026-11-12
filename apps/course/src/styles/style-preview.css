@@ -238,6 +238,8 @@ html[data-style-preview="new"] .style-preview-content > .lesson > .lesson-sectio
   scroll-margin-top: 156px;
 }
 html[data-style-preview="new"] .style-preview-content .lesson-section > h2 {
+  border-top: 0;
+  padding-top: 0;
   font-size: 30px;
   font-weight: 780;
   line-height: 1.2;
