@@ -18,6 +18,8 @@
     "dev": "npm run dev -w @al/course",
     "build": "npm run build -w @al/course",
     "preview": "npm run preview -w @al/course",
+    "build:style-preview": "node scripts/build-style-preview.mjs",
+    "test:style-preview": "playwright test -c playwright.style-preview.config.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",

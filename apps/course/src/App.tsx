@@ -30,6 +30,12 @@ import { lessonHref, pageTitle, useRoute } from "./route";
 import { RUNTIME_STRINGS } from "./runtime-strings";
 import { COMPANION_LINKS, GITHUB_REPOSITORY, STRINGS } from "./strings";
 import { clearThemeUpdate, saveThemeForUpdate, useTheme, type Theme } from "./theme";
+import {
+  STYLE_PREVIEW_ENABLED,
+  usePreviewStyle,
+  StylePreviewControls,
+  PreviewLessonLayout,
+} from "./StylePreview";
 
 /**
  * The skip link moves focus to the main content and leaves the address alone: its `#main` is not a
@@ -55,6 +61,7 @@ export function App() {
   const completion = useLessonCompletion(completionStore);
   const route = useRoute();
   const [theme, setTheme] = useTheme();
+  const [previewStyle, setPreviewStyle] = usePreviewStyle();
   const canReload = useCallback(
     () =>
       !document.querySelector('[aria-busy="true"], [data-app-busy="true"]') &&
@@ -78,6 +85,8 @@ export function App() {
   }, [route, book]);
 
   const flagsLayout = route.kind === "lesson" && route.id === "adding-and-the-flags";
+  const newStyle = STYLE_PREVIEW_ENABLED && previewStyle === "new";
+  const compactHeader = flagsLayout || newStyle;
   let page: React.ReactNode;
   if (route.kind === "front") page = <FrontPage completion={completion} />;
   else if (route.kind === "where-next") page = <WhereNextPage />;
@@ -88,7 +97,7 @@ export function App() {
     const at = lesson ? ordered.findIndex((l) => l.id === lesson.id) : -1;
     const previous = ordered[at - 1];
     const next = ordered[at + 1];
-    page = lesson ? (
+    const lessonBody = lesson ? (
       <>
         {!flagsLayout && (
           <p className="lesson-back">
@@ -109,6 +118,17 @@ export function App() {
             lessonHref={lessonHref}
             strings={RUNTIME_STRINGS}
           />
+        )}
+      </>
+    ) : null;
+    page = lesson ? (
+      <>
+        {STYLE_PREVIEW_ENABLED ? (
+          <PreviewLessonLayout key={lesson.id} lesson={lesson} style={previewStyle}>
+            {lessonBody}
+          </PreviewLessonLayout>
+        ) : (
+          lessonBody
         )}
         {lesson.module === 9 && next?.module !== 9 && (
           <aside className="where-next-after-calls">
@@ -171,11 +191,18 @@ export function App() {
           {STATUS_STRINGS.restarting}
         </p>
       )}
-      <header className="shell-header" data-flags-layout={flagsLayout} inert={offline?.updating}>
+      {STYLE_PREVIEW_ENABLED && (
+        <StylePreviewControls
+          style={previewStyle}
+          onChange={setPreviewStyle}
+          inert={offline?.updating}
+        />
+      )}
+      <header className="shell-header" data-flags-layout={compactHeader} inert={offline?.updating}>
         <a className="brand" href="#/">
           {STRINGS.title}
         </a>
-        {!flagsLayout && (
+        {!compactHeader && (
           <a className="github-star" href={GITHUB_REPOSITORY}>
             <span aria-hidden="true">☆</span>
             <span>
