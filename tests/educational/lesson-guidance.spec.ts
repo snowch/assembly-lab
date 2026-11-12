@@ -2,7 +2,7 @@
 
 import { expect, test } from "@playwright/test";
 import { LESSONS } from "@al/content";
-import { VIEW_STRINGS } from "../../packages/views/src/strings";
+import { FLAGS_LESSON_SECTIONS } from "../../packages/views/src/flags-lesson/strings";
 import { openLesson, watchErrors } from "./module1";
 
 for (const theme of ["light", "dark"]) {
@@ -29,8 +29,13 @@ for (const theme of ["light", "dark"]) {
       );
       // Descriptive headings are the navigation outline, visible to all readers. Authoring
       // stages add no second label, and surplus sections must be removed from data, not hidden.
-      const headings = page.locator(".lesson-section > h2");
-      await expect(headings).toHaveCount(lesson.sections.length);
+      const flags = lesson.id === "adding-and-the-flags";
+      const headings = page.locator(
+        flags ? ".lesson-step > .step-head > h2" : ".lesson-section > h2",
+      );
+      await expect(headings).toHaveCount(
+        flags ? FLAGS_LESSON_SECTIONS.length : lesson.sections.length,
+      );
       for (const heading of await headings.all()) {
         await expect(heading.locator(".section-title")).toBeVisible();
         await expect(heading.locator(".section-kind")).toBeHidden();
@@ -47,12 +52,13 @@ for (const theme of ["light", "dark"]) {
     }
     // Column reveal is a different interaction, so its local explanation remains available.
     await openLesson(page, "adding-and-the-flags");
-    const calculation = page.locator('figure[data-role="calculation"]').first();
-    const toggle = calculation.locator(".time-model-toggle");
-    await expect(toggle).toHaveAttribute("aria-expanded", "false");
-    await toggle.click();
-    await expect(calculation.locator(".time-model-note")).toHaveText(
-      VIEW_STRINGS.figureRoleNotes.calculation,
+    await expect(page.locator("#cvSummary")).toContainText("Signed addition");
+    await expect(page.locator("#columnTrace")).toHaveCount(0);
+    await page.locator('input[name="arm-choice"][value="0"]').locator("..").click();
+    await page.locator("#armForm button[type=submit]").click();
+    await page.locator("#columnTrace > summary").click();
+    await expect(page.locator("#columnTrace")).toContainText(
+      "it does not execute another instruction",
     );
     expect(errors).toEqual([]);
   });

@@ -19,3 +19,5 @@ createRoot(root).render(
     <App />
   </StrictMode>,
 );
+
+import "./styles/flags-lesson.css";

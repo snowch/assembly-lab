@@ -106,3 +106,6 @@ export { PROGRAMMER_CALCULATOR } from "./strings.programmer-calculator";
 export { ProgrammerCalculator } from "./ProgrammerCalculator";
 
 export { FLAG_PRIMER_STRINGS } from "./strings.flag-primer";
+
+export { FlagsLesson } from "./flags-lesson/FlagsLesson";
+export { FLAGS_LESSON_SECTIONS } from "./flags-lesson/strings";
