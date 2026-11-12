@@ -6,6 +6,7 @@
 
 import { expect, type Locator, type Page } from "@playwright/test";
 import { LESSONS } from "@al/content";
+import { FLAGS_LESSON_SECTIONS } from "../../packages/views/src/flags-lesson/strings";
 
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { format } from "../../platform/lesson-runtime/src/strings";
@@ -25,7 +26,9 @@ export async function openLesson(page: Page, id: string): Promise<void> {
   await page.goto(`#/lesson/${id}`);
   const lesson = LESSONS.find((lesson) => lesson.id === id);
   expect(lesson).toBeDefined();
-  await expect(page.locator("section.lesson-section")).toHaveCount(lesson!.sections.length);
+  await expect(page.locator("section.lesson-section")).toHaveCount(
+    id === "adding-and-the-flags" ? FLAGS_LESSON_SECTIONS.length : lesson!.sections.length,
+  );
   await page.evaluate(async () => {
     await document.fonts.ready;
   });

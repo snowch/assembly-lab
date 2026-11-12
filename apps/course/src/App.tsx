@@ -7,6 +7,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 
 import {
+  FlagsLesson,
   prepareViewHandoff,
   clearViewHandoff,
   LessonProse,
@@ -76,6 +77,7 @@ export function App() {
     );
   }, [route, book]);
 
+  const flagsLayout = route.kind === "lesson" && route.id === "adding-and-the-flags";
   let page: React.ReactNode;
   if (route.kind === "front") page = <FrontPage completion={completion} />;
   else if (route.kind === "where-next") page = <WhereNextPage />;
@@ -88,20 +90,26 @@ export function App() {
     const next = ordered[at + 1];
     page = lesson ? (
       <>
-        <p className="lesson-back">
-          <a className="back-link" href="#/">
-            {STRINGS.backToPlan}
-          </a>
-        </p>
-        <p className="lesson-position">{book.references.position(lesson.id)}</p>
-        <LessonView
-          key={lesson.id}
-          book={{ ...book, lessons: book.referenceLessons }}
-          lesson={lesson}
-          storage={storage}
-          lessonHref={lessonHref}
-          strings={RUNTIME_STRINGS}
-        />
+        {!flagsLayout && (
+          <p className="lesson-back">
+            <a className="back-link" href="#/">
+              {STRINGS.backToPlan}
+            </a>
+          </p>
+        )}
+        {!flagsLayout && <p className="lesson-position">{book.references.position(lesson.id)}</p>}
+        {flagsLayout ? (
+          <FlagsLesson book={book} lesson={lesson} storage={storage} strings={RUNTIME_STRINGS} />
+        ) : (
+          <LessonView
+            key={lesson.id}
+            book={{ ...book, lessons: book.referenceLessons }}
+            lesson={lesson}
+            storage={storage}
+            lessonHref={lessonHref}
+            strings={RUNTIME_STRINGS}
+          />
+        )}
         {lesson.module === 9 && next?.module !== 9 && (
           <aside className="where-next-after-calls">
             <LessonProse markdown={WHERE_NEXT.afterCalls} />
@@ -163,17 +171,19 @@ export function App() {
           {STATUS_STRINGS.restarting}
         </p>
       )}
-      <header className="shell-header" inert={offline?.updating}>
+      <header className="shell-header" data-flags-layout={flagsLayout} inert={offline?.updating}>
         <a className="brand" href="#/">
           {STRINGS.title}
         </a>
-        <a className="github-star" href={GITHUB_REPOSITORY}>
-          <span aria-hidden="true">☆</span>
-          <span>
-            {STRINGS.githubStar}
-            <span className="github-star-destination"> {STRINGS.githubStarDestination}</span>
-          </span>
-        </a>
+        {!flagsLayout && (
+          <a className="github-star" href={GITHUB_REPOSITORY}>
+            <span aria-hidden="true">☆</span>
+            <span>
+              {STRINGS.githubStar}
+              <span className="github-star-destination"> {STRINGS.githubStarDestination}</span>
+            </span>
+          </a>
+        )}
         <AppStatus offline={offline} />
         <label className="theme-picker">
           <span>{STRINGS.theme}</span>
@@ -184,7 +194,13 @@ export function App() {
           </select>
         </label>
       </header>
-      <main id="main" className="shell-main" tabIndex={-1} inert={offline?.updating}>
+      <main
+        id="main"
+        className="shell-main"
+        data-flags-layout={flagsLayout}
+        tabIndex={-1}
+        inert={offline?.updating}
+      >
         {page}
       </main>
       <footer className="shell-footer" inert={offline?.updating}>

@@ -9,6 +9,7 @@ import { challenge, passing, press, run, status, watchErrors } from "./module1";
 import { downloadOffline, offlineReady, openStatus } from "./app-status-helper";
 import { designProblems } from "./design";
 import { deployment } from "./offline-site";
+import { FLAGS_LESSON_SECTIONS } from "../../packages/views/src/flags-lesson/strings";
 
 // Keep every published route, but bound each fresh offline session's work as the course grows.
 // Each batch still downloads the whole course and verifies all downloadable files.
@@ -52,7 +53,11 @@ for (const [batchIndex, offlineLessons] of offlineBatches.entries()) {
         );
         expect(response?.fromServiceWorker()).toBe(true);
         await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
-        await expect(page.locator("section.lesson-section")).toHaveCount(lesson.sections.length);
+        await expect(page.locator("section.lesson-section")).toHaveCount(
+          lesson.id === "adding-and-the-flags"
+            ? FLAGS_LESSON_SECTIONS.length
+            : lesson.sections.length,
+        );
         await offlineReady(page);
         await expect(page.locator(".app-status > summary")).toBeVisible();
       }
