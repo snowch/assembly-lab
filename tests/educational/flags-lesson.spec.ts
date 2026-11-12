@@ -38,6 +38,19 @@ async function stored(page: Page) {
   return page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? "null"), KEY);
 }
 
+async function navigateOutline(page: Page, id: string) {
+  const phone = page.viewportSize()!.width <= 760;
+  if (phone) await page.locator(".lesson-outline-mobile > summary").click();
+  const nav = page.locator(phone ? ".lesson-outline-mobile nav" : ".lesson-outline-desktop nav");
+  const link = nav.locator(`a[href="#${id}"]`);
+  await link.click();
+  await page.evaluate(
+    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+  );
+  await expect(link).toHaveAttribute("aria-current", "location");
+  if (phone) await expect(page.locator(".lesson-outline-mobile")).not.toHaveAttribute("open");
+}
+
 for (const theme of ["light", "dark"] as const) {
   test(`approved flags route: complete outline, visible rules, examples and scoped navigation (${theme})`, async ({
     page,
@@ -88,16 +101,8 @@ for (const theme of ["light", "dark"] as const) {
     await page.locator("#tabV").click();
     await page.locator("#negativeBtn").click();
     await expect(page.locator("#overflowEquation")).toHaveText("−8 + (−1) = −9");
-    await (
-      page.viewportSize()!.width < 760
-        ? page.locator(".next-link[href='#compare']")
-        : page.locator("#nav a[href='#compare']")
-    ).click();
+    await navigateOutline(page, "compare");
     await expect(page).toHaveURL(/#\/lesson\/adding-and-the-flags$/);
-    await expect(page.locator("#nav a[href='#compare']")).toHaveAttribute(
-      "aria-current",
-      "location",
-    );
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
@@ -318,15 +323,9 @@ for (const theme of ["light", "dark"] as const) {
   });
 }
 
-test("theme, keyboard and course navigation preserve work and isolate the design", async ({
-  page,
-}) => {
+test("theme, keyboard and shared course navigation preserve flags work", async ({ page }) => {
   await open(page, "light");
-  await (
-    page.viewportSize()!.width < 760
-      ? page.locator('.next-link[href="#smallpractice"]')
-      : page.locator('#nav a[href="#smallpractice"]')
-  ).click();
+  await navigateOutline(page, "smallpractice");
   await expect(page).toHaveURL(/#\/lesson\/adding-and-the-flags$/);
   const n = page.locator('input[name=mini-n][value="0"]');
   await n.focus();
@@ -391,7 +390,7 @@ test("the approved layout stays legible, unclipped and follows the system theme"
       .evaluate((el) => getComputedStyle(el).getPropertyValue("--ink").trim()),
   ).toBe("#e7eeeb");
   expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe(
-    "rgb(16, 26, 23)",
+    "rgb(16, 27, 26)",
   );
   await page.emulateMedia({ colorScheme: "light" });
   expect(

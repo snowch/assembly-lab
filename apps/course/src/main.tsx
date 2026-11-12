@@ -21,4 +21,4 @@ createRoot(root).render(
 );
 
 import "./styles/flags-lesson.css";
-import "./styles/style-preview.css";
+import "./styles/course-layout.css";

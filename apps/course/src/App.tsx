@@ -28,14 +28,9 @@ import { WhereNextPage } from "./pages/WhereNextPage";
 import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
 import { RUNTIME_STRINGS } from "./runtime-strings";
-import { COMPANION_LINKS, GITHUB_REPOSITORY, STRINGS } from "./strings";
+import { COMPANION_LINKS, STRINGS } from "./strings";
 import { clearThemeUpdate, saveThemeForUpdate, useTheme, type Theme } from "./theme";
-import {
-  STYLE_PREVIEW_ENABLED,
-  usePreviewStyle,
-  StylePreviewControls,
-  PreviewLessonLayout,
-} from "./StylePreview";
+import { LessonLayout } from "./LessonLayout";
 
 /**
  * The skip link moves focus to the main content and leaves the address alone: its `#main` is not a
@@ -61,7 +56,6 @@ export function App() {
   const completion = useLessonCompletion(completionStore);
   const route = useRoute();
   const [theme, setTheme] = useTheme();
-  const [previewStyle, setPreviewStyle] = usePreviewStyle();
   const canReload = useCallback(
     () =>
       !document.querySelector('[aria-busy="true"], [data-app-busy="true"]') &&
@@ -85,8 +79,6 @@ export function App() {
   }, [route, book]);
 
   const flagsLayout = route.kind === "lesson" && route.id === "adding-and-the-flags";
-  const newStyle = STYLE_PREVIEW_ENABLED && previewStyle === "new";
-  const compactHeader = flagsLayout || newStyle;
   let page: React.ReactNode;
   if (route.kind === "front") page = <FrontPage completion={completion} />;
   else if (route.kind === "where-next") page = <WhereNextPage />;
@@ -123,13 +115,9 @@ export function App() {
     ) : null;
     page = lesson ? (
       <>
-        {STYLE_PREVIEW_ENABLED ? (
-          <PreviewLessonLayout key={lesson.id} lesson={lesson} style={previewStyle}>
-            {lessonBody}
-          </PreviewLessonLayout>
-        ) : (
-          lessonBody
-        )}
+        <LessonLayout key={lesson.id} lesson={lesson}>
+          {lessonBody}
+        </LessonLayout>
         {lesson.module === 9 && next?.module !== 9 && (
           <aside className="where-next-after-calls">
             <LessonProse markdown={WHERE_NEXT.afterCalls} />
@@ -191,26 +179,10 @@ export function App() {
           {STATUS_STRINGS.restarting}
         </p>
       )}
-      {STYLE_PREVIEW_ENABLED && (
-        <StylePreviewControls
-          style={previewStyle}
-          onChange={setPreviewStyle}
-          inert={offline?.updating}
-        />
-      )}
-      <header className="shell-header" data-flags-layout={compactHeader} inert={offline?.updating}>
+      <header className="shell-header" inert={offline?.updating}>
         <a className="brand" href="#/">
           {STRINGS.title}
         </a>
-        {!compactHeader && (
-          <a className="github-star" href={GITHUB_REPOSITORY}>
-            <span aria-hidden="true">☆</span>
-            <span>
-              {STRINGS.githubStar}
-              <span className="github-star-destination"> {STRINGS.githubStarDestination}</span>
-            </span>
-          </a>
-        )}
         <AppStatus offline={offline} />
         <label className="theme-picker">
           <span>{STRINGS.theme}</span>
@@ -221,13 +193,7 @@ export function App() {
           </select>
         </label>
       </header>
-      <main
-        id="main"
-        className="shell-main"
-        data-flags-layout={flagsLayout}
-        tabIndex={-1}
-        inert={offline?.updating}
-      >
+      <main id="main" className="shell-main" tabIndex={-1} inert={offline?.updating}>
         {page}
       </main>
       <footer className="shell-footer" inert={offline?.updating}>

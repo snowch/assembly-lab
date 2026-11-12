@@ -167,6 +167,15 @@ test("bit rows use the calculator's available width, including all 32 bits on a 
   await calc.evaluate((el) => {
     el.style.maxWidth = "";
   });
+  // The approved reading column is 760px wide beside its outline, so it fits 16 columns.
+  await expect.poll(columns).toBe(16);
+  // Preserve the 32-column breakpoint check with a genuinely wide available container.
+  // This changes only the test host; the live calculator and its bit controls stay mounted.
+  await page.locator(".lesson-layout").evaluate((el) => {
+    el.style.maxWidth = "1320px";
+    el.style.gridTemplateColumns = "minmax(0, 1fr)";
+    el.querySelector<HTMLElement>(".lesson-outline-desktop")!.style.display = "none";
+  });
   await expect.poll(columns).toBe(32);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
