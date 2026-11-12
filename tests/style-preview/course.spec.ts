@@ -13,6 +13,26 @@ const choose = (p: Page, mode: "current" | "new") =>
     .click();
 const captureStyle =
   ".style-preview-controls{display:none!important}.shell-header{position:relative!important;top:0!important}.preview-outline-desktop{top:112px!important}";
+test("last outline section stays current when the page reaches its end", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 1200 });
+  await page.goto("?style=new#/lesson/register-widths");
+  await page.evaluate(async () => document.fonts.ready);
+  const links = page.locator(".preview-outline-desktop nav").getByRole("link");
+  await links.last().click();
+  await expect
+    .poll(() =>
+      page.evaluate(() => Math.abs(scrollY + innerHeight - document.documentElement.scrollHeight)),
+    )
+    .toBeLessThanOrEqual(2);
+  // Let the scroll observer run before checking the visible navigation state.
+  await page.evaluate(
+    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+  );
+  await expect(links.last()).toHaveAttribute("aria-current", "location");
+  await links.first().click();
+  await expect(links.first()).toHaveAttribute("aria-current", "location");
+  await expect(links.last()).not.toHaveAttribute("aria-current");
+});
 for (const width of [375, 834, 1280])
   for (const theme of ["light", "dark"] as const) {
     for (let start = 0; start < LESSONS.length; start += 16) {
@@ -67,6 +87,13 @@ for (const width of [375, 834, 1280])
                 header: document.querySelector(".shell-header")!.getBoundingClientRect().bottom,
               }));
               expect(rect.heading, lesson.id).toBeGreaterThanOrEqual(rect.header - 1);
+              await page.evaluate(
+                () =>
+                  new Promise((resolve) =>
+                    requestAnimationFrame(() => requestAnimationFrame(resolve)),
+                  ),
+              );
+              await expect(nav.locator("a").last()).toHaveAttribute("aria-current", "location");
             }
             await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
             const file = `${lesson.id}-${mode}.jpg`;

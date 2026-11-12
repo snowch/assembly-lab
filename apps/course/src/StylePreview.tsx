@@ -101,7 +101,11 @@ export function PreviewLessonLayout({
       const targets = entries
         .map((e) => body.current?.querySelector<HTMLElement>(`#${CSS.escape(e.id)}`))
         .filter((e): e is HTMLElement => !!e);
-      const at = targets.filter((e) => e.getBoundingClientRect().top <= 180).at(-1) ?? targets[0];
+      const atBottom =
+        scrollY > 0 && scrollY + innerHeight >= document.documentElement.scrollHeight - 2;
+      const at = atBottom
+        ? targets.at(-1)
+        : (targets.filter((e) => e.getBoundingClientRect().top <= 180).at(-1) ?? targets[0]);
       if (at) setActive(at.id);
     };
     const schedule = () => {
