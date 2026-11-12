@@ -14,6 +14,7 @@ import type { LessonInput } from "@platform/lesson-schema";
 import { LABELS } from "./adding-and-the-flags.labels";
 import { PLUS, SUM_FLAGS } from "./adding-and-the-flags.listings";
 import { PROSE } from "./adding-and-the-flags.prose";
+import { FLAG_PRIMER_STRINGS as PRIMER } from "@al/views";
 
 /** The model the lesson's figures run: one instruction to a step (the book's note names it). */
 const STEPS = "steps";
@@ -60,6 +61,27 @@ export const addingAndTheFlags: LessonInput = {
       kind: "motivation",
       title: LABELS.titles.motivation,
       prose: [PROSE.question, PROSE.motivation].join("\n\n"),
+      interactives: [
+        {
+          id: "four-bit-flags",
+          kind: "flag-primer",
+          timeModel: "none",
+          role: "diagram",
+          caption: PRIMER.exampleCaption,
+          lead: PROSE.primerLead,
+          props: { stage: "examples" },
+        },
+        {
+          id: "four-bit-flags-check",
+          kind: "flag-primer",
+          timeModel: "none",
+          role: "exercise",
+          caption: PRIMER.practiceCaption,
+          lead: PROSE.primerPracticeLead,
+          after: PROSE.bridge32,
+          props: { stage: "practice" },
+        },
+      ],
     },
     {
       kind: "prediction",
@@ -294,6 +316,6 @@ export const addingAndTheFlags: LessonInput = {
     textbookExample:
       "The obvious example for the flags is an 8-bit addition table that runs through every overflow case, or a car odometer rolling over from 999999 to 0.",
     howThisDiffers:
-      "This lesson adds in 32 bits and draws the carry into every column from the simulator's own record, so the learner sees where C and V come from. Its prediction asks which reading can represent one exact sum in 32 bits, rather than judging the validity of a bit interpretation. It checks GCC's `__builtin_add_overflow` listing, which reads V, and shows that `add` leaves the flags alone. The trip computer's counter, not an odometer, is the running situation that lesson 2 builds on.",
+      "Four-bit teaching calculations first show N and Z in the retained result, then contrast C and V through both readings of two additions. One fresh check supplies the result bits and asks for the flags. The learner then transfers the rules to the preserved 32-bit prediction and three fresh flag predictions. The 32-bit carry trace comes from the simulator's own record. The lesson also checks GCC's `__builtin_add_overflow` listing, which reads V. The trip computer's counter is the running situation that the later elapsed-ticks lesson builds on.",
   },
 };

@@ -104,3 +104,5 @@ export { fourBitAddition, fourBitSubtraction, FOUR_BIT_EXAMPLES } from "./four-b
 
 export { PROGRAMMER_CALCULATOR } from "./strings.programmer-calculator";
 export { ProgrammerCalculator } from "./ProgrammerCalculator";
+
+export { FLAG_PRIMER_STRINGS } from "./strings.flag-primer";

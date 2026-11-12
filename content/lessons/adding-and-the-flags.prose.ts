@@ -10,11 +10,20 @@ export const PROSE = {
     "In Module 1, the same 32 bits could represent different signed and unsigned numbers. The processor adds these bits without knowing which reading the program uses. The sum may not fit that reading's range. How can the processor tell us when that happens?",
 
   motivation:
-    "Every addition in this lesson uses 32-bit register names such as `w0`, so it keeps 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.\n\n" +
+    "The Arm additions in this lesson use 32-bit register names such as `w0`, so they keep 32 result bits. If the sum of the two numbers is outside the signed or unsigned range, those bits cannot represent that sum under that reading.\n\n" +
     "A **flag** is a single bit stored by the processor, separate from the result in a register. Its value is either 0 or 1. Arm conventionally lists the four flags in **NZCV** order:\n\n" +
     "- N means **Negative**, for the signed reading.\n- Z means **Zero**, for both signed and unsigned readings.\n- C means **Carry**, for checking whether an addition’s sum fits the unsigned range.\n- V means **Overflow**, for signed arithmetic. Remember the **v** in “overflow”.\n\n" +
     "With the same 32-bit inputs, these two instructions write the same result bits:\n\n- `add` writes the result and leaves the flags at their previous values.\n- `adds` writes the result and updates all four flags to record facts about the addition.\n\nThe final `s` in `adds` means **setting flags**: calculating a new 0 or 1 value for each flag.\n\n" +
     "Neither instruction stops the program or reports an error when the sum does not fit. After `adds`, the program can read a flag to check whether the sum fits.",
+
+  primerLead:
+    "First use four-bit calculations to read the flags. These are teaching miniatures, not Arm registers or instructions. They illustrate the flag rules without changing the processor’s flags. The unsigned range is 0 to 15; the signed range is −8 to 7.",
+
+  primerPracticeLead:
+    "Use the same rules for a fresh four-bit addition. The result bits are supplied; choose the four flag values they would produce.",
+
+  bridge32:
+    "Now apply the rules to a real Arm addition with 32 result bits. The top bit changes from bit 3 to bit 31. The unsigned range becomes 0 to 4294967295; the signed range becomes −2147483648 to 2147483647. Predict which readings fit before opening the calculation.",
 
   prediction:
     "For 32-bit additions, `add` and `adds` add bit patterns without choosing a signed or unsigned reading. The reading depends on how the program uses the bits.\n\nThe figure adds the inputs `0x7fffffff` and `0x00000001` with `adds w0, w0, w1`.",
@@ -72,7 +81,7 @@ export const PROSE = {
     "Of `add`, `adds` and `sub`, only `adds` writes the flags.",
 
   explanation:
-    "After this 32-bit `adds`, use the result bits and the two carry marks at bit 31 to find the four flags:\n\n- N is the top bit of the result, bit 31.\n- Z is 1 if all 32 result bits are 0; otherwise it is 0.\n- C is the carry out of bit 31. It is 1 if a carry leaves that column; otherwise it is 0.\n- V is 1 if the carry into bit 31 differs from the carry out; it is 0 if they match.\n\nThe adder produces the same 32 result bits for both readings. C tells you whether the exact sum of the unsigned inputs exceeds the unsigned 32-bit range. V reports signed **overflow**: the exact sum of the signed inputs is outside the signed 32-bit range. A value of 1 means the sum does not fit that range; 0 means it fits.\n\nC and V are separate tests. Either can be 1 without the other.\n\nFor optional hardware background, explore [Bit Lab’s four-bit arithmetic and logic circuit](https://snowch.github.io/bit-lab/#/lesson/alu). It is a teaching model, not an Arm processor’s circuit.",
+    "After this 32-bit `adds`, read the flags from the result and the carry marks at bit 31:\n\n- N is the result’s top bit, bit 31.\n- Z is 1 if all 32 result bits are 0; otherwise it is 0.\n- C is the carry out of bit 31.\n- V is 1 if the carry into bit 31 differs from the carry out; otherwise it is 0.\n\nThe carry test for V reports the same signed-range check as the miniatures: 1 means the exact signed sum does not fit. C reports whether the exact unsigned sum is too large.\n\nFor optional hardware background, explore [Bit Lab’s four-bit arithmetic and logic circuit](https://snowch.github.io/bit-lab/#/lesson/alu). It is a teaching model, not an Arm processor’s circuit.",
 
   generalisation:
     "Every `adds` writes all four flags. The flags keep their values until another instruction writes them. `add` and `sub` do not write the flags.\n\n" +
