@@ -136,6 +136,9 @@ export const S = {
     "Adding one at the unsigned limit",
     "A small sum",
     "Two inputs with their top bit set",
+    "Adding 2 near the signed limit",
+    "One input with its top bit set",
+    "Two zero inputs",
   ],
   inputLabel: "Starting inputs",
   checkFlags: "Check flags",
@@ -297,7 +300,7 @@ export const MARKUP = `<div class="layout lesson al-flags-lesson" id="top" data-
     <a class="side-link" href="#checkranges"><span class="side-no">03</span>C and V</a>
     <a class="side-link" href="#compare"><span class="side-no">04</span>Why the flag matters</a><a class="side-link" href="#smallpractice"><span class="side-no">05</span>Small practice</a>
     <a class="side-link" href="#arm"><span class="side-no">06</span>Move to ARM</a>
-    <a class="side-link" href="#realpractice"><span class="side-no">07</span>Try three additions</a>
+    <a class="side-link" href="#realpractice"><span class="side-no">07</span>Try six additions</a>
 
 
     <p class="side-note">One idea at a time. Extra explanation is tucked away until you need it.</p>
@@ -419,10 +422,10 @@ export const MARKUP = `<div class="layout lesson al-flags-lesson" id="top" data-
           <div class="math-row result"><span class="math-prefix"></span><span id="exampleR" class="mini-bit-row"></span></div>
           <div class="carry-explain" id="exampleCarryRule"></div>
         </div>
-        <div class="math-notes">
+        <div class="math-notes"><div class="reading-pair">
           <div class="fit-cell" id="exampleUnsigned"><span>C · Unsigned: too big?</span><strong id="exampleUnsignedMain"></strong><p id="exampleUnsignedSub"></p><div class="fit-verdict" id="exampleUnsignedVerdict"></div></div>
           <div class="fit-cell" id="exampleSigned"><span>V · Signed: too big or too small?</span><strong id="exampleSignedMain"></strong><p id="exampleSignedSub"></p><div class="fit-verdict" id="exampleSignedVerdict"></div></div>
-        </div>
+        </div></div>
         <div class="flag-strip" aria-label="Flags set by this addition"><span class="flag-chip" id="cChip">C · unsigned <strong></strong></span><span class="flag-chip" id="vChip">V · signed <strong></strong></span></div>
         <div class="program-consequence" aria-live="polite">
           <div class="consequence-label">Why your program cares</div>

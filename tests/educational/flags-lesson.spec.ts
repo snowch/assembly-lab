@@ -16,6 +16,9 @@ const correct = [
   [0, 1, 1, 0],
   [0, 0, 0, 0],
   [0, 1, 1, 1],
+  [1, 0, 0, 1],
+  [1, 0, 0, 0],
+  [0, 1, 0, 0],
 ] as const;
 async function open(page: Page, theme: "light" | "dark") {
   await page.addInitScript((theme) => localStorage.setItem("assembly-lab:v1:theme", theme), theme);
@@ -53,6 +56,117 @@ async function navigateOutline(page: Page, id: string) {
 }
 
 for (const theme of ["light", "dark"] as const) {
+  test(`six practice cases and complete equations fit the available card width (${theme})`, async ({
+    page,
+  }) => {
+    await open(page, theme);
+    await expect(page.locator("#caseTabs button")).toHaveCount(6);
+    await expect(page.locator("#practicePosition")).toHaveText("Case 1 of 6");
+    await expect(page.locator("#followup .flag")).toHaveCount(0);
+    for (const [i, values] of correct.entries()) {
+      await commitCase(page, i, values);
+      if (i < correct.length - 1) {
+        await expect(page.locator("#challenge-predict-flags")).toHaveAttribute(
+          "data-complete",
+          "false",
+        );
+        await expect(page.locator("#followup .flag")).toHaveCount(0);
+      }
+      if (i === 2) {
+        await expect(page.locator("#nextCase")).toBeEnabled();
+        await page.locator("#nextCase").click();
+        await expect(page.locator("#practicePosition")).toHaveText("Case 4 of 6");
+        await expect(page.locator("#realForm input:checked")).toHaveCount(0);
+      }
+    }
+    await expect(page.locator("#practicePosition")).toHaveText("Case 6 of 6");
+    await expect(page.locator("#nextCase")).toBeDisabled();
+    await expect(page.locator("#challenge-predict-flags")).toHaveAttribute("data-complete", "true");
+    const disclosure = page.locator("#followup .carry-disclosure");
+    await disclosure.locator("summary").focus();
+    await page.keyboard.press("Enter");
+    await expect(disclosure).toHaveAttribute("open");
+    for (const width of [320, 375, 834, 920, 1280]) {
+      await page.setViewportSize({ width, height: 1000 });
+      if (width === 375)
+        await page.addStyleTag({
+          content:
+            ".reading-equation,.followup-equation { font-family: 'DejaVu Sans', sans-serif !important; }",
+        });
+      await page.evaluate(() => document.fonts.ready);
+      for (const index of [0, 2, 3, 4, 5]) {
+        await page.locator(`#caseTabs button[data-case="${index}"]`).click();
+        await expect(disclosure).toHaveAttribute("open");
+        const geometry = await page.locator("#realpractice").evaluate((root) => {
+          const notes = [...root.querySelectorAll<HTMLElement>(".math-notes")];
+          const panels = notes.map((note) => {
+            const cards = [...note.querySelectorAll<HTMLElement>(".fit-cell")];
+            const [a, b] = cards.map((card) => card.getBoundingClientRect());
+            return {
+              width: note.clientWidth,
+              paired: a!.left !== b!.left,
+              overlap: a!.left === b!.left ? b!.top < a!.bottom : b!.left < a!.right,
+              valuesFit: [...note.querySelectorAll(".reading-equation bdi")].every((value) => {
+                const card = value.closest(".fit-cell")!.getBoundingClientRect();
+                const text = document.createRange();
+                text.selectNodeContents(value);
+                const lines = [...text.getClientRects()];
+                return (
+                  lines.length === 1 &&
+                  lines.every((line) => line.left >= card.left && line.right <= card.right)
+                );
+              }),
+            };
+          });
+          const summary = root
+            .querySelector(".carry-disclosure > summary")!
+            .getBoundingClientRect();
+          const previous = root.querySelector("#followup .math-notes")!.getBoundingClientRect();
+          const carry = root.querySelector(".carry-disclosure")!.getBoundingClientRect();
+          const tabs = [...root.querySelectorAll("#caseTabs button")].map((button) =>
+            button.getBoundingClientRect(),
+          );
+          return {
+            panels,
+            carryGap: carry.top - previous.bottom,
+            summaryHeight: summary.height,
+            tabHeights: tabs.map((tab) => tab.height),
+            tabRows: new Set(tabs.map((tab) => tab.top)).size,
+            tabWidth:
+              root.querySelector("#challenge-predict-flags")!.clientWidth -
+              parseFloat(
+                getComputedStyle(root.querySelector("#challenge-predict-flags")!).paddingLeft,
+              ) *
+                2,
+            overflow: document.documentElement.scrollWidth > innerWidth,
+            hexFits: [...root.querySelectorAll(".followup-equation bdi")].every((value) => {
+              const box = value.parentElement!.getBoundingClientRect();
+              const text = document.createRange();
+              text.selectNodeContents(value);
+              return [...text.getClientRects()].every(
+                (line) => line.left >= box.left && line.right <= box.right,
+              );
+            }),
+          };
+        });
+        expect(geometry.panels).toHaveLength(2);
+        for (const panel of geometry.panels) {
+          expect(panel.paired).toBe(panel.width >= 600);
+          expect(panel.overlap).toBe(false);
+          expect(panel.valuesFit).toBe(true);
+        }
+        expect(geometry.carryGap).toBeGreaterThanOrEqual(24);
+        expect(geometry.summaryHeight).toBeGreaterThanOrEqual(44);
+        expect(geometry.tabHeights.every((height) => height >= 52)).toBe(true);
+        expect(geometry.tabRows).toBe(geometry.tabWidth >= 600 ? 1 : 2);
+        expect(geometry.overflow).toBe(false);
+        expect(geometry.hexFits).toBe(true);
+      }
+    }
+    await disclosure.locator("summary").focus();
+    await page.keyboard.press("Space");
+    await expect(disclosure).not.toHaveAttribute("open");
+  });
   test(`input display preserves predictions and checked results in every reading (${theme})`, async ({
     page,
   }) => {
@@ -546,11 +660,24 @@ for (const theme of ["light", "dark"] as const) {
       "third-z": "1",
       "third-c": "1",
       "third-v": "1",
+      "fourth-n": "1",
+      "fourth-z": "0",
+      "fourth-c": "0",
+      "fourth-v": "1",
+      "fifth-n": "1",
+      "fifth-z": "0",
+      "fifth-c": "0",
+      "fifth-v": "0",
+      "sixth-n": "0",
+      "sixth-z": "1",
+      "sixth-c": "0",
+      "sixth-v": "0",
     });
     expect(saved.challenges["predict-flags"].firstPassedAt).toBeDefined();
     await page.reload();
     await expect(c).toHaveAttribute("data-complete", "true");
     await expect(c.locator(".hints-list li")).toHaveCount(1);
+    await page.locator('#caseTabs button[data-case="2"]').click();
     await choose(page, "practice-v", 0);
     await expect(c).toHaveAttribute("data-complete", "false");
     await expect(page.locator("#followup .flag")).toHaveCount(0);
@@ -600,6 +727,19 @@ for (const theme of ["light", "dark"] as const) {
       old,
     ] as const);
     await page.reload();
+    await expect(page.locator("#challenge-predict-flags")).toHaveAttribute(
+      "data-complete",
+      "false",
+    );
+    for (let i = 0; i < 3; i++)
+      await expect(page.locator(`#caseTabs button[data-case="${i}"] .pass-mark`)).toHaveText(
+        S.passed,
+      );
+    for (let i = 3; i < correct.length; i++) {
+      await page.locator(`#caseTabs button[data-case="${i}"]`).click();
+      await expect(page.locator("#realForm input:checked")).toHaveCount(0);
+      await commitCase(page, i, correct[i]!);
+    }
     await expect(page.locator("#challenge-predict-flags")).toHaveAttribute("data-complete", "true");
     await expect(page.locator("#armFeedback [data-fixed-result]")).toHaveCount(1);
     await expect(page.locator(".hints-list li")).toHaveCount(2);

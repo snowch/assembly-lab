@@ -73,14 +73,15 @@ export function mountFlagsLesson(
       [8, 15],
     ] as const
   ).map(([a, b]) => M.compute(4, a, b));
+  if (challenge.tests.kind !== "answers") throw new Error("Missing flags answer tests.");
   const mini = M.compute(4, 5, 12),
-    practiceModels = (
-      [
-        [0xffffffff, 1],
-        [5, 3],
-        [0x80000000, 0x80000000],
-      ] as const
-    ).map(([a, b]) => M.compute(32, a, b)),
+    practiceModels = challenge.tests.cases.map(({ given }) => {
+      const a = given["w0"],
+        b = given["w1"];
+      if (typeof a !== "number" || typeof b !== "number")
+        throw new Error("Missing flags practice inputs.");
+      return M.compute(32, a, b);
+    }),
     followup = M.compute(32, 1, 0xffffffff);
   let state: FlagsState = stateFor(store, challenge);
   function save() {
@@ -110,15 +111,15 @@ export function mountFlagsLesson(
     return `<div class="range-choices range-pair" data-width="${width}"><div class="range-choice"><span>${esc(S.unsignedRange)}</span><strong><bdi>0</bdi><bdi> … ${fmt((top << 1n) - 1n)}</bdi></strong></div><div class="range-choice"><span>${esc(S.signedRange)}</span><strong><bdi>${fmt(-top)}</bdi><bdi> … ${fmt(top - 1n)}</bdi></strong></div></div>`;
   }
   function readings(m: FlagsModel) {
-    return (["unsigned", "signed"] as const)
+    return `<div class="math-notes"><div class="reading-pair">${(["unsigned", "signed"] as const)
       .map((reading) => {
         const flag = reading === "unsigned" ? "c" : "v";
-        return `<div class="fit-cell ${m.flags[flag] ? (reading === "unsigned" ? "overflow" : "overflow-signed") : ""}" data-reading="${reading}" data-overflow="${m.flags[flag] === 1}"><span>${esc(S[reading])} · ${flag.toUpperCase()}</span><strong>${sum(m.a[reading], m.b[reading], reading === "unsigned" ? m.unsignedSum : m.signedSum)}</strong><p>${esc(m.flags[flag] ? S.outside : S.fits)} · ${flag.toUpperCase()} = ${m.flags[flag]}</p><div>${esc(S.storedReading)}: ${fmt(m.result[reading])}</div></div>`;
+        return `<div class="fit-cell ${m.flags[flag] ? (reading === "unsigned" ? "overflow" : "overflow-signed") : ""}" data-reading="${reading}" data-overflow="${m.flags[flag] === 1}"><span>${esc(S[reading])} · ${flag.toUpperCase()}</span><strong class="reading-equation"><bdi>${fmt(m.a[reading])}</bdi><bdi> + ${BigInt(m.b[reading]) < 0n ? "(" + fmt(m.b[reading]) + ")" : fmt(m.b[reading])}</bdi><bdi class="equation-total"> = ${fmt(reading === "unsigned" ? m.unsignedSum : m.signedSum)}</bdi></strong><p>${esc(m.flags[flag] ? S.outside : S.fits)} · ${flag.toUpperCase()} = ${m.flags[flag]}</p><div>${esc(S.storedReading)}: ${fmt(m.result[reading])}</div></div>`;
       })
-      .join("");
+      .join("")}</div></div>`;
   }
   function carry(m: FlagsModel) {
-    return `<details><summary>${esc(S.carryDetail)}</summary><div><div class="carry-pair"><div>${esc(S.carryIn)}<strong>${m.carryIn}</strong></div><div>${esc(S.carryOut)}<strong>${m.carryOut}</strong></div></div><p>${esc(S.carryRule)}</p></div></details>`;
+    return `<details class="carry-disclosure"><summary>${esc(S.carryDetail)}</summary><div><div class="carry-pair"><div>${esc(S.carryIn)}<strong>${m.carryIn}</strong></div><div>${esc(S.carryOut)}<strong>${m.carryOut}</strong></div></div><p>${esc(S.carryRule)}</p></div></details>`;
   }
   function choices(prefix: string, a: Answers) {
     return `<div class="flag-form">${names.map((n) => `<fieldset class="flag-input"><legend class="char">${n.toUpperCase()}</legend><div class="bit-choices radios">${[0, 1].map((v) => `<label class="${a.choices[n] === v ? "selected" : ""}"><input class="visually-hidden" type="radio" name="${prefix}-${n}" value="${v}" ${a.choices[n] === v ? "checked" : ""}><span>${v}</span></label>`).join("")}</div></fieldset>`).join("")}</div>`;
@@ -255,7 +256,7 @@ export function mountFlagsLesson(
       return;
     }
     $("miniFeedback").innerHTML =
-      `<div class="feedback" data-correct="${good(a, mini) && a.intent === "c"}"><p><strong>${esc(good(a, mini) ? S.miniCorrect : S.miniIncorrect)}</strong></p>${flags(mini)}<div class="math-notes">${readings(mini)}</div><p>${esc(a.intent === "c" ? S.intentCorrect : S.intentIncorrect)}</p><p>${esc(S.miniTakeaway)}</p></div>`;
+      `<div class="feedback" data-correct="${good(a, mini) && a.intent === "c"}"><p><strong>${esc(good(a, mini) ? S.miniCorrect : S.miniIncorrect)}</strong></p>${flags(mini)}${readings(mini)}<p>${esc(a.intent === "c" ? S.intentCorrect : S.intentIncorrect)}</p><p>${esc(S.miniTakeaway)}</p></div>`;
   }
   function renderMini() {
     $("miniBits").innerHTML = matrix(mini);
@@ -297,7 +298,7 @@ export function mountFlagsLesson(
       `<div class="feedback" data-correct="${a.committed === armCorrectChoice()}"><p><strong>${esc(a.committed === armCorrectChoice() ? S.armCorrect : S.armIncorrect)}</strong></p><p class="mono">${esc(S.exactSum)}: ${fmt(arm().unsignedSum)}</p><p>${esc(S.registerResult)}: <code data-fixed-result>${arm().result.hex}</code></p><ul class="arm-result-readings"><li><strong>${esc(S.unsigned)}: <span data-result-reading="unsigned">${fmt(arm().result.unsigned)}</span></strong>. ${esc(S.armUnsignedMatch)} <span class="mono">C = ${arm().flags.c}</span></li><li><strong>${esc(S.signed)}: <span data-result-reading="signed">${fmt(arm().result.signed)}</span></strong>. ${esc(S.armSignedDifference)} <span class="mono">V = ${arm().flags.v}</span></li></ul><p>${esc(S.armExplanation)}</p></div>`;
   }
   function renderCaseTabs() {
-    if ($("caseTabs").children.length !== 3)
+    if ($("caseTabs").children.length !== practiceModels.length)
       $("caseTabs").innerHTML = practiceModels
         .map(
           (_, i) =>
@@ -316,7 +317,10 @@ export function mountFlagsLesson(
   function renderPracticeWork() {
     const i = state.practice.index,
       m = practiceModels[i]!;
-    $("practicePosition").textContent = t("practicePosition", { current: i + 1, total: 3 });
+    $("practicePosition").textContent = t("practicePosition", {
+      current: i + 1,
+      total: practiceModels.length,
+    });
     $("caseEquation").innerHTML =
       `<span class="label">${esc(S.caseLabels[i])}</span><div class="hex-equation mono">${m.a.hex} + ${m.b.hex}</div>`;
     $("realFlags").innerHTML = choices("practice", state.practice.cases[i]!);
@@ -327,7 +331,7 @@ export function mountFlagsLesson(
       a = state.practice.cases[i]!,
       m = practiceModels[i]!;
     $<HTMLButtonElement>("prevCase").disabled = i === 0;
-    $<HTMLButtonElement>("nextCase").disabled = i === 2 || !casePassed(i);
+    $<HTMLButtonElement>("nextCase").disabled = i === practiceModels.length - 1 || !casePassed(i);
     if (a.checked && complete(a)) {
       $("caseFeedback").innerHTML =
         `<div class="feedback" data-correct="${good(a, m)}"><strong>${esc(
@@ -339,16 +343,20 @@ export function mountFlagsLesson(
                   .map((n) => n.toUpperCase())
                   .join(", "),
               }),
-        )}</strong>${good(a, m) ? `<p class="mono">${m.result.hex}</p>${flags(m)}<div class="math-notes">${readings(m)}</div>` : ""}</div>`;
+        )}</strong>${good(a, m) ? `<p class="mono">${m.result.hex}</p>${flags(m)}${readings(m)}` : ""}</div>`;
     } else $("caseFeedback").innerHTML = "";
     $("aggregate").textContent = allPassed() ? S.allCorrect : S.notComplete;
     $("challenge-predict-flags").dataset["complete"] = String(allPassed());
     renderCaseTabs();
     renderFollowup();
   }
+  let followupShown: boolean | undefined;
   function renderFollowup() {
-    $("followup").innerHTML = allPassed()
-      ? `<p>${esc(S.followupLead)}</p><code class="instruction">adds w0, w0, w1</code><p class="mono">${followup.a.hex} + ${followup.b.hex} = ${followup.result.hex}</p>${flags(followup)}<div class="math-notes">${readings(followup)}</div>${carry(followup)}`
+    const shown = allPassed();
+    if (followupShown === shown) return;
+    followupShown = shown;
+    $("followup").innerHTML = shown
+      ? `<p>${esc(S.followupLead)}</p><code class="instruction">adds w0, w0, w1</code><p class="mono followup-equation"><bdi>${followup.a.hex}</bdi><bdi> + ${followup.b.hex}</bdi><bdi> = ${followup.result.hex}</bdi></p>${flags(followup)}${readings(followup)}${carry(followup)}`
       : `<p class="locked">${esc(S.followupLocked)}</p>`;
   }
   function initialise() {
@@ -488,7 +496,7 @@ export function mountFlagsLesson(
     renderArmFeedback();
   };
   $("clearPrediction").onclick = () => {
-    state.arm = blank().arm;
+    state.arm = blank(practiceModels.length).arm;
     store.setSlot("predict-readings", undefined);
     $("armChoices")
       .querySelectorAll<HTMLInputElement>("input")
@@ -524,7 +532,7 @@ export function mountFlagsLesson(
     }
   };
   $("nextCase").onclick = () => {
-    if (casePassed(state.practice.index) && state.practice.index < 2) {
+    if (casePassed(state.practice.index) && state.practice.index < practiceModels.length - 1) {
       state.practice.index++;
       save();
       renderPracticeWork();
@@ -538,7 +546,7 @@ export function mountFlagsLesson(
     renderPracticeWork();
   };
   $("practiceReset").onclick = () => {
-    state.practice = blank().practice;
+    state.practice = blank(practiceModels.length).practice;
     store.resetChallenge(challenge.id);
     save();
     renderPracticeWork();

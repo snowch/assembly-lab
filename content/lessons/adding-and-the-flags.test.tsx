@@ -112,13 +112,15 @@ describe("the lesson", () => {
     }
   });
 
-  it("asks the prediction challenge for twelve flags, in four letters for each of three additions", () => {
+  it("asks the prediction challenge for twenty-four flags, in four letters for each of six additions", () => {
     const c = challenge("predict-flags");
     expect(c.fields.map((f) => f.id)).toEqual(
-      ["first", "second", "third"].flatMap((a) => ["n", "z", "c", "v"].map((f) => `${a}-${f}`)),
+      ["first", "second", "third", "fourth", "fifth", "sixth"].flatMap((a) =>
+        ["n", "z", "c", "v"].map((f) => `${a}-${f}`),
+      ),
     );
     expect(c.fields.every((f) => f.kind === "choice")).toBe(true);
-    expect(testCount(c)).toBe(3);
+    expect(testCount(c)).toBe(6);
     expect(testCount(challenge("smallest-overflow"))).toBe(1);
   });
 });
@@ -176,7 +178,7 @@ describe("the challenges", () => {
     expect(verdict.failures[0]?.expected).toEqual({});
   });
 
-  it("predict-flags: the twelve choices are drawn as one group for each addition, N, Z, C and V in each", () => {
+  it("predict-flags: the twenty-four choices are drawn as one group for each addition, N, Z, C and V in each", () => {
     const c = challenge("predict-flags");
     const groups = (
       c.initial.data?.["editor"] as {
@@ -187,6 +189,9 @@ describe("the challenges", () => {
       "`0xffffffff` plus 1",
       "5 plus 3",
       "`0x80000000` plus `0x80000000`",
+      "`0x7ffffffe` plus 2",
+      "`0xfffffff9` plus 2",
+      "0 plus 0",
     ]);
     expect(groups.flatMap((g) => g.fields.map((f) => f.id))).toEqual(c.fields.map((f) => f.id));
     expect(groups.every((g) => g.fields.map((f) => f.label).join("") === "NZCV")).toBe(true);
@@ -236,13 +241,13 @@ describe("the page", () => {
     expect(container.querySelectorAll("details.lesson-details")).toHaveLength(1);
   });
 
-  it("draws the flags challenge as three separate groups of N, Z, C and V, with no answer chosen", () => {
+  it("draws the flags challenge as six separate groups of N, Z, C and V, with no answer chosen", () => {
     const { container } = render(
       <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
     );
     const c = container.querySelector('section.challenge[data-challenge="predict-flags"]')!;
     const groups = c.querySelectorAll("fieldset.answer-group");
-    expect(groups).toHaveLength(3);
+    expect(groups).toHaveLength(6);
     for (const g of groups)
       expect([...g.querySelectorAll(".answer-compact > legend")].map((l) => l.textContent)).toEqual(
         ["N", "Z", "C", "V"],

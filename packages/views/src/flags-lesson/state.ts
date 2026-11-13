@@ -22,7 +22,7 @@ export type FlagsState = {
   practice: { index: number; cases: Answers[] };
 };
 export const emptyAnswers = (): Answers => ({ choices: {}, checked: false });
-export const blank = (): FlagsState => ({
+export const blank = (caseCount: number): FlagsState => ({
   example: 0,
   mini: { ...emptyAnswers(), intent: null },
   arm: {
@@ -34,7 +34,7 @@ export const blank = (): FlagsState => ({
     trace: false,
     done: 0,
   },
-  practice: { index: 0, cases: [emptyAnswers(), emptyAnswers(), emptyAnswers()] },
+  practice: { index: 0, cases: Array.from({ length: caseCount }, emptyAnswers) },
 });
 const object = (x: unknown): Record<string, unknown> =>
   x !== null && typeof x === "object" ? (x as Record<string, unknown>) : {};
@@ -48,8 +48,8 @@ function cleanAnswers(raw: unknown): Answers {
     if (source[flag] === 0 || source[flag] === 1) choices[flag] = source[flag];
   return { choices, checked: value["checked"] === true };
 }
-export function restore(raw: unknown): FlagsState {
-  const s = blank(),
+export function restore(raw: unknown, caseCount: number): FlagsState {
+  const s = blank(caseCount),
     value = object(raw),
     mini = object(value["mini"]),
     arm = object(value["arm"]),
@@ -73,8 +73,8 @@ export function restore(raw: unknown): FlagsState {
   };
   const cases = Array.isArray(practice["cases"]) ? practice["cases"] : [];
   s.practice = {
-    index: validIndex(practice["index"], 3) ? practice["index"] : 0,
-    cases: [0, 1, 2].map((i) => cleanAnswers(cases[i])),
+    index: validIndex(practice["index"], caseCount) ? practice["index"] : 0,
+    cases: Array.from({ length: caseCount }, (_, i) => cleanAnswers(cases[i])),
   };
   return s;
 }
@@ -140,8 +140,10 @@ export function commitCase(
 }
 /** Migrate existing course predictions and graded answers without treating prototype checks as grades. */
 export function stateFor(store: LessonStore, challenge: Challenge): FlagsState {
+  if (challenge.tests.kind !== "answers") throw new Error("Missing flags answer tests.");
+  const caseCount = challenge.tests.cases.length;
   const raw = store.slot(FLAGS_VIEW_SLOT);
-  const s = restore(raw);
+  const s = restore(raw, caseCount);
   const prediction = object(store.slot("predict-readings"));
   const options = ["both", "unsigned", "signed", "neither"];
   const committed =
@@ -150,7 +152,7 @@ export function stateFor(store: LessonStore, challenge: Challenge): FlagsState {
   if (raw === undefined) {
     s.arm.draft = s.arm.committed;
     const artifact = currentArtifact(store, challenge);
-    s.practice.cases = [0, 1, 2].map((index) => {
+    s.practice.cases = Array.from({ length: caseCount }, (_, index) => {
       const choices: Answers["choices"] = {};
       caseFields(challenge, index).forEach((field, n) => {
         const v = artifact.answers?.[field];

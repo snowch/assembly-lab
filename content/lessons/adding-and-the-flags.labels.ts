@@ -16,7 +16,7 @@ export const LABELS = {
     motivation: "When an addition does not fit",
     prediction: "Two readings of one addition",
     investigation: "Carries and the four flags",
-    construction: "Three additions to predict",
+    construction: "Six additions to predict",
     failureExperiment: "Running add instead of adds",
     explanation: "Unsigned carry and signed overflow",
     challenge: "The smallest signed overflow",
@@ -31,7 +31,7 @@ export const LABELS = {
     predictAdd: "A prediction about what the flags show after add.",
     stepAdd:
       "The two additions one instruction at a time, with the flags under the registers. An outlined register was written by the last instruction. An outlined flag changed value.",
-    flags: "Predict N, Z, C and V for three additions.",
+    flags: "Predict N, Z, C and V for six additions.",
     overflow: "Find the smallest number that makes V 1.",
   },
   options: {
@@ -53,11 +53,14 @@ export const LABELS = {
   challenges: {
     flags: {
       title: "Predict the four flags",
-      /** The three additions, as the prose names them. */
+      /** The six additions, as the prose names them. */
       additions: [
         { id: "first", text: "`0xffffffff` plus 1" },
         { id: "second", text: "5 plus 3" },
         { id: "third", text: "`0x80000000` plus `0x80000000`" },
+        { id: "fourth", text: "`0x7ffffffe` plus 2" },
+        { id: "fifth", text: "`0xfffffff9` plus 2" },
+        { id: "sixth", text: "0 plus 0" },
       ],
       /** The label of one flag's field: its letter, then the addition. */
       field: (flag: string, addition: string) => `${flag} for ${addition}`,
