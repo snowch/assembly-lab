@@ -133,14 +133,13 @@ for (const theme of ["light", "dark"] as const) {
       const region = detail.getByRole("region", { name: LOGIC_COPY.regionLabel });
       if (geometry.scrolls) {
         await region.focus();
-        await page.keyboard.press("ArrowRight");
-        await expect.poll(() => region.evaluate((node) => node.scrollLeft)).toBeGreaterThan(0);
-        await region.evaluate((node) => {
-          node.scrollLeft = node.scrollWidth;
-        });
-        const right = await region.evaluate((node) => node.scrollLeft);
-        await page.keyboard.press("ArrowLeft");
-        await expect.poll(() => region.evaluate((node) => node.scrollLeft)).toBeLessThan(right);
+        await expect(region).toBeFocused();
+        const right = await region.evaluate((node) => node.scrollWidth - node.clientWidth);
+        // Finish the native key scroll before reversing; scripted jumps race its animation.
+        for (let step = 0; step < 8; step++) await region.press("ArrowRight", { delay: 50 });
+        await expect.poll(() => region.evaluate((node) => node.scrollLeft)).toBe(right);
+        for (let step = 0; step < 8; step++) await region.press("ArrowLeft", { delay: 50 });
+        await expect.poll(() => region.evaluate((node) => node.scrollLeft)).toBe(0);
       }
       await expect(page.locator("#explorer, #followup .flag")).toHaveCount(0);
       await expect(page.locator("#challenge-predict-flags")).toHaveAttribute(
