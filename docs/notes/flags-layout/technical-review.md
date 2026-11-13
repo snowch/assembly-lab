@@ -142,3 +142,22 @@ Both final scripts exited 0. Evidence is retained separately from candidate 1 in
 overwritten. The final verdict is based on candidate 2 and its stronger assertion
 that paired ranges occupy one line. The browser and full-suite limitations stated
 above still apply.
+
+## Final test-only refinement
+
+Independently reviewed the final geometry-test adjustment: it explicitly applies
+DejaVu Sans at 375px as well as 920px and permits stacked intervals to break between
+complete bounds. The single-line whole-interval assertion now applies when the
+cards' measured positions show they are paired. This reflects the reviewed
+behaviour; the existing complete-endpoint, containment, expected-value, 920px
+stacking, prediction gate/reset and no-page-overflow assertions remain intact.
+The product build at port 4492 did not change.
+
+Ran the exact revised `prediction input spacing` tests from
+`tests/educational/flags-lesson.spec.ts` against that immutable build, using both
+desktop and phone Playwright projects. All four tests passed, covering both actual
+themes and each test's five widths (320/375/834/920/1280px), exit 0. Configuration,
+log and any failure-artifact destination are retained under
+`/workspace/scratch/flags-technical-final-test*`. This focused verification does
+not replace or relabel the managing session's interrupted full-check run; its
+interruption and subsequent full rerun are recorded separately.

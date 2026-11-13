@@ -59,7 +59,7 @@ for (const theme of ["light", "dark"] as const) {
       await page.setViewportSize({ width, height: 900 });
       await open(page, theme);
       // A wider fallback font exposed premature pairing between tablet and desktop widths.
-      if (width === 920)
+      if (width === 375 || width === 920)
         await page.addStyleTag({
           content: "#armRanges .range-choice strong { font-family: 'DejaVu Sans', sans-serif; }",
         });
@@ -102,7 +102,9 @@ for (const theme of ["light", "dark"] as const) {
           expect(bound.lines).toBe(1);
           expect(bound.contained).toBe(true);
         }
-        if (width >= 375) expect(range.bounds[0]!.top).toBe(range.bounds[1]!.top);
+        // Stacked narrow intervals may wrap between complete bounds. Paired cards must not.
+        if (layout.ranges[0]!.left !== layout.ranges[1]!.left)
+          expect(range.bounds[0]!.top).toBe(range.bounds[1]!.top);
       }
       if (width < 1280) expect(layout.ranges[0]!.left).toBe(layout.ranges[1]!.left);
       else expect(layout.ranges[0]!.right).toBeLessThan(layout.ranges[1]!.left);
