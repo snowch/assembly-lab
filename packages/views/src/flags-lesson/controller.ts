@@ -105,7 +105,7 @@ export function mountFlagsLesson(
   }
   function ranges(width: Width) {
     const top = 1n << BigInt(width - 1);
-    return `<div class="range-choices range-pair" data-width="${width}"><div class="range-choice"><span>${esc(S.unsignedRange)}</span><strong>0 … ${fmt((top << 1n) - 1n)}</strong></div><div class="range-choice"><span>${esc(S.signedRange)}</span><strong>${fmt(-top)} … ${fmt(top - 1n)}</strong></div></div>`;
+    return `<div class="range-choices range-pair" data-width="${width}"><div class="range-choice"><span>${esc(S.unsignedRange)}</span><strong><bdi>0</bdi><bdi> … ${fmt((top << 1n) - 1n)}</bdi></strong></div><div class="range-choice"><span>${esc(S.signedRange)}</span><strong><bdi>${fmt(-top)}</bdi><bdi> … ${fmt(top - 1n)}</bdi></strong></div></div>`;
   }
   function readings(m: FlagsModel) {
     return (["unsigned", "signed"] as const)

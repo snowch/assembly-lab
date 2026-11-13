@@ -1083,6 +1083,8 @@
   background: var(--teal);
 }
 .al-flags-lesson .instruction {
+  display: block;
+  margin: 0 0 20px;
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   padding: 17px 20px;
   border-radius: 11px;
@@ -1323,9 +1325,12 @@
 }
 .al-flags-lesson .range-choices {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 9px;
   margin: 13px 0;
+}
+.al-flags-lesson .range-pair[data-width="32"] {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
 }
 .al-flags-lesson .range-choice {
   display: flex;
@@ -1341,8 +1346,14 @@
   font-size: 12px;
 }
 .al-flags-lesson .range-choice strong {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.35em;
   color: #235247;
   font-size: 17px;
+}
+.al-flags-lesson .range-choice bdi {
+  white-space: nowrap;
 }
 .al-flags-lesson .why-reading p.why-takeaway {
   margin-top: 13px;
