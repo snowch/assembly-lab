@@ -22,3 +22,5 @@ createRoot(root).render(
 
 import "./styles/flags-lesson.css";
 import "./styles/course-layout.css";
+
+import "./styles/header-calculator.css";

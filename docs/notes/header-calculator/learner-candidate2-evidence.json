@@ -1,0 +1,338 @@
+[
+  {
+    "width": 1280,
+    "theme": "light",
+    "close": {
+      "rect": {
+        "x": 1172.390625,
+        "y": 103,
+        "width": 70.609375,
+        "height": 44.390625,
+        "top": 103,
+        "right": 1243,
+        "bottom": 147.390625,
+        "left": 1172.390625
+      },
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(25, 49, 48)",
+      "focus": true
+    },
+    "panel": {
+      "rect": {
+        "x": 668,
+        "y": 78,
+        "width": 600,
+        "height": 710,
+        "top": 78,
+        "right": 1268,
+        "bottom": 788,
+        "left": 668
+      },
+      "bg": "rgb(247, 250, 248)",
+      "color": "rgb(25, 49, 48)",
+      "clientWidth": 598,
+      "scrollWidth": 598,
+      "bodyWidth": 1280
+    },
+    "toolBorders": {
+      "border": "0px none rgb(25, 49, 48)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    "value": [
+      "43",
+      "0x0000 002B"
+    ],
+    "focusRestored": true,
+    "heading": [
+      "One addition"
+    ],
+    "retained": [
+      "43",
+      "0x0000 002B"
+    ],
+    "toolOnly": {
+      "links": 0,
+      "tasks": 0
+    }
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "close": {
+      "rect": {
+        "x": 1172.390625,
+        "y": 103,
+        "width": 70.609375,
+        "height": 44.390625,
+        "top": 103,
+        "right": 1243,
+        "bottom": 147.390625,
+        "left": 1172.390625
+      },
+      "bg": "rgb(23, 38, 35)",
+      "color": "rgb(229, 241, 237)",
+      "focus": true
+    },
+    "panel": {
+      "rect": {
+        "x": 668,
+        "y": 78,
+        "width": 600,
+        "height": 710,
+        "top": 78,
+        "right": 1268,
+        "bottom": 788,
+        "left": 668
+      },
+      "bg": "rgb(16, 27, 26)",
+      "color": "rgb(229, 241, 237)",
+      "clientWidth": 598,
+      "scrollWidth": 598,
+      "bodyWidth": 1280
+    },
+    "toolBorders": {
+      "border": "0px none rgb(229, 241, 237)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    "value": [
+      "43",
+      "0x0000 002B"
+    ],
+    "focusRestored": true,
+    "heading": [
+      "One addition"
+    ],
+    "retained": [
+      "43",
+      "0x0000 002B"
+    ],
+    "toolOnly": {
+      "links": 0,
+      "tasks": 0
+    }
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "close": {
+      "rect": {
+        "x": 286.390625,
+        "y": 24.59375,
+        "width": 70.609375,
+        "height": 44.390625,
+        "top": 24.59375,
+        "right": 357,
+        "bottom": 68.984375,
+        "left": 286.390625
+      },
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(25, 49, 48)",
+      "focus": true
+    },
+    "panel": {
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 812,
+        "top": 0,
+        "right": 375,
+        "bottom": 812,
+        "left": 0
+      },
+      "bg": "rgb(247, 250, 248)",
+      "color": "rgb(25, 49, 48)",
+      "clientWidth": 375,
+      "scrollWidth": 375,
+      "bodyWidth": 375
+    },
+    "toolBorders": {
+      "border": "0px none rgb(25, 49, 48)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    "value": [
+      "43",
+      "0x0000 002B"
+    ],
+    "focusRestored": true,
+    "heading": [
+      "One addition"
+    ],
+    "retained": [
+      "43",
+      "0x0000 002B"
+    ],
+    "toolOnly": {
+      "links": 0,
+      "tasks": 0
+    }
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "close": {
+      "rect": {
+        "x": 286.390625,
+        "y": 24.59375,
+        "width": 70.609375,
+        "height": 44.390625,
+        "top": 24.59375,
+        "right": 357,
+        "bottom": 68.984375,
+        "left": 286.390625
+      },
+      "bg": "rgb(23, 38, 35)",
+      "color": "rgb(229, 241, 237)",
+      "focus": true
+    },
+    "panel": {
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 812,
+        "top": 0,
+        "right": 375,
+        "bottom": 812,
+        "left": 0
+      },
+      "bg": "rgb(16, 27, 26)",
+      "color": "rgb(229, 241, 237)",
+      "clientWidth": 375,
+      "scrollWidth": 375,
+      "bodyWidth": 375
+    },
+    "toolBorders": {
+      "border": "0px none rgb(229, 241, 237)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    "value": [
+      "43",
+      "0x0000 002B"
+    ],
+    "focusRestored": true,
+    "heading": [
+      "One addition"
+    ],
+    "retained": [
+      "43",
+      "0x0000 002B"
+    ],
+    "toolOnly": {
+      "links": 0,
+      "tasks": 0
+    }
+  },
+  {
+    "width": 320,
+    "theme": "light",
+    "close": {
+      "rect": {
+        "x": 231.390625,
+        "y": 24.59375,
+        "width": 70.609375,
+        "height": 44.390625,
+        "top": 24.59375,
+        "right": 302,
+        "bottom": 68.984375,
+        "left": 231.390625
+      },
+      "bg": "rgb(255, 255, 255)",
+      "color": "rgb(25, 49, 48)",
+      "focus": true
+    },
+    "panel": {
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 812,
+        "top": 0,
+        "right": 320,
+        "bottom": 812,
+        "left": 0
+      },
+      "bg": "rgb(247, 250, 248)",
+      "color": "rgb(25, 49, 48)",
+      "clientWidth": 320,
+      "scrollWidth": 320,
+      "bodyWidth": 320
+    },
+    "toolBorders": {
+      "border": "0px none rgb(25, 49, 48)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    "value": [
+      "43",
+      "0x0000 002B"
+    ],
+    "focusRestored": true,
+    "heading": [
+      "One addition"
+    ],
+    "retained": [
+      "43",
+      "0x0000 002B"
+    ],
+    "toolOnly": {
+      "links": 0,
+      "tasks": 0
+    }
+  },
+  {
+    "width": 320,
+    "theme": "dark",
+    "close": {
+      "rect": {
+        "x": 231.390625,
+        "y": 24.59375,
+        "width": 70.609375,
+        "height": 44.390625,
+        "top": 24.59375,
+        "right": 302,
+        "bottom": 68.984375,
+        "left": 231.390625
+      },
+      "bg": "rgb(23, 38, 35)",
+      "color": "rgb(229, 241, 237)",
+      "focus": true
+    },
+    "panel": {
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 812,
+        "top": 0,
+        "right": 320,
+        "bottom": 812,
+        "left": 0
+      },
+      "bg": "rgb(16, 27, 26)",
+      "color": "rgb(229, 241, 237)",
+      "clientWidth": 320,
+      "scrollWidth": 320,
+      "bodyWidth": 320
+    },
+    "toolBorders": {
+      "border": "0px none rgb(229, 241, 237)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    "value": [
+      "43",
+      "0x0000 002B"
+    ],
+    "focusRestored": true,
+    "heading": [
+      "One addition"
+    ],
+    "retained": [
+      "43",
+      "0x0000 002B"
+    ],
+    "toolOnly": {
+      "links": 0,
+      "tasks": 0
+    }
+  }
+]

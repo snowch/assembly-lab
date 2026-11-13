@@ -1,0 +1,112 @@
+/* Copyright © 2026 Christopher Snow */
+
+.shell-header .header-calculator-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 14px;
+  white-space: nowrap;
+}
+.header-calculator-dialog {
+  position: fixed;
+  inset: 78px 12px 12px auto;
+  margin: 0;
+  width: min(600px, calc(100vw - 24px));
+  height: calc(100dvh - 90px);
+  max-width: none;
+  max-height: none;
+  box-sizing: border-box;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg);
+  color: var(--fg);
+  box-shadow: 0 16px 64px #0003;
+  z-index: 60;
+}
+.header-calculator-heading {
+  position: sticky;
+  top: -24px;
+  margin-top: -24px;
+  padding-block: 18px 12px;
+  background: var(--bg);
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.header-calculator-heading h2 {
+  margin: 0;
+  font-size: 24px;
+}
+.header-calculator-heading button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--bg-raised);
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+}
+.header-calculator-help {
+  color: var(--fg-muted);
+}
+.header-calculator-dialog .al-programmer-calculator {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.header-calculator-dialog .al-programmer-panel {
+  padding: 0;
+  border: 0;
+  margin-top: 0;
+  background: transparent;
+}
+@media (max-width: 760px) {
+  .shell-header .header-calculator-button {
+    padding: 0;
+    flex: 0 0 44px;
+  }
+  .header-calculator-button span {
+    display: none;
+  }
+  .header-calculator-heading {
+    top: -18px;
+    margin-top: -18px;
+  }
+  .header-calculator-dialog {
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    padding: 18px;
+  }
+}
+@media (max-width: 400px) {
+  .shell-header {
+    padding-inline: 12px;
+    gap: 7px;
+  }
+  .shell-header .brand {
+    gap: 0;
+  }
+  .shell-header .brand > span {
+    display: none;
+  }
+}

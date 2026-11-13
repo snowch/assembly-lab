@@ -18,6 +18,7 @@ import { LessonView } from "@platform/lesson-runtime";
 
 import { createBook } from "./book";
 import { BUILD_VERSION, commitHref } from "./build-version";
+import { HeaderCalculator } from "./HeaderCalculator";
 import { AppStatus } from "./AppStatus";
 import { STATUS_STRINGS } from "./strings.status";
 import { useOffline } from "./offline";
@@ -188,10 +189,11 @@ export function App() {
         </p>
       )}
       <header className="shell-header" inert={offline?.updating}>
-        <a className="brand" href="#/">
-          {STRINGS.title}
+        <a className="brand" href="#/" aria-label={STRINGS.title}>
+          <span>{STRINGS.title}</span>
         </a>
         <AppStatus offline={offline} />
+        <HeaderCalculator updating={offline?.updating} />
         <label className="theme-picker">
           <span>{STRINGS.theme}</span>
           <select value={theme} onChange={(e) => setTheme(e.target.value as Theme)}>

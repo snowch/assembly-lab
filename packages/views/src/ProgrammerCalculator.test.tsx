@@ -330,3 +330,23 @@ it("restores open state, numeric working, pending entry and guide answers once t
   );
   expect(fresh.container.querySelector("details")).not.toHaveAttribute("open");
 });
+
+it("tool presentation has no exercises and limits half editing to 32 bits", () => {
+  const view = render(
+    <ProgrammerCalculator preset="widths" handoffKey="global" presentation="tool" />,
+  );
+  expect(view.queryByText(S.guideTitle)).toBeNull();
+  expect(view.queryByRole("link")).toBeNull();
+  expect(pattern(view.container)).toBe("0");
+  fireEvent.change(view.getByLabelText(S.halfValue), { target: { value: "15" } });
+  fireEvent.click(view.getByRole("button", { name: S.applyHalf }));
+  expect(pattern(view.container)).toBe("983040");
+  fireEvent.click(view.getByRole("button", { name: S.widthValue(64) }));
+  expect(view.queryByLabelText(S.halfValue)).toBeNull();
+  fireEvent.change(view.getByLabelText(S.shiftAmount), { target: { value: "32" } });
+  fireEvent.click(view.getByRole("button", { name: S.shiftLeft }));
+  expect(pattern(view.container)).toBe("4222124650659840");
+  fireEvent.click(view.getByRole("button", { name: S.widthValue(32) }));
+  expect(pattern(view.container)).toBe("0");
+  expect(view.getByLabelText(S.halfValue)).toBeInTheDocument();
+});

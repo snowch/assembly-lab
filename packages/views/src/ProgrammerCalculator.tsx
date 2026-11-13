@@ -71,14 +71,14 @@ function DecimalValue({ value }: { value: bigint }) {
   ));
 }
 
-function initial(preset: ProgrammerPreset): Work {
+function initial(preset: ProgrammerPreset, tool = false): Work {
   const config = programmerPresets[preset];
   return {
     open: false,
     guideOpen: false,
-    width: config.width,
+    width: tool ? 32 : config.width,
     reading: "unsigned",
-    pattern: config.initial,
+    pattern: tool ? "0" : config.initial,
     entry: "",
     format: "decimal",
     operand: "1",
@@ -101,17 +101,20 @@ function initial(preset: ProgrammerPreset): Work {
 export function ProgrammerCalculator({
   preset,
   handoffKey,
+  presentation = "lesson",
 }: {
   preset: ProgrammerPreset;
   handoffKey: string;
+  presentation?: "lesson" | "tool";
 }) {
+  const tool = presentation === "tool";
   const id = useId();
   const entryRef = useRef<HTMLInputElement>(null);
   const config = programmerPresets[preset];
   const copy = S.presets[preset];
   const [work, setWork] = useHandoffState<Work>(
     `ProgrammerCalculator.${handoffKey}.${preset}`,
-    () => initial(preset),
+    () => initial(preset, tool),
   );
   const change = (patch: Partial<Work>) => setWork((before) => ({ ...before, ...patch }));
   const act = (patch: Partial<Work>, message: string) =>
@@ -199,9 +202,412 @@ export function ProgrammerCalculator({
     "aria-errormessage": work.error?.field === field ? `${id}-${field}-error` : undefined,
   });
   const widths = config.resize ? ([32, 64] as const) : [];
-  const halves = config.halves ? calculatorHalves(work.pattern) : null;
+  const halves =
+    config.halves || (tool && work.width === 32) ? calculatorHalves(work.pattern) : null;
 
-  return (
+  const panel = (
+    <div className="al-programmer-panel">
+      <p>{S.help}</p>
+      {!tool && <p>{copy.intro}</p>}
+      <p className="al-programmer-qualifier">{tool ? S.toolWidthHelp : copy.qualifier}</p>
+      <div className="al-programmer-switches">
+        {config.resize && (
+          <div role="group" aria-label={S.width}>
+            <span>{S.width}</span>
+            {widths.map((width) => (
+              <button
+                type="button"
+                key={width}
+                aria-pressed={work.width === width}
+                onClick={() => {
+                  if (width !== work.width)
+                    act(
+                      {
+                        width,
+                        pattern: calculatorPattern(BigInt(work.pattern), width).toString(),
+                        selected: 0,
+                      },
+                      width < work.width ? S.messages.resizeNarrow : S.messages.resizeWide,
+                    );
+                }}
+              >
+                {S.widthValue(width)}
+              </button>
+            ))}
+          </div>
+        )}
+        {config.reading && (
+          <div role="group" aria-label={S.reading}>
+            <span>{S.reading}</span>
+            {(["unsigned", "signed"] as const).map((reading) => (
+              <button
+                type="button"
+                key={reading}
+                aria-pressed={work.reading === reading}
+                onClick={() => act({ reading }, S.messages.reading)}
+              >
+                {S[reading]}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="al-programmer-readouts">
+        <div>
+          <span id={`${id}-decimal`}>
+            {config.reading || config.arithmetic ? S.decimalReading(S[work.reading]) : S.decimal}
+          </span>
+          <output
+            aria-labelledby={`${id}-decimal`}
+            data-reading={work.reading}
+            data-long={number(decimal).length > 20 ? true : undefined}
+          >
+            <DecimalValue value={decimal} />
+          </output>
+          {tool && <small>{work.reading === "signed" ? S.signedHelp : S.unsignedHelp}</small>}
+        </div>
+        <div>
+          <span id={`${id}-hex`}>{S.hex}</span>
+          <output aria-labelledby={`${id}-hex`} data-pattern={work.pattern}>
+            {hexadecimal(work.pattern, work.width)}
+          </output>
+          {tool && <small>{S.hexHelp}</small>}
+        </div>
+      </div>
+      <div className="al-programmer-entry">
+        <label htmlFor={`${id}-entry`}>{S.entry}</label>
+        <div className="al-programmer-controls">
+          <select
+            aria-label={S.format}
+            value={work.format}
+            onChange={(event) => edit("entry", { format: event.target.value as CalculatorFormat })}
+            onKeyDown={enter(apply)}
+          >
+            <option value="decimal">{S.decimal}</option>
+            <option value="hex">{S.hex}</option>
+          </select>
+          <input
+            ref={entryRef}
+            id={`${id}-entry`}
+            value={work.entry}
+            autoComplete="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            aria-describedby={`${id}-range${work.error?.field === "entry" ? ` ${id}-entry-error` : ""}`}
+            {...invalid("entry")}
+            onChange={(event) => edit("entry", { entry: event.target.value })}
+            onKeyDown={enter(apply)}
+          />
+          <button type="button" onClick={apply}>
+            {S.apply}
+          </button>
+        </div>
+        <p className="al-programmer-help" id={`${id}-range`}>
+          {range}
+        </p>
+        {error("entry")}
+      </div>
+      <div className="al-programmer-bit-heading">
+        <strong>{S.bitRange(work.width)}</strong>
+        <span>{S.widthValue(work.width)}</span>
+      </div>
+      <div
+        className={`al-programmer-bits${work.width === 4 ? " al-programmer-four" : ""}`}
+        role="group"
+        aria-label={S.pattern}
+      >
+        {Array.from({ length: work.width }, (_, j) => work.width - 1 - j).map((position) => {
+          const value = Number((BigInt(work.pattern) >> BigInt(position)) & 1n);
+          return (
+            <button
+              type="button"
+              className="al-programmer-bit"
+              key={position}
+              data-bit={position}
+              aria-label={S.bit(position)}
+              aria-pressed={value === 1}
+              onClick={() => {
+                const pattern = calculatorPattern(
+                  BigInt(work.pattern) ^ (1n << BigInt(position)),
+                  work.width,
+                ).toString();
+                act({ pattern, selected: position }, "");
+              }}
+            >
+              <small aria-hidden="true">{position}</small>
+              <b aria-hidden="true">{value}</b>
+            </button>
+          );
+        })}
+      </div>
+      <p className="al-programmer-inspector">{inspector}</p>
+      <div className="al-programmer-controls">
+        <button type="button" onClick={() => act({ pattern: "0" }, S.messages.cleared)}>
+          {S.clear}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            const reset = initial(preset, tool);
+            change({
+              ...reset,
+              open: true,
+              guideOpen: work.guideOpen,
+              answers: work.answers,
+              guideChecked: work.guideChecked,
+              guideFeedback: work.guideFeedback,
+              loadedFeedback: work.loadedFeedback,
+              message: S.messages.reset,
+            });
+          }}
+        >
+          {S.reset}
+        </button>
+      </div>
+      {halves && (
+        <section className="al-programmer-section" aria-label={S.halfTitle}>
+          <h4>{S.halfTitle}</h4>
+          <div className="al-programmer-readouts">
+            <div>
+              <span>{S.upper}</span>
+              <strong>{number(halves.upper)}</strong>
+            </div>
+            <div>
+              <span>{S.lower}</span>
+              <strong>{number(halves.lower)}</strong>
+            </div>
+          </div>
+          <p className="al-programmer-help">
+            {S.halfSum(number(halves.upper), number(halves.lower), number(work.pattern))}
+          </p>
+          <div className="al-programmer-controls">
+            <label>
+              {S.replaceHalf}
+              <select
+                value={work.half}
+                onChange={(event) => change({ half: event.target.value as "upper" | "lower" })}
+                onKeyDown={enter(applyHalf)}
+              >
+                <option value="upper">{S.upper}</option>
+                <option value="lower">{S.lower}</option>
+              </select>
+            </label>
+            <label htmlFor={`${id}-half`}>
+              {S.halfValue}
+              <input
+                id={`${id}-half`}
+                value={work.halfValue}
+                inputMode="numeric"
+                {...invalid("half")}
+                aria-describedby={work.error?.field === "half" ? `${id}-half-error` : undefined}
+                onChange={(event) => edit("half", { halfValue: event.target.value })}
+                onKeyDown={enter(applyHalf)}
+              />
+            </label>
+            <button type="button" onClick={applyHalf}>
+              {S.applyHalf}
+            </button>
+          </div>
+          {error("half")}
+        </section>
+      )}
+      {(config.halves || tool) && (
+        <section className="al-programmer-section" aria-label={S.shiftLeft}>
+          <div className="al-programmer-controls al-programmer-shift">
+            <label htmlFor={`${id}-shift`}>
+              {S.shiftAmount}
+              <input
+                id={`${id}-shift`}
+                value={work.shift}
+                inputMode="numeric"
+                {...invalid("shift")}
+                aria-describedby={work.error?.field === "shift" ? `${id}-shift-error` : undefined}
+                onChange={(event) => edit("shift", { shift: event.target.value })}
+                onKeyDown={enter(shift)}
+              />
+            </label>
+            <button type="button" onClick={shift}>
+              {S.shiftLeft}
+            </button>
+          </div>
+          {error("shift")}
+        </section>
+      )}
+      {config.arithmetic && (
+        <section className="al-programmer-section" aria-label={S.calculate}>
+          <div className="al-programmer-controls">
+            <label>
+              {S.operation}
+              <select
+                value={work.operation}
+                onChange={(event) => change({ operation: event.target.value as Work["operation"] })}
+                onKeyDown={enter(calculate)}
+              >
+                <option value="add">{S.add}</option>
+                <option value="subtract">{S.subtract}</option>
+              </select>
+            </label>
+            <label htmlFor={`${id}-operand`}>
+              {S.second}
+              <input
+                id={`${id}-operand`}
+                value={work.operand}
+                aria-describedby={`${id}-operand-range${work.error?.field === "operand" ? ` ${id}-operand-error` : ""}`}
+                {...invalid("operand")}
+                onChange={(event) => edit("operand", { operand: event.target.value })}
+                onKeyDown={enter(calculate)}
+              />
+            </label>
+            <button type="button" onClick={calculate}>
+              {S.calculate}
+            </button>
+          </div>
+          <p className="al-programmer-help" id={`${id}-operand-range`}>
+            {S.decimalRange(number(minimum), number(maximum))}
+          </p>
+          {error("operand")}
+        </section>
+      )}
+      {work.full !== null && (
+        <div className="al-programmer-result">
+          <p>
+            {S.fullResult}:{" "}
+            <code>
+              <DecimalValue value={BigInt(work.full)} />
+            </code>
+          </p>
+          <p>
+            {S.retained} ({S.widthValue(work.width)}):{" "}
+            <code>
+              {BigInt(work.pattern)
+                .toString(2)
+                .padStart(work.width, "0")
+                .match(/.{1,4}/g)!
+                .join(" ")}
+            </code>{" "}
+            ·{" "}
+            <code>
+              <DecimalValue value={decimal} />
+            </code>
+          </p>
+        </div>
+      )}
+      <p className="al-programmer-message" role="status">
+        {work.message}
+      </p>
+      {!tool && (
+        <details
+          className="al-programmer-guide"
+          open={work.guideOpen}
+          onToggle={(event) => {
+            if (event.currentTarget.open !== work.guideOpen)
+              change({ guideOpen: event.currentTarget.open });
+          }}
+        >
+          <summary>{S.guideTitle}</summary>
+          <div className="al-programmer-worked">
+            <strong>{S.worked}</strong>
+            <p>{copy.worked}</p>
+          </div>
+          <strong>{S.turn}</strong>
+          <p>{copy.task}</p>
+          <button
+            type="button"
+            onClick={() => {
+              act(
+                {
+                  pattern: config.task,
+                  width: config.width,
+                  reading: "unsigned",
+                  selected: 0,
+                  ...(preset === "arithmetic" ? { operation: "add" as const, operand: "3" } : {}),
+                  loadedFeedback: S.messages.taskLoaded,
+                },
+                "",
+              );
+            }}
+          >
+            {S.loadTask}
+          </button>
+          <p className="al-programmer-help" role="status">
+            {work.loadedFeedback}
+          </p>
+          <button
+            className="al-programmer-return"
+            type="button"
+            onClick={() => entryRef.current?.focus()}
+          >
+            {S.returnToCalculator}
+          </button>
+          <div className="al-programmer-guide-answers">
+            {copy.labels.map((label, index) => (
+              <label key={label} htmlFor={`${id}-answer-${index}`}>
+                {label}
+                <input
+                  id={`${id}-answer-${index}`}
+                  value={work.answers[index]}
+                  autoComplete="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                  aria-invalid={work.guideChecked && !checks[index] ? true : undefined}
+                  aria-describedby={work.guideChecked ? `${id}-guide-feedback` : undefined}
+                  onChange={(event) =>
+                    change({
+                      answers: work.answers.map((answer, i) =>
+                        i === index ? event.target.value : answer,
+                      ),
+                      guideChecked: false,
+                      guideFeedback: "",
+                    })
+                  }
+                  onKeyDown={enter(check)}
+                />
+              </label>
+            ))}
+          </div>
+          <div className="al-programmer-controls">
+            <button type="button" onClick={check}>
+              {S.check}
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                change({
+                  answers: work.answers.map(() => ""),
+                  guideChecked: false,
+                  guideFeedback: S.messages.guideReset,
+                  loadedFeedback: "",
+                })
+              }
+            >
+              {S.resetGuide}
+            </button>
+          </div>
+          <p id={`${id}-guide-feedback`} role="status">
+            {work.guideFeedback}
+          </p>
+        </details>
+      )}
+      {!tool && (
+        <p className="al-programmer-full">
+          <a
+            href="https://snowch.github.io/programmer-calculator/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-describedby={`${id}-new-tab`}
+          >
+            {S.full}
+          </a>{" "}
+          <span id={`${id}-new-tab`}>{S.newTab}</span>
+        </p>
+      )}
+    </div>
+  );
+  return tool ? (
+    <section className="al-programmer-calculator" data-tool="true">
+      {panel}
+    </section>
+  ) : (
     <details
       className="al-programmer-calculator"
       data-preset={preset}
@@ -212,402 +618,7 @@ export function ProgrammerCalculator({
       }}
     >
       <summary>{S.title}</summary>
-      {work.open && (
-        <div className="al-programmer-panel">
-          <p>{S.help}</p>
-          <p>{copy.intro}</p>
-          <p className="al-programmer-qualifier">{copy.qualifier}</p>
-          <div className="al-programmer-switches">
-            {config.resize && (
-              <div role="group" aria-label={S.width}>
-                <span>{S.width}</span>
-                {widths.map((width) => (
-                  <button
-                    type="button"
-                    key={width}
-                    aria-pressed={work.width === width}
-                    onClick={() => {
-                      if (width !== work.width)
-                        act(
-                          {
-                            width,
-                            pattern: calculatorPattern(BigInt(work.pattern), width).toString(),
-                            selected: 0,
-                          },
-                          width < work.width ? S.messages.resizeNarrow : S.messages.resizeWide,
-                        );
-                    }}
-                  >
-                    {S.widthValue(width)}
-                  </button>
-                ))}
-              </div>
-            )}
-            {config.reading && (
-              <div role="group" aria-label={S.reading}>
-                <span>{S.reading}</span>
-                {(["unsigned", "signed"] as const).map((reading) => (
-                  <button
-                    type="button"
-                    key={reading}
-                    aria-pressed={work.reading === reading}
-                    onClick={() => act({ reading }, S.messages.reading)}
-                  >
-                    {S[reading]}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="al-programmer-readouts">
-            <div>
-              <span id={`${id}-decimal`}>
-                {config.reading || config.arithmetic
-                  ? S.decimalReading(S[work.reading])
-                  : S.decimal}
-              </span>
-              <output
-                aria-labelledby={`${id}-decimal`}
-                data-reading={work.reading}
-                data-long={number(decimal).length > 20 ? true : undefined}
-              >
-                <DecimalValue value={decimal} />
-              </output>
-            </div>
-            <div>
-              <span id={`${id}-hex`}>{S.hex}</span>
-              <output aria-labelledby={`${id}-hex`} data-pattern={work.pattern}>
-                {hexadecimal(work.pattern, work.width)}
-              </output>
-            </div>
-          </div>
-          <div className="al-programmer-entry">
-            <label htmlFor={`${id}-entry`}>{S.entry}</label>
-            <div className="al-programmer-controls">
-              <select
-                aria-label={S.format}
-                value={work.format}
-                onChange={(event) =>
-                  edit("entry", { format: event.target.value as CalculatorFormat })
-                }
-                onKeyDown={enter(apply)}
-              >
-                <option value="decimal">{S.decimal}</option>
-                <option value="hex">{S.hex}</option>
-              </select>
-              <input
-                ref={entryRef}
-                id={`${id}-entry`}
-                value={work.entry}
-                autoComplete="off"
-                autoCapitalize="off"
-                spellCheck={false}
-                aria-describedby={`${id}-range${work.error?.field === "entry" ? ` ${id}-entry-error` : ""}`}
-                {...invalid("entry")}
-                onChange={(event) => edit("entry", { entry: event.target.value })}
-                onKeyDown={enter(apply)}
-              />
-              <button type="button" onClick={apply}>
-                {S.apply}
-              </button>
-            </div>
-            <p className="al-programmer-help" id={`${id}-range`}>
-              {range}
-            </p>
-            {error("entry")}
-          </div>
-          <div className="al-programmer-bit-heading">
-            <strong>{S.bitRange(work.width)}</strong>
-            <span>{S.widthValue(work.width)}</span>
-          </div>
-          <div
-            className={`al-programmer-bits${work.width === 4 ? " al-programmer-four" : ""}`}
-            role="group"
-            aria-label={S.pattern}
-          >
-            {Array.from({ length: work.width }, (_, j) => work.width - 1 - j).map((position) => {
-              const value = Number((BigInt(work.pattern) >> BigInt(position)) & 1n);
-              return (
-                <button
-                  type="button"
-                  className="al-programmer-bit"
-                  key={position}
-                  data-bit={position}
-                  aria-label={S.bit(position)}
-                  aria-pressed={value === 1}
-                  onClick={() => {
-                    const pattern = calculatorPattern(
-                      BigInt(work.pattern) ^ (1n << BigInt(position)),
-                      work.width,
-                    ).toString();
-                    act({ pattern, selected: position }, "");
-                  }}
-                >
-                  <small aria-hidden="true">{position}</small>
-                  <b aria-hidden="true">{value}</b>
-                </button>
-              );
-            })}
-          </div>
-          <p className="al-programmer-inspector">{inspector}</p>
-          <div className="al-programmer-controls">
-            <button type="button" onClick={() => act({ pattern: "0" }, S.messages.cleared)}>
-              {S.clear}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                const reset = initial(preset);
-                change({
-                  ...reset,
-                  open: true,
-                  guideOpen: work.guideOpen,
-                  answers: work.answers,
-                  guideChecked: work.guideChecked,
-                  guideFeedback: work.guideFeedback,
-                  loadedFeedback: work.loadedFeedback,
-                  message: S.messages.reset,
-                });
-              }}
-            >
-              {S.reset}
-            </button>
-          </div>
-          {halves && (
-            <section className="al-programmer-section" aria-label={S.halfTitle}>
-              <h4>{S.halfTitle}</h4>
-              <div className="al-programmer-readouts">
-                <div>
-                  <span>{S.upper}</span>
-                  <strong>{number(halves.upper)}</strong>
-                </div>
-                <div>
-                  <span>{S.lower}</span>
-                  <strong>{number(halves.lower)}</strong>
-                </div>
-              </div>
-              <p className="al-programmer-help">
-                {S.halfSum(number(halves.upper), number(halves.lower), number(work.pattern))}
-              </p>
-              <div className="al-programmer-controls">
-                <label>
-                  {S.replaceHalf}
-                  <select
-                    value={work.half}
-                    onChange={(event) => change({ half: event.target.value as "upper" | "lower" })}
-                    onKeyDown={enter(applyHalf)}
-                  >
-                    <option value="upper">{S.upper}</option>
-                    <option value="lower">{S.lower}</option>
-                  </select>
-                </label>
-                <label htmlFor={`${id}-half`}>
-                  {S.halfValue}
-                  <input
-                    id={`${id}-half`}
-                    value={work.halfValue}
-                    inputMode="numeric"
-                    {...invalid("half")}
-                    aria-describedby={work.error?.field === "half" ? `${id}-half-error` : undefined}
-                    onChange={(event) => edit("half", { halfValue: event.target.value })}
-                    onKeyDown={enter(applyHalf)}
-                  />
-                </label>
-                <button type="button" onClick={applyHalf}>
-                  {S.applyHalf}
-                </button>
-              </div>
-              {error("half")}
-              <div className="al-programmer-controls al-programmer-shift">
-                <label htmlFor={`${id}-shift`}>
-                  {S.shiftAmount}
-                  <input
-                    id={`${id}-shift`}
-                    value={work.shift}
-                    inputMode="numeric"
-                    {...invalid("shift")}
-                    aria-describedby={
-                      work.error?.field === "shift" ? `${id}-shift-error` : undefined
-                    }
-                    onChange={(event) => edit("shift", { shift: event.target.value })}
-                    onKeyDown={enter(shift)}
-                  />
-                </label>
-                <button type="button" onClick={shift}>
-                  {S.shiftLeft}
-                </button>
-              </div>
-              {error("shift")}
-            </section>
-          )}
-          {config.arithmetic && (
-            <section className="al-programmer-section" aria-label={S.calculate}>
-              <div className="al-programmer-controls">
-                <label>
-                  {S.operation}
-                  <select
-                    value={work.operation}
-                    onChange={(event) =>
-                      change({ operation: event.target.value as Work["operation"] })
-                    }
-                    onKeyDown={enter(calculate)}
-                  >
-                    <option value="add">{S.add}</option>
-                    <option value="subtract">{S.subtract}</option>
-                  </select>
-                </label>
-                <label htmlFor={`${id}-operand`}>
-                  {S.second}
-                  <input
-                    id={`${id}-operand`}
-                    value={work.operand}
-                    aria-describedby={`${id}-operand-range${work.error?.field === "operand" ? ` ${id}-operand-error` : ""}`}
-                    {...invalid("operand")}
-                    onChange={(event) => edit("operand", { operand: event.target.value })}
-                    onKeyDown={enter(calculate)}
-                  />
-                </label>
-                <button type="button" onClick={calculate}>
-                  {S.calculate}
-                </button>
-              </div>
-              <p className="al-programmer-help" id={`${id}-operand-range`}>
-                {S.decimalRange(number(minimum), number(maximum))}
-              </p>
-              {error("operand")}
-            </section>
-          )}
-          {work.full !== null && (
-            <div className="al-programmer-result">
-              <p>
-                {S.fullResult}:{" "}
-                <code>
-                  <DecimalValue value={BigInt(work.full)} />
-                </code>
-              </p>
-              <p>
-                {S.retained} ({S.widthValue(work.width)}):{" "}
-                <code>
-                  {BigInt(work.pattern)
-                    .toString(2)
-                    .padStart(work.width, "0")
-                    .match(/.{1,4}/g)!
-                    .join(" ")}
-                </code>{" "}
-                ·{" "}
-                <code>
-                  <DecimalValue value={decimal} />
-                </code>
-              </p>
-            </div>
-          )}
-          <p className="al-programmer-message" role="status">
-            {work.message}
-          </p>
-          <details
-            className="al-programmer-guide"
-            open={work.guideOpen}
-            onToggle={(event) => {
-              if (event.currentTarget.open !== work.guideOpen)
-                change({ guideOpen: event.currentTarget.open });
-            }}
-          >
-            <summary>{S.guideTitle}</summary>
-            <div className="al-programmer-worked">
-              <strong>{S.worked}</strong>
-              <p>{copy.worked}</p>
-            </div>
-            <strong>{S.turn}</strong>
-            <p>{copy.task}</p>
-            <button
-              type="button"
-              onClick={() => {
-                act(
-                  {
-                    pattern: config.task,
-                    width: config.width,
-                    reading: "unsigned",
-                    selected: 0,
-                    ...(preset === "arithmetic" ? { operation: "add" as const, operand: "3" } : {}),
-                    loadedFeedback: S.messages.taskLoaded,
-                  },
-                  "",
-                );
-              }}
-            >
-              {S.loadTask}
-            </button>
-            <p className="al-programmer-help" role="status">
-              {work.loadedFeedback}
-            </p>
-            <button
-              className="al-programmer-return"
-              type="button"
-              onClick={() => entryRef.current?.focus()}
-            >
-              {S.returnToCalculator}
-            </button>
-            <div className="al-programmer-guide-answers">
-              {copy.labels.map((label, index) => (
-                <label key={label} htmlFor={`${id}-answer-${index}`}>
-                  {label}
-                  <input
-                    id={`${id}-answer-${index}`}
-                    value={work.answers[index]}
-                    autoComplete="off"
-                    autoCapitalize="off"
-                    spellCheck={false}
-                    aria-invalid={work.guideChecked && !checks[index] ? true : undefined}
-                    aria-describedby={work.guideChecked ? `${id}-guide-feedback` : undefined}
-                    onChange={(event) =>
-                      change({
-                        answers: work.answers.map((answer, i) =>
-                          i === index ? event.target.value : answer,
-                        ),
-                        guideChecked: false,
-                        guideFeedback: "",
-                      })
-                    }
-                    onKeyDown={enter(check)}
-                  />
-                </label>
-              ))}
-            </div>
-            <div className="al-programmer-controls">
-              <button type="button" onClick={check}>
-                {S.check}
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  change({
-                    answers: work.answers.map(() => ""),
-                    guideChecked: false,
-                    guideFeedback: S.messages.guideReset,
-                    loadedFeedback: "",
-                  })
-                }
-              >
-                {S.resetGuide}
-              </button>
-            </div>
-            <p id={`${id}-guide-feedback`} role="status">
-              {work.guideFeedback}
-            </p>
-          </details>
-          <p className="al-programmer-full">
-            <a
-              href="https://snowch.github.io/programmer-calculator/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-describedby={`${id}-new-tab`}
-            >
-              {S.full}
-            </a>{" "}
-            <span id={`${id}-new-tab`}>{S.newTab}</span>
-          </p>
-        </div>
-      )}
+      {work.open && panel}
     </details>
   );
 }

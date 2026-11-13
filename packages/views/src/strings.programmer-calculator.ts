@@ -4,6 +4,11 @@
 export const PROGRAMMER_CALCULATOR = {
   title: "Programmer calculator",
   help: "Use your own values as scratch work. These controls change numbers and bits; they do not run instructions.",
+  unsignedHelp: "Unsigned: zero or positive.",
+  signedHelp: "Signed: the highest bit has negative weight.",
+  hexHelp: "Hex: digits 0–9 and A–F; four bits per digit.",
+  toolWidthHelp:
+    "Narrowing discards upper bits. Widening adds upper zeros, even with Signed selected, without copying the highest bit.",
   full: "Open full calculator",
   newTab: "Opens in a new tab",
   decimal: "Decimal",

@@ -1,0 +1,70 @@
+[
+  {
+    "width": 375,
+    "theme": "light",
+    "brandState": {
+      "font": "16px",
+      "spanDisplay": "none",
+      "aria": "Assembly Lab",
+      "height": 44
+    },
+    "definitionsBeforeControls": true,
+    "sticky": {
+      "top": 24.59375,
+      "bottom": 68.984375,
+      "height": 44.390625,
+      "hit": true
+    }
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "brandState": {
+      "font": "16px",
+      "spanDisplay": "none",
+      "aria": "Assembly Lab",
+      "height": 44
+    },
+    "definitionsBeforeControls": true,
+    "sticky": {
+      "top": 24.59375,
+      "bottom": 68.984375,
+      "height": 44.390625,
+      "hit": true
+    }
+  },
+  {
+    "width": 1280,
+    "theme": "light",
+    "brandState": {
+      "font": "17px",
+      "spanDisplay": "block",
+      "aria": "Assembly Lab",
+      "height": 44
+    },
+    "definitionsBeforeControls": true,
+    "sticky": {
+      "top": 97,
+      "bottom": 141.390625,
+      "height": 44.390625,
+      "hit": true
+    }
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "brandState": {
+      "font": "17px",
+      "spanDisplay": "block",
+      "aria": "Assembly Lab",
+      "height": 44
+    },
+    "definitionsBeforeControls": true,
+    "sticky": {
+      "top": 97,
+      "bottom": 141.390625,
+      "height": 44.390625,
+      "hit": true
+    }
+  }
+]
