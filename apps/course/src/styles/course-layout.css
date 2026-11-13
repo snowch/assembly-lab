@@ -1,0 +1,379 @@
+/* Copyright © 2026 Christopher Snow */
+
+:root :is(button, input, textarea, select, summary, a) {
+  scroll-margin-top: 96px;
+}
+:root .skip-link:focus {
+  position: fixed;
+  top: 8px;
+  left: 16px;
+  z-index: 200;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+:root .al-flags-lesson .lesson-step {
+  scroll-margin-top: 96px;
+}
+.lesson-layout,
+.lesson-layout-body,
+.lesson-layout-content {
+  min-width: 0;
+}
+.lesson-outline-desktop,
+.lesson-outline-mobile {
+  display: none;
+}
+
+/* Menu contents keep the reading size even though its header button is compact. */
+.shell-header .app-status-panel {
+  font-size: 1rem;
+}
+
+:root {
+  --bg: #f7faf8;
+  --bg-raised: #fff;
+  --bg-sunken: #f0f5f3;
+  --bg-inset: #e9f0ed;
+  --fg: #193130;
+  --fg-muted: #617777;
+  --fg-faint: #6e8380;
+  --border: #dce7e3;
+  --accent: #087e6d;
+  --accent-strong: #066657;
+  --accent-soft: #eaf7f2;
+  --accent-fg: #fff;
+  --font-text: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-xxl: 3rem;
+  --line: 1.65;
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --measure: 42rem;
+  --page: 73.75rem;
+  --shadow-sm: 0 2px 8px #13372f05;
+  --shadow: 0 12px 36px #13372f06;
+}
+:root[data-theme="dark"] {
+  --bg: #101b1a;
+  --bg-raised: #172623;
+  --bg-sunken: #1c302b;
+  --bg-inset: #213b34;
+  --fg: #e5f1ed;
+  --fg-muted: #adc2bc;
+  --fg-faint: #a3b8b2;
+  --border: #36524a;
+  --accent: #66d8c0;
+  --accent-strong: #9aead6;
+  --accent-soft: #193c32;
+  --accent-fg: #08221a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101b1a;
+    --bg-raised: #172623;
+    --bg-sunken: #1c302b;
+    --bg-inset: #213b34;
+    --fg: #e5f1ed;
+    --fg-muted: #adc2bc;
+    --fg-faint: #a3b8b2;
+    --border: #36524a;
+    --accent: #66d8c0;
+    --accent-strong: #9aead6;
+    --accent-soft: #193c32;
+    --accent-fg: #08221a;
+  }
+}
+:root body {
+  background: var(--bg);
+}
+:root .shell-main:has(.lesson-layout) {
+  max-width: none;
+  padding: 0;
+}
+:root .lesson-layout {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 218px minmax(0, 760px);
+  gap: 45px;
+  padding: 38px 26px 100px;
+}
+:root .lesson-outline-desktop {
+  display: block;
+  position: sticky;
+  top: 112px;
+  align-self: start;
+}
+.lesson-outline-desktop nav {
+  max-height: calc(100dvh - 140px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.lesson-outline-desktop nav > p {
+  margin: 7px 13px 18px;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+.lesson-layout nav ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.lesson-layout nav li {
+  margin: 0;
+}
+.lesson-layout nav a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 12px;
+  padding: 12px 13px;
+  border-left: 2px solid transparent;
+  border-radius: 0 9px 9px 0;
+  color: var(--fg-muted);
+  font-size: 13px;
+  line-height: 1.5;
+  text-decoration: none;
+}
+.lesson-layout nav a[aria-current="location"] {
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+.lesson-outline-number {
+  font: 750 11px/1.5 var(--font-text);
+  font-variant-numeric: tabular-nums;
+}
+:root .lesson-layout-content > .lesson-back {
+  margin-bottom: 12px;
+}
+:root .lesson-header {
+  padding: 22px 0 52px;
+  margin: 0;
+}
+:root .lesson-header h1 {
+  font-size: clamp(32px, 4vw, 50px);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+  margin: 16px 0 32px;
+}
+:root :is(.lesson-objectives, .lesson-prerequisites) h2 {
+  font-size: 18px;
+}
+:root .lesson-layout-content > .lesson > .lesson-section {
+  padding: 32px 0 64px;
+  margin: 0;
+  border-top: 1px solid var(--border);
+  scroll-margin-top: 96px;
+}
+:root .lesson-layout-content .lesson-section > h2 {
+  border-top: 0;
+  padding-top: 0;
+  font-size: 30px;
+  font-weight: 780;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  margin: 0 0 26px;
+  scroll-margin-top: 96px;
+}
+:root .lesson-layout-content .button {
+  border-radius: 10px;
+}
+:root .lesson-layout-content :is(textarea, input:not([type="radio"]):not([type="checkbox"])) {
+  border-radius: 9px;
+}
+:root .lesson-layout-content .al-flags-lesson.layout {
+  display: block;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+:root .al-flags-lesson > .sidebar {
+  display: none;
+}
+:root
+  .shell-main:has(.lesson-layout)
+  > :is(.lesson-nav, .lesson-completion-note, .where-next-after-calls) {
+  max-width: 760px;
+  margin-left: max(calc((100% - 1180px) / 2 + 289px), 289px);
+  margin-right: 26px;
+}
+:root .shell-main:has(.lesson-layout) > .lesson-completion-note {
+  max-width: 65ch;
+}
+@media (max-width: 1050px) {
+  :root .lesson-layout {
+    grid-template-columns: 162px minmax(0, 1fr);
+    gap: 24px;
+  }
+  :root
+    .shell-main:has(.lesson-layout)
+    > :is(.lesson-nav, .lesson-completion-note, .where-next-after-calls) {
+    margin-left: 212px;
+  }
+  .lesson-layout nav a {
+    padding: 11px 7px;
+  }
+}
+@media (max-width: 760px) {
+  :root .lesson-layout {
+    display: block;
+    padding: 20px 16px 70px;
+  }
+  :root .lesson-outline-desktop {
+    display: none;
+  }
+  :root .lesson-outline-mobile {
+    display: block;
+    margin-bottom: 28px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-raised);
+  }
+  .lesson-outline-mobile > summary {
+    min-height: 48px;
+    padding: 11px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 650;
+  }
+  .lesson-outline-mobile nav {
+    max-height: 60dvh;
+    overflow-y: auto;
+  }
+  :root
+    .shell-main:has(.lesson-layout)
+    > :is(.lesson-nav, .lesson-completion-note, .where-next-after-calls) {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+  :root .lesson-header {
+    padding-top: 12px;
+  }
+  :root .lesson-layout-content .lesson-section > h2 {
+    font-size: 27px;
+  }
+}
+
+/* Shared compact header. Full app status remains in its accessible disclosure. */
+
+.shell-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  min-height: 68px;
+  padding: 10px max(26px, calc((100% - 1128px) / 2));
+  gap: 14px;
+}
+.shell-header .brand {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-stretch: normal;
+  font-size: 17px;
+  font-weight: 750;
+  gap: 11px;
+}
+.shell-header .brand::before {
+  content: "≋";
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  background: #087a6a;
+  color: #fff;
+  border-radius: 9px;
+  font-size: 20px;
+  transform: rotate(-6deg);
+}
+.shell-header :is(.github-star, .app-status) {
+  font-size: 12px;
+}
+.shell-header .theme-picker {
+  font-size: 12px;
+}
+.shell-header .theme-picker select {
+  border-radius: 9px;
+  border-color: var(--border);
+  font-size: 12px;
+}
+@media (max-width: 760px) {
+  .shell-header {
+    padding: 8px 17px;
+    min-height: 62px;
+  }
+}
+@media (max-width: 760px) {
+  .shell-header .app-status {
+    width: auto;
+    order: initial;
+  }
+}
+.shell-header {
+  flex-wrap: nowrap;
+}
+.shell-header .app-status {
+  margin-left: auto;
+  order: initial;
+  width: auto;
+  flex: 0 0 44px;
+}
+.shell-header .app-status > summary {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: var(--bg-sunken);
+}
+.shell-header .app-status > summary::before {
+  content: "⋯";
+  font-size: 24px;
+}
+.shell-header .app-status :is(.app-status-title, .app-status-compact) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.shell-header .theme-picker {
+  margin-left: 0;
+}
+@media (max-width: 760px) {
+  .shell-header {
+    gap: 8px;
+  }
+}
+@media (max-width: 760px) {
+  .shell-header .theme-picker > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    clip-path: inset(50%);
+    overflow: hidden;
+  }
+}
+@media (max-width: 760px) {
+  .shell-header .brand {
+    font-size: 16px;
+  }
+}
+@media (max-width: 760px) {
+  .shell-header .theme-picker select {
+    padding: 0 8px;
+    max-width: 76px;
+  }
+}

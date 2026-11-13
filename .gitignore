@@ -4,6 +4,8 @@ coverage/
 playwright-report/
 test-results/
 .vite/
+.style-preview-build/
+style-preview-results/
 *.local
 .DS_Store
 

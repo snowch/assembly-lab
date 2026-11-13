@@ -185,10 +185,15 @@ test.describe("the listing figure", () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       page.viewportSize()!.width,
     );
+    const command = notes.nth(0).locator("pre");
+    await page.evaluate(async () => document.fonts.ready);
+    const scrolls = await command.evaluate((el) => el.scrollWidth > el.clientWidth);
     await page.keyboard.press("Tab");
-    // Chromium gives the horizontally scrollable command a keyboard stop.
-    await expect(notes.nth(0).locator("pre")).toBeFocused();
-    await page.keyboard.press("Tab");
+    // Chromium gives an overflowing command a keyboard stop. A command that fits is skipped.
+    if (scrolls) {
+      await expect(command).toBeFocused();
+      await page.keyboard.press("Tab");
+    }
     await expect(summary(1)).toBeFocused();
     await page.keyboard.press("Space");
     await expect(notes.nth(1)).toHaveJSProperty("open", true);

@@ -28,8 +28,9 @@ import { WhereNextPage } from "./pages/WhereNextPage";
 import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
 import { RUNTIME_STRINGS } from "./runtime-strings";
-import { COMPANION_LINKS, GITHUB_REPOSITORY, STRINGS } from "./strings";
+import { COMPANION_LINKS, STRINGS } from "./strings";
 import { clearThemeUpdate, saveThemeForUpdate, useTheme, type Theme } from "./theme";
+import { LessonLayout } from "./LessonLayout";
 
 /**
  * The skip link moves focus to the main content and leaves the address alone: its `#main` is not a
@@ -88,7 +89,7 @@ export function App() {
     const at = lesson ? ordered.findIndex((l) => l.id === lesson.id) : -1;
     const previous = ordered[at - 1];
     const next = ordered[at + 1];
-    page = lesson ? (
+    const lessonBody = lesson ? (
       <>
         {!flagsLayout && (
           <p className="lesson-back">
@@ -110,6 +111,13 @@ export function App() {
             strings={RUNTIME_STRINGS}
           />
         )}
+      </>
+    ) : null;
+    page = lesson ? (
+      <>
+        <LessonLayout key={lesson.id} lesson={lesson}>
+          {lessonBody}
+        </LessonLayout>
         {lesson.module === 9 && next?.module !== 9 && (
           <aside className="where-next-after-calls">
             <LessonProse markdown={WHERE_NEXT.afterCalls} />
@@ -171,19 +179,10 @@ export function App() {
           {STATUS_STRINGS.restarting}
         </p>
       )}
-      <header className="shell-header" data-flags-layout={flagsLayout} inert={offline?.updating}>
+      <header className="shell-header" inert={offline?.updating}>
         <a className="brand" href="#/">
           {STRINGS.title}
         </a>
-        {!flagsLayout && (
-          <a className="github-star" href={GITHUB_REPOSITORY}>
-            <span aria-hidden="true">☆</span>
-            <span>
-              {STRINGS.githubStar}
-              <span className="github-star-destination"> {STRINGS.githubStarDestination}</span>
-            </span>
-          </a>
-        )}
         <AppStatus offline={offline} />
         <label className="theme-picker">
           <span>{STRINGS.theme}</span>
@@ -194,13 +193,7 @@ export function App() {
           </select>
         </label>
       </header>
-      <main
-        id="main"
-        className="shell-main"
-        data-flags-layout={flagsLayout}
-        tabIndex={-1}
-        inert={offline?.updating}
-      >
+      <main id="main" className="shell-main" tabIndex={-1} inert={offline?.updating}>
         {page}
       </main>
       <footer className="shell-footer" inert={offline?.updating}>

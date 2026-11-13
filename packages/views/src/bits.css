@@ -519,6 +519,12 @@
   white-space: normal;
 }
 
+.al-recorded-reference > summary {
+  box-sizing: border-box;
+  min-height: 44px;
+  padding-block: 0.5rem;
+  cursor: pointer;
+}
 .al-recorded-reference > .al-controls {
   margin-block: var(--space-3);
 }
