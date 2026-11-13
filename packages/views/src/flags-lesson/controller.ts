@@ -123,9 +123,6 @@ export function mountFlagsLesson(
   function choices(prefix: string, a: Answers) {
     return `<div class="flag-form">${names.map((n) => `<fieldset class="flag-input"><legend class="char">${n.toUpperCase()}</legend><div class="bit-choices radios">${[0, 1].map((v) => `<label class="${a.choices[n] === v ? "selected" : ""}"><input class="visually-hidden" type="radio" name="${prefix}-${n}" value="${v}" ${a.choices[n] === v ? "checked" : ""}><span>${v}</span></label>`).join("")}</div></fieldset>`).join("")}</div>`;
   }
-  function bits32(m: FlagsModel) {
-    return `<div class="byte-groups">${[0, 1, 2, 3].map((i) => `<div class="byte"><span class="label">${31 - i * 8}–${24 - i * 8}</span><div>${[...m.result.bits.slice(i * 8, i * 8 + 8)].map((b) => `<span class="bit" data-on="${b === "1"}">${b}</span>`).join("")}</div></div>`).join("")}</div>`;
-  }
   let inspectMode = "N",
     fitMode = "C",
     signedDirection = 0;
@@ -297,104 +294,7 @@ export function mountFlagsLesson(
       return;
     }
     $("armFeedback").innerHTML =
-      `<div class="feedback" data-correct="${a.committed === armCorrectChoice()}"><p><strong>${esc(a.committed === armCorrectChoice() ? S.armCorrect : S.armIncorrect)}</strong></p><p class="mono">${esc(S.exactSum)}: ${fmt(arm().unsignedSum)}</p><ul><li>${esc(S.unsigned)}: ${esc(S.fits)} · C = ${arm().flags.c}</li><li>${esc(S.signed)}: ${esc(S.outside)} · V = ${arm().flags.v}</li></ul><p>${esc(S.armExplanation)}</p></div>`;
-  }
-  function renderArmInspection() {
-    const a = state.arm;
-    if (a.committed === null) {
-      $("armInspection").innerHTML = `<p class="locked">${esc(S.choosePrediction)}</p>`;
-      return;
-    }
-    $("armInspection").innerHTML =
-      `<p class="label">${esc(S.checked)}: ${esc(S.armChoices[a.committed])}</p><details id="explorer" ${a.open ? "open" : ""}><summary>${esc(S.exploreTitle)}</summary><div><p>${esc(S.exploreLead)}</p><p class="label">${esc(S.registerResult)}</p><code class="value" data-fixed-result>${arm().result.hex}</code><div class="switcher" id="readingButtons" role="group" aria-label="${esc(S.exploreTitle)}">${(["unsigned", "signed"] as const).map((r) => `<button type="button" data-reading="${r}" aria-pressed="${a.reading === r}">${esc(S[r])}</button>`).join("")}</div><div id="readerValue"></div>${flags(arm())}<p class="stable">${esc(S.unchanged)}</p><details id="allBits" ${a.bits ? "open" : ""}><summary>${esc(S.showAllBits)}</summary><div>${bits32(arm())}</div></details></div></details><details id="columnTrace" ${a.trace ? "open" : ""}><summary>${esc(S.traceTitle)}</summary><div><p>${esc(S.traceLead)}</p><p class="muted">${esc(S.carryNote)}</p><div class="trace-scroll" tabindex="0" role="region" aria-label="${esc(S.traceTitle)}"><div id="traceRows" class="trace"></div></div><div id="columnDetail" class="column-detail" role="status" aria-live="polite"></div><div class="controls"><button type="button" id="nextCol">${esc(S.nextColumn)}</button><button type="button" id="nextGroup">${esc(S.nextGroup)}</button><button type="button" id="allCols">${esc(S.showAll)}</button><button type="button" id="prevCol">${esc(S.back)}</button><button type="button" id="resetCols">${esc(S.resetTrace)}</button></div></div></details>`;
-    $("explorer").ontoggle = () => {
-      state.arm.open = $<HTMLDetailsElement>("explorer").open;
-      save();
-    };
-    $("allBits").ontoggle = () => {
-      state.arm.bits = $<HTMLDetailsElement>("allBits").open;
-      save();
-    };
-    $("columnTrace").ontoggle = () => {
-      state.arm.trace = $<HTMLDetailsElement>("columnTrace").open;
-      save();
-      if (state.arm.trace) requestAnimationFrame(renderTrace);
-    };
-    $("readingButtons").onclick = (e) => {
-      const b = e.target instanceof Element ? e.target.closest<HTMLButtonElement>("button") : null;
-      if (!b) return;
-      state.arm.reading = b.dataset.reading === "signed" ? "signed" : "unsigned";
-      save();
-      renderReader();
-    };
-    for (const [id, act] of [
-      ["nextCol", (d: number) => Math.min(32, d + 1)],
-      ["nextGroup", (d: number) => Math.min(32, (Math.floor(d / 4) + 1) * 4)],
-      ["allCols", () => 32],
-      ["prevCol", (d: number) => Math.max(0, d - 1)],
-      ["resetCols", () => 0],
-    ] as const)
-      $(id).onclick = () => {
-        state.arm.done = act(state.arm.done);
-        save();
-        renderTrace();
-      };
-    renderReader();
-    renderTrace();
-  }
-  function renderReader() {
-    const a = state.arm;
-    root
-      .querySelectorAll<HTMLButtonElement>("#readingButtons button")
-      .forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.reading === a.reading)));
-    $("readerValue").innerHTML =
-      `<div class="value" data-reading-value>${fmt(arm().result[a.reading])}</div><p>${esc(S[a.reading === "unsigned" ? "unsignedExplanation" : "signedExplanation"])}</p><p class="mono">${esc(S.exactSum)}: ${fmt(a.reading === "unsigned" ? arm().unsignedSum : arm().signedSum)}</p><p><strong>${a.reading === "unsigned" ? "C" : "V"} = ${arm().flags[a.reading === "unsigned" ? "c" : "v"]}</strong> · ${esc(arm().flags[a.reading === "unsigned" ? "c" : "v"] ? S.outside : S.fits)}</p>`;
-  }
-  function renderTrace() {
-    const d = state.arm.done,
-      selected = d - 1;
-    const cells = (label: string, get: (bit: number) => string | number) =>
-      `<div class="trace-line"><span class="label">${esc(label)}</span>${Array.from(
-        { length: 32 },
-        (_, i) => {
-          const bit = 31 - i,
-            value = get(bit);
-          return `<span class="trace-cell" data-selected="${bit === selected}" data-on="${value === 1 || value === "1"}">${value}</span>`;
-        },
-      ).join("")}</div>`;
-    $("traceRows").innerHTML =
-      cells(S.positions, (b) => b) +
-      cells(S.traceCarry, (b) => (b < d + 1 ? arm().columns[b]!.carryIn : "?")) +
-      cells("w0", (b) => arm().a.bits[31 - b]!) +
-      cells("+ w1", (b) => arm().b.bits[31 - b]!) +
-      cells(S.retained, (b) => (b < d ? arm().columns[b]!.kept : "?"));
-    if (!d)
-      $("columnDetail").innerHTML =
-        `<strong>${esc(S.noColumn)}</strong><p>${esc(S.carryStart)}</p>`;
-    else {
-      const c = arm().columns[selected]!;
-      $("columnDetail").innerHTML =
-        `<h4>${esc(t("selectedColumn", { bit: c.bit }))}</h4><dl><dt>${esc(S.rowTotal)}</dt><dd>${c.a} + ${c.b} + ${c.carryIn} = ${c.total}</dd><dt>${esc(S.resultBit)}</dt><dd>${c.kept}</dd><dt>${esc(S.carryNext)}</dt><dd>${c.carryOut}</dd></dl>${d === 32 ? carry(arm()) + flags(arm()) : ""}`;
-    }
-    $<HTMLButtonElement>("nextCol").disabled = d === 32;
-    $<HTMLButtonElement>("nextGroup").disabled = d === 32;
-    $<HTMLButtonElement>("allCols").disabled = d === 32;
-    $<HTMLButtonElement>("prevCol").disabled = d === 0;
-    $<HTMLButtonElement>("resetCols").disabled = d === 0;
-    const scroller = $("traceRows").parentElement;
-    const active = $("traceRows").querySelector(
-      d ? '[data-selected="true"]' : ".trace-line:first-child .trace-cell:last-child",
-    );
-    if (active && scroller!.clientWidth) {
-      const r = active.getBoundingClientRect(),
-        box = scroller!.getBoundingClientRect(),
-        left =
-          box.left +
-          ($("traceRows").querySelector<HTMLElement>(".trace-line>.label")?.offsetWidth ?? 0) +
-          5;
-      if (r.right > box.right - 5) scroller!.scrollLeft += r.right - box.right + 5;
-      else if (r.left < left) scroller!.scrollLeft -= left - r.left;
-    }
+      `<div class="feedback" data-correct="${a.committed === armCorrectChoice()}"><p><strong>${esc(a.committed === armCorrectChoice() ? S.armCorrect : S.armIncorrect)}</strong></p><p class="mono">${esc(S.exactSum)}: ${fmt(arm().unsignedSum)}</p><p>${esc(S.registerResult)}: <code data-fixed-result>${arm().result.hex}</code></p><ul class="arm-result-readings"><li><strong>${esc(S.unsigned)}: <span data-result-reading="unsigned">${fmt(arm().result.unsigned)}</span></strong>. ${esc(S.armUnsignedMatch)} <span class="mono">C = ${arm().flags.c}</span></li><li><strong>${esc(S.signed)}: <span data-result-reading="signed">${fmt(arm().result.signed)}</span></strong>. ${esc(S.armSignedDifference)} <span class="mono">V = ${arm().flags.v}</span></li></ul><p>${esc(S.armExplanation)}</p></div>`;
   }
   function renderCaseTabs() {
     if ($("caseTabs").children.length !== 3)
@@ -488,7 +388,6 @@ export function mountFlagsLesson(
     renderComparison();
     renderMini();
     renderArmFeedback();
-    renderArmInspection();
     renderPracticeWork();
     save();
   }
@@ -587,7 +486,6 @@ export function mountFlagsLesson(
     });
     save();
     renderArmFeedback();
-    renderArmInspection();
   };
   $("clearPrediction").onclick = () => {
     state.arm = blank().arm;
@@ -597,7 +495,6 @@ export function mountFlagsLesson(
       .forEach((n) => (n.checked = false));
     save();
     renderArmFeedback();
-    renderArmInspection();
   };
   bindChoiceForm("realForm", "practice", (n, v) => {
     const a = state.practice.cases[state.practice.index]!;
