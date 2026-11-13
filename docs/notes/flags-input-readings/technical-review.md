@@ -1,0 +1,39 @@
+# Independent technical and sceptic review
+
+Reviewed candidate1 at `http://localhost:4510/assembly-lab/#/lesson/adding-and-the-flags`, served from immutable `/workspace/scratch/flags-input-readings-candidate1`. This reviewer did not draft the copy or implement the control. Read `CLAUDE.md`, the checked brief, the model, controller, state, formatter, formatter tests, markup, styles and prerequisite material. No product or test files were edited by this reviewer.
+
+## Verdict and source checks
+
+No accepted technical or learner finding in this change. The scope remains the starting inputs in section06. The later practice input equation was inspected as a sibling; its distinct exercise and grading are unchanged. This is a local presentation addition, not a course-wide correction to a shared component.
+
+- `inputExpression` selects the model's existing input readings. Hex strings are already width-normalised; decimal strings pass through exact `BigInt` formatting. Negative second operands are parenthesised. The helper does not read an answer, flag, carry, grade or store slot, and adds no arithmetic model.
+- `renderArmInputs` changes the input expression, three pressed states and conditional local note only. The button handler does not save, grade, execute a fresh instruction, rebuild feedback or rebuild inspection. All buttons explicitly have `type="button"` and sit outside the prediction form. Input display and result reading are independent choices.
+- The memoised model is now obtained while rendering the known starting inputs. Its result is not exposed by that renderer. The existing prediction gate still decides whether result/column inspection is mounted. This is consistent with the course's rule against showing unknown answers, rather than a requirement to delay internal model calculation.
+- The matching-readings note is conditional on both model inputs actually having identical signed/unsigned readings, and hidden in Hex. “Both starting inputs have clear sign bits, so their signed and unsigned decimal readings match” is accurate for the supplied inputs. It does not claim that the two readings always agree.
+- `armInputFormat` is transient controller-local presentation state. Clear prediction leaves it selected; a fresh mount starts Hex. State/store/schema/assembler/grading files and `platform/` are unchanged.
+- Strings are in the lesson strings file and have a separate recorded drafting pass. The control uses existing colour tokens and native buttons, with a fieldset legend, one pressed option and a polite atomic input-expression update.
+
+`npx vitest run packages/views/src/flags-lesson/input-display.test.ts` exited 0: one file, six tests passed, no failures/skips. The tests cover current positive inputs in all formats and high-bit-set inputs whose signed/unsigned readings differ, including correct negative notation. Source inspection also confirms that all supplied JavaScript numbers fit the exactly representable 32-bit range before conversion to BigInt.
+
+## Independent browser verification
+
+`node /tmp/flags-input-technical.mjs` exited 0. Measurements `/tmp/flags-input-technical.json` cover 48 display states: widths 320/375/834/1280, actual light/dark themes, normal/DejaVu Sans typography and each of the three formats. All button text rectangles fit inside their controls, minimum target height is 44px, minimum text size is 13px and no page-level horizontal overflow occurred. Both range cards stay present. Actual body backgrounds were `rgb(247, 250, 248)` and `rgb(16, 27, 26)` respectively.
+
+In every width/theme pair, checked initial Hex, changing to each decimal view with no early result or flags, native Enter/Space activation, retained focus and a visible keyboard focus outline. The unchanged raw stored-work string was checked before and after input-format changes. A draft, an incorrect checked prediction, open result inspection, its independently selected signed reading, all result bits, open arithmetic trace and revealed columns survived switches through all three input formats. Feedback and complete inspection markup were unchanged, and the actual explorer/trace DOM node identities were retained. Reload selected Hex and restored the same checked/revealed work. Clear prediction removed checked inspection and draft answers while retaining the selected decimal format and its note. No page errors occurred.
+
+Viewed `/tmp/flags-input-technical-375-dark.png` and `/tmp/flags-input-technical-1280-light.png` directly. Labels, spacing and active/focus states are distinguishable in both themes; long button labels wrap cleanly on the phone. The screenshot harness captured a sticky page header across part of the top edge of the tall card; numeric geometry checks and direct browser checks cover the control itself, which remains fully visible.
+
+`node /tmp/flags-input-technical-system.mjs` also exited 0 after correcting a test-driver assumption: the visible System option's underlying value is `auto`, not `system`. The first command exited 1 on that harness assertion before its theme assertions; it was not a product failure. The corrected command checked both emulated system preferences at 375px. Actual body and selected-button colours followed the preference; the three-option control remained usable. Pointer focus having no outline is expected; the separate keyboard check confirms the 3px visible outline.
+
+## Scepticism, assumptions and regression-test review
+
+The independent learner review in `learner-review.md` reports no findings. Its conclusions survive source/browser checks above. In particular:
+
+- Reject a concern that matching decimal options are broken: the model readings really agree here, the active option is visible and the local decimal note explains the agreement.
+- Reject a concern that “clear sign bits” introduces new untaught prerequisites. The earlier signed/unsigned lesson explicitly says “A bit that is 1 is set, and a bit that is 0 is clear” and “When the top bit is 0, the two readings agree.” The current page calls the top bit the sign bit in the preceding N example and explicitly identifies its 32-bit position before this control. Hexadecimal and decimal signed/unsigned readings are already introduced in that earlier lesson. No new assembler syntax or unexplained tool is introduced here.
+- Reject a concern that input-format buttons imply choosing different addition rules: “Display inputs as” and “The input bits stay the same; only their displayed reading changes” explicitly confine the action to display. Both range cards and the same question remain.
+- Reject a concern that selectors reset prediction state: independent raw-store, DOM-identity, markup and reload checks establish preservation, rather than relying only on visible labels.
+
+Read the new `flags-lesson.spec.ts` regression test. It checks default Hex after an actual reload, native keyboard activation/focus, pressed exclusivity, expected expressions, conditional note visibility, no early feedback/inspection, fallback-font containment and 44px targets, draft/store preservation, checked/open/stepped work, reload and clear. The managing session's initial failure came from navigating to the same hash without a fresh mount; the app correctly retained transient presentation in that still-mounted lesson. Adding an explicit reload to establish the tested fresh-load condition preserves the intended assertion. Changing a strict multi-element attribute assertion to individual detail assertions is also a correct driver fix. No meaningful existing assertion was weakened.
+
+These are focused Chromium/browser/source/unit checks, not a full-suite, CI or public-deployment result. Screen-reader speech, physical touch hardware and forced-colour mode were not tested. The managing session records required full checks and deployment separately.
