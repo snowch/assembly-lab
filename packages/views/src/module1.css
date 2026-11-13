@@ -693,13 +693,13 @@
 .answer-hex-problem {
   margin: 0;
   /* Room for the sentence on two lines, which a phone needs, so it never moves what is below. */
-  min-height: 3.2em;
+  min-height: 2lh;
   color: var(--bad);
   font-size: var(--text-sm);
 }
 @media (min-width: 48rem) {
   .answer-hex-problem {
-    min-height: 1.6em;
+    min-height: 1lh;
   }
 }
 

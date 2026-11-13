@@ -57,4 +57,19 @@ with 102 browser tests passed, 1 skipped, 1 interrupted and 1,386 not run. Both 
 commands exited 130 after graceful cancellation. Their logs and traces are retained
 separately; neither is a passing full run.
 
+The `041831d` broad browser run found a further real geometry defect in hexadecimal
+feedback. The new line spacing is 1.65, while the reserved message space still used
+1.6em per line. Invalid input moved the action row by 0.75px on desktop. Reserve the
+actual line height with `1lh`, or `2lh` for the phone's two-line message. The existing
+exact geometry assertions are unchanged. Independent verification passed the exact
+test in both projects and an eight-state width/theme/sibling matrix; measurements and
+visual checks are in `promotion-feedback-review.md`.
+
+The superseded `041831d` local full check had passed its static checks and all 3,471
+unit/integration tests. It was stopped gracefully before the known feedback failure
+to run the corrected candidate, exiting 130 with 177 browser tests passed, 1 skipped,
+1 interrupted and 1,311 not run. It is not a passing full check. Its separate broad
+browser run continues against its immutable original build to uncover any other
+findings; the final outcome is recorded in the PR rather than relabelled a pass.
+
 Final committed-source checks, independent reviews, merge and publication results are recorded in the implementation PR. Historical interrupted or stale-artifact checks must not be counted as a passing full final suite.
