@@ -1,0 +1,452 @@
+[
+  {
+    "width": 1280,
+    "theme": "light",
+    "text": "Programmer calculator\nClose\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nHexadecimal (hex) uses base sixteen: digits 0–9 and A–F. Each hex digit represents four bits. Unsigned reads every bit with a positive weight. Signed gives the highest bit a negative weight, so the value can be negative. Both decimal readings describe the same bit pattern.\n\nNarrowing discards the upper bits. Widening fills the new upper bits with zeros, even with Signed selected. These controls resize the calculator; they do not run instructions.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Unsigned)\n0\nHexadecimal\n0x0000 0000\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.",
+    "focus": true,
+    "initial": {
+      "box": {
+        "x": 668,
+        "y": 78,
+        "width": 600,
+        "height": 710,
+        "top": 78,
+        "right": 1268,
+        "bottom": 788,
+        "left": 668
+      },
+      "cw": 598,
+      "sw": 598,
+      "doc": 1280,
+      "bg": "rgb(247, 250, 248)",
+      "fg": "rgb(25, 49, 48)"
+    },
+    "close": {
+      "box": {
+        "x": 1172.390625,
+        "y": 97,
+        "width": 70.609375,
+        "height": 44.390625,
+        "top": 97,
+        "right": 1243,
+        "bottom": 141.390625,
+        "left": 1172.390625
+      },
+      "bg": "rgb(255, 255, 255)",
+      "fg": "rgb(25, 49, 48)"
+    },
+    "brand": {
+      "label": "Assembly Lab",
+      "box": {
+        "x": 76,
+        "y": 11.5,
+        "width": 156.015625,
+        "height": 44,
+        "top": 11.5,
+        "right": 232.015625,
+        "bottom": 55.5,
+        "left": 76
+      },
+      "spans": [
+        {
+          "text": "Assembly Lab",
+          "display": "block"
+        }
+      ]
+    },
+    "scrolled": {
+      "x": 1172.390625,
+      "y": 97,
+      "width": 70.609375,
+      "height": 44.390625
+    },
+    "closeFocus": true,
+    "escapeFocus": true,
+    "heading": ["One addition"],
+    "retained": ["42", "0x0000 002A"],
+    "tasks": 0,
+    "links": 0,
+    "resized": {
+      "modal": "true",
+      "cw": 320,
+      "sw": 320,
+      "doc": 320,
+      "body": "hidden"
+    }
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "text": "Programmer calculator\nClose\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nHexadecimal (hex) uses base sixteen: digits 0–9 and A–F. Each hex digit represents four bits. Unsigned reads every bit with a positive weight. Signed gives the highest bit a negative weight, so the value can be negative. Both decimal readings describe the same bit pattern.\n\nNarrowing discards the upper bits. Widening fills the new upper bits with zeros, even with Signed selected. These controls resize the calculator; they do not run instructions.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Unsigned)\n0\nHexadecimal\n0x0000 0000\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.",
+    "focus": true,
+    "initial": {
+      "box": {
+        "x": 668,
+        "y": 78,
+        "width": 600,
+        "height": 710,
+        "top": 78,
+        "right": 1268,
+        "bottom": 788,
+        "left": 668
+      },
+      "cw": 598,
+      "sw": 598,
+      "doc": 1280,
+      "bg": "rgb(16, 27, 26)",
+      "fg": "rgb(229, 241, 237)"
+    },
+    "close": {
+      "box": {
+        "x": 1172.390625,
+        "y": 97,
+        "width": 70.609375,
+        "height": 44.390625,
+        "top": 97,
+        "right": 1243,
+        "bottom": 141.390625,
+        "left": 1172.390625
+      },
+      "bg": "rgb(23, 38, 35)",
+      "fg": "rgb(229, 241, 237)"
+    },
+    "brand": {
+      "label": "Assembly Lab",
+      "box": {
+        "x": 76,
+        "y": 11.5,
+        "width": 156.015625,
+        "height": 44,
+        "top": 11.5,
+        "right": 232.015625,
+        "bottom": 55.5,
+        "left": 76
+      },
+      "spans": [
+        {
+          "text": "Assembly Lab",
+          "display": "block"
+        }
+      ]
+    },
+    "scrolled": {
+      "x": 1172.390625,
+      "y": 97,
+      "width": 70.609375,
+      "height": 44.390625
+    },
+    "closeFocus": true,
+    "escapeFocus": true,
+    "heading": ["One addition"],
+    "retained": ["42", "0x0000 002A"],
+    "tasks": 0,
+    "links": 0,
+    "resized": {
+      "modal": "true",
+      "cw": 320,
+      "sw": 320,
+      "doc": 320,
+      "body": "hidden"
+    }
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "text": "Programmer calculator\nClose\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nHexadecimal (hex) uses base sixteen: digits 0–9 and A–F. Each hex digit represents four bits. Unsigned reads every bit with a positive weight. Signed gives the highest bit a negative weight, so the value can be negative. Both decimal readings describe the same bit pattern.\n\nNarrowing discards the upper bits. Widening fills the new upper bits with zeros, even with Signed selected. These controls resize the calculator; they do not run instructions.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Unsigned)\n0\nHexadecimal\n0x0000 0000\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.",
+    "focus": true,
+    "initial": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 812,
+        "top": 0,
+        "right": 375,
+        "bottom": 812,
+        "left": 0
+      },
+      "cw": 375,
+      "sw": 375,
+      "doc": 375,
+      "bg": "rgb(247, 250, 248)",
+      "fg": "rgb(25, 49, 48)"
+    },
+    "close": {
+      "box": {
+        "x": 286.390625,
+        "y": 24.59375,
+        "width": 70.609375,
+        "height": 44.390625,
+        "top": 24.59375,
+        "right": 357,
+        "bottom": 68.984375,
+        "left": 286.390625
+      },
+      "bg": "rgb(255, 255, 255)",
+      "fg": "rgb(25, 49, 48)"
+    },
+    "brand": {
+      "label": "Assembly Lab",
+      "box": {
+        "x": 12,
+        "y": 8.5,
+        "width": 31,
+        "height": 44,
+        "top": 8.5,
+        "right": 43,
+        "bottom": 52.5,
+        "left": 12
+      },
+      "spans": [
+        {
+          "text": "Assembly Lab",
+          "display": "none"
+        }
+      ]
+    },
+    "scrolled": {
+      "x": 286.390625,
+      "y": 24.59375,
+      "width": 70.609375,
+      "height": 44.390625
+    },
+    "closeFocus": true,
+    "escapeFocus": true,
+    "heading": ["One addition"],
+    "retained": ["42", "0x0000 002A"],
+    "tasks": 0,
+    "links": 0,
+    "resized": {
+      "modal": null,
+      "cw": 598,
+      "sw": 598,
+      "doc": 1280,
+      "body": "visible"
+    }
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "text": "Programmer calculator\nClose\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nHexadecimal (hex) uses base sixteen: digits 0–9 and A–F. Each hex digit represents four bits. Unsigned reads every bit with a positive weight. Signed gives the highest bit a negative weight, so the value can be negative. Both decimal readings describe the same bit pattern.\n\nNarrowing discards the upper bits. Widening fills the new upper bits with zeros, even with Signed selected. These controls resize the calculator; they do not run instructions.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Unsigned)\n0\nHexadecimal\n0x0000 0000\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.",
+    "focus": true,
+    "initial": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 812,
+        "top": 0,
+        "right": 375,
+        "bottom": 812,
+        "left": 0
+      },
+      "cw": 375,
+      "sw": 375,
+      "doc": 375,
+      "bg": "rgb(16, 27, 26)",
+      "fg": "rgb(229, 241, 237)"
+    },
+    "close": {
+      "box": {
+        "x": 286.390625,
+        "y": 24.59375,
+        "width": 70.609375,
+        "height": 44.390625,
+        "top": 24.59375,
+        "right": 357,
+        "bottom": 68.984375,
+        "left": 286.390625
+      },
+      "bg": "rgb(23, 38, 35)",
+      "fg": "rgb(229, 241, 237)"
+    },
+    "brand": {
+      "label": "Assembly Lab",
+      "box": {
+        "x": 12,
+        "y": 8.5,
+        "width": 31,
+        "height": 44,
+        "top": 8.5,
+        "right": 43,
+        "bottom": 52.5,
+        "left": 12
+      },
+      "spans": [
+        {
+          "text": "Assembly Lab",
+          "display": "none"
+        }
+      ]
+    },
+    "scrolled": {
+      "x": 286.390625,
+      "y": 24.59375,
+      "width": 70.609375,
+      "height": 44.390625
+    },
+    "closeFocus": true,
+    "escapeFocus": true,
+    "heading": ["One addition"],
+    "retained": ["42", "0x0000 002A"],
+    "tasks": 0,
+    "links": 0,
+    "resized": {
+      "modal": null,
+      "cw": 598,
+      "sw": 598,
+      "doc": 1280,
+      "body": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "theme": "light",
+    "text": "Programmer calculator\nClose\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nHexadecimal (hex) uses base sixteen: digits 0–9 and A–F. Each hex digit represents four bits. Unsigned reads every bit with a positive weight. Signed gives the highest bit a negative weight, so the value can be negative. Both decimal readings describe the same bit pattern.\n\nNarrowing discards the upper bits. Widening fills the new upper bits with zeros, even with Signed selected. These controls resize the calculator; they do not run instructions.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Unsigned)\n0\nHexadecimal\n0x0000 0000\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.",
+    "focus": true,
+    "initial": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 812,
+        "top": 0,
+        "right": 320,
+        "bottom": 812,
+        "left": 0
+      },
+      "cw": 320,
+      "sw": 320,
+      "doc": 320,
+      "bg": "rgb(247, 250, 248)",
+      "fg": "rgb(25, 49, 48)"
+    },
+    "close": {
+      "box": {
+        "x": 231.390625,
+        "y": 24.59375,
+        "width": 70.609375,
+        "height": 44.390625,
+        "top": 24.59375,
+        "right": 302,
+        "bottom": 68.984375,
+        "left": 231.390625
+      },
+      "bg": "rgb(255, 255, 255)",
+      "fg": "rgb(25, 49, 48)"
+    },
+    "brand": {
+      "label": "Assembly Lab",
+      "box": {
+        "x": 12,
+        "y": 8.5,
+        "width": 31,
+        "height": 44,
+        "top": 8.5,
+        "right": 43,
+        "bottom": 52.5,
+        "left": 12
+      },
+      "spans": [
+        {
+          "text": "Assembly Lab",
+          "display": "none"
+        }
+      ]
+    },
+    "scrolled": {
+      "x": 231.390625,
+      "y": 24.59375,
+      "width": 70.609375,
+      "height": 44.390625
+    },
+    "closeFocus": true,
+    "escapeFocus": true,
+    "heading": ["One addition"],
+    "retained": ["42", "0x0000 002A"],
+    "tasks": 0,
+    "links": 0,
+    "resized": {
+      "modal": null,
+      "cw": 598,
+      "sw": 598,
+      "doc": 1280,
+      "body": "visible"
+    }
+  },
+  {
+    "width": 320,
+    "theme": "dark",
+    "text": "Programmer calculator\nClose\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nHexadecimal (hex) uses base sixteen: digits 0–9 and A–F. Each hex digit represents four bits. Unsigned reads every bit with a positive weight. Signed gives the highest bit a negative weight, so the value can be negative. Both decimal readings describe the same bit pattern.\n\nNarrowing discards the upper bits. Widening fills the new upper bits with zeros, even with Signed selected. These controls resize the calculator; they do not run instructions.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Unsigned)\n0\nHexadecimal\n0x0000 0000\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.",
+    "focus": true,
+    "initial": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 812,
+        "top": 0,
+        "right": 320,
+        "bottom": 812,
+        "left": 0
+      },
+      "cw": 320,
+      "sw": 320,
+      "doc": 320,
+      "bg": "rgb(16, 27, 26)",
+      "fg": "rgb(229, 241, 237)"
+    },
+    "close": {
+      "box": {
+        "x": 231.390625,
+        "y": 24.59375,
+        "width": 70.609375,
+        "height": 44.390625,
+        "top": 24.59375,
+        "right": 302,
+        "bottom": 68.984375,
+        "left": 231.390625
+      },
+      "bg": "rgb(23, 38, 35)",
+      "fg": "rgb(229, 241, 237)"
+    },
+    "brand": {
+      "label": "Assembly Lab",
+      "box": {
+        "x": 12,
+        "y": 8.5,
+        "width": 31,
+        "height": 44,
+        "top": 8.5,
+        "right": 43,
+        "bottom": 52.5,
+        "left": 12
+      },
+      "spans": [
+        {
+          "text": "Assembly Lab",
+          "display": "none"
+        }
+      ]
+    },
+    "scrolled": {
+      "x": 231.390625,
+      "y": 24.59375,
+      "width": 70.609375,
+      "height": 44.390625
+    },
+    "closeFocus": true,
+    "escapeFocus": true,
+    "heading": ["One addition"],
+    "retained": ["42", "0x0000 002A"],
+    "tasks": 0,
+    "links": 0,
+    "resized": {
+      "modal": null,
+      "cw": 598,
+      "sw": 598,
+      "doc": 1280,
+      "body": "visible"
+    }
+  }
+]

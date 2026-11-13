@@ -1,0 +1,242 @@
+[
+  {
+    "width": 1280,
+    "theme": "light",
+    "initialText": "Programmer calculator\nClose\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nNarrowing discards upper bits. Widening adds upper zeros, even with Signed selected, without copying the highest bit.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Unsigned)\n0\nUnsigned: zero or positive.\nHexadecimal\n0x0000 0000\nHex: digits 0–9 and A–F; four bits per digit.\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.",
+    "entry": {
+      "x": 836,
+      "y": 627.125,
+      "width": 338.796875,
+      "height": 44.390625
+    },
+    "layout": {
+      "box": {
+        "x": 668,
+        "y": 78,
+        "width": 600,
+        "height": 710,
+        "top": 78,
+        "right": 1268,
+        "bottom": 788,
+        "left": 668
+      },
+      "cw": 598,
+      "sw": 598,
+      "doc": 1280,
+      "bg": "rgb(247, 250, 248)",
+      "fg": "rgb(25, 49, 48)"
+    },
+    "focus": true,
+    "signedText": "Programmer calculator\nClose\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nNarrowing discards upper bits. Widening adds upper zeros, even with Signed selected, without copying the highest bit.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Signed)\n0\nSigned: the highest bit has negative weight.\nHexadecimal\n0x0000 0000\nHex: digits 0–9 and A–F; four bits per digit.\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from -2,147,483,648 to 2,147,483,647. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from -2,147,483,648 to 2,147,483,647. Spaces, commas and underscores may separate digits.\n\nReading changed. The bits stay the same.\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.",
+    "signedValue": ["-1", "0xFFFF FFFF"],
+    "unsignedValue": ["4,294,967,295", "0xFFFF FFFF"],
+    "scrolledClose": {
+      "x": 1172.390625,
+      "y": 97,
+      "width": 70.609375,
+      "height": 44.390625
+    },
+    "persistence": 1,
+    "focusRestored": true
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "initialText": "Programmer calculator\nClose\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nNarrowing discards upper bits. Widening adds upper zeros, even with Signed selected, without copying the highest bit.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Unsigned)\n0\nUnsigned: zero or positive.\nHexadecimal\n0x0000 0000\nHex: digits 0–9 and A–F; four bits per digit.\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.",
+    "entry": {
+      "x": 836,
+      "y": 627.125,
+      "width": 338.796875,
+      "height": 44.390625
+    },
+    "layout": {
+      "box": {
+        "x": 668,
+        "y": 78,
+        "width": 600,
+        "height": 710,
+        "top": 78,
+        "right": 1268,
+        "bottom": 788,
+        "left": 668
+      },
+      "cw": 598,
+      "sw": 598,
+      "doc": 1280,
+      "bg": "rgb(16, 27, 26)",
+      "fg": "rgb(229, 241, 237)"
+    },
+    "focus": true,
+    "signedText": "Programmer calculator\nClose\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nNarrowing discards upper bits. Widening adds upper zeros, even with Signed selected, without copying the highest bit.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Signed)\n0\nSigned: the highest bit has negative weight.\nHexadecimal\n0x0000 0000\nHex: digits 0–9 and A–F; four bits per digit.\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from -2,147,483,648 to 2,147,483,647. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from -2,147,483,648 to 2,147,483,647. Spaces, commas and underscores may separate digits.\n\nReading changed. The bits stay the same.\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.",
+    "signedValue": ["-1", "0xFFFF FFFF"],
+    "unsignedValue": ["4,294,967,295", "0xFFFF FFFF"],
+    "scrolledClose": {
+      "x": 1172.390625,
+      "y": 97,
+      "width": 70.609375,
+      "height": 44.390625
+    },
+    "persistence": 1,
+    "focusRestored": true
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "initialText": "Programmer calculator\nClose\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nNarrowing discards upper bits. Widening adds upper zeros, even with Signed selected, without copying the highest bit.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Unsigned)\n0\nUnsigned: zero or positive.\nHexadecimal\n0x0000 0000\nHex: digits 0–9 and A–F; four bits per digit.\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.",
+    "entry": {
+      "x": 161,
+      "y": 703.25,
+      "width": 127.796875,
+      "height": 44.390625
+    },
+    "layout": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 812,
+        "top": 0,
+        "right": 375,
+        "bottom": 812,
+        "left": 0
+      },
+      "cw": 375,
+      "sw": 375,
+      "doc": 375,
+      "bg": "rgb(247, 250, 248)",
+      "fg": "rgb(25, 49, 48)"
+    },
+    "focus": true,
+    "signedText": "Programmer calculator\nClose\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nNarrowing discards upper bits. Widening adds upper zeros, even with Signed selected, without copying the highest bit.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Signed)\n0\nSigned: the highest bit has negative weight.\nHexadecimal\n0x0000 0000\nHex: digits 0–9 and A–F; four bits per digit.\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from -2,147,483,648 to 2,147,483,647. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from -2,147,483,648 to 2,147,483,647. Spaces, commas and underscores may separate digits.\n\nReading changed. The bits stay the same.\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.",
+    "signedValue": ["-1", "0xFFFF FFFF"],
+    "unsignedValue": ["4,294,967,295", "0xFFFF FFFF"],
+    "scrolledClose": {
+      "x": 286.390625,
+      "y": 24.59375,
+      "width": 70.609375,
+      "height": 44.390625
+    },
+    "persistence": 1,
+    "focusRestored": true
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "initialText": "Programmer calculator\nClose\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nNarrowing discards upper bits. Widening adds upper zeros, even with Signed selected, without copying the highest bit.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Unsigned)\n0\nUnsigned: zero or positive.\nHexadecimal\n0x0000 0000\nHex: digits 0–9 and A–F; four bits per digit.\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.",
+    "entry": {
+      "x": 161,
+      "y": 703.25,
+      "width": 127.796875,
+      "height": 44.390625
+    },
+    "layout": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 375,
+        "height": 812,
+        "top": 0,
+        "right": 375,
+        "bottom": 812,
+        "left": 0
+      },
+      "cw": 375,
+      "sw": 375,
+      "doc": 375,
+      "bg": "rgb(16, 27, 26)",
+      "fg": "rgb(229, 241, 237)"
+    },
+    "focus": true,
+    "signedText": "Programmer calculator\nClose\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nNarrowing discards upper bits. Widening adds upper zeros, even with Signed selected, without copying the highest bit.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Signed)\n0\nSigned: the highest bit has negative weight.\nHexadecimal\n0x0000 0000\nHex: digits 0–9 and A–F; four bits per digit.\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from -2,147,483,648 to 2,147,483,647. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from -2,147,483,648 to 2,147,483,647. Spaces, commas and underscores may separate digits.\n\nReading changed. The bits stay the same.\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.",
+    "signedValue": ["-1", "0xFFFF FFFF"],
+    "unsignedValue": ["4,294,967,295", "0xFFFF FFFF"],
+    "scrolledClose": {
+      "x": 286.390625,
+      "y": 24.59375,
+      "width": 70.609375,
+      "height": 44.390625
+    },
+    "persistence": 1,
+    "focusRestored": true
+  },
+  {
+    "width": 320,
+    "theme": "light",
+    "initialText": "Programmer calculator\nClose\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nNarrowing discards upper bits. Widening adds upper zeros, even with Signed selected, without copying the highest bit.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Unsigned)\n0\nUnsigned: zero or positive.\nHexadecimal\n0x0000 0000\nHex: digits 0–9 and A–F; four bits per digit.\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.",
+    "entry": {
+      "x": 161,
+      "y": 754.390625,
+      "width": 141,
+      "height": 44.390625
+    },
+    "layout": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 812,
+        "top": 0,
+        "right": 320,
+        "bottom": 812,
+        "left": 0
+      },
+      "cw": 320,
+      "sw": 320,
+      "doc": 320,
+      "bg": "rgb(247, 250, 248)",
+      "fg": "rgb(25, 49, 48)"
+    },
+    "focus": true,
+    "signedText": "Programmer calculator\nClose\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nNarrowing discards upper bits. Widening adds upper zeros, even with Signed selected, without copying the highest bit.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Signed)\n0\nSigned: the highest bit has negative weight.\nHexadecimal\n0x0000 0000\nHex: digits 0–9 and A–F; four bits per digit.\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from -2,147,483,648 to 2,147,483,647. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from -2,147,483,648 to 2,147,483,647. Spaces, commas and underscores may separate digits.\n\nReading changed. The bits stay the same.\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.",
+    "signedValue": ["-1", "0xFFFF FFFF"],
+    "unsignedValue": ["4,294,967,295", "0xFFFF FFFF"],
+    "scrolledClose": {
+      "x": 231.390625,
+      "y": 24.59375,
+      "width": 70.609375,
+      "height": 44.390625
+    },
+    "persistence": 1,
+    "focusRestored": true
+  },
+  {
+    "width": 320,
+    "theme": "dark",
+    "initialText": "Programmer calculator\nClose\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nNarrowing discards upper bits. Widening adds upper zeros, even with Signed selected, without copying the highest bit.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Unsigned)\n0\nUnsigned: zero or positive.\nHexadecimal\n0x0000 0000\nHex: digits 0–9 and A–F; four bits per digit.\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from 0 to 4,294,967,295. Spaces, commas and underscores may separate digits.\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.",
+    "entry": {
+      "x": 161,
+      "y": 754.390625,
+      "width": 141,
+      "height": 44.390625
+    },
+    "layout": {
+      "box": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 812,
+        "top": 0,
+        "right": 320,
+        "bottom": 812,
+        "left": 0
+      },
+      "cw": 320,
+      "sw": 320,
+      "doc": 320,
+      "bg": "rgb(16, 27, 26)",
+      "fg": "rgb(229, 241, 237)"
+    },
+    "focus": true,
+    "signedText": "Programmer calculator\nClose\n\nUse your own values as scratch work. These controls change numbers and bits; they do not run instructions.\n\nNarrowing discards upper bits. Widening adds upper zeros, even with Signed selected, without copying the highest bit.\n\nWidth\n32 bits\n64 bits\nReading\nUnsigned\nSigned\nDecimal (Signed)\n0\nSigned: the highest bit has negative weight.\nHexadecimal\n0x0000 0000\nHex: digits 0–9 and A–F; four bits per digit.\nValue to enter\nDecimal\nHexadecimal\nApply\n\nEnter a whole decimal number from -2,147,483,648 to 2,147,483,647. Spaces, commas and underscores may separate digits.\n\nBits 31 to 0\n32 bits\n31\n0\n30\n0\n29\n0\n28\n0\n27\n0\n26\n0\n25\n0\n24\n0\n23\n0\n22\n0\n21\n0\n20\n0\n19\n0\n18\n0\n17\n0\n16\n0\n15\n0\n14\n0\n13\n0\n12\n0\n11\n0\n10\n0\n9\n0\n8\n0\n7\n0\n6\n0\n5\n0\n4\n0\n3\n0\n2\n0\n1\n0\n0\n0\n\nBit 0 is 0. Its weight is 1, so it contributes 0 to the decimal reading.\n\nClear bits\nReset calculator\nEdit a 16-bit half\nUpper 16 bits\n0\nLower 16 bits\n0\n\n0 × 65,536 + 0 = 0\n\nHalf to replace\nUpper 16 bits\nLower 16 bits\nHalf value in decimal\nApply half\nShift amount in bits\nShift left\nOperation\nAdd\nSubtract\nSecond value\nCalculate\n\nEnter a whole decimal number from -2,147,483,648 to 2,147,483,647. Spaces, commas and underscores may separate digits.\n\nReading changed. The bits stay the same.\n\nIn this tab, your value and settings stay when you close the calculator or move between lessons.",
+    "signedValue": ["-1", "0xFFFF FFFF"],
+    "unsignedValue": ["4,294,967,295", "0xFFFF FFFF"],
+    "scrolledClose": {
+      "x": 231.390625,
+      "y": 24.59375,
+      "width": 70.609375,
+      "height": 44.390625
+    },
+    "persistence": 1,
+    "focusRestored": true
+  }
+]
