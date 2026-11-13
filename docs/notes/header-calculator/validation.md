@@ -16,6 +16,10 @@ Scope: shared header tool; existing lesson calculators retain their preset guide
 - Candidate 4 final focused rerun: 27 passed, 1 existing skip. Final full results follow
   in the pull request so the source tree can remain fixed during `npm run check`.
 
+- First full `npm run check` on `10af2f2`: exit 1 at formatting, before tests.
+  Four review evidence JSON files needed Prettier formatting. Corrected only that formatting;
+  subsequent full results are reported independently in the pull request.
+
 ## Review corrections
 
 - Accepted learner finding: Close had poor dark-theme contrast and a small target.
