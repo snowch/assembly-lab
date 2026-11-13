@@ -274,6 +274,7 @@ ol {
 .cover-hero h1 {
   color: var(--hero-fg);
   margin-bottom: var(--space-3);
+  overflow-wrap: anywhere;
 }
 .cover-hero .cover-subtitle {
   font-family: var(--font-display);
@@ -593,10 +594,11 @@ ol {
 .prereqs-further {
   margin-bottom: 0;
 }
-/* A link inside a sentence: padding above and below makes it a 40-pixel target for a finger
-   without moving the lines, since an inline box's padding does not change the line's height. */
+/* Give links inside the sentence a full touch target independently of the system font. */
 .prereqs-further a {
-  padding-block: 0.6em;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 /* On a phone the check's code wraps rather than hiding its ends behind a scroll. */
 @media (max-width: 40rem) {

@@ -72,4 +72,28 @@ to run the corrected candidate, exiting 130 with 177 browser tests passed, 1 ski
 browser run continues against its immutable original build to uncover any other
 findings; the final outcome is recorded in the PR rather than relabelled a pass.
 
+Both `36e5f80` CI browser stages completed with 1,466 passed, 21 existing skips and
+3 failures. Its status-panel tests found page overflow at 375px after increasing
+root text size to 150%, in both themes. The front-page phone audit also found the
+two prerequisite companion links only 38px tall. All simulator and native CI jobs
+passed. The source and existing assertions are retained in the CI logs.
+
+These are system-font-dependent defects. Reproduction with DejaVu Sans widened the
+cover's automatic grid track to 376.921875px from x24, making the page's scroll width
+401px. Its 72px heading word established that minimum width. The prerequisite links
+measured 38.1875px with DejaVu Sans and 36.1875px with Arial, against 41.1875px with
+the local default face. Allow the cover H1 to wrap when needed and give the inline
+prerequisite links explicit 44px targets. Do not clip the overflow or alter existing
+test tolerances. A new regression covers Arial and DejaVu Sans, both themes and
+100/150% root text sizes in both existing viewport projects. The affected independent
+run passed all 30 cases. Its separate eight-state DejaVu matrix confirms actual
+themes, normal wrapping without clipping, containment, 44px links and pointer and
+keyboard use; the precise evidence is in `promotion-font-review.md`.
+
+The superseded local `36e5f80` full check passed static checks, 3,471 unit/integration
+tests and its build, then was stopped gracefully after the CI findings. It exited
+130 with 1,242 browser passes, 19 skips, 1 interrupted and 228 not run. It is not a
+passing full check. The separate independent font/zoom review records the correction
+and its affected-state verification.
+
 Final committed-source checks, independent reviews, merge and publication results are recorded in the implementation PR. Historical interrupted or stale-artifact checks must not be counted as a passing full final suite.

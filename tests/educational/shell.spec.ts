@@ -270,6 +270,36 @@ test("the theme control cycles through its choices, and the choice survives a re
   expect(errors).toEqual([]);
 });
 
+test("the cover stays contained and companion links remain full targets with alternate fonts and enlarged text", async ({
+  page,
+}) => {
+  await page.goto("#/");
+  await ready(page);
+  await page.locator(".prereqs-details > summary").click();
+  for (const family of ["Arial", "DejaVu Sans"]) {
+    await page.addStyleTag({
+      content: `:root { --font-text: "${family}"; --font-display: "${family}"; }`,
+    });
+    for (const theme of ["light", "dark"]) {
+      await page.getByLabel(STRINGS.theme).selectOption(theme);
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      for (const size of ["100%", "150%"]) {
+        await page.evaluate((size) => (document.documentElement.style.fontSize = size), size);
+        await page.evaluate(() => document.fonts.ready);
+        expect(
+          await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+          `${family}, ${theme}, ${size}`,
+        ).toBe(true);
+        const targets = await page
+          .locator(".prereqs-further a")
+          .evaluateAll((links) => links.map((link) => link.getBoundingClientRect().height));
+        expect(targets).toHaveLength(2);
+        for (const height of targets) expect(height).toBeGreaterThanOrEqual(44);
+      }
+    }
+  }
+});
+
 test("every learner state key the course writes starts assembly-lab:v1:", async ({ page }) => {
   await page.goto("#/");
   await ready(page);
