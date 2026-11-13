@@ -123,28 +123,36 @@ export function App() {
             <LessonProse markdown={WHERE_NEXT.afterCalls} />
           </aside>
         )}
-        <nav className="lesson-nav" aria-label={STRINGS.lessonNav}>
-          {previous ? (
-            <a className="lesson-nav-link" data-direction="previous" href={lessonHref(previous.id)}>
-              <span className="lesson-nav-direction">{STRINGS.previousLesson}</span>
-              <span className="lesson-nav-title">{book.references.label(previous.id)}</span>
-            </a>
-          ) : (
-            <span />
-          )}
-          <div className="lesson-nav-forward">
+        <div className="lesson-ending">
+          <div className="lesson-completion-row">
             <LessonCompletionButton store={completionStore} lessonId={lesson.id} />
+            <p id="lesson-completion-note" className="lesson-completion-note" role="status">
+              {completion.unsaved ? STRINGS.completion.unsaved : STRINGS.completion.saved}
+            </p>
+          </div>
+          <nav className="lesson-nav" aria-label={STRINGS.lessonNav}>
+            {previous ? (
+              <a
+                className="lesson-nav-link"
+                data-direction="previous"
+                href={lessonHref(previous.id)}
+              >
+                <span className="lesson-nav-direction">
+                  <span aria-hidden="true">←</span> {STRINGS.previousLesson}
+                </span>
+                <span className="lesson-nav-title">{book.references.label(previous.id)}</span>
+              </a>
+            ) : null}
             {next ? (
               <a className="lesson-nav-link" data-direction="next" href={lessonHref(next.id)}>
-                <span className="lesson-nav-direction">{STRINGS.nextLesson}</span>
+                <span className="lesson-nav-direction">
+                  {STRINGS.nextLesson} <span aria-hidden="true">→</span>
+                </span>
                 <span className="lesson-nav-title">{book.references.label(next.id)}</span>
               </a>
             ) : null}
-          </div>
-        </nav>
-        <p id="lesson-completion-note" className="lesson-completion-note" role="status">
-          {completion.unsaved ? STRINGS.completion.unsaved : STRINGS.completion.saved}
-        </p>
+          </nav>
+        </div>
       </>
     ) : (
       <>

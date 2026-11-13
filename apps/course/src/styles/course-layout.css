@@ -101,7 +101,7 @@
   display: grid;
   grid-template-columns: 218px minmax(0, 760px);
   gap: 45px;
-  padding: 38px 26px 100px;
+  padding: 38px 26px 32px;
 }
 :root .lesson-outline-desktop {
   display: block;
@@ -201,24 +201,17 @@
 :root .al-flags-lesson > .sidebar {
   display: none;
 }
-:root
-  .shell-main:has(.lesson-layout)
-  > :is(.lesson-nav, .lesson-completion-note, .where-next-after-calls) {
+:root .shell-main:has(.lesson-layout) > :is(.lesson-ending, .where-next-after-calls) {
   max-width: 760px;
   margin-left: max(calc((100% - 1180px) / 2 + 289px), 289px);
   margin-right: 26px;
-}
-:root .shell-main:has(.lesson-layout) > .lesson-completion-note {
-  max-width: 65ch;
 }
 @media (max-width: 1050px) {
   :root .lesson-layout {
     grid-template-columns: 162px minmax(0, 1fr);
     gap: 24px;
   }
-  :root
-    .shell-main:has(.lesson-layout)
-    > :is(.lesson-nav, .lesson-completion-note, .where-next-after-calls) {
+  :root .shell-main:has(.lesson-layout) > :is(.lesson-ending, .where-next-after-calls) {
     margin-left: 212px;
   }
   .lesson-layout nav a {
@@ -228,7 +221,7 @@
 @media (max-width: 760px) {
   :root .lesson-layout {
     display: block;
-    padding: 20px 16px 70px;
+    padding: 20px 16px 24px;
   }
   :root .lesson-outline-desktop {
     display: none;
@@ -251,9 +244,7 @@
     max-height: 60dvh;
     overflow-y: auto;
   }
-  :root
-    .shell-main:has(.lesson-layout)
-    > :is(.lesson-nav, .lesson-completion-note, .where-next-after-calls) {
+  :root .shell-main:has(.lesson-layout) > :is(.lesson-ending, .where-next-after-calls) {
     margin-left: 16px;
     margin-right: 16px;
   }
@@ -376,4 +367,10 @@
     padding: 0 8px;
     max-width: 76px;
   }
+}
+
+/* One gap after the final teaching section leads into the completion row. */
+:root .lesson-layout-content > .lesson > .lesson-section:last-child,
+:root .al-flags-lesson .lesson-step:last-child {
+  padding-bottom: 0;
 }

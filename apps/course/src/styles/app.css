@@ -608,108 +608,137 @@ ol {
   }
 }
 
-/* Previous sits at the left; the completion control stays beside Next at the right. */
-.lesson-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  margin: var(--space-4) 0 var(--space-3);
+/* Completion is a quiet local action; navigation has its own balanced row. */
+.lesson-ending {
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-6);
+  border-top: 1px solid var(--border);
 }
-.lesson-nav-forward {
+.lesson-completion-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: stretch;
-  gap: var(--space-3);
-  margin-left: auto;
-  max-width: 100%;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
 }
 .lesson-completion {
   display: flex;
-  align-items: center;
-  align-self: center;
-  width: 15rem;
+  flex: 0 0 auto;
   max-width: 100%;
 }
 .lesson-completion button.button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: var(--space-2);
-  width: 100%;
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-fg);
+  min-height: 44px;
+  max-width: 100%;
+  padding: 0;
+  border-color: transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-weight: 500;
+  text-align: left;
   box-shadow: none;
 }
 .lesson-completion button.button:hover {
-  background: var(--accent-strong);
-  border-color: var(--accent-strong);
-}
-.lesson-completion button.button[data-complete="true"] {
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-.lesson-completion button.button[data-complete="true"]:hover {
-  border-color: var(--accent-strong);
+  background: transparent;
+  border-color: transparent;
   color: var(--accent-strong);
 }
+.lesson-completion button.button[data-complete="true"] {
+  background: transparent;
+  color: var(--accent-strong);
+}
+.lesson-completion button.button[data-complete="true"]:hover {
+  background: transparent;
+}
+.lesson-completion button.button[data-complete="false"]:hover > span {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.lesson-completion button.button:hover .lesson-completion-undo {
+  color: var(--accent-strong);
+}
+.lesson-completion-label {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.35em;
+  min-width: 0;
+  font-weight: 600;
+}
+.lesson-completion-undo {
+  white-space: nowrap;
+  color: var(--fg-muted);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .lesson-completion-icon {
-  flex: 0 0 1.5rem;
-  width: 1.5rem;
-  height: 1.5rem;
+  flex: 0 0 1.35rem;
+  width: 1.35rem;
+  height: 1.35rem;
   fill: none;
   stroke: currentColor;
-  stroke-width: 2;
+  stroke-width: 1.7;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 .lesson-completion-note {
+  flex: 1 1 18rem;
   max-width: 65ch;
   color: var(--fg-muted);
-  font-size: var(--text-sm);
-  margin: 0 0 var(--space-4);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  margin: 0;
+}
+.lesson-nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 0;
 }
 .lesson-nav-link {
   display: grid;
-  gap: var(--space-1);
-  padding: var(--space-2) var(--space-3);
+  align-content: start;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-4);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: 16px;
   background: var(--bg-raised);
   text-decoration: none;
   color: inherit;
-  max-width: 24rem;
+  overflow-wrap: anywhere;
 }
 .lesson-nav-link:hover {
   border-color: var(--accent);
 }
 .lesson-nav-link[data-direction="next"] {
+  grid-column: 2;
   justify-items: end;
   text-align: right;
 }
+.lesson-nav-link:only-child {
+  grid-column: 1 / -1;
+}
 .lesson-nav-direction {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   font-size: var(--text-xs);
   color: var(--fg-muted);
 }
 .lesson-nav-title {
   font-weight: 600;
+  line-height: 1.4;
 }
 @media (max-width: 30rem) {
-  .lesson-nav,
-  .lesson-nav-forward {
-    flex-direction: column;
-  }
-  .lesson-nav-forward {
-    margin-left: 0;
-  }
-  .lesson-completion {
-    width: 100%;
-  }
-  .lesson-nav-link[data-direction="next"] {
-    justify-items: start;
-    text-align: left;
+  .lesson-nav-link {
+    padding: var(--space-3);
   }
 }
 

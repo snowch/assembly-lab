@@ -30,7 +30,9 @@ export const STRINGS = {
   start: "Start with",
   completion: {
     mark: "Mark lesson complete",
-    undo: "Mark lesson incomplete",
+    undo: "Lesson complete · Undo",
+    complete: "Lesson complete",
+    undoAction: "Undo",
     marked: "Marked complete",
     continue: "Continue learning",
     all: "You have marked all current lessons complete.",
