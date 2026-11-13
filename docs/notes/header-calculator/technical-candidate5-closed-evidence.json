@@ -1,0 +1,37 @@
+{
+  "results": [
+    {
+      "width": 375,
+      "theme": "light",
+      "closedControlCount": 0,
+      "bareSelectCount": 1,
+      "pendingAndCommittedWork": "preserved across close, Escape, closed and open navigation",
+      "status": "PASS"
+    },
+    {
+      "width": 375,
+      "theme": "dark",
+      "closedControlCount": 0,
+      "bareSelectCount": 1,
+      "pendingAndCommittedWork": "preserved across close, Escape, closed and open navigation",
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "theme": "light",
+      "closedControlCount": 0,
+      "bareSelectCount": 1,
+      "pendingAndCommittedWork": "preserved across close, Escape, closed and open navigation",
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "theme": "dark",
+      "closedControlCount": 0,
+      "bareSelectCount": 1,
+      "pendingAndCommittedWork": "preserved across close, Escape, closed and open navigation",
+      "status": "PASS"
+    }
+  ],
+  "errors": []
+}

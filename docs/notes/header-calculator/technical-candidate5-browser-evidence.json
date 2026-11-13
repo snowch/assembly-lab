@@ -1,0 +1,372 @@
+{
+  "results": [
+    {
+      "width": 375,
+      "theme": "light",
+      "geometry": {
+        "scrollWidth": 375,
+        "innerWidth": 375,
+        "dialog": {
+          "x": 0,
+          "y": 0,
+          "width": 375,
+          "height": 812,
+          "scrollWidth": 375,
+          "clientWidth": 375
+        },
+        "headerHeight": 62,
+        "theme": "light",
+        "background": "rgb(247, 250, 248)",
+        "shortControls": []
+      },
+      "close": {
+        "height": 44.390625,
+        "color": "rgb(25, 49, 48)",
+        "background": "rgb(255, 255, 255)",
+        "contrast": 13.7854996099805
+      },
+      "status": "PASS"
+    },
+    {
+      "width": 375,
+      "theme": "dark",
+      "geometry": {
+        "scrollWidth": 375,
+        "innerWidth": 375,
+        "dialog": {
+          "x": 0,
+          "y": 0,
+          "width": 375,
+          "height": 812,
+          "scrollWidth": 375,
+          "clientWidth": 375
+        },
+        "headerHeight": 62,
+        "theme": "dark",
+        "background": "rgb(16, 27, 26)",
+        "shortControls": []
+      },
+      "close": {
+        "height": 44.390625,
+        "color": "rgb(229, 241, 237)",
+        "background": "rgb(23, 38, 35)",
+        "contrast": 13.555551117885955
+      },
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "theme": "light",
+      "geometry": {
+        "scrollWidth": 1280,
+        "innerWidth": 1280,
+        "dialog": {
+          "x": 668,
+          "y": 78,
+          "width": 600,
+          "height": 710,
+          "scrollWidth": 598,
+          "clientWidth": 598
+        },
+        "headerHeight": 68,
+        "theme": "light",
+        "background": "rgb(247, 250, 248)",
+        "shortControls": []
+      },
+      "close": {
+        "height": 44.390625,
+        "color": "rgb(25, 49, 48)",
+        "background": "rgb(255, 255, 255)",
+        "contrast": 13.7854996099805
+      },
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "theme": "dark",
+      "geometry": {
+        "scrollWidth": 1280,
+        "innerWidth": 1280,
+        "dialog": {
+          "x": 668,
+          "y": 78,
+          "width": 600,
+          "height": 710,
+          "scrollWidth": 598,
+          "clientWidth": 598
+        },
+        "headerHeight": 68,
+        "theme": "dark",
+        "background": "rgb(16, 27, 26)",
+        "shortControls": []
+      },
+      "close": {
+        "height": 44.390625,
+        "color": "rgb(229, 241, 237)",
+        "background": "rgb(23, 38, 35)",
+        "contrast": 13.555551117885955
+      },
+      "status": "PASS"
+    },
+    {
+      "geometry": {
+        "width": 320,
+        "scrollWidth": 320,
+        "headerHeight": 62,
+        "controls": [
+          {
+            "name": "brand",
+            "x": 12,
+            "right": 43,
+            "y": 8.5,
+            "height": 44
+          },
+          {
+            "name": "app-status",
+            "x": 130,
+            "right": 174,
+            "y": 8.5,
+            "height": 44
+          },
+          {
+            "name": "header-calculator-button",
+            "x": 181,
+            "right": 225,
+            "y": 8.5,
+            "height": 44
+          },
+          {
+            "name": "theme-picker",
+            "x": 232,
+            "right": 308,
+            "y": 8.5,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "width": 360,
+        "scrollWidth": 360,
+        "headerHeight": 62,
+        "controls": [
+          {
+            "name": "brand",
+            "x": 12,
+            "right": 43,
+            "y": 8.5,
+            "height": 44
+          },
+          {
+            "name": "app-status",
+            "x": 170,
+            "right": 214,
+            "y": 8.5,
+            "height": 44
+          },
+          {
+            "name": "header-calculator-button",
+            "x": 221,
+            "right": 265,
+            "y": 8.5,
+            "height": 44
+          },
+          {
+            "name": "theme-picker",
+            "x": 272,
+            "right": 348,
+            "y": 8.5,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "width": 400,
+        "scrollWidth": 400,
+        "headerHeight": 62,
+        "controls": [
+          {
+            "name": "brand",
+            "x": 12,
+            "right": 43,
+            "y": 8.5,
+            "height": 44
+          },
+          {
+            "name": "app-status",
+            "x": 210,
+            "right": 254,
+            "y": 8.5,
+            "height": 44
+          },
+          {
+            "name": "header-calculator-button",
+            "x": 261,
+            "right": 305,
+            "y": 8.5,
+            "height": 44
+          },
+          {
+            "name": "theme-picker",
+            "x": 312,
+            "right": 388,
+            "y": 8.5,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "width": 760,
+        "scrollWidth": 760,
+        "headerHeight": 62,
+        "controls": [
+          {
+            "name": "brand",
+            "x": 17,
+            "right": 166.296875,
+            "y": 8.5,
+            "height": 44
+          },
+          {
+            "name": "app-status",
+            "x": 563,
+            "right": 607,
+            "y": 8.5,
+            "height": 44
+          },
+          {
+            "name": "header-calculator-button",
+            "x": 615,
+            "right": 659,
+            "y": 8.5,
+            "height": 44
+          },
+          {
+            "name": "theme-picker",
+            "x": 667,
+            "right": 743,
+            "y": 8.5,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "width": 761,
+        "scrollWidth": 761,
+        "headerHeight": 68,
+        "controls": [
+          {
+            "name": "brand",
+            "x": 26,
+            "right": 182.015625,
+            "y": 11.5,
+            "height": 44
+          },
+          {
+            "name": "app-status",
+            "x": 407.671875,
+            "right": 451.671875,
+            "y": 11.5,
+            "height": 44
+          },
+          {
+            "name": "header-calculator-button",
+            "x": 465.671875,
+            "right": 587.140625,
+            "y": 11.5,
+            "height": 44
+          },
+          {
+            "name": "theme-picker",
+            "x": 601.140625,
+            "right": 735,
+            "y": 11.5,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "width": 900,
+        "scrollWidth": 900,
+        "headerHeight": 68,
+        "controls": [
+          {
+            "name": "brand",
+            "x": 26,
+            "right": 182.015625,
+            "y": 11.5,
+            "height": 44
+          },
+          {
+            "name": "app-status",
+            "x": 546.671875,
+            "right": 590.671875,
+            "y": 11.5,
+            "height": 44
+          },
+          {
+            "name": "header-calculator-button",
+            "x": 604.671875,
+            "right": 726.140625,
+            "y": 11.5,
+            "height": 44
+          },
+          {
+            "name": "theme-picker",
+            "x": 740.140625,
+            "right": 874,
+            "y": 11.5,
+            "height": 44
+          }
+        ]
+      }
+    },
+    {
+      "geometry": {
+        "width": 1280,
+        "scrollWidth": 1280,
+        "headerHeight": 68,
+        "controls": [
+          {
+            "name": "brand",
+            "x": 76,
+            "right": 232.015625,
+            "y": 11.5,
+            "height": 44
+          },
+          {
+            "name": "app-status",
+            "x": 876.671875,
+            "right": 920.671875,
+            "y": 11.5,
+            "height": 44
+          },
+          {
+            "name": "header-calculator-button",
+            "x": 934.671875,
+            "right": 1056.140625,
+            "y": 11.5,
+            "height": 44
+          },
+          {
+            "name": "theme-picker",
+            "x": 1070.140625,
+            "right": 1204,
+            "y": 11.5,
+            "height": 44
+          }
+        ]
+      }
+    }
+  ],
+  "errors": []
+}

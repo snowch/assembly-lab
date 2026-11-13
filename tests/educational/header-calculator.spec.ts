@@ -29,6 +29,7 @@ for (const theme of ["light", "dark"] as const) {
     await expect(panel.locator('output[data-reading="signed"]')).toHaveText("8,589,934,592");
     await panel.getByRole("button", { name: "Close calculator" }).click();
     await expect(panel).not.toBeVisible();
+    await expect(panel.locator("input, select")).toHaveCount(0);
     await expect(trigger).toBeFocused();
     await trigger.click();
     await expect(panel.locator('output[data-reading="signed"]')).toHaveText("8,589,934,592");

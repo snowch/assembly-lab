@@ -139,3 +139,79 @@ represented here as a browser pass.
 
 Retained evidence: `technical-browser-evidence.json`,
 `technical-final-geometry.json`, and `technical-candidate4-*-scrolled.png`.
+
+## Candidate 5: inactive DOM integration and final verification
+
+The earlier verdict covered the candidate 4 focused checks, not a full-suite
+pass. The managing session subsequently reported that full run `33e712` found
+an integration failure: existing `page.locator("select")` theme interactions
+also matched selects inside the closed native dialog. That run was interrupted
+with exit 130 after 230 browser passes, 10 failures, 2 skips, 1 interrupted test
+and 1271 not run; its unit phase passed 3487 tests. These are the managing
+session's full-run figures, separate from this reviewer's focused results.
+The passing focused checks below do not change that run's outcome.
+
+**Medium, accepted and fixed: the closed global tool adds unrelated controls
+to the page DOM.** This integration issue was outside the initial focused
+coverage. The smallest compatible fix is to omit inactive tool markup while
+keeping its React state and update-handoff registration mounted. Updating all
+legacy selectors would leave the integration contract changed. Candidate 5
+adds an `active` prop, defaults it to true for existing lesson calculators,
+and returns null only after all hooks have run. Header `active={open}` hides
+controls, heading and persistence copy while closed. No hook becomes
+conditional, and no change enters the numerical model or lesson answer path.
+
+Independently checked the immutable candidate at
+`http://localhost:4518/assembly-lab/`, without rebuilding or editing product
+files. At 375 × 812 and 1280 × 800 in both actual light and dark themes:
+
+- The closed dialog contains zero inputs, selects, buttons or headings.
+  The page has exactly one select on the front page and the checked closed-tool
+  lesson states. The legacy bare `page.locator("select").selectOption(...)`
+  path changes the actual rendered theme, both initially and after closing.
+- A committed exact 64-bit pattern, Signed selection, hexadecimal entry format,
+  unapplied entry text, operand and shift amount survive Close, reopening,
+  Escape, navigation while closed and navigation while open. The destination
+  lesson's rendered heading was checked. Focus still returns to Calculator.
+- LocalStorage remains unchanged through those tool/navigation operations.
+  No page error occurs. The same independent numerical, halves, width, shift,
+  reset, lesson-isolation, resize and geometry runner used for candidate 4 also
+  passes against candidate 5 in all four width/theme cases. The four fresh
+  final-build screenshots were visually inspected. Local guidance, readable
+  Close and its sticky hit target remain as previously measured.
+- The real built one-shot restoration path still restores the exact seeded
+  header envelope while the header initially renders inactive. Opening exposes
+  the restored settings and pending work. The lesson calculator stays separate;
+  ordinary reload and route-mismatched envelopes reset as before.
+
+The missing half of a seeded browser check is whether the inactive component
+still *writes* the coordinated snapshot. An independent temporary Vitest test
+therefore exercised the actual `prepareViewHandoff()` function, not a stub.
+For both `active=true` and `active=false`, it prepared and inspected the exact
+`header-calculator::ProgrammerCalculator.global.widths` entry after committing
+a maximum 64-bit pattern and leaving an unapplied entry, operand and shift.
+It then reset modules to model restart, restored with `active=false`, confirmed
+empty DOM and one-shot envelope consumption, and reopened to check every saved
+field and exact pattern. Both cases passed. This directly verifies closed and
+open snapshot registration as well as restoration; it remains distinct from a
+complete service-worker replacement test.
+
+Focused repository command repeated on candidate 5's source, exit 0:
+
+```text
+npx vitest run packages/machine/src/programmer-calculator.test.ts packages/views/src/ProgrammerCalculator.test.tsx packages/views/src/update-handoff.test.tsx
+Test Files 3 passed (3); Tests 74 passed (74)
+```
+
+Separate temporary registration/restoration check, exit 0: 1 file, 2 tests
+passed. The independent browser runners exited 0. One initial candidate 5
+navigation assertion used an obsolete lesson-title guess and exited 1; the
+correct rendered heading was checked in the passing rerun. No product or test
+expectation was changed to satisfy that exploratory harness error.
+
+No open technical blocker remains in this inactive-DOM change. Full repository
+checks, all original failed suite cases and service-worker replacement are
+owned by the managing session and are not claimed as independently rerun here.
+Evidence: `technical-candidate5-browser-evidence.json`,
+`technical-candidate5-closed-evidence.json`, `technical-candidate5-geometry.json`
+and `technical-candidate5-*-scrolled.png`.

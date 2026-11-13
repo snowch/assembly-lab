@@ -83,16 +83,23 @@ export function HeaderCalculator({ updating = false }: { updating?: boolean }) {
           dismiss();
         }}
       >
-        <div className="header-calculator-heading">
-          <h2 id={`${id}-title`}>{S.title}</h2>
-          <button type="button" ref={close} aria-label={S.closeLabel} onClick={dismiss}>
-            {S.close}
-          </button>
-        </div>
+        {open && (
+          <div className="header-calculator-heading">
+            <h2 id={`${id}-title`}>{S.title}</h2>
+            <button type="button" ref={close} aria-label={S.closeLabel} onClick={dismiss}>
+              {S.close}
+            </button>
+          </div>
+        )}
         <ViewHandoffScope id="header-calculator">
-          <ProgrammerCalculator preset="widths" handoffKey="global" presentation="tool" />
+          <ProgrammerCalculator
+            preset="widths"
+            handoffKey="global"
+            presentation="tool"
+            active={open}
+          />
         </ViewHandoffScope>
-        <p className="header-calculator-help">{S.persistence}</p>
+        {open && <p className="header-calculator-help">{S.persistence}</p>}
       </dialog>
     </>
   );

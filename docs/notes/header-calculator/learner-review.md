@@ -193,3 +193,35 @@ regression. Evidence is in `learner-candidate4-evidence.json` and
 learner or UX blocker. Earlier route-persistence and resize checks remain
 separately recorded; this pass rechecked the final copy/layout, both readings,
 entry, initial focus and scrolled Close rather than claiming a full-suite run.
+
+## Integration candidate 5 verification (current verdict)
+
+Independently checked `http://localhost:4518/assembly-lab/` at 1280 × 800,
+375 × 812 and 320 × 812, each in light and dark. This supersedes the earlier
+candidate verdicts for the changed inactive rendering.
+
+On the front page before opening, and again after closing, the document has one
+select (Theme) and the calculator dialog has zero input elements. Opening still
+focuses Close. Applied decimal 42, then typed uncommitted entry 1234 and second
+value 5678. Close/reopen preserved all three independently: the applied readout
+remained 42 / `0x0000 002A`, while both pending fields retained their text.
+After Escape and navigation to the actual “One addition” route, verified its
+rendered heading and reopened the calculator: the same applied value and both
+pending fields still remained. This passed in all six viewport/theme states.
+
+The compact local Unsigned and hexadecimal explanations are present on opening;
+selecting Signed shows its negative-highest-bit explanation. Both prior findings
+remain closed. Actual theme colours match the previous measured palettes;
+client/scroll widths remain 598/598 desktop, 375/375 and 320/320 phone, with no
+horizontal page overflow. Desktop is nonmodal and phones modal. After maximum
+scrolling, Close remains at y 97 desktop or y 24.59 phone, measures
+70.61 × 44.39 pixels, and restores focus to Calculator when pressed. No browser
+page errors occurred in this focused script. No new learner or UX blocker was
+observed.
+
+Only this review file was changed for candidate 5; no new repository evidence
+artifacts or product files were written. This focused integration check does
+not replace the managing session's interrupted full-suite record or claim that
+the planned full rerun passed. It verifies the inactive controls, scratch-state
+retention and the identified visible interaction states independently of that
+suite.

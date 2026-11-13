@@ -102,10 +102,12 @@ export function ProgrammerCalculator({
   preset,
   handoffKey,
   presentation = "lesson",
+  active = true,
 }: {
   preset: ProgrammerPreset;
   handoffKey: string;
   presentation?: "lesson" | "tool";
+  active?: boolean;
 }) {
   const tool = presentation === "tool";
   const id = useId();
@@ -204,6 +206,9 @@ export function ProgrammerCalculator({
   const widths = config.resize ? ([32, 64] as const) : [];
   const halves =
     config.halves || (tool && work.width === 32) ? calculatorHalves(work.pattern) : null;
+
+  // Keep scratch work registered for updates while the closed header tool has no controls.
+  if (!active) return null;
 
   const panel = (
     <div className="al-programmer-panel">

@@ -20,6 +20,20 @@ Scope: shared header tool; existing lesson calculators retain their preset guide
   Four review evidence JSON files needed Prettier formatting. Corrected only that formatting;
   subsequent full results are reported independently in the pull request.
 
+- Second full run on `33e7121`: unit/integration 3,487 passed. Interrupted the browser
+  run with exit 130 after 10 failed, 230 passed, 2 skipped, 1 interrupted and 1,271 not run.
+  The failures were strict-selector collisions: a bare `select` query now found controls
+  inside the closed calculator as well as Theme. Kept the stateful calculator mounted but
+  return no DOM while inactive; closed headings/help also render only when open. Added
+  explicit closed-DOM and pending-entry regressions. Original assertions remain unchanged.
+  This interrupted run is not represented as a full pass; the new full run is independent.
+
+- Candidate 5 focused rerun includes the affected bit-weight and four-bit lessons:
+  47 browser tests passed, 1 existing phone skip. Focused model/view/handoff unit run:
+  74 passed. Independent learner and technical rechecks cover the inactive view and
+  retained pending work. Independent snapshot tests also passed 2 cases with the real
+  prepareViewHandoff path while active and inactive; final full results follow in the pull request.
+
 ## Review corrections
 
 - Accepted learner finding: Close had poor dark-theme contrast and a small target.
