@@ -2,7 +2,7 @@
 
 // Lesson 1 of Module 2: Adding, and the four flags. The learner predicts which readings represent
 // an exact sum, watches an addition column by column with the carry into each column, predicts
-// the four flags for three more additions, sees that `add` leaves the flags alone, and finds the
+// the four flags for six more additions, sees that `add` leaves the flags alone, and finds the
 // smallest number that sets V.
 //
 // The structure is here; the words are in adding-and-the-flags.prose.ts and .labels.ts (kept from
@@ -28,7 +28,7 @@ const PLUS_CALL = { entry: "plus", args: [0x7fffffff, 1] } as const;
 
 /**
  * The call the figure after the flags challenge runs: 1 plus `0xffffffff`, which sets C and Z. It is
- * none of the challenge's three calls (its first is `0xffffffff` plus 1, the other way round).
+ * none of the challenge's six calls (its first is `0xffffffff` plus 1, the other way round).
  */
 const CARRY_OUT_CALL = { entry: "plus", args: [1, 0xffffffff] } as const;
 
@@ -42,6 +42,9 @@ const ADDITIONS = [
   { ...LABELS.challenges.flags.additions[0], w0: 0xffffffff, w1: 1 },
   { ...LABELS.challenges.flags.additions[1], w0: 5, w1: 3 },
   { ...LABELS.challenges.flags.additions[2], w0: 0x80000000, w1: 0x80000000 },
+  { ...LABELS.challenges.flags.additions[3], w0: 0x7ffffffe, w1: 2 },
+  { ...LABELS.challenges.flags.additions[4], w0: 0xfffffff9, w1: 2 },
+  { ...LABELS.challenges.flags.additions[5], w0: 0, w1: 0 },
 ] as const;
 
 const ZERO_OR_ONE = [
@@ -242,7 +245,7 @@ export const addingAndTheFlags: LessonInput = {
         })),
       ),
       // The program the editor shows and the grader runs. The expected flags are what the run
-      // leaves, never values in this file. The twelve choices are drawn as one group for each
+      // leaves, never values in this file. The twenty-four choices are drawn as one group for each
       // addition, a compact row of N, Z, C and V in it.
       initial: {
         data: {
@@ -285,6 +288,18 @@ export const addingAndTheFlags: LessonInput = {
           "third-z": "1",
           "third-c": "1",
           "third-v": "1",
+          "fourth-n": "1",
+          "fourth-z": "0",
+          "fourth-c": "0",
+          "fourth-v": "1",
+          "fifth-n": "1",
+          "fifth-z": "0",
+          "fifth-c": "0",
+          "fifth-v": "0",
+          "sixth-n": "0",
+          "sixth-z": "1",
+          "sixth-c": "0",
+          "sixth-v": "0",
         },
       },
     },
@@ -316,6 +331,6 @@ export const addingAndTheFlags: LessonInput = {
     textbookExample:
       "The obvious example for the flags is an 8-bit addition table that runs through every overflow case, or a car odometer rolling over from 999999 to 0.",
     howThisDiffers:
-      "Four-bit teaching calculations first show N and Z in the retained result, then contrast C and V through both readings of two additions. One fresh check supplies the result bits and asks for the flags. The learner then transfers the rules to the preserved 32-bit prediction and three fresh flag predictions. The 32-bit carry trace comes from the simulator's own record. The lesson also checks GCC's `__builtin_add_overflow` listing, which reads V. The trip computer's counter is the running situation that the later elapsed-ticks lesson builds on.",
+      "Four-bit teaching calculations first show N and Z in the retained result, then contrast C and V through both readings of two additions. One fresh check supplies the result bits and asks for the flags. The learner then transfers the rules to the preserved 32-bit prediction and six fresh flag predictions. The 32-bit carry trace comes from the simulator's own record. The lesson also checks GCC's `__builtin_add_overflow` listing, which reads V. The trip computer's counter is the running situation that the later elapsed-ticks lesson builds on.",
   },
 };

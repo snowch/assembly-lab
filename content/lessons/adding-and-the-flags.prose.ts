@@ -50,21 +50,24 @@ export const PROSE = {
     "```\n\n" +
     "The first line, `add_overflows:`, is the function's name and a colon. The two instructions before `ret` return 1 exactly when V is set. A later module explains them.",
 
-  construction: "Now predict the four flags for three fresh 32-bit additions.",
+  construction: "Now predict the four flags for six fresh 32-bit additions.",
 
   flagsTask:
-    "Give N, Z, C and V for each of three additions with `adds`. Each addition has its own group of four boxes, N, Z, C and V. Each box takes 0 or 1.\n\n" +
-    "The three additions are:\n\n" +
+    "Give N, Z, C and V for each of six additions with `adds`. Each addition has its own group of four boxes, N, Z, C and V. Each box takes 0 or 1.\n\n" +
+    "The six additions are:\n\n" +
     "- `0xffffffff` plus 1\n" +
     "- 5 plus 3\n" +
-    "- `0x80000000` plus `0x80000000`\n\n" +
+    "- `0x80000000` plus `0x80000000`\n" +
+    "- `0x7ffffffe` plus 2\n" +
+    "- `0xfffffff9` plus 2\n" +
+    "- 0 plus 0\n\n" +
     "Check your answers. A wrong flag is named, and the answers you got right stay.",
   flagsHints: [
     "C is the carry out of the top bit. V is 1 when the carry into the top bit and the carry out of it differ.",
     "Do not give C and V the same value automatically. One addition here sets both, and one sets only C.",
     "5 plus 3 is 8. No carry reaches the top bit, so N, Z, C and V are all 0.",
     "`0xffffffff` plus 1 is 0 with a carry out of the top bit, so Z is 1 and C is 1.",
-    "`0xffffffff` plus 1 gives N 0, Z 1, C 1 and V 0. 5 plus 3 has all four at 0. `0x80000000` plus `0x80000000` gives N 0, Z 1, C 1 and V 1.",
+    "`0xffffffff` plus 1 gives N 0, Z 1, C 1 and V 0. 5 plus 3 has all four at 0. `0x80000000` plus `0x80000000` gives N 0, Z 1, C 1 and V 1. `0x7ffffffe` plus 2 gives N 1, Z 0, C 0 and V 1. `0xfffffff9` plus 2 gives N 1, Z 0, C 0 and V 0. 0 plus 0 gives N 0, Z 1, C 0 and V 0.",
   ] as const,
 
   /** Shown with the figure that opens when the flags challenge is passed. */

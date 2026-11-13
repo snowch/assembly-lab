@@ -25,7 +25,14 @@ const answers = (n: 0 | 1, z: 0 | 1, c: 0 | 1, v: 0 | 1): Answers => ({
   choices: { n, z, c, v },
   checked: true,
 });
-const correct = [answers(0, 1, 1, 0), answers(0, 0, 0, 0), answers(0, 1, 1, 1)] as const;
+const correct = [
+  answers(0, 1, 1, 0),
+  answers(0, 0, 0, 0),
+  answers(0, 1, 1, 1),
+  answers(1, 0, 0, 1),
+  answers(1, 0, 0, 0),
+  answers(0, 1, 0, 0),
+] as const;
 
 describe("the imported flags presentation uses canonical work and graders", () => {
   it("owns only the published addition challenge; the later challenge remains in its lesson", () => {
@@ -53,7 +60,7 @@ describe("the imported flags presentation uses canonical work and graders", () =
   });
   it("does not accept forged presentation check bits or a pending prediction as a canonical result", () => {
     const s = store(),
-      snapshot = blank();
+      snapshot = blank(correct.length);
     snapshot.practice.cases = correct.map((a) => structuredClone(a));
     snapshot.arm.committed = 1;
     s.setSlot(FLAGS_VIEW_SLOT, snapshot);
@@ -97,6 +104,29 @@ describe("the imported flags presentation uses canonical work and graders", () =
     expect(result.practice.index).toBe(0);
     expect(result.arm.committed).toBeNull();
     expect(result.practice.cases.every((a) => !a.checked)).toBe(true);
+  });
+  it("preserves the former three checked cases and leaves added cases unanswered", () => {
+    const s = store();
+    correct.slice(0, 3).forEach((answer, i) => commitCase(s, challenge, i, answer, true));
+    const previous = blank(3);
+    previous.practice.index = 2;
+    previous.practice.cases = correct.slice(0, 3).map((answer) => structuredClone(answer));
+    s.setSlot(FLAGS_VIEW_SLOT, previous);
+    s.setChallenge(challenge.id, (value) => ({
+      ...value,
+      firstPassedAt: "2026-11-12T12:00:00.000Z",
+    }));
+    const restored = stateFor(s, challenge);
+    expect(restored.practice.index).toBe(2);
+    expect(restored.practice.cases.slice(0, 3)).toEqual(correct.slice(0, 3));
+    expect(restored.practice.cases.slice(3)).toEqual([
+      { choices: {}, checked: false },
+      { choices: {}, checked: false },
+      { choices: {}, checked: false },
+    ]);
+    expect(verifyCompletion(book, lesson, s.get()).passed).toBe(0);
+    correct.slice(3).forEach((answer, i) => commitCase(s, challenge, i + 3, answer, true));
+    expect(verifyCompletion(book, lesson, s.get()).passed).toBe(1);
   });
 });
 

@@ -131,7 +131,7 @@ describe("module 1's pattern", () => {
   });
 });
 
-describe("the three additions the challenge predicts", () => {
+describe("the six additions the challenge predicts", () => {
   const flagsOf = (a: number, b: number) => nzcv(plus(a, b).flags);
 
   it("give 0xffffffff plus 1: N 0, Z 1, C 1, V 0, and an answer of 0 with a carry out of the top bit", () => {
@@ -170,6 +170,9 @@ describe("the three additions the challenge predicts", () => {
       ["`0xffffffff` plus 1", 0xffffffff, 1],
       ["5 plus 3", 5, 3],
       ["`0x80000000` plus `0x80000000`", 0x80000000, 0x80000000],
+      ["`0x7ffffffe` plus 2", 0x7ffffffe, 2],
+      ["`0xfffffff9` plus 2", 0xfffffff9, 2],
+      ["0 plus 0", 0, 0],
     ]);
   });
 });
@@ -289,7 +292,7 @@ describe("the figure after the flags challenge: 1 plus 0xffffffff", () => {
     expect(record.result).toBe(0n);
   });
 
-  it("is none of the three calls of the flags challenge, and opens only after that challenge", () => {
+  it("is none of the six calls of the flags challenge, and opens only after that challenge", () => {
     const challenge = lesson.challenges.find((x) => x.id === "predict-flags")!;
     if (challenge.tests.kind !== "answers") throw new Error("answers");
     const calls = challenge.tests.cases.map((t) => [t.given["w0"], t.given["w1"]].join(","));
@@ -490,6 +493,7 @@ describe("the numbers the improved text states", () => {
       "0xffffffff",
       "0xc0000000",
       "0x7ffffffe",
+      "0xfffffff9",
     ]);
     expect(stated.hex.filter((h) => !hexes.has(h))).toEqual([]);
   });
@@ -512,13 +516,16 @@ describe("the numbers the improved text states", () => {
     expect(reflection.details?.prose).toContain("0x80000000");
   });
 
-  it("holds the three additions' hexadecimal arguments to the calls of the challenge", () => {
+  it("holds the six additions' hexadecimal arguments to the calls of the challenge", () => {
     const c = lesson.challenges.find((x) => x.id === "predict-flags")!;
     if (c.tests.kind !== "answers") throw new Error("answers");
     expect(c.tests.cases.map((t) => [t.given["w0"], t.given["w1"]])).toEqual([
       [0xffffffff, 1],
       [5, 3],
       [0x80000000, 0x80000000],
+      [0x7ffffffe, 2],
+      [0xfffffff9, 2],
+      [0, 0],
     ]);
   });
 });

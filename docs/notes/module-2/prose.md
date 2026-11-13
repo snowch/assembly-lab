@@ -91,19 +91,22 @@ The carry test for V reports the same signed-range check as the miniatures: 1 me
 
 For optional hardware background, explore [Bit Lab’s four-bit arithmetic and logic circuit](https://snowch.github.io/bit-lab/#/lesson/alu). It is a teaching model, not an Arm processor’s circuit.
 
-## 5. Three additions to predict
+## 5. Six additions to predict
 
-Now predict the four flags for three fresh 32-bit additions.
+Now predict the four flags for six fresh 32-bit additions.
 
 **Predict the four flags**
 
-Give N, Z, C and V for each of three additions with `adds`. Each addition has its own group of four boxes, N, Z, C and V. Each box takes 0 or 1.
+Give N, Z, C and V for each of six additions with `adds`. Each addition has its own group of four boxes, N, Z, C and V. Each box takes 0 or 1.
 
-The three additions are:
+The six additions are:
 
 - `0xffffffff` plus 1
 - 5 plus 3
 - `0x80000000` plus `0x80000000`
+- `0x7ffffffe` plus 2
+- `0xfffffff9` plus 2
+- 0 plus 0
 
 Check your answers. A wrong flag is named, and the answers you got right stay.
 
@@ -111,7 +114,7 @@ Check your answers. A wrong flag is named, and the answers you got right stay.
 2. Do not give C and V the same value automatically. One addition here sets both, and one sets only C.
 3. 5 plus 3 is 8. No carry reaches the top bit, so N, Z, C and V are all 0.
 4. `0xffffffff` plus 1 is 0 with a carry out of the top bit, so Z is 1 and C is 1.
-5. `0xffffffff` plus 1 gives N 0, Z 1, C 1 and V 0. 5 plus 3 has all four at 0. `0x80000000` plus `0x80000000` gives N 0, Z 1, C 1 and V 1.
+5. `0xffffffff` plus 1 gives N 0, Z 1, C 1 and V 0. 5 plus 3 has all four at 0. `0x80000000` plus `0x80000000` gives N 0, Z 1, C 1 and V 1. `0x7ffffffe` plus 2 gives N 1, Z 0, C 0 and V 1. `0xfffffff9` plus 2 gives N 1, Z 0, C 0 and V 0. 0 plus 0 gives N 0, Z 1, C 0 and V 0.
 
 *Step through the addition column by column to inspect the result bits, carries and flags.*
 
