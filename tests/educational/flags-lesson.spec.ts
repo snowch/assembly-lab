@@ -52,6 +52,75 @@ async function navigateOutline(page: Page, id: string) {
 }
 
 for (const theme of ["light", "dark"] as const) {
+  test(`prediction input spacing and complete range bounds survive narrow cards (${theme})`, async ({
+    page,
+  }) => {
+    for (const width of [320, 375, 834, 920, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      await open(page, theme);
+      // A wider fallback font exposed premature pairing between tablet and desktop widths.
+      if (width === 920)
+        await page.addStyleTag({
+          content: "#armRanges .range-choice strong { font-family: 'DejaVu Sans', sans-serif; }",
+        });
+      await page.evaluate(() => document.fonts.ready);
+      const layout = await page.locator("#arm").evaluate((section) => {
+        const instruction = section.querySelector(".instruction")!.getBoundingClientRect();
+        const caption = section.querySelector(".quiz-heading")!.getBoundingClientRect();
+        const card = section.querySelector(".focus-card")!.getBoundingClientRect();
+        const ranges = [...section.querySelectorAll(".range-choice")].map((range) => {
+          const rect = range.getBoundingClientRect();
+          const bounds = [...range.querySelectorAll("bdi")].map((bound) => {
+            const text = document.createRange();
+            text.selectNodeContents(bound);
+            const boxes = [...text.getClientRects()];
+            return {
+              lines: boxes.length,
+              top: boxes[0]!.top,
+              contained: boxes.every((box) => box.left >= rect.left && box.right <= rect.right),
+            };
+          });
+          return {
+            left: rect.left,
+            right: rect.right,
+            contained: rect.left >= card.left && rect.right <= card.right,
+            text: range.querySelector("strong")!.textContent,
+            bounds,
+          };
+        });
+        return { gap: caption.top - instruction.bottom, ranges };
+      });
+      expect(layout.gap, `instruction/caption gap at ${width}px`).toBeGreaterThanOrEqual(16);
+      expect(layout.ranges.map((range) => range.text)).toEqual([
+        "0 … 4,294,967,295",
+        "−2,147,483,648 … 2,147,483,647",
+      ]);
+      for (const range of layout.ranges) {
+        expect(range.contained).toBe(true);
+        expect(range.bounds).toHaveLength(2);
+        for (const bound of range.bounds) {
+          expect(bound.lines).toBe(1);
+          expect(bound.contained).toBe(true);
+        }
+        if (width >= 375) expect(range.bounds[0]!.top).toBe(range.bounds[1]!.top);
+      }
+      if (width < 1280) expect(layout.ranges[0]!.left).toBe(layout.ranges[1]!.left);
+      else expect(layout.ranges[0]!.right).toBeLessThan(layout.ranges[1]!.left);
+      await expect(page.locator("#explorer")).toHaveCount(0);
+      await choose(page, "arm-choice", 1);
+      await page.locator("#armForm button[type=submit]").click();
+      await expect(page.locator("#armFeedback [data-correct]")).toHaveAttribute(
+        "data-correct",
+        "true",
+      );
+      await expect(page.locator("#explorer")).toHaveCount(1);
+      await page.locator("#clearPrediction").click();
+      await expect(page.locator("#explorer")).toHaveCount(0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+    }
+  });
   test(`approved flags route: complete outline, visible rules, examples and scoped navigation (${theme})`, async ({
     page,
   }) => {
@@ -233,6 +302,15 @@ for (const theme of ["light", "dark"] as const) {
     for (const [i, values] of correct.entries()) await commitCase(page, i, values);
     await expect(c).toHaveAttribute("data-complete", "true");
     await expect(page.locator("#followup .flag")).toHaveCount(4);
+    const followupInstruction = await page.locator("#followup .instruction").evaluate((node) => {
+      const next = node.nextElementSibling!.getBoundingClientRect();
+      return {
+        display: getComputedStyle(node).display,
+        gap: next.top - node.getBoundingClientRect().bottom,
+      };
+    });
+    expect(followupInstruction.display).toBe("block");
+    expect(followupInstruction.gap).toBeGreaterThanOrEqual(16);
     const saved = await stored(page);
     expect(saved.challenges["predict-flags"].artifact.answers).toEqual({
       "first-n": "0",
