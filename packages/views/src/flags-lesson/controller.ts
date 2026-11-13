@@ -8,6 +8,7 @@ import type { Challenge } from "@platform/lesson-schema";
 import type { RecordedProgram } from "../listing";
 import { grade } from "../grader";
 import { S, A, E } from "./strings";
+import { flagsLogicMarkup } from "./logic";
 import {
   FLAG_NAMES,
   flagsModel,
@@ -220,6 +221,7 @@ export function mountFlagsLesson(
     $("cChip").innerHTML = `C · unsigned <strong>${m.flags.c}</strong>`;
     $("vChip").innerHTML = `V · signed <strong>${m.flags.v}</strong>`;
     $("exampleConsequence").innerHTML = q.consequence;
+    $("flagsLogicContent").innerHTML = flagsLogicMarkup(m);
   }
 
   function syncChoiceLabels() {

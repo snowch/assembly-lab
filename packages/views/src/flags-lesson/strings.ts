@@ -4,6 +4,8 @@
 // in MARKUP are deliberately empty: the scoped controller fills them from the model.
 // This is trusted, authored HTML; no learner input is interpolated into this template.
 
+import { LOGIC_COPY } from "./strings.logic";
+
 export const S = {
   nInspectTitle: "Is the sign bit 1?",
   zInspectTitle: "Are all retained bits zero?",
@@ -445,7 +447,7 @@ export const MARKUP = `<div class="layout lesson al-flags-lesson" id="top" data-
           <div class="consequence-label">Why your program cares</div>
           <p id="exampleConsequence"></p>
         </div>
-        <details class="advanced short-detail"><summary>Optional: what do the carries into and out of the top bit tell us?</summary><div class="advanced-inner"><p><strong>C</strong> copies the carry <em>out</em> of the top bit. <strong>V</strong> becomes 1 when the carry <em>into</em> the top bit differs from the carry <em>out</em>. This is the bit-level mechanism behind the signed-range check.</p><p>For the carrying rule, revisit <a href="#/lesson/four-bit-arithmetic" data-lesson-reference="four-bit-arithmetic">Arithmetic with four bits</a>.</p><p>For optional hardware background, explore <a href="https://snowch.github.io/bit-lab/#/lesson/alu">Bit Lab’s four-bit arithmetic and logic circuit</a>. It is a teaching model, not an Arm processor’s circuit.</p></div></details>
+        <details class="flags-logic-disclosure" id="flagsLogic"><summary>${LOGIC_COPY.summary}</summary><div id="flagsLogicContent"></div><div class="flags-logic-links"><a href="#/lesson/four-bit-arithmetic" data-lesson-reference="four-bit-arithmetic">${LOGIC_COPY.carryLink}</a><a href="https://snowch.github.io/bit-lab/#/lesson/alu">${LOGIC_COPY.bitLabLink}</a></div></details>
       </div>
       <a class="next-link" href="#smallpractice">Next: check a fresh small addition →</a>
     </section><section id="smallpractice" class="lesson-step lesson-section"><div class="step-head"><div class="step-kicker"><span class="step-counter">05</span>Small practice</div><h2><span class="section-title" data-copy="miniTitle"></span></h2><p class="step-description" data-copy="miniLead"></p></div><div class="focus-card"><div id="miniBits"></div><form id="miniForm"><div id="miniChoices"></div><fieldset class="intent-field"><legend data-copy="intentLabel"></legend><p data-copy="intentQuestion"></p><div class="radios" id="intentChoices"></div></fieldset><div class="actions"><button type="submit" class="primary" data-copy="checkMini"></button><button type="button" class="secondary" id="clearMini" data-copy="clearMini"></button></div></form><div id="miniFeedback" role="status" aria-live="polite"></div></div></section>

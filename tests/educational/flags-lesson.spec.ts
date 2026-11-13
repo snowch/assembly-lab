@@ -5,6 +5,8 @@
 import { expect, test, type Page, type Locator } from "@playwright/test";
 import { S, FLAGS_LESSON_SECTIONS } from "../../packages/views/src/flags-lesson/strings";
 import { FLAGS_VIEW_SLOT } from "../../packages/views/src/flags-lesson/state";
+import { flagsModel } from "../../packages/views/src/flags-lesson/model";
+import { LOGIC_COPY } from "../../packages/views/src/flags-lesson/strings.logic";
 import { additionSteps, columnWork, traceOf } from "@al/views";
 import { PLUS } from "../../content/lessons/adding-and-the-flags.listings";
 
@@ -52,6 +54,112 @@ async function navigateOutline(page: Page, id: string) {
 }
 
 for (const theme of ["light", "dark"] as const) {
+  test(`optional logic follows the example, explains V and stays readable (${theme})`, async ({
+    page,
+  }) => {
+    const examples = [
+      ["exampleC", 15, 1],
+      ["exampleV", 7, 1],
+      ["exampleBoth", 8, 8],
+      ["exampleNegative", 8, 15],
+    ] as const;
+    for (const width of [320, 375, 834, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      await open(page, theme);
+      const detail = page.locator("#flagsLogic");
+      await expect(detail).not.toHaveAttribute("open");
+      await detail.locator("summary").focus();
+      await page.keyboard.press("Enter");
+      await expect(detail).toHaveAttribute("open");
+      await expect(detail.locator(".flags-logic-why")).toContainText(LOGIC_COPY.xorWhy);
+      await expect(detail.locator(".flags-logic-why")).toContainText(LOGIC_COPY.xorWhyNegative);
+      for (const [id, a, b] of examples) {
+        const model = flagsModel(PLUS, 4, a, b);
+        await page.locator(`#${id}`).click();
+        await expect(page.locator(`#${id}`)).toBeFocused();
+        await expect(detail).toHaveAttribute("open");
+        await expect(detail.locator(".flags-logic-body")).toHaveAttribute(
+          "data-logic-a",
+          model.a.bits,
+        );
+        await expect(detail.locator(".flags-logic-body")).toHaveAttribute(
+          "data-logic-b",
+          model.b.bits,
+        );
+        await expect(detail.locator(".flags-logic-body")).toHaveAttribute(
+          "data-logic-result",
+          model.result.bits,
+        );
+        for (const flag of digits)
+          await expect(detail.locator(`[data-logic-output="${flag}"]`)).toHaveText(
+            `${flag.toUpperCase()}=${model.flags[flag]}`,
+          );
+      }
+      const geometry = await detail.evaluate((node) => {
+        const svg = node.querySelector("svg")!;
+        const drawing = svg.getBoundingClientRect();
+        const figure = node.querySelector("figure")!.getBoundingClientRect();
+        const why = node.querySelector(".flags-logic-why")!.getBoundingClientRect();
+        const scroll = node.querySelector(".flags-logic-scroll")!;
+        const c = svg.querySelector('[data-logic-output="c"]')!.getBoundingClientRect();
+        const carry = svg.querySelector('[data-logic-carry="4"]')!.getBoundingClientRect();
+        return {
+          labelPixels: (drawing.width / 480) * parseFloat(getComputedStyle(svg).fontSize),
+          clippedText: [...svg.querySelectorAll("text")].some((text) => {
+            const box = text.getBoundingClientRect();
+            return (
+              box.top < drawing.top ||
+              box.bottom > drawing.bottom ||
+              box.left < drawing.left ||
+              box.right > drawing.right
+            );
+          }),
+          scrolls: scroll.scrollWidth > scroll.clientWidth,
+          cue: getComputedStyle(node.querySelector(".flags-logic-scroll-cue")!).display !== "none",
+          verticalScrollbar: scroll.scrollHeight > scroll.clientHeight,
+          whyAdjacent:
+            why.left >= figure.right
+              ? Math.abs(why.top - figure.top) < 1
+              : why.top >= figure.bottom && why.top - figure.bottom <= 25,
+          cLabelGap: carry.top - c.bottom,
+        };
+      });
+      expect(geometry.labelPixels).toBeGreaterThanOrEqual(18);
+      expect(geometry.clippedText).toBe(false);
+      expect(geometry.verticalScrollbar).toBe(false);
+      expect(geometry.whyAdjacent).toBe(true);
+      expect(geometry.cue).toBe(geometry.scrolls);
+      expect(geometry.cLabelGap).toBeGreaterThan(0);
+      const region = detail.getByRole("region", { name: LOGIC_COPY.regionLabel });
+      if (geometry.scrolls) {
+        await region.focus();
+        await page.keyboard.press("ArrowRight");
+        await expect.poll(() => region.evaluate((node) => node.scrollLeft)).toBeGreaterThan(0);
+        await region.evaluate((node) => {
+          node.scrollLeft = node.scrollWidth;
+        });
+        const right = await region.evaluate((node) => node.scrollLeft);
+        await page.keyboard.press("ArrowLeft");
+        await expect.poll(() => region.evaluate((node) => node.scrollLeft)).toBeLessThan(right);
+      }
+      await expect(page.locator("#explorer, #followup .flag")).toHaveCount(0);
+      await expect(page.locator("#challenge-predict-flags")).toHaveAttribute(
+        "data-complete",
+        "false",
+      );
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+      await page.reload();
+      await expect(detail).not.toHaveAttribute("open");
+      await detail.locator("summary").click();
+      await expect(detail.locator(".flags-logic-body")).toHaveAttribute("data-logic-a", "1000");
+      await expect(detail.locator(".flags-logic-body")).toHaveAttribute("data-logic-b", "1111");
+      await detail.locator("summary").focus();
+      await page.keyboard.press("Space");
+      await expect(detail).not.toHaveAttribute("open");
+    }
+  });
   test(`prediction input spacing and complete range bounds survive narrow cards (${theme})`, async ({
     page,
   }) => {

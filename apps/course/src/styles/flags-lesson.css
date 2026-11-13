@@ -2896,3 +2896,187 @@ html[data-theme="dark"] .al-flags-lesson .intent-field label:has(input:checked) 
   align-items: center;
   min-height: 44px;
 }
+
+/* Optional, model-backed counterpart to the selected four-bit example. */
+.al-flags-lesson .flags-logic-disclosure {
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.al-flags-lesson .flags-logic-disclosure > summary {
+  padding: 18px 0;
+  min-height: 44px;
+  color: var(--teal-dark);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.al-flags-lesson .flags-logic-body {
+  container-type: inline-size;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.al-flags-lesson .flags-logic-intro,
+.al-flags-lesson .flags-logic-figure figcaption {
+  color: var(--muted);
+}
+.al-flags-lesson .flags-logic-intro p {
+  margin-bottom: 12px;
+}
+.al-flags-lesson .flags-logic-layout {
+  display: grid;
+  gap: 24px;
+  align-items: start;
+  margin: 24px 0;
+}
+.al-flags-lesson .flags-logic-figure {
+  container-type: inline-size;
+  min-width: 0;
+  margin: 0;
+}
+.al-flags-lesson .flags-logic-figure figcaption {
+  margin-bottom: 16px;
+  text-align: center;
+}
+.al-flags-lesson .flags-logic-diagram {
+  display: block;
+  width: 100%;
+  min-width: 360px;
+  max-width: 480px;
+  height: auto;
+  margin-inline: auto;
+  overflow: visible;
+  color: var(--ink);
+  font:
+    24px/1 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+}
+.al-flags-lesson .flags-logic-diagram text {
+  fill: currentColor;
+}
+.al-flags-lesson .flags-logic-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.al-flags-lesson .flags-logic-scroll:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 3px;
+}
+.al-flags-lesson .flags-logic-scroll-cue {
+  display: none;
+  margin-bottom: 8px;
+  color: var(--muted);
+}
+/* Leave a whole pixel for scrollWidth/clientWidth rounding at the 360px fit boundary. */
+@container (max-width: 359px) {
+  .al-flags-lesson .flags-logic-scroll-cue {
+    display: block;
+  }
+}
+.al-flags-lesson .flags-logic-wire {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.al-flags-lesson .flags-logic-wire[data-signal="1"] {
+  stroke: var(--teal);
+  stroke-width: 3.5px;
+}
+.al-flags-lesson .flags-logic-carry[data-signal="1"] {
+  stroke: var(--orange);
+}
+.al-flags-lesson .flags-logic-junction {
+  fill: var(--ink);
+}
+.al-flags-lesson .flags-logic-gate :is(path, rect, circle) {
+  fill: var(--white);
+  stroke: var(--ink);
+  stroke-width: 2px;
+}
+.al-flags-lesson .flags-logic-gate[data-gate="XOR"] path:last-child {
+  fill: none;
+}
+.al-flags-lesson .flags-logic-cell rect {
+  fill: var(--canvas);
+  stroke: var(--line);
+  stroke-width: 1.5px;
+}
+.al-flags-lesson .flags-logic-cell[data-value="1"] rect {
+  fill: var(--teal-pale);
+  stroke: var(--teal);
+}
+.al-flags-lesson .flags-logic-cell text {
+  font-size: 28px;
+  font-weight: 700;
+}
+.al-flags-lesson .flags-logic-rules {
+  margin: 0;
+}
+.al-flags-lesson .flags-logic-rules > div {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.al-flags-lesson .flags-logic-rules dt {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 6px;
+  font:
+    600 18px/1.5 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+}
+.al-flags-lesson .flags-logic-rules dd {
+  margin: 0;
+}
+.al-flags-lesson .flags-logic-rules p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+.al-flags-lesson .flags-logic-rules .flags-logic-equation {
+  color: var(--ink);
+}
+.al-flags-lesson .flags-logic-why {
+  border-left: 3px solid var(--teal);
+  padding-left: 16px;
+}
+.al-flags-lesson .flags-logic-why h4 {
+  font-size: 17px;
+  margin-bottom: 12px;
+}
+.al-flags-lesson .flags-logic-why :is(p, ul) {
+  margin-bottom: 12px;
+}
+.al-flags-lesson .flags-logic-why ul {
+  padding-left: 20px;
+}
+.al-flags-lesson .flags-logic-why li + li {
+  margin-top: 8px;
+}
+.al-flags-lesson .flags-logic-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 20px;
+  padding: 8px 0 16px;
+}
+.al-flags-lesson .flags-logic-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--teal-dark);
+  font-size: 14px;
+}
+@container (min-width: 640px) {
+  .al-flags-lesson .flags-logic-layout {
+    grid-template-columns: minmax(360px, 1.2fr) minmax(0, 1fr);
+  }
+  .al-flags-lesson .flags-logic-rules {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
