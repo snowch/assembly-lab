@@ -50,15 +50,20 @@ for (const theme of ["light", "dark"]) {
         lesson.id,
       ).toBe(true);
     }
-    // Column reveal is a different interaction, so its local explanation remains available.
+    // The checked result stays local; the earlier optional circuit retains its explanation.
     await openLesson(page, "adding-and-the-flags");
     await expect(page.locator("#cvSummary")).toContainText("Signed addition");
-    await expect(page.locator("#columnTrace")).toHaveCount(0);
+    await expect(page.locator("#armFeedback [data-fixed-result]")).toHaveCount(0);
     await page.locator('input[name="arm-choice"][value="0"]').locator("..").click();
     await page.locator("#armForm button[type=submit]").click();
-    await page.locator("#columnTrace > summary").click();
-    await expect(page.locator("#columnTrace")).toContainText(
-      "it does not execute another instruction",
+    await expect(page.locator("#armFeedback [data-fixed-result]")).toHaveText("0x80000000");
+    await expect(page.locator('[data-result-reading="unsigned"]')).toHaveText("2,147,483,648");
+    await expect(page.locator('[data-result-reading="signed"]')).toHaveText("−2,147,483,648");
+    await expect(page.locator("#arm details,#armInspection,#columnTrace")).toHaveCount(0);
+    await page.locator("#flagsLogic > summary").click();
+    await expect(page.locator("#flagsLogic .flags-logic-equation")).toBeVisible();
+    await expect(page.locator("#flagsLogic .flags-logic-why")).toContainText(
+      "input sign bits match",
     );
     expect(errors).toEqual([]);
   });

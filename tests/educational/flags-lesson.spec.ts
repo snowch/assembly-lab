@@ -7,7 +7,6 @@ import { S, FLAGS_LESSON_SECTIONS } from "../../packages/views/src/flags-lesson/
 import { FLAGS_VIEW_SLOT } from "../../packages/views/src/flags-lesson/state";
 import { flagsModel } from "../../packages/views/src/flags-lesson/model";
 import { LOGIC_COPY } from "../../packages/views/src/flags-lesson/strings.logic";
-import { additionSteps, columnWork, traceOf } from "@al/views";
 import { PLUS } from "../../content/lessons/adding-and-the-flags.listings";
 
 const KEY = "assembly-lab:v1:adding-and-the-flags";
@@ -54,7 +53,7 @@ async function navigateOutline(page: Page, id: string) {
 }
 
 for (const theme of ["light", "dark"] as const) {
-  test(`input display preserves predictions and inspection in every reading (${theme})`, async ({
+  test(`input display preserves predictions and checked results in every reading (${theme})`, async ({
     page,
   }) => {
     const errors: string[] = [];
@@ -91,7 +90,9 @@ for (const theme of ["light", "dark"] as const) {
           visible: format !== "hex",
         });
         await expect(page.locator("#armFeedback")).toBeEmpty();
-        await expect(page.locator("#explorer,#columnTrace")).toHaveCount(0);
+        await expect(
+          page.locator("#arm [data-fixed-result],#arm [data-result-reading]"),
+        ).toHaveCount(0);
         const geometry = await selector.evaluate((node) => ({
           overflow: document.documentElement.scrollWidth > window.innerWidth,
           buttons: [...node.querySelectorAll("button")].map((button) => {
@@ -131,38 +132,33 @@ for (const theme of ["light", "dark"] as const) {
       "data-correct",
       "false",
     );
-    await page.locator("#explorer > summary").click();
-    await page.locator('#readingButtons button[data-reading="signed"]').click();
-    await page.locator("#allBits > summary").click();
-    await page.locator("#columnTrace > summary").click();
-    await page.locator("#nextGroup").click();
-    await expect(page.locator("#columnDetail h4")).toHaveText("Bit 3");
+    await expect(page.locator('[data-result-reading="unsigned"]')).toHaveText("2,147,483,648");
+    await expect(page.locator('[data-result-reading="signed"]')).toHaveText("−2,147,483,648");
     const saved = await stored(page);
-    const inspected = await page.locator("#armInspection").innerHTML();
     const feedback = await page.locator("#armFeedback").innerHTML();
-    const inspection = await page.locator("#armInspection").elementHandle();
+    const result = await page.locator("[data-fixed-result]").elementHandle();
     for (const [label, expression] of formats) {
       await selector.getByRole("button", { name: label, exact: true }).click();
       await expect(page.locator("#armInputValues")).toHaveText(expression);
       expect(await stored(page)).toEqual(saved);
-      expect(await page.locator("#armInspection").innerHTML()).toBe(inspected);
       expect(await page.locator("#armFeedback").innerHTML()).toBe(feedback);
-      expect(await inspection!.evaluate((node) => node.isConnected)).toBe(true);
+      expect(await result!.evaluate((node) => node.isConnected)).toBe(true);
     }
     await page.reload();
     await expect(
       selector.getByRole("button", { name: S.armInputHex, exact: true }),
     ).toHaveAttribute("aria-pressed", "true");
-    for (const id of ["explorer", "allBits", "columnTrace"])
-      await expect(page.locator(`#${id}`)).toHaveAttribute("open");
-    await expect(page.locator("[data-reading-value]")).toHaveText("−2,147,483,648");
-    await expect(page.locator("#columnDetail h4")).toHaveText("Bit 3");
+    await expect(page.locator('[data-result-reading="unsigned"]')).toHaveText("2,147,483,648");
+    await expect(page.locator('[data-result-reading="signed"]')).toHaveText("−2,147,483,648");
+    await expect(page.locator("#arm details")).toHaveCount(0);
     await selector.getByRole("button", { name: S.armInputSigned, exact: true }).click();
     await page.locator("#clearPrediction").click();
     await expect(
       selector.getByRole("button", { name: S.armInputSigned, exact: true }),
     ).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator("#explorer,#columnTrace")).toHaveCount(0);
+    await expect(page.locator("#arm [data-fixed-result],#arm [data-result-reading]")).toHaveCount(
+      0,
+    );
     await expect(page.locator("#armFeedback")).toBeEmpty();
     await expect(page.locator('input[name="arm-choice"]:checked')).toHaveCount(0);
     expect(errors).toEqual([]);
@@ -254,7 +250,7 @@ for (const theme of ["light", "dark"] as const) {
         for (let step = 0; step < 8; step++) await region.press("ArrowLeft", { delay: 50 });
         await expect.poll(() => region.evaluate((node) => node.scrollLeft)).toBe(0);
       }
-      await expect(page.locator("#explorer, #followup .flag")).toHaveCount(0);
+      await expect(page.locator("#arm [data-fixed-result], #followup .flag")).toHaveCount(0);
       await expect(page.locator("#challenge-predict-flags")).toHaveAttribute(
         "data-complete",
         "false",
@@ -328,16 +324,16 @@ for (const theme of ["light", "dark"] as const) {
       }
       if (width < 1280) expect(layout.ranges[0]!.left).toBe(layout.ranges[1]!.left);
       else expect(layout.ranges[0]!.right).toBeLessThan(layout.ranges[1]!.left);
-      await expect(page.locator("#explorer")).toHaveCount(0);
+      await expect(page.locator("#armFeedback [data-fixed-result]")).toHaveCount(0);
       await choose(page, "arm-choice", 1);
       await page.locator("#armForm button[type=submit]").click();
       await expect(page.locator("#armFeedback [data-correct]")).toHaveAttribute(
         "data-correct",
         "true",
       );
-      await expect(page.locator("#explorer")).toHaveCount(1);
+      await expect(page.locator("#armFeedback [data-fixed-result]")).toHaveCount(1);
       await page.locator("#clearPrediction").click();
-      await expect(page.locator("#explorer")).toHaveCount(0);
+      await expect(page.locator("#armFeedback [data-fixed-result]")).toHaveCount(0);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
       );
@@ -403,7 +399,9 @@ for (const theme of ["light", "dark"] as const) {
     page,
   }) => {
     await open(page, theme);
-    await expect(page.locator("#explorer,#columnTrace")).toHaveCount(0);
+    await expect(page.locator("#arm [data-fixed-result],#arm [data-result-reading]")).toHaveCount(
+      0,
+    );
     await page.locator("#miniForm button[type=submit]").click();
     await expect(page.locator("#miniFeedback")).toHaveText(S.chooseAll);
     await fillFlags(page, "mini", [0, 0, 0, 0]);
@@ -426,83 +424,84 @@ for (const theme of ["light", "dark"] as const) {
       "data-correct",
       "true",
     );
-    await expect(page.locator("#explorer,#columnTrace")).toHaveCount(0);
+    await expect(page.locator("#arm [data-fixed-result],#arm [data-result-reading]")).toHaveCount(
+      0,
+    );
     await page.locator("#clearMini").click();
     await expect(page.locator("#miniForm input:checked")).toHaveCount(0);
   });
-  test(`prediction commitment, both bit readings and all real arithmetic columns (${theme})`, async ({
+  test(`checked feedback compares both result readings without extra panels (${theme})`, async ({
     page,
   }) => {
     const errors: string[] = [];
-    page.on("pageerror", (e) => errors.push(e.message));
+    page.on("pageerror", (error) => errors.push(error.message));
     await open(page, theme);
-    await choose(page, "arm-choice", 0);
-    await expect(page.locator("#explorer,#columnTrace")).toHaveCount(0);
+    await expect(page.locator("#arm details,#armInspection,#explorer,#columnTrace")).toHaveCount(0);
+    await expect(page.locator("#armFeedback [data-fixed-result]")).toHaveCount(0);
     await page.locator("#armForm button[type=submit]").click();
-    await expect(page.locator("#armFeedback [data-correct]")).toHaveAttribute(
-      "data-correct",
-      "false",
-    );
-    expect((await stored(page)).slots["predict-readings"]).toEqual({ choice: "both" });
-    await page.locator("#explorer>summary").click();
-    await expect(page.locator("[data-fixed-result]")).toHaveText("0x80000000");
-    await expect(page.locator("[data-reading-value]")).toHaveText("2,147,483,648");
-    await page.locator("#readingButtons button[data-reading=signed]").click();
-    await expect(page.locator("[data-reading-value]")).toHaveText("−2,147,483,648");
-    await page.locator("#columnTrace>summary").click();
-    const record = additionSteps(traceOf(PLUS, { entry: "plus", args: [0x7fffffff, 1] }))[0]!
-      .addition!;
-    for (let bit = 0; bit < 32; bit++) {
-      await page.locator("#nextCol").click();
-      const work = columnWork(record, bit);
-      await expect(page.locator("#columnDetail")).toContainText(
-        `${work.a} + ${work.b} + ${work.carryIn} = ${work.total}`,
+    await expect(page.locator("#armFeedback")).toHaveText(S.choosePrediction);
+    await expect(page.locator("#armFeedback [data-fixed-result]")).toHaveCount(0);
+    const model = flagsModel(PLUS, 32, 0x7fffffff, 1);
+    for (const choice of [0, 1, 2, 3]) {
+      await choose(page, "arm-choice", choice);
+      await expect(page.locator("#armFeedback")).toBeEmpty();
+      await page.locator("#armForm button[type=submit]").click();
+      await expect(page.locator("#armFeedback [data-correct]")).toHaveAttribute(
+        "data-correct",
+        String(choice === 1),
       );
-      expect(
-        await page
-          .locator("#traceRows .trace-line")
-          .last()
-          .locator(".trace-cell")
-          .allTextContents(),
-      ).toEqual(
-        Array.from({ length: 32 }, (_, i) =>
-          31 - i <= bit ? String(columnWork(record, 31 - i).kept) : "?",
-        ),
+      expect((await stored(page)).slots["predict-readings"]).toEqual({
+        choice: ["both", "unsigned", "signed", "neither"][choice],
+      });
+      await expect(page.locator("#armFeedback [data-fixed-result]")).toHaveText(model.result.hex);
+      for (const reading of ["unsigned", "signed"] as const) {
+        await expect(page.locator(`[data-result-reading="${reading}"]`)).toBeVisible();
+        await expect(page.locator(`[data-result-reading="${reading}"]`)).toHaveText(
+          BigInt(model.result[reading]).toLocaleString("en-GB").replace(/^-/, "−"),
+        );
+      }
+      await expect(page.locator("#armFeedback")).toContainText("Exact sum: 2,147,483,648");
+      await expect(page.locator("#armFeedback")).toContainText(S.armUnsignedMatch);
+      await expect(page.locator("#armFeedback")).toContainText(S.armSignedDifference);
+      await expect(page.locator("#armFeedback")).toContainText(`C = ${model.flags.c}`);
+      await expect(page.locator("#armFeedback")).toContainText(`V = ${model.flags.v}`);
+      await expect(page.locator("#armFeedback")).toContainText(S.armExplanation);
+      await expect(page.locator("#arm details,#armInspection,#explorer,#columnTrace")).toHaveCount(
+        0,
       );
+      const feedback = await page.locator("#armFeedback").innerHTML();
+      await page.reload();
+      expect(await page.locator("#armFeedback").innerHTML()).toBe(feedback);
     }
-    await expect(page.locator("#nextCol")).toBeDisabled();
-    expect(await page.locator("#columnDetail .flag strong").allTextContents()).toEqual([
-      "1",
-      "0",
-      "0",
-      "1",
-    ]);
-    const alignment = await page.locator("#traceRows").evaluate((root) => {
-      const rows = Array.from(root.querySelectorAll(".trace-line"));
-      return Array.from({ length: 32 }, (_, i) =>
-        rows.map((row) => row.querySelectorAll(".trace-cell")[i]!.getBoundingClientRect().x),
-      );
-    });
-    alignment.forEach((xs) => expect(Math.max(...xs) - Math.min(...xs)).toBeLessThanOrEqual(1));
-    await expect(page.locator("[data-fixed-result]")).toHaveText("0x80000000");
-    await expect(page.locator("#columnDetail .flag")).toHaveCount(4);
-    await page.locator("#resetCols").click();
-    for (let n = 0; n < 8; n++) await page.locator("#nextGroup").click();
-    await expect(page.locator("#columnDetail h4")).toHaveText("Bit 31");
-    await page.locator("#prevCol").click();
-    await expect(page.locator("#columnDetail h4")).toHaveText("Bit 30");
-    await page.locator("#allCols").click();
+    // Legacy presentation fields cannot recreate removed panels or bypass an unsubmitted draft.
+    await page.evaluate(
+      ([key, slot]) => {
+        const value = JSON.parse(localStorage.getItem(key)!);
+        Object.assign(value.slots[slot].arm, {
+          open: true,
+          bits: true,
+          trace: true,
+          done: 32,
+          reading: "signed",
+          draft: 1,
+        });
+        localStorage.setItem(key, JSON.stringify(value));
+      },
+      [KEY, FLAGS_VIEW_SLOT] as const,
+    );
     await page.reload();
-    await expect(page.locator("#columnDetail h4")).toHaveText("Bit 31");
-    await choose(page, "arm-choice", 1);
-    await expect(page.locator("#armFeedback [data-correct]")).toHaveCount(0);
+    await expect(page.locator('input[name="arm-choice"][value="1"]')).toBeChecked();
+    await expect(page.locator("#armFeedback")).toBeEmpty();
+    await expect(page.locator("#arm details,#armInspection,#explorer,#columnTrace")).toHaveCount(0);
     await page.locator("#armForm button[type=submit]").click();
     await expect(page.locator("#armFeedback [data-correct]")).toHaveAttribute(
       "data-correct",
       "true",
     );
+    await expect(page.locator("#flagsLogic")).toHaveCount(1);
     await page.locator("#clearPrediction").click();
-    await expect(page.locator("#explorer,#columnTrace")).toHaveCount(0);
+    await expect(page.locator("#armFeedback")).toBeEmpty();
+    await expect(page.locator('input[name="arm-choice"]:checked')).toHaveCount(0);
     expect((await stored(page)).slots["predict-readings"]).toBeUndefined();
     expect(errors).toEqual([]);
   });
@@ -602,7 +601,7 @@ for (const theme of ["light", "dark"] as const) {
     ] as const);
     await page.reload();
     await expect(page.locator("#challenge-predict-flags")).toHaveAttribute("data-complete", "true");
-    await expect(page.locator("#explorer")).toHaveCount(1);
+    await expect(page.locator("#armFeedback [data-fixed-result]")).toHaveCount(1);
     await expect(page.locator(".hints-list li")).toHaveCount(2);
     await page.evaluate(
       ([key, slot]) => {
@@ -619,7 +618,9 @@ for (const theme of ["light", "dark"] as const) {
       "data-complete",
       "false",
     );
-    await expect(page.locator("#followup .flag,#explorer,#columnTrace")).toHaveCount(0);
+    await expect(
+      page.locator("#followup .flag,#arm [data-fixed-result],#arm [data-result-reading]"),
+    ).toHaveCount(0);
   });
 }
 

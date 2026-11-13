@@ -81,8 +81,6 @@ export const S = {
   fits: "Fits the range",
   outside: "Outside the range",
   carryDetail: "Optional: inspect the carries",
-  carryNote:
-    "Each column adds the two input bits and its incoming carry. Revealing a column shows part of this calculation; it does not execute another instruction.",
   carryIn: "Carry into the top bit",
   carryOut: "Carry out of the top bit",
   carryRule:
@@ -123,30 +121,12 @@ export const S = {
   checkPrediction: "Check prediction",
   clearPrediction: "Clear prediction",
   choosePrediction: "Choose a range prediction before checking.",
-  armCorrect: "Your range prediction matches the addition. You can now inspect the result.",
-  armIncorrect:
-    "Your range prediction differs from the addition. Compare the exact sum with each range below.",
+  armCorrect: "Your range prediction matches the addition.",
+  armIncorrect: "Your range prediction differs from the addition.",
+  armUnsignedMatch: "Matches the exact sum.",
+  armSignedDifference: "Differs from the exact sum.",
   armExplanation:
-    "The stored bits have a valid negative signed reading. That reading differs from the positive exact signed sum, which exceeds the signed range.",
-  exploreTitle: "Read the same stored bits",
-  exploreLead: "Choose an unsigned or signed reading of this result. The addition has already run.",
-  unsignedExplanation: "The unsigned reading equals the exact unsigned sum in this example.",
-  signedExplanation:
-    "The negative signed reading is a valid reading of the stored bits. The positive exact signed sum exceeds the signed range.",
-  unchanged:
-    "Changing the reading changes the display only. The inputs, stored bits and flags stay the same.",
-  showAllBits: "Show all result bits",
-  traceTitle: "Inspect the addition columns",
-  traceLead:
-    "Reveal columns from the lowest bit upwards. This is the calculation for the same addition, not another execution.",
-  nextColumn: "Next column",
-  nextGroup: "Next group",
-  showAll: "Show all columns",
-  back: "Previous column",
-  resetTrace: "Reset column view",
-  noColumn: "No column revealed yet.",
-  selectedColumn: "Bit {bit}",
-  carryStart: "The lowest column starts with no incoming carry.",
+    "The exact signed sum exceeds the signed range. The stored negative reading is valid.",
   registerResult: "Result written to w0",
   practiceTitle: "Predict flags for real additions",
   practiceLead:
@@ -192,18 +172,12 @@ export const S = {
   resetDone: "Saved answers cleared.",
   copyright: "Copyright © 2026 Christopher Snow",
   bits: "Bits",
-  positions: "Bit positions",
   allFlags: "All flags",
   exampleLabel: "Comparison example",
   chooseExample: "Choose an example",
   carryZero: "No incoming carry",
   traceResult: "Stored result",
   traceInputs: "Input bits",
-  traceCarry: "Incoming carry",
-  rowTotal: "Column total",
-  resultBit: "Result bit",
-  carryNext: "Carry to the next column",
-  checked: "Checked",
   notChecked: "Not checked",
   passed: "Correct",
   notPassed: "Needs another check",
@@ -468,7 +442,7 @@ export const MARKUP = `<div class="layout lesson al-flags-lesson" id="top" data-
           <button type="button" data-input-format="signed" aria-pressed="false" aria-controls="armInputValues" data-copy="armInputSigned"></button>
         </div></fieldset>
         <p class="label-small input-format-note"><span data-copy="armInputReadingNote"></span><span id="armInputReadingsMatch" data-copy="armInputReadingsMatch" hidden></span></p>
-        <div id="armRanges"></div><p class="label-small" data-copy="armRanges"></p><form id="armForm"><fieldset><legend data-copy="armQuestion"></legend><div class="choice-list" id="armChoices"></div></fieldset><div class="actions"><button type="submit" class="primary" data-copy="checkPrediction"></button><button type="button" class="secondary" id="clearPrediction" data-copy="clearPrediction"></button></div></form><div id="armFeedback" role="status" aria-live="polite"></div><div id="armInspection"></div></div><a class="next-link" href="#realpractice">Next: predict flags yourself <span aria-hidden="true">→</span></a>
+        <div id="armRanges"></div><p class="label-small" data-copy="armRanges"></p><form id="armForm"><fieldset><legend data-copy="armQuestion"></legend><div class="choice-list" id="armChoices"></div></fieldset><div class="actions"><button type="submit" class="primary" data-copy="checkPrediction"></button><button type="button" class="secondary" id="clearPrediction" data-copy="clearPrediction"></button></div></form><div id="armFeedback" role="status" aria-live="polite"></div></div><a class="next-link" href="#realpractice">Next: predict flags yourself <span aria-hidden="true">→</span></a>
     </section>
 
     <section class="lesson-step lesson-section" id="realpractice"><div class="step-head"><div class="step-kicker"><span class="step-counter">07</span> Your turn</div><h2><span class="section-title">Predict the four flags.</span></h2><p class="step-description">One addition at a time. Use N and Z to inspect the retained bits; C and V to decide whether each interpretation fits.</p></div>
