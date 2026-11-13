@@ -213,7 +213,7 @@ test("detect, download, defer and explicit restart reload every app tab while pr
     await second.getByLabel(STRINGS.theme).selectOption("light");
     // Another tab can undo a mark without making the first tab's update guard stale.
     await second.goto(`${site.url}#/lesson/cap-charge-in-c`);
-    await second.getByRole("button", { name: "Mark lesson incomplete", exact: true }).click();
+    await second.getByRole("button", { name: "Lesson complete · Undo", exact: true }).click();
     await expect(
       first.getByRole("button", { name: "Mark lesson complete", exact: true }),
     ).toBeVisible();
@@ -255,7 +255,7 @@ test("detect, download, defer and explicit restart reload every app tab while pr
       first.getByRole("button", { name: "Mark lesson complete", exact: true }),
     ).toBeVisible();
     await expect(
-      second.getByRole("button", { name: "Mark lesson incomplete", exact: true }),
+      second.getByRole("button", { name: "Lesson complete · Undo", exact: true }),
     ).toBeVisible();
     await expect(first).toHaveURL(`${site.url}#/lesson/cap-charge-in-c`);
     await expect(second).toHaveURL(`${site.url}#/lesson/meet-the-machine`);

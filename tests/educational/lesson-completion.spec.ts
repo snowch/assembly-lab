@@ -9,10 +9,10 @@ const first = ordered[0]!;
 const second = ordered[1]!;
 const key = (id: string) => `assembly-lab:v1:manual-completion:${id}`;
 const mark = "Mark lesson complete";
-const undo = "Mark lesson incomplete";
+const undo = "Lesson complete · Undo";
 
 for (const theme of ["light", "dark"]) {
-  test(`completion stays compact beside the lesson cards and hexadecimal digits use code in ${theme}`, async ({
+  test(`completion sits above balanced lesson links and hexadecimal digits use code in ${theme}`, async ({
     page,
     isMobile,
   }) => {
@@ -35,23 +35,37 @@ for (const theme of ["light", "dark"]) {
     const button = page.locator(".lesson-completion button");
     const clear = page.getByRole("button", { name: "Clear bits", exact: true });
     const next = page.locator('.lesson-nav-link[data-direction="next"]');
-    for (const complete of [false, true, false]) {
-      await expect(button).toHaveAttribute("data-complete", String(complete));
-      const buttonBox = await button.boundingBox();
-      const clearBox = await clear.boundingBox();
-      const nextBox = await next.boundingBox();
-      expect(buttonBox!.height).toBeGreaterThanOrEqual(44);
-      expect(buttonBox!.height).toBeCloseTo(clearBox!.height, 1);
-      if (!isMobile) {
-        expect(buttonBox!.height).toBeLessThan(nextBox!.height);
-        expect(buttonBox!.y + buttonBox!.height / 2).toBeCloseTo(
-          nextBox!.y + nextBox!.height / 2,
-          1,
+    const previous = page.locator('.lesson-nav-link[data-direction="previous"]');
+    await expect(page.locator(".lesson-nav .lesson-completion")).toHaveCount(0);
+    for (const width of isMobile ? [375] : [834, 1280]) {
+      await page.setViewportSize({ width, height: 812 });
+      for (const complete of [false, true, false, true]) {
+        await expect(button).toHaveAttribute("data-complete", String(complete));
+        const buttonBox = await button.boundingBox();
+        const clearBox = await clear.boundingBox();
+        const nextBox = await next.boundingBox();
+        const previousBox = await previous.boundingBox();
+        expect(buttonBox!.height).toBeGreaterThanOrEqual(44);
+        expect(buttonBox!.height).toBeCloseTo(clearBox!.height, 1);
+        const labelLines = await button
+          .locator(":scope > span")
+          .evaluate((label) =>
+            Math.round(
+              label.getBoundingClientRect().height / parseFloat(getComputedStyle(label).lineHeight),
+            ),
+          );
+        expect(labelLines).toBe(1);
+        expect(buttonBox!.y + buttonBox!.height).toBeLessThan(nextBox!.y);
+        expect(previousBox!.y).toBeCloseTo(nextBox!.y, 1);
+        expect(previousBox!.height).toBeCloseTo(nextBox!.height, 1);
+        expect(previousBox!.width).toBeCloseTo(nextBox!.width, 1);
+        expect(await button.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(
+          "rgba(0, 0, 0, 0)",
         );
+        await button.click();
       }
-      await button.click();
+      expect(await designProblems(page, width < 500)).toEqual([]);
     }
-    expect(await designProblems(page, isMobile)).toEqual([]);
   });
 
   test(`manual marks guide the next lesson and can be undone in ${theme}`, async ({ page }) => {

@@ -19,13 +19,21 @@ export function LessonCompletionButton({
         type="button"
         data-complete={complete}
         onClick={() => store.set(lessonId, !complete)}
+        aria-label={complete ? STRINGS.completion.undo : undefined}
         aria-describedby="lesson-completion-note"
       >
         <svg className="lesson-completion-icon" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="12" r="9" />
           {complete && <path d="m7.5 12 3 3 6-6" />}
         </svg>
-        <span>{complete ? STRINGS.completion.undo : STRINGS.completion.mark}</span>
+        {complete ? (
+          <span className="lesson-completion-label">
+            <span>{STRINGS.completion.complete}</span>
+            <span className="lesson-completion-undo">{` · ${STRINGS.completion.undoAction}`}</span>
+          </span>
+        ) : (
+          <span>{STRINGS.completion.mark}</span>
+        )}
       </button>
     </div>
   );
