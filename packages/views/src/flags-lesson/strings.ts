@@ -112,6 +112,13 @@ export const S = {
   armQuestion:
     "Which readings of the exact sum fit their 32-bit ranges? Predict before inspecting the result.",
   armRanges: "Use these ranges with the unsigned and signed readings of the starting inputs.",
+  armInputDisplayLabel: "Display inputs as",
+  armInputHex: "Hex",
+  armInputUnsigned: "Unsigned decimal",
+  armInputSigned: "Signed decimal",
+  armInputReadingNote: "The input bits stay the same; only their displayed reading changes.",
+  armInputReadingsMatch:
+    "Both starting inputs have clear sign bits, so their signed and unsigned decimal readings match.",
   armChoices: ["Both", "Unsigned only", "Signed only", "Neither"],
   checkPrediction: "Check prediction",
   clearPrediction: "Clear prediction",
@@ -453,7 +460,15 @@ export const MARKUP = `<div class="layout lesson al-flags-lesson" id="top" data-
     </section><section id="smallpractice" class="lesson-step lesson-section"><div class="step-head"><div class="step-kicker"><span class="step-counter">05</span>Small practice</div><h2><span class="section-title" data-copy="miniTitle"></span></h2><p class="step-description" data-copy="miniLead"></p></div><div class="focus-card"><div id="miniBits"></div><form id="miniForm"><div id="miniChoices"></div><fieldset class="intent-field"><legend data-copy="intentLabel"></legend><p data-copy="intentQuestion"></p><div class="radios" id="intentChoices"></div></fieldset><div class="actions"><button type="submit" class="primary" data-copy="checkMini"></button><button type="button" class="secondary" id="clearMini" data-copy="clearMini"></button></div></form><div id="miniFeedback" role="status" aria-live="polite"></div></div></section>
 
     <section class="lesson-step lesson-section" id="arm"><div class="step-head"><div class="step-kicker"><span class="step-counter">06</span> Apply it to a real instruction</div><h2><span class="section-title">ARM uses the same rules with 32 bits.</span></h2><p class="step-description">The sign bit is now bit 31, not bit 3. First, predict which interpretation of this exact addition fits.</p></div>
-      <div class="focus-card"><div class="focus-label">ARM instruction</div><div class="instruction">adds w0, w0, w1</div><div class="quiz-heading" data-copy="inputLabel"></div><div class="hex-equation">0x7fffffff + 0x00000001</div><div id="armRanges"></div><p class="label-small" data-copy="armRanges"></p><form id="armForm"><fieldset><legend data-copy="armQuestion"></legend><div class="choice-list" id="armChoices"></div></fieldset><div class="actions"><button type="submit" class="primary" data-copy="checkPrediction"></button><button type="button" class="secondary" id="clearPrediction" data-copy="clearPrediction"></button></div></form><div id="armFeedback" role="status" aria-live="polite"></div><div id="armInspection"></div></div><a class="next-link" href="#realpractice">Next: predict flags yourself <span aria-hidden="true">→</span></a>
+      <div class="focus-card"><div class="focus-label">ARM instruction</div><div class="instruction">adds w0, w0, w1</div><div class="quiz-heading" id="armInputsLabel" data-copy="inputLabel"></div>
+        <div class="hex-equation" id="armInputValues" aria-labelledby="armInputsLabel" aria-live="polite" aria-atomic="true"></div>
+        <fieldset class="input-format-field" id="armInputFormats"><legend data-copy="armInputDisplayLabel"></legend><div class="input-format-options">
+          <button type="button" data-input-format="hex" aria-pressed="true" aria-controls="armInputValues" data-copy="armInputHex"></button>
+          <button type="button" data-input-format="unsigned" aria-pressed="false" aria-controls="armInputValues" data-copy="armInputUnsigned"></button>
+          <button type="button" data-input-format="signed" aria-pressed="false" aria-controls="armInputValues" data-copy="armInputSigned"></button>
+        </div></fieldset>
+        <p class="label-small input-format-note"><span data-copy="armInputReadingNote"></span><span id="armInputReadingsMatch" data-copy="armInputReadingsMatch" hidden></span></p>
+        <div id="armRanges"></div><p class="label-small" data-copy="armRanges"></p><form id="armForm"><fieldset><legend data-copy="armQuestion"></legend><div class="choice-list" id="armChoices"></div></fieldset><div class="actions"><button type="submit" class="primary" data-copy="checkPrediction"></button><button type="button" class="secondary" id="clearPrediction" data-copy="clearPrediction"></button></div></form><div id="armFeedback" role="status" aria-live="polite"></div><div id="armInspection"></div></div><a class="next-link" href="#realpractice">Next: predict flags yourself <span aria-hidden="true">→</span></a>
     </section>
 
     <section class="lesson-step lesson-section" id="realpractice"><div class="step-head"><div class="step-kicker"><span class="step-counter">07</span> Your turn</div><h2><span class="section-title">Predict the four flags.</span></h2><p class="step-description">One addition at a time. Use N and Z to inspect the retained bits; C and V to decide whether each interpretation fits.</p></div>

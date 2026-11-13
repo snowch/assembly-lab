@@ -54,6 +54,119 @@ async function navigateOutline(page: Page, id: string) {
 }
 
 for (const theme of ["light", "dark"] as const) {
+  test(`input display preserves predictions and inspection in every reading (${theme})`, async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    const selector = page.getByRole("group", { name: S.armInputDisplayLabel, exact: true });
+    const formats = [
+      [S.armInputHex, "0x7fffffff + 0x00000001", "hex"],
+      [S.armInputUnsigned, "2,147,483,647 + 1", "unsigned"],
+      [S.armInputSigned, "2,147,483,647 + 1", "signed"],
+    ] as const;
+    for (const width of [320, 375, 834, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      await open(page, theme);
+      // Navigating to the same hash keeps the mounted lesson; a reload starts a new display choice.
+      await page.reload();
+      await expect(
+        selector.getByRole("button", { name: S.armInputHex, exact: true }),
+      ).toHaveAttribute("aria-pressed", "true");
+      if (width === 375)
+        await page.addStyleTag({
+          content: "#armInputFormats button { font-family: 'DejaVu Sans', sans-serif; }",
+        });
+      await page.evaluate(() => document.fonts.ready);
+      for (const [label, expression, format] of formats) {
+        const button = selector.getByRole("button", { name: label, exact: true });
+        await button.focus();
+        await page.keyboard.press(format === "signed" ? "Space" : "Enter");
+        await expect(button).toBeFocused();
+        await expect(button).toHaveAttribute("type", "button");
+        await expect(button).toHaveAttribute("aria-pressed", "true");
+        await expect(selector.locator('[aria-pressed="true"]')).toHaveCount(1);
+        await expect(page.locator("#armInputValues")).toHaveText(expression);
+        await expect(page.locator("#armInputReadingsMatch")).toBeVisible({
+          visible: format !== "hex",
+        });
+        await expect(page.locator("#armFeedback")).toBeEmpty();
+        await expect(page.locator("#explorer,#columnTrace")).toHaveCount(0);
+        const geometry = await selector.evaluate((node) => ({
+          overflow: document.documentElement.scrollWidth > window.innerWidth,
+          buttons: [...node.querySelectorAll("button")].map((button) => {
+            const box = button.getBoundingClientRect();
+            const text = document.createRange();
+            text.selectNodeContents(button);
+            return {
+              height: box.height,
+              contained: [...text.getClientRects()].every(
+                (line) =>
+                  line.left >= box.left &&
+                  line.right <= box.right &&
+                  line.top >= box.top &&
+                  line.bottom <= box.bottom,
+              ),
+            };
+          }),
+        }));
+        expect(geometry.overflow).toBe(false);
+        for (const button of geometry.buttons) {
+          expect(button.height).toBeGreaterThanOrEqual(44);
+          expect(button.contained).toBe(true);
+        }
+      }
+      await expect(page.locator("#armRanges")).toContainText("4,294,967,295");
+      await expect(page.locator("#armRanges")).toContainText("−2,147,483,648");
+    }
+
+    await choose(page, "arm-choice", 0);
+    const draft = await stored(page);
+    await selector.getByRole("button", { name: S.armInputUnsigned, exact: true }).click();
+    await expect(page.locator('input[name="arm-choice"][value="0"]')).toBeChecked();
+    expect(await stored(page)).toEqual(draft);
+    await expect(page.locator("#armFeedback")).toBeEmpty();
+    await page.locator("#armForm button[type=submit]").click();
+    await expect(page.locator("#armFeedback [data-correct]")).toHaveAttribute(
+      "data-correct",
+      "false",
+    );
+    await page.locator("#explorer > summary").click();
+    await page.locator('#readingButtons button[data-reading="signed"]').click();
+    await page.locator("#allBits > summary").click();
+    await page.locator("#columnTrace > summary").click();
+    await page.locator("#nextGroup").click();
+    await expect(page.locator("#columnDetail h4")).toHaveText("Bit 3");
+    const saved = await stored(page);
+    const inspected = await page.locator("#armInspection").innerHTML();
+    const feedback = await page.locator("#armFeedback").innerHTML();
+    const inspection = await page.locator("#armInspection").elementHandle();
+    for (const [label, expression] of formats) {
+      await selector.getByRole("button", { name: label, exact: true }).click();
+      await expect(page.locator("#armInputValues")).toHaveText(expression);
+      expect(await stored(page)).toEqual(saved);
+      expect(await page.locator("#armInspection").innerHTML()).toBe(inspected);
+      expect(await page.locator("#armFeedback").innerHTML()).toBe(feedback);
+      expect(await inspection!.evaluate((node) => node.isConnected)).toBe(true);
+    }
+    await page.reload();
+    await expect(
+      selector.getByRole("button", { name: S.armInputHex, exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+    for (const id of ["explorer", "allBits", "columnTrace"])
+      await expect(page.locator(`#${id}`)).toHaveAttribute("open");
+    await expect(page.locator("[data-reading-value]")).toHaveText("−2,147,483,648");
+    await expect(page.locator("#columnDetail h4")).toHaveText("Bit 3");
+    await selector.getByRole("button", { name: S.armInputSigned, exact: true }).click();
+    await page.locator("#clearPrediction").click();
+    await expect(
+      selector.getByRole("button", { name: S.armInputSigned, exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("#explorer,#columnTrace")).toHaveCount(0);
+    await expect(page.locator("#armFeedback")).toBeEmpty();
+    await expect(page.locator('input[name="arm-choice"]:checked')).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
   test(`optional logic follows the example, explains V and stays readable (${theme})`, async ({
     page,
   }) => {

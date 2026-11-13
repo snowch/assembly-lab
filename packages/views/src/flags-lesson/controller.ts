@@ -9,6 +9,7 @@ import type { RecordedProgram } from "../listing";
 import { grade } from "../grader";
 import { S, A, E } from "./strings";
 import { flagsLogicMarkup } from "./logic";
+import { INPUT_FORMATS, inputExpression, type InputFormat } from "./input-display";
 import {
   FLAG_NAMES,
   flagsModel,
@@ -274,6 +275,18 @@ export function mountFlagsLesson(
   function arm(): FlagsModel {
     return (armResult ??= M.compute(32, 0x7fffffff, 1));
   }
+  let armInputFormat: InputFormat = "hex";
+  function renderArmInputs() {
+    const model = arm();
+    $("armInputValues").textContent = inputExpression(model, armInputFormat);
+    root.querySelectorAll<HTMLButtonElement>("#armInputFormats button").forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.inputFormat === armInputFormat));
+    });
+    $("armInputReadingsMatch").hidden =
+      armInputFormat === "hex" ||
+      model.a.signed !== model.a.unsigned ||
+      model.b.signed !== model.b.unsigned;
+  }
   function armCorrectChoice() {
     return arm().flags.c ? (arm().flags.v ? 3 : 2) : arm().flags.v ? 1 : 0;
   }
@@ -458,6 +471,7 @@ export function mountFlagsLesson(
     values[0]!.textContent = fmt(read.result.unsigned);
     values[1]!.textContent = fmt(read.result.signed);
     $("armRanges").innerHTML = ranges(32);
+    renderArmInputs();
     $("caseTabs").setAttribute("aria-label", S.progressLabel);
     $("armChoices").innerHTML = S.armChoices
       .map(
@@ -479,6 +493,16 @@ export function mountFlagsLesson(
     save();
   }
   initialise();
+  $("armInputFormats").onclick = (event) => {
+    const button =
+      event.target instanceof Element
+        ? event.target.closest<HTMLButtonElement>("button[data-input-format]")
+        : null;
+    const format = button?.dataset.inputFormat;
+    if (!INPUT_FORMATS.some((candidate) => candidate === format)) return;
+    armInputFormat = format as InputFormat;
+    renderArmInputs();
+  };
   $("tabN").onclick = () => {
     inspectMode = "N";
     renderResults();

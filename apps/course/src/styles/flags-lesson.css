@@ -834,6 +834,44 @@
   white-space: nowrap;
   overflow: auto;
 }
+.al-flags-lesson .input-format-field {
+  border: 0;
+  padding: 0;
+  margin: 16px 0 12px;
+}
+.al-flags-lesson .input-format-field legend {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.al-flags-lesson .input-format-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.al-flags-lesson .input-format-options button {
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+  white-space: normal;
+}
+.al-flags-lesson .input-format-options button[aria-pressed="true"] {
+  border-color: var(--teal);
+  background: var(--teal-pale);
+  color: var(--teal-dark);
+}
+.al-flags-lesson .input-format-note > span:not([hidden]) {
+  display: block;
+}
+.al-flags-lesson .input-format-note > span + span {
+  margin-top: 6px;
+}
 .al-flags-lesson .choice-list {
   display: grid;
   gap: 9px;
