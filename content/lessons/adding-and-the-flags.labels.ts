@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 // Lesson 1 of Module 2: the titles, objectives, captions, option labels and field labels.
-// docs/notes/module-2/prose.md gives the objectives, the ten titles, the options, the caption of the
+// docs/notes/module-2/prose.md gives the objectives, the titles, the options, the caption of the
 // addition and the challenge titles, kept word for word (a title or caption that holds code has its
 // backticks taken out, because the page draws those as plain text). A label the file does not give
 // is marked DRAFT; module-2.prose.test.ts counts the marks.
@@ -19,20 +19,14 @@ export const LABELS = {
     construction: "Six additions to predict",
     failureExperiment: "Running add instead of adds",
     explanation: "Unsigned carry and signed overflow",
-    challenge: "The smallest signed overflow",
-    reflection: "What you now know",
   },
   captions: {
     adder: "Result bits and carries for the addition, with the four flags.",
-    // Visible while the follow-up figure is locked, so it must not reveal the answer.
-    adderCarryOut:
-      "Step through the addition column by column to inspect the result bits, carries and flags.",
     predictReadings: "Check which exact sums fit their corresponding 32-bit ranges.",
     predictAdd: "A prediction about what the flags show after add.",
     stepAdd:
       "The two additions one instruction at a time, with the flags under the registers. An outlined register was written by the last instruction. An outlined flag changed value.",
     flags: "Predict N, Z, C and V for six additions.",
-    overflow: "Find the smallest number that makes V 1.",
   },
   options: {
     readings: [
@@ -64,11 +58,6 @@ export const LABELS = {
       ],
       /** The label of one flag's field: its letter, then the addition. */
       field: (flag: string, addition: string) => `${flag} for ${addition}`,
-    },
-    overflow: {
-      title: "Find the smallest overflow",
-      field: "The number, in decimal",
-      test: "The smallest number that makes V 1",
     },
   },
 } as const;

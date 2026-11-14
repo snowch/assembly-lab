@@ -2,8 +2,7 @@
 
 // Lesson 1 of Module 2: Adding, and the four flags. The learner predicts which readings represent
 // an exact sum, watches an addition column by column with the carry into each column, predicts
-// the four flags for six more additions, sees that `add` leaves the flags alone, and finds the
-// smallest number that sets V.
+// the four flags for six more additions, and sees that `add` leaves earlier flags alone.
 //
 // The structure is here; the words are in adding-and-the-flags.prose.ts and .labels.ts (kept from
 // docs/notes/module-2/prose.md), and the programs are in adding-and-the-flags.listings.ts. The plan
@@ -21,16 +20,9 @@ const STEPS = "steps";
 
 /** The graders the book supplies (packages/views/src/grader-arith.ts). */
 const OUTCOMES_AT_RETURN = "outcomes-at-return";
-const SMALLEST_SETTING_FLAG = "smallest-setting-flag";
 
 /** The call every figure of the investigation runs: `0x7fffffff` plus 1. */
 const PLUS_CALL = { entry: "plus", args: [0x7fffffff, 1] } as const;
-
-/**
- * The call the figure after the flags challenge runs: 1 plus `0xffffffff`, which sets C and Z. It is
- * none of the challenge's six calls (its first is `0xffffffff` plus 1, the other way round).
- */
-const CARRY_OUT_CALL = { entry: "plus", args: [1, 0xffffffff] } as const;
 
 /** The failure experiment's call: `w2` is for the `adds`, `w0` and `w1` for the `add`. */
 const SUM_CALL = { entry: "sum_flags", args: [0x7fffffff, 1, 0xffffffff] } as const;
@@ -144,20 +136,6 @@ export const addingAndTheFlags: LessonInput = {
           caption: LABELS.captions.flags,
           props: { challengeId: "predict-flags" },
         },
-        {
-          id: "add-carry-out",
-          kind: "adder",
-          timeModel: STEPS,
-          role: "calculation",
-          caption: LABELS.captions.adderCarryOut,
-          props: {
-            program: PLUS,
-            call: CARRY_OUT_CALL,
-            afterChallenge: "predict-flags",
-            detail: true,
-            note: PROSE.flagsAfter,
-          },
-        },
       ],
     },
     {
@@ -206,27 +184,6 @@ export const addingAndTheFlags: LessonInput = {
         summary: PROSE.investigationDetailsSummary,
         prose: PROSE.investigationDetails,
       },
-    },
-    {
-      kind: "challenge",
-      title: LABELS.titles.challenge,
-      prose: PROSE.challenge,
-      interactives: [
-        {
-          id: "smallest-overflow",
-          kind: "challenge",
-          timeModel: STEPS,
-          role: "exercise",
-          caption: LABELS.captions.overflow,
-          props: { challengeId: "smallest-overflow" },
-        },
-      ],
-    },
-    {
-      kind: "reflection",
-      title: LABELS.titles.reflection,
-      prose: PROSE.reflection,
-      details: { summary: PROSE.reflectionAnswerSummary, prose: PROSE.reflectionAnswer },
     },
   ],
   challenges: [
@@ -302,27 +259,6 @@ export const addingAndTheFlags: LessonInput = {
           "sixth-v": "0",
         },
       },
-    },
-    {
-      id: "smallest-overflow",
-      title: LABELS.challenges.overflow.title,
-      task: PROSE.overflowTask,
-      gradedDirection: "answer",
-      fields: [{ id: "number", label: LABELS.challenges.overflow.field, kind: "number" }],
-      initial: { data: { program: PLUS } },
-      tests: {
-        kind: "answers",
-        grader: SMALLEST_SETTING_FLAG,
-        cases: [
-          {
-            label: LABELS.challenges.overflow.test,
-            given: { entry: "plus", w0: 0x7ffffffe, flag: "v" },
-            expect: { number: "w1" },
-          },
-        ],
-      },
-      hints: [...PROSE.overflowHints],
-      reference: { answers: { number: "2" } },
     },
   ],
   sectionLayout: "selected",

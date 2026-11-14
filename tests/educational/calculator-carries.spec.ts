@@ -13,13 +13,11 @@ for (const theme of ["light", "dark"] as const) {
       const panel = page.getByRole("dialog", { name: "Programmer calculator", exact: true });
       const toggle = panel.getByRole("button", { name: F.showCarries, exact: true });
       const scroll = panel.getByRole("region", { name: "Calculation", exact: true });
-      const entry = panel.getByLabel("Value to enter", { exact: true });
-      const b = panel.getByLabel("Second value", { exact: true });
-      const apply = panel.getByRole("button", { name: "Apply", exact: true });
+      const entry = panel.getByRole("textbox", { name: "Value A", exact: true });
+      const b = panel.getByRole("textbox", { name: "Value B", exact: true });
       const calculate = panel.getByRole("button", { name: "Calculate", exact: true });
       const setAddition = async (a: string, second: string) => {
         await entry.fill(a);
-        await apply.click();
         await b.fill(second);
         await calculate.click();
       };
@@ -168,11 +166,15 @@ test("carry visibility restores while saved carry and flag numbers are ignored",
     "aria-pressed",
     "true",
   );
-  await expect(panel.getByLabel("Value to enter", { exact: true })).toHaveValue("pending A");
+  await expect(panel.getByRole("textbox", { name: "Value A", exact: true })).toHaveValue(
+    "pending A",
+  );
+  await expect(panel.locator("[data-flag]")).toHaveCount(0);
+  await expect(panel.getByText(F.unknown, { exact: true })).toBeVisible();
+  await panel.getByRole("textbox", { name: "Value A", exact: true }).fill("0x7ffffffe");
+  await panel.getByRole("button", { name: "Calculate", exact: true }).click();
   await expect(panel.getByText(F.vEquation(1, 0, 1), { exact: true })).toBeVisible();
-  await expect(panel.getByText(F.cEquation(0), { exact: true })).toBeVisible();
   await expect(panel.locator('[data-row="carry"] [data-bit="31"]')).toHaveText("1");
-  await expect(panel.locator("[data-carry-out]")).toHaveText("0");
   expect(
     await page.evaluate(() => sessionStorage.getItem("assembly-lab:update:views:v1")),
   ).toBeNull();

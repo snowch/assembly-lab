@@ -14,14 +14,16 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 const setup = () => render(<CalculatorWorkspace handoffKey="test" />);
-function apply(view: ReturnType<typeof setup>, value: string) {
-  fireEvent.change(view.getByLabelText(S.entry), { target: { value } });
-  fireEvent.click(view.getByRole("button", { name: S.apply }));
+function enterA(view: ReturnType<typeof setup>, value: string) {
+  fireEvent.change(view.getByRole("textbox", { name: C.currentA }), { target: { value } });
 }
 function valueA(view: ReturnType<typeof setup>) {
-  return within(view.getByRole("group", { name: C.currentA }))
-    .getByText(/0x/)
-    .getAttribute("data-pattern");
+  return (
+    view
+      .getByRole("group", { name: C.currentA })
+      .querySelector("[data-pattern]")
+      ?.getAttribute("data-pattern") ?? null
+  );
 }
 
 it("preserves both operands, shows unknown output until Calculate, and explicitly chains a result", () => {
@@ -29,7 +31,7 @@ it("preserves both operands, shows unknown output until Calculate, and explicitl
   expect(view.getByRole("tab", { name: C.calculateView })).toHaveAttribute("aria-selected", "true");
   expect(view.getAllByRole("tabpanel")).toHaveLength(1);
   expect(view.getByRole("img", { name: `${C.result}: ${C.unknownResult}` })).toBeInTheDocument();
-  apply(view, "4294967295");
+  enterA(view, "4294967295");
   fireEvent.click(view.getByRole("button", { name: S.calculate }));
   expect(valueA(view)).toBe("4294967295");
   expect(
@@ -46,35 +48,44 @@ it("preserves both operands, shows unknown output until Calculate, and explicitl
   expect(view.getByRole("img", { name: `${C.result}: ${C.unknownResult}` })).toBeInTheDocument();
 });
 
-it("invalidates a computed output when B changes, while pending A entry remains separate", () => {
+it("previews both operands live, invalidates output on either edit, and calculates only valid drafts", () => {
   const view = setup();
-  apply(view, "7");
-  fireEvent.click(view.getByRole("button", { name: S.calculate }));
-  fireEvent.change(view.getByLabelText(S.entry), { target: { value: "unfinished" } });
+  expect(view.queryByRole("button", { name: S.apply })).toBeNull();
+  enterA(view, "7");
   expect(valueA(view)).toBe("7");
-  expect(view.getByRole("group", { name: C.retainedResult })).toHaveTextContent("8");
-  fireEvent.change(view.getByLabelText(S.second), { target: { value: "2" } });
-  expect(view.queryByRole("group", { name: C.retainedResult })).toBeNull();
   fireEvent.click(view.getByRole("button", { name: S.calculate }));
+  fireEvent.change(view.getByRole("textbox", { name: C.currentA }), {
+    target: { value: "unfinished" },
+  });
+  expect(valueA(view)).toBeNull();
+  expect(view.queryByRole("group", { name: C.retainedResult })).toBeNull();
+  fireEvent.change(view.getByRole("textbox", { name: C.currentB }), { target: { value: "2" } });
+  expect(
+    view.getByRole("group", { name: C.currentB }).querySelector("[data-pattern]"),
+  ).toHaveAttribute("data-pattern", "2");
+  fireEvent.click(view.getByRole("button", { name: S.calculate }));
+  expect(view.getByRole("textbox", { name: C.currentA })).toHaveAttribute("aria-invalid", "true");
+  expect(view.queryByRole("group", { name: C.retainedResult })).toBeNull();
+  enterA(view, "7");
+  fireEvent.keyDown(view.getByRole("textbox", { name: C.currentA }), { key: "Enter" });
   expect(
     view.getByRole("group", { name: C.retainedResult }).querySelector("[data-pattern]"),
   ).toHaveAttribute("data-pattern", "9");
-  expect(view.getByLabelText(S.entry)).toHaveValue("unfinished");
+  fireEvent.change(view.getByRole("textbox", { name: C.currentB }), { target: { value: "" } });
+  expect(view.getByRole("group", { name: C.currentB })).toHaveTextContent(C.unknownPreview);
+  expect(view.queryByRole("group", { name: C.retainedResult })).toBeNull();
 });
 
 it("keeps readings as interpretations and widens with zeros at full 64-bit precision", () => {
   const view = setup();
-  apply(view, "4294967295");
+  enterA(view, "4294967295");
   fireEvent.click(view.getByRole("button", { name: S.signed }));
   expect(valueA(view)).toBe("4294967295");
-  expect(view.getByRole("group", { name: C.currentA })).toHaveTextContent(S.signedHelp);
-  expect(view.getByRole("group", { name: C.currentA })).toHaveTextContent(S.hexHelp);
   expect(view.getByRole("group", { name: C.currentA })).toHaveTextContent("-1");
   fireEvent.click(view.getByRole("button", { name: "64 bits" }));
   expect(view.getByRole("group", { name: C.currentA })).toHaveTextContent("4,294,967,295");
   fireEvent.click(view.getByRole("button", { name: S.unsigned }));
-  expect(view.getByRole("group", { name: C.currentA })).toHaveTextContent(S.unsignedHelp);
-  apply(view, "18,446,744,073,709,551,615");
+  enterA(view, "18,446,744,073,709,551,615");
   fireEvent.click(view.getByRole("button", { name: S.calculate }));
   expect(valueA(view)).toBe("18446744073709551615");
   expect(view.container.querySelector(".workspace-exact")).toHaveTextContent(
@@ -92,7 +103,7 @@ it("uses one scroll region and gives shift a count instead of pretending B is an
   fireEvent.change(view.getByLabelText(S.operation), { target: { value: "shift-left" } });
   expect(view.queryByLabelText(S.second)).toBeNull();
   expect(view.container.querySelector('[data-row="b"]')).toBeNull();
-  apply(view, "1");
+  enterA(view, "1");
   fireEvent.change(view.getByLabelText(C.shiftAmountDecimal), { target: { value: "31" } });
   fireEvent.keyDown(view.getByLabelText(C.shiftAmountDecimal), { key: "Enter" });
   expect(
@@ -129,16 +140,18 @@ it("moves bit editing and half replacement out of the calculation and retains th
 
 it("does not silently truncate input or compute invalid operands, and associates errors locally", () => {
   const view = setup();
-  apply(view, "4294967296");
-  const entry = view.getByLabelText(S.entry);
+  enterA(view, "4294967296");
+  fireEvent.click(view.getByRole("button", { name: S.calculate }));
+  const entry = view.getByRole("textbox", { name: C.currentA });
   expect(entry).toHaveAttribute("aria-invalid", "true");
   expect(document.getElementById(entry.getAttribute("aria-errormessage")!)).toHaveTextContent(
     E.decimalRangeError("0", "4,294,967,295"),
   );
-  expect(valueA(view)).toBe("0");
-  fireEvent.change(view.getByLabelText(S.second), { target: { value: "-1" } });
+  expect(valueA(view)).toBeNull();
+  enterA(view, "0");
+  fireEvent.change(view.getByRole("textbox", { name: C.currentB }), { target: { value: "-1" } });
   fireEvent.click(view.getByRole("button", { name: S.calculate }));
-  expect(view.getByLabelText(S.second)).toHaveAttribute("aria-invalid", "true");
+  expect(view.getByRole("textbox", { name: C.currentB })).toHaveAttribute("aria-invalid", "true");
   expect(view.queryByRole("group", { name: C.retainedResult })).toBeNull();
 });
 
@@ -147,14 +160,14 @@ it("unmounts all closed controls while retaining the view, exact value and pendi
     <CalculatorWorkspace handoffKey="close" active={active} />
   );
   const view = render(renderTool(true));
-  apply(view, "123");
-  fireEvent.change(view.getByLabelText(S.entry), { target: { value: "456" } });
+  enterA(view, "123");
+  fireEvent.change(view.getByRole("textbox", { name: C.currentA }), { target: { value: "456" } });
   fireEvent.click(view.getByRole("tab", { name: C.editView }));
   view.rerender(renderTool(false));
   expect(view.container).toBeEmptyDOMElement();
   view.rerender(renderTool(true));
-  expect(valueA(view)).toBe("123");
-  expect(view.getByLabelText(S.entry)).toHaveValue("456");
+  expect(valueA(view)).toBe("456");
+  expect(view.getByRole("textbox", { name: C.currentA })).toHaveValue("456");
   expect(view.getByRole("tab", { name: C.editView })).toHaveAttribute("aria-selected", "true");
 });
 
@@ -181,10 +194,13 @@ it("migrates pending work from the former header calculator during a coordinated
       <Restored handoffKey="global" />
     </nextHandoff.ViewHandoffScope>,
   );
-  expect(valueA(next)).toBe("4294967295");
-  expect(next.getByLabelText(S.entry)).toHaveValue("pending A");
-  expect(next.getByLabelText(S.second)).toHaveValue("17");
+  expect(valueA(next)).toBeNull();
+  expect(next.getByRole("textbox", { name: C.currentA })).toHaveValue("pending A");
+  expect(next.getByRole("textbox", { name: C.currentB })).toHaveValue("17");
   expect(sessionStorage.getItem("assembly-lab:update:views:v1")).toBeNull();
+  fireEvent.click(next.getByRole("button", { name: S.calculate }));
+  expect(next.queryByRole("group", { name: C.retainedResult })).toBeNull();
+  enterA(next, "4294967295");
   fireEvent.click(next.getByRole("button", { name: S.calculate }));
   expect(next.container.querySelector(".workspace-exact")).toHaveTextContent("4,294,967,312");
   expect(nextHandoff.prepareViewHandoff()).toBe(true);
@@ -198,7 +214,7 @@ it("migrates pending work from the former header calculator during a coordinated
     </thirdHandoff.ViewHandoffScope>,
   );
   expect(valueA(third)).toBe("4294967295");
-  expect(third.getByLabelText(S.entry)).toHaveValue("pending A");
+  expect(third.getByRole("textbox", { name: C.currentA })).toHaveValue("4294967295");
   expect(third.container.querySelector(".workspace-exact")).toHaveTextContent("4,294,967,312");
   expect(
     third.getByRole("group", { name: C.retainedResult }).querySelector("[data-pattern]"),
@@ -209,30 +225,28 @@ it("uses prefixes for both operands and keeps width stable when a paste does not
   const view = setup();
   expect(view.queryByLabelText(S.format)).toBeNull();
   expect(view.queryByLabelText(C.operandFormat)).toBeNull();
-  apply(view, "0x7ffffffe");
+  enterA(view, "0x7ffffffe");
   expect(valueA(view)).toBe("2147483646");
-  fireEvent.change(view.getByLabelText(S.second), { target: { value: "0b10" } });
+  fireEvent.change(view.getByRole("textbox", { name: C.currentB }), { target: { value: "0b10" } });
   fireEvent.click(view.getByRole("button", { name: S.calculate }));
   expect(
     view.getByRole("group", { name: C.retainedResult }).querySelector("[data-pattern]"),
   ).toHaveAttribute("data-pattern", "2147483648");
-  apply(view, "0xFFFFFFFFFFFFFFFF");
-  expect(valueA(view)).toBe("2147483646");
+  enterA(view, "0xFFFFFFFFFFFFFFFF");
+  fireEvent.click(view.getByRole("button", { name: S.calculate }));
+  expect(valueA(view)).toBeNull();
   expect(view.getByRole("button", { name: S.widthValue(32) })).toHaveAttribute(
     "aria-pressed",
     "true",
   );
   expect(view.getByText(E.patternRangeError(32))).toBeVisible();
   fireEvent.click(view.getByRole("button", { name: S.widthValue(64) }));
-  expect(view.getByLabelText(S.entry)).toHaveValue("0xFFFFFFFFFFFFFFFF");
-  fireEvent.click(view.getByRole("button", { name: S.apply }));
+  expect(view.getByRole("textbox", { name: C.currentA })).toHaveValue("0xFFFFFFFFFFFFFFFF");
   expect(valueA(view)).toBe("18446744073709551615");
   fireEvent.click(view.getByRole("button", { name: S.widthValue(32) }));
   expect(valueA(view)).toBe("4294967295");
-  expect(view.getByLabelText(S.entry)).toHaveValue("0xFFFFFFFFFFFFFFFF");
-  fireEvent.click(view.getByRole("button", { name: S.apply }));
-  expect(view.getByText(E.patternRangeError(32))).toBeVisible();
-  apply(view, "0x00000000FFFFFFFF");
+  expect(view.getByRole("textbox", { name: C.currentA })).toHaveValue("0xffffffff");
+  enterA(view, "0x00000000FFFFFFFF");
   expect(valueA(view)).toBe("4294967295");
 });
 
@@ -240,15 +254,37 @@ it("zero-fills short signed patterns, retains binary text, and reports malformed
   const view = setup();
   fireEvent.click(view.getByRole("button", { name: S.widthValue(64) }));
   fireEvent.click(view.getByRole("button", { name: S.signed }));
-  apply(view, "0b" + "1".repeat(32));
+  enterA(view, "0b" + "1".repeat(32));
   expect(valueA(view)).toBe("4294967295");
   expect(view.getByRole("group", { name: C.currentA })).toHaveTextContent("4,294,967,295");
-  apply(view, "-1");
+  enterA(view, "-1");
   expect(valueA(view)).toBe("18446744073709551615");
-  apply(view, "0b102");
+  enterA(view, "0b102");
+  fireEvent.click(view.getByRole("button", { name: S.calculate }));
   expect(view.getByText(E.binaryError)).toBeVisible();
-  apply(view, "FFFF");
+  enterA(view, "FFFF");
+  fireEvent.click(view.getByRole("button", { name: S.calculate }));
   expect(view.getByText(E.notationError)).toBeVisible();
-  apply(view, "1010");
+  enterA(view, "1010");
   expect(valueA(view)).toBe("1010");
+});
+
+it("edits the current A after a width or reading change makes an invalid draft valid", () => {
+  const view = setup();
+  enterA(view, "0x100000000");
+  expect(valueA(view)).toBeNull();
+  fireEvent.click(view.getByRole("tab", { name: C.editView }));
+  expect(view.queryByRole("button", { name: S.bit(0) })).toBeNull();
+  expect(view.getByText(C.editUnavailable)).toBeVisible();
+  fireEvent.click(view.getByRole("button", { name: S.widthValue(64) }));
+  expect(view.getByRole("button", { name: S.bit(32) })).toHaveAttribute("aria-pressed", "true");
+  fireEvent.click(view.getByRole("button", { name: S.bit(0) }));
+  expect(valueA(view)).toBe("4294967297");
+  expect(view.getByRole("textbox", { name: C.currentA })).toHaveValue("4294967297");
+  enterA(view, "-1");
+  expect(valueA(view)).toBeNull();
+  fireEvent.click(view.getByRole("button", { name: S.signed }));
+  expect(view.getByRole("button", { name: S.bit(63) })).toHaveAttribute("aria-pressed", "true");
+  fireEvent.click(view.getByRole("button", { name: S.bit(0) }));
+  expect(view.getByRole("textbox", { name: C.currentA })).toHaveValue("-2");
 });

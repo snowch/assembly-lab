@@ -14,8 +14,6 @@ for (const theme of ["light", "dark"] as const) {
     await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     const c = page.locator("#ix-predict-two-registers"),
-      calc = c.locator(".al-programmer-calculator"),
-      link = c.getByRole("link", { name: "Open full calculator", exact: true }),
       notes = c.locator(".al-working-notes");
     const x = c.locator('[data-field="x1"] input'),
       w = c.locator('[data-field="w2"] input');
@@ -27,32 +25,20 @@ for (const theme of ["light", "dark"] as const) {
     await expect(c.getByLabel("Calculation", { exact: true })).toHaveCount(0);
     await expect(notes).toHaveJSProperty("open", false);
     await expect(c).toContainText("hexadecimal numbers beginning with");
-    await expect(calc).toHaveJSProperty("open", false);
-    await calc.locator(":scope > summary").click();
-    await expect(link).toHaveAttribute("href", "https://snowch.github.io/programmer-calculator/");
-    await expect(link).toHaveAttribute("target", "_blank");
-    await expect(link).toHaveAttribute("rel", "noopener noreferrer");
-    await expect(link).toHaveAccessibleDescription("Opens in a new tab");
-    // CI checks new-tab/state behavior deterministically. Live destination is checked separately.
-    await page.context().route("https://snowch.github.io/programmer-calculator/", (route) =>
-      route.fulfill({
-        contentType: "text/html",
-        body: "<!doctype html><title>Calculator test destination</title>",
-      }),
-    );
+    await expect(c.locator(".al-programmer-calculator")).toHaveCount(0);
     const openCalculator = async () => {
-      if (!(await calc.evaluate((el) => (el as HTMLDetailsElement).open)))
-        await calc.locator(":scope > summary").click();
-      const original = page.url();
-      const opened = page.waitForEvent("popup");
-      await link.focus();
-      await page.keyboard.press("Enter");
-      const popup = await opened;
-      await popup.waitForLoadState("domcontentloaded");
-      expect(popup.url()).toBe("https://snowch.github.io/programmer-calculator/");
-      expect(await popup.evaluate(() => window.opener)).toBe(null);
-      await popup.close();
-      expect(page.url()).toBe(original);
+      const trigger = page.getByRole("button", { name: "Calculator", exact: true });
+      await trigger.click();
+      const panel = page.getByRole("dialog", { name: "Programmer calculator" });
+      await panel.getByRole("textbox", { name: "Value A", exact: true }).fill("42");
+      await panel.getByRole("button", { name: "Calculate", exact: true }).click();
+      await expect(
+        panel
+          .getByRole("group", { name: "Retained result", exact: true })
+          .locator("[data-pattern]"),
+      ).toHaveAttribute("data-pattern", "43");
+      await panel.getByRole("button", { name: "Close calculator", exact: true }).click();
+      await expect(trigger).toBeFocused();
     };
     await openCalculator();
     await expect(x).toHaveValue("");

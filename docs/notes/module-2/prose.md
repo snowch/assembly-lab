@@ -116,12 +116,6 @@ Check your answers. A wrong flag is named, and the answers you got right stay.
 4. `0xffffffff` plus 1 is 0 with a carry out of the top bit, so Z is 1 and C is 1.
 5. `0xffffffff` plus 1 gives N 0, Z 1, C 1 and V 0. 5 plus 3 has all four at 0. `0x80000000` plus `0x80000000` gives N 0, Z 1, C 1 and V 1. `0x7ffffffe` plus 2 gives N 1, Z 0, C 0 and V 1. `0xfffffff9` plus 2 gives N 1, Z 0, C 0 and V 0. 0 plus 0 gives N 0, Z 1, C 0 and V 0.
 
-*Step through the addition column by column to inspect the result bits, carries and flags.*
-
-*Shown after the challenge is passed.*
-
-C and V are separate tests, one for each reading, so either can be 1 without the other. `0xffffffff` plus 1 carries into bit 31 and out of it, so C is 1 and V is 0; `0x7fffffff` plus 1 carries into bit 31 but not out, so C is 0 and V is 1. `0x80000000` plus `0x80000000` makes C and V both 1.
-
 ## 6. Running add instead of adds
 
 The figure runs `sum_flags` with:
@@ -156,8 +150,6 @@ Of `add`, `adds` and `sub`, only `adds` writes the flags.
 
 Every `adds` writes all four flags. The flags keep their values until another instruction writes them. `add` and `sub` do not write the flags.
 
-To check whether an addition fits, a program reads C for unsigned numbers or V for signed numbers. Later modules show instructions that read the flags.
-
 **How GCC checks for overflow**
 
 `__builtin_add_overflow` is a function built into GCC. It adds two numbers and reports whether the result did not fit. For two `int`s, GCC 16.1 with `-O1`, as in Module 0, compiles a call to it into this:
@@ -170,37 +162,6 @@ add_overflows:
 ```
 
 The first line, `add_overflows:`, is the function's name and a colon. The two instructions before `ret` return 1 exactly when V is set. A later module explains them.
-
-## 9. The smallest signed overflow
-
-This challenge uses V to detect a sum outside the signed range.
-
-**Find the smallest overflow**
-
-Give the smallest positive number that, added to `0x7ffffffe` with `adds`, makes V 1.
-
-Enter the number in decimal.
-
-1. V is 1 when the signed answer does not fit, so look for the first signed answer above 2147483647.
-2. The question is about V, not C. The unsigned answer fits for small numbers.
-3. `0x7fffffff` plus 1 makes V 1.
-4. `0x7ffffffe` is 2147483646.
-5. The answer is 2.
-
-## 10. What you now know
-
-- `adds` adds two numbers and writes N, Z, C and V.
-- N and Z describe the result.
-- C is the carry out of bit 31 for an addition.
-- V reports signed overflow.
-- `add` does not write the flags.
-- The flags keep their values until an instruction writes them.
-
-**Question:** `adds` adds `0xc0000000` and `0xc0000000`. Which of C and V is 1?
-
-**Answer**
-
-The result is `0x80000000`. A carry goes into bit 31 and a carry comes out, so C is 1 and V is 0. The unsigned result does not fit, but the signed one does: −1073741824 plus −1073741824 is −2147483648.
 
 # Lesson 2: Subtracting, and the tick counter
 

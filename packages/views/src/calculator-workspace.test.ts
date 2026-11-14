@@ -26,7 +26,15 @@ describe("header calculator working", () => {
   ] as const)(
     "retains exact inputs and bounded result: %s/%s/%s/%s/%s",
     (width, reading, pattern, operation, operand, result, full) => {
-      const work = { ...initialWorkspace(), width, reading, pattern, operation, operand };
+      const work = {
+        ...initialWorkspace(),
+        width,
+        reading,
+        pattern,
+        entry: `0x${BigInt(pattern).toString(16)}`,
+        operation,
+        operand,
+      };
       const before = structuredClone(work);
       expect(workspaceCalculation(work)).toEqual({
         ok: true,
@@ -41,6 +49,7 @@ describe("header calculator working", () => {
       workspaceCalculation({
         ...initialWorkspace(),
         pattern: "4294967295",
+        entry: "0xffffffff",
         operand: "0xFFFF FFFF",
         operation: "subtract",
       }),
@@ -50,6 +59,7 @@ describe("header calculator working", () => {
         ...initialWorkspace(),
         width: 64,
         pattern: "983040",
+        entry: "983040",
         operation: "shift-left",
         shift: "32",
       }),
@@ -99,7 +109,7 @@ describe("header calculator working", () => {
   });
 
   it("recomputes restored result metadata and rejects a stale source rather than inventing a trace", () => {
-    const work = { ...initialWorkspace(), pattern: "4294967295" };
+    const work = { ...initialWorkspace(), pattern: "4294967295", entry: "4294967295" };
     const result = workspaceCalculation(work);
     if (!result.ok) throw new Error("Expected valid fixture");
     expect(
@@ -151,17 +161,28 @@ it("marks legacy hexadecimal drafts explicitly and preserves new prefix drafts e
   ).toMatchObject({ entry: "10", operand: "0b10" });
 });
 
-it("preserves pasted notation and does not truncate oversized uncommitted drafts on width changes", () => {
+it("explicitly resizes valid words but preserves malformed and already-oversized drafts", () => {
   expect(workspaceEntryForSettings("0xFFFFFFFFFFFFFFFF", 64, "signed", 32, "signed")).toBe(
-    "0xFFFFFFFFFFFFFFFF",
+    "0xffffffff",
   );
-  expect(workspaceEntryForSettings("4294967296", 64, "unsigned", 32, "unsigned")).toBe(
-    "4294967296",
-  );
+  expect(workspaceEntryForSettings("4294967296", 64, "unsigned", 32, "unsigned")).toBe("0");
   expect(workspaceEntryForSettings("pending", 32, "unsigned", 64, "signed")).toBe("pending");
   expect(workspaceEntryForSettings("0B1111_0000", 32, "unsigned", 64, "signed")).toBe(
     "0B1111_0000",
   );
   expect(workspaceEntryForSettings("4294967295", 32, "unsigned", 32, "signed")).toBe("-1");
   expect(workspaceEntryForSettings("-1", 32, "signed", 64, "signed")).toBe("4294967295");
+});
+
+it("preserves an empty live draft but migrates an old empty entry from the loaded A", () => {
+  expect(restoreWorkspace({ pattern: "123", entry: "" }).entry).toBe("123");
+  expect(restoreWorkspace({ ...initialWorkspace(), pattern: "123", entry: "" }).entry).toBe("");
+  expect(workspaceCalculation({ ...initialWorkspace(), pattern: "123", entry: "" })).toEqual({
+    ok: false,
+    field: "entry",
+    code: "empty",
+  });
+  expect(workspaceEntryForSettings("0xFFFFFFFFFFFFFFFF", 32, "unsigned", 64, "unsigned")).toBe(
+    "0xFFFFFFFFFFFFFFFF",
+  );
 });

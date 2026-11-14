@@ -82,8 +82,7 @@ export function mountFlagsLesson(
       if (typeof a !== "number" || typeof b !== "number")
         throw new Error("Missing flags practice inputs.");
       return M.compute(32, a, b);
-    }),
-    followup = M.compute(32, 1, 0xffffffff);
+    });
   let state: FlagsState = stateFor(store, challenge);
   function save() {
     store.setSlot(FLAGS_VIEW_SLOT, structuredClone(state));
@@ -118,9 +117,6 @@ export function mountFlagsLesson(
         return `<div class="fit-cell ${m.flags[flag] ? (reading === "unsigned" ? "overflow" : "overflow-signed") : ""}" data-reading="${reading}" data-overflow="${m.flags[flag] === 1}"><span>${esc(S[reading])} · ${flag.toUpperCase()}</span><strong class="reading-equation"><bdi>${fmt(m.a[reading])}</bdi><bdi> + ${BigInt(m.b[reading]) < 0n ? "(" + fmt(m.b[reading]) + ")" : fmt(m.b[reading])}</bdi><bdi class="equation-total"> = ${fmt(reading === "unsigned" ? m.unsignedSum : m.signedSum)}</bdi></strong><p>${esc(m.flags[flag] ? S.outside : S.fits)} · ${flag.toUpperCase()} = ${m.flags[flag]}</p><div>${esc(S.storedReading)}: ${fmt(m.result[reading])}</div></div>`;
       })
       .join("")}</div></div>`;
-  }
-  function carry(m: FlagsModel) {
-    return `<details class="carry-disclosure"><summary>${esc(S.carryDetail)}</summary><div><div class="carry-pair"><div>${esc(S.carryIn)}<strong>${m.carryIn}</strong></div><div>${esc(S.carryOut)}<strong>${m.carryOut}</strong></div></div><p>${esc(S.carryRule)}</p></div></details>`;
   }
   function choices(prefix: string, a: Answers) {
     return `<div class="flag-form">${names.map((n) => `<fieldset class="flag-input"><legend class="char">${n.toUpperCase()}</legend><div class="bit-choices radios">${[0, 1].map((v) => `<label class="${a.choices[n] === v ? "selected" : ""}"><input class="visually-hidden" type="radio" name="${prefix}-${n}" value="${v}" ${a.choices[n] === v ? "checked" : ""}><span>${v}</span></label>`).join("")}</div></fieldset>`).join("")}</div>`;
@@ -349,16 +345,6 @@ export function mountFlagsLesson(
     $("aggregate").textContent = allPassed() ? S.allCorrect : S.notComplete;
     $("challenge-predict-flags").dataset["complete"] = String(allPassed());
     renderCaseTabs();
-    renderFollowup();
-  }
-  let followupShown: boolean | undefined;
-  function renderFollowup() {
-    const shown = allPassed();
-    if (followupShown === shown) return;
-    followupShown = shown;
-    $("followup").innerHTML = shown
-      ? `<p>${esc(S.followupLead)}</p><code class="instruction">adds w0, w0, w1</code><p class="mono followup-equation"><bdi>${followup.a.hex}</bdi><bdi> + ${followup.b.hex}</bdi><bdi> = ${followup.result.hex}</bdi></p>${flags(followup)}${readings(followup)}${carry(followup)}`
-      : `<p class="locked">${esc(S.followupLocked)}</p>`;
   }
   function initialise() {
     root

@@ -59,6 +59,7 @@ export function CalculatorWorkspace({
       error: before.error?.field === field ? null : before.error,
       message: "",
     }));
+  const a = calculatorParseEntry(work.entry, work.width, work.reading);
   const operand = workspaceOperand(work);
   const showCarries = work.operation === "add" && work.showCarries;
   const carries =
@@ -76,16 +77,21 @@ export function CalculatorWorkspace({
     event.stopPropagation();
     run();
   };
-  const apply = () => {
-    const parsed = calculatorParseEntry(work.entry, work.width, work.reading);
-    if (!parsed.ok) return patch({ error: { field: "entry", code: parsed.error }, message: "" });
-    act({ pattern: parsed.pattern }, S.messages.applied);
+  const editA = (entry: string) => {
+    const parsed = calculatorParseEntry(entry, work.width, work.reading);
+    draft("entry", { entry, ...(parsed.ok ? { pattern: parsed.pattern } : {}) }, true);
   };
+  const replaceA = (pattern: string, message = "") =>
+    act(
+      { pattern, entry: calculatorReading(BigInt(pattern), work.width, work.reading).toString() },
+      message,
+    );
   const calculate = () => {
     const calculated = workspaceCalculation(work);
     if (!calculated.ok)
       return patch({ error: { field: calculated.field, code: calculated.code }, message: "" });
     patch({
+      pattern: calculated.trace.a,
       trace: calculated.trace,
       full: calculated.trace.full,
       error: null,
@@ -94,12 +100,16 @@ export function CalculatorWorkspace({
   };
   const settings = (width: WorkspaceWidth, reading: CalculatorReading) => {
     if (width === work.width && reading === work.reading) return;
+    const entry = workspaceEntryForSettings(work.entry, work.width, work.reading, width, reading);
+    const parsed = calculatorParseEntry(entry, width, reading);
     act(
       {
         width,
         reading,
-        pattern: calculatorPattern(BigInt(work.pattern), width).toString(),
-        entry: workspaceEntryForSettings(work.entry, work.width, work.reading, width, reading),
+        pattern: parsed.ok
+          ? parsed.pattern
+          : calculatorPattern(BigInt(work.pattern), width).toString(),
+        entry,
         operand: workspaceEntryForSettings(work.operand, work.width, work.reading, width, reading),
         selected: Math.min(work.selected, width - 1),
         scrollLeft: width !== work.width ? -1 : work.scrollLeft,
@@ -115,8 +125,8 @@ export function CalculatorWorkspace({
     const parsed = calculatorParse(work.halfValue, "decimal", 32, "unsigned");
     if (!parsed.ok || BigInt(parsed.pattern) > 65535n)
       return patch({ error: { field: "half", code: "half" }, message: "" });
-    act(
-      { pattern: calculatorSetHalf(work.pattern, work.half, parsed.pattern) },
+    replaceA(
+      calculatorSetHalf(a.ok ? a.pattern : "0", work.half, parsed.pattern),
       S.messages.halfApplied,
     );
   };
@@ -161,25 +171,25 @@ export function CalculatorWorkspace({
         {errorMessage(field)}
       </p>
     ) : null;
-  const readouts = (pattern: string, label: string, prefix: string, help = false) => (
+  const readouts = (pattern: string | null, label: string, prefix: string) => (
     <div className="workspace-readouts" role="group" aria-label={label}>
       <div>
         <span id={`${id}-${prefix}-decimal`}>{S.decimalReading(S[work.reading])}</span>
         <output aria-labelledby={`${id}-${prefix}-decimal`} data-reading={work.reading}>
-          <ProgrammerDecimal value={calculatorReading(BigInt(pattern), work.width, work.reading)} />
+          {pattern === null ? (
+            C.unknownPreview
+          ) : (
+            <ProgrammerDecimal
+              value={calculatorReading(BigInt(pattern), work.width, work.reading)}
+            />
+          )}
         </output>
-        {help && (
-          <p className="workspace-readout-help">
-            {work.reading === "signed" ? S.signedHelp : S.unsignedHelp}
-          </p>
-        )}
       </div>
       <div>
         <span id={`${id}-${prefix}-hex`}>{S.hex}</span>
         <output aria-labelledby={`${id}-${prefix}-hex`} data-pattern={pattern}>
-          {programmerHex(pattern, work.width)}
+          {pattern === null ? C.unknownPreview : programmerHex(pattern, work.width)}
         </output>
-        {help && <p className="workspace-readout-help">{S.hexHelp}</p>}
       </div>
     </div>
   );
@@ -191,7 +201,7 @@ export function CalculatorWorkspace({
         role="img"
         aria-label={
           pattern === null
-            ? `${label}: ${C.unknownResult}`
+            ? `${label}: ${kind === "a" || kind === "b" ? C.unknownPreview : C.unknownResult}`
             : kind === "carry"
               ? F.rowDescription(shown, work.width)
               : C.resultDescription(label, work.width, shown)
@@ -268,11 +278,12 @@ export function CalculatorWorkspace({
     selectView(view);
     document.getElementById(`${id}-${view}-tab`)!.focus();
   };
-  const selectedValue = Number((BigInt(work.pattern) >> BigInt(work.selected)) & 1n) as 0 | 1;
+  const editablePattern = a.ok ? a.pattern : "0";
+  const selectedValue = Number((BigInt(editablePattern) >> BigInt(work.selected)) & 1n) as 0 | 1;
   const weight =
     (work.reading === "signed" && work.selected === work.width - 1 ? -1n : 1n) *
     (1n << BigInt(work.selected));
-  const halves = work.width === 32 ? calculatorHalves(work.pattern) : null;
+  const halves = a.ok && work.width === 32 ? calculatorHalves(a.pattern) : null;
 
   if (!active) return null;
   return (
@@ -309,32 +320,10 @@ export function CalculatorWorkspace({
           ))}
         </div>
       </div>
+      <p className="workspace-field-help">
+        {work.reading === "signed" ? S.signedHelp : S.unsignedHelp} {S.hexHelp}
+      </p>
       <p className="workspace-width-help">{E.widthHelp}</p>
-      <h3 className="workspace-value-heading">{C.currentA}</h3>
-      {readouts(work.pattern, C.currentA, "a", true)}
-      <div className="workspace-load">
-        <label htmlFor={`${id}-entry`}>{S.entry}</label>
-        <div className="workspace-load-controls">
-          <input
-            id={`${id}-entry`}
-            value={work.entry}
-            autoComplete="off"
-            autoCapitalize="off"
-            spellCheck={false}
-            {...invalid("entry")}
-            aria-describedby={`${id}-entry-help`}
-            onChange={(e) => draft("entry", { entry: e.target.value })}
-            onKeyDown={enter(apply)}
-          />
-          <button type="button" onClick={apply}>
-            {S.apply}
-          </button>
-        </div>
-        <p id={`${id}-entry-help`} className="workspace-field-help">
-          {E.notationHint}
-        </p>
-        {error("entry")}
-      </div>
       <div className="workspace-tabs" role="tablist" aria-label={C.viewLabel}>
         {(["calculate", "edit"] as const).map((view) => (
           <button
@@ -352,13 +341,62 @@ export function CalculatorWorkspace({
           </button>
         ))}
       </div>
+      <div className="workspace-value">
+        <label htmlFor={`${id}-entry`}>{C.currentA}</label>
+        <input
+          id={`${id}-entry`}
+          value={work.entry}
+          autoComplete="off"
+          autoCapitalize="off"
+          spellCheck={false}
+          {...invalid("entry")}
+          aria-describedby={`${id}-${work.view === "edit" ? "edit-notation" : "notation"}-help`}
+          onChange={(e) => editA(e.target.value)}
+          onKeyDown={work.view === "calculate" ? enter(calculate) : undefined}
+        />
+        {readouts(a.ok ? a.pattern : null, C.currentA, "a")}
+        {error("entry")}
+      </div>
       <section
         id={`${id}-calculate-panel`}
         role="tabpanel"
         aria-labelledby={`${id}-calculate-tab`}
         hidden={work.view !== "calculate"}
       >
-        <div className="workspace-operation">
+        <div className="workspace-value">
+          <label htmlFor={`${id}-operand`}>
+            {work.operation === "shift-left" ? C.shiftAmountDecimal : C.currentB}
+          </label>
+          <input
+            id={`${id}-operand`}
+            value={work.operation === "shift-left" ? work.shift : work.operand}
+            autoComplete="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            {...invalid(work.operation === "shift-left" ? "shift" : "operand")}
+            aria-describedby={
+              work.operation === "shift-left" ? `${id}-shift-help` : `${id}-notation-help`
+            }
+            onChange={(e) =>
+              work.operation === "shift-left"
+                ? draft("shift", { shift: e.target.value }, true)
+                : draft("operand", { operand: e.target.value }, true)
+            }
+            onKeyDown={enter(calculate)}
+          />
+          {work.operation !== "shift-left" &&
+            readouts(operand.ok ? operand.pattern : null, C.currentB, "b")}
+          {work.operation === "shift-left" && (
+            <p className="workspace-field-help" id={`${id}-shift-help`}>
+              {S.errors.shift}
+            </p>
+          )}
+          {error(work.operation === "shift-left" ? "shift" : "operand")}
+        </div>
+        <p className="workspace-field-help" id={`${id}-notation-help`}>
+          {E.notationHint}
+        </p>
+        <div className="workspace-operation workspace-calculation-action">
           <label>
             {S.operation}
             <select
@@ -371,32 +409,10 @@ export function CalculatorWorkspace({
               <option value="shift-left">{S.shiftLeft}</option>
             </select>
           </label>
-          <label htmlFor={`${id}-operand`}>
-            {work.operation === "shift-left" ? C.shiftAmountDecimal : S.second}
-            <input
-              id={`${id}-operand`}
-              value={work.operation === "shift-left" ? work.shift : work.operand}
-              autoComplete="off"
-              autoCapitalize="off"
-              spellCheck={false}
-              {...invalid(work.operation === "shift-left" ? "shift" : "operand")}
-              aria-describedby={`${id}-operand-help`}
-              onChange={(e) =>
-                work.operation === "shift-left"
-                  ? draft("shift", { shift: e.target.value }, true)
-                  : draft("operand", { operand: e.target.value }, true)
-              }
-              onKeyDown={enter(calculate)}
-            />
-          </label>
-          <button type="button" onClick={calculate}>
+          <button type="button" className="workspace-calculate" onClick={calculate}>
             {S.calculate}
           </button>
         </div>
-        <p className="workspace-field-help" id={`${id}-operand-help`}>
-          {work.operation === "shift-left" ? S.errors.shift : E.notationHint}
-        </p>
-        {error(work.operation === "shift-left" ? "shift" : "operand")}
         <div className="workspace-bit-tools">
           <strong>{S.bitRange(work.width)}</strong>
           <div>
@@ -458,7 +474,7 @@ export function CalculatorWorkspace({
               </span>
             </div>
             {showCarries && stripRow(F.carryIn, carries?.carries ?? null, "carry")}
-            {stripRow(C.a, work.pattern, "a")}
+            {stripRow(C.a, a.ok ? a.pattern : null, "a")}
             {work.operation !== "shift-left" &&
               stripRow(
                 `${work.operation === "subtract" ? "−" : "+"} ${C.b}`,
@@ -519,9 +535,7 @@ export function CalculatorWorkspace({
             </p>
             <button
               type="button"
-              onClick={() =>
-                act({ pattern: work.trace!.pattern, entry: "" }, C.messages.resultUsed)
-              }
+              onClick={() => replaceA(work.trace!.pattern, C.messages.resultUsed)}
             >
               {C.useResult}
             </button>
@@ -529,11 +543,6 @@ export function CalculatorWorkspace({
         ) : !showCarries ? (
           <p className="workspace-field-help">{C.calculateHint}</p>
         ) : null}
-        {!work.trace && work.full !== null && (
-          <p className="workspace-exact">
-            {C.previousExactResult}: <ProgrammerDecimal value={BigInt(work.full)} />
-          </p>
-        )}
       </section>
       <section
         id={`${id}-edit-panel`}
@@ -541,59 +550,62 @@ export function CalculatorWorkspace({
         aria-labelledby={`${id}-edit-tab`}
         hidden={work.view !== "edit"}
       >
+        <p id={`${id}-edit-notation-help`} className="workspace-field-help">
+          {E.notationHint}
+        </p>
         <h3>{C.editingA}</h3>
-        <div
-          ref={editor}
-          className="al-programmer-bits workspace-editor"
-          role="group"
-          aria-label={S.pattern}
-        >
-          {Array.from({ length: work.width }, (_, index) => work.width - 1 - index).map(
-            (position) => {
-              const value = Number((BigInt(work.pattern) >> BigInt(position)) & 1n);
-              return (
-                <button
-                  type="button"
-                  className="al-programmer-bit"
-                  data-bit={position}
-                  key={position}
-                  aria-label={S.bit(position)}
-                  aria-pressed={value === 1}
-                  tabIndex={work.selected === position ? 0 : -1}
-                  onFocus={() => patch({ selected: position })}
-                  onKeyDown={(e) => editorKey(e, position)}
-                  onClick={() =>
-                    act(
-                      {
-                        pattern: calculatorPattern(
-                          BigInt(work.pattern) ^ (1n << BigInt(position)),
+        {!a.ok && <p className="workspace-field-help">{C.editUnavailable}</p>}
+        <fieldset className="workspace-editor-controls" disabled={!a.ok} hidden={!a.ok}>
+          <div
+            ref={editor}
+            className="al-programmer-bits workspace-editor"
+            role="group"
+            aria-label={S.pattern}
+          >
+            {Array.from({ length: work.width }, (_, index) => work.width - 1 - index).map(
+              (position) => {
+                const value = Number((BigInt(editablePattern) >> BigInt(position)) & 1n);
+                return (
+                  <button
+                    type="button"
+                    className="al-programmer-bit"
+                    data-bit={position}
+                    key={position}
+                    aria-label={S.bit(position)}
+                    aria-pressed={value === 1}
+                    tabIndex={work.selected === position ? 0 : -1}
+                    onFocus={() => patch({ selected: position })}
+                    onKeyDown={(e) => editorKey(e, position)}
+                    onClick={() => {
+                      patch({ selected: position });
+                      replaceA(
+                        calculatorPattern(
+                          BigInt(editablePattern) ^ (1n << BigInt(position)),
                           work.width,
                         ).toString(),
-                        selected: position,
-                      },
-                      "",
-                    )
-                  }
-                >
-                  <small aria-hidden="true">{position}</small>
-                  <b aria-hidden="true">{value}</b>
-                </button>
-              );
-            },
-          )}
-        </div>
-        <p className="al-programmer-inspector">
-          {S.inspector(
-            work.selected,
-            selectedValue,
-            programmerNumber(weight * BigInt(selectedValue)),
-            programmerNumber(weight),
-          )}
-        </p>
-        <button type="button" onClick={() => act({ pattern: "0" }, S.messages.cleared)}>
+                      );
+                    }}
+                  >
+                    <small aria-hidden="true">{position}</small>
+                    <b aria-hidden="true">{value}</b>
+                  </button>
+                );
+              },
+            )}
+          </div>
+          <p className="al-programmer-inspector">
+            {S.inspector(
+              work.selected,
+              selectedValue,
+              programmerNumber(weight * BigInt(selectedValue)),
+              programmerNumber(weight),
+            )}
+          </p>
+        </fieldset>
+        <button type="button" onClick={() => replaceA("0", S.messages.cleared)}>
           {S.clear}
         </button>
-        {halves && (
+        {a.ok && halves && (
           <details
             className="workspace-halves"
             open={work.halfOpen}

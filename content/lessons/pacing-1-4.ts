@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-import { READING_SEQUENCE as RS, PROGRAMMER_CALCULATOR as PC } from "@al/views";
+import { READING_SEQUENCE as RS } from "@al/views";
 import type { LessonInput } from "@platform/lesson-schema";
 
 import { addingAndTheFlags } from "./adding-and-the-flags";
@@ -31,16 +31,6 @@ function figure(source: LessonInput, id: string): Figure {
     .find((part) => part.id === id);
   if (!found) throw new Error(`${source.id}: missing ${id}`);
   return found;
-}
-function calculator(id: string, preset: "hexadecimal" | "readings" | "halves"): Figure {
-  return {
-    id,
-    kind: "programmer-calculator",
-    timeModel: "none",
-    role: "experiment",
-    caption: PC.help,
-    props: { preset },
-  };
 }
 const hexReader = figure(onePatternThreeReadings, "read-register");
 
@@ -75,7 +65,6 @@ const readings = splitLesson(onePatternThreeReadings, [
               teachingReadings: false,
             },
           },
-          calculator("hexadecimal-calculator", "hexadecimal"),
         ],
       },
     ],
@@ -155,7 +144,6 @@ const readings = splitLesson(onePatternThreeReadings, [
             props: { stage: "bridge" },
             after: RS.bridgeAfter + "\n\n" + RS.negativeUse,
           },
-          calculator("readings-calculator", "readings"),
         ],
       },
       {
@@ -267,9 +255,6 @@ const constants = splitLesson(constantsAndWidths, [
           COPY.buildConstant.reminder,
           section(constantsAndWidths, "construction").prose,
         ].join("\n\n"),
-        interactives: section(constantsAndWidths, "construction").interactives?.flatMap((x) =>
-          x.id === "movk-halves" ? [x, calculator("halves-calculator", "halves")] : [x],
-        ),
       },
     ],
   },
@@ -338,11 +323,10 @@ const addition = splitLesson(addingAndTheFlags, [
       section(addingAndTheFlags, "failureExperiment"),
       {
         ...section(addingAndTheFlags, "explanation"),
+        title: COPY.staleFlags.explanationTitle,
         prose: ADD.generalisation,
         details: undefined,
       },
-      section(addingAndTheFlags, "challenge"),
-      section(addingAndTheFlags, "reflection"),
     ],
   },
 ]);

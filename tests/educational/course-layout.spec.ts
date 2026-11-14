@@ -122,16 +122,12 @@ for (const theme of ["light", "dark"] as const) {
     await notes
       .getByLabel("Your working notes", { exact: true })
       .fill("Separate the two registers.");
-    const calculator = challenge.locator('.al-programmer-calculator[data-preset="widths"]');
-    await calculator.locator(":scope > summary").click();
-    await calculator.getByLabel("Value to enter", { exact: true }).fill("42");
-    await calculator.getByLabel("Value to enter", { exact: true }).press("Enter");
+    await expect(challenge.locator(".al-programmer-calculator")).toHaveCount(0);
     const node = await x1.elementHandle();
     await selectSection(page, "first");
     await selectSection(page, "last");
     expect(await x1.evaluate((el, before) => el === before, node)).toBe(true);
     await expect(x1).toHaveValue("0x5");
-    await expect(calculator.locator("output[data-reading]")).toHaveText("42");
     await expect(challenge.locator(".hints-list")).toHaveText(hint!);
     await expect(notes.getByLabel("Your working notes", { exact: true })).toHaveValue(
       "Separate the two registers.",
@@ -141,11 +137,9 @@ for (const theme of ["light", "dark"] as const) {
     await selectSection(page, "first");
     await selectSection(page, "last");
     await expect(challenge.locator(".challenge-complete")).toHaveCount(1);
-    await expect(calculator.locator("output[data-reading]")).toHaveText("42");
     await page.reload();
     await expect(challenge.locator(".challenge-complete")).toHaveCount(1);
     await expect(challenge.locator(".hints-list")).toHaveText(hint!);
-    await expect(calculator).not.toHaveAttribute("open");
     await notes.locator(":scope > summary").click();
     await expect(notes.getByLabel("Your working notes", { exact: true })).toHaveValue(
       "Separate the two registers.",

@@ -5,7 +5,6 @@ import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { Challenge, type Lesson } from "@platform/lesson-schema";
 import { AnswerEditor } from "./AnswerEditor";
-import { PROGRAMMER_CALCULATOR as PC } from "./strings.programmer-calculator";
 import { PREDICTION_TOOLS as S } from "./strings.prediction-tools";
 
 const challenge = Challenge.parse({
@@ -40,22 +39,14 @@ function editor(lesson = "tools-test", change = vi.fn()) {
     />
   );
 }
-it("offers a separate calculator and keeps notes out of answer artifacts", () => {
+it("keeps working notes independent of answers without duplicating the header calculator", () => {
   const change = vi.fn(),
     submit = vi.fn((e) => e.preventDefault());
   const view = render(<form onSubmit={submit}>{editor("tools-test", change)}</form>);
   expect(view.container.querySelectorAll("details[open]")).toHaveLength(0);
   expect(view.getByLabelText("Register value")).toHaveAttribute("inputmode", "text");
-  open(view, PC.title);
-  const link = view.getByRole("link", { name: PC.full });
-  expect(link).toHaveAttribute("href", "https://snowch.github.io/programmer-calculator/");
-  expect(link).toHaveAttribute("target", "_blank");
-  expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  expect(view.container.querySelector(".al-programmer-calculator")).toBeNull();
   expect(view.queryByLabelText("Calculation")).toBeNull();
-  const entry = view.getByLabelText(PC.entry);
-  fireEvent.change(entry, { target: { value: "17" } });
-  fireEvent.keyDown(entry, { key: "Enter" });
-  expect(view.getByLabelText("Register value")).toHaveValue("17");
   expect(change).not.toHaveBeenCalled();
   expect(submit).not.toHaveBeenCalled();
   open(view, S.summary);

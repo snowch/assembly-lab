@@ -15,15 +15,14 @@ for (const theme of ["light", "dark"] as const) {
     await expect(panel.getByRole("button", { name: "Close calculator" })).toBeFocused();
     await expect(panel.getByText("Try a short task", { exact: true })).toHaveCount(0);
     await expect(panel.getByRole("link")).toHaveCount(0);
-    await panel.getByLabel("Value to enter", { exact: true }).fill("4294967295");
-    await panel.getByRole("button", { name: "Apply", exact: true }).click();
+    await panel.getByRole("textbox", { name: "Value A", exact: true }).fill("4294967295");
     await panel.getByRole("button", { name: "Signed", exact: true }).click();
     const a = panel.getByRole("group", { name: "Value A", exact: true });
     const result = panel.getByRole("group", { name: "Retained result", exact: true });
     await expect(a.locator('output[data-reading="signed"]')).toHaveText("-1");
     await panel.getByRole("button", { name: "64 bits", exact: true }).click();
     await expect(a.locator('output[data-reading="signed"]')).toHaveText("4,294,967,295");
-    await panel.getByLabel("Second value", { exact: true }).fill("1");
+    await panel.getByRole("textbox", { name: "Value B", exact: true }).fill("1");
     await panel.getByRole("button", { name: "Calculate", exact: true }).click();
     await expect(a.locator('output[data-reading="signed"]')).toHaveText("4,294,967,295");
     await expect(result.locator('output[data-reading="signed"]')).toHaveText("4,294,967,296");
@@ -70,7 +69,7 @@ for (const theme of ["light", "dark"] as const) {
     expect(box!.x).toBeGreaterThanOrEqual(0);
     expect(box!.x + box!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
     await panel.getByRole("button", { name: "Reset calculator", exact: true }).click();
-    await expect(panel.locator('output[data-reading="unsigned"]')).toHaveText("0");
+    await expect(a.locator('output[data-reading="unsigned"]')).toHaveText("0");
     await expect(panel.getByRole("button", { name: "32 bits", exact: true })).toHaveAttribute(
       "aria-pressed",
       "true",
@@ -86,12 +85,15 @@ test("phone modal traps focus and changing to desktop keeps work", async ({ page
   await expect(panel).toHaveAttribute("aria-modal", "true");
   await panel.getByRole("button", { name: "Close calculator" }).press("Shift+Tab");
   expect(await panel.evaluate((node) => node.contains(document.activeElement))).toBe(true);
-  await panel.getByLabel("Value to enter", { exact: true }).fill("42");
-  await panel.getByRole("button", { name: "Apply", exact: true }).click();
+  await panel.getByRole("textbox", { name: "Value A", exact: true }).fill("42");
   await page.setViewportSize({ width: 1280, height: 800 });
   await expect(panel).toBeVisible();
   await expect(panel).not.toHaveAttribute("aria-modal", "true");
-  await expect(panel.locator('output[data-reading="unsigned"]')).toHaveText("42");
+  await expect(
+    panel
+      .getByRole("group", { name: "Value A", exact: true })
+      .locator('output[data-reading="unsigned"]'),
+  ).toHaveText("42");
   await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
 });
 
@@ -113,9 +115,29 @@ for (const theme of ["light", "dark"] as const) {
       const panel = page.getByRole("dialog", { name: "Programmer calculator" });
       const scroll = panel.getByRole("region", { name: "Calculation", exact: true });
       const a = panel.getByRole("group", { name: "Value A", exact: true });
+      await expect(panel.getByRole("button", { name: "Apply", exact: true })).toHaveCount(0);
+      const aInput = await panel
+        .getByRole("textbox", { name: "Value A", exact: true })
+        .boundingBox();
+      const aPreview = await a.boundingBox();
+      const bInput = await panel
+        .getByRole("textbox", { name: "Value B", exact: true })
+        .boundingBox();
+      const bPreview = await panel
+        .getByRole("group", { name: "Value B", exact: true })
+        .boundingBox();
+      const operation = await panel
+        .getByRole("combobox", { name: "Operation", exact: true })
+        .boundingBox();
+      expect(Math.abs(aInput!.width - bInput!.width)).toBeLessThan(1);
+      expect(aPreview!.y).toBeGreaterThanOrEqual(aInput!.y + aInput!.height);
+      expect(bInput!.y).toBeGreaterThanOrEqual(aPreview!.y + aPreview!.height);
+      expect(bPreview!.y).toBeGreaterThanOrEqual(bInput!.y + bInput!.height);
+      expect(operation!.y).toBeGreaterThanOrEqual(bPreview!.y + bPreview!.height);
       await panel.getByRole("button", { name: "64 bits", exact: true }).click();
-      await panel.getByLabel("Value to enter", { exact: true }).fill("18446744073709551615");
-      await panel.getByRole("button", { name: "Apply", exact: true }).click();
+      await panel
+        .getByRole("textbox", { name: "Value A", exact: true })
+        .fill("18446744073709551615");
       await panel.getByRole("button", { name: "Calculate", exact: true }).click();
       await expect(a.locator("[data-pattern]")).toHaveAttribute(
         "data-pattern",
@@ -149,12 +171,12 @@ for (const theme of ["light", "dark"] as const) {
       await panel.getByRole("button", { name: "Close calculator" }).click();
       await page.getByRole("button", { name: "Calculator", exact: true }).click();
       await expect.poll(() => scroll.evaluate((n) => n.scrollLeft)).toBe(position);
-      await panel.getByLabel("Second value", { exact: true }).fill("invalid");
+      await panel.getByRole("textbox", { name: "Value B", exact: true }).fill("invalid");
       await expect(
         panel.getByRole("img", { name: "Result: Not calculated", exact: true }),
       ).toBeVisible();
       await panel.getByRole("button", { name: "Calculate", exact: true }).click();
-      await expect(panel.getByLabel("Second value", { exact: true })).toHaveAttribute(
+      await expect(panel.getByRole("textbox", { name: "Value B", exact: true })).toHaveAttribute(
         "aria-invalid",
         "true",
       );

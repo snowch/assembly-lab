@@ -30,6 +30,7 @@ export type Workspace = {
   pattern: string;
   entry: string;
   entryNotation: "prefix";
+  entryMode: "live";
   operand: string;
   operation: CalculatorOperation;
   shift: string;
@@ -51,8 +52,9 @@ export function initialWorkspace(): Workspace {
     width: 32,
     reading: "unsigned",
     pattern: "0",
-    entry: "",
+    entry: "0",
     entryNotation: "prefix",
+    entryMode: "live",
     operand: "1",
     operation: "add",
     shift: "1",
@@ -82,10 +84,12 @@ export function workspaceOperand(work: Workspace) {
 }
 
 export function workspaceCalculation(work: Workspace) {
+  const a = calculatorParseEntry(work.entry, work.width, work.reading);
+  if (!a.ok) return { ok: false as const, field: "entry" as const, code: a.error };
   const operand = workspaceOperand(work);
   if (!operand.ok) return operand;
   const result = calculatorCompute(
-    work.pattern,
+    a.pattern,
     work.operation,
     operand.pattern,
     work.width,
@@ -94,7 +98,7 @@ export function workspaceCalculation(work: Workspace) {
   return {
     ok: true as const,
     trace: {
-      a: work.pattern,
+      a: a.pattern,
       b: operand.pattern,
       pattern: result.pattern,
       full: result.full,
@@ -105,7 +109,7 @@ export function workspaceCalculation(work: Workspace) {
   };
 }
 
-/** Preserve a decimal reading across settings changes without truncating a pending draft. */
+/** Explicit settings changes resize valid words; malformed drafts remain available to correct. */
 export function workspaceEntryForSettings(
   text: string,
   oldWidth: WorkspaceWidth,
@@ -113,11 +117,13 @@ export function workspaceEntryForSettings(
   width: WorkspaceWidth,
   reading: CalculatorReading,
 ): string {
-  // Explicit bit notation is independent of reading and retains its pasted length/text.
-  if (calculatorEntryFormat(text) !== "decimal") return text;
   const parsed = calculatorParseEntry(text, oldWidth, oldReading);
-  if (!parsed.ok || BigInt(parsed.pattern) >= 1n << BigInt(width)) return text;
-  return calculatorReading(BigInt(parsed.pattern), width, reading).toString();
+  if (!parsed.ok) return text;
+  const pattern = BigInt.asUintN(width, BigInt(parsed.pattern));
+  const format = calculatorEntryFormat(text);
+  if (format === "decimal") return calculatorReading(pattern, width, reading).toString();
+  if (width >= oldWidth) return text;
+  return format === "hex" ? `0x${pattern.toString(16)}` : `0b${pattern.toString(2)}`;
 }
 
 /** Preserve the old header tool's exact patterns and pending fields across a coordinated update. */
@@ -152,6 +158,11 @@ export function restoreWorkspace(raw: unknown): Workspace {
       )
         work[field] = `0x${work[field]}`;
   }
+  // The old tool's empty draft meant no replacement for its loaded A.
+  if (value.entryMode !== "live" && work.entry.trim() === "")
+    work.entry = calculatorReading(BigInt(work.pattern), work.width, work.reading).toString();
+  const liveA = calculatorParseEntry(work.entry, work.width, work.reading);
+  if (liveA.ok) work.pattern = liveA.pattern;
   if (value.half === "lower") work.half = "lower";
   work.halfOpen = value.halfOpen === true;
   if (typeof value.selected === "number" && Number.isInteger(value.selected))

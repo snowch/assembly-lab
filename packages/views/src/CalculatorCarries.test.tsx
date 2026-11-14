@@ -15,9 +15,8 @@ afterEach(() => {
 });
 const setup = () => render(<CalculatorWorkspace handoffKey="carries" />);
 function calculate(view: ReturnType<typeof setup>, a: string, b: string) {
-  fireEvent.change(view.getByLabelText(S.entry), { target: { value: a } });
-  fireEvent.click(view.getByRole("button", { name: S.apply }));
-  fireEvent.change(view.getByLabelText(S.second), { target: { value: b } });
+  fireEvent.change(view.getByRole("textbox", { name: C.currentA }), { target: { value: a } });
+  fireEvent.change(view.getByRole("textbox", { name: C.currentB }), { target: { value: b } });
   fireEvent.click(view.getByRole("button", { name: S.calculate }));
 }
 
@@ -70,18 +69,20 @@ it("shows the user's actual carry columns, sign-bit ports and distinct C/V resul
   ).toHaveAttribute("data-pattern", "2147483648");
 });
 
-it("clears stale carry values when applied inputs change but keeps an unapplied A draft separate", () => {
+it("clears stale carry values as soon as either current input changes", () => {
   const view = setup();
   fireEvent.click(view.getByRole("button", { name: F.showCarries }));
   calculate(view, "0x7ffffffe", "2");
-  fireEvent.change(view.getByLabelText(S.entry), { target: { value: "0x1" } });
-  expect(view.getByText(F.vEquation(1, 0, 1))).toBeVisible();
-  fireEvent.change(view.getByLabelText(S.second), { target: { value: "1" } });
+  fireEvent.change(view.getByRole("textbox", { name: C.currentA }), { target: { value: "0x1" } });
+  expect(view.container.querySelector("[data-flag]")).toBeNull();
+  fireEvent.change(view.getByRole("textbox", { name: C.currentB }), { target: { value: "1" } });
   expect(view.container.querySelector("[data-flag]")).toBeNull();
   expect(view.getByText(F.unknown)).toBeVisible();
   fireEvent.click(view.getByRole("button", { name: S.calculate }));
   expect(view.getByText(F.vEquation(0, 0, 0))).toBeVisible();
-  fireEvent.click(view.getByRole("button", { name: S.apply }));
+  fireEvent.change(view.getByRole("textbox", { name: C.currentA }), {
+    target: { value: "invalid" },
+  });
   expect(view.container.querySelector("[data-flag]")).toBeNull();
   expect(view.getByText(F.unknown)).toBeVisible();
 });

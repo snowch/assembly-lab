@@ -2,8 +2,28 @@
 
 import { describe, expect, it } from "vitest";
 import { LESSONS } from "@al/content";
+import { Challenge } from "@platform/lesson-schema";
 import { grade, HEX_REGISTERS_AT_RETURN } from "./grader";
 import { answers as patternAnswers } from "./testing";
+
+// Keep generic grader bounds coverage independent of the published lesson sequence.
+const flagRange = Challenge.parse({
+  id: "flag-range-regression",
+  title: "Flag range",
+  task: "Give the number.",
+  gradedDirection: "answer",
+  fields: [{ id: "number", label: "Number", kind: "number" }],
+  initial: { data: { program: { c: "", listing: "plus:\n  adds w0, w0, w1\n  ret" } } },
+  tests: {
+    kind: "answers",
+    grader: "smallest-setting-flag",
+    cases: [
+      { label: "V", given: { entry: "plus", w0: 0x7ffffffe, flag: "v" }, expect: { number: "w1" } },
+    ],
+  },
+  hints: patternAnswers.hints,
+  reference: { answers: { number: "2" } },
+});
 
 function exercise(id: string) {
   const challenge = LESSONS.flatMap((lesson) => lesson.challenges).find((item) => item.id === id);
@@ -52,9 +72,7 @@ describe("feedback from the submitted value and the requested reading", () => {
   });
 
   it.each(["0", "−1", "4,294,967,298"])("does not invent flag results for operand %s", (value) => {
-    const challenge = exercise("smallest-overflow");
-    const field = Object.keys(reference(challenge.id))[0] as string;
-    const verdict = grade(challenge, { answers: { [field]: value } });
+    const verdict = grade(flagRange, { answers: { number: value } });
     expect(verdict.blocked).toBeUndefined();
     expect(verdict.failures).toHaveLength(1);
     expect(verdict.failures[0]?.detail).toContain("outside this range");

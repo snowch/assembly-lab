@@ -272,7 +272,7 @@ describe("the failure experiment", () => {
   });
 });
 
-describe("the figure after the flags challenge: 1 plus 0xffffffff", () => {
+describe("the carry chain for 1 plus 0xffffffff", () => {
   const call = { entry: "plus", args: [1, 0xffffffff] };
   const addition = () => additionSteps(traceOf(PLUS, call))[0]!.addition!;
 
@@ -290,21 +290,6 @@ describe("the figure after the flags challenge: 1 plus 0xffffffff", () => {
     expect(record.a).toBe(1n);
     expect(record.b).toBe(0xffffffffn);
     expect(record.result).toBe(0n);
-  });
-
-  it("is none of the six calls of the flags challenge, and opens only after that challenge", () => {
-    const challenge = lesson.challenges.find((x) => x.id === "predict-flags")!;
-    if (challenge.tests.kind !== "answers") throw new Error("answers");
-    const calls = challenge.tests.cases.map((t) => [t.given["w0"], t.given["w1"]].join(","));
-    expect(calls).not.toContain(call.args.join(","));
-    const figure = lesson.sections
-      .flatMap((s) => s.interactives)
-      .find((x) => x.id === "add-carry-out")!;
-    expect(figure.kind).toBe("adder");
-    expect(figure.props["afterChallenge"]).toBe("predict-flags");
-    expect(figure.props["call"]).toEqual(call);
-    // The same flags as the challenge's first addition, with the operands the other way round.
-    expect(nzcv(plus(0xffffffff, 1).flags)).toBe(nzcv(plus(1, 0xffffffff).flags));
   });
 
   it("is in the differential test's corpus, as a call of plus", () => {
@@ -411,7 +396,7 @@ describe("the carries into and out of bit 31, for each addition the lesson names
   });
 });
 
-describe("0xc0000000 plus 0xc0000000, the question of the last section", () => {
+describe("0xc0000000 plus 0xc0000000, matching top carries", () => {
   it("gives 0x80000000 with C 1 and V 0: the unsigned result does not fit, the signed one does", () => {
     const out = plus(0xc0000000, 0xc0000000);
     expect(out.w0).toBe(0x80000000);
@@ -422,7 +407,6 @@ describe("0xc0000000 plus 0xc0000000, the question of the last section", () => {
     expect(signed(out.w0)).toBe(-2147483648);
     // The signed sum is in range, so the signed result fits; the unsigned sum is over 2^32.
     expect(0xc0000000 + 0xc0000000).toBeGreaterThanOrEqual(2 ** 32);
-    expect(PROSE.reflectionAnswer).toContain("−1073741824 plus −1073741824 is −2147483648");
   });
 });
 
@@ -463,7 +447,6 @@ describe("the numbers the improved text states", () => {
     ...learnerText(lesson),
     ...lesson.challenges.flatMap((c) => c.fields.map((f) => f.label)),
   ]);
-  const reflection = lesson.sections.find((section) => section.kind === "reflection")!;
 
   it("are each a result of the model, an argument of a call, a count of bits or the recorded compiler's version", () => {
     const decimal = new Map<number, string>([
@@ -513,7 +496,6 @@ describe("the numbers the improved text states", () => {
     expect(recorded).toContain("ARM64 GCC 16.1.0");
     // 2147483647 plus 1 is 2147483648 as an unsigned number.
     expect(0x7fffffff + 1).toBe(2147483648);
-    expect(reflection.details?.prose).toContain("0x80000000");
   });
 
   it("holds the six additions' hexadecimal arguments to the calls of the challenge", () => {
