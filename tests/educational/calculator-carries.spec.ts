@@ -52,7 +52,18 @@ for (const theme of ["light", "dark"] as const) {
       expect(Math.max(...(await aligned(32)))).toBeLessThan(1);
       await panel.getByRole("button", { name: "High bits", exact: true }).click();
       await expect.poll(() => scroll.evaluate((n) => n.scrollLeft)).toBe(0);
-      await expect(panel.locator('[data-row="carry"] [data-sign-bit="true"]')).toBeInViewport();
+      const signCell = panel.locator('[data-row="carry"] [data-sign-bit="true"]');
+      const cellBox = (await signCell.boundingBox())!;
+      const labelBox = (await panel
+        .locator('[data-row="carry"] .workspace-row-label')
+        .boundingBox())!;
+      const scrollBox = (await scroll.boundingBox())!;
+      expect(cellBox.x).toBeGreaterThanOrEqual(labelBox.x + labelBox.width);
+      expect(cellBox.x + cellBox.width).toBeLessThanOrEqual(scrollBox.x + scrollBox.width);
+      // High bits changes the horizontal position. Reach the row vertically as a learner can.
+      await signCell.scrollIntoViewIfNeeded();
+      await expect.poll(() => scroll.evaluate((n) => n.scrollLeft)).toBe(0);
+      await expect(signCell).toBeInViewport();
       await scroll.evaluate((n) => {
         n.scrollLeft = 137;
       });
