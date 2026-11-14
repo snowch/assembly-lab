@@ -5,6 +5,7 @@
 // This is trusted, authored HTML; no learner input is interpolated into this template.
 
 import { LOGIC_COPY } from "./strings.logic";
+import { CARRY_PROOF_COPY } from "./strings.carry-proof";
 
 export const S = {
   nInspectTitle: "Is the sign bit 1?",
@@ -272,6 +273,11 @@ export const FLAGS_LESSON_SECTIONS = [
     label: "Two interpretations",
   },
   {
+    id: "carryproof",
+    title: CARRY_PROOF_COPY.title,
+    label: CARRY_PROOF_COPY.label,
+  },
+  {
     id: "compare",
     title: "How do you know whether the answer fitted?",
     label: "Why this matters",
@@ -298,9 +304,10 @@ export const MARKUP = `<div class="layout lesson al-flags-lesson" id="top" data-
     <a class="side-link active" href="#read"><span class="side-no">01</span>Read the bits</a>
     <a class="side-link" href="#resultflags"><span class="side-no">02</span>N and Z</a>
     <a class="side-link" href="#checkranges"><span class="side-no">03</span>C and V</a>
-    <a class="side-link" href="#compare"><span class="side-no">04</span>Why the flag matters</a><a class="side-link" href="#smallpractice"><span class="side-no">05</span>Small practice</a>
-    <a class="side-link" href="#arm"><span class="side-no">06</span>Move to ARM</a>
-    <a class="side-link" href="#realpractice"><span class="side-no">07</span>Try six additions</a>
+    <a class="side-link" href="#carryproof"><span class="side-no">04</span>${CARRY_PROOF_COPY.label}</a>
+    <a class="side-link" href="#compare"><span class="side-no">05</span>Why the flag matters</a><a class="side-link" href="#smallpractice"><span class="side-no">06</span>Small practice</a>
+    <a class="side-link" href="#arm"><span class="side-no">07</span>Move to ARM</a>
+    <a class="side-link" href="#realpractice"><span class="side-no">08</span>Try six additions</a>
 
 
     <p class="side-note">One idea at a time. Extra explanation is tucked away until you need it.</p>
@@ -379,12 +386,25 @@ export const MARKUP = `<div class="layout lesson al-flags-lesson" id="top" data-
           <p class="fit-footnote"><strong>V = 1</strong> when the exact signed sum falls outside −8 to +7.</p>
         </div>
       </div>
-      <a class="next-link" href="#compare">Next: why checking the right flag matters <span aria-hidden="true">→</span></a>
+      <a class="next-link" href="#carryproof">${CARRY_PROOF_COPY.rangeNext} <span aria-hidden="true">→</span></a>
+    </section>
+
+    <section class="lesson-step lesson-section" id="carryproof">
+      <div class="step-head">
+        <div class="step-kicker"><span class="step-counter">04</span> ${CARRY_PROOF_COPY.label}</div>
+        <h2><span class="section-title">${CARRY_PROOF_COPY.title}</span></h2>
+        <p class="step-description">${CARRY_PROOF_COPY.lead}</p>
+      </div>
+      <div class="focus-card">
+        <p class="carry-rule"><strong>${CARRY_PROOF_COPY.rule}</strong></p>
+        <div id="carryProofExamples"></div>
+      </div>
+      <a class="next-link" href="#compare">${CARRY_PROOF_COPY.next} <span aria-hidden="true">→</span></a>
     </section>
 
     <section class="lesson-step lesson-section" id="compare">
       <div class="step-head">
-        <div class="step-kicker"><span class="step-counter">04</span> Why this matters</div>
+        <div class="step-kicker"><span class="step-counter">05</span> Why this matters</div>
         <h2><span class="section-title">How do you know whether the answer fitted?</span></h2>
         <p class="step-description">After <code>adds</code>, both flags have values. <strong>Your program must check the flag that matches its numbers.</strong> Checking the other one can miss an overflow.</p>
       </div>
@@ -408,7 +428,7 @@ export const MARKUP = `<div class="layout lesson al-flags-lesson" id="top" data-
         <p class="flag-description" id="exampleIntro">But the signed answer does.</p>
         <div class="math-wrap" aria-live="polite">
           <div class="msb-carry" aria-label="Carry entering and leaving the leftmost bit, bit 3">
-            <div class="msb-carry-caption">Only look at the top bit (bit 3)</div>
+            <div class="msb-carry-caption">The sign bit is the leftmost retained bit, bit 3 here.</div>
             <div class="msb-flow">
               <span class="carry-tag out"><small>Carry out</small><strong id="exampleCarryOut"></strong></span>
               <span class="flow-arrow" aria-hidden="true">←</span>
@@ -434,9 +454,9 @@ export const MARKUP = `<div class="layout lesson al-flags-lesson" id="top" data-
         <details class="flags-logic-disclosure" id="flagsLogic"><summary>${LOGIC_COPY.summary}</summary><div id="flagsLogicContent"></div><div class="flags-logic-links"><a href="#/lesson/four-bit-arithmetic" data-lesson-reference="four-bit-arithmetic">${LOGIC_COPY.carryLink}</a><a href="https://snowch.github.io/bit-lab/#/lesson/alu">${LOGIC_COPY.bitLabLink}</a></div></details>
       </div>
       <a class="next-link" href="#smallpractice">Next: check a fresh small addition →</a>
-    </section><section id="smallpractice" class="lesson-step lesson-section"><div class="step-head"><div class="step-kicker"><span class="step-counter">05</span>Small practice</div><h2><span class="section-title" data-copy="miniTitle"></span></h2><p class="step-description" data-copy="miniLead"></p></div><div class="focus-card"><div id="miniBits"></div><form id="miniForm"><div id="miniChoices"></div><fieldset class="intent-field"><legend data-copy="intentLabel"></legend><p data-copy="intentQuestion"></p><div class="radios" id="intentChoices"></div></fieldset><div class="actions"><button type="submit" class="primary" data-copy="checkMini"></button><button type="button" class="secondary" id="clearMini" data-copy="clearMini"></button></div></form><div id="miniFeedback" role="status" aria-live="polite"></div></div></section>
+    </section><section id="smallpractice" class="lesson-step lesson-section"><div class="step-head"><div class="step-kicker"><span class="step-counter">06</span>Small practice</div><h2><span class="section-title" data-copy="miniTitle"></span></h2><p class="step-description" data-copy="miniLead"></p></div><div class="focus-card"><div id="miniBits"></div><form id="miniForm"><div id="miniChoices"></div><fieldset class="intent-field"><legend data-copy="intentLabel"></legend><p data-copy="intentQuestion"></p><div class="radios" id="intentChoices"></div></fieldset><div class="actions"><button type="submit" class="primary" data-copy="checkMini"></button><button type="button" class="secondary" id="clearMini" data-copy="clearMini"></button></div></form><div id="miniFeedback" role="status" aria-live="polite"></div></div></section>
 
-    <section class="lesson-step lesson-section" id="arm"><div class="step-head"><div class="step-kicker"><span class="step-counter">06</span> Apply it to a real instruction</div><h2><span class="section-title">ARM uses the same rules with 32 bits.</span></h2><p class="step-description">The sign bit is now bit 31, not bit 3. First, predict which interpretation of this exact addition fits.</p></div>
+    <section class="lesson-step lesson-section" id="arm"><div class="step-head"><div class="step-kicker"><span class="step-counter">07</span> Apply it to a real instruction</div><h2><span class="section-title">ARM uses the same rules with 32 bits.</span></h2><p class="step-description">The sign bit is now bit 31, not bit 3. First, predict which interpretation of this exact addition fits.</p></div>
       <div class="focus-card"><div class="focus-label">ARM instruction</div><div class="instruction">adds w0, w0, w1</div><div class="quiz-heading" id="armInputsLabel" data-copy="inputLabel"></div>
         <div class="hex-equation" id="armInputValues" aria-labelledby="armInputsLabel" aria-live="polite" aria-atomic="true"></div>
         <fieldset class="input-format-field" id="armInputFormats"><legend data-copy="armInputDisplayLabel"></legend><div class="input-format-options">
@@ -448,7 +468,7 @@ export const MARKUP = `<div class="layout lesson al-flags-lesson" id="top" data-
         <div id="armRanges"></div><p class="label-small" data-copy="armRanges"></p><form id="armForm"><fieldset><legend data-copy="armQuestion"></legend><div class="choice-list" id="armChoices"></div></fieldset><div class="actions"><button type="submit" class="primary" data-copy="checkPrediction"></button><button type="button" class="secondary" id="clearPrediction" data-copy="clearPrediction"></button></div></form><div id="armFeedback" role="status" aria-live="polite"></div></div><a class="next-link" href="#realpractice">Next: predict flags yourself <span aria-hidden="true">→</span></a>
     </section>
 
-    <section class="lesson-step lesson-section" id="realpractice"><div class="step-head"><div class="step-kicker"><span class="step-counter">07</span> Your turn</div><h2><span class="section-title">Predict the four flags.</span></h2><p class="step-description">One addition at a time. Use N and Z to inspect the retained bits; C and V to decide whether each interpretation fits.</p></div>
+    <section class="lesson-step lesson-section" id="realpractice"><div class="step-head"><div class="step-kicker"><span class="step-counter">08</span> Your turn</div><h2><span class="section-title">Predict the four flags.</span></h2><p class="step-description">One addition at a time. Use N and Z to inspect the retained bits; C and V to decide whether each interpretation fits.</p></div>
       <section class="focus-card challenge" data-challenge="predict-flags" id="challenge-predict-flags" aria-labelledby="practicePosition"><div class="practice-meta"><div class="quiz-heading" style="margin-bottom:0" id="practicePosition"></div><span class="practice-counter">adds w0, w0, w1</span></div><div id="caseTabs" class="case-tabs switcher" role="group"></div><div id="practiceWork"></div><p id="aggregate" role="status" class="live-status"></p><button type="button" class="secondary" id="practiceReset" data-copy="practiceReset"></button><div id="challengeHints"></div></section>
 
     <div class="focus-card"><h3 class="flag-title" data-copy="followupTitle"></h3><div id="followup"></div></div></section>

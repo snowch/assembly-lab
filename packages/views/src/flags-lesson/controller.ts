@@ -9,6 +9,7 @@ import type { RecordedProgram } from "../listing";
 import { grade } from "../grader";
 import { S, A, E } from "./strings";
 import { flagsLogicMarkup } from "./logic";
+import { carryProofMarkup } from "./carry-proof";
 import { INPUT_FORMATS, inputExpression, type InputFormat } from "./input-display";
 import {
   FLAG_NAMES,
@@ -393,6 +394,11 @@ export function mountFlagsLesson(
     ids.forEach((id, i) => ($(id).dataset.example = String(i)));
     renderResults();
     renderFit();
+    $("carryProofExamples").innerHTML = carryProofMarkup(
+      comparisonModels[1]!,
+      comparisonModels[3]!,
+      M.compute(4, 13, 4),
+    );
     renderComparison();
     renderMini();
     renderArmFeedback();
