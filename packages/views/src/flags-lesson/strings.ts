@@ -165,11 +165,6 @@ export const S = {
     "For addition, C checks whether the exact unsigned sum fits.",
     "For addition, V checks whether the exact signed sum fits.",
   ],
-  nextLessonLabel: "Next lesson",
-  nextLessonTitle: "M2, L2: Flags and overflow",
-  calculatorLabel: "Revisit the programmer calculator",
-  calculatorNote:
-    "Optional: use the programmer calculator in the register-width lesson to explore other inputs.",
   zero: "0 · clear",
   one: "1 · set",
   intentLabel: "Flag for the program's range check",
@@ -476,6 +471,6 @@ export const MARKUP = `<div class="layout lesson al-flags-lesson" id="top" data-
 
 
 
-    <div class="end"><div class="summary"><h2 data-copy="recapTitle"></h2><ul class="summary-list" id="recap"></ul></div><a class="next-link" href="#/lesson/flags-and-overflow" data-copy="nextLessonTitle" data-lesson-reference="flags-and-overflow"></a><p class="plain-note" data-copy="calculatorNote"></p><a class="next-link" href="#/lesson/register-widths" data-copy="calculatorLabel" data-lesson-reference="register-widths"></a></div>
+    <div class="end"><div class="summary"><h2 data-copy="recapTitle"></h2><ul class="summary-list" id="recap"></ul></div></div>
   </div>
 </div>`;

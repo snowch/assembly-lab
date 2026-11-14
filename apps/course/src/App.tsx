@@ -92,13 +92,11 @@ export function App() {
     const next = ordered[at + 1];
     const lessonBody = lesson ? (
       <>
-        {!flagsLayout && (
-          <p className="lesson-back">
-            <a className="back-link" href="#/">
-              {STRINGS.backToPlan}
-            </a>
-          </p>
-        )}
+        <p className="lesson-back">
+          <a className="back-link" href="#/">
+            {STRINGS.backToPlan}
+          </a>
+        </p>
         {!flagsLayout && <p className="lesson-position">{book.references.position(lesson.id)}</p>}
         {flagsLayout ? (
           <FlagsLesson book={book} lesson={lesson} storage={storage} strings={RUNTIME_STRINGS} />
