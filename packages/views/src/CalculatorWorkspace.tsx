@@ -3,6 +3,7 @@
 import { useId, useLayoutEffect, useRef, type KeyboardEvent } from "react";
 import {
   calculatorHalves,
+  calculatorAdditionCarries,
   calculatorParse,
   calculatorParseEntry,
   calculatorEntryFormat,
@@ -14,6 +15,7 @@ import {
 } from "@al/machine";
 import { useHandoffState } from "./update-handoff";
 import { PROGRAMMER_CALCULATOR as S } from "./strings.programmer-calculator";
+import { CALCULATOR_CARRIES as F } from "./strings.calculator-carries";
 import { CALCULATOR_ENTRY as E } from "./strings.calculator-entry";
 import { CALCULATOR_WORKSPACE as C } from "./strings.calculator-workspace";
 import { ProgrammerDecimal, programmerHex, programmerNumber } from "./programmer-format";
@@ -58,6 +60,11 @@ export function CalculatorWorkspace({
       message: "",
     }));
   const operand = workspaceOperand(work);
+  const showCarries = work.operation === "add" && work.showCarries;
+  const carries =
+    work.trace?.operation === "add"
+      ? calculatorAdditionCarries(work.trace.a, work.trace.b, work.trace.width)
+      : null;
   const minimum = work.reading === "signed" ? -(1n << BigInt(work.width - 1)) : 0n;
   const maximum =
     work.reading === "signed"
@@ -185,7 +192,9 @@ export function CalculatorWorkspace({
         aria-label={
           pattern === null
             ? `${label}: ${C.unknownResult}`
-            : C.resultDescription(label, work.width, shown)
+            : kind === "carry"
+              ? F.rowDescription(shown, work.width)
+              : C.resultDescription(label, work.width, shown)
         }
         data-row={kind}
       >
@@ -199,6 +208,7 @@ export function CalculatorWorkspace({
                 <span
                   className="workspace-cell"
                   data-value={value}
+                  data-sign-bit={work.width - 1 - index * 4 - offset === work.width - 1}
                   data-bit={work.width - 1 - index * 4 - offset}
                   key={offset}
                 >
@@ -266,7 +276,10 @@ export function CalculatorWorkspace({
 
   if (!active) return null;
   return (
-    <div className="al-programmer-panel calculator-workspace">
+    <div
+      className="al-programmer-panel calculator-workspace"
+      data-show-carries={showCarries || undefined}
+    >
       <p className="workspace-help">{C.modeHelp}</p>
       <div className="workspace-settings">
         <div role="group" aria-label={S.width}>
@@ -387,6 +400,16 @@ export function CalculatorWorkspace({
         <div className="workspace-bit-tools">
           <strong>{S.bitRange(work.width)}</strong>
           <div>
+            {work.operation === "add" && (
+              <button
+                type="button"
+                aria-pressed={work.showCarries}
+                aria-controls={`${id}-comparison`}
+                onClick={() => patch({ showCarries: !work.showCarries })}
+              >
+                {F.showCarries}
+              </button>
+            )}
             <button type="button" onClick={() => jump(false)}>
               {C.highBits}
             </button>
@@ -398,12 +421,18 @@ export function CalculatorWorkspace({
         <p className="workspace-field-help" id={`${id}-scroll-help`}>
           {C.sharedScrollHint}
         </p>
+        {showCarries && (
+          <p className="workspace-field-help" id={`${id}-carry-help`}>
+            {F.help} {F.signBit(work.width)}
+          </p>
+        )}
         <div
+          id={`${id}-comparison`}
           className="workspace-scroll"
           ref={scroller}
           role="region"
           aria-label={C.snapshotHeading}
-          aria-describedby={`${id}-scroll-help`}
+          aria-describedby={`${id}-scroll-help${showCarries ? ` ${id}-carry-help` : ""}`}
           tabIndex={0}
           onScroll={(event) => {
             if (!active || work.view !== "calculate") return;
@@ -428,6 +457,7 @@ export function CalculatorWorkspace({
                 ))}
               </span>
             </div>
+            {showCarries && stripRow(F.carryIn, carries?.carries ?? null, "carry")}
             {stripRow(C.a, work.pattern, "a")}
             {work.operation !== "shift-left" &&
               stripRow(
@@ -438,6 +468,45 @@ export function CalculatorWorkspace({
             {stripRow(C.result, work.trace?.pattern ?? null, "result")}
           </div>
         </div>
+        {showCarries && (
+          <div className="workspace-carry-details" aria-live="polite">
+            {carries ? (
+              <>
+                <dl className="workspace-carry-ports">
+                  <div>
+                    <dt>{F.intoSign(work.width - 1)}</dt>
+                    <dd data-carry-into-sign>{carries.intoSign}</dd>
+                  </div>
+                  <div>
+                    <dt>{F.carryOut}</dt>
+                    <dd data-carry-out>{carries.out}</dd>
+                  </div>
+                </dl>
+                <p className="workspace-field-help">{F.overflowHelp}</p>
+                <p className="workspace-field-help">{F.xorHelp}</p>
+                <dl className="workspace-carry-flags">
+                  <div>
+                    <dt>{F.cLabel}</dt>
+                    <dd data-flag="c" data-value={carries.c}>
+                      {F.cEquation(carries.c)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{F.vLabel}</dt>
+                    <dd data-flag="v" data-value={carries.v}>
+                      {F.vEquation(carries.intoSign, carries.out, carries.v)}
+                    </dd>
+                  </div>
+                </dl>
+                <p className="workspace-field-help">
+                  <strong>{carries.v === 1 ? F.different : F.matching}</strong>
+                </p>
+              </>
+            ) : (
+              <p className="workspace-field-help">{F.unknown}</p>
+            )}
+          </div>
+        )}
         {work.trace ? (
           <div className="workspace-result" aria-live="polite">
             <h3>{C.retainedResult}</h3>
@@ -457,9 +526,9 @@ export function CalculatorWorkspace({
               {C.useResult}
             </button>
           </div>
-        ) : (
+        ) : !showCarries ? (
           <p className="workspace-field-help">{C.calculateHint}</p>
-        )}
+        ) : null}
         {!work.trace && work.full !== null && (
           <p className="workspace-exact">
             {C.previousExactResult}: <ProgrammerDecimal value={BigInt(work.full)} />

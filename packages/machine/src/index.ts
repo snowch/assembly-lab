@@ -25,6 +25,7 @@ export {
   calculatorParseEntry,
   calculatorEntryFormat,
   calculatorCompute,
+  calculatorAdditionCarries,
   calculatorHalves,
   calculatorSetHalf,
 } from "./programmer-calculator.ts";
