@@ -167,7 +167,7 @@ for (const theme of ["light", "dark"] as const) {
     await open(page, theme);
     await expect(page.locator("#caseTabs button")).toHaveCount(6);
     await expect(page.locator("#practicePosition")).toHaveText("Case 1 of 6");
-    await expect(page.locator("#followup .flag")).toHaveCount(0);
+    await expect(page.locator("#followup")).toHaveCount(0);
     for (const [i, values] of correct.entries()) {
       await commitCase(page, i, values);
       if (i < correct.length - 1) {
@@ -175,7 +175,7 @@ for (const theme of ["light", "dark"] as const) {
           "data-complete",
           "false",
         );
-        await expect(page.locator("#followup .flag")).toHaveCount(0);
+        await expect(page.locator("#followup")).toHaveCount(0);
       }
       if (i === 2) {
         await expect(page.locator("#nextCase")).toBeEnabled();
@@ -187,21 +187,20 @@ for (const theme of ["light", "dark"] as const) {
     await expect(page.locator("#practicePosition")).toHaveText("Case 6 of 6");
     await expect(page.locator("#nextCase")).toBeDisabled();
     await expect(page.locator("#challenge-predict-flags")).toHaveAttribute("data-complete", "true");
-    const disclosure = page.locator("#followup .carry-disclosure");
-    await disclosure.locator("summary").focus();
-    await page.keyboard.press("Enter");
-    await expect(disclosure).toHaveAttribute("open");
+    await expect(page.locator("#followup")).toHaveCount(0);
+    await expect(page.locator("#aggregate")).toHaveText(
+      "Every case has a checked, correct answer.",
+    );
+    await expect(page.locator("#realpractice + .end #recap li")).toHaveCount(4);
     for (const width of [320, 375, 834, 920, 1280]) {
       await page.setViewportSize({ width, height: 1000 });
       if (width === 375)
         await page.addStyleTag({
-          content:
-            ".reading-equation,.followup-equation { font-family: 'DejaVu Sans', sans-serif !important; }",
+          content: ".reading-equation { font-family: 'DejaVu Sans', sans-serif !important; }",
         });
       await page.evaluate(() => document.fonts.ready);
       for (const index of [0, 2, 3, 4, 5]) {
         await page.locator(`#caseTabs button[data-case="${index}"]`).click();
-        await expect(disclosure).toHaveAttribute("open");
         const geometry = await page.locator("#realpractice").evaluate((root) => {
           const notes = [...root.querySelectorAll<HTMLElement>(".math-notes")];
           const panels = notes.map((note) => {
@@ -223,18 +222,11 @@ for (const theme of ["light", "dark"] as const) {
               }),
             };
           });
-          const summary = root
-            .querySelector(".carry-disclosure > summary")!
-            .getBoundingClientRect();
-          const previous = root.querySelector("#followup .math-notes")!.getBoundingClientRect();
-          const carry = root.querySelector(".carry-disclosure")!.getBoundingClientRect();
           const tabs = [...root.querySelectorAll("#caseTabs button")].map((button) =>
             button.getBoundingClientRect(),
           );
           return {
             panels,
-            carryGap: carry.top - previous.bottom,
-            summaryHeight: summary.height,
             tabHeights: tabs.map((tab) => tab.height),
             tabRows: new Set(tabs.map((tab) => tab.top)).size,
             tabWidth:
@@ -244,33 +236,19 @@ for (const theme of ["light", "dark"] as const) {
               ) *
                 2,
             overflow: document.documentElement.scrollWidth > innerWidth,
-            hexFits: [...root.querySelectorAll(".followup-equation bdi")].every((value) => {
-              const box = value.parentElement!.getBoundingClientRect();
-              const text = document.createRange();
-              text.selectNodeContents(value);
-              return [...text.getClientRects()].every(
-                (line) => line.left >= box.left && line.right <= box.right,
-              );
-            }),
           };
         });
-        expect(geometry.panels).toHaveLength(2);
+        expect(geometry.panels).toHaveLength(1);
         for (const panel of geometry.panels) {
           expect(panel.paired).toBe(panel.width >= 600);
           expect(panel.overlap).toBe(false);
           expect(panel.valuesFit).toBe(true);
         }
-        expect(geometry.carryGap).toBeGreaterThanOrEqual(24);
-        expect(geometry.summaryHeight).toBeGreaterThanOrEqual(44);
         expect(geometry.tabHeights.every((height) => height >= 52)).toBe(true);
         expect(geometry.tabRows).toBe(geometry.tabWidth >= 600 ? 1 : 2);
         expect(geometry.overflow).toBe(false);
-        expect(geometry.hexFits).toBe(true);
       }
     }
-    await disclosure.locator("summary").focus();
-    await page.keyboard.press("Space");
-    await expect(disclosure).not.toHaveAttribute("open");
   });
   test(`input display preserves predictions and checked results in every reading (${theme})`, async ({
     page,
@@ -469,7 +447,7 @@ for (const theme of ["light", "dark"] as const) {
         for (let step = 0; step < 8; step++) await region.press("ArrowLeft", { delay: 50 });
         await expect.poll(() => region.evaluate((node) => node.scrollLeft)).toBe(0);
       }
-      await expect(page.locator("#arm [data-fixed-result], #followup .flag")).toHaveCount(0);
+      await expect(page.locator("#arm [data-fixed-result]")).toHaveCount(0);
       await expect(page.locator("#challenge-predict-flags")).toHaveAttribute(
         "data-complete",
         "false",
@@ -724,7 +702,7 @@ for (const theme of ["light", "dark"] as const) {
     expect((await stored(page)).slots["predict-readings"]).toBeUndefined();
     expect(errors).toEqual([]);
   });
-  test(`registered case grades, hints, aggregate gate and edit invalidation survive reload (${theme})`, async ({
+  test(`registered case grades, hints, completion and edit invalidation survive reload (${theme})`, async ({
     page,
   }) => {
     await open(page, theme);
@@ -741,16 +719,10 @@ for (const theme of ["light", "dark"] as const) {
     await expect(page.locator("#nextCase")).toBeDisabled();
     for (const [i, values] of correct.entries()) await commitCase(page, i, values);
     await expect(c).toHaveAttribute("data-complete", "true");
-    await expect(page.locator("#followup .flag")).toHaveCount(4);
-    const followupInstruction = await page.locator("#followup .instruction").evaluate((node) => {
-      const next = node.nextElementSibling!.getBoundingClientRect();
-      return {
-        display: getComputedStyle(node).display,
-        gap: next.top - node.getBoundingClientRect().bottom,
-      };
-    });
-    expect(followupInstruction.display).toBe("block");
-    expect(followupInstruction.gap).toBeGreaterThanOrEqual(16);
+    await expect(page.locator("#followup")).toHaveCount(0);
+    await expect(page.locator("#aggregate")).toHaveText(
+      "Every case has a checked, correct answer.",
+    );
     const saved = await stored(page);
     expect(saved.challenges["predict-flags"].artifact.answers).toEqual({
       "first-n": "0",
@@ -785,7 +757,9 @@ for (const theme of ["light", "dark"] as const) {
     await page.locator('#caseTabs button[data-case="2"]').click();
     await choose(page, "practice-v", 0);
     await expect(c).toHaveAttribute("data-complete", "false");
-    await expect(page.locator("#followup .flag")).toHaveCount(0);
+    await expect(page.locator("#aggregate")).toHaveText(
+      "Every case needs a checked, correct answer. Moving between cases does not complete the practice.",
+    );
     expect((await stored(page)).challenges["predict-flags"].artifact.answers).not.toHaveProperty(
       "third-v",
     );
@@ -863,9 +837,9 @@ for (const theme of ["light", "dark"] as const) {
       "data-complete",
       "false",
     );
-    await expect(
-      page.locator("#followup .flag,#arm [data-fixed-result],#arm [data-result-reading]"),
-    ).toHaveCount(0);
+    await expect(page.locator("#arm [data-fixed-result],#arm [data-result-reading]")).toHaveCount(
+      0,
+    );
   });
 }
 

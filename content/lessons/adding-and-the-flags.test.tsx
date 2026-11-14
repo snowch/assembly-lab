@@ -23,7 +23,6 @@ import {
 
 import { LESSONS } from ".";
 import { addingAndTheFlags } from "./adding-and-the-flags";
-import { PROSE } from "./adding-and-the-flags.prose";
 
 const lesson = LESSONS.find((l) => l.id === "adding-and-the-flags")!;
 const followOn = LESSONS.find((l) => l.id === "flags-and-overflow")!;
@@ -98,20 +97,6 @@ describe("the lesson", () => {
       expect(ids.indexOf(x.props["after"] as string), x.id).toBeLessThan(ids.indexOf(x.id));
   });
 
-  it("gates a second adder behind the flags challenge, after the challenge in the page", () => {
-    const figures = lesson.sections.flatMap((s) => s.interactives);
-    const ids = figures.map((x) => x.id);
-    const gated = figures.filter((x) => typeof x.props["afterChallenge"] === "string");
-    expect(gated.map((x) => x.id)).toEqual(["add-carry-out"]);
-    for (const x of gated) {
-      const challengeId = x.props["afterChallenge"] as string;
-      expect(lesson.challenges.map((c) => c.id)).toContain(challengeId);
-      // The challenge is mounted by a figure of the same id as its mount, earlier in the page.
-      const mount = figures.find((m) => m.props["challengeId"] === challengeId)!;
-      expect(ids.indexOf(mount.id), x.id).toBeLessThan(ids.indexOf(x.id));
-    }
-  });
-
   it("asks the prediction challenge for twenty-four flags, in four letters for each of six additions", () => {
     const c = challenge("predict-flags");
     expect(c.fields.map((f) => f.id)).toEqual(
@@ -121,12 +106,11 @@ describe("the lesson", () => {
     );
     expect(c.fields.every((f) => f.kind === "choice")).toBe(true);
     expect(testCount(c)).toBe(6);
-    expect(testCount(challenge("smallest-overflow"))).toBe(1);
   });
 });
 
 describe("the challenges", () => {
-  it.each(["predict-flags", "smallest-overflow"])(
+  it.each(["predict-flags"])(
     "%s: the reference passes every test and the starting point does not",
     (id) => {
       const c = challenge(id);
@@ -199,27 +183,6 @@ describe("the challenges", () => {
     if (c.tests.kind !== "answers") throw new Error("answers");
     expect(c.tests.cases.every((t) => t.given["feedback"] === "rule")).toBe(true);
   });
-
-  it("smallest-overflow: only 2 passes, and a wrong answer is told only what it got wrong", () => {
-    const c = challenge("smallest-overflow");
-    const pass = (n: string) => grade(c, { answers: { number: n } });
-    expect(pass("2").passed).toBe(true);
-    // 1 does not set V: 0x7ffffffe plus 1 is 0x7fffffff, which fits.
-    expect(pass("1").failures[0]?.detail).toBe(ARITH_STRINGS.grader.flagClear("V"));
-    // 3 sets V, but 2 does too.
-    expect(pass("3").failures[0]?.detail).toBe(ARITH_STRINGS.grader.notSmallest);
-    // 0 and negative numbers are not positive; a number with no V does not pass.
-    expect(pass("0").passed).toBe(false);
-    expect(pass("-5").passed).toBe(false);
-    expect(pass("2147483648").passed).toBe(false);
-    expect(JSON.stringify(pass("1"))).not.toContain('"2"');
-  });
-
-  it("smallest-overflow: an answer that is not a whole number is asked for again", () => {
-    const c = challenge("smallest-overflow");
-    expect(grade(c, { answers: { number: "two" } }).blocked).toContain("whole number");
-    expect(grade(c, { answers: {} }).blocked).toMatch(/^Nothing is graded until /);
-  });
 });
 
 describe("the page", () => {
@@ -232,9 +195,8 @@ describe("the page", () => {
     );
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
-    // The adder and the stepper wait for their predictions, and the second adder for the flags
-    // challenge; nothing of any run is on the page.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
+    // The investigation adder waits for its prediction; no run result is on the page.
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(1);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(1);
     // The closed note on GCC's check, and the closed answer to the last section's question.
@@ -279,29 +241,11 @@ describe("the page", () => {
     expect(c.querySelector(".challenge-complete")).not.toBeNull();
   });
 
-  it("shows the text after the flags challenge, and the adder it follows, only once the challenge passes", () => {
-    const { container } = render(
-      <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
-    );
-    const note = PROSE.flagsAfter.split(". ")[0]!;
-    expect(container.textContent).not.toContain(note);
-    const c = container.querySelector(
-      'section.challenge[data-challenge="predict-flags"]',
-    ) as HTMLElement;
-    for (const [id, value] of Object.entries(challenge("predict-flags").reference.answers!))
-      fireEvent.click(c.querySelector(`[data-field="${id}"] input[value="${value}"]`)!);
-    fireEvent.click(within(c).getByRole("button", { name: /Run tests/ }));
-    expect(container.querySelector("#ix-add-carry-out .al-adder-note")?.textContent).toContain(
-      note,
-    );
-  });
-
   it("opens no result before it is earned: the stepper and the adder wait for their predictions", () => {
     const { container } = render(
       <LessonView book={book} lesson={lesson} storage={memoryStorage()} />,
     );
-    for (const id of ["add-columns", "add-carry-out"])
-      expect(container.querySelector(`#ix-${id} .al-locked`), id).not.toBeNull();
+    expect(container.querySelector("#ix-add-columns .al-locked")).not.toBeNull();
     expect(container.querySelector(".al-adder-final")).toBeNull();
     expect(container.querySelector(".al-flag-tag")).toBeNull();
   });

@@ -4,23 +4,15 @@ import { expect, it } from "vitest";
 import { LESSONS } from ".";
 
 it.each([
-  ["one-pattern-three-readings", "hexadecimal-calculator", "hexadecimal"],
-  ["same-bits-two-readings", "readings-calculator", "readings"],
-  ["four-bit-arithmetic", "four-bit-calculator", "arithmetic"],
-  ["building-constants", "halves-calculator", "halves"],
-])("offers only the lesson's optional calculator: %s", (lessonId, figureId, preset) => {
+  ["one-pattern-three-readings", "read-register"],
+  ["same-bits-two-readings", "reading-explore"],
+  ["four-bit-arithmetic", "four-bit-width"],
+  ["building-constants", "movk-halves"],
+])("keeps teaching figures without a duplicate scratch calculator: %s", (lessonId, figureId) => {
   const lesson = LESSONS.find((x) => x.id === lessonId)!;
-  const figures = lesson.sections.flatMap((s) => s.interactives);
-  const tools = figures.filter((f) => f.kind === "programmer-calculator");
-  expect(tools).toHaveLength(1);
-  expect(tools[0]).toMatchObject({
-    id: figureId,
-    role: "experiment",
-    timeModel: "none",
-    props: { preset },
-  });
-  expect(tools[0]!.props).not.toHaveProperty("answers");
-  expect(tools[0]!.props).not.toHaveProperty("fromChallenge");
+  const figures = lesson.sections.flatMap((section) => section.interactives);
+  expect(figures.filter((figure) => figure.kind === "programmer-calculator")).toEqual([]);
+  expect(figures.map((figure) => figure.id)).toContain(figureId);
 });
 
 it("keeps register scratch work and existing arithmetic helpers independent of grading", () => {

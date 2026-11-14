@@ -81,11 +81,6 @@ export const S = {
   exactSum: "Exact sum",
   fits: "Fits the range",
   outside: "Outside the range",
-  carryDetail: "Optional: inspect the carries",
-  carryIn: "Carry into the top bit",
-  carryOut: "Carry out of the top bit",
-  carryRule:
-    "C is the carry out of the top bit. V is set when the carries into and out of the top bit differ.",
   programUse:
     "The program's intended meaning decides which range to check: C for unsigned addition, V for signed addition.",
   miniTitle: "Check a fresh small addition",
@@ -148,16 +143,10 @@ export const S = {
   chooseFlags: "Choose a value for every flag before checking.",
   wrongFlags: "Check these flags again: {flags}.",
   caseCorrect: "Your flags match this case.",
-  allCorrect: "Every case has a checked, correct answer. The follow-up is ready.",
+  allCorrect: "Every case has a checked, correct answer.",
   notComplete:
-    "Check a correct answer for every case to open the follow-up. Moving to the next case does not complete it.",
-  editInvalidates:
-    "You changed an answer. Check this case again; the follow-up stays locked until every case is correct.",
+    "Every case needs a checked, correct answer. Moving between cases does not complete the practice.",
   practiceReset: "Clear practice answers",
-  followupTitle: "Inspect the first case with its inputs reversed",
-  followupLocked: "Complete every practice case correctly to open this addition.",
-  followupLead:
-    "The first practice case appears below with its input order reversed. Inspect the result and flags using the same checks.",
   recapTitle: "Keep the bits and the sums separate",
   recap: [
     "N reads the stored result's top bit.",
@@ -466,7 +455,7 @@ export const MARKUP = `<div class="layout lesson al-flags-lesson" id="top" data-
     <section class="lesson-step lesson-section" id="realpractice"><div class="step-head"><div class="step-kicker"><span class="step-counter">08</span> Your turn</div><h2><span class="section-title">Predict the four flags.</span></h2><p class="step-description">One addition at a time. Use N and Z to inspect the retained bits; C and V to decide whether each interpretation fits.</p></div>
       <section class="focus-card challenge" data-challenge="predict-flags" id="challenge-predict-flags" aria-labelledby="practicePosition"><div class="practice-meta"><div class="quiz-heading" style="margin-bottom:0" id="practicePosition"></div><span class="practice-counter">adds w0, w0, w1</span></div><div id="caseTabs" class="case-tabs switcher" role="group"></div><div id="practiceWork"></div><p id="aggregate" role="status" class="live-status"></p><button type="button" class="secondary" id="practiceReset" data-copy="practiceReset"></button><div id="challengeHints"></div></section>
 
-    <div class="focus-card"><h3 class="flag-title" data-copy="followupTitle"></h3><div id="followup"></div></div></section>
+    </section>
 
 
 

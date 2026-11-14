@@ -182,7 +182,8 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "reminder": "A set top bit makes the signed reading negative, while the unsigned reading stays non-negative. [Signed and unsigned readings](#/lesson/same-bits-two-readings) explains the two readings."
   },
   "staleFlags": {
-    "title": "Flags and overflow",
+    "title": "Which instruction wrote the flags?",
+    "explanationTitle": "Writing and preserving flags",
     "objectives": [
       "distinguish preserved flags from flags written by the latest arithmetic operation."
     ],
@@ -427,13 +428,13 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     ],
     "motivation": "Narrowing can change a value even when no arithmetic overflows. If the application must reject values outside a required range, check the original value before converting it. The recorded conversions show why keeping the low byte is not a range check. Sign extension repeats the narrow value’s top bit; [Extending values in registers](#/lesson/extending-register-values) traces that rule."
   },
-  "overflowReminder": "A64’s V flag reports signed overflow; [Flags and overflow](#/lesson/flags-and-overflow) separates that report from unsigned carry. The next experiment executes an instruction directly, so its rules differ from those of the C expression.",
+  "overflowReminder": "A64’s V flag reports signed overflow; [Addition and its flags](#/lesson/adding-and-the-flags) separates that report from unsigned carry. The next experiment executes an instruction directly, so its rules differ from those of the C expression.",
   "checkedAdd": {
     "title": "Checked addition",
     "objectives": [
       "store the sum bits and return a separate report of signed overflow."
     ],
-    "intro": "Checked addition has two outputs: stored result bits and a report of whether the mathematical sum fits. Keep them separate. [Flags and overflow](#/lesson/flags-and-overflow) distinguishes unsigned carry from signed overflow. The following experiment stores the sum but tests the wrong flag for its report."
+    "intro": "Checked addition has two outputs: stored result bits and a report of whether the mathematical sum fits. Keep them separate. [Addition and its flags](#/lesson/adding-and-the-flags) distinguishes unsigned carry from signed overflow. The following experiment stores the sum but tests the wrong flag for its report."
   },
   "nativeBoot": {
     "title": "Building and booting an executable",

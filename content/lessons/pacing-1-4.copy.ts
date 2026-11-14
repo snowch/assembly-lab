@@ -180,7 +180,8 @@ export const COPY = {
   staleFlags: {
     reminder:
       "`add` leaves the flags unchanged; `adds` writes them. [Addition and its flags](#/lesson/adding-and-the-flags) explains what N, Z, C and V record.",
-    title: "Flags and overflow",
+    title: "Which instruction wrote the flags?",
+    explanationTitle: "Writing and preserving flags",
     objectives: [
       "distinguish preserved flags from flags written by the latest arithmetic operation.",
     ],

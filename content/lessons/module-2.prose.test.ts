@@ -59,20 +59,12 @@ const cases = [
     labelsFile: "./adding-and-the-flags.labels.ts",
     // The captions, field labels and test names the file does not give: each was drafted for the
     // page, and the file's parts name none of them.
-    canonicalCaptions: [
-      PRIMER.exampleCaption,
-      PRIMER.practiceCaption,
-      L1.captions.adder,
-      L1.captions.adderCarryOut,
-    ],
+    canonicalCaptions: [PRIMER.exampleCaption, PRIMER.practiceCaption, L1.captions.adder],
     own: [
       L1.captions.predictReadings,
       L1.captions.predictAdd,
       L1.captions.stepAdd,
       L1.captions.flags,
-      L1.captions.overflow,
-      L1.challenges.overflow.field,
-      L1.challenges.overflow.test,
       // The twelve fields of the prediction: a flag's letter, then the addition.
       ...L1.challenges.flags.additions.flatMap((a) =>
         ["N", "Z", "C", "V"].map((flag) => L1.challenges.flags.field(flag, a.text)),
@@ -222,9 +214,6 @@ describe("module 2, the improved text: closed notes, gated texts and the last se
     {
       id: "adding-and-the-flags",
       prose: P1,
-      gated: P1.flagsAfter,
-      gatedFigure: "add-carry-out",
-      gate: "predict-flags",
     },
     {
       id: "subtracting-and-the-tick-counter",
@@ -235,7 +224,7 @@ describe("module 2, the improved text: closed notes, gated texts and the last se
     },
   ] as const;
 
-  it.each(lessons)(
+  it.each([lessons[1]])(
     "$id: the last section is What you now know, a list and a question, and a closed Answer",
     ({ id, prose }) => {
       const lesson = LESSONS.find((l) => l.id === id)!;
@@ -258,17 +247,16 @@ describe("module 2, the improved text: closed notes, gated texts and the last se
   );
 
   it.each(lessons)(
-    "$id: the closed notes and the gated text are read by the term gate and the lessons' checks",
-    ({ id, gated }) => {
+    "$id: the closed notes are read by the term gate and the lessons' checks",
+    ({ id }) => {
       const lesson = LESSONS.find((l) => l.id === id)!;
       const read = learnerText(lesson);
-      expect(read).toContain(gated);
       for (const s of lesson.sections) if (s.details) expect(read).toContain(s.details.prose);
       expect(termProblems(LESSONS)).toEqual([]);
     },
   );
 
-  it.each(lessons)(
+  it.each(lessons.filter((lesson) => "gated" in lesson))(
     "$id: the text shown after a challenge is in the figure that waits for the pass, and nowhere else",
     ({ id, gated, gatedFigure, gate }) => {
       const lesson = LESSONS.find((l) => l.id === id)!;
@@ -277,6 +265,7 @@ describe("module 2, the improved text: closed notes, gated texts and the last se
         .find((x) => x.id === gatedFigure)!;
       expect(figure.props["afterChallenge"]).toBe(gate);
       expect(figure.props["note"]).toBe(gated);
+      expect(learnerText(lesson)).toContain(gated);
       for (const s of lesson.sections) {
         expect(s.prose).not.toContain(gated);
         expect(s.details?.prose ?? "").not.toContain(gated);
@@ -288,7 +277,7 @@ describe("module 2, the improved text: closed notes, gated texts and the last se
     },
   );
 
-  it("lesson 1: the gate for its text is the challenge that asks for the three additions", () => {
+  it("lesson 1: the six-addition challenge keeps its mount and feedback guidance", () => {
     const lesson = LESSONS.find((l) => l.id === "adding-and-the-flags")!;
     const mount = lesson.sections
       .flatMap((s) => s.interactives)

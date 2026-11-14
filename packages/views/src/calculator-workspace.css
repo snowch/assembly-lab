@@ -54,11 +54,6 @@
   font: 600 16px/1.5 var(--font-mono);
   overflow-wrap: anywhere;
 }
-.workspace-readout-help {
-  margin: 4px 0 0;
-  color: var(--fg-muted);
-  font-size: 12px;
-}
 .workspace-readouts .al-programmer-number-group,
 .workspace-exact .al-programmer-number-group {
   display: inline;
@@ -66,20 +61,25 @@
   color: inherit;
   font: inherit;
 }
-.workspace-load {
-  margin-top: 14px;
+.workspace-value {
+  margin: 18px 0;
 }
-.workspace-load > label {
-  margin-bottom: 4px;
+.calculator-workspace .workspace-value > label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 17px;
+  font-weight: 700;
 }
-.workspace-load-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.calculator-workspace .workspace-value > input {
+  width: 100%;
+  margin-bottom: 10px;
+  font-family: var(--font-mono);
 }
-.workspace-load-controls input {
-  flex: 1 1 0;
-  width: 0;
+.calculator-workspace .workspace-editor-controls {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
 }
 .workspace-tabs {
   display: flex;
@@ -113,6 +113,16 @@
 }
 .workspace-operation > button {
   font-size: 14px;
+}
+.workspace-calculation-action {
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-top: 24px;
+}
+.calculator-workspace .workspace-calculate {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 700;
 }
 .workspace-bit-tools {
   display: flex;

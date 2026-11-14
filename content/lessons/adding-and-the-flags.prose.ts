@@ -70,10 +70,6 @@ export const PROSE = {
     "`0xffffffff` plus 1 gives N 0, Z 1, C 1 and V 0. 5 plus 3 has all four at 0. `0x80000000` plus `0x80000000` gives N 0, Z 1, C 1 and V 1. `0x7ffffffe` plus 2 gives N 1, Z 0, C 0 and V 1. `0xfffffff9` plus 2 gives N 1, Z 0, C 0 and V 0. 0 plus 0 gives N 0, Z 1, C 0 and V 0.",
   ] as const,
 
-  /** Shown with the figure that opens when the flags challenge is passed. */
-  flagsAfter:
-    "C and V are separate tests, one for each reading, so either can be 1 without the other. `0xffffffff` plus 1 carries into bit 31 and out of it, so C is 1 and V is 0; `0x7fffffff` plus 1 carries into bit 31 but not out, so C is 0 and V is 1. `0x80000000` plus `0x80000000` makes C and V both 1.",
-
   failureExperiment:
     "The figure runs `sum_flags` with:\n\n- `w0` = `0x7fffffff`.\n- `w1` = 1.\n- `w2` = `0xffffffff`.\n\n" +
     "It runs these instructions in order:\n\n1. `adds w3, w2, w2` adds `0xffffffff` to itself.\n2. `add w0, w0, w1` adds `0x7fffffff` and 1.\n\nAfter each step, the figure marks the registers that were written and the flags whose values changed.",
@@ -87,32 +83,7 @@ export const PROSE = {
     "After this 32-bit `adds`, read the flags from the result and the carry marks at bit 31:\n\n- N is the result’s top bit, bit 31.\n- Z is 1 if all 32 result bits are 0; otherwise it is 0.\n- C is the carry out of bit 31.\n- V is 1 if the carry into bit 31 differs from the carry out; otherwise it is 0.\n\nThe carry test for V reports the same signed-range check as the miniatures: 1 means the exact signed sum does not fit. C reports whether the exact unsigned sum is too large.\n\nFor optional hardware background, explore [Bit Lab’s four-bit arithmetic and logic circuit](https://snowch.github.io/bit-lab/#/lesson/alu). It is a teaching model, not an Arm processor’s circuit.",
 
   generalisation:
-    "Every `adds` writes all four flags. The flags keep their values until another instruction writes them. `add` and `sub` do not write the flags.\n\n" +
-    "To check whether an addition fits, a program reads C for unsigned numbers or V for signed numbers. Later modules show instructions that read the flags.",
-
-  challenge: "This challenge uses V to detect a sum outside the signed range.",
-  overflowTask:
-    "Give the smallest positive number that, added to `0x7ffffffe` with `adds`, makes V 1.\n\n" +
-    "Enter the number in decimal.",
-  overflowHints: [
-    "V is 1 when the signed answer does not fit, so look for the first signed answer above 2147483647.",
-    "The question is about V, not C. The unsigned answer fits for small numbers.",
-    "`0x7fffffff` plus 1 makes V 1.",
-    "`0x7ffffffe` is 2147483646.",
-    "The answer is 2.",
-  ] as const,
-
-  reflection:
-    "- `adds` adds two numbers and writes N, Z, C and V.\n" +
-    "- N and Z describe the result.\n" +
-    "- C is the carry out of bit 31 for an addition.\n" +
-    "- V reports signed overflow.\n" +
-    "- `add` does not write the flags.\n" +
-    "- The flags keep their values until an instruction writes them.\n\n" +
-    "**Question:** `adds` adds `0xc0000000` and `0xc0000000`. Which of C and V is 1?",
-  reflectionAnswerSummary: "Answer",
-  reflectionAnswer:
-    "The result is `0x80000000`. A carry goes into bit 31 and a carry comes out, so C is 1 and V is 0. The unsigned result does not fit, but the signed one does: −1073741824 plus −1073741824 is −2147483648.",
+    "Every `adds` writes all four flags. The flags keep their values until another instruction writes them. `add` and `sub` do not write the flags.",
 
   modelVsReality: "",
 } as const;

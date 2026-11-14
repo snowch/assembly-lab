@@ -35,11 +35,18 @@ const correct = [
 ] as const;
 
 describe("the imported flags presentation uses canonical work and graders", () => {
-  it("owns only the published addition challenge; the later challenge remains in its lesson", () => {
+  it("owns the six-case challenge and the next lesson focuses on preserved flags", () => {
     expect(lesson.challenges.map((c) => c.id)).toEqual(["predict-flags"]);
+    const next = LESSONS.find((l) => l.id === "flags-and-overflow")!;
+    expect(next.challenges).toEqual([]);
+    expect(next.sections.map((section) => section.kind)).toEqual([
+      "question",
+      "failureExperiment",
+      "explanation",
+    ]);
     expect(
-      LESSONS.find((l) => l.id === "flags-and-overflow")!.challenges.map((c) => c.id),
-    ).toContain("smallest-overflow");
+      next.sections.flatMap((section) => section.interactives).map((figure) => figure.id),
+    ).toEqual(["predict-add-flags", "step-add"]);
   });
   it("requires genuine checked cases and preserves independent correct work after an edit", () => {
     const s = store();

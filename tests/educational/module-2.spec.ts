@@ -142,68 +142,6 @@ test.describe("lesson 1, Adding, and the four flags", () => {
     await expect(registerValue(stepper, "w3")).toHaveText("4294967294");
     await expect(next).toBeDisabled();
   });
-
-  test.describe("the smallest overflow", () => {
-    const answer = async (c: Locator, text: string) =>
-      c.locator('[data-field="number"] input').fill(text);
-
-    test("shows the program it is about, and asks for one number", async ({ page }) => {
-      await openLesson(page, "flags-and-overflow");
-      const c = challenge(page, "smallest-overflow");
-      await c.scrollIntoViewIfNeeded();
-      await expect(c.locator(".al-insn .al-text")).toHaveText(["adds w0, w0, w1", "ret"]);
-      await expect(c.locator(".answer-field")).toHaveCount(1);
-    });
-
-    test("rejects 1, which does not overflow, and 3, which is not the smallest, without saying 2", async ({
-      page,
-    }) => {
-      await openLesson(page, "flags-and-overflow");
-      const c = challenge(page, "smallest-overflow");
-      await c.scrollIntoViewIfNeeded();
-      await answer(c, "1");
-      await press(page, run(c));
-      await expect(status(c)).toHaveText(failing(0, 1));
-      await expect(c.locator(".verdict-detail")).toHaveText(A.grader.flagClear("V"));
-      await answer(c, "3");
-      await press(page, run(c));
-      await expect(c.locator(".verdict-detail")).toHaveText(A.grader.notSmallest);
-      await expect(c.locator(".verdict")).not.toContainText(/\b2\b/);
-      await expect(c.locator(".challenge-complete")).toHaveCount(0);
-    });
-
-    test("asks for a whole number before it grades", async ({ page }) => {
-      await openLesson(page, "flags-and-overflow");
-      const c = challenge(page, "smallest-overflow");
-      await c.scrollIntoViewIfNeeded();
-      await press(page, run(c));
-      await expect(c.locator(".verdict.blocked")).toContainText("Nothing is graded until");
-      await answer(c, "two");
-      await press(page, run(c));
-      await expect(c.locator(".verdict.blocked")).toContainText("whole number");
-    });
-
-    test("accepts the reference, keeps it over a reload, and drops it when the work changes", async ({
-      page,
-    }) => {
-      await openLesson(page, "flags-and-overflow");
-      let c = challenge(page, "smallest-overflow");
-      await c.scrollIntoViewIfNeeded();
-      const reference = LESSONS.flatMap((unit) => unit.challenges).find(
-        (x) => x.id === "smallest-overflow",
-      )!.reference.answers!["number"]!;
-      await answer(c, reference);
-      await press(page, run(c));
-      await expect(status(c)).toHaveText(passing(1));
-      await expect(c.locator(".challenge-complete")).toHaveText(S.challenge.complete);
-      await page.reload();
-      c = challenge(page, "smallest-overflow");
-      await expect(c.locator(".challenge-complete")).toBeVisible();
-      await expect(c.locator('[data-field="number"] input')).toHaveValue(reference);
-      await answer(c, "4");
-      await expect(c.locator(".challenge-complete")).toHaveCount(0);
-    });
-  });
 });
 
 // ---------------------------------------------------------------------------------------------

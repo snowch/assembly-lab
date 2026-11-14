@@ -21,15 +21,15 @@ for (const theme of ["light", "dark"] as const) {
       await page.getByRole("button", { name: "Calculator", exact: true }).click();
       const panel = page.getByRole("dialog", { name: "Programmer calculator", exact: true });
       await expect(panel.getByRole("combobox")).toHaveCount(1);
-      await expect(panel.getByText(E.notationHint, { exact: true })).toHaveCount(2);
+      await expect(
+        panel.getByText(E.notationHint, { exact: true }).filter({ visible: true }),
+      ).toHaveCount(1);
       const a = panel.getByRole("group", { name: "Value A", exact: true });
       const result = panel.getByRole("group", { name: "Retained result", exact: true });
-      const entry = panel.getByLabel("Value to enter", { exact: true });
-      const b = panel.getByLabel("Second value", { exact: true });
-      const apply = panel.getByRole("button", { name: "Apply", exact: true });
+      const entry = panel.getByRole("textbox", { name: "Value A", exact: true });
+      const b = panel.getByRole("textbox", { name: "Value B", exact: true });
       const calculate = panel.getByRole("button", { name: "Calculate", exact: true });
       await paste(page, entry, "0x7ffffffe");
-      await apply.click();
       await expect(a.locator("[data-pattern]")).toHaveAttribute("data-pattern", "2147483646");
       await paste(page, b, "0b10");
       await calculate.click();
@@ -37,7 +37,6 @@ for (const theme of ["light", "dark"] as const) {
       await panel.getByRole("button", { name: "Signed", exact: true }).click();
       await panel.getByRole("button", { name: "64 bits", exact: true }).click();
       await paste(page, entry, "0xFFFF FFFF");
-      await apply.click();
       await expect(a.locator('output[data-reading="signed"]')).toHaveText("4,294,967,295");
       await paste(page, b, "0B" + "1".repeat(32));
       await calculate.click();
@@ -47,19 +46,16 @@ for (const theme of ["light", "dark"] as const) {
         "true",
       );
       await paste(page, entry, "0xFFFFFFFFFFFFFFFF");
-      await apply.click();
       await expect(a.locator('output[data-reading="signed"]')).toHaveText("-1");
       await panel.getByRole("button", { name: "32 bits", exact: true }).click();
-      await expect(entry).toHaveValue("0xFFFFFFFFFFFFFFFF");
-      await apply.click();
-      await expect(panel.getByText(E.patternRangeError(32), { exact: true })).toBeVisible();
+      await expect(entry).toHaveValue("0xffffffff");
+      await expect(entry).not.toHaveAttribute("aria-invalid", "true");
       await expect(a.locator("[data-pattern]")).toHaveAttribute("data-pattern", "4294967295");
       await expect(panel.getByRole("button", { name: "32 bits", exact: true })).toHaveAttribute(
         "aria-pressed",
         "true",
       );
       await paste(page, entry, "0x00000000FFFFFFFF");
-      await apply.click();
       await expect(entry).not.toHaveAttribute("aria-invalid", "true");
       await paste(page, b, "0b" + "1".repeat(64));
       await calculate.click();
@@ -93,7 +89,7 @@ for (const theme of ["light", "dark"] as const) {
   });
 }
 
-test("legacy selected-hex drafts and their result survive the prefix-entry update", async ({
+test("legacy selected-hex drafts migrate and invalidate a result from different A", async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -134,15 +130,18 @@ test("legacy selected-hex drafts and their result survive the prefix-entry updat
   await page.goto("#/lesson/adding-and-the-flags");
   await page.getByRole("button", { name: "Calculator", exact: true }).click();
   const panel = page.getByRole("dialog", { name: "Programmer calculator", exact: true });
-  await expect(panel.getByLabel("Value to enter", { exact: true })).toHaveValue("0x7ffffffe");
-  await expect(panel.getByLabel("Second value", { exact: true })).toHaveValue("0x0b10");
+  await expect(panel.getByRole("textbox", { name: "Value A", exact: true })).toHaveValue(
+    "0x7ffffffe",
+  );
+  await expect(panel.getByRole("textbox", { name: "Value B", exact: true })).toHaveValue("0x0b10");
   await expect(
     panel.getByRole("group", { name: "Value A", exact: true }).locator("[data-pattern]"),
-  ).toHaveAttribute("data-pattern", "7");
-  await expect(
-    panel.getByRole("group", { name: "Retained result", exact: true }).locator("[data-pattern]"),
-  ).toHaveAttribute("data-pattern", "2839");
-  await expect(panel.locator(".workspace-exact")).toHaveText("Full mathematical result: 2,839");
+  ).toHaveAttribute("data-pattern", "2147483646");
+  await expect(panel.getByRole("group", { name: "Retained result", exact: true })).toHaveCount(0);
+  await panel.getByRole("button", { name: "Calculate", exact: true }).click();
+  await expect(panel.locator(".workspace-exact")).toHaveText(
+    "Full mathematical result: 2,147,486,478",
+  );
   expect(
     await page.evaluate(() => sessionStorage.getItem("assembly-lab:update:views:v1")),
   ).toBeNull();
