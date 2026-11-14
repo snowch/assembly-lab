@@ -406,6 +406,37 @@ export function mountFlagsLesson(
     save();
   }
   initialise();
+  const proofPanels = ["carryProofPositive", "carryProofNegative"] as const;
+  function selectProof(index: number) {
+    proofPanels.forEach((id, i) => {
+      const selected = i === index;
+      $(id).hidden = !selected;
+      const tab = $(id + "Tab");
+      tab.classList.toggle("active", selected);
+      tab.setAttribute("aria-selected", String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+    });
+  }
+  proofPanels.forEach((id, index) => {
+    const tab = $(id + "Tab");
+    tab.onclick = () => selectProof(index);
+    tab.onkeydown = (event) => {
+      const next =
+        event.key === "Home"
+          ? 0
+          : event.key === "End"
+            ? proofPanels.length - 1
+            : event.key === "ArrowRight"
+              ? (index + 1) % proofPanels.length
+              : event.key === "ArrowLeft"
+                ? (index + proofPanels.length - 1) % proofPanels.length
+                : null;
+      if (next === null) return;
+      event.preventDefault();
+      selectProof(next);
+      $(proofPanels[next]! + "Tab").focus({ preventScroll: true });
+    };
+  });
   $("armInputFormats").onclick = (event) => {
     const button =
       event.target instanceof Element

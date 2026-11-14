@@ -47,9 +47,14 @@ export function carryProofMarkup(positive: FlagsModel, negative: FlagsModel, fre
     [positive, C.positiveTitle, C.positiveWhy],
     [negative, C.negativeTitle, C.negativeWhy],
   ] as const;
-  return `<div class="carry-proof-examples">${examples
-    .map(([m, title, why], index) => {
-      return `<article class="carry-proof-example" data-proof-example="${index}">
+  const panelIds = ["carryProofPositive", "carryProofNegative"] as const;
+  return `<p class="carry-proof-summary">${C.summary}</p>
+    <div class="switcher fit-switcher carry-proof-switcher" role="tablist" aria-label="${C.tabsLabel}">
+      ${[C.positiveTab, C.negativeTab].map((label, index) => `<button type="button" class="purple${index === 0 ? " active" : ""}" id="${panelIds[index]}Tab" role="tab" aria-selected="${index === 0}" aria-controls="${panelIds[index]}" tabindex="${index === 0 ? 0 : -1}">${label}</button>`).join("")}
+    </div>
+    <div class="carry-proof-examples">${examples
+      .map(([m, title, why], index) => {
+        return `<article class="carry-proof-example" data-proof-example="${index}" id="${panelIds[index]}" role="tabpanel" aria-labelledby="${panelIds[index]}Tab" tabindex="0"${index === 0 ? "" : " hidden"}>
         <h3>${esc(title)}</h3>
         <p class="carry-proof-equation"><span>${C.exactSum}</span><strong>${signedEquation(m)}</strong></p>
         ${bits(m)}${carries(m, true)}
@@ -57,8 +62,8 @@ export function carryProofMarkup(positive: FlagsModel, negative: FlagsModel, fre
         <p>${esc(why)}</p>
         <p class="carry-proof-verdict">${fill(C.verdict, { carryIn: m.carryIn, carryOut: m.carryOut, v: m.flags.v })}</p>
       </article>`;
-    })
-    .join("")}</div>
+      })
+      .join("")}</div>
     <div class="carry-proof-matching"><h3>${C.matchingTitle}</h3><p>${C.matching}</p><p>${C.opposite}</p></div>
     <div class="carry-proof-check"><h3>${C.checkTitle}</h3><p>${C.checkPrompt}</p>
       <p class="carry-proof-fresh-inputs"><span>${C.firstInput}: <code>${fresh.a.bits}</code></span><span>${C.secondInput}: <code>${fresh.b.bits}</code></span></p>
