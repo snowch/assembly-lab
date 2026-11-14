@@ -56,6 +56,77 @@ async function navigateOutline(page: Page, id: string) {
 }
 
 for (const theme of ["light", "dark"] as const) {
+  test(`dedicated carry pane explains both overflow directions before comparison (${theme})`, async ({
+    page,
+  }) => {
+    await open(page, theme);
+    const pane = page.locator("#carryproof");
+    await expect(pane.getByRole("heading", { level: 2 })).toHaveText(
+      "Why unequal carries mean signed overflow",
+    );
+    await expect(page.locator("#checkranges > .next-link")).toHaveAttribute("href", "#carryproof");
+    await expect(pane.locator(".next-link")).toHaveAttribute("href", "#compare");
+    await navigateOutline(page, "carryproof");
+    await expect(page).toHaveURL(/#\/lesson\/adding-and-the-flags$/);
+    await expect(pane.locator(".carry-rule")).toContainText(
+      "V = 1 when the carry into the sign bit differs from the carry out",
+    );
+    await expect(page.locator("#compare .carry-rule")).toHaveCount(0);
+    const expected = [
+      {
+        exact: "7 + 1 = 8",
+        bits: ["0111", "0001", "1000"],
+        column: "0 + 0 + 1 = 1",
+        incoming: "1",
+        outgoing: "0",
+        kept: "1",
+        signed: "−8",
+      },
+      {
+        exact: "−8 + (−1) = −9",
+        bits: ["1000", "1111", "0111"],
+        column: "1 + 1 + 0 = 10",
+        incoming: "0",
+        outgoing: "1",
+        kept: "0",
+        signed: "7",
+      },
+    ];
+    for (const [i, example] of expected.entries()) {
+      const worked = pane.locator(`[data-proof-example="${i}"]`);
+      await expect(worked.locator(".carry-proof-equation strong")).toHaveText(example.exact);
+      await expect(worked.locator(".carry-proof-pattern")).toHaveText(example.bits);
+      for (const [row, label] of ["First input", "Second input", "Stored result"].entries())
+        await expect(
+          worked.getByRole("img", { name: `${label}: ${example.bits[row]}` }),
+        ).toBeVisible();
+      await expect(worked.locator("[data-proof-column]")).toHaveText(example.column);
+      await expect(worked.locator("[data-proof-in]")).toHaveText(example.incoming);
+      await expect(worked.locator("[data-proof-out]")).toHaveText(example.outgoing);
+      await expect(worked.locator("[data-proof-kept]")).toHaveText(example.kept);
+      await expect(worked.locator(".carry-proof-reading")).toContainText(
+        `read as ${example.signed}.`,
+      );
+      await expect(worked.locator(".carry-proof-verdict")).toContainText("V = 1");
+      await expect(worked).toContainText("wrong sign because the exact sum does not fit");
+    }
+    await expect(pane.locator(".carry-proof-matching")).toContainText(
+      "Its outgoing carry therefore equals its incoming carry",
+    );
+    const check = pane.locator(".carry-proof-check");
+    await expect(check.locator("[data-proof-in]")).toHaveText("1");
+    await expect(check.locator("[data-proof-out]")).toHaveText("1");
+    await expect(check.locator("details > div")).toBeHidden();
+    await check.locator("summary").focus();
+    await page.keyboard.press("Enter");
+    await expect(check.locator("details > div")).toBeVisible();
+    await expect(check.locator("details > div")).toContainText("The carries match, so V = 0");
+    await expect(check.locator("details > div")).toContainText("−3 + 4 = 1");
+    await expect(check.locator("details > div")).toContainText("0001, read as 1");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+  });
   test(`six practice cases and complete equations fit the available card width (${theme})`, async ({
     page,
   }) => {
