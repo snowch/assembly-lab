@@ -8,6 +8,8 @@
 export type CalculatorWidth = 4 | 32 | 64;
 export type CalculatorReading = "unsigned" | "signed";
 export type CalculatorFormat = "decimal" | "hex";
+export type CalculatorEntryFormat = CalculatorFormat | "binary";
+export type CalculatorEntryParseResult = CalculatorParseResult | { ok: false; error: "binary" };
 export type CalculatorOperation = "add" | "subtract" | "shift-left";
 export type CalculatorParseResult =
   { ok: true; pattern: string } | { ok: false; error: "empty" | "decimal" | "hex" | "range" };
@@ -79,6 +81,29 @@ export function calculatorParse(
   const maximum = reading === "signed" ? signBit - 1n : mask;
   if (value < minimum || value > maximum) return { ok: false, error: "range" };
   return { ok: true, pattern: calculatorPattern(value, width).toString() };
+}
+
+/** Prefix-based entry: unprefixed digits stay decimal; patterns never infer a signed width. */
+export function calculatorEntryFormat(text: string): CalculatorEntryFormat {
+  const input = text.replace(/[\s,_]/g, "");
+  return /^0x/i.test(input) ? "hex" : /^0b/i.test(input) ? "binary" : "decimal";
+}
+
+export function calculatorParseEntry(
+  text: string,
+  width: CalculatorWidth,
+  reading: CalculatorReading,
+): CalculatorEntryParseResult {
+  const format = calculatorEntryFormat(text);
+  if (format !== "binary") return calculatorParse(text, format, width, reading);
+  calculatorMask(width);
+  checkReading(reading);
+  const digits = text.replace(/[\s,_]/g, "").slice(2);
+  if (!/^[01]+$/.test(digits)) return { ok: false, error: "binary" };
+  const significant = digits.replace(/^0+/, "") || "0";
+  // Accept redundant leading zeros, but bound conversion before constructing a BigInt.
+  if (significant.length > width) return { ok: false, error: "range" };
+  return { ok: true, pattern: BigInt(`0b${significant}`).toString() };
 }
 
 /** Internal interchange uses unsigned decimal strings, not entry notation. */

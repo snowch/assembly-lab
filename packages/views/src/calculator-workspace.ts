@@ -3,14 +3,16 @@
 import {
   calculatorCompute,
   calculatorParse,
-  type CalculatorFormat,
+  calculatorParseEntry,
+  calculatorEntryFormat,
+  calculatorReading,
   type CalculatorOperation,
   type CalculatorReading,
 } from "@al/machine";
 
 export type WorkspaceWidth = 32 | 64;
 export type WorkspaceField = "entry" | "operand" | "half" | "shift";
-export type WorkspaceError = "empty" | "decimal" | "hex" | "range" | "half" | "shift";
+export type WorkspaceError = "empty" | "decimal" | "hex" | "binary" | "range" | "half" | "shift";
 export type WorkspaceTrace = {
   a: string;
   b: string;
@@ -26,9 +28,8 @@ export type Workspace = {
   reading: CalculatorReading;
   pattern: string;
   entry: string;
-  format: CalculatorFormat;
+  entryNotation: "prefix";
   operand: string;
-  operandFormat: CalculatorFormat;
   operation: CalculatorOperation;
   shift: string;
   half: "upper" | "lower";
@@ -49,9 +50,8 @@ export function initialWorkspace(): Workspace {
     reading: "unsigned",
     pattern: "0",
     entry: "",
-    format: "decimal",
+    entryNotation: "prefix",
     operand: "1",
-    operandFormat: "decimal",
     operation: "add",
     shift: "1",
     half: "upper",
@@ -73,7 +73,7 @@ export function workspaceOperand(work: Workspace) {
       return { ok: false as const, field: "shift" as const, code: "shift" as const };
     return { ok: true as const, pattern: amount.pattern };
   }
-  const operand = calculatorParse(work.operand, work.operandFormat, work.width, work.reading);
+  const operand = calculatorParseEntry(work.operand, work.width, work.reading);
   return operand.ok
     ? operand
     : { ok: false as const, field: "operand" as const, code: operand.error };
@@ -103,6 +103,21 @@ export function workspaceCalculation(work: Workspace) {
   };
 }
 
+/** Preserve a decimal reading across settings changes without truncating a pending draft. */
+export function workspaceEntryForSettings(
+  text: string,
+  oldWidth: WorkspaceWidth,
+  oldReading: CalculatorReading,
+  width: WorkspaceWidth,
+  reading: CalculatorReading,
+): string {
+  // Explicit bit notation is independent of reading and retains its pasted length/text.
+  if (calculatorEntryFormat(text) !== "decimal") return text;
+  const parsed = calculatorParseEntry(text, oldWidth, oldReading);
+  if (!parsed.ok || BigInt(parsed.pattern) >= 1n << BigInt(width)) return text;
+  return calculatorReading(BigInt(parsed.pattern), width, reading).toString();
+}
+
 /** Preserve the old header tool's exact patterns and pending fields across a coordinated update. */
 export function restoreWorkspace(raw: unknown): Workspace {
   const work = initialWorkspace();
@@ -110,8 +125,6 @@ export function restoreWorkspace(raw: unknown): Workspace {
   const value = raw as Record<string, unknown>;
   if (value.width === 64) work.width = 64;
   if (value.reading === "signed") work.reading = "signed";
-  if (value.format === "hex") work.format = "hex";
-  if (value.operandFormat === "hex") work.operandFormat = "hex";
   if (value.view === "edit") work.view = "edit";
   if (value.operation === "subtract" || value.operation === "shift-left")
     work.operation = value.operation;
@@ -121,6 +134,21 @@ export function restoreWorkspace(raw: unknown): Workspace {
   }
   for (const field of ["entry", "operand", "shift", "halfValue", "message"] as const)
     if (typeof value[field] === "string") work[field] = value[field];
+  if (value.entryNotation !== "prefix") {
+    // The previous tool could store bare hex digits alongside an explicit format selector.
+    // In hex mode, even 0b10 previously meant hex digits; preserve that value as 0x0b10.
+    // In Decimal mode, leave a formerly failed prefixed paste intact for the new parser.
+    for (const [field, format] of [
+      ["entry", "format"],
+      ["operand", "operandFormat"],
+    ] as const)
+      if (
+        value[format] === "hex" &&
+        work[field].replace(/[\s,_]/g, "") !== "" &&
+        calculatorEntryFormat(work[field]) !== "hex"
+      )
+        work[field] = `0x${work[field]}`;
+  }
   if (value.half === "lower") work.half = "lower";
   work.halfOpen = value.halfOpen === true;
   if (typeof value.selected === "number" && Number.isInteger(value.selected))
@@ -146,9 +174,14 @@ export function restoreWorkspace(raw: unknown): Workspace {
   if (value.error && typeof value.error === "object") {
     const error = value.error as Record<string, unknown>;
     const fields: WorkspaceField[] = ["entry", "operand", "half", "shift"];
-    const codes: WorkspaceError[] = ["empty", "decimal", "hex", "range", "half", "shift"];
+    const codes: WorkspaceError[] = ["empty", "decimal", "hex", "binary", "range", "half", "shift"];
     if (fields.some((f) => f === error.field) && codes.some((c) => c === error.code))
       work.error = { field: error.field as WorkspaceField, code: error.code as WorkspaceError };
+  }
+  if (work.error?.field === "entry" || work.error?.field === "operand") {
+    const field = work.error.field;
+    const parsed = calculatorParseEntry(work[field], work.width, work.reading);
+    work.error = parsed.ok ? null : { field, code: parsed.error };
   }
   return work;
 }

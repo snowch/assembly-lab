@@ -4,6 +4,7 @@
 import { cleanup, fireEvent, render, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { CalculatorWorkspace } from "./CalculatorWorkspace";
+import { CALCULATOR_ENTRY as E } from "./strings.calculator-entry";
 import { CALCULATOR_WORKSPACE as C } from "./strings.calculator-workspace";
 import { PROGRAMMER_CALCULATOR as S } from "./strings.programmer-calculator";
 
@@ -132,7 +133,7 @@ it("does not silently truncate input or compute invalid operands, and associates
   const entry = view.getByLabelText(S.entry);
   expect(entry).toHaveAttribute("aria-invalid", "true");
   expect(document.getElementById(entry.getAttribute("aria-errormessage")!)).toHaveTextContent(
-    S.errors.range,
+    E.decimalRangeError("0", "4,294,967,295"),
   );
   expect(valueA(view)).toBe("0");
   fireEvent.change(view.getByLabelText(S.second), { target: { value: "-1" } });
@@ -202,4 +203,52 @@ it("migrates pending work from the former header calculator during a coordinated
   expect(
     third.getByRole("group", { name: C.retainedResult }).querySelector("[data-pattern]"),
   ).toHaveAttribute("data-pattern", "16");
+});
+
+it("uses prefixes for both operands and keeps width stable when a paste does not fit", () => {
+  const view = setup();
+  expect(view.queryByLabelText(S.format)).toBeNull();
+  expect(view.queryByLabelText(C.operandFormat)).toBeNull();
+  apply(view, "0x7ffffffe");
+  expect(valueA(view)).toBe("2147483646");
+  fireEvent.change(view.getByLabelText(S.second), { target: { value: "0b10" } });
+  fireEvent.click(view.getByRole("button", { name: S.calculate }));
+  expect(
+    view.getByRole("group", { name: C.retainedResult }).querySelector("[data-pattern]"),
+  ).toHaveAttribute("data-pattern", "2147483648");
+  apply(view, "0xFFFFFFFFFFFFFFFF");
+  expect(valueA(view)).toBe("2147483646");
+  expect(view.getByRole("button", { name: S.widthValue(32) })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(view.getByText(E.patternRangeError(32))).toBeVisible();
+  fireEvent.click(view.getByRole("button", { name: S.widthValue(64) }));
+  expect(view.getByLabelText(S.entry)).toHaveValue("0xFFFFFFFFFFFFFFFF");
+  fireEvent.click(view.getByRole("button", { name: S.apply }));
+  expect(valueA(view)).toBe("18446744073709551615");
+  fireEvent.click(view.getByRole("button", { name: S.widthValue(32) }));
+  expect(valueA(view)).toBe("4294967295");
+  expect(view.getByLabelText(S.entry)).toHaveValue("0xFFFFFFFFFFFFFFFF");
+  fireEvent.click(view.getByRole("button", { name: S.apply }));
+  expect(view.getByText(E.patternRangeError(32))).toBeVisible();
+  apply(view, "0x00000000FFFFFFFF");
+  expect(valueA(view)).toBe("4294967295");
+});
+
+it("zero-fills short signed patterns, retains binary text, and reports malformed notation locally", () => {
+  const view = setup();
+  fireEvent.click(view.getByRole("button", { name: S.widthValue(64) }));
+  fireEvent.click(view.getByRole("button", { name: S.signed }));
+  apply(view, "0b" + "1".repeat(32));
+  expect(valueA(view)).toBe("4294967295");
+  expect(view.getByRole("group", { name: C.currentA })).toHaveTextContent("4,294,967,295");
+  apply(view, "-1");
+  expect(valueA(view)).toBe("18446744073709551615");
+  apply(view, "0b102");
+  expect(view.getByText(E.binaryError)).toBeVisible();
+  apply(view, "FFFF");
+  expect(view.getByText(E.notationError)).toBeVisible();
+  apply(view, "1010");
+  expect(valueA(view)).toBe("1010");
 });
