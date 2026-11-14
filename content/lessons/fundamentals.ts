@@ -198,7 +198,6 @@ const primitiveLessons: LessonInput[] = CONFIG.map((config, order) => {
       prose: sectionProse[kind]!,
       ...(kind === "motivation" && key === "addition"
         ? {
-            details: P.addition.references,
             interactives: [
               {
                 id: "register-views",

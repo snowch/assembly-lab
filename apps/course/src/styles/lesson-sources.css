@@ -1,0 +1,63 @@
+/* Copyright © 2026 Christopher Snow */
+
+.lesson-source-references {
+  margin: 0 0 var(--space-5);
+  border-block: 1px solid var(--border);
+}
+.lesson-source-references > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  padding: 16px 4px;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+.lesson-source-references > summary::-webkit-details-marker {
+  display: none;
+}
+.lesson-source-references > summary::after {
+  content: "";
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  color: var(--fg-muted);
+}
+.lesson-source-references[open] > summary::after {
+  transform: rotate(45deg);
+}
+.lesson-source-references > summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.lesson-source-reference-body {
+  padding: 0 4px 20px;
+  overflow-wrap: anywhere;
+}
+.lesson-source-reference-body h2 {
+  font-size: var(--text-base);
+  margin: 16px 0 8px;
+}
+.lesson-source-reference-body ul {
+  margin: 8px 0 12px;
+  padding-left: 22px;
+}
+.lesson-source-reference-body li {
+  margin: 8px 0;
+}
+.lesson-source-reference-body a {
+  text-underline-offset: 3px;
+}
+
+.lesson-source-links > li > a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 0;
+}

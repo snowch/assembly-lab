@@ -95,7 +95,8 @@ for (const theme of ["light", "dark"] as const) {
       expect(Math.abs(geometry.lowLeft - geometry.mid)).toBeLessThan(2);
       expect(geometry.lowRight).toBeLessThanOrEqual(geometry.right);
       const motivation = page.locator('.lesson-section[data-kind="motivation"]');
-      const references = motivation.locator("details");
+      await expect(motivation.locator("details")).toHaveCount(0);
+      const references = page.locator(".lesson-source-references");
       await expect(references).not.toHaveAttribute("open");
       await references.locator("summary").click();
       await expect(references).toHaveAttribute("open");

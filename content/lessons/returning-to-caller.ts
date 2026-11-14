@@ -54,7 +54,6 @@ export const returningToCaller: LessonInput = {
       kind: "explanation",
       title: L.titles.explanation,
       prose: P.sections.explanation,
-      details: P.references,
     },
     {
       kind: "challenge",

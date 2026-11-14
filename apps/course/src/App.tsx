@@ -16,7 +16,8 @@ import {
 import { WHERE_NEXT } from "@al/content";
 import { LessonView } from "@platform/lesson-runtime";
 
-import { createBook } from "./book";
+import { createBook, COURSE_SOURCES } from "./book";
+import { LessonSourceReferences } from "./LessonSourceReferences";
 import { BUILD_VERSION, commitHref } from "./build-version";
 import { HeaderCalculator } from "./HeaderCalculator";
 import { AppStatus } from "./AppStatus";
@@ -99,7 +100,13 @@ export function App() {
         </p>
         {!flagsLayout && <p className="lesson-position">{book.references.position(lesson.id)}</p>}
         {flagsLayout ? (
-          <FlagsLesson book={book} lesson={lesson} storage={storage} strings={RUNTIME_STRINGS} />
+          <FlagsLesson
+            book={book}
+            lesson={lesson}
+            storage={storage}
+            strings={RUNTIME_STRINGS}
+            instructionIntroductions={COURSE_SOURCES.get(lesson.id)!.introductions}
+          />
         ) : (
           <LessonView
             key={lesson.id}
@@ -123,6 +130,7 @@ export function App() {
           </aside>
         )}
         <div className="lesson-ending">
+          <LessonSourceReferences key={lesson.id} sources={COURSE_SOURCES.get(lesson.id)!} />
           <div className="lesson-completion-row">
             <LessonCompletionButton store={completionStore} lessonId={lesson.id} />
             <p id="lesson-completion-note" className="lesson-completion-note" role="status">

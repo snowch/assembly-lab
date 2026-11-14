@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   HintLadder,
@@ -15,8 +15,12 @@ import { useLessonStore, type LessonViewProps } from "@platform/lesson-runtime";
 import { RecordedSchema } from "../interactives/props";
 import { mountFlagsLesson } from "./controller";
 import { MARKUP } from "./strings";
+import {
+  linkInstructionIntroductionHtml,
+  type InstructionIntroduction,
+} from "../instruction-reference-links";
 
-const AUTHORED_HTML = { __html: MARKUP };
+const NO_INTRODUCTIONS: readonly InstructionIntroduction[] = [];
 
 /** One course-owned presentation, preserving the approved authored DOM and the runtime's store. */
 function FlagsHints({ store, challenge }: { store: LessonStore; challenge: Challenge }) {
@@ -37,7 +41,15 @@ export function FlagsLesson({
   lesson,
   storage,
   strings = DEFAULT_STRINGS,
-}: Omit<LessonViewProps, "book"> & { book: CourseBook }) {
+  instructionIntroductions = NO_INTRODUCTIONS,
+}: Omit<LessonViewProps, "book"> & {
+  book: CourseBook;
+  instructionIntroductions?: readonly InstructionIntroduction[];
+}) {
+  const markup = useMemo(
+    () => linkInstructionIntroductionHtml(MARKUP, instructionIntroductions),
+    [instructionIntroductions],
+  );
   const host = useRef<HTMLDivElement>(null);
   const store = useLessonStore(storage, book.id, lesson.id);
   const [hintHost, setHintHost] = useState<HTMLElement | null>(null);
@@ -47,7 +59,7 @@ export function FlagsLesson({
     const root = host.current;
     if (!root) return;
     // Reset the authored boundary on remount (including React StrictMode), never on a theme change.
-    root.innerHTML = MARKUP;
+    root.innerHTML = markup;
     const prediction = lesson.sections
       .flatMap((s) => s.interactives)
       .find((x) => x.id === "predict-readings");
@@ -65,10 +77,10 @@ export function FlagsLesson({
     });
     setHintHost(root.querySelector<HTMLElement>("#challengeHints"));
     return cleanup;
-  }, [book, lesson, store, challenge]);
+  }, [book, lesson, store, challenge, markup]);
   return (
     <StringsContext.Provider value={strings}>
-      <div className="flags-lesson-host" ref={host} dangerouslySetInnerHTML={AUTHORED_HTML} />
+      <div className="flags-lesson-host" ref={host} dangerouslySetInnerHTML={{ __html: markup }} />
       {hintHost && createPortal(<FlagsHints store={store} challenge={challenge} />, hintHost)}
     </StringsContext.Provider>
   );

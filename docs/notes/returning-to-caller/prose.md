@@ -38,7 +38,7 @@ Check Arm’s references
 
 ### prose / references / prose
 
-- [BL: branch with link](https://support.arm.com/documentation/ddi0602/2025-12/Base-Instructions/BL--Branch-with-Link-) describes how the call saves the return address in `x30`.
+- [BL: branch with link](https://support.arm.com/documentation/ddi0602/2026-09/Base-Instructions/BL--Branch-with-link-?lang=en) describes how the call saves the return address in `x30`.
 - [RET: return from subroutine](https://support.arm.com/documentation/ddi0602/2025-12/Base-Instructions/RET--Return-from-subroutine-) describes the instruction. Its optional register operand defaults to `x30`.
 - [Arm’s procedure call standard](https://github.com/ARM-software/abi-aa/blob/2025Q4/aapcs64/aapcs64.rst) describes argument registers, result registers and the values a function must preserve.
 
