@@ -153,6 +153,21 @@ export function calculatorCompute(
   };
 }
 
+/** Carry into each column of an ordinary addition, independent of its decimal reading. */
+export function calculatorAdditionCarries(
+  leftPattern: string,
+  rightPattern: string,
+  width: CalculatorWidth,
+): { carries: string; intoSign: 0 | 1; out: 0 | 1; c: 0 | 1; v: 0 | 1 } {
+  const result = calculatorCompute(leftPattern, "add", rightPattern, width, "unsigned");
+  const sum = BigInt(result.full);
+  // The same carry identity used by the simulator's addWithCarry, with initial carry zero.
+  const carries = (BigInt(leftPattern) ^ BigInt(rightPattern) ^ sum) & calculatorMask(width);
+  const intoSign = Number((carries >> BigInt(width - 1)) & 1n) as 0 | 1;
+  const out = Number((sum >> BigInt(width)) & 1n) as 0 | 1;
+  return { carries: carries.toString(), intoSign, out, c: out, v: intoSign === out ? 0 : 1 };
+}
+
 /** The two unsigned 16-bit halves of a validated 32-bit pattern. */
 export function calculatorHalves(pattern: string): { upper: string; lower: string } {
   const value = boundedDecimal(pattern, calculatorMask(32));

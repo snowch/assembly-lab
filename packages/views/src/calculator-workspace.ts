@@ -24,6 +24,7 @@ export type WorkspaceTrace = {
 };
 export type Workspace = {
   view: "calculate" | "edit";
+  showCarries: boolean;
   width: WorkspaceWidth;
   reading: CalculatorReading;
   pattern: string;
@@ -46,6 +47,7 @@ export type Workspace = {
 export function initialWorkspace(): Workspace {
   return {
     view: "calculate",
+    showCarries: false,
     width: 32,
     reading: "unsigned",
     pattern: "0",
@@ -126,6 +128,7 @@ export function restoreWorkspace(raw: unknown): Workspace {
   if (value.width === 64) work.width = 64;
   if (value.reading === "signed") work.reading = "signed";
   if (value.view === "edit") work.view = "edit";
+  work.showCarries = value.showCarries === true;
   if (value.operation === "subtract" || value.operation === "shift-left")
     work.operation = value.operation;
   if (typeof value.pattern === "string") {
