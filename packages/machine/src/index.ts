@@ -22,6 +22,8 @@ export {
   calculatorPattern,
   calculatorReading,
   calculatorParse,
+  calculatorParseEntry,
+  calculatorEntryFormat,
   calculatorCompute,
   calculatorHalves,
   calculatorSetHalf,
@@ -30,6 +32,8 @@ export type {
   CalculatorWidth,
   CalculatorReading,
   CalculatorFormat,
+  CalculatorEntryFormat,
+  CalculatorEntryParseResult,
   CalculatorOperation,
   CalculatorParseResult,
 } from "./programmer-calculator.ts";

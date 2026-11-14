@@ -1,7 +1,12 @@
 // Copyright © 2026 Christopher Snow
 
 import { describe, expect, it } from "vitest";
-import { initialWorkspace, restoreWorkspace, workspaceCalculation } from "./calculator-workspace";
+import {
+  initialWorkspace,
+  restoreWorkspace,
+  workspaceCalculation,
+  workspaceEntryForSettings,
+} from "./calculator-workspace";
 
 describe("header calculator working", () => {
   it.each([
@@ -36,7 +41,6 @@ describe("header calculator working", () => {
       workspaceCalculation({
         ...initialWorkspace(),
         pattern: "4294967295",
-        operandFormat: "hex",
         operand: "0xFFFF FFFF",
         operation: "subtract",
       }),
@@ -90,7 +94,7 @@ describe("header calculator working", () => {
       selected: 63,
       full: "-1",
       trace: null,
-      operandFormat: "decimal",
+      entryNotation: "prefix",
     });
   });
 
@@ -111,4 +115,53 @@ describe("header calculator working", () => {
       }),
     ).toMatchObject({ width: 32, pattern: "0", selected: 31, scrollLeft: -1 });
   });
+});
+
+it("marks legacy hexadecimal drafts explicitly and preserves new prefix drafts exactly", () => {
+  for (const [text, migrated, value] of [
+    ["10", "0x10", "16"],
+    ["0b10", "0x0b10", "2832"],
+    ["FFFF FFFF", "0xFFFF FFFF", "4294967295"],
+  ]) {
+    const work = restoreWorkspace({
+      format: "hex",
+      operandFormat: "hex",
+      entry: text,
+      operand: text,
+    });
+    expect(work.entry).toBe(migrated);
+    expect(work.operand).toBe(migrated);
+    expect(workspaceCalculation(work)).toMatchObject({ ok: true, trace: { b: value } });
+  }
+  expect(
+    restoreWorkspace({
+      format: "decimal",
+      entry: "0x7ffffffe",
+      error: { field: "entry", code: "decimal" },
+    }),
+  ).toMatchObject({ entry: "0x7ffffffe", error: null });
+  expect(
+    restoreWorkspace({
+      ...initialWorkspace(),
+      format: "hex",
+      operandFormat: "hex",
+      entry: "10",
+      operand: "0b10",
+    }),
+  ).toMatchObject({ entry: "10", operand: "0b10" });
+});
+
+it("preserves pasted notation and does not truncate oversized uncommitted drafts on width changes", () => {
+  expect(workspaceEntryForSettings("0xFFFFFFFFFFFFFFFF", 64, "signed", 32, "signed")).toBe(
+    "0xFFFFFFFFFFFFFFFF",
+  );
+  expect(workspaceEntryForSettings("4294967296", 64, "unsigned", 32, "unsigned")).toBe(
+    "4294967296",
+  );
+  expect(workspaceEntryForSettings("pending", 32, "unsigned", 64, "signed")).toBe("pending");
+  expect(workspaceEntryForSettings("0B1111_0000", 32, "unsigned", 64, "signed")).toBe(
+    "0B1111_0000",
+  );
+  expect(workspaceEntryForSettings("4294967295", 32, "unsigned", 32, "signed")).toBe("-1");
+  expect(workspaceEntryForSettings("-1", 32, "signed", 64, "signed")).toBe("4294967295");
 });

@@ -4,15 +4,17 @@ import { useId, useLayoutEffect, useRef, type KeyboardEvent } from "react";
 import {
   calculatorHalves,
   calculatorParse,
+  calculatorParseEntry,
+  calculatorEntryFormat,
   calculatorPattern,
   calculatorReading,
   calculatorSetHalf,
-  type CalculatorFormat,
   type CalculatorOperation,
   type CalculatorReading,
 } from "@al/machine";
 import { useHandoffState } from "./update-handoff";
 import { PROGRAMMER_CALCULATOR as S } from "./strings.programmer-calculator";
+import { CALCULATOR_ENTRY as E } from "./strings.calculator-entry";
 import { CALCULATOR_WORKSPACE as C } from "./strings.calculator-workspace";
 import { ProgrammerDecimal, programmerHex, programmerNumber } from "./programmer-format";
 import {
@@ -20,22 +22,13 @@ import {
   workspaceCalculation,
   workspaceCodec,
   workspaceOperand,
+  workspaceEntryForSettings,
   type Workspace,
   type WorkspaceField,
   type WorkspaceWidth,
 } from "./calculator-workspace";
 
 const bits = (value: string, width: number) => BigInt(value).toString(2).padStart(width, "0");
-const entryText = (
-  pattern: string,
-  format: CalculatorFormat,
-  width: WorkspaceWidth,
-  reading: CalculatorReading,
-) =>
-  format === "hex"
-    ? programmerHex(pattern, width)
-    : calculatorReading(BigInt(pattern), width, reading).toString();
-
 /** A global scratch workspace. No lesson answer or simulator state is accepted here. */
 export function CalculatorWorkspace({
   handoffKey = "global",
@@ -70,10 +63,6 @@ export function CalculatorWorkspace({
     work.reading === "signed"
       ? (1n << BigInt(work.width - 1)) - 1n
       : (1n << BigInt(work.width)) - 1n;
-  const range = (format: CalculatorFormat) =>
-    format === "hex"
-      ? S.patternRange(work.width)
-      : S.decimalRange(programmerNumber(minimum), programmerNumber(maximum));
   const enter = (run: () => void) => (event: KeyboardEvent<HTMLElement>) => {
     if (event.key !== "Enter") return;
     event.preventDefault();
@@ -81,7 +70,7 @@ export function CalculatorWorkspace({
     run();
   };
   const apply = () => {
-    const parsed = calculatorParse(work.entry, work.format, work.width, work.reading);
+    const parsed = calculatorParseEntry(work.entry, work.width, work.reading);
     if (!parsed.ok) return patch({ error: { field: "entry", code: parsed.error }, message: "" });
     act({ pattern: parsed.pattern }, S.messages.applied);
   };
@@ -98,38 +87,13 @@ export function CalculatorWorkspace({
   };
   const settings = (width: WorkspaceWidth, reading: CalculatorReading) => {
     if (width === work.width && reading === work.reading) return;
-    const parsedEntry = calculatorParse(work.entry, work.format, work.width, work.reading);
-    const parsedOperand = calculatorParse(
-      work.operand,
-      work.operandFormat,
-      work.width,
-      work.reading,
-    );
     act(
       {
         width,
         reading,
         pattern: calculatorPattern(BigInt(work.pattern), width).toString(),
-        ...(parsedEntry.ok
-          ? {
-              entry: entryText(
-                calculatorPattern(BigInt(parsedEntry.pattern), width).toString(),
-                work.format,
-                width,
-                reading,
-              ),
-            }
-          : {}),
-        ...(parsedOperand.ok
-          ? {
-              operand: entryText(
-                calculatorPattern(BigInt(parsedOperand.pattern), width).toString(),
-                work.operandFormat,
-                width,
-                reading,
-              ),
-            }
-          : {}),
+        entry: workspaceEntryForSettings(work.entry, work.width, work.reading, width, reading),
+        operand: workspaceEntryForSettings(work.operand, work.width, work.reading, width, reading),
         selected: Math.min(work.selected, width - 1),
         scrollLeft: width !== work.width ? -1 : work.scrollLeft,
       },
@@ -139,17 +103,6 @@ export function CalculatorWorkspace({
           ? S.messages.resizeNarrow
           : S.messages.resizeWide,
     );
-  };
-  const changeFormat = (field: "entry" | "operand", format: CalculatorFormat) => {
-    const oldFormat = field === "entry" ? work.format : work.operandFormat;
-    const value = field === "entry" ? work.entry : work.operand;
-    const parsed = calculatorParse(value, oldFormat, work.width, work.reading);
-    draft(field, {
-      [field === "entry" ? "format" : "operandFormat"]: format,
-      ...(parsed.ok
-        ? { [field]: entryText(parsed.pattern, format, work.width, work.reading) }
-        : {}),
-    });
   };
   const applyHalf = () => {
     const parsed = calculatorParse(work.halfValue, "decimal", 32, "unsigned");
@@ -183,10 +136,22 @@ export function CalculatorWorkspace({
     "aria-invalid": work.error?.field === field || undefined,
     "aria-errormessage": work.error?.field === field ? `${id}-${field}-error` : undefined,
   });
+  const errorMessage = (field: WorkspaceField) => {
+    const code = work.error!.code;
+    if (code === "binary") return E.binaryError;
+    if (field === "entry" || field === "operand") {
+      if (code === "decimal" || code === "hex") return E.notationError;
+      if (code === "range")
+        return calculatorEntryFormat(field === "entry" ? work.entry : work.operand) === "decimal"
+          ? E.decimalRangeError(programmerNumber(minimum), programmerNumber(maximum))
+          : E.patternRangeError(work.width);
+    }
+    return S.errors[code];
+  };
   const error = (field: WorkspaceField) =>
     work.error?.field === field ? (
       <p className="al-programmer-error" id={`${id}-${field}-error`} role="status">
-        {S.errors[work.error.code]}
+        {errorMessage(field)}
       </p>
     ) : null;
   const readouts = (pattern: string, label: string, prefix: string, help = false) => (
@@ -331,20 +296,12 @@ export function CalculatorWorkspace({
           ))}
         </div>
       </div>
-      <p className="workspace-width-help">{C.widthHelp}</p>
+      <p className="workspace-width-help">{E.widthHelp}</p>
       <h3 className="workspace-value-heading">{C.currentA}</h3>
       {readouts(work.pattern, C.currentA, "a", true)}
       <div className="workspace-load">
         <label htmlFor={`${id}-entry`}>{S.entry}</label>
         <div className="workspace-load-controls">
-          <select
-            aria-label={S.format}
-            value={work.format}
-            onChange={(e) => changeFormat("entry", e.target.value as CalculatorFormat)}
-          >
-            <option value="decimal">{S.decimal}</option>
-            <option value="hex">{S.hex}</option>
-          </select>
           <input
             id={`${id}-entry`}
             value={work.entry}
@@ -361,7 +318,7 @@ export function CalculatorWorkspace({
           </button>
         </div>
         <p id={`${id}-entry-help`} className="workspace-field-help">
-          {range(work.format)}
+          {E.notationHint}
         </p>
         {error("entry")}
       </div>
@@ -419,24 +376,12 @@ export function CalculatorWorkspace({
               onKeyDown={enter(calculate)}
             />
           </label>
-          {work.operation !== "shift-left" && (
-            <label>
-              {C.operandFormat}
-              <select
-                value={work.operandFormat}
-                onChange={(e) => changeFormat("operand", e.target.value as CalculatorFormat)}
-              >
-                <option value="decimal">{S.decimal}</option>
-                <option value="hex">{S.hex}</option>
-              </select>
-            </label>
-          )}
           <button type="button" onClick={calculate}>
             {S.calculate}
           </button>
         </div>
         <p className="workspace-field-help" id={`${id}-operand-help`}>
-          {work.operation === "shift-left" ? S.errors.shift : range(work.operandFormat)}
+          {work.operation === "shift-left" ? S.errors.shift : E.notationHint}
         </p>
         {error(work.operation === "shift-left" ? "shift" : "operand")}
         <div className="workspace-bit-tools">
