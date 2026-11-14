@@ -14,7 +14,7 @@ import { MODULES, PLAN, statusOf } from "@al/content/plan";
 import { pageTitle, parseRoute } from "./route";
 import { courseTitle, staticPage } from "./static-page";
 import { STATUS_STRINGS as S } from "./strings.status";
-import { COMPANION_LINKS, STRINGS } from "./strings";
+import { COMPANION_LINKS, GITHUB_REPOSITORY, STRINGS } from "./strings";
 import { ICONS, MANIFEST_FILE, shortName, webManifest } from "./web-manifest";
 
 const template = readFileSync(resolve(process.cwd(), "apps/course/index.html"), "utf8");
@@ -41,6 +41,14 @@ describe("the page before any script runs", () => {
     expect(initial).toContain(S.noScript);
     expect(initial).not.toContain(S.versionStates.current);
     expect(html.match(/class="app-status"/g)).toHaveLength(1);
+  });
+
+  it("keeps the GitHub star as a plain header link before scripts run", () => {
+    expect(page.match(/class="github-star"/g)).toHaveLength(1);
+    expect(page).toContain(`class="github-star" href="${GITHUB_REPOSITORY}"`);
+    expect(text(page)).toContain(STRINGS.githubStar);
+    expect(text(page)).toContain(STRINGS.githubStarDestination);
+    expect(page).not.toContain("api.github.com");
   });
 
   it("is named as the course is", () => {

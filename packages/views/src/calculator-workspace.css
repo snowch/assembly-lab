@@ -1,0 +1,254 @@
+/* Copyright © 2026 Christopher Snow */
+
+.calculator-workspace {
+  min-width: 0;
+}
+.calculator-workspace .workspace-help,
+.calculator-workspace .workspace-width-help,
+.calculator-workspace .workspace-field-help {
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+  margin: 8px 0 12px;
+}
+.workspace-settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.workspace-settings > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.workspace-settings > div > span {
+  flex-basis: 100%;
+  font-size: var(--text-sm);
+}
+.calculator-workspace .workspace-settings button {
+  padding: 8px;
+  font-size: 14px;
+}
+.calculator-workspace h3 {
+  font-size: 17px;
+  margin: 16px 0 8px;
+}
+.workspace-readouts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.workspace-readouts > div {
+  min-width: 0;
+  background: var(--bg-sunken);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+.workspace-readouts span {
+  display: block;
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+.workspace-readouts :is(output, strong) {
+  display: block;
+  font: 600 16px/1.5 var(--font-mono);
+  overflow-wrap: anywhere;
+}
+.workspace-readout-help {
+  margin: 4px 0 0;
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+.workspace-readouts .al-programmer-number-group,
+.workspace-exact .al-programmer-number-group {
+  display: inline;
+  white-space: nowrap;
+  color: inherit;
+  font: inherit;
+}
+.workspace-load {
+  margin-top: 14px;
+}
+.workspace-load > label {
+  margin-bottom: 4px;
+}
+.workspace-load-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.workspace-load-controls input {
+  flex: 1 1 0;
+  width: 0;
+}
+.workspace-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 20px 0 16px;
+  padding: 4px;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.workspace-tabs button {
+  flex: 1;
+}
+.calculator-workspace .workspace-tabs [aria-selected="true"] {
+  color: var(--accent-fg);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.workspace-operation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+}
+.workspace-operation label {
+  font-size: 13px;
+}
+.workspace-operation :is(input, select) {
+  width: 100%;
+  font-size: 16px;
+}
+.workspace-operation > button {
+  font-size: 14px;
+}
+.workspace-bit-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  font-size: 14px;
+}
+.workspace-bit-tools > div {
+  display: flex;
+  gap: 6px;
+}
+.workspace-bit-tools button {
+  font-size: 13px;
+}
+.workspace-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 0;
+}
+.calculator-workspace :is(button, input, select, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.workspace-track {
+  width: max-content;
+  min-width: 100%;
+}
+.workspace-bitrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding-right: 10px;
+}
+.workspace-groups {
+  display: flex;
+  gap: 8px;
+}
+.workspace-nibble {
+  display: grid;
+  grid-template-columns: repeat(4, 26px);
+  gap: 2px;
+}
+.workspace-row-label {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  flex: 0 0 60px;
+  box-sizing: border-box;
+  padding: 0 8px;
+  background: var(--bg-raised);
+  box-shadow: 3px 0 4px var(--bg-raised);
+  font-size: 12px;
+  font-weight: 700;
+}
+.workspace-cell {
+  display: grid;
+  place-items: center;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-sunken);
+  font: 600 16px/1 var(--font-mono);
+}
+.workspace-cell[data-value="1"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.workspace-index-row {
+  min-height: 24px;
+}
+.workspace-index {
+  text-align: center;
+  color: var(--fg-muted);
+  font: 11px/1.5 var(--font-mono);
+}
+.workspace-bitrow-result {
+  border-top: 1px solid var(--border-strong);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+.workspace-result {
+  margin-top: 16px;
+}
+.workspace-exact {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.calculator-workspace .workspace-editor {
+  --bit-target: 44px;
+  grid-template-columns: repeat(4, var(--bit-target));
+}
+.calculator-workspace .workspace-editor .al-programmer-bit {
+  height: 44px;
+  min-height: 44px;
+}
+.workspace-halves {
+  margin-top: 20px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.workspace-halves summary {
+  display: list-item;
+  min-height: 44px;
+  padding: 10px 0;
+  cursor: pointer;
+}
+.workspace-halves .workspace-operation {
+  margin-top: 12px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+}
+.workspace-footer {
+  margin-top: 20px;
+}
+@container programmer (max-width: 520px) {
+  .workspace-operation,
+  .workspace-halves .workspace-operation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container programmer (min-width: 359px) {
+  .calculator-workspace .workspace-editor {
+    grid-template-columns: repeat(8, var(--bit-target));
+  }
+}
+@container programmer (min-width: 719px) {
+  .calculator-workspace .workspace-editor {
+    grid-template-columns: repeat(16, var(--bit-target));
+  }
+}
