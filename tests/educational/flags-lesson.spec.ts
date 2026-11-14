@@ -871,6 +871,14 @@ for (const theme of ["light", "dark"] as const) {
 
 test("theme, keyboard and shared course navigation preserve flags work", async ({ page }) => {
   await open(page, "light");
+  const backToPlan = page.locator(".lesson-back .back-link");
+  await expect(backToPlan).toHaveCount(1);
+  await expect(backToPlan).toHaveText("Back to the course plan");
+  await expect(backToPlan).toHaveAttribute("href", "#/");
+  await expect(page.locator('.shell-main a[href="#/lesson/register-widths"]')).toHaveCount(1);
+  await expect(page.locator('.shell-main a[href="#/lesson/flags-and-overflow"]')).toHaveCount(1);
+  await expect(page.locator(".al-flags-lesson .end a")).toHaveCount(0);
+  await expect(page.locator("#recap li")).toHaveCount(4);
   await navigateOutline(page, "smallpractice");
   await expect(page).toHaveURL(/#\/lesson\/adding-and-the-flags$/);
   const n = page.locator('input[name=mini-n][value="0"]');
@@ -887,6 +895,13 @@ test("theme, keyboard and shared course navigation preserve flags work", async (
   await expect(page).toHaveURL(/#\/lesson\/flags-and-overflow$/);
   await expect(page.locator(".al-flags-lesson")).toHaveCount(0);
   await page.locator(".lesson-nav-link[data-direction=previous]").click();
+  await expect(page.locator('input[name=mini-n][value="1"]')).toBeChecked();
+  await page.locator(".lesson-back .back-link").focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/#\/$/);
+  const courseModule = page.locator('.plan-module[data-module="adding-and-the-flags"]');
+  await expect(courseModule).toBeVisible();
+  await courseModule.locator(`a[href="${URL}"]`).click();
   await expect(page.locator('input[name=mini-n][value="1"]')).toBeChecked();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
