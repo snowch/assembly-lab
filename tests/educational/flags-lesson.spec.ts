@@ -72,6 +72,17 @@ for (const theme of ["light", "dark"] as const) {
       "V = 1 when the carry into the sign bit differs from the carry out",
     );
     await expect(page.locator("#compare .carry-rule")).toHaveCount(0);
+    const positiveTab = pane.getByRole("tab", { name: "Too positive", exact: true });
+    const negativeTab = pane.getByRole("tab", { name: "Too negative", exact: true });
+    await expect(positiveTab).toHaveAttribute("aria-selected", "true");
+    await expect(negativeTab).toHaveAttribute("aria-selected", "false");
+    await expect(pane.getByRole("tabpanel")).toHaveCount(1);
+    await expect(pane.locator('[data-proof-example="1"]')).toBeHidden();
+    await expect(pane.locator(".carry-proof-summary")).toHaveText(
+      "Signed overflow can make a positive sum appear negative in the stored result, or a negative sum appear non-negative.",
+    );
+    await expect(pane.locator(".carry-proof-summary")).toBeVisible();
+    const savedBeforeTabs = await stored(page);
     const expected = [
       {
         exact: "7 + 1 = 8",
@@ -93,7 +104,13 @@ for (const theme of ["light", "dark"] as const) {
       },
     ];
     for (const [i, example] of expected.entries()) {
+      const tab = i === 0 ? positiveTab : negativeTab;
+      await tab.click();
+      await expect(tab).toHaveAttribute("aria-selected", "true");
+      await expect(pane.getByRole("tabpanel")).toHaveCount(1);
       const worked = pane.locator(`[data-proof-example="${i}"]`);
+      await expect(worked).toBeVisible();
+      await expect(pane.locator(`[data-proof-example="${1 - i}"]`)).toBeHidden();
       await expect(worked.locator(".carry-proof-equation strong")).toHaveText(example.exact);
       await expect(worked.locator(".carry-proof-pattern")).toHaveText(example.bits);
       for (const [row, label] of ["First input", "Second input", "Stored result"].entries())
@@ -110,6 +127,19 @@ for (const theme of ["light", "dark"] as const) {
       await expect(worked.locator(".carry-proof-verdict")).toContainText("V = 1");
       await expect(worked).toContainText("wrong sign because the exact sum does not fit");
     }
+    expect(await stored(page)).toEqual(savedBeforeTabs);
+    await negativeTab.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(positiveTab).toBeFocused();
+    await expect(positiveTab).toHaveAttribute("aria-selected", "true");
+    await page.keyboard.press("ArrowLeft");
+    await expect(negativeTab).toBeFocused();
+    await page.keyboard.press("Home");
+    await expect(positiveTab).toBeFocused();
+    await page.keyboard.press("End");
+    await expect(negativeTab).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(pane.getByRole("tabpanel", { name: "Too negative" })).toBeFocused();
     await expect(pane.locator(".carry-proof-matching")).toContainText(
       "Its outgoing carry therefore equals its incoming carry",
     );
@@ -123,6 +153,10 @@ for (const theme of ["light", "dark"] as const) {
     await expect(check.locator("details > div")).toContainText("The carries match, so V = 0");
     await expect(check.locator("details > div")).toContainText("−3 + 4 = 1");
     await expect(check.locator("details > div")).toContainText("0001, read as 1");
+    await positiveTab.click();
+    await expect(check.locator("details")).toHaveAttribute("open");
+    await expect(pane.locator(".carry-proof-matching")).toBeVisible();
+    expect(await stored(page)).toEqual(savedBeforeTabs);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

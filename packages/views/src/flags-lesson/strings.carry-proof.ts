@@ -6,6 +6,11 @@ export const CARRY_PROOF_COPY = {
   label: "Why the carry rule works",
   lead: "The sign bit is the leftmost retained bit, bit 3 in these four-bit examples. Its column adds both input sign bits and the incoming carry.",
   rule: "V = 1 when the carry into the sign bit differs from the carry out.",
+  summary:
+    "Signed overflow can make a positive sum appear negative in the stored result, or a negative sum appear non-negative.",
+  tabsLabel: "Choose a direction of signed overflow",
+  positiveTab: "Too positive",
+  negativeTab: "Too negative",
   positiveTitle: "Two non-negative inputs",
   positiveWhy:
     "Both inputs are non-negative, so both sign bits are 0. The incoming carry makes the stored sign bit 1, with no carry out. Two non-negative numbers cannot have a negative sum. The stored result has the wrong sign because the exact sum does not fit.",

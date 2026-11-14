@@ -3059,17 +3059,15 @@ html[data-theme="dark"] .al-flags-lesson .intent-field label:has(input:checked) 
   margin-top: 0;
   margin-bottom: 28px;
 }
-.al-flags-lesson .carry-proof-examples {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 28px;
+.al-flags-lesson .carry-proof-summary {
+  margin: 0 0 20px;
 }
 .al-flags-lesson .carry-proof-example {
   min-width: 0;
 }
-.al-flags-lesson .carry-proof-example + .carry-proof-example {
-  border-inline-start: 1px solid var(--line);
-  padding-inline-start: 28px;
+.al-flags-lesson .carry-proof-example:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 6px;
 }
 .al-flags-lesson #carryproof h3 {
   margin: 0 0 12px;
@@ -3212,19 +3210,8 @@ html[data-theme="dark"] .al-flags-lesson .intent-field label:has(input:checked) 
 .al-flags-lesson .carry-proof-check details p + p {
   margin-top: 12px;
 }
-@media (max-width: 1100px) {
-  .al-flags-lesson .carry-proof-examples {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .al-flags-lesson .carry-proof-example + .carry-proof-example {
-    border-inline-start: 0;
-    padding-inline-start: 0;
-    border-top: 1px solid var(--line);
-    padding-top: 24px;
-  }
-  .al-flags-lesson .carry-proof-bits,
-  .al-flags-lesson .carry-proof-example > .carry-proof-flow {
-    max-width: 400px;
-    margin-inline: auto;
-  }
+.al-flags-lesson .carry-proof-bits,
+.al-flags-lesson .carry-proof-example > .carry-proof-flow {
+  max-width: 400px;
+  margin-inline: auto;
 }
