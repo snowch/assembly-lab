@@ -25,6 +25,7 @@
 @import "./reading-sequence.css";
 @import "./calculator.css";
 @import "./programmer-calculator.css";
+@import "./calculator-workspace.css";
 @import "./floating-point.css";
 
 .al-figure {

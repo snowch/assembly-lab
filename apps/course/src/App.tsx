@@ -29,7 +29,7 @@ import { WhereNextPage } from "./pages/WhereNextPage";
 import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
 import { RUNTIME_STRINGS } from "./runtime-strings";
-import { COMPANION_LINKS, STRINGS } from "./strings";
+import { COMPANION_LINKS, GITHUB_REPOSITORY, STRINGS } from "./strings";
 import { clearThemeUpdate, saveThemeForUpdate, useTheme, type Theme } from "./theme";
 import { LessonLayout } from "./LessonLayout";
 
@@ -192,6 +192,13 @@ export function App() {
         </a>
         <AppStatus offline={offline} />
         <HeaderCalculator updating={offline?.updating} />
+        <a className="github-star" href={GITHUB_REPOSITORY}>
+          <span aria-hidden="true">☆</span>
+          <span>
+            {STRINGS.githubStar}{" "}
+            <span className="github-star-destination">{STRINGS.githubStarDestination}</span>
+          </span>
+        </a>
         <label className="theme-picker">
           <span>{STRINGS.theme}</span>
           <select value={theme} onChange={(e) => setTheme(e.target.value as Theme)}>

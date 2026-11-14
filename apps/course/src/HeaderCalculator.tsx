@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 import { useEffect, useId, useRef, useState } from "react";
-import { ProgrammerCalculator, ViewHandoffScope } from "@al/views";
+import { CalculatorWorkspace, ViewHandoffScope } from "@al/views";
 import { HEADER_CALCULATOR as S } from "./strings.header-calculator";
 
 /** One mounted scratch workspace, independent of routes and lesson artifacts. */
@@ -92,12 +92,7 @@ export function HeaderCalculator({ updating = false }: { updating?: boolean }) {
           </div>
         )}
         <ViewHandoffScope id="header-calculator">
-          <ProgrammerCalculator
-            preset="widths"
-            handoffKey="global"
-            presentation="tool"
-            active={open}
-          />
+          <CalculatorWorkspace handoffKey="global" active={open} />
         </ViewHandoffScope>
         {open && <p className="header-calculator-help">{S.persistence}</p>}
       </dialog>
