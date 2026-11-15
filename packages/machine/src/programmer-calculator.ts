@@ -168,6 +168,34 @@ export function calculatorAdditionCarries(
   return { carries: carries.toString(), intoSign, out, c: out, v: intoSign === out ? 0 : 1 };
 }
 
+/** Arithmetic conditions for a retained word; this does not execute an instruction. */
+export function calculatorArithmeticFlags(
+  leftPattern: string,
+  operation: Exclude<CalculatorOperation, "shift-left">,
+  rightPattern: string,
+  width: CalculatorWidth,
+): { n: 0 | 1; z: 0 | 1; c: 0 | 1; v: 0 | 1 } {
+  const result = calculatorCompute(leftPattern, operation, rightPattern, width, "unsigned");
+  const left = BigInt(leftPattern),
+    right = BigInt(rightPattern),
+    pattern = BigInt(result.pattern);
+  const signedLeft = calculatorReading(left, width, "signed");
+  const signedRight = calculatorReading(right, width, "signed");
+  const exact = operation === "add" ? signedLeft + signedRight : signedLeft - signedRight;
+  const limit = 1n << BigInt(width - 1);
+  return {
+    n: Number((pattern >> BigInt(width - 1)) & 1n) as 0 | 1,
+    z: pattern === 0n ? 1 : 0,
+    c:
+      operation === "add"
+        ? calculatorAdditionCarries(leftPattern, rightPattern, width).c
+        : left >= right
+          ? 1
+          : 0,
+    v: exact < -limit || exact >= limit ? 1 : 0,
+  };
+}
+
 /** The two unsigned 16-bit halves of a validated 32-bit pattern. */
 export function calculatorHalves(pattern: string): { upper: string; lower: string } {
   const value = boundedDecimal(pattern, calculatorMask(32));

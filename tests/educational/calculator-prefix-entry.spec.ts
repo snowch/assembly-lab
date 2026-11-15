@@ -1,6 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { COMPACT_CALCULATOR as D } from "../../packages/views/src/strings.compact-calculator";
 import { CALCULATOR_ENTRY as E } from "../../packages/views/src/strings.calculator-entry";
 
 async function paste(page: Page, input: Locator, text: string) {
@@ -22,7 +23,7 @@ for (const theme of ["light", "dark"] as const) {
       const panel = page.getByRole("dialog", { name: "Programmer calculator", exact: true });
       await expect(panel.getByRole("combobox")).toHaveCount(1);
       await expect(
-        panel.getByText(E.notationHint, { exact: true }).filter({ visible: true }),
+        panel.getByText(D.notationHint, { exact: true }).filter({ visible: true }),
       ).toHaveCount(1);
       const a = panel.getByRole("group", { name: "Value A", exact: true });
       const result = panel.getByRole("group", { name: "Retained result", exact: true });
@@ -65,7 +66,7 @@ for (const theme of ["light", "dark"] as const) {
       await paste(page, b, "0b" + "0".repeat(32) + "1".repeat(32));
       await calculate.click();
       await expect(result.locator("[data-pattern]")).toHaveAttribute("data-pattern", "4294967294");
-      await expect(panel.locator(".workspace-exact")).toHaveText("Full mathematical result: -2");
+      await expect(panel.locator(".workspace-exact")).toHaveText("Exact signed sum: -2");
       await paste(page, entry, "1010");
       await entry.press("Enter");
       await expect(a.locator("[data-pattern]")).toHaveAttribute("data-pattern", "1010");
@@ -139,9 +140,7 @@ test("legacy selected-hex drafts migrate and invalidate a result from different 
   ).toHaveAttribute("data-pattern", "2147483646");
   await expect(panel.getByRole("group", { name: "Retained result", exact: true })).toHaveCount(0);
   await panel.getByRole("button", { name: "Calculate", exact: true }).click();
-  await expect(panel.locator(".workspace-exact")).toHaveText(
-    "Full mathematical result: 2,147,486,478",
-  );
+  await expect(panel.locator(".workspace-exact")).toHaveText("Exact unsigned sum: 2,147,486,478");
   expect(
     await page.evaluate(() => sessionStorage.getItem("assembly-lab:update:views:v1")),
   ).toBeNull();

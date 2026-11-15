@@ -25,6 +25,10 @@ export type WorkspaceTrace = {
 export type Workspace = {
   view: "calculate" | "edit";
   showCarries: boolean;
+  showFlags: boolean;
+  bitsOpen: boolean;
+  helpOpen: boolean;
+  dirty: boolean;
   width: WorkspaceWidth;
   reading: CalculatorReading;
   pattern: string;
@@ -49,6 +53,10 @@ export function initialWorkspace(): Workspace {
   return {
     view: "calculate",
     showCarries: false,
+    showFlags: false,
+    bitsOpen: false,
+    helpOpen: false,
+    dirty: false,
     width: 32,
     reading: "unsigned",
     pattern: "0",
@@ -126,6 +134,51 @@ export function workspaceEntryForSettings(
   return format === "hex" ? `0x${pattern.toString(16)}` : `0b${pattern.toString(2)}`;
 }
 
+/** A reading change reprojects an existing valid result; resizing invalidates it. */
+export function workspaceSettings(
+  work: Workspace,
+  width: WorkspaceWidth,
+  reading: CalculatorReading,
+): Workspace {
+  const entry = workspaceEntryForSettings(work.entry, work.width, work.reading, width, reading);
+  const operand = workspaceEntryForSettings(work.operand, work.width, work.reading, width, reading);
+  const a = calculatorParseEntry(entry, width, reading);
+  const next: Workspace = {
+    ...work,
+    width,
+    reading,
+    entry,
+    operand,
+    pattern: a.ok ? a.pattern : BigInt.asUintN(width, BigInt(work.pattern)).toString(),
+    selected: Math.min(work.selected, width - 1),
+    scrollLeft: width === work.width ? work.scrollLeft : -1,
+    trace: null,
+    full: null,
+    error: null,
+    message: "",
+    dirty: width !== work.width || work.dirty,
+  };
+  if (width === work.width && work.trace) {
+    const before = workspaceCalculation(work),
+      after = workspaceCalculation(next);
+    if (
+      before.ok &&
+      after.ok &&
+      work.trace.a === before.trace.a &&
+      work.trace.b === before.trace.b &&
+      work.trace.width === work.width &&
+      work.trace.reading === work.reading &&
+      work.trace.operation === work.operation &&
+      after.trace.a === before.trace.a &&
+      after.trace.b === before.trace.b
+    ) {
+      next.trace = after.trace;
+      next.full = after.trace.full;
+    }
+  }
+  return next;
+}
+
 /** Preserve the old header tool's exact patterns and pending fields across a coordinated update. */
 export function restoreWorkspace(raw: unknown): Workspace {
   const work = initialWorkspace();
@@ -135,6 +188,13 @@ export function restoreWorkspace(raw: unknown): Workspace {
   if (value.reading === "signed") work.reading = "signed";
   if (value.view === "edit") work.view = "edit";
   work.showCarries = value.showCarries === true;
+  work.showFlags = typeof value.showFlags === "boolean" ? value.showFlags : work.showCarries;
+  work.bitsOpen =
+    typeof value.bitsOpen === "boolean"
+      ? value.bitsOpen
+      : work.view === "edit" || work.showCarries || value.halfOpen === true;
+  work.helpOpen = value.helpOpen === true;
+  work.dirty = value.dirty === true;
   if (value.operation === "subtract" || value.operation === "shift-left")
     work.operation = value.operation;
   if (typeof value.pattern === "string") {

@@ -1,19 +1,29 @@
 // Copyright © 2026 Christopher Snow
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render } from "@testing-library/react";
+import { cleanup, fireEvent, render, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { CalculatorWorkspace } from "./CalculatorWorkspace";
 import { CALCULATOR_CARRIES as F } from "./strings.calculator-carries";
 import { CALCULATOR_WORKSPACE as C } from "./strings.calculator-workspace";
 import { PROGRAMMER_CALCULATOR as S } from "./strings.programmer-calculator";
+import { COMPACT_CALCULATOR as D } from "./strings.compact-calculator";
 
 afterEach(() => {
   cleanup();
   sessionStorage.clear();
   vi.restoreAllMocks();
 });
-const setup = () => render(<CalculatorWorkspace handoffKey="carries" />);
+function openInspection(view: ReturnType<typeof render>) {
+  const details = view.container.querySelector<HTMLDetailsElement>(".workspace-inspection")!;
+  details.open = true;
+  fireEvent(details, new Event("toggle", { bubbles: true }));
+}
+const setup = () => {
+  const view = render(<CalculatorWorkspace handoffKey="carries" />);
+  openInspection(view);
+  return view;
+};
 function calculate(view: ReturnType<typeof setup>, a: string, b: string) {
   fireEvent.change(view.getByRole("textbox", { name: C.currentA }), { target: { value: a } });
   fireEvent.change(view.getByRole("textbox", { name: C.currentB }), { target: { value: b } });
@@ -32,7 +42,7 @@ it("starts off, points to the real comparison, and shows unknown carries until C
   fireEvent.click(toggle);
   expect(toggle).toHaveAttribute("aria-pressed", "true");
   expect(view.getByText(F.unknown)).toBeVisible();
-  expect(view.queryByText(C.calculateHint)).toBeNull();
+  expect(view.getByText(D.emptyResult)).toBeVisible();
   expect(view.container.querySelectorAll("[data-flag]")).toHaveLength(0);
   expect(view.getByRole("img", { name: `${F.carryIn}: ${C.unknownResult}` })).toBeVisible();
   fireEvent.click(view.getByRole("button", { name: S.calculate }));
@@ -55,12 +65,15 @@ it("shows the user's actual carry columns, sign-bit ports and distinct C/V resul
   expect(view.getByText(F.vEquation(1, 0, 1))).toBeVisible();
   expect(view.getByText(F.different)).toBeVisible();
   expect(view.getAllByText(F.xorHelp)).toHaveLength(1);
-  expect(view.getByText(F.overflowHelp)).toBeVisible();
-  expect(view.container.textContent!.indexOf(F.overflowHelp)).toBeLessThan(
-    view.container.textContent!.indexOf(F.vLabel),
+  expect(view.getByText(D.flagsHelp)).toBeVisible();
+  expect(view.getByText(D.vLabel)).toBeVisible();
+  const detail = view.container.querySelector<HTMLElement>(".workspace-carry-details")!;
+  expect(within(detail).getByText(F.overflowHelp)).toBeVisible();
+  expect(detail.textContent!.indexOf(F.overflowHelp)).toBeLessThan(
+    detail.textContent!.indexOf(F.vEquation(1, 0, 1)),
   );
-  expect(view.container.textContent!.indexOf(F.xorHelp)).toBeLessThan(
-    view.container.textContent!.indexOf(F.vEquation(1, 0, 1)),
+  expect(detail.textContent!.indexOf(F.xorHelp)).toBeLessThan(
+    detail.textContent!.indexOf(F.vEquation(1, 0, 1)),
   );
   fireEvent.click(view.getByRole("button", { name: F.showCarries }));
   expect(view.container.querySelector('[data-row="carry"]')).toBeNull();
@@ -121,7 +134,7 @@ it("covers every top carry pair at both widths, independent of selected reading"
   }
 });
 
-it("keeps carries exclusive to Add and resets the preference with the workspace", () => {
+it("keeps carry columns exclusive to Add, gives Subtract arithmetic flags and resets preferences", () => {
   const view = setup();
   fireEvent.click(view.getByRole("button", { name: F.showCarries }));
   calculate(view, "0xFFFFFFFF", "1");
@@ -133,12 +146,20 @@ it("keeps carries exclusive to Add and resets the preference with the workspace"
     expect(view.container.querySelector('[data-row="carry"]')).toBeNull();
     expect(view.container.querySelector("[data-flag]")).toBeNull();
     fireEvent.click(view.getByRole("button", { name: S.calculate }));
-    expect(view.container.querySelector("[data-flag]")).toBeNull();
+    if (operation === "subtract") {
+      expect(view.container.querySelectorAll("[data-flag]")).toHaveLength(4);
+      expect(view.container.querySelector('[data-flag="c"]')).toHaveAttribute("data-value", "1");
+      expect(view.container.querySelector('[data-flag="v"]')).toHaveAttribute("data-value", "0");
+      expect(view.getByText(D.cSubLabel)).toBeVisible();
+      expect(view.container.querySelector(".workspace-carry-details")).toBeNull();
+    } else expect(view.container.querySelector("[data-flag]")).toBeNull();
   }
   fireEvent.change(view.getByRole("combobox", { name: S.operation }), { target: { value: "add" } });
   expect(view.getByRole("button", { name: F.showCarries })).toHaveAttribute("aria-pressed", "true");
   expect(view.getByText(F.unknown)).toBeVisible();
   fireEvent.click(view.getByRole("button", { name: S.reset }));
+  expect(view.container.querySelector(".workspace-inspection")).not.toHaveAttribute("open");
+  openInspection(view);
   expect(view.getByRole("button", { name: F.showCarries })).toHaveAttribute(
     "aria-pressed",
     "false",
@@ -155,6 +176,7 @@ it("preserves carry visibility and recomputes its values through a coordinated u
       <Original handoffKey="global" />
     </handoff.ViewHandoffScope>,
   );
+  openInspection(view);
   calculate(view, "0x7ffffffe", "2");
   fireEvent.click(view.getByRole("button", { name: F.showCarries }));
   expect(handoff.prepareViewHandoff()).toBe(true);
@@ -167,6 +189,7 @@ it("preserves carry visibility and recomputes its values through a coordinated u
       <Restored handoffKey="global" />
     </nextHandoff.ViewHandoffScope>,
   );
+  expect(next.container.querySelector(".workspace-inspection")).toHaveAttribute("open");
   expect(next.getByRole("button", { name: F.showCarries })).toHaveAttribute("aria-pressed", "true");
   expect(next.getByText(F.vEquation(1, 0, 1))).toBeVisible();
   expect(next.container.querySelector("[data-carry-into-sign]")).toHaveTextContent("1");

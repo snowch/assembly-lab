@@ -1,6 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 import { expect, test } from "@playwright/test";
+import { inspectCalculator } from "./calculator-helpers";
 import { CALCULATOR_CARRIES as F } from "../../packages/views/src/strings.calculator-carries";
 
 for (const theme of ["light", "dark"] as const) {
@@ -11,6 +12,7 @@ for (const theme of ["light", "dark"] as const) {
       await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
       await page.getByRole("button", { name: "Calculator", exact: true }).click();
       const panel = page.getByRole("dialog", { name: "Programmer calculator", exact: true });
+      await inspectCalculator(panel);
       const toggle = panel.getByRole("button", { name: F.showCarries, exact: true });
       const scroll = panel.getByRole("region", { name: "Calculation", exact: true });
       const entry = panel.getByRole("textbox", { name: "Value A", exact: true });
@@ -70,8 +72,14 @@ for (const theme of ["light", "dark"] as const) {
       await toggle.click();
       await expect.poll(() => scroll.evaluate((n) => n.scrollLeft)).toBe(137);
       await panel.getByRole("button", { name: "Signed", exact: true }).click();
-      await expect(panel.locator("[data-flag]")).toHaveCount(0);
-      await calculate.click();
+      await expect(panel.locator("[data-flag]")).toHaveCount(4);
+      await expect(panel.locator('[data-flag="c"]')).toHaveAttribute("data-value", "0");
+      await expect(panel.locator('[data-flag="v"]')).toHaveAttribute("data-value", "1");
+      await expect(
+        panel
+          .getByRole("group", { name: "Retained result", exact: true })
+          .locator('output[data-reading="signed"]'),
+      ).toHaveText("-2,147,483,648");
       await expect(panel.getByText(F.vEquation(1, 0, 1), { exact: true })).toBeVisible();
       await panel.getByRole("button", { name: "64 bits", exact: true }).click();
       await expect(panel.getByText(F.unknown, { exact: true })).toBeVisible();
@@ -108,6 +116,8 @@ for (const theme of ["light", "dark"] as const) {
         false,
       );
       await panel.getByRole("button", { name: "Reset calculator", exact: true }).click();
+      await expect(panel.locator(".workspace-inspection")).not.toHaveAttribute("open");
+      await inspectCalculator(panel);
       await expect(toggle).toHaveAttribute("aria-pressed", "false");
       await expect(panel.locator('[data-row="carry"], [data-flag]')).toHaveCount(0);
       await panel.getByRole("button", { name: "Close calculator", exact: true }).click();

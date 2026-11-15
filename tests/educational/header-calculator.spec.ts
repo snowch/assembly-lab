@@ -1,6 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 import { expect, test } from "@playwright/test";
+import { inspectCalculator } from "./calculator-helpers";
 
 for (const theme of ["light", "dark"] as const) {
   test(`header calculator in ${theme}: scratch work, focus and lesson isolation`, async ({
@@ -131,7 +132,10 @@ for (const theme of ["light", "dark"] as const) {
         .boundingBox();
       expect(Math.abs(aInput!.width - bInput!.width)).toBeLessThan(1);
       expect(aPreview!.y).toBeGreaterThanOrEqual(aInput!.y + aInput!.height);
-      expect(bInput!.y).toBeGreaterThanOrEqual(aPreview!.y + aPreview!.height);
+      if (width >= 834) {
+        expect(Math.abs(aInput!.y - bInput!.y)).toBeLessThan(1);
+        expect(bInput!.x).toBeGreaterThanOrEqual(aInput!.x + aInput!.width);
+      } else expect(bInput!.y).toBeGreaterThanOrEqual(aPreview!.y + aPreview!.height);
       expect(bPreview!.y).toBeGreaterThanOrEqual(bInput!.y + bInput!.height);
       expect(operation!.y).toBeGreaterThanOrEqual(bPreview!.y + bPreview!.height);
       await panel.getByRole("button", { name: "64 bits", exact: true }).click();
@@ -144,8 +148,9 @@ for (const theme of ["light", "dark"] as const) {
         "18446744073709551615",
       );
       await expect(panel.locator(".workspace-exact")).toHaveText(
-        "Full mathematical result: 18,446,744,073,709,551,616",
+        "Exact unsigned sum: 18,446,744,073,709,551,616",
       );
+      await inspectCalculator(panel);
       await expect(panel.locator('[data-row="result"] .workspace-cell')).toHaveCount(64);
       await expect.poll(() => scroll.evaluate((n) => n.scrollLeft)).toBeGreaterThan(0);
       await panel.getByRole("button", { name: "High bits", exact: true }).click();
@@ -180,7 +185,7 @@ for (const theme of ["light", "dark"] as const) {
         "aria-invalid",
         "true",
       );
-      await panel.getByRole("tab", { name: "Edit bits", exact: true }).click();
+      await panel.getByRole("button", { name: "Edit A bits", exact: true }).click();
       const bit0 = panel.getByRole("button", { name: "Bit 0", exact: true });
       await bit0.focus();
       await bit0.press("ArrowLeft");
@@ -208,10 +213,8 @@ for (const theme of ["light", "dark"] as const) {
         false,
       );
       await panel.getByRole("button", { name: "Reset calculator", exact: true }).click();
-      await expect(panel.getByRole("tab", { name: "Calculate", exact: true })).toHaveAttribute(
-        "aria-selected",
-        "true",
-      );
+      await expect(panel.locator(".workspace-inspection")).not.toHaveAttribute("open");
+      await expect(panel.getByRole("button", { name: "Calculate", exact: true })).toHaveCount(1);
       await expect(a.locator("[data-pattern]")).toHaveAttribute("data-pattern", "0");
       await panel.getByRole("button", { name: "Close calculator" }).click();
     }

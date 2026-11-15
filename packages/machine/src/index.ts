@@ -26,6 +26,7 @@ export {
   calculatorEntryFormat,
   calculatorCompute,
   calculatorAdditionCarries,
+  calculatorArithmeticFlags,
   calculatorHalves,
   calculatorSetHalf,
 } from "./programmer-calculator.ts";

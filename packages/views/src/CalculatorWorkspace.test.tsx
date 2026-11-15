@@ -4,6 +4,7 @@
 import { cleanup, fireEvent, render, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { CalculatorWorkspace } from "./CalculatorWorkspace";
+import { COMPACT_CALCULATOR as D } from "./strings.compact-calculator";
 import { CALCULATOR_ENTRY as E } from "./strings.calculator-entry";
 import { CALCULATOR_WORKSPACE as C } from "./strings.calculator-workspace";
 import { PROGRAMMER_CALCULATOR as S } from "./strings.programmer-calculator";
@@ -13,7 +14,16 @@ afterEach(() => {
   sessionStorage.clear();
   vi.restoreAllMocks();
 });
-const setup = () => render(<CalculatorWorkspace handoffKey="test" />);
+function openInspection(view: ReturnType<typeof render>) {
+  const details = view.container.querySelector<HTMLDetailsElement>(".workspace-inspection")!;
+  details.open = true;
+  fireEvent(details, new Event("toggle", { bubbles: true }));
+}
+const setup = () => {
+  const view = render(<CalculatorWorkspace handoffKey="test" />);
+  openInspection(view);
+  return view;
+};
 function enterA(view: ReturnType<typeof setup>, value: string) {
   fireEvent.change(view.getByRole("textbox", { name: C.currentA }), { target: { value } });
 }
@@ -28,8 +38,8 @@ function valueA(view: ReturnType<typeof setup>) {
 
 it("preserves both operands, shows unknown output until Calculate, and explicitly chains a result", () => {
   const view = setup();
-  expect(view.getByRole("tab", { name: C.calculateView })).toHaveAttribute("aria-selected", "true");
-  expect(view.getAllByRole("tabpanel")).toHaveLength(1);
+  expect(view.queryByRole("tab")).toBeNull();
+  expect(view.getAllByRole("button", { name: S.calculate })).toHaveLength(1);
   expect(view.getByRole("img", { name: `${C.result}: ${C.unknownResult}` })).toBeInTheDocument();
   enterA(view, "4294967295");
   fireEvent.click(view.getByRole("button", { name: S.calculate }));
@@ -110,13 +120,16 @@ it("uses one scroll region and gives shift a count instead of pretending B is an
     view.getByRole("group", { name: C.retainedResult }).querySelector("[data-pattern]"),
   ).toHaveAttribute("data-pattern", "2147483648");
   expect(valueA(view)).toBe("1");
-  expect(view.container.querySelector(".workspace-exact")).toHaveTextContent(C.fullShiftResult);
+  expect(view.container.querySelector(".workspace-exact")).toHaveTextContent(
+    D.exactLabel("shift-left", "unsigned"),
+  );
 });
 
 it("moves bit editing and half replacement out of the calculation and retains their exact behaviour", () => {
   const view = setup();
   expect(view.queryByRole("button", { name: S.bit(0) })).toBeNull();
-  fireEvent.click(view.getByRole("tab", { name: C.editView }));
+  openInspection(view);
+  fireEvent.click(view.getByRole("button", { name: D.editBits }));
   const editor = view.getByRole("group", { name: S.pattern });
   const bit = within(editor).getByRole("button", { name: S.bit(0) });
   bit.focus();
@@ -135,7 +148,7 @@ it("moves bit editing and half replacement out of the calculation and retains th
   expect(view.queryByLabelText(S.halfValue)).toBeNull();
   fireEvent.click(view.getByRole("button", { name: S.reset }));
   expect(valueA(view)).toBe("0");
-  expect(view.getByRole("tab", { name: C.calculateView })).toHaveAttribute("aria-selected", "true");
+  expect(view.container.querySelector(".workspace-inspection")).not.toHaveAttribute("open");
 });
 
 it("does not silently truncate input or compute invalid operands, and associates errors locally", () => {
@@ -162,13 +175,17 @@ it("unmounts all closed controls while retaining the view, exact value and pendi
   const view = render(renderTool(true));
   enterA(view, "123");
   fireEvent.change(view.getByRole("textbox", { name: C.currentA }), { target: { value: "456" } });
-  fireEvent.click(view.getByRole("tab", { name: C.editView }));
+  openInspection(view);
+  fireEvent.click(view.getByRole("button", { name: D.editBits }));
   view.rerender(renderTool(false));
   expect(view.container).toBeEmptyDOMElement();
   view.rerender(renderTool(true));
   expect(valueA(view)).toBe("456");
   expect(view.getByRole("textbox", { name: C.currentA })).toHaveValue("456");
-  expect(view.getByRole("tab", { name: C.editView })).toHaveAttribute("aria-selected", "true");
+  expect(view.getByRole("button", { name: D.finishEditing })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
 });
 
 it("migrates pending work from the former header calculator during a coordinated update", async () => {
@@ -273,7 +290,8 @@ it("edits the current A after a width or reading change makes an invalid draft v
   const view = setup();
   enterA(view, "0x100000000");
   expect(valueA(view)).toBeNull();
-  fireEvent.click(view.getByRole("tab", { name: C.editView }));
+  openInspection(view);
+  fireEvent.click(view.getByRole("button", { name: D.editBits }));
   expect(view.queryByRole("button", { name: S.bit(0) })).toBeNull();
   expect(view.getByText(C.editUnavailable)).toBeVisible();
   fireEvent.click(view.getByRole("button", { name: S.widthValue(64) }));
