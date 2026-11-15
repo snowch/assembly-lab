@@ -6,9 +6,62 @@ import {
   restoreWorkspace,
   workspaceCalculation,
   workspaceEntryForSettings,
+  workspaceSettings,
 } from "./calculator-workspace";
 
 describe("header calculator working", () => {
+  it("reprojects a completed word across readings while keeping its sources and optional inspection", () => {
+    const work = { ...initialWorkspace(), entry: "0xffffffff", showFlags: true, bitsOpen: true };
+    const result = workspaceCalculation(work);
+    if (!result.ok) throw new Error("Expected valid fixture");
+    const next = workspaceSettings(
+      { ...work, trace: result.trace, full: result.trace.full },
+      32,
+      "signed",
+    );
+    expect(next).toMatchObject({
+      reading: "signed",
+      entry: "0xffffffff",
+      showFlags: true,
+      bitsOpen: true,
+      trace: { a: "4294967295", b: "1", pattern: "0", full: "0", reading: "signed" },
+      full: "0",
+    });
+    expect(workspaceSettings(next, 32, "unsigned").trace).toMatchObject({
+      pattern: "0",
+      full: "4294967296",
+    });
+  });
+
+  it("does not manufacture a reading-only result, retain stale sources or retain a resized result", () => {
+    const work = { ...initialWorkspace(), entry: "7" };
+    expect(workspaceSettings(work, 32, "signed").trace).toBeNull();
+    const result = workspaceCalculation(work);
+    if (!result.ok) throw new Error("Expected valid fixture");
+    expect(
+      workspaceSettings({ ...work, entry: "8", trace: result.trace }, 32, "signed").trace,
+    ).toBeNull();
+    expect(
+      workspaceSettings({ ...work, entry: "invalid", trace: result.trace }, 32, "signed").trace,
+    ).toBeNull();
+    expect(workspaceSettings({ ...work, trace: result.trace }, 64, "unsigned")).toMatchObject({
+      trace: null,
+      full: null,
+      dirty: true,
+    });
+  });
+
+  it("migrates open editing/carry work to inspection and preserves an explicitly collapsed new disclosure", () => {
+    expect(restoreWorkspace({ view: "edit", showCarries: true, halfOpen: true })).toMatchObject({
+      bitsOpen: true,
+      showFlags: true,
+      view: "edit",
+      halfOpen: true,
+    });
+    expect(
+      restoreWorkspace({ view: "edit", showCarries: true, bitsOpen: false, showFlags: false }),
+    ).toMatchObject({ bitsOpen: false, showFlags: false });
+  });
   it.each([
     [32, "unsigned", "4294967295", "add", "1", "0", "4294967296"],
     [32, "unsigned", "0", "subtract", "1", "4294967295", "-1"],

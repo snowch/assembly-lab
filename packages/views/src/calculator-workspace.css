@@ -307,3 +307,252 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* The arithmetic route ends at its numeric result. Inspection and detailed help are optional. */
+.calculator-workspace .workspace-notation {
+  margin: 10px 0 12px;
+}
+.workspace-operands {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+.workspace-operands .workspace-value {
+  margin: 0;
+  min-width: 0;
+}
+.calculator-workspace .workspace-value > label {
+  margin-bottom: 5px;
+  font-size: 15px;
+}
+.calculator-workspace .workspace-value > input {
+  margin-bottom: 6px;
+}
+.workspace-value .workspace-readouts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 12px;
+}
+.workspace-value .workspace-readouts > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 6px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  max-width: 100%;
+}
+.workspace-value .workspace-readouts span {
+  font-size: 11px;
+}
+.workspace-value .workspace-readouts output {
+  font-size: 12px;
+}
+.workspace-value .workspace-readouts .al-programmer-number-group {
+  font: inherit;
+}
+.calculator-workspace .workspace-calculation-action {
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin: 16px 0 12px;
+}
+.calculator-workspace .workspace-calculation-action > button {
+  min-width: 116px;
+  font-size: 15px;
+}
+.calculator-workspace button.workspace-calculate:hover,
+.calculator-workspace button.workspace-calculate:active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+.calculator-workspace .workspace-feedback {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+.workspace-feedback:empty {
+  display: none;
+}
+.workspace-pending {
+  padding: 12px 0;
+  border-block: 1px solid var(--border);
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+.workspace-result {
+  margin-top: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--accent-soft);
+}
+.workspace-result-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+.workspace-result-heading h3 {
+  margin: 0;
+  font-size: 15px;
+}
+.workspace-result-heading > span {
+  font-size: 12px;
+}
+.workspace-result .workspace-readouts {
+  display: block;
+}
+.workspace-result .workspace-readouts > div {
+  background: transparent;
+  padding: 0;
+  margin-top: 6px;
+}
+.workspace-result .workspace-readouts output[data-reading] {
+  font-size: 24px;
+  line-height: 1.4;
+}
+.workspace-result .workspace-readouts output[data-pattern] {
+  font-size: 14px;
+}
+.calculator-workspace .workspace-result > p {
+  margin: 8px 0 0;
+  font-size: 13px;
+}
+.workspace-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+.calculator-workspace .workspace-flags-toggle {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  min-height: 44px;
+  font-size: 13px;
+}
+.calculator-workspace .workspace-flags-toggle input {
+  appearance: auto;
+  padding: 0;
+  border: initial;
+  border-radius: 0;
+  background: initial;
+  flex: 0 0 18px;
+  width: 18px;
+  min-height: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.workspace-flags-summary {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.workspace-flags-summary dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+.workspace-flags-summary dt {
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+.workspace-flags-summary dd {
+  margin: 3px 0 0;
+  font: 600 20px/1.4 var(--font-mono);
+}
+.workspace-flags-summary [data-value="1"] {
+  color: var(--accent);
+}
+.calculator-workspace .workspace-flags-summary > p {
+  font-size: 12px;
+  margin: 8px 0 0;
+}
+.workspace-inspection,
+.workspace-help-details {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.workspace-inspection > summary,
+.workspace-help-details > summary {
+  display: list-item;
+  min-height: 44px;
+  padding: 11px 0;
+  cursor: pointer;
+}
+.workspace-help-copy {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  padding-bottom: 10px;
+}
+.calculator-workspace .workspace-help-copy p {
+  margin: 0;
+}
+.workspace-inspection .workspace-bit-tools {
+  margin-top: 6px;
+}
+.workspace-bit-tools > div {
+  flex-wrap: wrap;
+}
+.workspace-scroll {
+  --workspace-cell: 26px;
+}
+.workspace-nibble {
+  grid-template-columns: repeat(4, var(--workspace-cell, 26px));
+}
+.workspace-scroll[data-editing="true"] {
+  --workspace-cell: 44px;
+}
+.calculator-workspace button.workspace-edit-bit {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  color: var(--fg);
+  font: 600 16px/1 var(--font-mono);
+}
+.workspace-scroll .workspace-cell[data-sign-bit="true"] {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.calculator-workspace .workspace-edit-help p {
+  margin: 8px 0;
+}
+.workspace-edit-help .al-programmer-inspector {
+  min-height: 0;
+}
+.workspace-half-field {
+  min-width: 0;
+}
+.workspace-half-field > label {
+  display: block;
+  font-size: 13px;
+}
+.workspace-half-field .al-programmer-error {
+  font-size: 12px;
+}
+.workspace-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+@container programmer (min-width: 520px) {
+  .workspace-operands {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container programmer (max-width: 359px) {
+  .workspace-flags-summary dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .workspace-result {
+    padding: 12px;
+  }
+  .workspace-result .workspace-readouts output[data-reading] {
+    font-size: 21px;
+  }
+}
