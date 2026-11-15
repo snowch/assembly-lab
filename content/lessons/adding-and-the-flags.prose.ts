@@ -83,7 +83,7 @@ export const PROSE = {
     "After this 32-bit `adds`, read the flags from the result and the carry marks at bit 31:\n\n- N is the result’s top bit, bit 31.\n- Z is 1 if all 32 result bits are 0; otherwise it is 0.\n- C is the carry out of bit 31.\n- V is 1 if the carry into bit 31 differs from the carry out; otherwise it is 0.\n\nThe carry test for V reports the same signed-range check as the miniatures: 1 means the exact signed sum does not fit. C reports whether the exact unsigned sum is too large.\n\nFor optional hardware background, explore [Bit Lab’s four-bit arithmetic and logic circuit](https://snowch.github.io/bit-lab/#/lesson/alu). It is a teaching model, not an Arm processor’s circuit.",
 
   generalisation:
-    "Every `adds` writes all four flags. The flags keep their values until another instruction writes them. `add` and `sub` do not write the flags.",
+    "Preserving the flags means not writing to them. Their existing values stay unchanged. Every `adds` writes all four flags, even when a calculated flag value matches its old value. The flags keep their values until another instruction writes them. `add` and `sub` preserve the flags.",
 
   modelVsReality: "",
 } as const;
