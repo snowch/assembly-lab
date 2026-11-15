@@ -301,11 +301,11 @@ export function CalculatorInspection({
                   <dd data-carry-out>{carries.out}</dd>
                 </div>
               </dl>
+              <p className="workspace-field-help">
+                <span>{F.help}</span> <span>{F.overflowHelp}</span> <span>{F.xorHelp}</span>
+              </p>
               <p>{F.cEquation(carries.c)}</p>
               <p>{F.vEquation(carries.intoSign, carries.out, carries.v)}</p>
-              <p className="workspace-field-help">
-                {F.help} {F.xorHelp}
-              </p>
               <p>
                 <strong>{carries.v === 1 ? F.different : F.matching}</strong>
               </p>
