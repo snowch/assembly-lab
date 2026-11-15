@@ -61,3 +61,10 @@
   min-height: 44px;
   padding: 8px 0;
 }
+
+.al-flags-lesson .instruction-reference-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  vertical-align: middle;
+}

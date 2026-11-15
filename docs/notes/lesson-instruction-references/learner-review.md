@@ -62,3 +62,22 @@ The independent matrix covered these ten routes at **375, 768 and 1280 pixels**,
 - Screenshots and text captures are in `/workspace/output/instruction-reference-learner/`, together with both scripts, logs and JSON records. The initial source/UI assessment was recorded in `pre-brief-assessment.txt` before reading the author brief.
 
 This is Chromium keyboard, layout and interaction evidence. It is not an observed novice-learning result, a screen-reader/assistive-technology study, or a claim about all browser engines. Native disclosure markup supports expected semantics, but a real screen reader was not run. External documentation bodies, source correctness and destination availability belong to the separate technical review; this learner pass did not browse every external link. No full-suite result is claimed here, and no product or test file was edited by this reviewer.
+
+## Follow-up: custom flags introduction target
+
+Rechecked 15 November 2026 after the managing session's full run at HEAD `e152e6e` exposed the custom flags `adds` link's 20-pixel target. The earlier learner pass checked that link's appearance and state behaviour but did not measure its target. This is separate from L1's generated footer links.
+
+**Finding L2, medium: accepted, corrected and independently verified.** The managing session added `.al-flags-lesson .instruction-reference-link` with `display: inline-flex`, centred contents, `min-height: 44px` and `vertical-align: middle` in `lesson-sources.css`. No learner copy or state implementation changed. This follow-up was commissioned with the failure and proposed correction already supplied; it is an independent checker pass, not a new blind review.
+
+The actual preview at port 4204 served **`index-8yO3FBBb.js` and `index-B4vMGVkB.css`**. These fingerprints were read from the served page, rather than inferred from the earlier build. The compiled stylesheet contains the new scoped rule.
+
+Independent results:
+
+- The custom flags introduction link measured **44 pixels high** at **320, 375, 834 and 1280 pixels**, in **both light and dark themes**. It stayed `inline-flex` with middle vertical alignment and remained contained within its paragraph. Keyboard focus was visible.
+- Normal and focused hero screenshots were inspected across all eight combinations. The linked `adds` remains within its explanatory sentence. The taller inline target increases that line's height; words remain in reading order without clipping, overlap or a separate block row. Both command-comparison instructions remain plain code. No hero or page overflow was observed.
+- A saved miniature choice survived theme changes, navigation away/back and reload. Theme changes preserved the open References row; route changes/reload closed it. The independent Arm result gate remained closed throughout. No console/page error was recorded.
+- Relevant siblings remain intact: generated footer links still measured at least 44 pixels, the ordinary first-lesson mnemonic link retained its existing mobile/desktop display behaviour, and the authored opening reference list retained inline or inline-flex prose links rather than block links.
+
+`flags-followup/check.cjs` completed **8 viewport/theme combinations**, exit 0. The additional `flags-followup/layout.cjs` completed **8 normal hero layout checks**, exit 0, including page/hero width and paragraph-text bounds. Scripts, logs, measurements and screenshots are preserved in `/workspace/output/instruction-reference-learner/flags-followup/`. **L2 is closed; no further learner issue was found in this follow-up.**
+
+For the distinct full-suite record, the managing session reported that its first fixed-HEAD run was deliberately stopped with **exit 130**, after **766 passed, 14 skipped, 3 failed, 1 interrupted and 732 not run**. One failure identified this target-size issue; the other two were reported as stale selectors for the moved manuals. Its artifacts were copied to `/workspace/output/instruction-references-initial-artifacts/`. Those counts are managing-session evidence, not a full-suite run performed by this reviewer. The passing focused checks above do not change that original exit status or establish a passing full suite.
