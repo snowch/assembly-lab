@@ -78,7 +78,9 @@ for (const theme of ["light", "dark"] as const) {
       const forward = page.locator('#ix-register-views a[href="#/lesson/register-widths"]');
       await expect(forward).toHaveText(lessonLabel("register-widths"));
       await expectNumberedReferences(page);
-      const references = page.locator('.lesson-section[data-kind="motivation"] details');
+      const references = page.locator(".lesson-source-references");
+      await expect(references).not.toHaveAttribute("open");
+      await expect(page.locator('.lesson-section[data-kind="motivation"] details')).toHaveCount(0);
       await press(page, references.locator("summary"));
       await expect(
         references.getByRole("link", { name: "Arm’s instruction reference", exact: true }),

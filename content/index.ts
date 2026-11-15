@@ -8,3 +8,10 @@ export { COVER_CALL, COVER_PROGRAM } from "./cover";
 
 export { WHERE_NEXT } from "./where-next.prose";
 export { PLAYGROUND_STARTER } from "./where-next.example";
+
+export {
+  lessonSources,
+  FIRST_INSTRUCTION_FORMS,
+  LESSON_INSTRUCTION_FORMS,
+} from "./lesson-source-references";
+export type { LessonSources, SourceReference } from "./lesson-source-references";

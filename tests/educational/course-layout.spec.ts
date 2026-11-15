@@ -69,6 +69,8 @@ for (const theme of ["light", "dark"] as const) {
           await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
           await page.evaluate(async () => document.fonts.ready);
           await expect(page.locator(".lesson-layout")).toHaveCount(1);
+          await expect(page.locator(".lesson-source-references")).toHaveCount(1);
+          await expect(page.locator(".lesson-source-references")).not.toHaveAttribute("open");
           await expect(page.locator(".style-preview-controls,.style-preview-choices")).toHaveCount(
             0,
           );

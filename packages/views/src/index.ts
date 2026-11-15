@@ -110,3 +110,10 @@ export { FLAG_PRIMER_STRINGS } from "./strings.flag-primer";
 
 export { FlagsLesson } from "./flags-lesson/FlagsLesson";
 export { FLAGS_LESSON_SECTIONS } from "./flags-lesson/strings";
+
+export {
+  linkInstructionMarkdown,
+  linkLessonInstructionIntroductions,
+  linkInstructionIntroductionHtml,
+} from "./instruction-reference-links";
+export type { InstructionIntroduction } from "./instruction-reference-links";
