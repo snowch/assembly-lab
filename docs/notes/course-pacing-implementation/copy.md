@@ -185,10 +185,10 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "title": "Which instruction wrote the flags?",
     "explanationTitle": "Writing and preserving flags",
     "objectives": [
-      "distinguish preserved flags from flags written by the latest arithmetic operation."
+      "identify which instruction last updated N, Z, C and V."
     ],
-    "intro": "An instruction that leaves the flags unchanged can leave an earlier operation’s flags beside a new result. Follow the two additions to identify which operation the flags describe.",
-    "reminder": "`add` leaves the flags unchanged; `adds` writes them. [Addition and its flags](#/lesson/adding-and-the-flags) explains what N, Z, C and V record."
+    "intro": "Preserving the flags means not writing to them. Their existing values stay unchanged. `add` writes a new result to its destination register. N, Z, C and V still describe the earlier flag-setting instruction. Follow the two additions to identify which instruction last updated the flags.",
+    "reminder": "`add` leaves the flags unchanged; `adds` updates all four. [Addition and its flags](#/lesson/adding-and-the-flags) explains what N, Z, C and V record."
   },
   "subtractionArithmetic": {
     "title": "Subtraction flags and negation",

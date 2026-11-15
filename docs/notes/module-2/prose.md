@@ -148,7 +148,7 @@ Of `add`, `adds` and `sub`, only `adds` writes the flags.
 
 ## 7. Unsigned carry and signed overflow
 
-Every `adds` writes all four flags. The flags keep their values until another instruction writes them. `add` and `sub` do not write the flags.
+Preserving the flags means not writing to them. Their existing values stay unchanged. Every `adds` writes all four flags, even when a calculated flag value matches its old value. The flags keep their values until another instruction writes them. `add` and `sub` preserve the flags.
 
 **How GCC checks for overflow**
 
