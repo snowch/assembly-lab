@@ -243,9 +243,7 @@ test.describe("the constant tester", () => {
     await expect(tester(page).locator(".al-half16, .al-bit")).toHaveCount(0);
   });
 
-  test("says 'no single instruction' for 1000000, as the lesson's prose says it will", async ({
-    page,
-  }) => {
+  test("names the unsupported mov encoding for 1000000", async ({ page }) => {
     await openLesson(page, "constants-and-widths");
     await commit(page, "predict-fits", "65536");
     await tester(page).scrollIntoViewIfNeeded();

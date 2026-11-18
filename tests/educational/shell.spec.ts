@@ -466,7 +466,9 @@ test("the prerequisites name binary and link to its refresher and companion work
   await ready(page);
   const lead = page.locator(".prereqs > p");
   await expect(lead).toBeVisible();
-  await expect(lead).toContainText("an understanding of binary numbers");
+  await expect(lead).toContainText("small C functions with conditions, loops and arrays");
+  await expect(lead).toContainText("basic arithmetic");
+  await expect(lead).toContainText("read binary numbers by place value");
   await expect(page.locator(".prereqs-details")).not.toHaveAttribute("open", "");
   await page.locator(".prereqs-details > summary").click();
   const numbers = page

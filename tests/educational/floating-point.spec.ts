@@ -42,11 +42,11 @@ for (const theme of ["light", "dark"] as const) {
           await entry.press("Enter");
           await expect(explorer).toContainText("Kind of value: Subnormal");
           await check.getByLabel(/^Write the binary value/).fill("101.01");
-          await check.getByLabel(/^A normal binary32 value/).fill("-2");
+          await check.getByLabel(/^A normal binary32 value/).fill("−2");
           await check.getByLabel(/^A binary32 pattern/).selectOption("subnormal");
         } else {
-          await explorer.locator("details").first().locator("summary").click();
-          await expect(explorer).toContainText("12.3500003814697265625");
+          await expect(explorer.getByText("Exact stored value", { exact: true })).toBeVisible();
+          await expect(explorer.getByText("12.3500003814697265625", { exact: true })).toBeVisible();
           await explorer.getByLabel("Format", { exact: true }).selectOption("64");
           // Widening current storage must not silently re-encode the pending input.
           await expect(explorer).toContainText("12.3500003814697265625");
