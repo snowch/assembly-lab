@@ -243,16 +243,12 @@ test.describe("the constant tester", () => {
     await expect(tester(page).locator(".al-half16, .al-bit")).toHaveCount(0);
   });
 
-  test("says 'no single instruction' for 1000000, as the lesson's prose says it will", async ({
-    page,
-  }) => {
+  test("names the unsupported mov encoding for 1000000", async ({ page }) => {
     await openLesson(page, "constants-and-widths");
     await commit(page, "predict-fits", "65536");
     await tester(page).scrollIntoViewIfNeeded();
     await typeNumber(page, "1000000");
-    await expect(tester(page).locator(".al-nomatch")).toContainText(
-      "No single instruction can put",
-    );
+    await expect(tester(page).locator(".al-nomatch")).toContainText("cannot encode");
   });
 
   test("does not hand text that is not a number to the assembler", async ({ page }) => {
@@ -290,11 +286,11 @@ test.describe("the written challenge", () => {
     await c.scrollIntoViewIfNeeded();
     await expect(box(page)).toHaveValue(ODOMETER_LIMIT_START_TEXT);
     await expect(c.locator(".asm-problems")).toContainText("Line 1");
-    await expect(c.locator(".asm-problems")).toContainText("No single instruction can put");
+    await expect(c.locator(".asm-problems")).toContainText("cannot encode");
     await press(page, runTests(c));
     await expect(status(c)).toHaveText(blocked);
     await expect(c.locator(".verdict.blocked")).toContainText(
-      "Line 1: No single instruction can put 1000000 in a register.",
+      "Line 1: This mov cannot encode 1000000 in one instruction.",
     );
     await expect(c.locator(".challenge-complete")).toHaveCount(0);
   });

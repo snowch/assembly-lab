@@ -4,7 +4,7 @@
 // the course's book; the shell itself knows nothing about the machine. The front page lists the
 // plan, a lesson address shows the lesson with a way back, and an address with no lesson says so.
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 
 import {
   FlagsLesson,
@@ -46,6 +46,7 @@ function skipToContent(e: React.MouseEvent<HTMLAnchorElement>) {
 
 export function App() {
   const persistence = useMemo(updateStorage, []);
+  const unsavedWork = useSyncExternalStore(persistence.subscribe, persistence.hasUnsavedWork);
   const book = useMemo(() => createBook(), []);
   const completionStore = useMemo(
     () =>
@@ -216,6 +217,9 @@ export function App() {
           </select>
         </label>
       </header>
+      <div className="work-save-notice" role="status">
+        {unsavedWork ? STRINGS.workNotSaved : ""}
+      </div>
       <main id="main" className="shell-main" tabIndex={-1} inert={offline?.updating}>
         {page}
       </main>

@@ -15,7 +15,7 @@ export const PROSE = {
   predictionExplain:
     "It returns 31. The product is 24, stored as charge, and the return expression adds 7. Follow that value from the expression's working registers through the local variable and into `w0`.",
   investigation:
-    "Compile the source locally, choose inputs, and run it. The C evaluator first checks the operations on that input. It rejects unsupported or unsafe operations on the tested path. This checks that path in the supported subset, not arbitrary C or every possible input. If it completes, the A64 simulator executes the generated listing. The interface compares their results and lets you step through the instructions.\n\nThe highlighted C line is the line associated with the current generated instruction. One C expression can produce several instructions, so the highlight can stay on the same source line as different registers change.\n\nTry changing the fixed charge or adding an unsigned local variable. The statement editor and the text editor both change the same C source. A new compilation generates instructions from that source; the interface does not substitute a prepared animation.",
+    "After checking the prediction, select **Run with these inputs** to compile the prepared C and start its trace. Press **Next** until the function returns and read `w0`. Select **Compile C** when you want to read the generated instructions on their own. The C evaluator first checks the operations on that input. It rejects unsupported or unsafe operations on the tested path. This checks that path in the supported subset, not arbitrary C or every possible input. If it completes, the A64 simulator executes the generated listing. The interface compares their results and lets you step through the instructions.\n\nThe highlighted C line is the line associated with the current generated instruction. One C expression can produce several instructions, so the highlight can stay on the same source line as different registers change.\n\nTry changing the fixed charge or adding an unsigned local variable. The statement editor and the text editor both change the same C source. A new compilation generates instructions from that source; the interface does not substitute a prepared animation.",
   construction:
     "Write the same calculation directly in assembly. Your instructions can be shorter than the course compiler's fixed sequence while producing the required result.",
   writeTask:
@@ -28,10 +28,10 @@ export const PROSE = {
     "Write `mul w0, w0, w1`, `add w0, w0, #7` and `ret`.",
   ],
   failureExperiment:
-    "The changed C function returns `charge` directly. It no longer adds the fixed charge. Its inputs are still distance 6 and rate 4.",
+    "Choose the returned value and press **Check your prediction**. This opens the prepared C for you to run.",
   failureQuestion: "**What does the changed function return?**",
   failureExplain:
-    "It returns 24. The multiplication still calculates the distance-dependent charge, but the return expression no longer adds 7. Recompile the changed source and find which generated instructions have disappeared.",
+    "It returns 24. The multiplication still calculates the distance-dependent charge, but the return expression no longer adds 7. Select **Run with these inputs**, then press **Next** until the function returns. Compare `w0` and the generated instructions with the original charge calculation. In **Edit C text**, replace `return charge;` with `return charge + 7;` and repeat the run. Which instructions return, and how does the result change?",
   explanation:
     "The course compiler follows a fixed pattern for each supported expression and statement. That makes the translation inspectable, but it can produce moves and intermediate values that a more capable optimiser removes. Different instruction sequences can implement the same defined C calculation.\n\nThe C types control the arithmetic rules and the instruction choices. They do not remain as labels attached to the registers. For these unsigned variables, arithmetic keeps the low 32 bits. A later comparison tests that wrapped value.\n\nThe final function caps a charge at a limit. It first calculates the unsigned 32-bit product, then compares that result with the limit. It does not compare an unlimited mathematical product with the limit.",
   generalisation:

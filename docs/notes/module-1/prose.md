@@ -220,7 +220,7 @@ The one-half rule guarantees some constants fit. Other patterns can fit too. Try
 
 The figure assembles `mov w0,` followed by the number you type. Assembling turns that text into an instruction.
 
-The course's assembler accepts and rejects the same numbers as the GNU assembler, the program GCC uses to turn its listings into instructions. So the figure is the authority on whether a number fits.
+After checking your prediction, type `0x00010000` into **The number after mov w0** and inspect the result. Then replace it with `1000000` and read the diagnostic. The course checks these `mov w0` encodings against GNU as, the assembler for the GCC listings.
 
 Other patterns load with one `mov` because `mov` is a name the assembler accepts for more than one instruction. It picks the one that can hold the constant.
 
@@ -234,7 +234,7 @@ Other patterns load with one `mov` because `mov` is a name the assembler accepts
 
 65537 (`0x00010001`) fits. It is a single 1 repeated every 16 bits.
 
-The full rule is longer than this course needs. The figure checks any number.
+The figure checks whether the number you enter fits this `mov w0` instruction.
 
 *Type a number; the figure shows whether one `mov` can hold it, and what `w0` then holds.*
 

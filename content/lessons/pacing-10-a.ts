@@ -68,10 +68,7 @@ const tripUnits = splitLesson(trip, [
   ]),
   part("change-c-calculation", COPY.tripEdit, [
     context(COPY.tripEdit),
-    {
-      ...s(trip, "failureExperiment"),
-      prose: [paras(tripRead, 2), s(trip, "failureExperiment").prose].join("\n\n"),
-    },
+    s(trip, "failureExperiment"),
     {
       ...s(trip, "generalisation"),
       prose: [paras(s(trip, "generalisation"), 0, 1), paras(s(trip, "generalisation"), 2)].join(
@@ -373,11 +370,12 @@ const a32Units = splitLesson(a32Source, [
     {
       ...s(a32, "construction"),
       prose: "",
-      interactives: s(a32, "construction").interactives?.map((figure) =>
-        figure.kind === "challenge"
-          ? { ...figure, caption: COPY.a32Conditions.challengeTitle }
-          : figure,
-      ),
+      interactives: s(a32, "construction").interactives?.map((figure) => {
+        if (figure.kind === "challenge")
+          return { ...figure, caption: COPY.a32Conditions.challengeTitle };
+        const { referenceTitle: _referenceTitle, ...props } = figure.props ?? {};
+        return { ...figure, role: "diagram", props };
+      }),
     },
     s(a32, "failureExperiment"),
   ]),
@@ -397,7 +395,7 @@ const a32Units = splitLesson(a32Source, [
     {
       ...s(a32, "challenge"),
       interactives: s(a32, "challenge").interactives?.filter(
-        (f) => f.id !== "a32-marker-reference",
+        (f) => f.id !== "a32-marker-reference" && f.id !== "a32-average-reference",
       ),
     },
     s(a32, "reflection"),

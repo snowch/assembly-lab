@@ -229,7 +229,7 @@ The calculation has four parts:
 - The **quotient** is the whole-number answer.
 - The **remainder** is the amount left after subtracting the quotient times the divisor.
 
-In C, `/` produces the quotient and `%` produces the remainder.
+In C, `/` produces the quotient and `%` produces the remainder. Both operations require a nonzero divisor and a quotient that fits the result type.
 
 *Closed note: Defined C division*
 
@@ -315,7 +315,7 @@ A64 gives its division instructions results even in cases where C division is un
 
 These instructions do not signal those cases through the condition flags.
 
-Inspect the two assembly-only experiments. Their hardware results are observable, but a C compiler is not required to preserve the behaviour of an undefined C expression. Check a divisor or an overflow case before performing the C operation.
+Press **Next** in the two assembly-only examples. Read `w2` after `sdiv` and `w3` after `udiv`. The simulator follows A64’s rules for these inputs. A C program needs to check the divisor and the quotient’s range before using `/` or `%`.
 
 ## 8. Division by a constant
 
@@ -420,7 +420,7 @@ Divide by a negative divisor
 
 Divide two negative inputs
 
-Divide zero
+Zero dividend
 
 Divide the maximum signed value
 

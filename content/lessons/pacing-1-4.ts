@@ -460,6 +460,7 @@ const bitMasks = splitLesson(maskSource, [
       },
       {
         ...section(masks, "challenge"),
+        title: COPY.masks.traceTitle,
         prose: "",
         interactives: [{ ...traceFigure, caption: COPY.masks.traceTitle }],
       },
@@ -487,6 +488,7 @@ const bitMasks = splitLesson(maskSource, [
       },
       {
         ...section(masks, "challenge"),
+        title: COPY.fields.traceTitle,
         prose: "",
         interactives: [
           {

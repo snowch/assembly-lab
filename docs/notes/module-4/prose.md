@@ -174,7 +174,9 @@ In `cmp a, b`, `a` is the first operand and `b` is the second. After that compar
 
 `vs`, which Module 2 met, is yes when V is 1.
 
-The figure below uses `cmp w0, w1`, the reverse of `steeper_s`'s `cmp w1, w0`. Here, `a` is `w0` and `b` is `w1`. Choose a pair of values. For each condition, the figure shows the rule, the flags it reads and whether the condition holds.
+The figure runs `cmp w0, w1`. It puts the first value in `w0` and the second in `w1`, then sets the flags for `w0` minus `w1`.
+
+Select **8 and 8**. Read the flags and the **yes** or **no** results for `cs` and `ge`. Then select **0xffffffff and 1** and check the same conditions. Which pair gives a different answer for the signed and unsigned readings?
 
 *Closed note: Every condition this course uses*
 
@@ -200,7 +202,7 @@ A condition read after something other than `cmp` uses the flags that the last i
 
 *End of closed note.*
 
-*Two values you choose, the flags `cmp` leaves, and each condition beside whether it holds.*
+*Four comparison presets and the conditions their flags satisfy.*
 
 ## 8. What GCC does for a yes or no answer
 
@@ -229,7 +231,7 @@ fuel_low:
 
 `fuel_low(5, 8)` is 1, and `fuel_low(8, 8)` is 0.
 
-Not every C `if` makes the processor skip instructions. `warning_light` is written with `if (litres < reserve) return 1;` and then `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing, which runs every instruction. The closed note "`warning_light`, and `tst` and `ands`" shows that listing and its two results.
+Not every C `if` makes the processor skip instructions. `warning_light` is written with `if (litres < reserve) return 1;` and then `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing, which runs every instruction. Open **Other compiler forms and bit tests** to see that listing and its two results.
 
 *Closed note: warning_light, and tst and ands*
 

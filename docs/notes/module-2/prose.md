@@ -192,8 +192,10 @@ It is easy to assume that a later reading is always larger than an earlier one. 
 
 ## 3. Elapsed across the wrap
 
-- `then` is 4294966296, the count just before the wrap.
-- `now` is 1000, the count just after it.
+- The first reading, `then`, is 4294966296.
+- The later reading, `now`, is 1000.
+
+The counter wraps between these readings.
 
 **What does `elapsed(1000, 4294966296)` return?**
 

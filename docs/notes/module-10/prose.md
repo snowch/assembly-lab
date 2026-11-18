@@ -57,7 +57,7 @@ It returns 31. The product is 24, stored as charge, and the return expression ad
 
 ## investigation
 
-Compile the source locally, choose inputs, and run it. The C evaluator first checks the operations on that input. It rejects unsupported or unsafe operations on the tested path. This checks that path in the supported subset, not arbitrary C or every possible input. If it completes, the A64 simulator executes the generated listing. The interface compares their results and lets you step through the instructions.
+After checking the prediction, select **Run with these inputs** to compile the prepared C and start its trace. Press **Next** until the function returns and read `w0`. Select **Compile C** when you want to read the generated instructions on their own. The C evaluator first checks the operations on that input. It rejects unsupported or unsafe operations on the tested path. This checks that path in the supported subset, not arbitrary C or every possible input. If it completes, the A64 simulator executes the generated listing. The interface compares their results and lets you step through the instructions.
 
 The highlighted C line is the line associated with the current generated instruction. One C expression can produce several instructions, so the highlight can stay on the same source line as different registers change.
 
@@ -90,7 +90,7 @@ Write `mul w0, w0, w1`, `add w0, w0, #7` and `ret`.
 
 ## failureExperiment
 
-The changed C function returns `charge` directly. It no longer adds the fixed charge. Its inputs are still distance 6 and rate 4.
+Choose the returned value and press **Check your prediction**. This opens the prepared C for you to run.
 
 ## failureQuestion
 
@@ -98,7 +98,7 @@ The changed C function returns `charge` directly. It no longer adds the fixed ch
 
 ## failureExplain
 
-It returns 24. The multiplication still calculates the distance-dependent charge, but the return expression no longer adds 7. Recompile the changed source and find which generated instructions have disappeared.
+It returns 24. The multiplication still calculates the distance-dependent charge, but the return expression no longer adds 7. Select **Run with these inputs**, then press **Next** until the function returns. Compare `w0` and the generated instructions with the original charge calculation. In **Edit C text**, replace `return charge;` with `return charge + 7;` and repeat the run. Which instructions return, and how does the result change?
 
 ## explanation
 
@@ -277,9 +277,9 @@ It returns 12. Three iterations each add 4 to the total. Follow the counter's up
 
 ## investigation
 
-Run the compiled loop and find the initialisation, condition, body and update in the listing. Step over the backward branch to see which comparison runs next.
+After checking the prediction, select **Run with these inputs**. Press **Next** to follow the initialisation, condition, body and update. When the backward branch runs, read the next instruction. Which comparison does it reach?
 
-Try count zero. The condition must reject the first iteration, leaving the total at zero. Then change the count and rate, and compare how the total and counter evolve.
+Set **count** to 0 and leave **rate** at 4. Select **Run with these inputs**, then press **Next** until the function returns. Compare the instructions that run and the returned `w0` with the prepared count of 3.
 
 If a source edit introduces an invalid operation on an executed path, the C evaluator stops before the assembly runs. Read its diagnostic rather than treating an incomplete trace as a returned result.
 
@@ -326,7 +326,7 @@ ret
 
 ## failureExperiment
 
-The changed C loop uses `i <= count` where it previously used `i < count`. The count is still 3 and the rate is 4.
+Choose the returned total and press **Check your prediction**. This opens the prepared C for you to run.
 
 ## failureQuestion
 
@@ -336,7 +336,7 @@ The changed C loop uses `i <= count` where it previously used `i < count`. The c
 
 It returns 16. The counter values 0, 1, 2 and 3 all satisfy the changed condition, so the body runs four times. The original loop stopped before the counter reached 3.
 
-With count zero, the changed loop would still run once. The extra equality case changes both the ordinary run and the empty case.
+Select **Run with these inputs** and press **Next** until the function returns. Compare `w0` with the result of the original loop. In **Edit C text**, change `i <= count` back to `i < count`, then repeat the run. Which counter value stops reaching the body? With count zero, the version that includes equality still runs once.
 
 ## explanation
 
@@ -549,7 +549,8 @@ The C this compiler accepts
 
 Write one function returning unsigned, with unsigned parameters and initialised unsigned local variables. You can use arithmetic, bitwise operations, comparisons, shifts, assignments, if/else, while and for. Calls, pointers, arrays and signed declarations are outside this subset. The compiler also limits source size and nesting. A successful compilation does not prove every input safe; each run checks its C operations before the assembly executes.
 
-Restore the original C
+Restore this example
+Swap with previous C and inputs
 
 Compare with GCC
 
@@ -569,7 +570,7 @@ GCC comparison needs a network connection. The local compiler and exercises work
 
 Showing the saved compiler response for this source and these settings.
 
-Recorded GCC response
+GCC response
 
 Course compiler assembly
 

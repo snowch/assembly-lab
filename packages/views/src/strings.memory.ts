@@ -5,6 +5,7 @@ export const MEMORY_STRINGS = {
   memory: "Memory bytes",
   comparison: "Instruction to compare",
   inspectSource: "Inspect C and instructions",
+  inspectInstructions: "Inspect instructions",
   addressUsed: "Address used",
   before: "Before",
   after: "After",

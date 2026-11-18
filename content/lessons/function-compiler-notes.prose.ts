@@ -8,7 +8,7 @@ export const FUNCTION_COMPILER_NOTES = [
       "Compiler Explorer, an online compiler service, ran GCC 16.1.0 for 64-bit Arm Linux to make this listing. The submitted settings were `-g -O1 -fno-verbose-asm`.\n\n" +
       "To try the same settings locally, save the C shown above as `increment_int.c`. You need GCC 16.1.0 for 64-bit Arm Linux installed as `aarch64-linux-gnu-gcc`. Run:\n\n" +
       "```sh\naarch64-linux-gnu-gcc -g -O1 -fno-verbose-asm -S -o increment_int.s increment_int.c\n```\n\n" +
-      "`-O1` selects the optimisation setting described above. `-g` includes C line references for debugging tools. `-fno-verbose-asm` suppresses extra assembly comments. `-S` produces assembly text, and `-o increment_int.s` names the output file.\n\n" +
+      "`-O1` enables optimisations that can make code shorter or faster. `-g` includes C line references for debugging tools. `-fno-verbose-asm` suppresses extra assembly comments. `-S` produces assembly text, and `-o increment_int.s` names the output file.\n\n" +
       "The assembly file also contains compiler and debugging information that this page filters out.",
   },
   {

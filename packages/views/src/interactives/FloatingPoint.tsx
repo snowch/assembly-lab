@@ -115,6 +115,12 @@ function Explorer({ rounding }: { rounding: boolean }) {
           <dt>{S.hex}</dt>
           <dd>{value.hex}</dd>
         </div>
+        {rounding && (
+          <div>
+            <dt>{S.exact}</dt>
+            <dd className="al-fp-long">{value.exact}</dd>
+          </div>
+        )}
       </dl>
       {rounding && (
         <div className="al-fp-rounding">
@@ -271,10 +277,12 @@ function Explorer({ rounding }: { rounding: boolean }) {
           </p>
         </div>
       )}
-      <details className="lesson-details">
-        <summary>{S.exact}</summary>
-        <p className="al-fp-long">{value.exact}</p>
-      </details>
+      {!rounding && (
+        <details className="lesson-details">
+          <summary>{S.exact}</summary>
+          <p className="al-fp-long">{value.exact}</p>
+        </details>
+      )}
       <button type="button" onClick={() => set(initial(rounding))}>
         {S.reset}
       </button>
@@ -444,7 +452,8 @@ export const FloatingPointCheck = withProps(CheckProps, function FloatingPointCh
     : "";
   const extraCorrect =
     data.task === "fields"
-      ? Number(work.fieldValue) === Number(fieldValue) && work.fieldKind === fieldKind
+      ? Number(work.fieldValue.trim().replace(/−/g, "-")) === Number(fieldValue) &&
+        work.fieldKind === fieldKind
       : data.task === "conversion"
         ? work.copy === "fmov"
         : true;

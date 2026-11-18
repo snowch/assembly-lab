@@ -201,14 +201,17 @@ const loadParts = splitLesson(loadingWidths, [
       {
         ...ungated(s(loadingWidths, "explanation")),
         kind: "question",
-        prose: paragraphs(LOAD.questionNote, 0, 1) + "\n\n" + LOAD.explanation,
+        prose: [
+          paragraphs(LOAD.questionNote, 0, 1),
+          LOAD.explanation,
+          C["extending-register-values"].activity,
+        ].join("\n\n"),
       },
       {
         ...ungated(s(loadingWidths, "generalisation")),
         kind: "investigation",
         prose: paragraphs(LOAD.generalisation, 0, 2),
       },
-      reflection(loadingWidths, C["extending-register-values"].activity),
     ],
   },
 ]);
@@ -287,8 +290,14 @@ const productParts = splitLesson(productsAndWidths, [
     ...copy("reading-product-halves"),
     introduces: ["high half"],
     sections: [
-      { ...ungated(s(productsAndWidths, "generalisation")), kind: "question" },
-      reflection(productsAndWidths, C["reading-product-halves"].activity),
+      {
+        ...ungated(s(productsAndWidths, "generalisation")),
+        kind: "question",
+        prose:
+          s(productsAndWidths, "generalisation").prose +
+          "\n\n" +
+          C["reading-product-halves"].activity,
+      },
     ],
   },
 ]);
@@ -331,12 +340,11 @@ const divisionParts = splitLesson(divisionAndRemainders, [
       {
         ...withReminder(
           ungated(s(divisionAndRemainders, "generalisation")),
-          C["dividing-by-a-constant"].reminder,
+          C["dividing-by-a-constant"].activity,
         ),
         kind: "question",
         details: s(productsAndWidths, "question").details,
       },
-      reflection(divisionAndRemainders, C["dividing-by-a-constant"].activity),
     ],
   },
 ]);

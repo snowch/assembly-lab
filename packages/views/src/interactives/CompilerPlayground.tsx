@@ -24,17 +24,26 @@ const Props = z.object({
   signature: z.string(),
   after: z.string().optional(),
 });
-interface Stored {
+interface Example {
   source: string;
   args: string[];
+}
+interface Stored extends Example {
+  previous?: Example;
 }
 export const CompilerPlayground = withProps(
   Props,
   function CompilerPlayground({ data, interactive, store }) {
     const [saved, setSaved] = useSlot<Stored>(store, `${interactive.id}:source`),
       [prediction] = useSlot<{ choice: string }>(store, data.after ?? "");
+    const originalArgs = data.args.map(String);
     const source = saved?.source ?? data.source,
-      args = saved?.args ?? data.args.map(String);
+      args = saved?.args ?? originalArgs;
+    const previous = saved?.previous;
+    const changed =
+      source !== data.source ||
+      args.length !== originalArgs.length ||
+      args.some((arg, i) => arg !== originalArgs[i]);
     const sourceRef = useRef(source);
     sourceRef.current = source;
     const [program, setProgram] = useHandoffState<RecordedProgram | null>(
@@ -64,8 +73,8 @@ export const CompilerPlayground = withProps(
           {S.stepper.locked}
         </p>
       );
-    const edit = (nextSource: string, nextArgs = args) => {
-      setSaved({ source: nextSource, args: nextArgs });
+    const edit = (nextSource: string, nextArgs = args, previous = saved?.previous) => {
+      setSaved({ source: nextSource, args: nextArgs, ...(previous ? { previous } : {}) });
       setProgram(null);
       setResult(null);
       setDiagnostic("");
@@ -167,10 +176,20 @@ export const CompilerPlayground = withProps(
           <button
             type="button"
             className="button secondary"
-            onClick={() => edit(data.source, data.args.map(String))}
+            disabled={!changed}
+            onClick={() => edit(data.source, originalArgs, { source, args })}
           >
             {C.playground.reset}
           </button>
+          {previous && (
+            <button
+              type="button"
+              className="button secondary"
+              onClick={() => edit(previous.source, previous.args, { source, args })}
+            >
+              {C.playground.recover}
+            </button>
+          )}
         </div>
         {diagnostic && <p role="alert">{diagnostic}</p>}
         {program && (

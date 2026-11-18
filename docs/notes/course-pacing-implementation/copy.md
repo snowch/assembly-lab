@@ -171,7 +171,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "objectives": [
       "follow branches that test a register or one bit without reading the flags."
     ],
-    "caption": "The course-written service function, stepped with warning word 0x2a.",
+    "caption": "The service stepper prepares warning word 0x2a in w0. Press Next to follow tbz. Compare its next instruction with the worked 0x28 case.",
     "reminder": "Each warning occupies its own bit in the warning word. [Changing one warning](#/lesson/masks) gives the warning positions and shows how to change one bit independently."
   },
   "shifts": {
@@ -259,7 +259,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
       "extend a value already held in a register before using it at a wider width."
     ],
     "intro": "A wider calculation may need a value extended without reading memory again. Compare the register-only extensions with the casts that request them.",
-    "activity": "1. Compare the input bits with each extended result.\n2. Identify whether the added bits are zeros or copies of the original top bit.\n3. Follow the wider calculation that uses the value."
+    "activity": "Each stepper prepares `0xf9` in `w0` for a separate run. Press **Next** once in each. Compare `w0` after `sxtb` and after `uxtb`. Which bits came from the byte, and which did the extension add?"
   },
   "array-addresses": {
     "reminder": "A left shift multiplies by a power of two and discards bits that leave the register, as in [Choosing a shift](#/lesson/shifts).",
@@ -287,7 +287,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
       "compare the low and high halves of signed and unsigned products."
     ],
     "intro": "The same register bits can produce different high halves under signed and unsigned multiplication. The low half alone does not show that difference.",
-    "activity": "1. Run the two multiplications with the same inputs.\n2. Compare their low halves, then their high halves.\n3. Use each input’s signed or unsigned reading to explain the difference."
+    "activity": "The stepper prepares the same bits in `x0` and `x1` for all three instructions. Press **Next** once for each instruction. Read `x2` after `mul`, `x3` after `umulh`, and `x4` after `smulh`. Which result reveals the difference between signed and unsigned multiplication?"
   },
   "division-and-remainders": {
     "title": "Division and remainders",
@@ -296,13 +296,12 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     ]
   },
   "dividing-by-a-constant": {
-    "reminder": "The high half contains the product bits above the low register width, as in [Reading both halves of a product](#/lesson/reading-product-halves).",
     "title": "How GCC divides by a constant",
     "objectives": [
       "follow a recorded multiplication-and-shift implementation of unsigned division."
     ],
     "intro": "A constant divisor can let a compiler choose a different instruction sequence. This record shows GCC’s choice for `groups_of_ten`.",
-    "activity": "1. Step through the multiply and shift.\n2. Compare the returned value with unsigned division of the same input by ten.\n3. Identify which instructions produce the quotient.\n\nKeep this compiler choice separate from the rule for division."
+    "activity": "The stepper starts with 12345 in `w0`. Press **Next** to follow `mov` and `movk` as they build the multiplier in `w1`. Read `x0` after `umull`, then read it again after `lsr`. How does the shifted value compare with the whole-number quotient of 12345 divided by ten?"
   },
   "calls-and-returns": {
     "title": "Saving a return address",
@@ -323,7 +322,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "objectives": [
       "preserve a full product by widening the operands before multiplication."
     ],
-    "intro": "A wider destination cannot recover product bits already discarded. Compare the two recorded calculations to find where the widening must happen."
+    "intro": "Compare the modified narrow run with the widened unsigned run. Use **Next** in each stepper and inspect `x0` when it returns. Then compare the widened signed and unsigned runs, which start with the same bits."
   },
   "consumption-calculation": {
     "reminder": "Widen the operands before multiplying to preserve the full product, as in [Widening before multiplication](#/lesson/widening-products).",
@@ -351,7 +350,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "objectives": [
       "make each recursive call approach the base case and use the returned result."
     ],
-    "intro": "A base case cannot finish a calculation that never reaches it. Test the unchanged-argument version of `fade_sum`, then complete `lit_count` so each call advances towards zero and counts its own level."
+    "intro": "A base case cannot finish a calculation that never reaches it. The page prepares a version of `fade_sum` that passes the same argument to every call. Check your prediction, then press **Next** in its stepper. Compare `w0` and the active stack frames after successive calls. In the separate `lit_count` exercise, edit the instructions and run the tests."
   },
   "memory-and-addresses": {
     "title": "Memory and addresses",
@@ -385,7 +384,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "objectives": [
       "change the source and trace how the generated calculation changes."
     ],
-    "intro": "Change the fixed charge in the C source. Compile it again and trace how that change reaches the returned value."
+    "intro": "The page prepares `return charge;` in place of `return charge + 7;`. The distance is 6 and the rate is 4. Predict the return value before running this version."
   },
   "tripCap": {
     "title": "Capping a result in C",
@@ -412,7 +411,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "objectives": [
       "trace how a changed comparison affects the loop’s final pass."
     ],
-    "intro": "Change the loop comparison and follow a complete run. Check which values reach the body and where the loop stops."
+    "intro": "The page prepares `i <= count` in place of `i < count`. The count is 3 and the rate is 4. Predict which counter values reach the body."
   },
   "loopShifts": {
     "title": "Writing repeated shifts in C",
@@ -526,7 +525,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "objectives": [
       "distinguish an A32 constant instruction from an A64 register-width name."
     ],
-    "task": "Open the recorded service-marker pair. Enter the A32 instruction used to load the marker constant. Give only its mnemonic.",
+    "task": "In the A32 listing above, find the instruction that loads the service marker. Enter its mnemonic, the instruction name at the start of the line.",
     "challengeTitle": "Identify the constant instruction",
     "hints": [
       "Read the A32 side of the service-marker pair.",
@@ -542,7 +541,7 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "objectives": [
       "distinguish a recorded helper call from an A64 division instruction."
     ],
-    "task": "Open the recorded average pair, then run the A64 average with distance 95 and trip count 4. Enter:\n\n- The A32 division helper’s name, given after the call instruction.\n- The A64 division mnemonic.\n- The A64 result.",
+    "task": "Read the recorded average listings above. The A64 stepper prepares distance 95 and trip count 4. Press **Next** until the function returns.\n\n- Enter the helper’s name after the call instruction in the A32 listing.\n- Enter the division instruction’s mnemonic in the A64 listing.\n- Enter the returned value in `w0`.",
     "challengeTitle": "Compare the division paths",
     "hints": [
       "Use the average pair for the names and the A64 stepper for the result.",

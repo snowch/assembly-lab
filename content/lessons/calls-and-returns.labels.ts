@@ -75,7 +75,7 @@ export const LABELS = {
         "Keep a reserve with zero distance",
         "Handle zero reserve",
         "Keep the reserve for an odd distance",
-        "Keep both inputs across the helper call",
+        "Combine the helper result with the reserve",
         "Wrap the unsigned result and restore saved registers",
       ],
     },

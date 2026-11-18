@@ -28,6 +28,8 @@ export const STRINGS = {
   intro:
     "Learn assembly by running instructions one at a time in your browser. The simulator supports a subset of 64-bit Arm instructions. In the lessons, you see C code beside its assembly instructions. After each instruction, you can inspect the register values and their bits, the flags and memory. You predict what will happen and write small assembly programs. Automatic checks test your answers and programs.",
   start: "Start with",
+  workNotSaved:
+    "Your latest changes could not be saved. Copy your work before refreshing or closing this tab.",
   completion: {
     mark: "Mark lesson complete",
     undo: "Lesson complete · Undo",
@@ -44,7 +46,7 @@ export const STRINGS = {
   prereqs: {
     heading: "Before you start",
     showDetails: "Check what you need to know",
-    lead: "You need a little C, basic arithmetic and an understanding of binary numbers. You do not need any assembly experience.",
+    lead: "You should be able to read small C functions with conditions, loops and arrays, do basic arithmetic, and read binary numbers by place value. The course starts with your first assembly instruction.",
     cLead: "You should be able to read small C functions that use:",
     cItems: [
       "`int` and `unsigned` arguments, and `return`.",

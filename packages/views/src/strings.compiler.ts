@@ -56,7 +56,8 @@ export const COMPILER_STRINGS = {
     subsetSummary: "The C this compiler accepts",
     subset:
       "Write one function returning unsigned, with unsigned parameters and initialised unsigned local variables. You can use arithmetic, bitwise operations, comparisons, shifts, assignments, if/else, while and for. Calls, pointers, arrays and signed declarations are outside this subset. The compiler also limits source size and nesting. A successful compilation does not prove every input safe; each run checks its C operations before the assembly executes.",
-    reset: "Restore the original C",
+    reset: "Restore this example",
+    recover: "Swap with previous C and inputs",
     compare: "Compare with GCC",
     privacy:
       "Pressing Compare with GCC sends this C source to Compiler Explorer’s public service. The lesson works without sending it.",
@@ -69,7 +70,7 @@ export const COMPILER_STRINGS = {
     offline:
       "GCC comparison needs a network connection. The local compiler and exercises work offline.",
     cached: "Showing the saved compiler response for this source and these settings.",
-    gccTitle: "Recorded GCC response",
+    gccTitle: "GCC response",
     courseTitle: "Course compiler assembly",
     loopPhase: {
       initialisation: "Loop: set the starting value",

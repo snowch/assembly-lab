@@ -504,6 +504,10 @@ Parameterized messages use example values and placeholders. The figures substitu
 
 Inspect C and instructions
 
+## inspectInstructions
+
+Inspect instructions
+
 ## comparison
 
 Instruction to compare

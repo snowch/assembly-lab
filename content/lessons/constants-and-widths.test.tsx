@@ -66,7 +66,7 @@ describe("the challenges", () => {
     const c = challenge("build-1000000");
     const verdict = grade(c, c.initial);
     expect(verdict.passed).toBe(false);
-    expect(verdict.blocked).toBe("Line 1: No single instruction can put `1000000` in a register.");
+    expect(verdict.blocked).toBe("Line 1: This `mov` cannot encode `1000000` in one instruction.");
   });
 
   it("build-1000000: the text the tap editor builds passes, and so does movk alone with the lower half first", () => {

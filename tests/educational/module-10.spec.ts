@@ -52,11 +52,19 @@ for (const route of routes.filter((route) =>
     const fig = page.locator(`#ix-${playId(route)}`);
     const source = fig.getByRole("textbox", { name: C.editor.source });
     const original = await source.inputValue();
+    const firstInput = fig.locator(".al-c-fields input").first();
+    const originalArgument = await firstInput.inputValue();
     await source.fill(original + "\n// saved edit");
+    await firstInput.fill("61");
     await page.reload();
     await expect(source).toHaveValue(original + "\n// saved edit");
     await press(page, fig.getByRole("button", { name: C.playground.reset }));
     await expect(source).toHaveValue(original);
+    await expect(firstInput).toHaveValue(originalArgument);
+    await page.reload();
+    await press(page, fig.getByRole("button", { name: C.playground.recover }));
+    await expect(source).toHaveValue(original + "\n// saved edit");
+    await expect(firstInput).toHaveValue("61");
     expect(errors).toEqual([]);
   });
   for (const theme of ["light", "dark"])

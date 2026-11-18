@@ -18,7 +18,7 @@ export const pacing10A = {
     title: "Changing a C calculation",
     objectives: ["change the source and trace how the generated calculation changes."],
     intro:
-      "Change the fixed charge in the C source. Compile it again and trace how that change reaches the returned value.",
+      "The page prepares `return charge;` in place of `return charge + 7;`. The distance is 6 and the rate is 4. Predict the return value before running this version.",
   },
   tripCap: {
     title: "Capping a result in C",
@@ -40,7 +40,7 @@ export const pacing10A = {
     title: "Changing a loop boundary",
     objectives: ["trace how a changed comparison affects the loop’s final pass."],
     intro:
-      "Change the loop comparison and follow a complete run. Check which values reach the body and where the loop stops.",
+      "The page prepares `i <= count` in place of `i < count`. The count is 3 and the rate is 4. Predict which counter values reach the body.",
   },
   loopShifts: {
     title: "Writing repeated shifts in C",
@@ -160,7 +160,7 @@ export const pacing10A = {
   a32Constants: {
     title: "A32 constant instructions",
     objectives: ["distinguish an A32 constant instruction from an A64 register-width name."],
-    task: "Open the recorded service-marker pair. Enter the A32 instruction used to load the marker constant. Give only its mnemonic.",
+    task: "In the A32 listing above, find the instruction that loads the service marker. Enter its mnemonic, the instruction name at the start of the line.",
     challengeTitle: "Identify the constant instruction",
     hints: [
       "Read the A32 side of the service-marker pair.",
@@ -175,7 +175,7 @@ export const pacing10A = {
   a32Division: {
     title: "A32 division helpers",
     objectives: ["distinguish a recorded helper call from an A64 division instruction."],
-    task: "Open the recorded average pair, then run the A64 average with distance 95 and trip count 4. Enter:\n\n- The A32 division helper’s name, given after the call instruction.\n- The A64 division mnemonic.\n- The A64 result.",
+    task: "Read the recorded average listings above. The A64 stepper prepares distance 95 and trip count 4. Press **Next** until the function returns.\n\n- Enter the helper’s name after the call instruction in the A32 listing.\n- Enter the division instruction’s mnemonic in the A64 listing.\n- Enter the returned value in `w0`.",
     challengeTitle: "Compare the division paths",
     hints: [
       "Use the average pair for the names and the A64 stepper for the result.",

@@ -169,7 +169,8 @@ export const COPY = {
       "Each warning occupies its own bit in the warning word. [Changing one warning](#/lesson/masks) gives the warning positions and shows how to change one bit independently.",
     title: "Testing registers and bits",
     objectives: ["follow branches that test a register or one bit without reading the flags."],
-    caption: "The course-written service function, stepped with warning word 0x2a.",
+    caption:
+      "The service stepper prepares warning word 0x2a in w0. Press Next to follow tbz. Compare its next instruction with the worked 0x28 case.",
   },
   shifts: {
     reminder:

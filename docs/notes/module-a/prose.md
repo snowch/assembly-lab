@@ -95,9 +95,7 @@ Find the conditional move on the A32 side of the recorded limit function. Enter 
 
 ## PROSE.failureExperiment
 
-Take the conditional-move line from the A32 record and give it to the course's A64 assembler. The source still belongs to the A32 listing.
-
-This checks whether the assembler accepts the line; it does not execute it.
+The page supplies the conditional move from the A32 listing. Choose whether the course’s A64 assembler accepts it and press **Check your prediction**. Read the result and its explanation. This check stops at assembly, before any instruction executes.
 
 ## PROSE.failureQuestion
 
