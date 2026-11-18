@@ -11,6 +11,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { ARITH_STRINGS as A } from "@al/views";
+import { COUNTER_WRAP_STRINGS } from "../../packages/views/src/strings.counter-wrap";
 import { FLAG_PRIMER_STRINGS as PRIMER } from "../../packages/views/src/strings.flag-primer";
 import { learnerText, termProblems } from "@platform/lesson-schema";
 
@@ -84,6 +85,8 @@ const cases = [
     labelsFile: "./subtracting-and-the-tick-counter.labels.ts",
     canonicalCaptions: [L2.captions.ring],
     own: [
+      // Separately drafted and reviewed in docs/notes/counter-wrap/copy.md.
+      COUNTER_WRAP_STRINGS.caption,
       L2.captions.subtractWrapped,
       L2.captions.subtractNoWrap,
       L2.captions.subtractOwn,
