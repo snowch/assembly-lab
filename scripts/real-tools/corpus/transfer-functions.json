@@ -1,0 +1,66 @@
+{
+  "entry": "difference",
+  "calls": [
+    {
+      "entry": "difference",
+      "args": [
+        ["53", 64],
+        ["40", 64]
+      ]
+    },
+    {
+      "entry": "difference",
+      "args": [
+        ["4294967350", 64],
+        ["40", 64]
+      ]
+    },
+    {
+      "entry": "difference",
+      "args": [
+        ["0", 64],
+        ["18446744073709551615", 64]
+      ]
+    },
+    {
+      "entry": "adjusted_difference",
+      "args": [
+        ["53", 64],
+        ["40", 64],
+        ["5", 64]
+      ]
+    },
+    {
+      "entry": "adjusted_difference",
+      "args": [
+        ["4294967350", 64],
+        ["40", 64],
+        ["5", 64]
+      ]
+    },
+    {
+      "entry": "adjusted_difference",
+      "args": [
+        ["8", 64],
+        ["18446744073709551608", 64],
+        ["3", 64]
+      ]
+    },
+    {
+      "entry": "adjusted_difference",
+      "args": [
+        ["18446744073709551615", 64],
+        ["0", 64],
+        ["2", 64]
+      ]
+    },
+    {
+      "entry": "adjusted_difference",
+      "args": [
+        ["40", 64],
+        ["40", 64],
+        ["0", 64]
+      ]
+    }
+  ]
+}

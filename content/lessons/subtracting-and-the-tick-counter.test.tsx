@@ -44,9 +44,7 @@ describe("the lesson", () => {
     expect(lesson.sections.map((s) => s.kind)).toEqual(
       SECTION_KINDS.filter(
         (kind) =>
-          !["question", "failureExperiment", "explanation", "generalisation", "challenge"].includes(
-            kind,
-          ),
+          !["failureExperiment", "explanation", "generalisation", "challenge"].includes(kind),
       ),
     );
     expect([lesson.module, lesson.order]).toEqual([2, 2]);

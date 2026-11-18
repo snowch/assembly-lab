@@ -13,6 +13,18 @@ for (const theme of ["light", "dark"])
     await page.locator("select").first().selectOption(theme);
     const ring = page.locator("#ix-counter-ring");
     const summary = ring.locator('[data-reading="elapsed-summary"]');
+    const reminder = page.locator("#ix-counter-subtraction-reminder");
+    await expect(reminder).toBeVisible();
+    await expect(reminder.locator('[data-reading="result"]')).toHaveText("0010");
+    await expect(reminder).toContainText("keeping 32 result bits instead of 4");
+    expect(
+      await reminder.evaluate((node) =>
+        Boolean(
+          node.compareDocumentPosition(document.querySelector("#ix-predict-elapsed")!) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+        ),
+      ),
+    ).toBe(true);
     await expect(page.locator("#ix-counter-wrap")).toHaveCount(0);
     await expect(
       page.getByRole("heading", { name: "Counting forward across the wrap" }),

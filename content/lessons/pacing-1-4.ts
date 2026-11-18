@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-import { READING_SEQUENCE as RS } from "@al/views";
+import { READING_SEQUENCE as RS, COUNTER_SUBTRACTION_STRINGS as COUNTER_SUB } from "@al/views";
 import type { LessonInput } from "@platform/lesson-schema";
 
 import { addingAndTheFlags } from "./adding-and-the-flags";
@@ -347,6 +347,21 @@ const subtraction = splitLesson(subtractingAndTheTickCounter, [
       howThisDiffers: COPY.subtraction.originality,
     },
     sections: [
+      {
+        kind: "question",
+        title: COUNTER_SUB.title,
+        prose: "",
+        interactives: [
+          {
+            id: "counter-subtraction-reminder",
+            kind: "counter-subtraction",
+            timeModel: "none",
+            role: "diagram",
+            caption: COUNTER_SUB.caption,
+            props: {},
+          },
+        ],
+      },
       section(subtractingAndTheTickCounter, "motivation"),
       section(subtractingAndTheTickCounter, "prediction"),
       {

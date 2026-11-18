@@ -91,6 +91,7 @@ export const TAUGHT: Readonly<Record<string, readonly string[]>> = {
   "floating-point-rounding": [],
   "floating-point-arm": [],
   "floating-point-conversions": [],
+  "moving-to-riscv": [],
   "a32-conditions": [],
   "a32-constants": [],
   "a32-division-helper": [],

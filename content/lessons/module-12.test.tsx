@@ -85,8 +85,11 @@ describe("final core native module", () => {
     expect(LESSONS.filter((lesson) => lesson.module === 16).map((lesson) => lesson.id)).toEqual([
       "c-integer-types",
     ]);
-    expect(LESSONS.at(-1)?.id).toBe("floating-point-conversions");
-    expect(LESSONS.at(-1)?.module).toBe(17);
+    expect(LESSONS.filter((lesson) => lesson.module === 17).at(-1)?.id).toBe(
+      "floating-point-conversions",
+    );
+    expect(LESSONS.at(-1)?.id).toBe("moving-to-riscv");
+    expect(LESSONS.at(-1)?.module).toBe(18);
     expect(termProblems(LESSONS)).toEqual([]);
   });
   it.each(lessons)(

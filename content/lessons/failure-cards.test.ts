@@ -103,10 +103,11 @@ describe("the failure cards", () => {
 });
 
 // The written challenges whose C is `unsigned` (the functions' recorded C in docs/notes/module-N/
-// listings.md and the lessons' tasks). Their cases say so, so a failure card prints the same
+// listings.md and the lessons' tasks), plus explicitly unsigned pattern functions. Their cases say so, so a failure card prints the same
 // reading for what the program returned and what was expected. The others are `int` (Module 0's
 // `fuel_used`, Module 1's `odometer_limit`).
 const UNSIGNED_WRITTEN = [
+  "write-transfer-difference",
   "write-elapsed",
   "write-set-gear",
   "write-less-fuel",

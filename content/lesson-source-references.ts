@@ -102,6 +102,7 @@ export const LESSON_INSTRUCTION_FORMS = {
   "register-widths": ["mov-register", "mov-wide-immediate", "mov-inverted-wide-immediate"],
   "flags-and-overflow": ["adds-register", "add-register"],
   "subtracting-and-the-tick-counter": ["subs-register", "sub-register"],
+  "moving-to-riscv": ["sub-register", "add-register", "ret"],
   masks: [
     "and-immediate",
     "and-register",
@@ -207,6 +208,27 @@ function unique(entries: readonly SourceReference[]): SourceReference[] {
 }
 /** No lesson answers, machine programs or source claims are passed to the reference UI. */
 export function lessonSources(lesson: Pick<Lesson, "id" | "module">): LessonSources {
+  if (lesson.id === "moving-to-riscv")
+    return {
+      instructions: [I["sub-register"], I["add-register"], I.ret],
+      otherSources: [
+        ARCHITECTURE,
+        X.aapcs64,
+        {
+          label: "RV64 integer instructions",
+          url: "https://docs.riscv.org/reference/isa/unpriv/rv64.html",
+        },
+        {
+          label: "RISC-V procedure calling convention",
+          url: "https://riscv-non-isa.github.io/riscv-elf-psabi-doc/",
+        },
+        {
+          label: "The xv6 source used by RISC-V Assembly Lab",
+          url: "https://github.com/mit-pdos/xv6-riscv/tree/d7c0a1b7a703f7366942092f9cf421b6cd111a36",
+        },
+      ],
+      introductions: [],
+    };
   const coreKeys: readonly InstructionReferenceKey[] = [
     ...(TAUGHT[lesson.id] ?? []).map(
       (mnemonic) => FIRST_INSTRUCTION_FORMS[mnemonic as keyof typeof FIRST_INSTRUCTION_FORMS],

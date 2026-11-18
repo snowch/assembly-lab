@@ -13,6 +13,7 @@ import { ArgsFigure } from "./ArgsFigure";
 import { OperandRoles } from "./OperandRoles";
 import { ChallengeNote } from "./ChallengeNote";
 import { CounterRing } from "./CounterRing";
+import { CounterSubtraction } from "./CounterSubtraction";
 import { ListingFigure } from "./ListingFigure";
 import { RunPrediction } from "./RunPrediction";
 import { ListingCompare } from "./ListingCompare";
@@ -82,6 +83,7 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   "arg-registers": ArgsFigure,
   "operand-roles": OperandRoles,
   "counter-ring": CounterRing,
+  "counter-subtraction": CounterSubtraction,
   "run-prediction": RunPrediction,
   "wide-stepper": WideStepper,
   "listing-runs": ListingRuns,
