@@ -19,6 +19,7 @@ import { ListingView, withCode } from "../parts";
 import { COUNTER_VALUES, onRing, ringReading } from "../ring";
 import { ARITH_STRINGS as A } from "../strings.arith";
 import { VIEW_STRINGS as S } from "../strings";
+import { ELAPSED_COUNTER_STRINGS as E } from "../strings.counter-elapsed";
 import { CallSchema, RecordedSchema, withProps } from "./props";
 
 const Props = z.object({
@@ -32,6 +33,8 @@ const Props = z.object({
   after: z.string().optional(),
   /** Show the recorded function above the ring. */
   listing: z.boolean().default(false),
+  /** Elapsed-time lessons use the original subtraction and defer flags to the next unit. */
+  purpose: z.enum(["arithmetic", "elapsed"]).default("arithmetic"),
 });
 
 const CX = 160;
@@ -238,13 +241,21 @@ export const CounterRing = withProps(Props, function CounterRing({ data, store }
           <dt>{A.ring.elapsed}</dt>
           <dd>{elapsed}</dd>
         </div>
-        <div data-row="c">
-          <dt>{withCode(A.ring.carryAfter)}</dt>
-          <dd>
-            {c} ({c === 0 ? A.ring.borrowed : A.ring.notBorrowed})
-          </dd>
-        </div>
+        {data.purpose === "arithmetic" && (
+          <div data-row="c">
+            <dt>{withCode(A.ring.carryAfter)}</dt>
+            <dd>
+              {c} ({c === 0 ? A.ring.borrowed : A.ring.notBorrowed})
+            </dd>
+          </div>
+        )}
       </dl>
+      {data.purpose === "elapsed" && (
+        <div className="al-ring-elapsed-explanation">
+          <p data-reading="elapsed-summary">{withCode(E.summary(now, then, elapsed, 32))}</p>
+          <p>{withCode(E.rule(COUNTER_VALUES, 32))}</p>
+        </div>
+      )}
     </div>
   );
 });

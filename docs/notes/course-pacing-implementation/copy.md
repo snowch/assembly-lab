@@ -117,8 +117,13 @@ Sentence and idea passes: one goal per title/objective; instructions name the lo
     "objectives": [
       "use subtraction to measure elapsed ticks across a counter wrap."
     ],
-    "reflection": "A subtraction gives the forward distance between counter readings when the counter advances normally and fewer than a full turn has passed. The readings alone cannot show how many full turns passed.\n\nUse this pair of counter readings:\n\n- `then` is 4294967000.\n- `now` is 296.\n\n**Question:** What does `elapsed(now, then)` return, and what does `subs` set C to?",
-    "reflectionAnswer": "592, and C is 0. 296 ticks reach the wrap, 296 more reach 296, and a borrow was needed."
+    "investigationTitle": "Counting forward across the wrap",
+    "investigation": "`then` and `now` are readings of the same 32-bit counter. After its largest value, the counter continues at zero. The ring shows its values in their counting order.\n\nThe counter advances clockwise round the ring. The strip below it enlarges the path from `then` through zero to `now`. Follow the ticks before the wrap, then the ticks after it.",
+    "instructionNote": "`subs` produces the same result bits as `sub` and also updates the flags. The tests here check the returned ticks.",
+    "task": "Write `elapsed(now, then)`. It returns the ticks from `then` to `now`.\n\n- `now` arrives in `w0`.\n- `then` arrives in `w1`.\n\nReturn the result in `w0`.\n\nAssume the counter advances normally and less than one full turn passes between readings. Your function must work whether or not the counter wrapped. Four calls test it, two of them across the wrap.\n\nYou may use `add`, `sub`, `adds`, `subs` and `ret`.",
+    "reflection": "Use this pair of readings from a normally advancing 32-bit counter:\n\n- `then` is 4294967000.\n- `now` is 296.\n\n**Question:** What does `elapsed(now, then)` return? Explain the forward path through zero. What limit on elapsed time is needed for the result to be the actual interval?",
+    "reflectionAnswer": "592 ticks. Count forward 296 ticks to zero and 296 more to `now`. The 32-bit subtraction keeps the low bits of `now - then`, giving this same forward distance. This is the elapsed time only while the counter advances normally and fewer than one full turn passes between readings.",
+    "originality": "Uses the trip computer’s 32-bit millisecond counter. The learner predicts the elapsed interval, follows the same readings round a ring, and connects the forward distance to the subtraction’s retained result bits. The learner writes the function and tests it on wrapped and unwrapped readings."
   },
   "arithmeticBits": {
     "title": "Arithmetic on register bits",

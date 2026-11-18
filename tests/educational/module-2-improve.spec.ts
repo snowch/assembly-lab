@@ -210,14 +210,18 @@ test.describe("lesson 2, the ring's strip and the subtraction figures", () => {
   test("the closed answer to the last question stays closed until it is opened", async ({
     page,
   }) => {
-    for (const id of [TWO]) {
+    for (const id of [TWO, "subtraction-flags-and-negation"]) {
       await openLesson(page, id);
       const answer = page.locator('section[data-kind="reflection"] details.lesson-details');
       await expect(answer).not.toHaveAttribute("open", "");
       await expect(answer.locator("summary")).toHaveText("Answer");
       await press(page, answer.locator("summary"));
       await expect(answer).toHaveAttribute("open", "");
-      await expect(answer).toContainText("592, and C is 0");
+      if (id === TWO) {
+        await expect(answer).toContainText("592 ticks");
+        await expect(answer).toContainText("fewer than one full turn");
+        await expect(answer).not.toContainText("C is 0");
+      } else await expect(answer).toContainText("592, and C is 0");
     }
   });
 

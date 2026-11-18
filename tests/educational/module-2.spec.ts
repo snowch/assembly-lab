@@ -181,7 +181,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     await expect(figure.locator(".al-match")).toContainText("The run ended with w0 holding 2000.");
   });
 
-  test("the ring stays shut until the prediction is checked, then shows the model's distance and C", async ({
+  test("the ring stays shut until the prediction is checked, then connects the model's distance to subtraction", async ({
     page,
   }) => {
     await openLesson(page, "subtracting-and-the-tick-counter");
@@ -193,8 +193,8 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     await expect(row("then")).toHaveText("4294966296");
     await expect(row("now")).toHaveText("1000");
     await expect(row("elapsed")).toHaveText("2000");
-    await expect(row("c")).toContainText("0");
-    await expect(row("c")).toContainText(A.ring.borrowed);
+    await expect(row("c")).toHaveCount(0);
+    await expect(ring.locator('[data-reading="elapsed-summary"]')).toContainText("2000");
     await expect(ring.locator("svg")).toHaveAttribute("data-borrowed", "true");
     await expect(ring.locator('[data-mark="wrap"]')).toHaveCount(1);
     const box = (await ring.locator("svg").boundingBox())!;
