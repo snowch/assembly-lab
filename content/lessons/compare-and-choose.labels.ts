@@ -36,8 +36,7 @@ export const LABELS = {
     predictGe: "A prediction about what steeper_u returns once its last operand is ge.",
     stepGe:
       "steeper_u with ge in place of cs, on 0x80000000 and 1, with the flags under the registers. An outline marks a register that the instruction wrote, or a flag whose value changed.",
-    conditions:
-      "Two values you choose, the flags cmp leaves, and each condition beside whether it holds.",
+    conditions: "Four comparison presets and the conditions their flags satisfy.",
     holds: "The compare, and four conditions to read from the flags it leaves.",
   },
   options: {

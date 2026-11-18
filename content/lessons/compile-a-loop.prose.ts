@@ -15,7 +15,7 @@ export const PROSE = {
   predictionExplain:
     "It returns 12. Three iterations each add 4 to the total. Follow the counter's update and the comparison that prevents a fourth iteration.",
   investigation:
-    "Run the compiled loop and find the initialisation, condition, body and update in the listing. Step over the backward branch to see which comparison runs next.\n\nTry count zero. The condition must reject the first iteration, leaving the total at zero. Then change the count and rate, and compare how the total and counter evolve.\n\nIf a source edit introduces an invalid operation on an executed path, the C evaluator stops before the assembly runs. Read its diagnostic rather than treating an incomplete trace as a returned result.\n\nThe C evaluator limits how many steps it runs before the A64 run. Reaching that budget means the run is incomplete, not necessarily that the loop can never finish. A successful run establishes a result for those inputs, not correctness for every input.",
+    "After checking the prediction, select **Run with these inputs**. Press **Next** to follow the initialisation, condition, body and update. When the backward branch runs, read the next instruction. Which comparison does it reach?\n\nSet **count** to 0 and leave **rate** at 4. Select **Run with these inputs**, then press **Next** until the function returns. Compare the instructions that run and the returned `w0` with the prepared count of 3.\n\nIf a source edit introduces an invalid operation on an executed path, the C evaluator stops before the assembly runs. Read its diagnostic rather than treating an incomplete trace as a returned result.\n\nThe C evaluator limits how many steps it runs before the A64 run. Reaching that budget means the run is incomplete, not necessarily that the loop can never finish. A successful run establishes a result for those inputs, not correctness for every input.",
   construction:
     "Write the repeated addition directly in assembly. You may count remaining iterations down instead of reproducing the compiler's increasing counter.",
   writeTask:
@@ -28,10 +28,10 @@ export const PROSE = {
     "One complete solution is:\n\n```asm\nmov w2, w0\nmov w0, #0\ncbz w2, done\nloop:\nadd w0, w0, w1\nsubs w2, w2, #1\nb.ne loop\ndone:\nret\n```",
   ],
   failureExperiment:
-    "The changed C loop uses `i <= count` where it previously used `i < count`. The count is still 3 and the rate is 4.",
+    "Choose the returned total and press **Check your prediction**. This opens the prepared C for you to run.",
   failureQuestion: "**What does the changed function return?**",
   failureExplain:
-    "It returns 16. The counter values 0, 1, 2 and 3 all satisfy the changed condition, so the body runs four times. The original loop stopped before the counter reached 3.\n\nWith count zero, the changed loop would still run once. The extra equality case changes both the ordinary run and the empty case.",
+    "It returns 16. The counter values 0, 1, 2 and 3 all satisfy the changed condition, so the body runs four times. The original loop stopped before the counter reached 3.\n\nSelect **Run with these inputs** and press **Next** until the function returns. Compare `w0` with the result of the original loop. In **Edit C text**, change `i <= count` back to `i < count`, then repeat the run. Which counter value stops reaching the body? With count zero, the version that includes equality still runs once.",
   explanation:
     "The loop boundary describes which counter values belong in the calculation. Starting at zero and using `< count` gives count iterations. Including equality adds the endpoint as another iteration.\n\nAn unsigned counter also has a maximum value. When the input count equals that maximum, every possible value of `i` satisfies `i <= count`. After the counter reaches the maximum, its next increment wraps it back to zero, so the loop keeps repeating.\n\nThe local evaluator would stop such a run at its budget. That budget is a tool limit. The reason this loop fails to finish comes from its always-true condition and wrapping counter, not merely from seeing the budget message.",
   generalisation:

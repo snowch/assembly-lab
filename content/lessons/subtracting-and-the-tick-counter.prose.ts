@@ -20,7 +20,7 @@ export const PROSE = {
     "It is easy to assume that a later reading is always larger than an earlier one. After a wrap, `now` can be less than `then`. Tests that never cross the wrap will not catch a mistake based on that assumption. Include readings on both sides of the wrap.",
 
   prediction:
-    "- `then` is 4294966296, the count just before the wrap.\n- `now` is 1000, the count just after it.",
+    "- The first reading, `then`, is 4294966296.\n- The later reading, `now`, is 1000.\n\nThe counter wraps between these readings.",
   predictionQuestion: "**What does `elapsed(1000, 4294966296)` return?**",
   predictionExplain:
     "The answer is 2000. Counting forward from 4294966296, 1000 ticks reach the wrap to 0, and 1000 more reach 1000.",

@@ -69,7 +69,7 @@ export const strings = {
 
   // --- immediates
   "immediate.range": "`{text}` must be from {min} to {max}.",
-  "immediate.move": "No single instruction can put `{text}` in a register.",
+  "immediate.move": "This `mov` cannot encode `{text}` in one instruction.",
   "immediate.addsub": "`{text}` must be from 0 to 4095, or a multiple of 4096 up to 16773120.",
   // The rule for the constant of `and`, `orr`, `eor`, `ands` and `tst`. `{bits}` is 32 or 64
   // and `{repeats}` the spacings that repeat a run there ("2, 4, 8 or 16"). The two examples are

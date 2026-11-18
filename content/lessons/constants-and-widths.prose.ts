@@ -30,14 +30,14 @@ export const PROSE = {
 
   investigation:
     "The figure assembles `mov w0,` followed by the number you type. Assembling turns that text into an instruction.\n\n" +
-    "The course's assembler accepts and rejects the same numbers as the GNU assembler, the program GCC uses to turn its listings into instructions. So the figure is the authority on whether a number fits.\n\n" +
+    "After checking your prediction, type `0x00010000` into **The number after mov w0** and inspect the result. Then replace it with `1000000` and read the diagnostic. The course checks these `mov w0` encodings against GNU as, the assembler for the GCC listings.\n\n" +
     "Other patterns load with one `mov` because `mov` is a name the assembler accepts for more than one instruction. It picks the one that can hold the constant.",
   investigationDetailsSummary: "Other patterns that fit",
   investigationDetails:
     "`-1` fits, with all 32 bits set.\n\n" +
     "1048575 (`0x000fffff`) fits. It has twenty 1s in a row across both halves.\n\n" +
     "65537 (`0x00010001`) fits. It is a single 1 repeated every 16 bits.\n\n" +
-    "The full rule is longer than this course needs. The figure checks any number.",
+    "The figure checks whether the number you enter fits this `mov w0` instruction.",
 
   construction:
     "`mov w0, 1000000` cannot assemble: 1000000 does not match any constant pattern that one `mov` can encode. Build it in halves instead. Use `mov` to load the first part. A second `mov` would replace all 32 bits of `w0`, losing that part.\n\n`movk` means **move wide with keep**: here it replaces one 16-bit half and keeps the other.\n\n" +

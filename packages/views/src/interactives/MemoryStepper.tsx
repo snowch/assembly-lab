@@ -217,7 +217,7 @@ export const MemoryStepper = withProps(Props, function MemoryStepper({ data: sup
       )}
       {supplied.cases ? (
         <details className="al-memory-source-details">
-          <summary>{M.inspectSource}</summary>
+          <summary>{data.program.c ? M.inspectSource : M.inspectInstructions}</summary>
           <ListingView
             cLines={cLinesOf(data.program.c)}
             lines={trace.lines}

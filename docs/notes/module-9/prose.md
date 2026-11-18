@@ -231,7 +231,7 @@ Handle zero reserve
 
 Keep the reserve for an odd distance
 
-Keep both inputs across the helper call
+Combine the helper result with the reserve
 
 Wrap the unsigned result and restore saved registers
 
@@ -285,7 +285,7 @@ It returns `0x0000000b`, or 11. The calls receive 7, 3, 1 and 0. They return in 
 
 ## 4. Follow the frames down and back
 
-This figure starts at the deepest point, with all four calls active:
+The first stepper starts before the first call sets aside space on the stack. The separate stack inspection starts at the deepest point, with all four calls active:
 
 - Use Back to inspect how the calls built the stack.
 - Use Next to follow the remaining instructions and returns.

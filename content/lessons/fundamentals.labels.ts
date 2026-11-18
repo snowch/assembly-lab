@@ -21,7 +21,7 @@ export const FUNDAMENTALS_LABELS = {
       challenge: "Trace a new addition",
     },
     captions: {
-      figure: "Press Run the instruction to see the result written to w2.",
+      figure: "Starting values in w0 and w1, and the destination w2.",
       challenge: "A new addition to trace without running it.",
     },
     challenge: {

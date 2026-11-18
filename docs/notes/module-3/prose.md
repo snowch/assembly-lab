@@ -229,7 +229,7 @@ The warning word is `0x47`. Start with that value separately for each instructio
 
 ## 1. Why does the C type change the instruction?
 
-C writes a shift right as `>>` and a shift left as `<<`. `g >> 1` shifts the bits of `g` one place right.
+C writes a shift right as `>>` and a shift left as `<<`. `g >> 1` requests a one-place right shift. For a negative `int`, the C standard lets each implementation specify the result of `>>`. This lesson shows GCC’s choice.
 
 GCC 16.1 at `-O1` chooses a right shift for `g >> 1` according to the C type:
 
@@ -241,8 +241,6 @@ Both types use the same register width here. Their signed and unsigned readings 
 What does each instruction do differently?
 
 *Closed note: What C says*
-
-For a negative `int`, the C standard lets the compiler choose and document the result of `>>`. Another C compiler may make a different choice.
 
 For some signed left shifts, C gives no guarantee about the program's behaviour. This includes shifting a negative `int` left. GCC supports left shifts of negative signed values as an extension to C, but code that relies on that extension is not guaranteed to work the same way with another compiler. This lesson's C left-shift examples avoid those cases. The compiler is GCC 16.1 with `-O1`, as in Module 0.
 

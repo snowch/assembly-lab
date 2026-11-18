@@ -34,7 +34,7 @@ export const PROSE = {
       "Find the conditional move on the A32 side of the recorded limit function. Enter its complete instruction name, including the condition suffix, without registers.",
   },
   failureExperiment:
-    "Take the conditional-move line from the A32 record and give it to the course's A64 assembler. The source still belongs to the A32 listing.\n\nThis checks whether the assembler accepts the line; it does not execute it.",
+    "The page supplies the conditional move from the A32 listing. Choose whether the course’s A64 assembler accepts it and press **Check your prediction**. Read the result and its explanation. This check stops at assembly, before any instruction executes.",
   failureQuestion: "**Will the course A64 assembler accept this recorded line?**",
   failureExplain:
     "It rejects the line. The course assembler accepts the taught A64 subset, including its register names and instruction syntax. It does not accept A32 source.\n\nChanging the register spelling alone would not add A32's conditional-move form to that subset. This experiment checks the course assembler's language; it is not a test of every instruction in the complete A64 architecture.",

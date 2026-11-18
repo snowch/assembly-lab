@@ -192,6 +192,16 @@ svg {
   color: var(--fg);
   background: var(--bg-inset);
 }
+.work-save-notice:not(:empty) {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: var(--space-2) var(--gutter);
+  color: var(--fg);
+  background: var(--bg-inset);
+  border-bottom: 1px solid var(--border-strong);
+  text-align: center;
+}
 .footer-links {
   list-style: none;
   display: flex;

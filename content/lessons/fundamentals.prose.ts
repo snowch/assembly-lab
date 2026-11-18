@@ -15,7 +15,7 @@ export const FUNDAMENTALS_PROSE = {
       prediction:
         "In `add w2, w0, w1`, the **inputs** are `w0` and `w1`: the instruction reads the values stored there. It adds those values and writes the result into `w2`. The register that receives the result is the **destination**, named first in this instruction.",
       investigation:
-        "Press Run the instruction. The figure runs a **simulator** in your browser: a program that imitates the processor. The course calls it the model.",
+        "A **simulator** is a program that follows the processor’s instruction rules. This one runs in your browser and shows each instruction’s completed effect.\n\nPress **Run the instruction**. Read `w2` after the addition. Check whether `w0` or `w1` changed.",
       explanation: "Reading preserves the inputs. Only the destination is written.",
       generalisation:
         "The destination can be a different register. Apply the same operand rule below.",
@@ -23,8 +23,7 @@ export const FUNDAMENTALS_PROSE = {
     },
     figure: {
       title: "One addition",
-      prose:
-        "The diagram shows the input values and where the result will go. Run `add w2, w0, w1` once.",
+      prose: "The starting values are shown before the instruction runs.",
     },
     simulationNote: {
       summary: "What the simulator shows",
@@ -64,9 +63,9 @@ export const FUNDAMENTALS_PROSE = {
     compilerNotes: FUNCTION_COMPILER_NOTES,
     sections: {
       motivation:
-        "`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C below into an assembly **listing**, a written sequence of instructions. GCC 16.1.0 made these listings for 64-bit Arm using `-O1`, an optimisation setting that asks it to make code shorter and faster. `increment_int:` names the function.\n\nCode that calls a function is its **caller**. The input it supplies is an **argument**. For this function, the argument arrives in `w0` and the integer result is left in `w0` too.\n\nThe function adds one, then `ret` returns to its caller. The next lesson follows execution back into the caller.",
+        "`increment_int` takes an integer `n` and returns `n + 1`. GCC is the compiler that translated the C below into an assembly **listing**, a written sequence of instructions. The label `increment_int:` names the function.\n\nCode that calls a function is its **caller**. The input it supplies is an **argument**. For this function, the argument arrives in `w0` and the integer result is left in `w0` too.\n\nThe function adds one, then `ret` returns to its caller. The next lesson follows execution back into the caller.",
       investigation:
-        "The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call.\n\nRun the function one instruction at a time. Watch where the argument arrives and where the result is left. On a narrow screen, scroll sideways within the listing to see the C and instructions.",
+        "The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call.\n\nPress **Run the instruction** to execute the addition and again to return. Compare `w0` when the call starts with `w0` when it returns. On a narrow screen, scroll sideways within the listing to see the C and instructions together.",
       construction:
         "`add_ints` takes two integer arguments:\n\n- `a`, the first argument, arrives in `w0`.\n- `b`, the second argument, arrives in `w1`.\n\nThe figure starts a separate call, `add_ints(7, 5)`. Its integer result is left in `w0`, just as for `increment_int`.",
       challenge:
@@ -74,11 +73,12 @@ export const FUNDAMENTALS_PROSE = {
     },
     figure: {
       title: "One argument, one result",
-      prose: "Run the addition, then the return. Watch the value in `w0`.",
+      prose: "The incoming argument starts in `w0`.",
     },
     twoArgumentFigure: {
       title: "Two arguments, one result",
-      prose: "Run the addition, then the return. Watch both registers.",
+      prose:
+        "Press **Run the instruction** for the addition and again for the return. Which register gets the sum? Which keeps its starting value?",
     },
     challenge: {
       task: "For a fresh call, `add_ints(6, 4)`:\n\n- The first argument, 6, arrives in `w0`.\n- The second argument, 4, arrives in `w1`.\n\nThe function runs `add w0, w0, w1`, then `ret`.\n\nWhat do `w0` and `w1` hold when the function returns?",

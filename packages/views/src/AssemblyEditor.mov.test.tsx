@@ -136,7 +136,9 @@ describe("tap mode with mov and movk", () => {
       />,
     );
     await user.click(screen.getByRole("button", { name: S.editor.tap }));
-    expect(screen.getByText(/No single instruction can put/)).toBeInTheDocument();
+    expect(screen.getByText(/cannot encode/).closest(".asm-error")).toHaveTextContent(
+      "This mov cannot encode 1000000 in one instruction.",
+    );
   });
 
   it("keeps the pad open when the last digit of a number goes, so the number can be replaced", async () => {

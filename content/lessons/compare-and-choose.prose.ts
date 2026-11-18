@@ -86,7 +86,7 @@ export const PROSE = {
     "`hi` and `gt` exclude equality. Each has an opposite condition that includes equality. These conditions read Z as well.\n\n" +
     "- `hi` (higher, unsigned) is `cs` without equality: C is 1 and Z is 0. Its opposite is `ls` (lower or same, unsigned): C is 0 or Z is 1.\n- `gt` (greater than, signed) is `ge` without equality: Z is 0 and N equals V. Its opposite is `le` (less than or equal, signed): Z is 1 or N differs from V.\n\n" +
     "`vs`, which Module 2 met, is yes when V is 1.\n\n" +
-    "The figure below uses `cmp w0, w1`, the reverse of `steeper_s`'s `cmp w1, w0`. Here, `a` is `w0` and `b` is `w1`. Choose a pair of values. For each condition, the figure shows the rule, the flags it reads and whether the condition holds.",
+    "The figure runs `cmp w0, w1`. It puts the first value in `w0` and the second in `w1`, then sets the flags for `w0` minus `w1`.\n\nSelect **8 and 8**. Read the flags and the **yes** or **no** results for `cs` and `ge`. Then select **0xffffffff and 1** and check the same conditions. Which pair gives a different answer for the signed and unsigned readings?",
 
   explanationNoteSummary: "Every condition this course uses",
   explanationNote:
@@ -101,7 +101,7 @@ export const PROSE = {
     "```\nfuel_low:\n        cmp     w0, w1\n        cset    w0, cc\n        ret\n```\n\n" +
     "`cset` means **conditional set**: `cset w0, cc` writes 1 to `w0` when `cc` is yes, and 0 when it is no. `csel` selects between register values. `cset` writes 0 or 1.\n\n" +
     "`fuel_low(5, 8)` is 1, and `fuel_low(8, 8)` is 0.\n\n" +
-    'Not every C `if` makes the processor skip instructions. `warning_light` is written with `if (litres < reserve) return 1;` and then `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing, which runs every instruction. The closed note "`warning_light`, and `tst` and `ands`" shows that listing and its two results.\n\n' +
+    "Not every C `if` makes the processor skip instructions. `warning_light` is written with `if (litres < reserve) return 1;` and then `return 0;`. GCC 16.1 at `-O1` compiled it to the same listing, which runs every instruction. Open **Other compiler forms and bit tests** to see that listing and its two results.\n\n" +
     "`downhill` is `bool downhill(int gradient) { return gradient < 0; }`. GCC 16.1 at `-O1` compiled it to two instructions:\n\n" +
     "```\ndownhill:\n        lsr     w0, w0, 31\n        ret\n```\n\n" +
     "There is no compare. The signed reading of a number is negative exactly when its top bit is 1. `lsr w0, w0, 31` moves the top bit to the bottom, as Module 3 showed. So the result is 1 for a negative gradient, and 0 otherwise.",

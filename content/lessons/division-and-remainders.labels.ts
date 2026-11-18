@@ -77,7 +77,7 @@ export const LABELS = {
         "Divide positive inputs",
         "Divide by a negative divisor",
         "Divide two negative inputs",
-        "Divide zero",
+        "Zero dividend",
         "Divide the maximum signed value",
         "Divide the minimum signed value",
       ],

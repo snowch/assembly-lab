@@ -26,7 +26,9 @@ In `add w2, w0, w1`, the **inputs** are `w0` and `w1`: the instruction reads the
 
 ### addition / sections / investigation
 
-Press Run the instruction. The figure runs a **simulator** in your browser: a program that imitates the processor. The course calls it the model.
+A **simulator** is a program that follows the processor’s instruction rules. This one runs in your browser and shows each instruction’s completed effect.
+
+Press **Run the instruction**. Read `w2` after the addition. Check whether `w0` or `w1` changed.
 
 ### addition / sections / explanation
 
@@ -46,7 +48,7 @@ One addition
 
 ### addition / figure / prose
 
-The diagram shows the input values and where the result will go. Run `add w2, w0, w1` once.
+The starting values are shown before the instruction runs.
 
 ### addition / simulationNote / summary
 
@@ -155,7 +157,7 @@ Trace a new addition
 
 ### addition labels / captions / figure
 
-Press Run the instruction to see the result written to w2.
+Starting values in w0 and w1, and the destination w2.
 
 ### addition labels / captions / challenge
 
@@ -312,7 +314,7 @@ w0 after the instruction
 
 ### function / sections / motivation
 
-`increment_int` takes the integer input `n` and returns it increased by one. GCC, a compiler, translated the C below into an assembly **listing**, a written sequence of instructions. GCC 16.1.0 made these listings for 64-bit Arm using `-O1`, an optimisation setting that asks it to make code shorter and faster. `increment_int:` names the function.
+`increment_int` takes an integer `n` and returns `n + 1`. GCC is the compiler that translated the C below into an assembly **listing**, a written sequence of instructions. The label `increment_int:` names the function.
 
 Code that calls a function is its **caller**. The input it supplies is an **argument**. For this function, the argument arrives in `w0` and the integer result is left in `w0` too.
 
@@ -322,7 +324,7 @@ The function adds one, then `ret` returns to its caller. The next lesson follows
 
 The simulator supplies the call and shows the caller waiting for the result. It omits the instructions that make the call.
 
-Run the function one instruction at a time. Watch where the argument arrives and where the result is left. On a narrow screen, scroll sideways within the listing to see the C and instructions.
+Press **Run the instruction** to execute the addition and again to return. Compare `w0` when the call starts with `w0` when it returns. On a narrow screen, scroll sideways within the listing to see the C and instructions together.
 
 ### function / sections / construction
 
@@ -343,7 +345,7 @@ One argument, one result
 
 ### function / figure / prose
 
-Run the addition, then the return. Watch the value in `w0`.
+The incoming argument starts in `w0`.
 
 ### function / twoArgumentFigure / title
 
@@ -351,7 +353,7 @@ Two arguments, one result
 
 ### function / twoArgumentFigure / prose
 
-Run the addition, then the return. Watch both registers.
+Press **Run the instruction** for the addition and again for the return. Which register gets the sum? Which keeps its starting value?
 
 ### function / challenge / task
 
@@ -797,7 +799,7 @@ To try the same settings locally, save the C shown above as `increment_int.c`. Y
 aarch64-linux-gnu-gcc -g -O1 -fno-verbose-asm -S -o increment_int.s increment_int.c
 ```
 
-`-O1` selects the optimisation setting described above. `-g` includes C line references for debugging tools. `-fno-verbose-asm` suppresses extra assembly comments. `-S` produces assembly text, and `-o increment_int.s` names the output file.
+`-O1` enables optimisations that can make code shorter or faster. `-g` includes C line references for debugging tools. `-fno-verbose-asm` suppresses extra assembly comments. `-S` produces assembly text, and `-o increment_int.s` names the output file.
 
 The assembly file also contains compiler and debugging information that this page filters out.
 

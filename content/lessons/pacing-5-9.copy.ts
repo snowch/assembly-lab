@@ -43,7 +43,7 @@ export const pacing5To9 = {
     intro:
       "A wider calculation may need a value extended without reading memory again. Compare the register-only extensions with the casts that request them.",
     activity:
-      "1. Compare the input bits with each extended result.\n2. Identify whether the added bits are zeros or copies of the original top bit.\n3. Follow the wider calculation that uses the value.",
+      "Each stepper prepares `0xf9` in `w0` for a separate run. Press **Next** once in each. Compare `w0` after `sxtb` and after `uxtb`. Which bits came from the byte, and which did the extension add?",
   },
   "array-addresses": {
     reminder:
@@ -67,21 +67,19 @@ export const pacing5To9 = {
     intro:
       "The same register bits can produce different high halves under signed and unsigned multiplication. The low half alone does not show that difference.",
     activity:
-      "1. Run the two multiplications with the same inputs.\n2. Compare their low halves, then their high halves.\n3. Use each input’s signed or unsigned reading to explain the difference.",
+      "The stepper prepares the same bits in `x0` and `x1` for all three instructions. Press **Next** once for each instruction. Read `x2` after `mul`, `x3` after `umulh`, and `x4` after `smulh`. Which result reveals the difference between signed and unsigned multiplication?",
   },
   "division-and-remainders": {
     title: "Division and remainders",
     objectives: ["use a quotient and remainder while preserving the required input values."],
   },
   "dividing-by-a-constant": {
-    reminder:
-      "The high half contains the product bits above the low register width, as in [Reading both halves of a product](#/lesson/reading-product-halves).",
     title: "How GCC divides by a constant",
     objectives: ["follow a recorded multiplication-and-shift implementation of unsigned division."],
     intro:
       "A constant divisor can let a compiler choose a different instruction sequence. This record shows GCC’s choice for `groups_of_ten`.",
     activity:
-      "1. Step through the multiply and shift.\n2. Compare the returned value with unsigned division of the same input by ten.\n3. Identify which instructions produce the quotient.\n\nKeep this compiler choice separate from the rule for division.",
+      "The stepper starts with 12345 in `w0`. Press **Next** to follow `mov` and `movk` as they build the multiplier in `w1`. Read `x0` after `umull`, then read it again after `lsr`. How does the shifted value compare with the whole-number quotient of 12345 divided by ten?",
   },
   "calls-and-returns": {
     title: "Saving a return address",
@@ -99,7 +97,7 @@ export const pacing5To9 = {
     title: "Widening before multiplication",
     objectives: ["preserve a full product by widening the operands before multiplication."],
     intro:
-      "A wider destination cannot recover product bits already discarded. Compare the two recorded calculations to find where the widening must happen.",
+      "Compare the modified narrow run with the widened unsigned run. Use **Next** in each stepper and inspect `x0` when it returns. Then compare the widened signed and unsigned runs, which start with the same bits.",
   },
   "consumption-calculation": {
     reminder:
@@ -127,7 +125,7 @@ export const pacing5To9 = {
     title: "Making recursive progress",
     objectives: ["make each recursive call approach the base case and use the returned result."],
     intro:
-      "A base case cannot finish a calculation that never reaches it. Test the unchanged-argument version of `fade_sum`, then complete `lit_count` so each call advances towards zero and counts its own level.",
+      "A base case cannot finish a calculation that never reaches it. The page prepares a version of `fade_sum` that passes the same argument to every call. Check your prediction, then press **Next** in its stepper. Compare `w0` and the active stack frames after successive calls. In the separate `lit_count` exercise, edit the instructions and run the tests.",
   },
   "memory-and-addresses": {
     title: "Memory and addresses",

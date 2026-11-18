@@ -53,7 +53,7 @@ On a narrow screen, swipe sideways within the listing to see the C and instructi
 
 The processor keeps instructions in **memory**, outside its registers. Here, `fuel_used` follows `trip_distance` in memory. `fuel_used` contains `sub w0, w0, w1`, then `ret`.
 
-Make your prediction, then use the switch to delete `trip_distance`’s `ret` and run `trip_distance(120, 85, 42, 15)` again.
+Choose your prediction and press **See what happens**. In the stepper that opens, select **Delete the ret line**. Press **Next** to follow the run. Compare `w0` after the last instruction of `trip_distance` with `w0` when the run ends.
 
 *A prediction about what w0 holds when the run ends without ret.*
 

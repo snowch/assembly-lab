@@ -601,7 +601,7 @@ describe("every message key an error can have", () => {
     const e = firstError("f:\n  mov w0, 1000000");
     expect(e.key).toBe("immediate.move");
     expect(e.params).toEqual({ text: "1000000" });
-    expect(message(e.key, e.params)).toBe("No single instruction can put `1000000` in a register.");
+    expect(message(e.key, e.params)).toBe("This `mov` cannot encode `1000000` in one instruction.");
     expect(firstError("f:\n  mov x0, 0x123456789").params).toEqual({ text: "0x123456789" });
   });
 
