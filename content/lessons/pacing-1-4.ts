@@ -347,7 +347,10 @@ const subtraction = splitLesson(subtractingAndTheTickCounter, [
       section(subtractingAndTheTickCounter, "prediction"),
       {
         ...counterInvestigation,
-        interactives: [figure(subtractingAndTheTickCounter, "counter-ring")],
+        interactives: [
+          figure(subtractingAndTheTickCounter, "counter-wrap"),
+          figure(subtractingAndTheTickCounter, "counter-ring"),
+        ],
       },
       {
         ...counterConstruction,

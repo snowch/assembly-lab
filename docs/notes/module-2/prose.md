@@ -217,7 +217,7 @@ The subtraction `a - b` needs a **borrow** when `a` is less than `b` under the u
 - After `adds`, C = 1 means a carry left the top bit.
 - After `subs`, C = 1 means no borrow was needed, and C = 0 means one was.
 
-After 4294967295 comes 0, so the counter's values form a ring. The figure draws them that way. The counter counts forward, clockwise.
+After 4294967295 comes 0, so the counter's values form a ring. The ring below draws them that way. The counter counts forward, clockwise.
 
 Two readings close together sit at almost one spot on a ring of 4294967296 values. So the strip under the ring enlarges the stretch round the wrap. The strip shows `then`, the wrap from 4294967295 to 0, `now`, the ticks before the wrap, the ticks after it, and their total.
 
