@@ -12,8 +12,6 @@
 
 import type { LessonInput } from "@platform/lesson-schema";
 
-import { COUNTER_WRAP_STRINGS } from "../../packages/views/src/strings.counter-wrap";
-
 import { LABELS } from "./subtracting-and-the-tick-counter.labels";
 import {
   ELAPSED,
@@ -84,14 +82,6 @@ export const subtractingAndTheTickCounter: LessonInput = {
       title: LABELS.titles.investigation,
       prose: PROSE.investigation,
       interactives: [
-        {
-          id: "counter-wrap",
-          caption: COUNTER_WRAP_STRINGS.caption,
-          kind: "counter-wrap",
-          timeModel: STEPS,
-          role: "diagram",
-          props: { after: "predict-elapsed" },
-        },
         {
           id: "counter-ring",
           kind: "counter-ring",

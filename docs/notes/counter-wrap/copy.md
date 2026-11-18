@@ -1,84 +1,58 @@
-# Counter wrap copy draft
+# Archived counter miniature copy
+
+This record describes the removed elapsed-page prototype. The current learning route is in [the elapsed learning-design brief](../elapsed-learning-design/brief.md). The earlier four-bit arithmetic lesson retains the addition-width demonstration.
+
+# Counter-wrap copy record
 
 Copyright © 2026 Christopher Snow
 
-Separate drafting pass from the parent's checked-fact brief. Canonical runtime copy is
-`packages/views/src/strings.counter-wrap.ts`, exported as `COUNTER_WRAP_STRINGS`.
-The matching RISC-V draft uses the same keys with numeric placeholders.
+Separate drafting pass from the checked-fact brief, updated from the user-approved simplified preview. Runtime copy lives in `packages/views/src/strings.counter-wrap.ts` as `COUNTER_WRAP_STRINGS`.
 
 ## Purpose and scope
 
-Help a learner explain why a fixed-width unsigned counter wraps and why subtraction at
-the same width can measure a short interval across that wrap. Prerequisites are the
-existing lesson's arithmetic, small binary numbers and flags. This is a mathematical
-four-bit miniature; it does not portray a physical four-bit Arm register or the flags
-from executing the same decimal inputs in a wider register.
+Show why a fixed-width unsigned counter stores only the low result bits, then connect that mechanism to measuring a short interval across a wrap. The learner has met small binary numbers, unsigned and signed readings, arithmetic and Arm flags. The four-bit miniature is a mathematical teaching model beside the actual 32-bit lesson; it does not depict four-bit Arm registers or flags produced at that width.
 
-The model supplies every displayed number: width, actual register width, initial and
-stored readings, tick count, full sum and binary pattern, retained pattern, carry out,
-elapsed result and full-turn size. Runtime copy does not calculate the lesson's answers.
+## Simplification and rendering contract
 
-## Display order and wording
+The user found the separate stored-bit readout and tick metric redundant. Remove those readouts and the repeated full-sum cards. The full addition, separate carry and retained bits now form the main visual. Keep one compact sequence of counter readings with its tick count. That sequence explains elapsed ticks; it is not another result panel.
 
-1. `title`, `modelNote` and `instruction` identify the model, then the actual action.
-2. `startingLabel`, `counterLabel` and `ticksLabel` distinguish the initial reading,
-   current stored bits and ticks advanced. Show `initialNote` initially; do not show a
-   completed addition or a carry value before the first tick.
-3. `advance` is the primary control. `reset` restores this miniature's initial state.
-   Neither control resets the lesson's CPU, prediction or saved work.
-4. After a tick, `additionLabel`, `fullSumLabel`, `carryLabel` and `retainedLabel` name
-   the previous increment separately from the current state. Keep `carryExplanation`
-   visible so the learner knows what the extra bit means.
-5. Show `wrapExplanation` when a tick has a carry out. Its arguments come from that
-   addition. Do not call a later non-wrapping increment unsigned wrap.
-6. At the final bounded tick, show `elapsedTitle`, `elapsedExplanation`,
-   `elapsedAssumption`, `turnLimit` and `limitNote`. The explanation uses the original
-   reading and current reading, not the inputs to the last increment.
-7. Keep `architectureNote` visible beside the model. Render its backtick-marked
-   instruction names as code using `withCode`.
+Production starts at zero ticks. Show `initialNote(start)` until a tick completes; do not invent a completed addition or a carry value at the start. The review preview was opened at the wrap only to show the proposed layout. It does not change the production starting state.
 
-Use `caption` as the enclosing lesson figure's description of the interactive task.
-It is distinct from `title`, the component's heading. The caption does not supply
-the model's initial or final values.
+After a tick, show the full addition with `carryLabel` and `retainedLabel`. Keep `carryExplanation(width)` visible beside it. Use `wrapExplanation` only when that completed addition has a carry out. A later increment without a carry is not itself a wrapping increment.
 
-`initialStatus` and `stepStatus` are concise status announcements; they need not be
-additional visible paragraphs beside values the figure already labels.
+`traceLabel` identifies the sequence. `timelineTicks(ticks)` uses the singular only for one tick; zero uses the plural. Both the trace and the count come from the same model state.
 
-## String function signatures
+`advance` increments the miniature; `reset` restores only its starting state. Preserve the existing prediction gate, saved tick key, CPU state, editor drafts and other learner work. Show `limitNote` by the controls when the bounded example ends so the learner can see why Advance is unavailable and how to restart.
+
+At the final tick, keep `elapsedTitle`, `elapsedExplanation`, `elapsedAssumption` and `turnLimit` visible. The elapsed subtraction uses the original and current readings. “Ticks shown in the sequence” describes both a restored state and a sequence the learner advanced directly.
+
+Keep `architectureNote` visible and render its backtick-marked instruction names as code. Use `initialStatus` and `stepStatus` as announcements, not additional visible result paragraphs. The enclosing `caption` describes the task without revealing a native prediction answer.
+
+## Function signatures
 
 | Key | Model arguments, in order |
 | --- | --- |
 | `modelNote` | `width`, `realWidth` |
+| `timelineTicks` | `ticks` |
+| `initialNote` | `start` |
 | `initialStatus` | `stored` |
 | `stepStatus` | `ticks`, `stored`, `fullSum`, `carryOut` |
 | `limitNote` | `maximumTicks` |
-| `wrapExplanation` | `fullSum`, `fullPattern`, `pattern`, `stored` |
+| `carryExplanation` | `width` |
 | `elapsedExplanation` | `start`, `stored`, `width`, `elapsed` |
 | `elapsedAssumption` | `range` |
 
 ## Accuracy boundaries
 
-Insert after the existing prediction gate. Do not reveal the original prediction answer
-in a caption or initial miniature state. The compact model precedes optional carry-column
-detail; it does not replace the actual-width counter ring.
+Every displayed reading, bit pattern, sum, carry and count comes from the existing arithmetic model. The miniature stays behind the original prediction gate and does not replace the actual-width counter ring. Do not say a lost bit causes a reset. Unsigned wrap and signed overflow are different conditions. `adds` updates C at its actual instruction width; `add` preserves the flags. The addition carry is not the `subs` no-borrow flag.
 
-The separate carry out is the arithmetic reason the retained low bits differ from the
-full sum. Avoid saying a bit fell out and caused a reset. Wrapping is not a reset
-instruction. Unsigned carry and signed overflow are different tests. `adds` updates C
-at its instruction width; `add` preserves the flags. Do not reuse this addition carry
-as the `subs` no-borrow flag for the elapsed subtraction.
+Measuring elapsed ticks requires a normally advancing counter and fewer than a complete turn between readings. Two readings cannot reveal additional complete turns or establish that no external reset happened.
 
-The elapsed interpretation assumes a normally advancing counter and fewer than a full
-turn of ticks. The subtraction cannot reveal additional full turns or establish that
-the counter was never reset externally.
-
-This drafting pass checks wording against the facts and style brief. Parent integration
-must still receive independent technical and learner review, model checks and actual
-UI verification. No claim of measured learning effectiveness is made.
+The existing investigation names “The ring below” because this miniature precedes it; that wording remains in the canonical Module 2 record. Independent learner and technical review and browser checks belong to integration. Passing functional checks does not establish learning effectiveness.
 
 ## Canonical wording
 
-Placeholder values come from the model. These sentences are the draft reviewed by the integration pass.
+Placeholders receive model values. For `timelineTicks`, choose the singular template only when `ticks` is one.
 
 ### `title`
 
@@ -104,25 +78,13 @@ Advance one tick
 
 Reset
 
-### `counterLabel`
+### `traceLabel`
 
-Stored counter bits
+Counter readings
 
-### `startingLabel`
+### `timelineTicks`
 
-Earlier reading
-
-### `ticksLabel`
-
-Ticks since the earlier reading
-
-### `additionLabel`
-
-Last tick's addition
-
-### `fullSumLabel`
-
-Full sum
+{ticks} tick / {ticks} ticks
 
 ### `carryLabel`
 
@@ -134,7 +96,7 @@ Bits stored
 
 ### `initialNote`
 
-No tick has advanced yet. There is no completed addition to show.
+Starting reading: {start}. Choose Advance one tick to add one.
 
 ### `initialStatus`
 
@@ -142,7 +104,7 @@ Starting reading: {stored}. No ticks have passed.
 
 ### `stepStatus`
 
-Ticks passed: {ticks}. Stored reading: {stored}. Last tick's full sum: {fullSum}. Carry out: {carryOut}.
+Ticks passed: {ticks}. Stored reading: {stored}. Full sum: {fullSum}. Carry out: {carryOut}.
 
 ### `limitNote`
 
@@ -150,11 +112,11 @@ This example ends after {maximumTicks} ticks. Choose Reset to try it again.
 
 ### `carryExplanation`
 
-Carry out is the bit beyond the counter's width. It is separate from the bits stored in the counter.
+Carry out is the bit beyond the counter’s width. The counter stores only the low {width} bits.
 
 ### `wrapExplanation`
 
-The full sum is {fullSum}, or {fullPattern} in binary. The counter stores only the low bits: {pattern}, read as {stored}. This is unsigned wrap.
+This is unsigned wrap.
 
 ### `elapsedTitle`
 
@@ -162,7 +124,7 @@ Count the ticks across the wrap
 
 ### `elapsedExplanation`
 
-The earlier reading is {start}; the later reading is {stored}. Subtract the earlier reading from the later one and keep the low {width} bits. The result is {elapsed}, matching the ticks you advanced.
+The earlier reading is {start}; the later reading is {stored}. Subtract the earlier reading from the later one and keep the low {width} bits. The result is {elapsed}, matching the ticks shown in the sequence.
 
 ### `elapsedAssumption`
 
@@ -175,8 +137,3 @@ The two readings alone cannot tell you how many complete turns the counter made.
 ### `architectureNote`
 
 Unsigned wrap differs from signed overflow V. Arm `adds` updates C for its actual register width; `add` leaves the flags unchanged.
-
-
-## Integration correction
-
-The existing investigation now names “The ring below” rather than “The figure”, because the four-bit miniature precedes the ring. Its canonical Module 2 prose record and rendered prose module were updated together.

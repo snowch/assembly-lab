@@ -52,8 +52,9 @@ describe("the lesson", () => {
     expect([lesson.module, lesson.order]).toEqual([2, 2]);
   });
 
-  it("introduces borrow after wrap was named in the C type comparison, and passes the term gate", () => {
-    expect(lesson.introduces).toEqual(["borrow"]);
+  it("keeps elapsed subtraction focused and introduces borrow in the following flags lesson", () => {
+    expect(lesson.introduces).toEqual([]);
+    expect(arithmetic.introduces).toContain("borrow");
     expect(termProblems(LESSONS)).toEqual([]);
   });
 
@@ -78,12 +79,12 @@ describe("the lesson", () => {
     expect(modelProblems(LESSONS, [STEPS])).toEqual([]);
   });
 
-  it("gates the miniature and ring behind the prediction in the same lesson", () => {
+  it("gates the same-input ring and subtraction explanation behind the prediction", () => {
     const ids = lesson.sections.flatMap((s) => s.interactives.map((x) => x.id));
     const gated = lesson.sections
       .flatMap((s) => s.interactives)
       .filter((x) => typeof x.props["after"] === "string");
-    expect(gated.map((x) => x.id)).toEqual(["counter-wrap", "counter-ring"]);
+    expect(gated.map((x) => x.id)).toEqual(["counter-ring"]);
     for (const x of gated)
       expect(ids.indexOf(x.props["after"] as string), x.id).toBeLessThan(ids.indexOf(x.id));
   });
@@ -236,8 +237,8 @@ describe("the page", () => {
     );
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
-    // The miniature and ring both wait for the preceding prediction.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
+    // The ring and its worked subtraction stay behind the preceding prediction.
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(1);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(1);
     // The closed answer of the last section, and no other closed note.

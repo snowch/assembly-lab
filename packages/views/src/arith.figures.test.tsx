@@ -479,6 +479,16 @@ describe("the counter's ring", () => {
     expect(container.querySelector('[data-mark="wrap"]')).not.toBeNull();
   });
 
+  it("keeps elapsed interpretation on the same readings and omits the separate flag run's output", () => {
+    const { container } = figure(CounterRing, "counter-ring", { ...props, purpose: "elapsed" });
+    expect(row(container, "elapsed")).toBe("2000");
+    expect(container.querySelector('[data-row="c"]')).toBeNull();
+    const summary = container.querySelector('[data-reading="elapsed-summary"]');
+    expect(summary).toHaveTextContent("1000 - 4294966296");
+    expect(summary).toHaveTextContent("2000");
+    expect(summary).toHaveTextContent("low 32 bits");
+  });
+
   it("places the wrap by how far from then it falls: 1000 of 2000 is halfway", () => {
     const { container } = figure(CounterRing, "counter-ring", props);
     const wrap = container.querySelector('[data-mark="wrap"] line')!;

@@ -7,6 +7,10 @@
 
 import { FOUR_BIT_PROSE } from "./four-bit-arithmetic.prose";
 
+const BORROW_INTRODUCTION =
+  "`subs` does the same subtraction as `sub` and also replaces all four flags, N, Z, C and V. `sub` leaves the flags unchanged.\n\n" +
+  "The subtraction `a - b` needs a **borrow** when `a` is less than `b` under the unsigned reading. The meaning of C depends on the instruction:\n\n- After `adds`, C = 1 means a carry left the top bit.\n- After `subs`, C = 1 means no borrow was needed, and C = 0 means one was.\n\n";
+
 export const PROSE = {
   question:
     "The trip computer counts milliseconds using a 32-bit unsigned counter. After 4294967295, the next value is 0.\n\n" +
@@ -25,9 +29,9 @@ export const PROSE = {
   predictionExplain:
     "The answer is 2000. Counting forward from 4294966296, 1000 ticks reach the wrap to 0, and 1000 more reach 1000.",
 
+  borrowIntroduction: BORROW_INTRODUCTION,
   investigation:
-    "`subs` does the same subtraction as `sub` and also replaces all four flags, N, Z, C and V. `sub` leaves the flags unchanged.\n\n" +
-    "The subtraction `a - b` needs a **borrow** when `a` is less than `b` under the unsigned reading. The meaning of C depends on the instruction:\n\n- After `adds`, C = 1 means a carry left the top bit.\n- After `subs`, C = 1 means no borrow was needed, and C = 0 means one was.\n\n" +
+    BORROW_INTRODUCTION +
     "After 4294967295 comes 0, so the counter's values form a ring. The ring below draws them that way. The counter counts forward, clockwise.\n\n" +
     "Two readings close together sit at almost one spot on a ring of 4294967296 values. So the strip under the ring enlarges the stretch round the wrap. The strip shows `then`, the wrap from 4294967295 to 0, `now`, the ticks before the wrap, the ticks after it, and their total.",
 

@@ -341,19 +341,31 @@ const subtraction = splitLesson(subtractingAndTheTickCounter, [
     id: subtractingAndTheTickCounter.id,
     title: COPY.subtraction.title,
     objectives: [...COPY.subtraction.objectives],
-    introduces: ["borrow"],
+    introduces: [],
+    originalityNote: {
+      ...subtractingAndTheTickCounter.originalityNote,
+      howThisDiffers: COPY.subtraction.originality,
+    },
     sections: [
       section(subtractingAndTheTickCounter, "motivation"),
       section(subtractingAndTheTickCounter, "prediction"),
       {
         ...counterInvestigation,
+        title: COPY.subtraction.investigationTitle,
+        prose: COPY.subtraction.investigation,
         interactives: [
-          figure(subtractingAndTheTickCounter, "counter-wrap"),
-          figure(subtractingAndTheTickCounter, "counter-ring"),
+          {
+            ...figure(subtractingAndTheTickCounter, "counter-ring"),
+            props: {
+              ...figure(subtractingAndTheTickCounter, "counter-ring").props,
+              purpose: "elapsed",
+            },
+          },
         ],
       },
       {
         ...counterConstruction,
+        prose: [counterConstruction.prose, COPY.subtraction.instructionNote].join("\n\n"),
         interactives: [figure(subtractingAndTheTickCounter, "write-elapsed")],
       },
       {
@@ -367,12 +379,16 @@ const subtraction = splitLesson(subtractingAndTheTickCounter, [
     id: "subtraction-flags-and-negation",
     title: COPY.subtractionArithmetic.title,
     objectives: [...COPY.subtractionArithmetic.objectives],
-    introduces: [],
+    introduces: ["borrow"],
     sections: [
       {
         kind: "investigation",
         title: COPY.subtraction.drilldownTitle,
-        prose: [COPY.subtractionArithmetic.reminder, SUB.subtractionInvestigation].join("\n\n"),
+        prose: [
+          SUB.borrowIntroduction,
+          COPY.subtractionArithmetic.reminder,
+          SUB.subtractionInvestigation,
+        ].join("\n\n"),
         interactives: [
           ...(counterInvestigation.interactives ?? [])
             .filter((part) => part.kind === "adder")
@@ -400,7 +416,21 @@ const subtraction = splitLesson(subtractingAndTheTickCounter, [
       counterReflection,
     ],
   },
-]);
+]).map((lesson) =>
+  lesson.id === subtractingAndTheTickCounter.id
+    ? {
+        ...lesson,
+        challenges: (lesson.challenges ?? []).map((challenge) =>
+          challenge.id === "write-elapsed"
+            ? {
+                ...challenge,
+                task: COPY.subtraction.task,
+              }
+            : challenge,
+        ),
+      }
+    : lesson,
+);
 
 const trace = masks.challenges!.find((part) => part.id === "trace-three-results")!;
 if (trace.tests.kind !== "answers") throw new Error("mask trace must use answer tests");
