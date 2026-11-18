@@ -3,7 +3,7 @@
 // Canonical drafting record: docs/notes/counter-wrap/copy.md.
 export const COUNTER_WRAP_STRINGS = {
   title: "See a counter wrap",
-  caption: "Advance a four-bit counter to compare each full sum with the bits it stores.",
+  caption: "Advance a four-bit counter to see which bits of each full sum it stores.",
   modelNote: (width: number, realWidth: number) =>
     `This is a ${width}-bit teaching model. The lesson uses ${realWidth}-bit registers.`,
   instruction: "Choose Advance one tick. Each tick adds one. Watch which bits the counter stores.",

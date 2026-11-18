@@ -86,7 +86,7 @@ See a counter wrap
 
 ### `caption`
 
-Advance a four-bit counter to compare each full sum with the bits it stores.
+Advance a four-bit counter to see which bits of each full sum it stores.
 
 ### `modelNote`
 

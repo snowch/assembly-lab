@@ -78,12 +78,12 @@ describe("the lesson", () => {
     expect(modelProblems(LESSONS, [STEPS])).toEqual([]);
   });
 
-  it("gates the ring, the two adders and the stepper behind the prediction before each, in the same lesson", () => {
+  it("gates the miniature and ring behind the prediction in the same lesson", () => {
     const ids = lesson.sections.flatMap((s) => s.interactives.map((x) => x.id));
     const gated = lesson.sections
       .flatMap((s) => s.interactives)
       .filter((x) => typeof x.props["after"] === "string");
-    expect(gated.map((x) => x.id)).toEqual(["counter-ring"]);
+    expect(gated.map((x) => x.id)).toEqual(["counter-wrap", "counter-ring"]);
     for (const x of gated)
       expect(ids.indexOf(x.props["after"] as string), x.id).toBeLessThan(ids.indexOf(x.id));
   });
@@ -236,10 +236,8 @@ describe("the page", () => {
     );
     const problems = [...container.querySelectorAll(".interactive-problem, .interactive-missing")];
     expect(problems.map((p) => p.textContent)).toEqual([]);
-    // The ring, the two adders and the stepper wait for their predictions; nothing of any run is
-    // on the page.
-    // The adder after the construction challenge waits for it too.
-    expect(container.querySelectorAll(".al-locked")).toHaveLength(1);
+    // The miniature and ring both wait for the preceding prediction.
+    expect(container.querySelectorAll(".al-locked")).toHaveLength(2);
     expect(container.querySelectorAll(".al-outcome")).toHaveLength(0);
     expect(container.querySelectorAll("section.challenge")).toHaveLength(1);
     // The closed answer of the last section, and no other closed note.
