@@ -118,3 +118,4 @@ export {
 } from "./instruction-reference-links";
 export type { InstructionIntroduction } from "./instruction-reference-links";
 export { COUNTER_SUBTRACTION_STRINGS } from "./strings.counter-subtraction";
+export { COUNTER_WRAP_STRINGS } from "./strings.counter-wrap";

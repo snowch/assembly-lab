@@ -28,7 +28,7 @@ A worked subtraction using a small counter.
 
 ### Introduction
 
-This {width}-bit teaching counter stores a count. Each tick adds one. After the largest value, the next tick stores zero. Its earlier reading is `{then}` and its later reading is `{now}`. Calculate later minus earlier.
+Use the same {width}-bit counter. Its earlier reading is `{then}` and its later reading is `{now}`. Calculate later minus earlier.
 
 ### Rule
 
@@ -71,3 +71,7 @@ The focused command `npx vitest run packages/views/src/four-bit-arithmetic.test.
 ## First-use definitions after learner review
 
 Accepted the independent finding that the new question pane precedes the original motivation, so its counter and tick terms need definitions before their first use. The introduction now defines the counter as a stored count, a tick as adding one, and the selected counter’s continuation at zero after its largest value. No model-value parameter or API changed. The parent/reviewer owns rebuilt-page verification of this wording and its position. This correction is an authoring review result, not evidence from a novice study.
+
+## Counter-wrap preparation restored
+
+The separate preceding counter-wrap pane now defines the counter and tick, and demonstrates continuation through zero before this subtraction. The introduction above keeps the same explicit readings and calculation without repeating those definitions. The restored pane and joining copy are recorded in `../restore-counter-wrap/copy.md`. The four-bit subtraction, interval bound, single-instruction note and 32-bit bridge remain unchanged.

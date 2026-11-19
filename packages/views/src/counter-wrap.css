@@ -1,0 +1,52 @@
+/* Copyright © 2026 Christopher Snow */
+
+.al-figure.al-counter-wrap {
+  min-width: 0;
+  gap: var(--space-3);
+}
+.al-counter-wrap p {
+  margin: 0;
+}
+.al-counter-wrap-addition {
+  display: grid;
+  gap: var(--space-3);
+}
+.al-counter-wrap-full code {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.al-counter-wrap-split {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.al-counter-wrap-split > div {
+  display: grid;
+  gap: var(--space-1);
+  text-align: center;
+}
+.al-counter-wrap-split > code {
+  padding-bottom: 0.4rem;
+}
+.al-counter-wrap-split code {
+  white-space: nowrap;
+}
+.al-counter-wrap-carry,
+.al-counter-wrap-stored {
+  font-size: 1.5rem;
+  padding: 0.3rem 0.6rem;
+}
+.al-counter-wrap-carry {
+  border: 1px dashed var(--border-strong);
+}
+.al-counter-wrap-stored {
+  border: 2px solid var(--accent);
+  background: var(--accent-soft);
+  letter-spacing: 0.15em;
+}
+.al-counter-wrap-initial code,
+.al-counter-wrap-trail {
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+}
