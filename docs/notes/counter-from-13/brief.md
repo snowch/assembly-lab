@@ -1,0 +1,15 @@
+# Count from thirteen to the wrap
+
+Copyright © 2026 Christopher Snow
+
+The user asks to start the teaching counter at 13, instruct the learner to advance until the stored reading reaches zero, retain the carry on that transition, use the same readings in the following subtraction pane, and merge when done. The existing built/live route was verified in the preceding restoration: small wrap, small subtraction, original gated 32-bit prediction/ring, written exercise.
+
+Observable outcome: distinguish ordinary counter increments from the increment that leaves the stored four bits at zero, then connect the three forward ticks with the retained subtraction result. Earlier modules teach binary place values, four-bit retained arithmetic and add/sub/flags; the current counter pane defines counter/tick/wrap and distinguishes the miniature carry from actual-width C. The current subtraction pane defines inversion, demonstrates invert/add-one/add-later and states the shorter-than-a-turn bound. Its final width bridge leads to a fresh 32-bit prediction and written exercise. Do not change that original question, its gate, or those saved answers/code.
+
+Checked model facts: four-bit increment readings are 13 (1101), 14 (1110), 15 (1111), 0 (0000). The completed sums are 14, 15 and 16; only the final carry out of column 3 is 1. Four-bit 0 minus 13 retains 0011: invert 1101 to 0010, add one to get 0011, then add 0000. The forward path and result both give 3 ticks, under the existing normal-counter/fewer-than-16 bound. Obtain all rendered values from existing model helpers. Share the counter's start/finish/path between both panes so a future starting-value edit cannot silently split their examples. Extend native corpus coverage for newly displayed operands; existing mathematical all-pair tests also cover them.
+
+Keep the established fixed-position Advance/Reset controls, labels, width note, initial/no-completed-addition distinction and pause at zero. Replace the old two-press wording with a concrete until-zero instruction using the actual control name; do not hide essential instructions. Preserve saved tick counts without automatic writes (old two-tick progress now resumes one step before zero); preserve unrelated challenge/prediction state. Model counts are not proof of novice understanding. No novice participant is available.
+
+Likely misconception hypotheses: all increments produce carry; zero means an unrelated reset; subtraction must reverse its input order across a wrap. Two ordinary increments before the final transition and the same-input subtraction are intended to distinguish these; test/review their visible evidence rather than claiming the hypotheses confirmed.
+
+Process: separate one-sentence drafting pass; independent learner and technical reviews of the final built page, initial/three increments/paused/reset/restored states, phone/desktop and actual light/dark themes, keyboard and saved-work isolation. Retain the original larger-width prediction gate and check its normal completion. Record focused and full check results separately. Publish and verify the exact deployed commit after successful required checks.

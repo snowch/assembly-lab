@@ -49,9 +49,13 @@ describe("the counter-wrap preparation", () => {
     store.setSlot("write-elapsed", { draft: "keep learner code" });
     store.setSlot("predict-elapsed", { choice: "made" });
     const view = figure(store);
-    expect(view.container.querySelector('[data-reading="stored"]')?.textContent).toBe("1110");
+    expect(view.container.querySelector('[data-reading="stored"]')?.textContent).toBe("1101");
     expect(view.container.querySelector('[data-reading="carry"]')).toBeNull();
     const advance = screen.getByRole("button", { name: S.advance });
+    fireEvent.click(advance);
+    expect(view.container.querySelector('[data-reading="stored"]')?.textContent).toBe("1110");
+    expect(view.container.querySelector('[data-reading="sum"]')?.textContent).toBe("13 + 1 = 14");
+    expect(view.container.querySelector('[data-reading="carry"]')?.textContent).toBe("0");
     fireEvent.click(advance);
     expect(view.container.querySelector('[data-reading="stored"]')?.textContent).toBe("1111");
     expect(view.container.querySelector('[data-reading="sum"]')?.textContent).toBe("14 + 1 = 15");
@@ -62,7 +66,7 @@ describe("the counter-wrap preparation", () => {
     expect(view.container.querySelector('[data-reading="carry"]')?.textContent).toBe("1");
     expect(advance.getAttribute("aria-disabled")).toBe("true");
     fireEvent.click(advance);
-    expect(store.slot("counter-wrap:ticks")).toBe(2);
+    expect(store.slot("counter-wrap:ticks")).toBe(3);
     view.unmount();
     const restored = new LessonStore(storage, "assembly-lab", "wrap-test");
     const next = figure(restored);
@@ -73,10 +77,13 @@ describe("the counter-wrap preparation", () => {
     expect(restored.slot("predict-elapsed")).toEqual({ choice: "made" });
   });
 
-  it("reads old progress without overwriting the saved slot on render", () => {
+  it("resumes previous two-tick progress without overwriting it on render", () => {
     const store = new LessonStore(memoryStorage(), "assembly-lab", "legacy-wrap");
-    store.setSlot("counter-wrap:ticks", 3);
+    store.setSlot("counter-wrap:ticks", 2);
     const view = figure(store);
+    expect(view.container.querySelector('[data-reading="sum"]')?.textContent).toBe("14 + 1 = 15");
+    expect(store.slot("counter-wrap:ticks")).toBe(2);
+    fireEvent.click(screen.getByRole("button", { name: S.advance }));
     expect(view.container.querySelector('[data-reading="sum"]')?.textContent).toBe("15 + 1 = 16");
     expect(store.slot("counter-wrap:ticks")).toBe(3);
   });

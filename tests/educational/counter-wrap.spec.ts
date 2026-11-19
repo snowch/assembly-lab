@@ -14,7 +14,7 @@ for (const theme of ["light", "dark"])
     await page.locator("select").first().selectOption(theme);
     const wrap = page.locator("#ix-counter-wrap");
     const ring = page.locator("#ix-counter-ring");
-    await expect(wrap.locator('[data-reading="stored"]')).toHaveText("1110");
+    await expect(wrap.locator('[data-reading="stored"]')).toHaveText("1101");
     await expect(wrap.locator('[data-reading="carry"]')).toHaveCount(0);
     await expect(wrap).toContainText("keeps only 4 bits");
     await expect(wrap).toContainText("32-bit registers");
@@ -24,11 +24,18 @@ for (const theme of ["light", "dark"])
     const control = await advance.boundingBox();
     expect(control!.y + control!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
     await page.keyboard.press("Enter");
+    await expect(wrap.locator('[data-reading="sum"]')).toHaveText("13 + 1 = 14");
+    await expect(wrap.locator('[data-reading="stored"]')).toHaveText("1110");
+    await expect(wrap.locator('[data-reading="carry"]')).toHaveText("0");
+    await expect(advance).toBeEnabled();
+    expect(Math.abs((await advance.boundingBox())!.y - control!.y)).toBeLessThan(1);
+    await page.keyboard.press("Space");
     await expect(wrap.locator('[data-reading="sum"]')).toHaveText("14 + 1 = 15");
     await expect(wrap.locator('[data-reading="stored"]')).toHaveText("1111");
     await expect(wrap.locator('[data-reading="carry"]')).toHaveText("0");
+    await expect(advance).toBeEnabled();
     expect(Math.abs((await advance.boundingBox())!.y - control!.y)).toBeLessThan(1);
-    await page.keyboard.press("Space");
+    await page.keyboard.press("Enter");
     await expect(wrap.locator('[data-reading="sum"]')).toHaveText("15 + 1 = 16");
     await expect(wrap.locator('[data-reading="stored"]')).toHaveText("0000");
     await expect(wrap.locator('[data-reading="carry"]')).toHaveText("1");
@@ -43,7 +50,7 @@ for (const theme of ["light", "dark"])
     await page.reload();
     await expect(wrap.locator('[data-reading="carry"]')).toHaveText("1");
     await wrap.getByRole("button", { name: S.reset, exact: true }).click();
-    await expect(wrap.locator('[data-reading="stored"]')).toHaveText("1110");
+    await expect(wrap.locator('[data-reading="stored"]')).toHaveText("1101");
     await expect(wrap.locator('[data-reading="carry"]')).toHaveCount(0);
     await expect(prediction.getByRole("radio", { name: /^2000$/ })).toBeChecked();
     await expect(ring.locator('[data-reading="elapsed-summary"]')).toContainText("2000");

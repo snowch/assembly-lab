@@ -26,7 +26,7 @@ for (const theme of ["light", "dark"])
       ),
     ).toBe(true);
     await expect(reminder).toBeVisible();
-    await expect(reminder.locator('[data-reading="result"]')).toHaveText("0010");
+    await expect(reminder.locator('[data-reading="result"]')).toHaveText("0011");
     await expect(reminder).toContainText("keeping 32 result bits instead of 4");
     expect(
       await reminder.evaluate((node) =>

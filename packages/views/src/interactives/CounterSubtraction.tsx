@@ -1,20 +1,20 @@
 // Copyright © 2026 Christopher Snow
 
 import { z } from "zod";
-import { fourBitAddition, fourBitSubtraction } from "../four-bit-arithmetic";
+import { counterWrap, COUNTER_WRAP_TICKS } from "../counter-wrap";
+import { fourBitSubtraction } from "../four-bit-arithmetic";
 import { withCode } from "../parts";
 import { COUNTER_SUBTRACTION_STRINGS as S } from "../strings.counter-subtraction";
 import { withProps } from "./props";
 
 /** A small worked counter, using the existing arithmetic models for every shown value. */
 export function counterSubtractionWork() {
-  const subtraction = fourBitSubtraction(0, 14);
-  const next = fourBitAddition(subtraction.b.unsigned, 1);
-  const wrapped = fourBitAddition(next.result.unsigned, 1);
+  const counter = counterWrap(COUNTER_WRAP_TICKS);
+  const subtraction = fourBitSubtraction(counter.value.unsigned, counter.start);
   return {
     width: subtraction.a.pattern.length,
     subtraction,
-    timeline: [subtraction.b.unsigned, next.result.unsigned, wrapped.result.unsigned],
+    timeline: counter.readings.map((reading) => reading.unsigned),
   };
 }
 

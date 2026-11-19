@@ -9,8 +9,8 @@ import { withProps } from "./props";
 
 export const CounterWrap = withProps(z.object({}), function CounterWrap({ store, interactive }) {
   const [saved, save] = useSlot<number>(store, `${interactive.id}:ticks`);
-  // The earlier activity allowed a third tick. Keep its saved slot intact and
-  // display the end of this two-tick preparation without changing other work.
+  // Retain saved tick counts when the starting value changes. Rendering must
+  // not write this slot or change the learner's other work.
   const ticks =
     typeof saved === "number" && Number.isInteger(saved) && saved >= 0 && saved < COUNTER_WRAP_RANGE
       ? Math.min(saved, COUNTER_WRAP_TICKS)

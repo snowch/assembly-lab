@@ -7,7 +7,7 @@ export const COUNTER_WRAP_STRINGS = {
   intro: (width: number, realWidth: number) =>
     `A counter stores a count. Each tick adds one. This teaching counter keeps only ${width} bits; the program later uses ${realWidth}-bit registers.`,
   instruction:
-    "Choose Advance one tick twice. Each press adds one to the stored count. Watch Carry out and Bits stored when the count reaches zero.",
+    "Choose Advance one tick until Bits stored shows 0000. Watch Carry out on that transition. The example pauses at zero.",
   advance: "Advance one tick",
   reset: "Reset",
   initialLabel: "Starting reading",

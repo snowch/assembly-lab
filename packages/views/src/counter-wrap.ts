@@ -2,9 +2,9 @@
 
 import { fourBitAddition, fourBitSubtraction } from "./four-bit-arithmetic";
 
-export const COUNTER_WRAP_START = 14;
-export const COUNTER_WRAP_TICKS = 2;
+export const COUNTER_WRAP_START = 13;
 export const COUNTER_WRAP_RANGE = 16;
+export const COUNTER_WRAP_TICKS = COUNTER_WRAP_RANGE - COUNTER_WRAP_START;
 
 /** A four-place mathematical view of the existing machine-backed ADD/SUB model.
  * No four-bit Arm register or architectural flag is simulated here. */
