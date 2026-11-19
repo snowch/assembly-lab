@@ -26,3 +26,7 @@ Sentence pass: the first sentence gives a concrete action and visible stopping c
 Idea pass: the learner encounters ordinary increments before the zero transition and can inspect its carry without advancing past it. The instruction names the binary pattern actually shown, rather than relying on a decimal readout that is not present in the completed result. The following pane remains responsible for explaining elapsed subtraction.
 
 No source file was edited. Browser operation, arithmetic/native checks and independent learner/technical reviews remain with implementation. These facts and the drafting judgement do not establish novice learning effectiveness.
+
+## Superseded instruction
+
+The user subsequently requested compact +1 / −1 controls and decimal beneath the stored bits, without addition equations in the wrap pane. Current instructions and labels are drafted in `compact-copy.md` and synchronised with the named canonical runtime record. The three-tick path and matching subtraction remain as described above.

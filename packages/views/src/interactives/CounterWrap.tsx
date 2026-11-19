@@ -25,7 +25,19 @@ export const CounterWrap = withProps(z.object({}), function CounterWrap({ store,
       <div className="al-controls">
         <button
           type="button"
+          className="button secondary"
+          aria-label={S.previousLabel}
+          aria-disabled={ticks === 0}
+          onClick={() => {
+            if (ticks > 0) save(ticks - 1);
+          }}
+        >
+          {S.previous}
+        </button>
+        <button
+          type="button"
           className="button primary"
+          aria-label={S.advanceLabel}
           aria-disabled={complete}
           onClick={() => {
             if (!complete) save(ticks + 1);
@@ -37,38 +49,26 @@ export const CounterWrap = withProps(z.object({}), function CounterWrap({ store,
           {S.reset}
         </button>
       </div>
-      {sum ? (
-        <div className="al-counter-wrap-addition">
-          <p className="al-counter-wrap-full">
-            <code data-reading="sum">
-              {sum.a.unsigned} + {sum.b.unsigned} = {sum.fullSum}
-            </code>
-          </p>
-          <div className="al-counter-wrap-split">
-            <code>
-              {sum.a.pattern} + {sum.b.pattern} =
-            </code>
-            <div>
-              <span>{S.carryLabel}</span>
-              <code data-reading="carry" className="al-counter-wrap-carry">
-                {sum.carryOut}
-              </code>
-            </div>
-            <div>
-              <span>{S.retainedLabel}</span>
-              <code data-reading="stored" className="al-counter-wrap-stored">
-                {sum.result.pattern}
-              </code>
-            </div>
-          </div>
-          <p>{sum.carryOut === 1 ? S.wrapped(4) : S.noCarry(4)}</p>
+      <div className="al-counter-wrap-split">
+        <div>
+          <span>{S.carryLabel}</span>
+          <code data-reading="carry" className="al-counter-wrap-carry">
+            {sum?.carryOut ?? S.pendingCarry}
+          </code>
         </div>
-      ) : (
-        <p className="al-counter-wrap-initial">
-          {S.initialLabel}: <code data-reading="stored">{model.value.pattern}</code>{" "}
-          <span>({model.value.unsigned})</span>. {S.initialNote}
-        </p>
-      )}
+        <div>
+          <span>{S.retainedLabel}</span>
+          <code data-reading="stored" className="al-counter-wrap-stored">
+            {model.value.pattern}
+          </code>
+          <span className="al-counter-wrap-decimal">
+            <span className="visually-hidden">{S.decimalLabel}: </span>
+            <span data-reading="decimal">{model.value.unsigned}</span>
+          </span>
+        </div>
+      </div>
+      {sum?.carryOut === 1 && <p>{S.wrapped(4)}</p>}
+      {!sum && <p>{S.initialNote}</p>}
       <p className="al-counter-wrap-trail" aria-label={S.trailLabel}>
         {model.readings.map((reading, index) => (
           <span key={index}>
