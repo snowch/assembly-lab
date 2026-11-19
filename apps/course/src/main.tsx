@@ -25,3 +25,5 @@ import "./styles/course-layout.css";
 import "./styles/lesson-sources.css";
 
 import "./styles/header-calculator.css";
+
+import "./styles/instruction-reference.css";

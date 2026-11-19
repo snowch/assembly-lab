@@ -119,3 +119,6 @@ export {
 export type { InstructionIntroduction } from "./instruction-reference-links";
 export { COUNTER_SUBTRACTION_STRINGS } from "./strings.counter-subtraction";
 export { COUNTER_WRAP_STRINGS } from "./strings.counter-wrap";
+
+export { InstructionHelpProvider, useInstructionHelp } from "./instruction-help";
+export type { InstructionHelpApi, InstructionHelpRequest } from "./instruction-help";
