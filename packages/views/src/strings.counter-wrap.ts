@@ -7,22 +7,25 @@ export const COUNTER_WRAP_STRINGS = {
   intro: (width: number, realWidth: number) =>
     `A counter stores a count. Each tick adds one. This teaching counter keeps only ${width} bits; the program later uses ${realWidth}-bit registers.`,
   instruction:
-    "Choose Advance one tick twice. Each press adds one to the stored count. Watch Carry out and Bits stored when the count reaches zero.",
-  advance: "Advance one tick",
+    "Use +1 until Bits stored shows 0000. The example pauses there. Use −1 to revisit the previous tick.",
+  previous: "−1",
+  previousLabel: "−1, revisit the previous tick",
+  advance: "+1",
+  advanceLabel: "+1, advance one tick",
   reset: "Reset",
-  initialLabel: "Starting reading",
-  initialNote: "No tick has advanced yet, so no addition is shown.",
-  carryLabel: "Carry out",
+  initialNote: "The dash means no +1 tick is shown at the starting reading.",
+  carryLabel: "Carry from +1",
+  decimalLabel: "Decimal reading",
+  pendingCarry: "—",
   retainedLabel: "Bits stored",
   trailLabel: "Counter readings in counting order",
-  noCarry: (width: number) => `The full sum fits in ${width} bits, so the carry out is 0.`,
   wrapped: (width: number) =>
     `The carry out is outside the ${width} stored positions. The counter keeps only the low ${width} bits, so its reading becomes zero. This is a wrap.`,
   architectureNote:
     "The carry shown belongs to this four-bit example. Arm `adds` records carry out for its actual register width; `add` leaves C unchanged.",
   next: (earlier: number, later: number) =>
     `The next pane uses the earlier reading \`${earlier}\` and the later reading \`${later}\` to calculate elapsed ticks.`,
-  initialStatus: (stored: number) => `Starting counter reading: ${stored}. No ticks have advanced.`,
+  initialStatus: (stored: number) => `Starting reading: ${stored}. No +1 tick is shown.`,
   stepStatus: (ticks: number, stored: number, carry: number) =>
-    `Ticks advanced: ${ticks}. Stored reading: ${stored}. Carry out: ${carry}.`,
+    `Viewing tick ${ticks}. Stored reading: ${stored}. Carry from +1: ${carry}.`,
 } as const;

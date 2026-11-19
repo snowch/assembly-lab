@@ -75,3 +75,7 @@ Accepted the independent finding that the new question pane precedes the origina
 ## Counter-wrap preparation restored
 
 The separate preceding counter-wrap pane now defines the counter and tick, and demonstrates continuation through zero before this subtraction. The introduction above keeps the same explicit readings and calculation without repeating those definitions. The restored pane and joining copy are recorded in `../restore-counter-wrap/copy.md`. The four-bit subtraction, interval bound, single-instruction note and 32-bit bridge remain unchanged.
+
+## Shared thirteen-to-zero example
+
+The wrap counter now starts at 13 and stops at zero after three increments. Both panes obtain their readings and timeline from the same counter model. The subtraction displays 1101 → 0010, then 0010 + 1 = 0011, then 0000 + 0011 = 0011. Its three-tick result matches the forward path 13 → 14 → 15 → 0. Runtime strings above remain parameterised; the original 32-bit prediction and shorter-than-a-turn qualification are unchanged. Current copy and verification are in `../counter-from-13/`.

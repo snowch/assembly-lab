@@ -7,17 +7,9 @@
 .al-counter-wrap p {
   margin: 0;
 }
-.al-counter-wrap-addition {
-  display: grid;
-  gap: var(--space-3);
-}
-.al-counter-wrap-full code {
-  font-size: 1.5rem;
-  font-weight: 700;
-}
 .al-counter-wrap-split {
   display: flex;
-  align-items: end;
+  align-items: start;
   flex-wrap: wrap;
   gap: var(--space-2);
 }
@@ -25,9 +17,6 @@
   display: grid;
   gap: var(--space-1);
   text-align: center;
-}
-.al-counter-wrap-split > code {
-  padding-bottom: 0.4rem;
 }
 .al-counter-wrap-split code {
   white-space: nowrap;
@@ -45,7 +34,7 @@
   background: var(--accent-soft);
   letter-spacing: 0.15em;
 }
-.al-counter-wrap-initial code,
+.al-counter-wrap-decimal,
 .al-counter-wrap-trail {
   font-size: 1.2rem;
   font-variant-numeric: tabular-nums;

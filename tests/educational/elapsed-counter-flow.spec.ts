@@ -2,6 +2,7 @@
 
 import { expect, test } from "@playwright/test";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
+import { COUNTER_WRAP_STRINGS as W } from "../../packages/views/src/strings.counter-wrap";
 
 for (const theme of ["light", "dark"])
   test(`elapsed counter follows the same subtraction through the ring in ${theme}`, async ({
@@ -15,7 +16,7 @@ for (const theme of ["light", "dark"])
     const summary = ring.locator('[data-reading="elapsed-summary"]');
     const reminder = page.locator("#ix-counter-subtraction-reminder");
     const wrap = page.locator("#ix-counter-wrap");
-    await expect(wrap.getByRole("button", { name: "Advance one tick" })).toBeVisible();
+    await expect(wrap.getByRole("button", { name: W.advanceLabel })).toBeVisible();
     expect(
       await wrap.evaluate((node) =>
         Boolean(
@@ -26,7 +27,7 @@ for (const theme of ["light", "dark"])
       ),
     ).toBe(true);
     await expect(reminder).toBeVisible();
-    await expect(reminder.locator('[data-reading="result"]')).toHaveText("0010");
+    await expect(reminder.locator('[data-reading="result"]')).toHaveText("0011");
     await expect(reminder).toContainText("keeping 32 result bits instead of 4");
     expect(
       await reminder.evaluate((node) =>

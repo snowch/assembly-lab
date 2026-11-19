@@ -11,11 +11,11 @@ import { fourBitSubtraction } from "./four-bit-arithmetic";
 it("connects the worked wrapped difference to inversion, addition and the forward path", () => {
   const work = counterSubtractionWork();
   expect(work.width).toBe(4);
-  expect(work.subtraction.b.pattern).toBe("1110");
-  expect(work.subtraction.negation.inverted.pattern).toBe("0001");
-  expect(work.subtraction.negation.after.pattern).toBe("0010");
-  expect(work.subtraction.result.pattern).toBe("0010");
-  expect(work.timeline).toEqual([14, 15, 0]);
+  expect(work.subtraction.b.pattern).toBe("1101");
+  expect(work.subtraction.negation.inverted.pattern).toBe("0010");
+  expect(work.subtraction.negation.after.pattern).toBe("0011");
+  expect(work.subtraction.result.pattern).toBe("0011");
+  expect(work.timeline).toEqual([13, 14, 15, 0]);
   expect(work.timeline.length - 1).toBe(work.subtraction.result.unsigned);
   // The reminder's rule applies to unfamiliar values too, including negating zero.
   for (const [now, then] of [
@@ -43,10 +43,10 @@ it("shows a worked calculation with an explicit width bridge and no processor-st
       })}
     />,
   );
-  expect(container.querySelector('[data-stage="invert"]')).toHaveTextContent("1110 → 0001");
-  expect(container.querySelector('[data-stage="add-one"]')).toHaveTextContent("0001 + 1 = 0010");
+  expect(container.querySelector('[data-stage="invert"]')).toHaveTextContent("1101 → 0010");
+  expect(container.querySelector('[data-stage="add-one"]')).toHaveTextContent("0010 + 1 = 0011");
   expect(container.querySelector('[data-stage="add-later"]')).toHaveTextContent(
-    "0000 + 0010 = 0010",
+    "0000 + 0011 = 0011",
   );
   expect(container).toHaveTextContent("fewer than 16 ticks");
   expect(container).toHaveTextContent("one sub instruction");
