@@ -47,9 +47,9 @@ export const STATUS_STRINGS = {
   source: "View source commit",
   committed: "Committed",
   restartExplanation:
-    "Restart reloads all open Assembly Lab tabs and app windows. Your saved work, theme and current lesson are kept.",
+    "Restart reloads all open Arm Assembly Lab tabs and app windows. Your saved work, theme and current lesson are kept.",
   restarting:
-    "Checking saved work in all open Assembly Lab tabs and app windows before restarting.",
+    "Checking saved work in all open Arm Assembly Lab tabs and app windows before restarting.",
   offlineRequiresUpdate: "Finish updating the app before saving the course offline.",
   offlineExplanation:
     "Save the whole course, including its browser tools and example downloads. You can then reopen it in this browser without an internet connection.",
@@ -61,7 +61,7 @@ export const STATUS_STRINGS = {
     "Other websites and Compare with GCC need an internet connection. Running the native examples needs tools installed outside this browser.",
   storage:
     "Your browser may remove saved files to free space. App status checks that the complete course is still saved.",
-  removeQuestion: "Remove this browser’s offline copy of Assembly Lab?",
+  removeQuestion: "Remove this browser’s offline copy of Arm Assembly Lab?",
   removeExplanation:
     "This removes the saved app files. Your answers, exercise edits, achievements and theme stay. Other apps’ saved files stay too.",
   removed: "The offline copy has been removed. Your work is kept.",
@@ -75,7 +75,7 @@ export const STATUS_STRINGS = {
   updateErrors: {
     unsaved:
       "Restart is paused because a tab has unsaved work, unfinished input or an operation still running. Finish or save your work, then retry.",
-    tabs: "Another Assembly Lab tab did not respond. Check your work in the other tabs, close them, then retry.",
+    tabs: "Another Arm Assembly Lab tab did not respond. Check your work in the other tabs, close them, then retry.",
     download:
       "The prepared update is incomplete. Reconnect to the internet, then prepare the update again.",
     changed:

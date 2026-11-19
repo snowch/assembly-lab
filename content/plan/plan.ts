@@ -141,7 +141,7 @@ export const PARTS: readonly PlanPart[] = [
       M(
         "12",
         "running-arm64-outside-assembly-lab",
-        "Running ARM64 outside Assembly Lab",
+        "Running ARM64 outside Arm Assembly Lab",
         "Assemble a bootable ARM64 program, trace its startup and debug it with GNU tools and QEMU.",
       ),
       M(

@@ -16,7 +16,7 @@ export const WHERE_NEXT = {
   playground: {
     title: "Take a familiar function into a playground",
     prose:
-      "[AArch64 Playground](https://aarch64-playground.com/playground) gives you an editor and debugger for your own assembly programs. You can inspect registers, stack and memory, set breakpoints and step backwards. A breakpoint pauses a run at an instruction you choose. Start with the trip calculation you already know, so you can concentrate on the new workspace.\n\nAssembly Lab’s offline save includes this page and starter. Prepare the playground’s own offline options separately.",
+      "[AArch64 Playground](https://aarch64-playground.com/playground) gives you an editor and debugger for your own assembly programs. You can inspect registers, stack and memory, set breakpoints and step backwards. A breakpoint pauses a run at an instruction you choose. Start with the trip calculation you already know, so you can concentrate on the new workspace.\n\nArm Assembly Lab’s offline save includes this page and starter. Prepare the playground’s own offline options separately.",
     beforeCode:
       "The playground starts this program at `main`, with a prepared stack and a return destination. Our supplied caller saves that return address before calling `trip_distance`, then restores it before returning, as in Module 9.\n\nThe lines beginning with a dot are **directives** for the tool preparing the program. They do not execute on the processor.\n\n- `.text` begins a group of instructions.\n- `.global main` exposes the function name `main`, which the playground uses to find where to start.",
     caption: "The familiar trip function with an assembly caller for the playground.",
@@ -43,6 +43,6 @@ export const WHERE_NEXT = {
   routes: {
     title: "Choose the environment for your goal",
     prose:
-      "- **Write and debug your own programs:** keep using the playground. You can choose projects without repeating its lesson sequence.\n- **Use real assembler and debugger tools:** continue with [Running ARM64 outside Assembly Lab](#/lesson/from-function-to-executable) in Module 12. Build the assembly image and inspect its execution with GNU tools and QEMU.\n- **Boot a physical board:** follow [Running on Raspberry Pi 5](#/lesson/raspberry-pi-5) in Module 13. Check the Pi 5 and Debug Probe prerequisites first; physical verification remains pending until the hardware test is completed.",
+      "- **Write and debug your own programs:** keep using the playground. You can choose projects without repeating its lesson sequence.\n- **Use real assembler and debugger tools:** continue with [Running ARM64 outside Arm Assembly Lab](#/lesson/from-function-to-executable) in Module 12. Build the assembly image and inspect its execution with GNU tools and QEMU.\n- **Boot a physical board:** follow [Running on Raspberry Pi 5](#/lesson/raspberry-pi-5) in Module 13. Check the Pi 5 and Debug Probe prerequisites first; physical verification remains pending until the hardware test is completed.",
   },
 } as const;

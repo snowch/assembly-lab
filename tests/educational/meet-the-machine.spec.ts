@@ -94,14 +94,14 @@ test("the lesson loads with no console error, selected sections, and its trace c
   await expect(page.locator("section.challenge")).toHaveCount(1);
   await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
   await expect(page.locator("a.back-link").first()).toHaveAttribute("href", "#/");
-  await expect(page).toHaveTitle(`${lesson.title} / Assembly Lab`);
+  await expect(page).toHaveTitle(`${lesson.title} / Arm Assembly Lab`);
   expect(errors).toEqual([]);
 });
 
 test("the way back leads to the front page", async ({ page }) => {
   await openLesson(page);
   await press(page, page.locator("a.back-link").first());
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Assembly Lab");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Arm Assembly Lab");
 });
 
 test.describe("the listing figure", () => {

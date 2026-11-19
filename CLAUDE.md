@@ -4,7 +4,7 @@ Project instructions for anyone, human or AI, working on this course. They are b
 
 ## What this is
 
-*Assembly Lab*: an interactive, browser-based course in which the learner drives a real
+*Arm Assembly Lab*: an interactive, browser-based course in which the learner drives a real
 processor's instruction set one instruction at a time, with the C that compiled to each
 instruction beside it. It is built on the author's learning platform (`snowch/learning-platform`),
 like `snowch/digital-design` and `snowch/metadata-systems`, and shares their interaction

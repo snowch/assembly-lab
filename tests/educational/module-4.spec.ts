@@ -111,7 +111,7 @@ test.describe("lesson 1, Compare, and the signed or unsigned condition", () => {
       lesson((await page.url()).split("/lesson/")[1]!).challenges.length,
     );
     await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
-    await expect(page).toHaveTitle(`${lesson(ONE).title} / Assembly Lab`);
+    await expect(page).toHaveTitle(`${lesson(ONE).title} / Arm Assembly Lab`);
     expect(errors).toEqual([]);
   });
 
@@ -640,7 +640,7 @@ test.describe("lesson 2, Branches, and the run that skips", () => {
       lesson((await page.url()).split("/lesson/")[1]!).challenges.length,
     );
     await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
-    await expect(page).toHaveTitle(`${lesson(TWO).title} / Assembly Lab`);
+    await expect(page).toHaveTitle(`${lesson(TWO).title} / Arm Assembly Lab`);
     expect(errors).toEqual([]);
   });
 

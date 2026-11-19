@@ -4,7 +4,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Assembly Lab. An interactive course that teaches a real instruction set by driving it, on a reusable learning platform.",
+  "description": "Arm Assembly Lab. An interactive course that teaches a real instruction set by driving it, on a reusable learning platform.",
   "engines": {
     "node": ">=22"
   },

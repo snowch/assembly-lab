@@ -17,7 +17,7 @@ for (const theme of ["light", "dark"] as const) {
     const home = page.locator(".where-next-discovery");
     await home.getByRole("link", { name: WHERE_NEXT.linkLabel }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(WHERE_NEXT.title);
-    await expect(page).toHaveTitle(`Where next? / Assembly Lab`);
+    await expect(page).toHaveTitle(`Where next? / Arm Assembly Lab`);
     await expect(page.locator(".where-next-starter code")).toHaveText(PLAYGROUND_STARTER);
     await expect(page.getByRole("link", { name: WHERE_NEXT.playground.openLabel })).toHaveAttribute(
       "href",

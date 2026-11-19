@@ -158,7 +158,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson(TWO).title);
     await expect(page.locator("section.challenge")).toHaveCount(1);
     await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
-    await expect(page).toHaveTitle(`${lesson(TWO).title} / Assembly Lab`);
+    await expect(page).toHaveTitle(`${lesson(TWO).title} / Arm Assembly Lab`);
     expect(errors).toEqual([]);
   });
 

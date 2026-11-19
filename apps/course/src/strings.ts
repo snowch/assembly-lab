@@ -15,13 +15,15 @@ export const COMPANION_LINKS = {
   hub: "https://snowch.github.io/",
 } as const;
 
+const COURSE_TITLE = "Arm Assembly Lab";
+
 export const STRINGS = {
   version: {
     commit: "Commit",
     committed: "committed",
     utc: "(UTC)",
   },
-  title: "Assembly Lab",
+  title: COURSE_TITLE,
   githubStar: "Star",
   githubStarDestination: "on GitHub",
   subtitle: "From a line of C to the bits in a register",
@@ -94,7 +96,7 @@ export const STRINGS = {
   // The name of the list of a module's lessons, for a screen reader, when it has several.
   lessonsOf: (title: string) => `Lessons of ${title}`,
   // a page's name in the browser's tab, after its own name; the front page keeps the title.
-  pageTitle: (page: string) => `${page} / Assembly Lab`,
+  pageTitle: (page: string) => `${page} / ${COURSE_TITLE}`,
 
   // the skip link, the theme control and its three choices.
   skip: "Skip to content",
@@ -137,7 +139,7 @@ export const STRINGS = {
       { title: "Digital Design" },
       " builds a computer from gates. ",
       { title: "Bit Lab" },
-      " explores how computers represent and process data. Assembly Lab teaches Arm assembly through a browser simulator.",
+      ` explores how computers represent and process data. ${COURSE_TITLE} teaches Arm assembly through a browser simulator.`,
     ] as readonly CompanionIntroPart[],
     digitalDesign: "Digital Design",
     bitLab: "Bit Lab",
