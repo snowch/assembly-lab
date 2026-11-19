@@ -4,10 +4,12 @@
 // the course's book; the shell itself knows nothing about the machine. The front page lists the
 // plan, a lesson address shows the lesson with a way back, and an address with no lesson says so.
 
-import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import {
   FlagsLesson,
+  InstructionHelpProvider,
+  type InstructionHelpRequest,
   prepareViewHandoff,
   clearViewHandoff,
   LessonProse,
@@ -20,6 +22,8 @@ import { createBook, COURSE_SOURCES } from "./book";
 import { LessonSourceReferences } from "./LessonSourceReferences";
 import { BUILD_VERSION, commitHref } from "./build-version";
 import { HeaderCalculator } from "./HeaderCalculator";
+import { HeaderInstructionReference, type ReferenceRequest } from "./HeaderInstructionReference";
+import { THEME_TITLE } from "./strings.instruction-reference";
 import { AppStatus } from "./AppStatus";
 import { STATUS_STRINGS } from "./strings.status";
 import { useOffline } from "./offline";
@@ -59,6 +63,41 @@ export function App() {
   const completion = useLessonCompletion(completionStore);
   const route = useRoute();
   const [theme, setTheme] = useTheme();
+  const [calculatorOpen, setCalculatorOpen] = useState(false);
+  const [referenceRequest, setReferenceRequest] = useState<ReferenceRequest | null>(null);
+  const [activeChallengeId, rememberChallenge] = useState<string>();
+  const referenceFocus = useRef<HTMLElement | null>(null);
+  const requestSerial = useRef(0);
+  const currentLesson =
+    route.kind === "lesson" ? book.lessons.find((item) => item.id === route.id) : undefined;
+  const openReference = useCallback((request: InstructionHelpRequest) => {
+    referenceFocus.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setCalculatorOpen(false);
+    setReferenceRequest({ ...request, serial: ++requestSerial.current });
+  }, []);
+  const closeReference = useCallback(() => {
+    setReferenceRequest(null);
+    referenceFocus.current?.focus({ preventScroll: true });
+  }, []);
+  const changeCalculator = useCallback((open: boolean) => {
+    if (open) setReferenceRequest(null);
+    setCalculatorOpen(open);
+  }, []);
+  const instructionHelp = useMemo(
+    () => ({ open: openReference, rememberChallenge }),
+    [openReference],
+  );
+  useEffect(() => {
+    setReferenceRequest(null);
+    rememberChallenge(undefined);
+  }, [currentLesson?.id]);
+  const themeName =
+    theme === "auto"
+      ? STRINGS.themeAuto
+      : theme === "light"
+        ? STRINGS.themeLight
+        : STRINGS.themeDark;
   const canReload = useCallback(
     () =>
       !document.querySelector('[aria-busy="true"], [data-app-busy="true"]') &&
@@ -186,79 +225,116 @@ export function App() {
   }
 
   return (
-    <LessonReferenceProvider references={book.references}>
-      <a className="skip-link" href="#main" onClick={skipToContent}>
-        {STRINGS.skip}
-      </a>
-      {offline?.updating && (
-        <p className="update-progress" role="status">
-          {STATUS_STRINGS.restarting}
-        </p>
-      )}
-      <header className="shell-header" inert={offline?.updating}>
-        <a className="brand" href="#/" aria-label={STRINGS.title}>
-          <span>{STRINGS.title}</span>
+    <InstructionHelpProvider value={instructionHelp}>
+      <LessonReferenceProvider references={book.references}>
+        <a className="skip-link" href="#main" onClick={skipToContent}>
+          {STRINGS.skip}
         </a>
-        <AppStatus offline={offline} />
-        <HeaderCalculator updating={offline?.updating} />
-        <a className="github-star" href={GITHUB_REPOSITORY}>
-          <span aria-hidden="true">☆</span>
-          <span>
-            {STRINGS.githubStar}{" "}
-            <span className="github-star-destination">{STRINGS.githubStarDestination}</span>
-          </span>
-        </a>
-        <label className="theme-picker">
-          <span>{STRINGS.theme}</span>
-          <select value={theme} onChange={(e) => setTheme(e.target.value as Theme)}>
-            <option value="auto">{STRINGS.themeAuto}</option>
-            <option value="light">{STRINGS.themeLight}</option>
-            <option value="dark">{STRINGS.themeDark}</option>
-          </select>
-        </label>
-      </header>
-      <div className="work-save-notice" role="status">
-        {unsavedWork ? STRINGS.workNotSaved : ""}
-      </div>
-      <main id="main" className="shell-main" tabIndex={-1} inert={offline?.updating}>
-        {page}
-      </main>
-      <footer className="shell-footer" inert={offline?.updating}>
-        <p className="footer-next">
-          <a href="#/where-next">{WHERE_NEXT.linkLabel}</a>
-        </p>
-        <p className="footer-intro">
-          {STRINGS.companions.intro.map((part, i) =>
-            typeof part === "string" ? part : <em key={i}>{part.title}</em>,
-          )}
-        </p>
-        <nav aria-label={STRINGS.companions.label}>
-          <ul className="footer-links">
-            <li>
-              <a href={COMPANION_LINKS.digitalDesign}>{STRINGS.companions.digitalDesign}</a>
-            </li>
-            <li>
-              <a href={COMPANION_LINKS.bitLab}>{STRINGS.companions.bitLab}</a>
-            </li>
-            <li>
-              <a href={COMPANION_LINKS.hub}>{STRINGS.companions.hub}</a>
-            </li>
-          </ul>
-        </nav>
-        <p className="copyright">{STRINGS.copyright}</p>
-        {BUILD_VERSION && (
-          <p className="build-version">
-            {STRINGS.version.commit}{" "}
-            <a href={commitHref(BUILD_VERSION.sha)}>{BUILD_VERSION.sha.slice(0, 7)}</a>
-            {" · "}
-            {STRINGS.version.committed}{" "}
-            <time dateTime={BUILD_VERSION.committedAt}>
-              {BUILD_VERSION.committedAt.slice(0, 10)}
-            </time>{" "}
-            {STRINGS.version.utc}
+        {offline?.updating && (
+          <p className="update-progress" role="status">
+            {STATUS_STRINGS.restarting}
           </p>
         )}
-      </footer>
-    </LessonReferenceProvider>
+        <header className="shell-header" inert={offline?.updating}>
+          <a className="brand" href="#/" aria-label={STRINGS.title}>
+            <span>{STRINGS.title}</span>
+          </a>
+          <AppStatus offline={offline} />
+          <HeaderCalculator
+            updating={offline?.updating}
+            open={calculatorOpen}
+            onOpenChange={changeCalculator}
+          />
+          <HeaderInstructionReference
+            lesson={currentLesson}
+            request={referenceRequest}
+            activeChallengeId={activeChallengeId}
+            onOpen={openReference}
+            onClose={closeReference}
+            updating={offline?.updating}
+          />
+          <a className="github-star" href={GITHUB_REPOSITORY}>
+            <span aria-hidden="true">☆</span>
+            <span>
+              {STRINGS.githubStar}{" "}
+              <span className="github-star-destination">{STRINGS.githubStarDestination}</span>
+            </span>
+          </a>
+          <label className="theme-picker" title={THEME_TITLE(themeName)}>
+            <span>{STRINGS.theme}</span>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              width="21"
+              height="21"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+            >
+              {theme === "auto" ? (
+                <>
+                  <rect x="3" y="4" width="18" height="13" rx="2" />
+                  <path d="M8 21h8m-4-4v4" />
+                </>
+              ) : theme === "light" ? (
+                <>
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 1v3m0 16v3M1 12h3m16 0h3M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2" />
+                </>
+              ) : (
+                <path d="M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z" />
+              )}
+            </svg>
+            <select value={theme} onChange={(e) => setTheme(e.target.value as Theme)}>
+              <option value="auto">{STRINGS.themeAuto}</option>
+              <option value="light">{STRINGS.themeLight}</option>
+              <option value="dark">{STRINGS.themeDark}</option>
+            </select>
+          </label>
+        </header>
+        <div className="work-save-notice" role="status">
+          {unsavedWork ? STRINGS.workNotSaved : ""}
+        </div>
+        <main id="main" className="shell-main" tabIndex={-1} inert={offline?.updating}>
+          {page}
+        </main>
+        <footer className="shell-footer" inert={offline?.updating}>
+          <p className="footer-next">
+            <a href="#/where-next">{WHERE_NEXT.linkLabel}</a>
+          </p>
+          <p className="footer-intro">
+            {STRINGS.companions.intro.map((part, i) =>
+              typeof part === "string" ? part : <em key={i}>{part.title}</em>,
+            )}
+          </p>
+          <nav aria-label={STRINGS.companions.label}>
+            <ul className="footer-links">
+              <li>
+                <a href={COMPANION_LINKS.digitalDesign}>{STRINGS.companions.digitalDesign}</a>
+              </li>
+              <li>
+                <a href={COMPANION_LINKS.bitLab}>{STRINGS.companions.bitLab}</a>
+              </li>
+              <li>
+                <a href={COMPANION_LINKS.hub}>{STRINGS.companions.hub}</a>
+              </li>
+            </ul>
+          </nav>
+          <p className="copyright">{STRINGS.copyright}</p>
+          {BUILD_VERSION && (
+            <p className="build-version">
+              {STRINGS.version.commit}{" "}
+              <a href={commitHref(BUILD_VERSION.sha)}>{BUILD_VERSION.sha.slice(0, 7)}</a>
+              {" · "}
+              {STRINGS.version.committed}{" "}
+              <time dateTime={BUILD_VERSION.committedAt}>
+                {BUILD_VERSION.committedAt.slice(0, 10)}
+              </time>{" "}
+              {STRINGS.version.utc}
+            </p>
+          )}
+        </footer>
+      </LessonReferenceProvider>
+    </InstructionHelpProvider>
   );
 }

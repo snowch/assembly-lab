@@ -5,8 +5,15 @@ import { CalculatorWorkspace, ViewHandoffScope } from "@al/views";
 import { HEADER_CALCULATOR as S } from "./strings.header-calculator";
 
 /** One mounted scratch workspace, independent of routes and lesson artifacts. */
-export function HeaderCalculator({ updating = false }: { updating?: boolean }) {
-  const [open, setOpen] = useState(false);
+export function HeaderCalculator({
+  updating = false,
+  open,
+  onOpenChange: setOpen,
+}: {
+  updating?: boolean;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const [phone, setPhone] = useState(() => matchMedia("(max-width: 760px)").matches);
   const trigger = useRef<HTMLButtonElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -40,7 +47,7 @@ export function HeaderCalculator({ updating = false }: { updating?: boolean }) {
       document.removeEventListener("keydown", escape);
       document.body.style.overflow = previous;
     };
-  }, [open, phone]);
+  }, [open, phone, setOpen]);
   const dismiss = () => {
     dialog.current?.close();
     setOpen(false);

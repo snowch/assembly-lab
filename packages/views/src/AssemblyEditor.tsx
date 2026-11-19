@@ -14,10 +14,12 @@ import { useHandoffState } from "./update-handoff";
 import { useLayoutEffect, useMemo, useRef, type ComponentType, type ReactNode } from "react";
 import { z } from "zod";
 
-import { assemble, type AsmError } from "@al/machine";
+import { assemble, subsetMnemonics, type AsmError } from "@al/machine";
 import type { ChallengeEditorProps } from "@platform/lesson-runtime";
 
 import { Calculator } from "./Calculator";
+import { useInstructionHelp } from "./instruction-help";
+import { INSTRUCTION_HELP_STRINGS as HELP } from "./strings.instruction-help";
 import { EditorKeysSchema, introducedOf } from "./interactives/props";
 import { errorSentence } from "./messages";
 import { withCode } from "./parts";
@@ -86,11 +88,13 @@ function TextMode({
   setText,
   errors,
   symbols,
+  showProblems,
 }: {
   text: string;
   setText: (text: string) => void;
   errors: readonly AsmError[];
   symbols: readonly string[];
+  showProblems: boolean;
 }) {
   const box = useRef<HTMLTextAreaElement>(null);
   const cursor = useRef<number | null>(null);
@@ -140,7 +144,7 @@ function TextMode({
         spellCheck={false}
         onChange={(e) => setText(e.target.value)}
       />
-      <Problems errors={errors} />
+      {showProblems && <Problems errors={errors} />}
     </div>
   );
 }
@@ -447,6 +451,7 @@ function TapMode({
   conditions,
   addresses,
   extensions,
+  showProblems,
 }: {
   lines: readonly string[];
   setLines: (lines: string[]) => void;
@@ -458,6 +463,7 @@ function TapMode({
   conditions: readonly string[];
   addresses: readonly string[];
   extensions: readonly string[];
+  showProblems: boolean;
 }) {
   const [open, setOpen] = useHandoffState<number | null>("AssemblyEditor.open", null);
   const replace = (i: number, text: string) => setLines(replaceLine(lines, i, text));
@@ -496,16 +502,18 @@ function TapMode({
                   type="button"
                   className="asm-line-button"
                   aria-expanded={open === i}
+                  aria-invalid={mine.length > 0}
                   onClick={() => setOpen(open === i ? null : i)}
                 >
                   <span className="asm-ln">{i + 1}</span>
                   <code>{text.trim() === "" ? S.editor.emptyLine : text}</code>
                 </button>
-                {mine.map((e, k) => (
-                  <p key={k} className="asm-error">
-                    {withCode(errorSentence(e))}
-                  </p>
-                ))}
+                {showProblems &&
+                  mine.map((e, k) => (
+                    <p key={k} className="asm-error">
+                      {withCode(errorSentence(e))}
+                    </p>
+                  ))}
                 {open === i && (
                   <LineEditor
                     n={i + 1}
@@ -552,7 +560,9 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
   challenge,
   artifact,
   onChange,
+  verdict,
 }) => {
+  const help = useInstructionHelp();
   const text = artifact.text ?? challenge.initial.text ?? "";
   // The chips: the instructions the challenge allows, a conditional branch under each condition.
   const allowed = challenge.allowedConstructs;
@@ -575,6 +585,20 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
     () => assemble(text, { allowed: new Set(allowed), introduced }).errors,
     [text, allowed, introduced],
   );
+  // Once Run tests shows these exact diagnostics, keep one copy in its verdict.
+  // A different blocked result must never hide live source diagnostics.
+  const diagnostics = errors.map((error) => S.editor.lineProblem(error.line, errorSentence(error)));
+  const showProblems = errors.length === 0 || verdict?.blocked !== diagnostics.join("\n");
+  const firstError = errors[0];
+  const errorLine = firstError ? text.split("\n")[firstError.line - 1] : undefined;
+  const parsedMnemonic = errorLine
+    ? parseLine(errorLine.replace(/^\s*[.\w$]+:\s*/, "")).mnemonic
+    : undefined;
+  const normalisedMnemonic = parsedMnemonic?.startsWith("b.") ? "b.cond" : parsedMnemonic;
+  const errorMnemonic =
+    normalisedMnemonic && subsetMnemonics().includes(normalisedMnemonic)
+      ? normalisedMnemonic
+      : undefined;
   // This optional scratch area has no access to the artifact, expected result or setText.
   const calculator = CalculatorSchema.safeParse(challenge.initial.data?.["calculator"]);
   const setText = (next: string) => onChange({ ...artifact, text: next });
@@ -583,7 +607,12 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
     remember(next);
   };
   return (
-    <div className="asm-editor" data-mode={mode}>
+    <div
+      className="asm-editor"
+      data-mode={mode}
+      onFocusCapture={() => help?.rememberChallenge(challenge.id)}
+      onPointerDownCapture={() => help?.rememberChallenge(challenge.id)}
+    >
       {calculator.success && <Calculator handoffKey={challenge.id} division="whole" />}
       <div className="asm-mode" role="group" aria-label={S.editor.mode}>
         <span className="asm-mode-label">{S.editor.mode}</span>
@@ -599,8 +628,28 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
           </button>
         ))}
       </div>
+      {help && (
+        <button
+          type="button"
+          className="button secondary asm-instruction-help"
+          onClick={() =>
+            help.open({
+              challengeId: challenge.id,
+              ...(errorMnemonic ? { mnemonic: errorMnemonic } : {}),
+            })
+          }
+        >
+          {errorMnemonic ? HELP.syntax(errorMnemonic) : HELP.reference}
+        </button>
+      )}
       {mode === "text" ? (
-        <TextMode text={text} setText={setText} errors={errors} symbols={symbols} />
+        <TextMode
+          text={text}
+          setText={setText}
+          errors={errors}
+          symbols={symbols}
+          showProblems={showProblems}
+        />
       ) : (
         <TapMode
           lines={linesOf(text)}
@@ -613,6 +662,7 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
           conditions={conditions}
           addresses={addresses}
           extensions={extensions}
+          showProblems={showProblems}
         />
       )}
     </div>

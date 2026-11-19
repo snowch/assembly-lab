@@ -15,3 +15,8 @@ export {
   LESSON_INSTRUCTION_FORMS,
 } from "./lesson-source-references";
 export type { LessonSources, SourceReference } from "./lesson-source-references";
+
+export {
+  INSTRUCTION_QUICK_REFERENCE,
+  QUICK_REFERENCE_NOTATION,
+} from "./instruction-quick-reference";

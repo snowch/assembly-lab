@@ -1,0 +1,211 @@
+/* Copyright © 2026 Christopher Snow */
+
+/* One native theme picker keeps the operating system's keyboard and touch behaviour. */
+.shell-header .theme-picker {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--fg);
+}
+.shell-header .theme-picker > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+.shell-header .theme-picker select {
+  position: absolute;
+  inset: -1px;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.shell-header .theme-picker:focus-within {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.shell-header .header-reference-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 14px;
+  white-space: nowrap;
+}
+.instruction-reference-dialog {
+  position: fixed;
+  inset: 78px 12px 12px auto;
+  margin: 0;
+  width: min(580px, calc(100vw - 24px));
+  height: calc(100dvh - 90px);
+  max-width: none;
+  max-height: none;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg);
+  color: var(--fg);
+  box-shadow: 0 16px 64px #0003;
+  z-index: 60;
+  font-size: 16px;
+}
+.instruction-reference-dialog::backdrop {
+  background: #001b1766;
+}
+.instruction-reference-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: sticky;
+  top: -20px;
+  margin-top: -20px;
+  padding-block: 16px 12px;
+  background: var(--bg);
+  z-index: 1;
+}
+.instruction-reference-heading h2 {
+  margin: 0;
+  font-size: 23px;
+}
+.instruction-reference-dialog :is(button, input, select) {
+  min-height: 44px;
+  min-width: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: var(--bg-raised);
+  color: var(--fg);
+  font: inherit;
+}
+.instruction-reference-dialog button {
+  cursor: pointer;
+}
+.reference-search,
+.reference-exercise {
+  display: grid;
+  gap: 6px;
+  margin-block: 10px;
+}
+.reference-search input,
+.reference-exercise select {
+  width: 100%;
+}
+.reference-scope {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+.reference-scope button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg-raised);
+}
+.reference-context,
+.reference-scope-note,
+.reference-count {
+  font-size: 14px;
+  color: var(--fg-muted);
+}
+.reference-count {
+  margin-block: 12px 4px;
+}
+.reference-entries > details {
+  border-top: 1px solid var(--border);
+  padding-block: 8px;
+}
+.reference-entries summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding-block: 10px;
+}
+.reference-entries > details > summary > span {
+  margin-left: 12px;
+}
+.reference-entries h3 {
+  font-size: 16px;
+  margin: 14px 0 6px;
+}
+.reference-entries pre {
+  margin-block: 6px;
+  padding: 10px;
+  white-space: pre;
+}
+.reference-entries ul {
+  padding-left: 22px;
+  margin-top: 6px;
+}
+.reference-entries li {
+  margin-block: 6px;
+}
+.reference-unavailable {
+  border-left: 3px solid var(--border-strong);
+  padding-left: 10px;
+  color: var(--fg-muted);
+}
+.reference-notation summary {
+  min-height: 44px;
+  padding-block: 10px;
+  cursor: pointer;
+}
+.reference-notation ul {
+  padding-left: 22px;
+}
+.reference-official a {
+  display: inline-block;
+  min-height: 44px;
+  padding-block: 10px;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .shell-header .header-reference-button {
+    flex: 0 0 44px;
+    padding: 0;
+  }
+  .header-reference-button > span {
+    display: none;
+  }
+  .instruction-reference-dialog {
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    padding: 16px;
+    border: 0;
+    border-radius: 0;
+  }
+  .instruction-reference-heading {
+    top: -16px;
+    margin-top: -16px;
+  }
+  .reference-scope button {
+    flex: 1;
+  }
+}
+@media (max-width: 430px) {
+  /* Keep the existing phone logo treatment while making room for the reference tool. */
+  .shell-header .brand {
+    gap: 0;
+  }
+  .shell-header .brand > span {
+    display: none;
+  }
+}
