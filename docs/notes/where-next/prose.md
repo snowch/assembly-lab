@@ -36,7 +36,7 @@ Take a familiar function into a playground
 
 [AArch64 Playground](https://aarch64-playground.com/playground) gives you an editor and debugger for your own assembly programs. You can inspect registers, stack and memory, set breakpoints and step backwards. A breakpoint pauses a run at an instruction you choose. Start with the trip calculation you already know, so you can concentrate on the new workspace.
 
-Assembly Lab’s offline save includes this page and starter. Prepare the playground’s own offline options separately.
+Arm Assembly Lab’s offline save includes this page and starter. Prepare the playground’s own offline options separately.
 
 ## playground.beforeCode
 
@@ -124,5 +124,5 @@ Choose the environment for your goal
 ## routes.prose
 
 - **Write and debug your own programs:** keep using the playground. You can choose projects without repeating its lesson sequence.
-- **Use real assembler and debugger tools:** continue with [Running ARM64 outside Assembly Lab](#/lesson/from-function-to-executable) in Module 12. Build the assembly image and inspect its execution with GNU tools and QEMU.
+- **Use real assembler and debugger tools:** continue with [Running ARM64 outside Arm Assembly Lab](#/lesson/from-function-to-executable) in Module 12. Build the assembly image and inspect its execution with GNU tools and QEMU.
 - **Boot a physical board:** follow [Running on Raspberry Pi 5](#/lesson/raspberry-pi-5) in Module 13. Check the Pi 5 and Debug Probe prerequisites first; physical verification remains pending until the hardware test is completed.

@@ -63,7 +63,7 @@ test("the lesson loads with no console error, selected sections, and its two cha
   await expect(page.locator("section.challenge")).toHaveCount(1);
   await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
   await expect(page.locator("a.back-link").first()).toHaveAttribute("href", "#/");
-  await expect(page).toHaveTitle(`${lesson.title} / Assembly Lab`);
+  await expect(page).toHaveTitle(`${lesson.title} / Arm Assembly Lab`);
   expect(errors).toEqual([]);
 });
 
