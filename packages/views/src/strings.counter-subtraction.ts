@@ -5,7 +5,7 @@ export const COUNTER_SUBTRACTION_STRINGS = {
   title: "Subtracting with addition",
   caption: "A worked subtraction using a small counter.",
   intro: (width: number, now: number, then: number) =>
-    `This ${width}-bit teaching counter stores a count. Each tick adds one. After the largest value, the next tick stores zero. Its earlier reading is \`${then}\` and its later reading is \`${now}\`. Calculate later minus earlier.`,
+    `Use the same ${width}-bit counter. Its earlier reading is \`${then}\` and its later reading is \`${now}\`. Calculate later minus earlier.`,
   rule: (width: number) =>
     `Invert the earlier reading: change every 0 to 1 and every 1 to 0. Add one, then add the later reading. Keep only the low ${width} result bits.`,
   labels: {

@@ -13,6 +13,7 @@ import { ArgsFigure } from "./ArgsFigure";
 import { OperandRoles } from "./OperandRoles";
 import { ChallengeNote } from "./ChallengeNote";
 import { CounterRing } from "./CounterRing";
+import { CounterWrap } from "./CounterWrap";
 import { CounterSubtraction } from "./CounterSubtraction";
 import { ListingFigure } from "./ListingFigure";
 import { RunPrediction } from "./RunPrediction";
@@ -60,6 +61,7 @@ import { FloatingPoint, FloatingPointCheck } from "./FloatingPoint";
 import { PrimitiveOperation } from "./PrimitiveOperation";
 
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
+  "counter-wrap": CounterWrap,
   "floating-point": FloatingPoint,
   "floating-point-check": FloatingPointCheck,
   "programmer-calculator": ProgrammerCalculatorFigure,
