@@ -29,3 +29,5 @@ This pass drafts labels and scope explanations only. It does not verify the impl
 interaction, catalog completeness or instruction claims. Those require the independent
 learner and technical reviews and browser checks in the brief. No functional check proves
 learning effectiveness.
+
+After independent technical review, changed the context prefix from “Allowed in” to “Exercise”. This remains accurate in both the allowed list and the broader browser list.

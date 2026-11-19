@@ -22,3 +22,9 @@ Further final-build checks and exact-head CI results are recorded below when com
 Final focused reference rerun: 6 browser checks passed, covering desktop and phone projects and both actual themes. Includes keyboard theme choice, 320/375/834/1280 header targets, exact error deduplication, saved source, calculator/reference coordination and phone/desktop resizing.
 
 The first full `npm run check` invocation passed formatting, copyright, platform-copy and type stages and entered unit tests. Main advanced independently with the Arm course naming change during this run; final verification will use the integrated main tree.
+
+## Integration with current main
+
+Main advanced to `d3b9655` (course renamed Arm Assembly Lab). Interrupted the original full check during unit execution (exit130), rebased cleanly and rebuilt. That partial run is not a full-suite pass. Measuring the longer name at 414px found a 91px header from three-line wrapping. Extended the existing logo-only phone treatment through 430px; the brand's accessible name remains the full course title. Added 414/430/768px header checks and a maximum70px header-height assertion. Rechecking integrated build before the exact-head full check.
+
+Independent final integration check: all16 combinations of320/375/414/430/600/768/834/1280px and actual light/dark passed. Header measured62–68px; Calculator, Reference, Star and Theme remained visible and in bounds, theme target44×44, no page overflow. See technical-review.md for separate evidence.

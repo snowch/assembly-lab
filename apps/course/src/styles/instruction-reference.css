@@ -200,3 +200,12 @@
     flex: 1;
   }
 }
+@media (max-width: 430px) {
+  /* Keep the existing phone logo treatment while making room for the reference tool. */
+  .shell-header .brand {
+    gap: 0;
+  }
+  .shell-header .brand > span {
+    display: none;
+  }
+}

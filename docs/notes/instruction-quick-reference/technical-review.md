@@ -85,3 +85,31 @@ combination, or actual learner understanding. The native corpus checks the displ
 in supplied safe contexts; it does not establish all architecture overlap behaviours. Full-suite
 and release/live verification results belong in the parent record. Functional checks and agent
 review do not prove learning effectiveness.
+
+## Final integration recheck after the Arm course rename
+
+The implementation was rebased onto the main-branch Arm naming change. The final build completed
+successfully before this check. A narrow-header rule now uses the existing logo-only brand
+presentation through 430 pixels. No other product behaviour was changed for this integration.
+
+Independently checked the rebuilt front page at each width below in both requested and actual
+light and dark themes. All 16 combinations passed. Calculator, Reference, Star on GitHub and the
+native Theme selector remained visible, fully within the viewport and at least 44 pixels high.
+The theme selector measured exactly 44 × 44 pixels throughout. Page horizontal overflow was zero.
+
+| Width | Header height in both themes | Brand text |
+| --- | --- | --- |
+| 320 | 62 | Logo only |
+| 375 | 62 | Logo only |
+| 414 | 62 | Logo only |
+| 430 | 62 | Logo only |
+| 600 | 62 | Visible |
+| 768 | 68 | Visible |
+| 834 | 68 | Visible |
+| 1280 | 68 | Visible |
+
+Screenshots were captured for 414, 768 and 834 pixels in both themes at
+`/tmp/reference-final-header-{width}-{theme}.png`. Inspected 414 light, 768 dark and 834 light
+captures: the longer “Arm Assembly Lab” brand and all header tools fit cleanly. No integration
+finding remains. This was a focused layout recheck, not a repeat of the full suite or a new
+claim about learner understanding.

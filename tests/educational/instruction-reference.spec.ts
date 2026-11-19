@@ -69,8 +69,9 @@ test("compact header, keyboard theme choice and calculator/reference coordinatio
   page,
 }) => {
   await page.goto("#/");
-  for (const width of [320, 375, 834, 1280]) {
+  for (const width of [320, 375, 414, 430, 768, 834, 1280]) {
     await page.setViewportSize({ width, height: 900 });
+    expect((await page.locator(".shell-header").boundingBox())!.height).toBeLessThanOrEqual(70);
     const themeControl = page.getByRole("combobox", { name: "Theme", exact: true });
     const themeBox = (await themeControl.boundingBox())!;
     expect(themeBox.width).toBe(44);
