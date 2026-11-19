@@ -46,6 +46,7 @@ import { floatingPointBits } from "./floating-point-bits";
 import { floatingPointRounding } from "./floating-point-rounding";
 import { floatingPointArm } from "./floating-point-arm";
 import { floatingPointConversions } from "./floating-point-conversions";
+import { movingToRiscv } from "./moving-to-riscv";
 import { shifts } from "./shifts";
 import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
 
@@ -86,6 +87,7 @@ export const SOURCE_LESSONS: readonly Lesson[] = [
   floatingPointRounding,
   floatingPointArm,
   floatingPointConversions,
+  movingToRiscv,
 ]
   .map(withIntroduced)
   .map(parseLesson);
@@ -106,6 +108,7 @@ export const LESSONS: readonly Lesson[] = [
   floatingPointRounding,
   floatingPointArm,
   floatingPointConversions,
+  movingToRiscv,
 ]
   .map((lesson, index, lessons) => ({
     ...lesson,

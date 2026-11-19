@@ -14,6 +14,8 @@ import { STRINGS } from "../strings";
 
 /** One mark per module, by the module's id in content/plan/plan.ts. */
 export const MODULE_ICONS: Readonly<Record<string, ReactNode>> = {
+  // Two function listings connected by a translation arrow.
+  "moving-to-riscv": <path d="M3 5h6v14H3zM15 5h6v14h-6zM10 12h4M12 10l2 2-2 2" />,
   "floating-point": <path d="M3 6h18v12H3zM7 6v12M13 6v12M10 10h.01M16 10h3M16 14h3" />,
   // A listing, with the marker at the line that runs next.
   "meet-the-machine": <path d="M10 6h10M10 12h10M10 18h10M3.5 9l3.5 3-3.5 3" />,

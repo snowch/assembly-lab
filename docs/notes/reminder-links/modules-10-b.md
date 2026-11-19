@@ -1,4 +1,4 @@
-# Reminder links: Modules 10 to Appendix C
+# Reminder links: Modules 10 to Appendix E
 
 Source review covers every published route in the exported lesson order, not just the unsplit source lessons. Guidance: `CLAUDE.md`, `docs/style.md`, `docs/authoring.md`, and the learning-design skill. These are retrieval aids for previously practised mechanisms; essential explanations remain visible. No interface or teaching sequence changes are proposed. Independent learner and technical review, and final browser verification, remain separate.
 
@@ -37,6 +37,7 @@ Outcome: learners can retrieve the earlier machine rule needed to trace generate
 | `floating-point-rounding` | Immediately follows D1; its input/format explanations retrieve the field and fraction rule locally before introducing nearest-even rounding and spacing. |
 | `floating-point-arm` | Immediately follows D2; register bank/target formats/calling conventions are defined before the checked recorded cases. Numeric rounding preparation is repeated beside the examples. |
 | `floating-point-conversions` | Immediately follows D3; cast syntax, finite/range conditions and byte-copy arguments are explained locally. The recorded-case guide retrieves arithmetic precision without assuming integer bit-copy means numeric conversion. |
+| `moving-to-riscv` | Optional E restates register roles, widths and calling conventions before the worked translation and fresh function exercise. The runtime boundary and project controls are explained locally; reciprocal links lead to the corresponding RISC-V guide and workbench instructions. Independent learner/technical reviews in `../subtraction-transfer/` verified that preparation, controls and the fresh task. No additional recap link is needed before these local explanations. |
 
 ## Implementation and checks
 

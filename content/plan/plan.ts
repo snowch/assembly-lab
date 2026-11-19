@@ -10,16 +10,17 @@
 import { FUNDAMENTALS_MODULE } from "../lessons/fundamentals.prose";
 import { COMPLEMENT_PROSE } from "../lessons/twos-complement.prose";
 import { LABELS as C_TYPES } from "../lessons/c-integer-types.labels";
+import { TRANSFER_PROSE } from "../lessons/moving-to-riscv.prose";
 
 export const STATUSES = ["planned", "drafting", "published"] as const;
 export type ModuleStatus = (typeof STATUSES)[number];
 
 export interface PlannedModule {
-  /** Numeric lesson-schema key; optional chapters use 14–17 while displaying A–D. */
+  /** Numeric lesson-schema key; optional chapters use 14–18 while displaying A–E. */
   readonly lessonModule: number;
   /** Unique, lower-case, and the stem a lesson's id may start with. */
   readonly id: string;
-  /** What the module is called: "0" to "13", or "A" to "D" for optional chapters. */
+  /** What the module is called: "0" to "13", or "A" to "E" for optional chapters. */
   readonly label: string;
   readonly title: string;
   /** One line on what the learner does in the module. */
@@ -42,7 +43,9 @@ const M = (label: string, id: string, title: string, line: string): PlannedModul
           ? 16
           : label === "D"
             ? 17
-            : Number(label),
+            : label === "E"
+              ? 18
+              : Number(label),
   id,
   label,
   title,
@@ -170,6 +173,7 @@ export const OPTIONAL_PART: PlanPart = {
       "Floating-point values and instructions",
       "Read floating-point bits, investigate rounding and compare recorded Arm arithmetic and conversions.",
     ),
+    M("E", "moving-to-riscv", TRANSFER_PROSE.title, TRANSFER_PROSE.line),
   ],
 };
 

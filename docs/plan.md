@@ -191,6 +191,7 @@ the list from the listings its lessons show.
 | B Two’s complement | optional four-bit diagrams for signed weights, fixed-width negation, zero and the signed limits; linked directly from Module 1 |
 | C C integer types and register widths | optional recorded GCC examples of int, unsigned int and long; linked from Module 1's register-width recap |
 | D Floating-point values and instructions | optional binary32/binary64 bit and rounding explorers, recorded Arm floating-point arithmetic and C conversions; exact numeric models and checked GCC/QEMU records, separate from the integer simulator |
+| E Moving from Arm to RISC-V | optional function translation, register and calling-convention differences, and a practical transfer between the two lab environments |
 
 ## The model
 
