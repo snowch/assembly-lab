@@ -18,6 +18,20 @@
   gap: var(--space-1);
   text-align: center;
 }
+.al-counter-wrap-marker {
+  min-width: 7rem;
+}
+.al-counter-wrap-trail {
+  min-height: 1.8em;
+  white-space: nowrap;
+}
+.al-counter-wrap-trail code {
+  padding: 0.05rem 0.15rem;
+}
+.al-counter-wrap-feedback {
+  min-height: 3.2em;
+  line-height: 1.6;
+}
 .al-counter-wrap-split code {
   white-space: nowrap;
 }
@@ -38,4 +52,12 @@
 .al-counter-wrap-trail {
   font-size: 1.2rem;
   font-variant-numeric: tabular-nums;
+}
+@media (max-width: 520px) {
+  .al-counter-wrap-feedback {
+    min-height: 6.4em;
+  }
+  .al-counter-wrap-trail {
+    font-size: 1rem;
+  }
 }

@@ -1,31 +1,38 @@
 // Copyright © 2026 Christopher Snow
 
-// Canonical drafting record: docs/notes/restore-counter-wrap/copy.md.
+// Canonical drafting record: docs/notes/bidirectional-counter-wrap/copy.md.
 export const COUNTER_WRAP_STRINGS = {
   title: "How a counter wraps",
-  caption: "Count forward, then inspect the stored bits.",
+  caption: "Count up and down, then inspect the stored bits.",
   intro: (width: number, realWidth: number) =>
-    `A counter stores a count. Each tick adds one. This teaching counter keeps only ${width} bits; the program later uses ${realWidth}-bit registers.`,
+    `Each real counter tick adds one. This teaching counter keeps only ${width} bits; the program later uses ${realWidth}-bit registers. Its readings are unsigned: zero or positive.`,
   instruction:
-    "Use +1 until Bits stored shows 0000. The example pauses there. Use −1 to revisit the previous tick.",
+    "Use +1 until the stored reading wraps to zero, then press −1. Watch Carry out change to Borrow needed. Keep counting in either direction.",
   previous: "−1",
-  previousLabel: "−1, revisit the previous tick",
+  previousLabel: "−1, subtract one",
   advance: "+1",
-  advanceLabel: "+1, advance one tick",
+  advanceLabel: "+1, add one",
   reset: "Reset",
-  initialNote: "The dash means no +1 tick is shown at the starting reading.",
-  carryLabel: "Carry from +1",
-  decimalLabel: "Decimal reading",
+  initialNote: "The dash means no addition or subtraction is shown yet.",
+  initialMarkerLabel: "Carry / borrow",
+  carryLabel: "Carry out",
+  borrowLabel: "Borrow needed",
+  decimalLabel: "Unsigned decimal reading",
   pendingCarry: "—",
   retainedLabel: "Bits stored",
-  trailLabel: "Counter readings in counting order",
-  wrapped: (width: number) =>
-    `The carry out is outside the ${width} stored positions. The counter keeps only the low ${width} bits, so its reading becomes zero. This is a wrap.`,
+  trailLabel: "Recent stored readings",
+  forwardWrapped: (width: number) =>
+    `The extra carry lies beyond the ${width} stored bits. The stored bits wrap to zero.`,
+  backwardWrapped: (width: number, range: number) =>
+    `Subtraction must borrow one group of ${range} from the next position. Taking one leaves ${range - 1} in ${width} bits.`,
+  forwardNormal: "The addition stays within the stored bits. Carry out is zero.",
+  backwardNormal:
+    "The subtraction stays at or above zero. No borrow from beyond the stored bits is needed.",
   architectureNote:
-    "The carry shown belongs to this four-bit example. Arm `adds` records carry out for its actual register width; `add` leaves C unchanged.",
-  next: (earlier: number, later: number) =>
-    `The next pane uses the earlier reading \`${earlier}\` and the later reading \`${later}\` to calculate elapsed ticks.`,
-  initialStatus: (stored: number) => `Starting reading: ${stored}. No +1 tick is shown.`,
-  stepStatus: (ticks: number, stored: number, carry: number) =>
-    `Viewing tick ${ticks}. Stored reading: ${stored}. Carry from +1: ${carry}.`,
+    "These markers belong to this four-bit example. At the instruction's width, Arm `adds` sets C from carry; `subs` sets C to 1 for no borrow. Plain `add` and `sub` leave flags unchanged.",
+  initialStatus: (stored: number) => `Stored reading: ${stored}. No step is shown.`,
+  stepStatus: (direction: number, stored: number, marker: number) =>
+    direction === 1
+      ? `Added one. Stored reading: ${stored}. Carry out: ${marker}.`
+      : `Subtracted one. Stored reading: ${stored}. Borrow needed: ${marker}.`,
 } as const;
