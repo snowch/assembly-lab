@@ -2,58 +2,46 @@
 
 import { useSlot } from "@platform/lesson-runtime";
 import { z } from "zod";
-import { counterWrap, COUNTER_WRAP_RANGE, COUNTER_WRAP_TICKS } from "../counter-wrap";
+import {
+  counterExplorerView,
+  moveCounterExplorer,
+  restoreCounterExplorer,
+  COUNTER_WRAP_RANGE,
+  COUNTER_WRAP_START,
+} from "../counter-wrap";
 import { withCode } from "../parts";
 import { COUNTER_WRAP_STRINGS as S } from "../strings.counter-wrap";
 import { withProps } from "./props";
 
 export const CounterWrap = withProps(z.object({}), function CounterWrap({ store, interactive }) {
-  const [saved, save] = useSlot<number>(store, `${interactive.id}:ticks`);
-  // Retain saved tick counts when the starting value changes. Rendering must
-  // not write this slot or change the learner's other work.
-  const ticks =
-    typeof saved === "number" && Number.isInteger(saved) && saved >= 0 && saved < COUNTER_WRAP_RANGE
-      ? Math.min(saved, COUNTER_WRAP_TICKS)
-      : 0;
-  const model = counterWrap(ticks);
-  const sum = model.addition;
-  const complete = ticks === COUNTER_WRAP_TICKS;
+  const [saved, save] = useSlot<unknown>(store, `${interactive.id}:state-v2`);
+  const [legacy] = useSlot<unknown>(store, `${interactive.id}:ticks`);
+  const state = restoreCounterExplorer(saved, legacy);
+  const model = counterExplorerView(state);
+  const change = model.change;
+  const markerLabel = !change
+    ? S.initialMarkerLabel
+    : change.direction === 1
+      ? S.carryLabel
+      : S.borrowLabel;
+  const feedback = !change
+    ? S.initialNote
+    : change.wrapped
+      ? change.direction === 1
+        ? S.forwardWrapped(4)
+        : S.backwardWrapped(4, COUNTER_WRAP_RANGE)
+      : change.direction === 1
+        ? S.forwardNormal
+        : S.backwardNormal;
   return (
-    <div className="al-figure al-counter-wrap" data-figure="counter-wrap" data-ticks={ticks}>
+    <div className="al-figure al-counter-wrap" data-figure="counter-wrap">
       <p>{withCode(S.intro(4, 32))}</p>
-      <p>{S.instruction}</p>
-      <div className="al-controls">
-        <button
-          type="button"
-          className="button secondary"
-          aria-label={S.previousLabel}
-          aria-disabled={ticks === 0}
-          onClick={() => {
-            if (ticks > 0) save(ticks - 1);
-          }}
-        >
-          {S.previous}
-        </button>
-        <button
-          type="button"
-          className="button primary"
-          aria-label={S.advanceLabel}
-          aria-disabled={complete}
-          onClick={() => {
-            if (!complete) save(ticks + 1);
-          }}
-        >
-          {S.advance}
-        </button>
-        <button type="button" className="button secondary" onClick={() => save(0)}>
-          {S.reset}
-        </button>
-      </div>
+      <p>{withCode(S.instruction)}</p>
       <div className="al-counter-wrap-split">
-        <div>
-          <span>{S.carryLabel}</span>
+        <div className="al-counter-wrap-marker">
+          <span data-reading="marker-label">{markerLabel}</span>
           <code data-reading="carry" className="al-counter-wrap-carry">
-            {sum?.carryOut ?? S.pendingCarry}
+            {change?.marker ?? S.pendingCarry}
           </code>
         </div>
         <div>
@@ -67,21 +55,46 @@ export const CounterWrap = withProps(z.object({}), function CounterWrap({ store,
           </span>
         </div>
       </div>
-      {sum?.carryOut === 1 && <p>{S.wrapped(4)}</p>}
-      {!sum && <p>{S.initialNote}</p>}
       <p className="al-counter-wrap-trail" aria-label={S.trailLabel}>
         {model.readings.map((reading, index) => (
           <span key={index}>
             {index > 0 && <span aria-hidden="true"> → </span>}
-            <code>{reading.unsigned}</code>
+            <code>{reading}</code>
           </span>
         ))}
       </p>
-      {complete && <p>{withCode(S.next(model.start, model.value.unsigned))}</p>}
+      <p className="al-counter-wrap-feedback" data-reading="explanation">
+        {withCode(feedback)}
+      </p>
+      <div className="al-controls">
+        <button
+          type="button"
+          className="button secondary"
+          aria-label={S.previousLabel}
+          onClick={() => save(moveCounterExplorer(state, -1))}
+        >
+          {S.previous}
+        </button>
+        <button
+          type="button"
+          className="button primary"
+          aria-label={S.advanceLabel}
+          onClick={() => save(moveCounterExplorer(state, 1))}
+        >
+          {S.advance}
+        </button>
+        <button
+          type="button"
+          className="button secondary"
+          onClick={() => save({ readings: [COUNTER_WRAP_START] })}
+        >
+          {S.reset}
+        </button>
+      </div>
       <p>{withCode(S.architectureNote)}</p>
       <span role="status" className="visually-hidden">
-        {sum
-          ? S.stepStatus(ticks, model.value.unsigned, sum.carryOut)
+        {change
+          ? S.stepStatus(change.direction, model.value.unsigned, change.marker)
           : S.initialStatus(model.value.unsigned)}
       </span>
     </div>
