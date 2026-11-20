@@ -4,6 +4,7 @@ import { fourBitAddition, fourBitSubtraction } from "./four-bit-arithmetic";
 
 export const COUNTER_WRAP_START = 13;
 export const COUNTER_WRAP_RANGE = 16;
+export const COUNTER_EXPLORER_START = 0;
 export const COUNTER_WRAP_TICKS = COUNTER_WRAP_RANGE - COUNTER_WRAP_START;
 
 /** A bounded recent history, independent of the fixed elapsed-time example. */
@@ -42,7 +43,7 @@ export function restoreCounterExplorer(
       ),
     };
   }
-  return { readings: [COUNTER_WRAP_START] };
+  return { readings: [COUNTER_EXPLORER_START] };
 }
 
 export function counterChange(before: number, direction: -1 | 1) {

@@ -1,20 +1,19 @@
 // Copyright © 2026 Christopher Snow
 
-// Canonical drafting record: docs/notes/bidirectional-counter-wrap/copy.md.
+// Canonical drafting record: docs/notes/counter-zero-optional-borrow/copy.md.
 export const COUNTER_WRAP_STRINGS = {
   title: "How a counter wraps",
-  caption: "Count up and down, then inspect the stored bits.",
+  caption: "Count forward through the wrap.",
   intro: (width: number, realWidth: number) =>
-    `Each real counter tick adds one. This teaching counter keeps only ${width} bits; the program later uses ${realWidth}-bit registers. Its readings are unsigned: zero or positive.`,
+    `Each tick adds one. This teaching counter keeps only ${width} bits; the program later uses ${realWidth}-bit registers. Its readings are unsigned: zero or positive.`,
   instruction:
-    "Use +1 until the stored reading wraps to zero, then press −1. Watch Carry out change to Borrow needed. Keep counting in either direction.",
+    "Press +1 to add a tick. Keep pressing until the stored reading returns to zero. Watch Carry out at the wrap. Reset starts at zero.",
   previous: "−1",
   previousLabel: "−1, subtract one",
   advance: "+1",
   advanceLabel: "+1, add one",
   reset: "Reset",
-  initialNote: "The dash means no addition or subtraction is shown yet.",
-  initialMarkerLabel: "Carry / borrow",
+  initialNote: "The dash means no addition is shown yet.",
   carryLabel: "Carry out",
   borrowLabel: "Borrow needed",
   decimalLabel: "Unsigned decimal reading",
@@ -29,7 +28,15 @@ export const COUNTER_WRAP_STRINGS = {
   backwardNormal:
     "The subtraction stays at or above zero. No borrow from beyond the stored bits is needed.",
   architectureNote:
-    "These markers belong to this four-bit example. At the instruction's width, Arm `adds` sets C from carry; `subs` sets C to 1 for no borrow. Plain `add` and `sub` leave flags unchanged.",
+    "The carry shown belongs to this four-bit example. At its actual register width, `adds` records carry in C; `add` leaves flags unchanged.",
+  borrowTitle: "Optional: subtract one and inspect the borrow",
+  borrowIntro: (width: number) =>
+    `The processor’s arithmetic and logic unit (ALU) can subtract when an instruction such as \`sub\` requests it. Subtracting one is a decrement. This separate ${width}-bit counter explores subtraction; it does not reverse time or undo an earlier operation.`,
+  borrowInstruction:
+    "Press −1 once from zero. Inspect Borrow needed and the stored reading. Keep pressing to count down through further wraps. Reset starts this counter at zero.",
+  borrowInitialNote: "The dash means no subtraction is shown yet.",
+  borrowArchitectureNote:
+    "This marker shows borrow beyond the four stored bits. At the instruction’s width, `subs` sets C to 1 for no borrow; `sub` leaves flags unchanged.",
   initialStatus: (stored: number) => `Stored reading: ${stored}. No step is shown.`,
   stepStatus: (direction: number, stored: number, marker: number) =>
     direction === 1
