@@ -6,6 +6,8 @@ import { createContext, useContext, type ReactNode } from "react";
 export interface InstructionHelpRequest {
   readonly mnemonic?: string;
   readonly challengeId?: string;
+  readonly formId?: string;
+  readonly issueKey?: string;
 }
 
 export interface InstructionHelpApi {

@@ -19,6 +19,7 @@ import type { ChallengeEditorProps } from "@platform/lesson-runtime";
 
 import { Calculator } from "./Calculator";
 import { useInstructionHelp } from "./instruction-help";
+import { instructionHelpForm } from "./instruction-help-target";
 import { INSTRUCTION_HELP_STRINGS as HELP } from "./strings.instruction-help";
 import { EditorKeysSchema, introducedOf } from "./interactives/props";
 import { errorSentence } from "./messages";
@@ -635,7 +636,13 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
           onClick={() =>
             help.open({
               challengeId: challenge.id,
-              ...(errorMnemonic ? { mnemonic: errorMnemonic } : {}),
+              ...(errorMnemonic
+                ? {
+                    mnemonic: errorMnemonic,
+                    formId: instructionHelpForm(errorMnemonic, errorLine ?? ""),
+                    issueKey: firstError?.key,
+                  }
+                : {}),
             })
           }
         >
