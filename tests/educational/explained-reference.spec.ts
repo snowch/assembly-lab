@@ -60,13 +60,24 @@ for (const theme of ["light", "dark"] as const) {
         await expect(example).toContainText("Branch taken");
       }
       await example.locator(".reference-complete-example > summary").click();
+      const header = example.locator(".reference-program-header");
+      await expect(header).toBeVisible();
+      await expect(header.locator("dt code")).toHaveText([
+        ".text",
+        ".global reference_example",
+        "reference_example:",
+      ]);
+      await expect(header).toContainText("not a reserved command");
+      await expect(example).toContainText(
+        ".global alone does not choose where execution starts or call the code.",
+      );
       const mark = example.locator(".reference-complete-example mark");
       await expect(mark).toHaveCount(1);
       expect(
         await mark.evaluate((node) => parseFloat(getComputedStyle(node).fontSize)),
       ).toBeGreaterThanOrEqual(12);
       expect(
-        await example.locator(".reference-complete-example code").evaluate((node) => {
+        await example.locator(".reference-complete-example pre > code").evaluate((node) => {
           const mark = node.querySelector("mark")!;
           const text = [...node.childNodes].find(
             (child) => child.nodeType === Node.TEXT_NODE && child.previousSibling === mark,
