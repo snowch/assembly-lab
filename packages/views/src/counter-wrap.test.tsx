@@ -116,7 +116,7 @@ describe("the counter-wrap preparation", () => {
     const restored = new LessonStore(storage, "assembly-lab", "wrap-test");
     const next = figure(restored);
     expect(next.container.querySelector('[data-reading="carry"]')).toHaveTextContent("1");
-    fireEvent.click(screen.getByRole("button", { name: S.reset, exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: S.reset }));
     expect(next.container.querySelector('[data-reading="decimal"]')).toHaveTextContent("13");
     expect(next.container.querySelector('[data-reading="carry"]')).toHaveTextContent(
       S.pendingCarry,
