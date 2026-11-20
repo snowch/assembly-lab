@@ -71,60 +71,69 @@ describe("the counter-wrap preparation", () => {
         expect(counterExplorerView(state).value.unsigned).toBe((before + direction + 16) % 16);
         expect(state.readings.length).toBeLessThanOrEqual(5);
       }
-      expect(counterExplorerView(state).value.unsigned).toBe(13);
+      expect(counterExplorerView(state).value.unsigned).toBe(0);
     }
   });
 
-  it("shows the last real operation, cycles, restores and resets only the miniature", () => {
+  it("starts at zero and keeps optional subtraction independent of forward ticks", () => {
     const storage = memoryStorage();
     const store = new LessonStore(storage, "assembly-lab", "wrap-test");
     store.setSlot("write-elapsed", { draft: "keep learner code" });
     store.setSlot("predict-elapsed", { choice: "made" });
     const view = figure(store);
-    const value = () => view.container.querySelector('[data-reading="decimal"]')?.textContent;
-    const marker = () => view.container.querySelector('[data-reading="carry"]')?.textContent;
-    expect(value()).toBe("13");
-    expect(marker()).toBe(S.pendingCarry);
-    const plus = screen.getByRole("button", { name: S.advanceLabel });
-    const minus = screen.getByRole("button", { name: S.previousLabel });
-    expect(minus).toBeEnabled();
-    for (const expected of ["14", "15", "0"]) {
-      fireEvent.click(plus);
-      expect(value()).toBe(expected);
-    }
-    expect(marker()).toBe("1");
-    expect(plus).toBeEnabled();
-    expect(view.container.querySelector('[data-reading="marker-label"]')).toHaveTextContent(
-      S.carryLabel,
-    );
+    const forward = view.container.querySelector('[data-counter-pane="forward"]')!;
+    const borrow = view.container.querySelector('[data-counter-pane="borrow"]')!;
+    expect(forward.querySelector('[data-reading="decimal"]')).toHaveTextContent("0");
+    expect(forward.querySelector('[data-reading="carry"]')).toHaveTextContent(S.pendingCarry);
+    expect(view.container.querySelector("details")).not.toHaveAttribute("open");
+    expect(forward.querySelectorAll("button")).toHaveLength(2);
+    const plus = forward.querySelector("button")!;
+    const minus = borrow.querySelector("button")!;
+    for (let i = 0; i < 16; i++) fireEvent.click(plus);
+    expect(forward.querySelector('[data-reading="stored"]')).toHaveTextContent("0000");
+    expect(forward.querySelector('[data-reading="carry"]')).toHaveTextContent("1");
+    expect(store.slot("counter-wrap:state-v2")).toEqual({ readings: [12, 13, 14, 15, 0] });
     fireEvent.click(minus);
-    expect(value()).toBe("15");
-    expect(marker()).toBe("1");
-    expect(view.container.querySelector('[data-reading="marker-label"]')).toHaveTextContent(
-      S.borrowLabel,
-    );
-    expect(view.container.querySelector('[data-reading="explanation"]')).toHaveTextContent(
+    expect(borrow.querySelector('[data-reading="borrow-decimal"]')).toHaveTextContent("15");
+    expect(borrow.querySelector('[data-reading="borrow-carry"]')).toHaveTextContent("1");
+    expect(borrow.querySelector('[data-reading="borrow-explanation"]')).toHaveTextContent(
       S.backwardWrapped(4, 16),
     );
-    fireEvent.click(plus);
-    expect(value()).toBe("0");
-    for (let i = 0; i < 16; i++) fireEvent.click(plus);
-    expect(value()).toBe("0");
-    expect(store.slot("counter-wrap:state-v2")).toEqual({ readings: [12, 13, 14, 15, 0] });
-    expect(view.container.querySelector('[data-reading="sum"]')).toBeNull();
+    expect(forward.querySelector('[data-reading="decimal"]')).toHaveTextContent("0");
+    const savedBorrow = store.slot("counter-wrap:borrow-state-v1");
+    fireEvent.click(forward.querySelectorAll("button")[1]!);
+    expect(store.slot("counter-wrap:borrow-state-v1")).toEqual(savedBorrow);
+    expect(forward.querySelector('[data-reading="carry"]')).toHaveTextContent(S.pendingCarry);
     view.unmount();
     const restored = new LessonStore(storage, "assembly-lab", "wrap-test");
     const next = figure(restored);
-    expect(next.container.querySelector('[data-reading="carry"]')).toHaveTextContent("1");
-    fireEvent.click(screen.getByRole("button", { name: S.reset }));
-    expect(next.container.querySelector('[data-reading="decimal"]')).toHaveTextContent("13");
-    expect(next.container.querySelector('[data-reading="carry"]')).toHaveTextContent(
+    expect(next.container.querySelector('[data-reading="borrow-decimal"]')).toHaveTextContent("15");
+    const borrowReset = next.container
+      .querySelector('[data-counter-pane="borrow"]')!
+      .querySelectorAll("button")[1]!;
+    fireEvent.click(borrowReset);
+    expect(next.container.querySelector('[data-reading="borrow-stored"]')).toHaveTextContent(
+      "0000",
+    );
+    expect(next.container.querySelector('[data-reading="borrow-carry"]')).toHaveTextContent(
       S.pendingCarry,
     );
-    fireEvent.click(screen.getByRole("button", { name: S.previousLabel }));
-    expect(next.container.querySelector('[data-reading="decimal"]')).toHaveTextContent("12");
     expect(restored.slot("write-elapsed")).toEqual({ draft: "keep learner code" });
     expect(restored.slot("predict-elapsed")).toEqual({ choice: "made" });
+  });
+
+  it("restores an old subtraction without relabelling its borrow as carry", () => {
+    const store = new LessonStore(memoryStorage(), "assembly-lab", "old-subtraction");
+    store.setSlot("counter-wrap:state-v2", { readings: [0, 15] });
+    const view = figure(store);
+    expect(view.container.querySelector('[data-reading="decimal"]')).toHaveTextContent("15");
+    expect(view.container.querySelector('[data-reading="carry"]')).toHaveTextContent(
+      S.pendingCarry,
+    );
+    expect(store.slot("counter-wrap:state-v2")).toEqual({ readings: [0, 15] });
+    fireEvent.click(screen.getByRole("button", { name: S.advanceLabel }));
+    expect(view.container.querySelector('[data-reading="decimal"]')).toHaveTextContent("0");
+    expect(view.container.querySelector('[data-reading="carry"]')).toHaveTextContent("1");
   });
 
   it("preserves old displayed progress until the first real step, and rejects corrupt histories", () => {
@@ -149,7 +158,7 @@ describe("the counter-wrap preparation", () => {
       { readings: [NaN] },
       { readings: [0, 1, 2, 3, 4, 5] },
     ]) {
-      expect(restoreCounterExplorer(saved)).toEqual({ readings: [13] });
+      expect(restoreCounterExplorer(saved)).toEqual({ readings: [0] });
     }
     expect(restoreCounterExplorer(undefined, 3)).toEqual({ readings: [13, 14, 15, 0] });
     expect(restoreCounterExplorer({ readings: [0, 15, 0, 1] })).toEqual({

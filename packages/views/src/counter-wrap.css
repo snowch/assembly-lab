@@ -61,3 +61,17 @@
     font-size: 1rem;
   }
 }
+
+.al-counter-wrap-panes {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.al-counter-borrow {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-3);
+}
+.al-counter-borrow > summary {
+  cursor: pointer;
+  min-height: 44px;
+}
