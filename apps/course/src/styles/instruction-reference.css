@@ -340,6 +340,16 @@
   max-height: 340px;
   overflow: auto;
 }
+.reference-program-header {
+  display: grid;
+  gap: 10px;
+}
+.reference-program-header dd {
+  margin: 4px 0 0;
+}
+.reference-program-header dt code {
+  overflow-wrap: anywhere;
+}
 .reference-complete-example mark {
   color: var(--fg);
   background: var(--bg-inset);

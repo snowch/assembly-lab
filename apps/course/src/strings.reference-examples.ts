@@ -12,6 +12,28 @@ export const REFERENCE_EXAMPLE_STRINGS = {
   completeExample: "Complete example program",
   completeExampleNote:
     "The program includes the code that prepares and finishes the example. Its highlighted instruction is the one shown above. Your editor stays unchanged.",
+  programHeaderTitle: "Reading the program header",
+  programHeaderIntro:
+    "The assembler turns assembly text into machine instructions. Directives give the assembler directions; labels name positions in the program. Neither runs as an instruction.",
+  programHeaderLines: [
+    {
+      source: ".text",
+      explanation:
+        "Selects the code section, where the assembler places the instructions that follow.",
+    },
+    {
+      source: ".global reference_example",
+      explanation:
+        "Makes the name reference_example available to other assembled files when the linker joins them. .globl is another spelling of .global.",
+    },
+    {
+      source: "reference_example:",
+      explanation:
+        "Defines a label at this position. Here it names the first instruction's address. reference_example is a name chosen for this example, not a reserved command.",
+    },
+  ],
+  programHeaderEntry:
+    "The reference runner starts this example at reference_example. .global alone does not choose where execution starts or call the code.",
   branchTaken: "Branch taken",
   branchNotTaken: "Branch not taken",
   signed: "Signed decimal",

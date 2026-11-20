@@ -73,6 +73,19 @@ function WorkedExample({ example }: { example: ExplainedReferenceExample }) {
         <details className="reference-complete-example">
           <summary>{S.completeExample}</summary>
           <p>{S.completeExampleNote}</p>
+          <h5>{S.programHeaderTitle}</h5>
+          <p>{S.programHeaderIntro}</p>
+          <dl className="reference-program-header">
+            {S.programHeaderLines.map((line) => (
+              <div key={line.source}>
+                <dt>
+                  <code>{line.source}</code>
+                </dt>
+                <dd>{line.explanation}</dd>
+              </div>
+            ))}
+          </dl>
+          <p>{S.programHeaderEntry}</p>
           <pre>
             <code>
               {programLines.map((line, index) => (
