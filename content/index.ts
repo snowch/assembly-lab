@@ -20,3 +20,10 @@ export {
   INSTRUCTION_QUICK_REFERENCE,
   QUICK_REFERENCE_NOTATION,
 } from "./instruction-quick-reference";
+
+export {
+  INSTRUCTION_FORM_GUIDES,
+  computeReferenceExample,
+  buildReferenceExample,
+} from "./reference-guides";
+export type { InstructionFormGuide, ExplainedReferenceExample } from "./reference-guides";

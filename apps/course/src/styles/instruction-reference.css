@@ -209,3 +209,171 @@
     display: none;
   }
 }
+
+/* One form owns its rules, independent prepared state and immediate result. */
+.reference-form-guides {
+  margin-block: 10px;
+}
+.reference-example-preparation {
+  margin-block: 8px;
+  color: var(--fg-muted);
+  font-size: 14px;
+}
+.reference-error-context {
+  border-left: 3px solid var(--accent);
+  background: var(--bg-inset);
+  padding: 10px 12px;
+  margin-block: 8px;
+}
+.reference-error-context p {
+  margin: 6px 0 0;
+}
+.reference-form {
+  border-top: 1px solid var(--border);
+}
+.reference-form > summary {
+  font-weight: 650;
+}
+.reference-form-body {
+  padding-bottom: 12px;
+}
+.reference-form h4 {
+  margin: 14px 0 8px;
+  font-size: 16px;
+}
+.reference-worked-example {
+  margin: 8px 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.reference-example-state {
+  background: var(--bg-inset);
+  padding: 10px 12px;
+}
+.reference-example-state[data-state="after"] {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.reference-worked-example h5 {
+  font-size: 14px;
+  margin: 0 0 6px;
+  color: var(--fg-muted);
+}
+.reference-example-state dl {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+}
+.reference-example-state dl > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 3px 12px;
+}
+.reference-example-state dt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+.reference-example-state dt code {
+  overflow-wrap: anywhere;
+}
+.reference-example-state small {
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+.reference-example-state dd {
+  margin: 0;
+  max-width: 100%;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.reference-example-instruction {
+  padding: 10px 12px;
+}
+.reference-example-instruction pre {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.reference-worked-example figcaption {
+  padding: 10px 12px;
+  font-size: 15px;
+}
+.reference-mistakes {
+  margin-block: 10px;
+}
+.reference-mistake {
+  border-left: 3px solid var(--border-strong);
+  padding: 8px 10px;
+  margin-block: 8px;
+}
+.reference-rejected {
+  color: var(--fg-muted);
+  font-size: 13px;
+  font-weight: 650;
+}
+.reference-mistake p {
+  margin: 6px 0 0;
+  font-size: 15px;
+}
+.reference-advanced-forms > summary,
+.reference-advanced-rules > summary,
+.reference-more-examples > summary {
+  color: var(--accent);
+}
+.reference-advanced-forms > .reference-form {
+  margin-left: 10px;
+}
+.reference-flags {
+  font-size: 14px;
+  color: var(--fg-muted);
+}
+.reference-complete-example pre {
+  font-size: 12px;
+  max-height: 340px;
+  overflow: auto;
+}
+.reference-complete-example mark {
+  color: var(--fg);
+  background: var(--bg-inset);
+  font-weight: 650;
+}
+.reference-branch-result {
+  font-weight: 650;
+  margin-block: 8px;
+}
+
+/* Error lookups scroll only the drawer; the focused search remains visible. */
+.instruction-reference-tools {
+  position: sticky;
+  top: -20px;
+  margin-top: -20px;
+  padding-block: 16px 10px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  z-index: 3;
+}
+.instruction-reference-tools .instruction-reference-heading {
+  position: static;
+  margin: 0;
+  padding: 0 0 10px;
+}
+.instruction-reference-tools .reference-search {
+  margin: 0;
+}
+@media (max-width: 760px) {
+  .instruction-reference-tools {
+    top: -16px;
+    margin-top: -16px;
+  }
+}
+.reference-entries pre code {
+  font-size: inherit;
+}

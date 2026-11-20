@@ -63,7 +63,12 @@ describe("instruction help from the assembly editor", () => {
     fireEvent.focus(screen.getByRole("textbox", { name: S.editor.textLabel }));
     expect(rememberChallenge).toHaveBeenCalledWith(written.id);
     await userEvent.click(screen.getByRole("button", { name: HELP.syntax("add") }));
-    expect(open).toHaveBeenCalledExactlyOnceWith({ challengeId: written.id, mnemonic: "add" });
+    expect(open).toHaveBeenCalledExactlyOnceWith({
+      challengeId: written.id,
+      mnemonic: "add",
+      formId: "immediate",
+      issueKey: "immediate.addsub",
+    });
     expect(editor.onChange).not.toHaveBeenCalled();
     expect(screen.getByRole("textbox")).toHaveValue(invalid);
   });
@@ -90,7 +95,13 @@ describe("instruction help from the assembly editor", () => {
       </InstructionHelpProvider>,
     );
     await userEvent.click(screen.getByRole("button", { name: HELP.syntax("b.cond") }));
-    expect(open).toHaveBeenCalledExactlyOnceWith({ challengeId: written.id, mnemonic: "b.cond" });
+    expect(open).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        challengeId: written.id,
+        mnemonic: "b.cond",
+        formId: "label-condition",
+      }),
+    );
   });
 });
 

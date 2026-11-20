@@ -7,6 +7,7 @@ import { isWritten } from "@al/views";
 import type { InstructionHelpRequest } from "@al/views";
 import { INSTRUCTION_QUICK_REFERENCE, QUICK_REFERENCE_NOTATION } from "@al/content";
 import { REFERENCE_STRINGS as S } from "./strings.instruction-reference";
+import { ReferenceInstructionForms } from "./ReferenceInstructionForms";
 
 export interface ReferenceRequest extends InstructionHelpRequest {
   readonly serial: number;
@@ -38,6 +39,7 @@ export function HeaderInstructionReference({
   const [scope, setScope] = useState<"allowed" | "all">("allowed");
   const [exerciseId, setExerciseId] = useState("");
   const panel = useRef<HTMLDialogElement>(null);
+  const toolsBar = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLInputElement>(null);
   const dismiss = useCallback(() => {
     // Release native modal inertness before the shell restores the opening control's focus.
@@ -99,6 +101,26 @@ export function HeaderInstructionReference({
       dialog.close();
     };
   }, [request, phone, dismiss]);
+  useEffect(() => {
+    if (!request?.issueKey || !request.mnemonic || lookup !== request.mnemonic) return;
+    const frame = requestAnimationFrame(() => {
+      const dialog = panel.current;
+      const entry = dialog?.querySelector(`[data-mnemonic="${CSS.escape(request.mnemonic!)}"]`);
+      const target =
+        (!request.issueKey?.startsWith("gate.") &&
+          request.formId &&
+          entry?.querySelector(`[data-form="${CSS.escape(request.formId)}"]`)) ||
+        entry;
+      if (!dialog?.open || !target) return;
+      const headingHeight = toolsBar.current?.getBoundingClientRect().height ?? 0;
+      dialog.scrollTop +=
+        target.getBoundingClientRect().top -
+        dialog.getBoundingClientRect().top -
+        headingHeight -
+        12;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [request, phone, lookup]);
   return (
     <>
       <button
@@ -136,22 +158,24 @@ export function HeaderInstructionReference({
               dismiss();
             }}
           >
-            <div className="instruction-reference-heading">
-              <h2 id={`${id}-title`}>{S.title}</h2>
-              <button type="button" onClick={dismiss}>
-                {S.close}
-              </button>
+            <div className="instruction-reference-tools" ref={toolsBar}>
+              <div className="instruction-reference-heading">
+                <h2 id={`${id}-title`}>{S.title}</h2>
+                <button type="button" onClick={dismiss}>
+                  {S.close}
+                </button>
+              </div>
+              <label className="reference-search">
+                <span>{S.search}</span>
+                <input
+                  ref={input}
+                  type="search"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder={S.searchPlaceholder}
+                />
+              </label>
             </div>
-            <label className="reference-search">
-              <span>{S.search}</span>
-              <input
-                ref={input}
-                type="search"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder={S.searchPlaceholder}
-              />
-            </label>
             {exercise ? (
               <>
                 <div className="reference-scope" role="group" aria-label={S.scope}>
@@ -201,56 +225,72 @@ export function HeaderInstructionReference({
               key={`${request.serial}-${scope}-${exercise?.id ?? "all"}`}
             >
               {entries.map((entry) => (
-                <details
-                  key={entry.mnemonic}
-                  open={lookup === entry.mnemonic || entries.length === 1}
-                >
-                  <summary>
-                    <code>{entry.mnemonic}</code>
-                    <span>{entry.summary}</span>
-                  </summary>
-                  {exercise && !allowed.has(entry.mnemonic) && (
-                    <p className="reference-unavailable">{S.unavailable}</p>
-                  )}
-                  <h3>{S.syntax}</h3>
-                  {entry.forms.map((form) => (
-                    <pre key={form}>
-                      <code>{form}</code>
-                    </pre>
-                  ))}
-                  <h3>{S.rules}</h3>
-                  <ul>
-                    {entry.rules.map((rule) => (
-                      <li key={rule}>{rule}</li>
-                    ))}
-                  </ul>
-                  <p>
-                    <strong>{S.flags}</strong> {entry.flags}
-                  </p>
-                  <h3>{S.examples}</h3>
-                  {entry.examples.map((example) => (
-                    <pre key={example}>
-                      <code>{example}</code>
-                    </pre>
-                  ))}
-                  <details className="reference-official">
-                    <summary>{S.official}</summary>
-                    <ul>
-                      {entry.references.map((source) => (
-                        <li key={source.url}>
-                          <a href={source.url} target="_blank" rel="noreferrer">
-                            {source.label}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                </details>
+                <ReferenceEntry
+                  key={`${request.serial}-${lookup}-${entry.mnemonic}`}
+                  entry={entry}
+                  autoOpen={lookup === entry.mnemonic || entries.length === 1}
+                  unavailable={!!exercise && !allowed.has(entry.mnemonic)}
+                  formId={request.mnemonic === entry.mnemonic ? request.formId : undefined}
+                  issueKey={request.mnemonic === entry.mnemonic ? request.issueKey : undefined}
+                />
               ))}
             </div>
           </dialog>,
           document.body,
         )}
     </>
+  );
+}
+
+function ReferenceEntry({
+  entry,
+  autoOpen,
+  unavailable,
+  formId,
+  issueKey,
+}: {
+  entry: (typeof INSTRUCTION_QUICK_REFERENCE)[number];
+  autoOpen: boolean;
+  unavailable: boolean;
+  formId?: string;
+  issueKey?: string;
+}) {
+  const [open, setOpen] = useState(autoOpen);
+  return (
+    <details
+      open={open}
+      onToggle={(event) => setOpen(event.currentTarget.open)}
+      data-mnemonic={entry.mnemonic}
+    >
+      <summary>
+        <code>{entry.mnemonic}</code>
+        <span>{entry.summary}</span>
+      </summary>
+      {open && (
+        <>
+          {unavailable && <p className="reference-unavailable">{S.unavailable}</p>}
+          <ReferenceInstructionForms
+            mnemonic={entry.mnemonic}
+            formId={formId}
+            issueKey={issueKey}
+          />
+          <p className="reference-flags">
+            <strong>{S.flags}</strong> {entry.flags}
+          </p>
+          <details className="reference-official">
+            <summary>{S.official}</summary>
+            <ul>
+              {entry.references.map((source) => (
+                <li key={source.url}>
+                  <a href={source.url} target="_blank" rel="noreferrer">
+                    {source.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </details>
+        </>
+      )}
+    </details>
   );
 }
