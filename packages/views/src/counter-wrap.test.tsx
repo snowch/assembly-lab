@@ -58,6 +58,7 @@ describe("the counter-wrap preparation", () => {
         expect(change.result.pattern).toBe(change.result.unsigned.toString(2).padStart(4, "0"));
         expect(change.marker).toBe(direction === 1 ? Number(before === 15) : Number(before === 0));
         expect(exact).toBe(change.result.unsigned + direction * change.marker * 16);
+        expect(change.carryOut).toBe(direction === 1 ? Number(before === 15) : Number(before >= 1));
       }
     }
   });
@@ -95,10 +96,23 @@ describe("the counter-wrap preparation", () => {
     expect(store.slot("counter-wrap:state-v2")).toEqual({ readings: [12, 13, 14, 15, 0] });
     fireEvent.click(minus);
     expect(borrow.querySelector('[data-reading="borrow-decimal"]')).toHaveTextContent("15");
-    expect(borrow.querySelector('[data-reading="borrow-carry"]')).toHaveTextContent("1");
+    expect(borrow.querySelector('[data-reading="borrow-carry"]')).toHaveTextContent("0");
     expect(borrow.querySelector('[data-reading="borrow-explanation"]')).toHaveTextContent(
-      S.backwardWrapped(4, 16),
+      "Subtracting one from zero goes below the unsigned range. Keeping only 4 result bits gives 1111 (15 unsigned).",
     );
+    expect(borrow.querySelector('[data-reading="borrow-marker-label"]')).toHaveTextContent(
+      "C after subs",
+    );
+    expect(borrow.querySelector('[data-reading="borrow-rule"] li:first-child')).toHaveTextContent(
+      "C = 0: Borrow needed.",
+    );
+    expect(borrow.querySelector('[data-reading="borrow-rule"] li:last-child')).toHaveTextContent(
+      "C = 1: No borrow needed.",
+    );
+    expect(borrow.querySelector('[role="status"]')).toHaveTextContent(S.stepStatus(-1, 15, 0));
+    fireEvent.click(minus);
+    expect(borrow.querySelector('[data-reading="borrow-carry"]')).toHaveTextContent("1");
+    expect(borrow.querySelector('[data-reading="borrow-decimal"]')).toHaveTextContent("14");
     expect(forward.querySelector('[data-reading="decimal"]')).toHaveTextContent("0");
     const savedBorrow = store.slot("counter-wrap:borrow-state-v1");
     fireEvent.click(forward.querySelectorAll("button")[1]!);
@@ -107,7 +121,8 @@ describe("the counter-wrap preparation", () => {
     view.unmount();
     const restored = new LessonStore(storage, "assembly-lab", "wrap-test");
     const next = figure(restored);
-    expect(next.container.querySelector('[data-reading="borrow-decimal"]')).toHaveTextContent("15");
+    expect(next.container.querySelector('[data-reading="borrow-decimal"]')).toHaveTextContent("14");
+    expect(next.container.querySelector('[data-reading="borrow-carry"]')).toHaveTextContent("1");
     const borrowReset = next.container
       .querySelector('[data-counter-pane="borrow"]')!
       .querySelectorAll("button")[1]!;

@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-// Canonical drafting record: docs/notes/counter-zero-optional-borrow/copy.md.
+// Canonical drafting record: docs/notes/counter-subtraction-c/copy.md.
 export const COUNTER_WRAP_STRINGS = {
   title: "How a counter wraps",
   caption: "Count forward through the wrap.",
@@ -15,31 +15,39 @@ export const COUNTER_WRAP_STRINGS = {
   reset: "Reset",
   initialNote: "The dash means no addition is shown yet.",
   carryLabel: "Carry out",
-  borrowLabel: "Borrow needed",
+  subtractionFlagLabel: "C after `subs`",
   decimalLabel: "Unsigned decimal reading",
   pendingCarry: "—",
   retainedLabel: "Bits stored",
   trailLabel: "Recent stored readings",
   forwardWrapped: (width: number) =>
     `The extra carry lies beyond the ${width} stored bits. The stored bits wrap to zero.`,
-  backwardWrapped: (width: number, range: number) =>
-    `Subtraction must borrow one group of ${range} from the next position. Taking one leaves ${range - 1} in ${width} bits.`,
+  backwardWrapped: (width: number, pattern: string, stored: number) =>
+    `Subtracting one from zero goes below the unsigned range. Keeping only ${width} result bits gives \`${pattern}\` (${stored} unsigned).`,
   forwardNormal: "The addition stays within the stored bits. Carry out is zero.",
-  backwardNormal:
-    "The subtraction stays at or above zero. No borrow from beyond the stored bits is needed.",
+  backwardNormal: (width: number, pattern: string, stored: number) =>
+    `Subtracting one stays within the unsigned range. Keeping only ${width} result bits gives \`${pattern}\` (${stored} unsigned).`,
+  subtractionRule: (width: number) => `This ${width}-bit model follows the Arm \`subs\` rule:`,
+  subtractionRules: [
+    { flag: "C = 0:", explanation: "Borrow needed. The unsigned subtraction went below zero." },
+    {
+      flag: "C = 1:",
+      explanation: "No borrow needed. The unsigned subtraction stayed at or above zero.",
+    },
+  ],
   architectureNote:
     "The carry shown belongs to this four-bit example. At its actual register width, `adds` records carry in C; `add` leaves flags unchanged.",
-  borrowTitle: "Optional: subtract one and inspect the borrow",
+  borrowTitle: "Optional: subtract one and inspect C",
   borrowIntro: (width: number) =>
-    `The processor’s arithmetic and logic unit (ALU) can subtract when an instruction such as \`sub\` requests it. Subtracting one is a decrement. This separate ${width}-bit counter explores subtraction; it does not reverse time or undo an earlier operation.`,
+    `The processor’s arithmetic and logic unit (ALU) can subtract when an instruction such as \`subs\` requests it. Subtracting one is a decrement. This separate ${width}-bit counter explores subtraction; it does not reverse time or undo an earlier operation.`,
   borrowInstruction:
-    "Press −1 once from zero. Inspect Borrow needed and the stored reading. Keep pressing to count down through further wraps. Reset starts this counter at zero.",
+    "Press −1 once from zero. Inspect C after `subs` and the stored reading. Keep pressing to count down through further wraps. Reset starts this counter at zero.",
   borrowInitialNote: "The dash means no subtraction is shown yet.",
   borrowArchitectureNote:
-    "This marker shows borrow beyond the four stored bits. At the instruction’s width, `subs` sets C to 1 for no borrow; `sub` leaves flags unchanged.",
+    "C is calculated for this four-bit model. Real `subs` uses 32- or 64-bit registers; plain `sub` preserves the processor’s flags.",
   initialStatus: (stored: number) => `Stored reading: ${stored}. No step is shown.`,
-  stepStatus: (direction: number, stored: number, marker: number) =>
+  stepStatus: (direction: number, stored: number, carryOut: number) =>
     direction === 1
-      ? `Added one. Stored reading: ${stored}. Carry out: ${marker}.`
-      : `Subtracted one. Stored reading: ${stored}. Borrow needed: ${marker}.`,
+      ? `Added one. Stored reading: ${stored}. Carry out: ${carryOut}.`
+      : `Subtracted one. Stored reading: ${stored}. C after subs: ${carryOut}.`,
 } as const;

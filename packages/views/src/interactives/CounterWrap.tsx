@@ -6,7 +6,6 @@ import {
   counterExplorerView,
   moveCounterExplorer,
   restoreCounterExplorer,
-  COUNTER_WRAP_RANGE,
   COUNTER_EXPLORER_START,
   type CounterExplorerState,
 } from "../counter-wrap";
@@ -29,27 +28,46 @@ function CounterExperiment({
   const change = model.change?.direction === direction ? model.change : null;
   const backward = direction === -1;
   const reading = (name: string) => (backward ? `borrow-${name}` : name);
-  const markerLabel = backward ? S.borrowLabel : S.carryLabel;
+  const markerLabel = backward ? S.subtractionFlagLabel : S.carryLabel;
   const feedback = !change
     ? backward
       ? S.borrowInitialNote
       : S.initialNote
     : change.wrapped
       ? backward
-        ? S.backwardWrapped(4, COUNTER_WRAP_RANGE)
+        ? S.backwardWrapped(4, model.value.pattern, model.value.unsigned)
         : S.forwardWrapped(4)
       : backward
-        ? S.backwardNormal
+        ? S.backwardNormal(4, model.value.pattern, model.value.unsigned)
         : S.forwardNormal;
+  const controls = (
+    <div className="al-controls">
+      <button
+        type="button"
+        className="button primary"
+        aria-label={backward ? S.previousLabel : S.advanceLabel}
+        onClick={() => save(moveCounterExplorer(state, direction))}
+      >
+        {backward ? S.previous : S.advance}
+      </button>
+      <button
+        type="button"
+        className="button secondary"
+        onClick={() => save({ readings: [COUNTER_EXPLORER_START] })}
+      >
+        {S.reset}
+      </button>
+    </div>
+  );
   return (
     <div className="al-figure al-counter-wrap" data-counter-pane={backward ? "borrow" : "forward"}>
       <p>{withCode(backward ? S.borrowIntro(4) : S.intro(4, 32))}</p>
       <p>{withCode(backward ? S.borrowInstruction : S.instruction)}</p>
       <div className="al-counter-wrap-split">
         <div className="al-counter-wrap-marker">
-          <span data-reading={reading("marker-label")}>{markerLabel}</span>
+          <span data-reading={reading("marker-label")}>{withCode(markerLabel)}</span>
           <code data-reading={reading("carry")} className="al-counter-wrap-carry">
-            {change?.marker ?? S.pendingCarry}
+            {change?.carryOut ?? S.pendingCarry}
           </code>
         </div>
         <div>
@@ -71,30 +89,27 @@ function CounterExperiment({
           </span>
         ))}
       </p>
+      {backward && controls}
       <p className="al-counter-wrap-feedback" data-reading={reading("explanation")}>
         {withCode(feedback)}
       </p>
-      <div className="al-controls">
-        <button
-          type="button"
-          className="button primary"
-          aria-label={backward ? S.previousLabel : S.advanceLabel}
-          onClick={() => save(moveCounterExplorer(state, direction))}
-        >
-          {backward ? S.previous : S.advance}
-        </button>
-        <button
-          type="button"
-          className="button secondary"
-          onClick={() => save({ readings: [COUNTER_EXPLORER_START] })}
-        >
-          {S.reset}
-        </button>
-      </div>
+      {backward && (
+        <div className="al-counter-wrap-rule" data-reading="borrow-rule">
+          <p>{withCode(S.subtractionRule(4))}</p>
+          <ul>
+            {S.subtractionRules.map((rule) => (
+              <li key={rule.flag}>
+                <strong>{rule.flag}</strong> {rule.explanation}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {!backward && controls}
       <p>{withCode(backward ? S.borrowArchitectureNote : S.architectureNote)}</p>
       <span role="status" className="visually-hidden">
         {change
-          ? S.stepStatus(change.direction, model.value.unsigned, change.marker)
+          ? S.stepStatus(change.direction, model.value.unsigned, change.carryOut)
           : S.initialStatus(model.value.unsigned)}
       </span>
     </div>

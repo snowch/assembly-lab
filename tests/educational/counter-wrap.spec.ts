@@ -54,12 +54,27 @@ for (const theme of ["light", "dark"])
     await page.keyboard.press("Enter");
     await expect(borrow.locator('[data-reading="borrow-stored"]')).toHaveText("1111");
     await expect(borrow.locator('[data-reading="borrow-decimal"]')).toHaveText("15");
-    await expect(borrow.locator('[data-reading="borrow-carry"]')).toHaveText("1");
+    await expect(borrow.locator('[data-reading="borrow-carry"]')).toHaveText("0");
+    await expect(borrow.locator('[data-reading="borrow-marker-label"]')).toHaveText("C after subs");
+    await expect(borrow.locator('[data-reading="borrow-rule"] li').nth(0)).toHaveText(
+      "C = 0: Borrow needed. The unsigned subtraction went below zero.",
+    );
+    await expect(borrow.locator('[data-reading="borrow-rule"] li').nth(1)).toHaveText(
+      "C = 1: No borrow needed. The unsigned subtraction stayed at or above zero.",
+    );
+    expect(
+      await borrow
+        .locator('[data-reading="borrow-rule"]')
+        .evaluate((el) => el.previousElementSibling?.getAttribute("data-reading")),
+    ).toBe("borrow-explanation");
     await expect(borrow.locator('[data-reading="borrow-explanation"]')).toHaveText(
-      S.backwardWrapped(4, 16),
+      "Subtracting one from zero goes below the unsigned range. Keeping only 4 result bits gives 1111 (15 unsigned).",
     );
     for (let step = 0; step < 16; step++) {
       await minus.click();
+      await expect(borrow.locator('[data-reading="borrow-carry"]')).toHaveText(
+        step === 15 ? "0" : "1",
+      );
       expect(Math.abs((await minus.boundingBox())!.y - lowerBaseline)).toBeLessThan(1);
     }
     await expect(borrow.locator('[data-reading="borrow-decimal"]')).toHaveText("15");
@@ -73,6 +88,7 @@ for (const theme of ["light", "dark"])
     await expect(marker).toHaveText(S.pendingCarry);
     await details.locator("summary").click();
     await expect(borrow.locator('[data-reading="borrow-decimal"]')).toHaveText("15");
+    await expect(borrow.locator('[data-reading="borrow-carry"]')).toHaveText("0");
     await borrow.getByRole("button", { name: S.reset, exact: true }).click();
     await expect(borrow.locator('[data-reading="borrow-stored"]')).toHaveText("0000");
     await expect(borrow.locator('[data-reading="borrow-carry"]')).toHaveText(S.pendingCarry);
