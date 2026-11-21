@@ -25,6 +25,9 @@ for (const theme of ["light", "dark"])
     await expect(bits).toHaveText("0000");
     await expect(decimal).toHaveText("0");
     await expect(marker).toHaveText(S.pendingCarry);
+    await expect(forward.locator('[data-reading="marker-label"]')).toHaveText(
+      "Carry flag C after adds",
+    );
     await expect(forward).not.toContainText("Borrow");
     await expect(forward.getByRole("button")).toHaveCount(2);
     await plus.focus();
@@ -55,7 +58,9 @@ for (const theme of ["light", "dark"])
     await expect(borrow.locator('[data-reading="borrow-stored"]')).toHaveText("1111");
     await expect(borrow.locator('[data-reading="borrow-decimal"]')).toHaveText("15");
     await expect(borrow.locator('[data-reading="borrow-carry"]')).toHaveText("0");
-    await expect(borrow.locator('[data-reading="borrow-marker-label"]')).toHaveText("C after subs");
+    await expect(borrow.locator('[data-reading="borrow-marker-label"]')).toHaveText(
+      "Carry flag C after subs",
+    );
     await expect(borrow.locator('[data-reading="borrow-rule"] li').nth(0)).toHaveText(
       "C = 0: Borrow needed. The unsigned subtraction went below zero.",
     );

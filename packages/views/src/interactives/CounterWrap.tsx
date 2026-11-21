@@ -38,7 +38,7 @@ function CounterExperiment({
         ? S.backwardWrapped(4, model.value.pattern, model.value.unsigned)
         : S.forwardWrapped(4)
       : backward
-        ? S.backwardNormal(4, model.value.pattern, model.value.unsigned)
+        ? S.backwardNormal
         : S.forwardNormal;
   const controls = (
     <div className="al-controls">
@@ -106,7 +106,7 @@ function CounterExperiment({
         </div>
       )}
       {!backward && controls}
-      <p>{withCode(backward ? S.borrowArchitectureNote : S.architectureNote)}</p>
+      <p>{withCode(backward ? S.borrowArchitectureNote(4) : S.architectureNote(4))}</p>
       <span role="status" className="visually-hidden">
         {change
           ? S.stepStatus(change.direction, model.value.unsigned, change.carryOut)
