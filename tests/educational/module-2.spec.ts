@@ -501,7 +501,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       await openLesson(page, "subtracting-and-the-tick-counter");
       const write = challenge(page, WRITE);
       await press(page, write.getByRole("button", { name: V.editor.tap, exact: true }));
-      await press(page, write.locator(".asm-line-button").first());
+      await press(page, write.getByRole("button", { name: V.editor.addFirst, exact: true }));
       await press(page, run(write));
       await openLesson(page, "subtraction-flags-and-negation");
       const step = challenge(page, STEP);
