@@ -257,7 +257,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       const c = challenge(page, WRITE);
       await c.scrollIntoViewIfNeeded();
       const box = c.getByRole("textbox", { name: V.editor.textLabel });
-      await expect(box).toHaveValue("ret");
+      await expect(box).toHaveValue("");
       await expect(box).toHaveAttribute("autocapitalize", "off");
       await box.fill("");
       await box.pressSequentially("sub w0, w0, w1\nret");
@@ -276,7 +276,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       await c.getByRole("button", { name: V.editor.tap, exact: true }).tap();
       // No text box in this mode: nothing can be typed.
       await expect(c.getByRole("textbox")).toHaveCount(0);
-      await c.locator(".asm-line-button").first().tap();
+      await c.getByRole("button", { name: V.editor.addFirst, exact: true }).tap();
       const chip = (group: string, name: string) =>
         c
           .getByRole("group", { name: group, exact: true })
@@ -285,16 +285,14 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       await chip(V.editor.operand(1), "w0").tap();
       await chip(V.editor.operand(2), "w0").tap();
       await chip(V.editor.operand(3), "w1").tap();
-      await c.getByRole("button", { name: V.editor.addBelow }).tap();
-      await chip(V.editor.instruction, "ret").tap();
-      await expect(c.locator(".asm-line-button")).toHaveCount(2);
+      await expect(c.locator(".asm-line-button")).toHaveCount(1);
       await expect(c.locator(".asm-line-button").first()).toContainText("sub w0, w0, w1");
       await run(c).tap();
       await expect(status(c)).toHaveText(passing(4));
       await expect(c.locator(".challenge-complete")).toHaveText(S.challenge.complete);
       expect(
         (await stored(page, "subtracting-and-the-tick-counter")).challenges[WRITE].artifact.text,
-      ).toBe("sub w0, w0, w1\nret");
+      ).toBe("sub w0, w0, w1");
       expect(errors).toEqual([]);
     });
 
@@ -305,22 +303,23 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       const c = challenge(page, WRITE);
       await c.scrollIntoViewIfNeeded();
       await press(page, c.getByRole("button", { name: V.editor.tap, exact: true }));
-      await press(page, c.locator(".asm-line-button").first());
+      await press(page, c.getByRole("button", { name: V.editor.addFirst, exact: true }));
       const chips = (group: string) =>
         c.getByRole("group", { name: group, exact: true }).locator("button.chip");
-      // A line that holds ret has no operands; choose an instruction that has them.
+      // Start an arithmetic line; termination is supplied automatically.
       await press(page, chips(V.editor.instruction).filter({ hasText: /^sub$/ }));
       // neg is taught here but this challenge does not allow it, so the chips leave it out.
-      await expect(chips(V.editor.instruction)).toHaveText(["add", "sub", "adds", "subs", "ret"]);
+      await expect(chips(V.editor.instruction)).toHaveText(["add", "sub", "adds", "subs"]);
       await expect(chips(V.editor.operand(1))).toHaveText(["w0", "w1"]);
     });
 
-    test("fails the starting point on all four calls, and says what it returned", async ({
+    test("fails unchanged input on all four pairs, and shows the resulting count", async ({
       page,
     }) => {
       await openLesson(page, "subtracting-and-the-tick-counter");
       const c = challenge(page, WRITE);
       await c.scrollIntoViewIfNeeded();
+      await c.getByRole("textbox", { name: V.editor.textLabel }).fill("add w0, w0, #0");
       await press(page, run(c));
       await expect(status(c)).toHaveText(failing(0, 4));
       await expect(c.locator(".verdict-failure h4")).toHaveText([
@@ -385,7 +384,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       await press(page, c.getByRole("button", { name: new RegExp(`^${S.challenge.reset}`) }));
       await press(page, c.getByRole("button", { name: S.challenge.resetConfirm }));
       await expect(c.locator(".challenge-complete")).toHaveCount(0);
-      await expect(c.getByRole("textbox", { name: V.editor.textLabel })).toHaveValue("ret");
+      await expect(c.getByRole("textbox", { name: V.editor.textLabel })).toHaveValue("");
     });
   });
 
@@ -502,7 +501,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       await openLesson(page, "subtracting-and-the-tick-counter");
       const write = challenge(page, WRITE);
       await press(page, write.getByRole("button", { name: V.editor.tap, exact: true }));
-      await press(page, write.locator(".asm-line-button").first());
+      await press(page, write.getByRole("button", { name: V.editor.addFirst, exact: true }));
       await press(page, run(write));
       await openLesson(page, "subtraction-flags-and-negation");
       const step = challenge(page, STEP);

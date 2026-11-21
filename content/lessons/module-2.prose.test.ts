@@ -292,10 +292,10 @@ describe("module 2, the improved text: closed notes, gated texts and the last se
     const task = LESSONS.find((l) => l.id === "subtracting-and-the-tick-counter")!.challenges.find(
       (c) => c.id === "write-elapsed",
     )!.task;
-    for (const fact of ["now arrives in w0.", "then arrives in w1.", "Return the result in w0."])
+    for (const fact of ["w0 holds now.", "w1 holds then.", "Leave the elapsed tick count in w0"])
       expect(flat(task)).toContain(fact);
     expect(task).not.toMatch(/sub w0, w0, w1/);
-    expect(flat(task)).toContain("Four calls test it, two of them across the wrap.");
+    expect(flat(task)).toContain("Four tests run, two of them across the wrap.");
   });
 });
 

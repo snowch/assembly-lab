@@ -43,17 +43,16 @@ export const PROSE = {
     "A carry leaves the top exactly when `a` is at least `b`, so C = 1 also means no borrow was needed.\n\n" +
     "The two figures below show the final states of two subtractions. Each can be stepped column by column:\n\n- 1000 minus 4294966296 needs a borrow and leaves C 0.\n- 9000 minus 2500 needs no borrow and leaves C 1 and the result 6500.",
 
-  construction: "Earlier, GCC wrote `elapsed` for you. Here you write it yourself.",
+  construction:
+    "Use the editor to calculate elapsed ticks from two counter readings. The tests prepare the register values for you.",
   elapsedTask:
-    "Write `elapsed(now, then)`. It returns the ticks from `then` to `now`.\n\n- `now` arrives in `w0`.\n- `then` arrives in `w1`.\n\nReturn the result in `w0`.\n\n" +
-    "Assume the counter advances normally and less than one full turn passes between readings. Your function must work whether or not the counter wrapped. Four calls test it, two of them across the wrap.\n\n" +
-    "You may use `add`, `sub`, `adds`, `subs` and `ret`.",
+    "Calculate the ticks from the earlier reading, `then`, to the later reading, `now`.\n\nFor each test, **Run tests** loads the inputs shown in the table:\n\n- `w0` holds `now`.\n- `w1` holds `then`.\n\nWrite only the arithmetic instructions in the editor. You do not need to load the large `then` values; the tests load them into `w1` automatically. Leave the elapsed tick count in `w0`, then choose **Run tests**. The test runner supplies the instruction that finishes each run.\n\nAssume the counter advances normally and less than one full turn passes between readings. Your code must work for both wrapped and unwrapped pairs. Four tests run, two of them across the wrap.\n\nYou may use `add`, `sub`, `adds` and `subs`.",
   elapsedHints: [
     "The 32 bits of a 32-bit subtraction are `now - then` when `now` is at least `then`, and `now - then + 4294967296` when `now` is less than `then`. Either way they are the distance round the ring.",
     "Do not reverse the subtraction when the counter wraps. The low 32 bits already give the forward distance.",
-    "`elapsed(5000, 1000)` is 4000. `sub` takes 1000 from 5000.",
-    "`now` arrives in `w0` and `then` in `w1`.",
-    "The whole answer is `sub w0, w0, w1`, then `ret`.",
+    "For `now = 5000` and `then = 1000`, the elapsed count is 4000. `sub` takes 1000 from 5000.",
+    "The tests already put `now` in `w0` and `then` in `w1`. Use those registers directly.",
+    "Use `sub w0, w0, w1`. The test runner supplies the ending instruction.",
   ] as const,
 
   /** Shown with the figure that opens when `elapsed` is passed. */

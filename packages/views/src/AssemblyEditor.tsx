@@ -17,6 +17,7 @@ import { z } from "zod";
 import { assemble, subsetMnemonics, type AsmError } from "@al/machine";
 import type { ChallengeEditorProps } from "@platform/lesson-runtime";
 
+import { arithmeticFragment } from "./arithmetic-fragment";
 import { Calculator } from "./Calculator";
 import { useInstructionHelp } from "./instruction-help";
 import { instructionHelpForm } from "./instruction-help-target";
@@ -567,6 +568,7 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
   const text = artifact.text ?? challenge.initial.text ?? "";
   // The chips: the instructions the challenge allows, a conditional branch under each condition.
   const allowed = challenge.allowedConstructs;
+  const fragment = arithmeticFragment(challenge);
   // The challenge may choose its keys (`initial.data.editor`); without, the editor offers all.
   const keys = EditorKeysSchema.safeParse(challenge.initial.data?.["editor"]);
   const chosen = keys.success ? keys.data : {};
@@ -577,9 +579,9 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
   const conditions = chosen.conditions ?? CONDITIONS;
   const addresses = chosen.addresses ?? [];
   const extensions = chosen.extensions ?? [];
-  const instructions = allowed.flatMap((m) =>
-    m === "b.cond" ? conditions.map((c) => `b.${c}`) : [m],
-  );
+  const instructions = allowed
+    .filter((m) => !fragment || m !== "ret" || /^\s*ret\b/m.test(text))
+    .flatMap((m) => (m === "b.cond" ? conditions.map((c) => `b.${c}`) : [m]));
   const [mode, setMode] = useHandoffState<Mode>("AssemblyEditor.mode", rememberedMode);
   const introduced = useMemo(() => introducedOf(challenge), [challenge]);
   const errors = useMemo(
@@ -614,6 +616,31 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
       onFocusCapture={() => help?.rememberChallenge(challenge.id)}
       onPointerDownCapture={() => help?.rememberChallenge(challenge.id)}
     >
+      {fragment && challenge.tests.kind === "answers" && (
+        <table className="asm-inputs">
+          <caption>{S.editor.preparedInputs}</caption>
+          <thead>
+            <tr>
+              {fragment.inputs.map((input) => (
+                <th key={input.register} scope="col">
+                  {input.name} (<code>{input.register}</code>)
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {challenge.tests.cases.map((test, index) => (
+              <tr key={index}>
+                {fragment.inputs.map((input) => (
+                  <td key={input.register}>
+                    {Number(test.given[input.register]).toLocaleString("en-GB")}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
       {calculator.success && <Calculator handoffKey={challenge.id} division="whole" />}
       <div className="asm-mode" role="group" aria-label={S.editor.mode}>
         <span className="asm-mode-label">{S.editor.mode}</span>

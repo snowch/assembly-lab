@@ -52,9 +52,9 @@ for (const theme of ["light", "dark"])
     await expect(ring.locator('[data-row="c"]')).toHaveCount(0);
     await expect(ring).toContainText("fewer than 4294967296 ticks");
     await expect(
-      page
-        .locator("section.lesson-section")
-        .filter({ has: page.getByRole("heading", { name: "Writing elapsed yourself" }) }),
+      page.locator("section.lesson-section").filter({
+        has: page.getByRole("heading", { name: "Calculate elapsed ticks", exact: true }),
+      }),
     ).toBeVisible();
     await page.reload();
     await expect(summary).toBeVisible();

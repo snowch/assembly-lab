@@ -43,8 +43,11 @@ export const NEGATE_FLAGS = {
   listing: ["negate_flags:", "  negs w0, w0", "  ret"].join("\n"),
 } as const;
 
-/** The construction challenge starts from a function that returns `now` unchanged. */
+/** Complete unchanged-input program retained for native differential checks and legacy work. */
 export const ELAPSED_STARTING_TEXT = "ret";
 
-/** The construction challenge's reference: the recorded `elapsed`. */
-export const ELAPSED_FIXED_TEXT = ["sub w0, w0, w1", "ret"].join("\n");
+/** The editable arithmetic, without the runner's supplied termination. */
+export const ELAPSED_FRAGMENT_TEXT = "sub w0, w0, w1";
+
+/** Complete reference for native differential checks. */
+export const ELAPSED_FIXED_TEXT = [ELAPSED_FRAGMENT_TEXT, "ret"].join("\n");

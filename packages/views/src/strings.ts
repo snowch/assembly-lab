@@ -192,6 +192,7 @@ export const VIEW_STRINGS = {
   },
 
   editor: {
+    preparedInputs: "Test inputs loaded automatically before each run",
     mode: "Edit as",
     text: "Text",
     tap: "Tap",

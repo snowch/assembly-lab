@@ -117,12 +117,12 @@ describe("the lesson", () => {
     );
   });
 
-  it("gives the construction challenge the gate add, sub, adds, subs and ret, and not neg", () => {
+  it("supplies termination while retaining the old program gate for saved work", () => {
     const c = challenge("write-elapsed");
     expect(c.allowedConstructs).toEqual(["add", "sub", "adds", "subs", "ret"]);
     expect(c.palette).toEqual(["w0", "w1"]);
-    expect(c.initial.text).toBe("ret");
-    expect(c.reference.text).toBe("sub w0, w0, w1\nret");
+    expect(c.initial.text).toBe("");
+    expect(c.reference.text).toBe("sub w0, w0, w1");
     expect(testCount(c)).toBe(4);
   });
 });
@@ -140,15 +140,23 @@ describe("the challenges", () => {
     },
   );
 
-  it("write-elapsed: the starting point fails all four calls", () => {
+  it("write-elapsed: an empty editor asks for an instruction before running", () => {
+    const verdict = grade(challenge("write-elapsed"), { text: "" });
+    expect(verdict.blocked).toBe("Write at least one instruction first.");
+    expect(verdict.passed).toBe(false);
+  });
+
+  it("write-elapsed: runs arithmetic alone and preserves old saved programs", () => {
     const c = challenge("write-elapsed");
-    const verdict = grade(c, c.initial);
-    expect(verdict.failures.map((f) => f.label)).toEqual([
-      "elapsed(5000, 1000)",
-      "elapsed(86400000, 3600000)",
-      "elapsed(250, 4294967046)",
-      "elapsed(30, 4294966296)",
-    ]);
+    for (const text of ["sub w0, w0, w1", "subs w0, w0, w1", "sub w0, w0, w1\nret"]) {
+      const artifact = { text };
+      expect(grade(c, artifact).passed).toBe(true);
+      expect(artifact.text).toBe(text);
+    }
+    expect(grade(c, { text: "add w0, w0, w1" }).failures).toHaveLength(4);
+    expect(grade(c, { text: "sub w0, w0, w1\nadd w0, w0, #4294967296" }).blocked).toContain(
+      "Line 2:",
+    );
   });
 
   it("write-elapsed: the other order of the operands fails, and so does adding", () => {
