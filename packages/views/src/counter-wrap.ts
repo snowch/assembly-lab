@@ -54,6 +54,7 @@ export function counterChange(before: number, direction: -1 | 1) {
       before: work.a,
       result: work.result,
       marker: work.carryOut,
+      carryOut: work.carryOut,
       wrapped: work.carryOut === 1,
     };
   }
@@ -65,6 +66,7 @@ export function counterChange(before: number, direction: -1 | 1) {
     before: work.a,
     result: work.result,
     marker: borrow,
+    carryOut: work.addition.carryOut,
     wrapped: borrow === 1,
   };
 }

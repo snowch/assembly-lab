@@ -75,3 +75,18 @@
   cursor: pointer;
   min-height: 44px;
 }
+
+.al-counter-wrap-rule {
+  display: grid;
+  gap: var(--space-2);
+}
+.al-counter-wrap-rule ul {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+.al-counter-wrap-rule li + li {
+  margin-block-start: var(--space-1);
+}
+.al-counter-wrap[data-counter-pane="borrow"] .al-counter-wrap-feedback {
+  min-height: 0;
+}
