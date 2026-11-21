@@ -15,8 +15,7 @@ import type { LessonInput } from "@platform/lesson-schema";
 import { LABELS } from "./subtracting-and-the-tick-counter.labels";
 import {
   ELAPSED,
-  ELAPSED_FIXED_TEXT,
-  ELAPSED_STARTING_TEXT,
+  ELAPSED_FRAGMENT_TEXT,
   ELAPSED_SUBS,
   NEGATE_FLAGS,
 } from "./subtracting-and-the-tick-counter.listings";
@@ -229,7 +228,18 @@ export const subtractingAndTheTickCounter: LessonInput = {
       // The registers the tap editor offers, and the instructions the lesson's assembler allows.
       palette: ["w0", "w1"],
       allowedConstructs: ["add", "sub", "adds", "subs", "ret"],
-      initial: { text: ELAPSED_STARTING_TEXT },
+      initial: {
+        text: "",
+        data: {
+          exercise: {
+            kind: "arithmetic-fragment",
+            inputs: [
+              { register: "w0", name: "now" },
+              { register: "w1", name: "then" },
+            ],
+          },
+        },
+      },
       tests: {
         kind: "answers",
         grader: RUN_REGISTERS,
@@ -259,7 +269,7 @@ export const subtractingAndTheTickCounter: LessonInput = {
         ],
       },
       hints: [...PROSE.elapsedHints],
-      reference: { text: ELAPSED_FIXED_TEXT },
+      reference: { text: ELAPSED_FRAGMENT_TEXT },
     },
     {
       id: "one-step-past",

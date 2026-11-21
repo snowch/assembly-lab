@@ -309,7 +309,7 @@ describe("the construction challenge", () => {
     const across = c.tests.cases.filter((t) => Number(t.given["w0"]) < Number(t.given["w1"]));
     expect(across).toHaveLength(2);
     expect(elapsed(5000, 1000).w0).toBe(4000);
-    expect(PROSE.elapsedTask).toContain("Four calls test it, two of them across the wrap");
+    expect(PROSE.elapsedTask).toContain("Four tests run, two of them across the wrap");
   });
 
   it("does not test the step from 4294967295 to 0, which the last challenge asks about", () => {

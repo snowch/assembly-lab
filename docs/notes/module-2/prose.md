@@ -169,7 +169,7 @@ The first line, `add_overflows:`, is the function's name and a colon. The two in
 
 - Explain why `elapsed(now, then)` works across a wrap when the counter advances normally and less than a full turn passes.
 - Say what C records after `subs`.
-- Write `elapsed` and pass tests across the wrap.
+- Calculate elapsed ticks and pass tests across the wrap.
 
 ## 1. Elapsed time across a wrap
 
@@ -236,28 +236,30 @@ The two figures below show the final states of two subtractions. Each can be ste
 - 1000 minus 4294966296 needs a borrow and leaves C 0.
 - 9000 minus 2500 needs no borrow and leaves C 1 and the result 6500.
 
-## 5. Writing elapsed yourself
+## 5. Calculate elapsed ticks
 
-Earlier, GCC wrote `elapsed` for you. Here you write it yourself.
+Use the editor to calculate elapsed ticks from two counter readings. The tests prepare the register values for you.
 
-**Write `elapsed`**
+**Calculate elapsed ticks**
 
-Write `elapsed(now, then)`. It returns the ticks from `then` to `now`.
+Calculate the ticks from the earlier reading, `then`, to the later reading, `now`.
 
-- `now` arrives in `w0`.
-- `then` arrives in `w1`.
+For each test, **Run tests** loads the inputs shown in the table:
 
-Return the result in `w0`.
+- `w0` holds `now`.
+- `w1` holds `then`.
 
-Assume the counter advances normally and less than one full turn passes between readings. Your function must work whether or not the counter wrapped. Four calls test it, two of them across the wrap.
+Write only the arithmetic instructions in the editor. You do not need to load the large `then` values; the tests load them into `w1` automatically. Leave the elapsed tick count in `w0`, then choose **Run tests**. The test runner supplies the instruction that finishes each run.
 
-You may use `add`, `sub`, `adds`, `subs` and `ret`.
+Assume the counter advances normally and less than one full turn passes between readings. Your code must work for both wrapped and unwrapped pairs. Four tests run, two of them across the wrap.
+
+You may use `add`, `sub`, `adds` and `subs`.
 
 1. The 32 bits of a 32-bit subtraction are `now - then` when `now` is at least `then`, and `now - then + 4294967296` when `now` is less than `then`. Either way they are the distance round the ring.
 2. Do not reverse the subtraction when the counter wraps. The low 32 bits already give the forward distance.
-3. `elapsed(5000, 1000)` is 4000. `sub` takes 1000 from 5000.
-4. `now` arrives in `w0` and `then` in `w1`.
-5. The whole answer is `sub w0, w0, w1`, then `ret`.
+3. For `now = 5000` and `then = 1000`, the elapsed count is 4000. `sub` takes 1000 from 5000.
+4. The tests already put `now` in `w0` and `then` in `w1`. Use those registers directly.
+5. Use `sub w0, w0, w1`. The test runner supplies the ending instruction.
 
 *Shown after the challenge is passed.*
 

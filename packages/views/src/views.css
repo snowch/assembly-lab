@@ -831,3 +831,21 @@
   font-family: var(--font-mono);
   font-size: 1rem;
 }
+
+/* Prepared register values stay visible without exposing expected answers. */
+.asm-inputs {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.asm-inputs caption {
+  text-align: left;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.asm-inputs th,
+.asm-inputs td {
+  text-align: left;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}

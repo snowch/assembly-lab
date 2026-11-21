@@ -19,6 +19,7 @@
 // computes, never values in the lesson's data. A wrong field gives the case's own sentence for
 // that field (`given["feedback.<field>"]`) as the failure's detail, and never the right value.
 
+import { writtenProgram } from "./arithmetic-fragment";
 import { FOUR_BIT_SUBTRACTION, gradeFourBitSubtraction } from "./grader-four-bit";
 import { RUN_C, gradeC } from "./grader-c";
 import { RECORDED_TOKENS, gradeRecorded } from "./grader-recorded";
@@ -100,7 +101,7 @@ export function gradeWritten(challenge: Challenge, artifact: Artifact): Verdict 
   const text = artifact.text ?? challenge.initial.text ?? "";
   if (text.trim() === "")
     return { passed: false, total, failures: [], blocked: S.grader.nothingWritten };
-  const { program, errors } = assemble(text, {
+  const { program, errors } = assemble(writtenProgram(challenge, text), {
     allowed: new Set(challenge.allowedConstructs),
     introduced: introducedOf(challenge),
   });

@@ -10,13 +10,13 @@ export const LABELS = {
   objectives: [
     "Explain why `elapsed(now, then)` works across a wrap when the counter advances normally and less than a full turn passes.",
     "Say what C records after `subs`.",
-    "Write `elapsed` and pass tests across the wrap.",
+    "Calculate elapsed ticks and pass tests across the wrap.",
   ],
   titles: {
     motivation: "Elapsed time across a wrap",
     prediction: "Elapsed across the wrap",
     investigation: "Subtraction as addition, and borrows",
-    construction: "Writing elapsed yourself",
+    construction: "Calculate elapsed ticks",
     failureExperiment: "Negating 0x80000000",
     explanation: "Why the low bits are enough",
     generalisation: "Other counters",
@@ -37,7 +37,7 @@ export const LABELS = {
     predictNegs: "A prediction about what w0 holds after negs.",
     stepNegs:
       "negs w0, w0 on 0x80000000, with the flags under the register. An outlined register was written by the last instruction. An outlined flag changed value.",
-    elapsed: "The assembly editor, starting from a function that returns now unchanged.",
+    elapsed: "Write the arithmetic; the tests prepare the registers automatically.",
     step: "Give the result and C for one step past the top.",
   },
   options: {
@@ -55,7 +55,7 @@ export const LABELS = {
     ],
   },
   challenges: {
-    elapsed: { title: "Write elapsed" },
+    elapsed: { title: "Calculate elapsed ticks" },
     step: {
       title: "One step past the top",
       fields: {
