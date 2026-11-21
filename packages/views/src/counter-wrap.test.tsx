@@ -101,7 +101,7 @@ describe("the counter-wrap preparation", () => {
       "Subtracting one from zero goes below the unsigned range. Keeping only 4 result bits gives 1111 (15 unsigned).",
     );
     expect(borrow.querySelector('[data-reading="borrow-marker-label"]')).toHaveTextContent(
-      "C after subs",
+      "Carry flag C after subs",
     );
     expect(borrow.querySelector('[data-reading="borrow-rule"] li:first-child')).toHaveTextContent(
       "C = 0: Borrow needed.",

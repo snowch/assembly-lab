@@ -15,11 +15,17 @@
 }
 .al-counter-wrap-split > div {
   display: grid;
+  grid-template-rows: minmax(2lh, auto) auto auto;
   gap: var(--space-1);
   text-align: center;
 }
+.al-counter-wrap-split > div > span:first-child {
+  align-self: end;
+}
 .al-counter-wrap-marker {
-  min-width: 7rem;
+  width: 8rem;
+  min-width: 0;
+  max-width: 100%;
 }
 .al-counter-wrap-trail {
   min-height: 1.8em;
