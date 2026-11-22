@@ -344,16 +344,19 @@ figure.interactive > figcaption .badge {
 .time-model-note .prose p {
   margin: 0;
 }
-figure.interactive > :not(figcaption):not(.figure-lead):not(.figure-after) {
+figure.interactive > :not(figcaption):not(.figure-lead):not(.figure-after),
+.al-subtraction-panes > .al-figure {
   padding: var(--space-4) var(--space-5);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--bg-raised);
   box-shadow: var(--shadow-sm);
 }
-/* A call comparison contains several activities. Its own panels provide the
-   boundaries; one enclosing card would join them back into a single block. */
-figure.interactive:has(.al-compare-stages) > :not(figcaption):not(.figure-lead):not(.figure-after) {
+/* These grouped activities provide their own panels. One enclosing card would
+   join them back into a single block. */
+figure.interactive:has(.al-compare-stages) > :not(figcaption):not(.figure-lead):not(.figure-after),
+figure.interactive:has(.al-subtraction-panes)
+  > :not(figcaption):not(.figure-lead):not(.figure-after) {
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -497,7 +500,8 @@ figure.interactive > .figure-after p {
   .verdict-values {
     grid-template-columns: minmax(0, 1fr);
   }
-  figure.interactive > :not(figcaption):not(.figure-lead):not(.figure-after) {
+  figure.interactive > :not(figcaption):not(.figure-lead):not(.figure-after),
+  .al-subtraction-panes > .al-figure {
     padding: var(--space-3);
   }
 }

@@ -22,8 +22,25 @@ for (const theme of ["light", "dark"])
     await expect(bridge.locator('[data-bridge-row="all-ones"] code')).toHaveText("1111");
     await expect(bridge.locator("[data-bridge-carry]")).toHaveText("1");
     await expect(bridge.locator("[data-bridge-result]")).toHaveText("0101");
-    await expect(bridge).toContainText("4,294,967,295");
-    await expect(bridge).toContainText("4,294,967,296");
+    const wide = page.locator("#ix-carry-means-no-borrow .al-adder .al-sub-bridge-wide");
+    await expect(wide).toContainText("4,294,967,295");
+    await expect(wide).toContainText("4,294,967,296");
+    await expect(
+      page.locator("#ix-carry-means-no-borrow .al-subtraction-panes > .al-figure"),
+    ).toHaveCount(2);
+    const firstPane = (await bridge.boundingBox())!;
+    const secondPane = (await page.locator("#ix-carry-means-no-borrow .al-adder").boundingBox())!;
+    expect(secondPane.y).toBeGreaterThan(firstPane.y + firstPane.height);
+    expect(
+      await page
+        .locator("#ix-carry-means-no-borrow .al-subtraction-panes")
+        .evaluate((node) => getComputedStyle(node).borderTopWidth),
+    ).toBe("0px");
+    for (const pane of await page
+      .locator("#ix-carry-means-no-borrow .al-subtraction-panes > .al-figure")
+      .all()) {
+      expect(await pane.evaluate((node) => getComputedStyle(node).borderTopStyle)).toBe("solid");
+    }
     const bridgeBounds = (await bridge.boundingBox())!;
     for (const header of await bridge.locator(".al-sub-bridge-head > span").all()) {
       expect(await header.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(true);

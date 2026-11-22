@@ -13,8 +13,8 @@ function Pattern({ value }: { value: string }) {
   return <code className="al-sub-bridge-bits">{value}</code>;
 }
 
-/** An always-visible worked miniature of this same run, before its real 32-bit columns. */
-export function SubtractionBridge({ record }: { record: Addition }) {
+/** The worked miniature, or its introduction to the real 32-bit calculation. */
+export function SubtractionBridge({ record, wide = false }: { record: Addition; wide?: boolean }) {
   const { small: m, wide: w } = subtractionBridge(record);
   const values = {
     a: decimal(m.a),
@@ -35,8 +35,17 @@ export function SubtractionBridge({ record }: { record: Addition }) {
     resultBits: m.patterns.result,
   };
   const text = (template: string) => fill(template, values);
+  if (wide) {
+    return (
+      <section className="al-sub-bridge-wide" aria-label={S.wideTitle}>
+        <h3>{S.wideTitle}</h3>
+        <Prose markdown={text(S.wideWhy)} />
+        <Prose markdown={text(S.rule)} />
+      </section>
+    );
+  }
   return (
-    <section className="al-sub-bridge" aria-label={S.title}>
+    <section className="al-figure al-sub-bridge" aria-label={S.title}>
       <h3>{S.title}</h3>
       <Prose markdown={text(S.scope)} />
       <div className="al-sub-bridge-panels">
@@ -115,11 +124,6 @@ export function SubtractionBridge({ record }: { record: Addition }) {
           <p className="al-sub-bridge-total">{text(S.fullSumReading)}</p>
           <Prose markdown={text(S.sumWhy)} />
         </div>
-      </div>
-      <div className="al-sub-bridge-wide">
-        <h3>{S.wideTitle}</h3>
-        <Prose markdown={text(S.wideWhy)} />
-        <Prose markdown={text(S.rule)} />
       </div>
     </section>
   );

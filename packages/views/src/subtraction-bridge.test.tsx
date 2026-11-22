@@ -48,6 +48,8 @@ describe("the visible subtraction bridge", () => {
   it("makes inversion, carry in and the retained boundary visible before the real instruction", () => {
     const { container, getByRole } = figure({ subtractionBridge: true });
     const bridge = container.querySelector(".al-sub-bridge")!;
+    const wide = container.querySelector(".al-adder .al-sub-bridge-wide")!;
+    expect(container.querySelectorAll(".al-subtraction-panes > .al-figure")).toHaveLength(2);
     const pattern = (row: string) =>
       bridge.querySelector(`[data-bridge-row="${row}"] code`)?.textContent;
     expect(pattern("b")).toBe("0011");
@@ -57,8 +59,10 @@ describe("the visible subtraction bridge", () => {
     expect(pattern("carry-in")).toBe("0001");
     expect(bridge.querySelector("[data-bridge-carry]")).toHaveTextContent("1");
     expect(bridge.querySelector("[data-bridge-result]")).toHaveTextContent("0101");
-    expect(bridge.textContent).toContain("4,294,967,295");
-    expect(bridge.textContent).toContain("4,294,967,296");
+    expect(wide.textContent).toContain("4,294,967,295");
+    expect(wide.textContent).toContain("4,294,967,296");
+    expect(bridge.querySelector(".al-sub-bridge-wide")).toBeNull();
+    expect(container.querySelector(".al-adder .al-sub-bridge")).toBeNull();
     expect(bridge.textContent).not.toMatch(/\{\w+\}/);
     expect(bridge.querySelector("button,details")).toBeNull();
     expect(
