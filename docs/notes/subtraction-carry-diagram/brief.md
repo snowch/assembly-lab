@@ -1,0 +1,17 @@
+<!-- Copyright © 2026 Christopher Snow -->
+
+# Subtraction carry: make the width boundary visible
+
+The user found the jump from an inverted input to a + 4294967296 - b unexplained and accepted a four-bit diagram before the existing 32-bit calculation. Preserve the reminder connecting to prior subtraction-as-addition teaching.
+
+Outcome: explain why the inverted second input plus the carry-in changes the full sum to one unsigned range plus a - b, and locate the extra carry outside the retained bits. Keep the existing later negation practice and signed-limit prediction. New arithmetic controls, function writing and circuit design are outside scope.
+
+Preparation: earlier four-bit arithmetic defines inversion, add one and width retention; addition lessons teach carries and NZCV; the preceding elapsed lesson uses subtraction. Source and existing final built/live reviews were inspected in the previous task; this change's final built page still needs review. The user's difficulty is observed feedback; other misconception hypotheses are confusing the all-ones maximum with the next place, treating carry in and carry out as the same bit, or silently changing operand values when moving between widths.
+
+Checked source: the actual subs w0, w0, w1 record for inputs 8 and 3, using additionSteps/traceOf and columnWork. packages/views/src/subtraction-bridge.ts reads the low four columns and full 32-bit record. It does not execute a new four-bit processor. In the miniature b=0011/3 and inverted b=1100/12; each pair adds to one, giving1111/15. Carry in1 makes the range16. Full sum8+12+1=21 has carry1 of weight16 and retained0101/5. In the real 32-bit view all ones is4294967295, range4294967296, inverted b4294967292, fullsum4294967301 and retained result5/C1. Existing native corpus already includes the real 8/3 call. All256 small input pairs must obey the same carry/no-borrow rule, including b0/equality; invalid larger inputs cannot be silently truncated into a miniature.
+
+The diagram replaces the unexplained large-number paragraph with a labelled worked mechanism: original b + inverted b = all ones, then a + inverted b + carry in, with one separately framed carry place and four retained places. Unsigned decimal readings accompany the bits. All essential rows and explanation are visible. The bridge to the real width explicitly distinguishes maximum all-ones from the next place, before the existing32-bit adder. Keep the prose shorter than a second complete subtraction lesson.
+
+Fresh application is already in the independent negation exercise later in the lesson; do not reveal its zero/near-minimum answers. No new quiz or saved state is necessary. Existing diagram ID, prediction IDs and learner work remain intact. Figure is an optional prop on the existing adder, default false elsewhere; gates must apply before the explanation renders. Inspect ordinary addition and another subtraction sibling as well as this target.
+
+Evidence sought: correct model-derived inversion, all-ones result, carry/retained split and explicit four-to32 bridge in final built phone/desktop actual light/dark; no overflow, readable bit labels, no new focus/scroll behaviour, existing adder controls/gates and saved state preserved. Agent reviews and tests are functional/content evidence, not novice learning-effectiveness evidence. Follow docs/style.md and docs/visual-language.md. Separate drafting and independent learner/technical review are required by CLAUDE.md.

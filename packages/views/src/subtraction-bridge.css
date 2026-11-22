@@ -1,0 +1,116 @@
+/* Copyright © 2026 Christopher Snow */
+
+.al-sub-bridge {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.al-sub-bridge h3,
+.al-sub-bridge h4,
+.al-sub-bridge p {
+  margin: 0;
+}
+.al-sub-bridge h3 {
+  font-size: var(--text-lg);
+}
+.al-sub-bridge h4 {
+  font-size: var(--text-md);
+}
+.al-sub-bridge .prose {
+  min-width: 0;
+}
+.al-sub-bridge-panels {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.al-sub-bridge-panel {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.al-sub-bridge-stack {
+  display: grid;
+  gap: var(--space-2);
+}
+.al-sub-bridge-row,
+.al-sub-bridge-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 0.75rem 5rem 4rem;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.al-sub-bridge-head {
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+  text-align: center;
+}
+.al-sub-bridge-row {
+  font-size: var(--text-sm);
+}
+.al-sub-bridge-bits {
+  display: block;
+  padding: var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+.al-sub-bridge-decimal {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.al-sub-bridge-row[data-bridge-row="all-ones"] {
+  border-top: 1px solid var(--border-strong);
+  padding-top: var(--space-2);
+}
+.al-sub-bridge-output {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-strong);
+}
+.al-sub-bridge-output > * {
+  text-align: center;
+  align-self: stretch;
+  font-size: var(--text-sm);
+}
+.al-sub-bridge-output code {
+  padding: var(--space-2);
+  border-radius: var(--radius);
+  font-size: var(--text-xl);
+  font-family: var(--font-mono);
+}
+.al-sub-bridge-carry {
+  border: 1px dashed var(--border-strong);
+  background: var(--bg-sunken);
+}
+.al-sub-bridge-stored {
+  border: 2px solid var(--accent);
+  background: var(--accent-soft);
+  letter-spacing: 0.15em;
+}
+.al-sub-bridge-output small {
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+.al-sub-bridge-wide {
+  display: grid;
+  gap: var(--space-3);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-4);
+}
+.al-sub-bridge-wide code {
+  overflow-wrap: anywhere;
+}
+@media (min-width: 52rem) {
+  .al-sub-bridge-panels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
