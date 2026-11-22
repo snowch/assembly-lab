@@ -1,5 +1,10 @@
 /* Copyright © 2026 Christopher Snow */
 
+.al-subtraction-panes {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+}
 .al-sub-bridge {
   display: grid;
   gap: var(--space-3);
@@ -7,16 +12,20 @@
 }
 .al-sub-bridge h3,
 .al-sub-bridge h4,
-.al-sub-bridge p {
+.al-sub-bridge p,
+.al-sub-bridge-wide h3,
+.al-sub-bridge-wide p {
   margin: 0;
 }
-.al-sub-bridge h3 {
+.al-sub-bridge h3,
+.al-sub-bridge-wide h3 {
   font-size: var(--text-lg);
 }
 .al-sub-bridge h4 {
   font-size: var(--text-md);
 }
-.al-sub-bridge .prose {
+.al-sub-bridge .prose,
+.al-sub-bridge-wide .prose {
   min-width: 0;
 }
 .al-sub-bridge-panels {
@@ -103,8 +112,7 @@
 .al-sub-bridge-wide {
   display: grid;
   gap: var(--space-3);
-  border-top: 1px solid var(--border);
-  padding-top: var(--space-4);
+  min-width: 0;
 }
 .al-sub-bridge-wide code {
   overflow-wrap: anywhere;

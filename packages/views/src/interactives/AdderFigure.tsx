@@ -363,7 +363,7 @@ export const AdderFigure = withProps(Props, function AdderFigure({ data, store, 
     <FlagsRow flags={finished ? flagsAfter : null} before={finished ? flagsBefore : null} />
   );
 
-  return (
+  const calculation = (
     <div
       className="al-figure al-adder"
       data-figure="adder"
@@ -372,7 +372,7 @@ export const AdderFigure = withProps(Props, function AdderFigure({ data, store, 
       role="group"
       aria-label={A.adder.rows}
     >
-      {data.subtractionBridge && <SubtractionBridge record={record} />}
+      {data.subtractionBridge && <SubtractionBridge record={record} wide />}
       <div className="al-adder-instruction">
         <p className="al-adder-instruction-label">{A.adder.instructionLabel}</p>
         <code className="al-adder-instruction-code">{step.text}</code>
@@ -570,5 +570,13 @@ export const AdderFigure = withProps(Props, function AdderFigure({ data, store, 
       </p>
       {data.note !== undefined && <p className="al-adder-note">{withCode(data.note)}</p>}
     </div>
+  );
+  return data.subtractionBridge ? (
+    <div className="al-subtraction-panes">
+      <SubtractionBridge record={record} />
+      {calculation}
+    </div>
+  ) : (
+    calculation
   );
 });
