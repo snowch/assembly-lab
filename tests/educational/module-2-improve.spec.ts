@@ -5,7 +5,7 @@
 // and reaches the same state each way; the column just worked and the carries at bit 31 are the
 // model's; the flags challenge is three groups of choices, names a wrong flag and keeps the answers
 // the learner chose; the stepper marks what changed and says what an add left alone; the ring's strip
-// shows the two stretches and their total; the two subtraction figures open at their final states;
+// shows the two stretches and their total; the focused carry example opens at its final state;
 // and nothing is shown before the prediction or the challenge it follows.
 
 import { expect, test, type Locator, type Page } from "@playwright/test";
@@ -14,6 +14,7 @@ import { LESSONS } from "@al/content";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { ARITH_STRINGS as A } from "../../packages/views/src/strings.arith";
 
+import { SUBTRACTION_FOCUS_COPY as FOCUS } from "../../content/lessons/subtraction-flags-and-negation.copy";
 import { designProblems } from "./design";
 
 const TWO = "subtracting-and-the-tick-counter";
@@ -145,11 +146,10 @@ test.describe("lesson 2, the ring's strip and the subtraction figures", () => {
 
   for (const d of [
     {
-      id: "subtract-wrapped",
-      c: "C = 0: a borrow was needed",
-      result: "Result: 0x000007d0, which is 2000",
+      id: "carry-means-no-borrow",
+      c: "C = 1: no borrow",
+      result: "Result: 0x00000005, which is 5",
     },
-    { id: "subtract-no-wrap", c: "C = 1: no borrow", result: "Result: 0x00001964, which is 6500" },
   ]) {
     test(`${d.id} opens at its final state, with the second operand as given and then changed`, async ({
       page,
@@ -175,12 +175,12 @@ test.describe("lesson 2, the ring's strip and the subtraction figures", () => {
     });
   }
 
-  test("the two subtraction figures keep their rows inside 360 pixels, one under the other, with no sideways scroll", async ({
+  test("the focused carry diagram keeps its rows inside 360 pixels with no sideways page scroll", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 360, height: 800 });
     await openLesson(page, "subtraction-flags-and-negation");
-    for (const id of ["subtract-wrapped", "subtract-no-wrap"]) {
+    for (const id of ["carry-means-no-borrow"]) {
       const figure = page.locator(`#ix-${id}`);
       await figure.scrollIntoViewIfNeeded();
       await press(page, figure.getByRole("button", { name: A.adder.reset }));
@@ -214,32 +214,33 @@ test.describe("lesson 2, the ring's strip and the subtraction figures", () => {
       await openLesson(page, id);
       const answer = page.locator('section[data-kind="reflection"] details.lesson-details');
       await expect(answer).not.toHaveAttribute("open", "");
-      await expect(answer.locator("summary")).toHaveText("Answer");
+      await expect(answer.locator("summary")).toHaveText(
+        id === TWO ? "Answer" : FOCUS.reflectionSummary,
+      );
       await press(page, answer.locator("summary"));
       await expect(answer).toHaveAttribute("open", "");
       if (id === TWO) {
         await expect(answer).toContainText("592 ticks");
         await expect(answer).toContainText("fewer than one full turn");
         await expect(answer).not.toContainText("C is 0");
-      } else await expect(answer).toContainText("592, and C is 0");
+      } else {
+        await expect(answer).toContainText("V remains 1");
+        await expect(answer).toContainText("Plain neg does not update V");
+      }
     }
   });
 
-  test("the arithmetic worked example opens without saved counter work and says what the subtraction kept", async ({
+  test("ordinary negation opens without saved counter work and reports the same retained bits", async ({
     page,
   }) => {
     await openLesson(page, "subtraction-flags-and-negation");
-    const own = page.locator("#ix-subtract-own");
-    await own.scrollIntoViewIfNeeded();
-    await expect(own.locator(".al-locked")).toHaveCount(0);
-    await expect(own.locator(".al-adder-note")).toContainText(
-      "A single 32-bit subtraction keeps the low 32 bits of now - then.",
-    );
-    await expect(own.locator('.al-adder-final [data-line="result"]')).toHaveText(
-      "Result: 0x000001f4, which is 500",
-    );
-    await expect(own.locator('.al-adder-final [data-line="c"]')).toHaveText(
-      "C = 0: a borrow was needed",
-    );
+    const ordinary = page.locator("#ix-negate-an-ordinary-value");
+    await ordinary.scrollIntoViewIfNeeded();
+    await expect(ordinary.locator(".al-locked")).toHaveCount(0);
+    await expect(ordinary.locator('[data-register="w0"] .al-reg-value')).toHaveText("5");
+    await press(page, ordinary.getByRole("button", { name: V.stepper.next, exact: true }));
+    await expect(ordinary.locator('[data-register="w0"] .al-reg-value')).toHaveText("4294967291");
+    await expect(ordinary.locator(".al-flag-value")).toHaveText(["1", "0", "0", "0"]);
+    await expect(page.locator("#ix-subtract-own")).toHaveCount(0);
   });
 });
