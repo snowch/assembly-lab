@@ -42,6 +42,23 @@ describe("the published short lesson sequence", () => {
           ).toBe(true);
           continue;
         }
+        // The author-approved focus revision retires the repeated counter quiz. Its saved
+        // entry remains in storage; the replacement has independent inputs and a new identity.
+        if (source.id === "subtracting-and-the-tick-counter" && challenge.id === "one-step-past") {
+          const focused = pages.find((page) => page.id === "subtraction-flags-and-negation")!;
+          expect(focused.challenges.map((item) => item.id)).toEqual(["negation-flags"]);
+          const fresh = focused.challenges[0]!;
+          expect(fresh.tests.kind).toBe("answers");
+          if (fresh.tests.kind === "answers") {
+            expect(new Set(fresh.tests.cases.map((item) => item.given["w0"]))).toEqual(
+              new Set([0, 0x80000001]),
+            );
+            expect(fresh.tests.cases.every((item) => item.given["entry"] === "negate_flags")).toBe(
+              true,
+            );
+          }
+          continue;
+        }
         if (challenge.tests.kind !== "answers") continue;
         for (const test of challenge.tests.cases)
           for (const [field, value] of Object.entries(test.expect)) {

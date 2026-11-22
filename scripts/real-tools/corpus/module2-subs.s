@@ -13,3 +13,11 @@ elapsed_start:
 elapsed_fixed:
   sub w0, w0, w1
   ret
+// Authored examples for the focused subtraction/negation page.
+subtract_flags:
+  subs w0, w0, w1
+  ret
+negate_preserved_flags:
+  negs w1, w1
+  neg w0, w0
+  ret

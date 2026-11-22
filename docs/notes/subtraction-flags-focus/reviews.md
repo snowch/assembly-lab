@@ -1,0 +1,21 @@
+<!-- Copyright © 2026 Christopher Snow -->
+
+# Review decisions and verification
+
+The separate drafting pass produced the canonical copy in copy.md. The integration pass made the minimum introduction name the instruction explicitly and clarified the signed-negation rule. The writer's closing pass added the visible unique-overflow rule before the fresh exercise. No later rewrite changed the examples or arithmetic.
+
+The independent learner reviewer read actual earlier public pages and the old target, then checked the final sequence at 320, 390 and 1440 pixels in actual light/dark themes. The ordinary example prepares the boundary prediction and the new grouped exercise. The signed/unsigned distinction stays local, inputs and automatic behaviour are named, and no function-writing prerequisite was introduced.
+
+Accepted learner finding: a sentence referred to the completed diagram “below” although it rendered beside the controls after the diagram. The spatial pointer was removed in both source and canonical record and verified in all six contexts.
+
+Accepted technical finding: at 320 pixels the binary choices extended 17 pixels beyond their fieldsets despite the document having no horizontal overflow. Shared compact answer choices now wrap when needed without reducing touch target height, and this exercise uses two flag columns. Every option was independently measured inside its own fieldset at all six widths/themes. Published grouped-number siblings in counting-up and shifts-and-signed-division were checked at narrow/wide sizes in both themes; their layouts remained usable. The archived generic flag-choice editor remains covered by shared tests.
+
+The technical reviewer independently verified the formulas, normal and boundary results, flag semantics, fresh model grading and native instruction behaviour. Custom 12-call/36-state and current module2-subs 25-call/75-state GNU/QEMU comparisons had zero differences. Independent focused/shared tests passed. No open technical finding remained.
+
+Both reviewers checked the prediction gate, ordinary Next/reset, blank/wrong/correct answers, keyboard use, reload and confirmed reset. Real old saved state was replayed: the unchanged signed-limit prediction restores, the historical elapsed quiz entry remains intact, and it cannot complete the new negation-flags challenge. The new ID avoids changing the meaning of existing saved answers.
+
+Assessment limit: both fresh V answers are zero. The worked/predicted minimum example supplies the V=1 contrast; the nearby input tests transfer across that boundary. These checks do not alone distinguish every correct overflow explanation from guessing zero. The reflection separately tests whether a preserved V belongs to the latest negation. Passing model tests, browser checks and agent reviews are functional/content evidence, not proof of learning effectiveness. No novice session or real screen-reader study was conducted.
+
+Verification history is preserved separately: an early focused run found three stale source-versus-published assertions after retiring the duplicate counter content. They now distinguish archived compiler/native fidelity from the new published behaviour without dropping arithmetic checks. A later new test used the browser URL constructor for a filesystem record; it was corrected to NodeURL. An initial browser assertion mistook the digits of the supplied negative input for an answer leak; it now checks the explanatory feedback and absence of expected-value payloads. The failed commands remain failed attempts. Final focused, full-suite, CI and live results are recorded separately in the pull request.
+
+Raw independent evidence is outside the repository at /workspace/work/subtraction-flags-focus/learner/review.md and technical-review.md. The final decision is to keep the C derivation and signed-limit prediction, teach ordinary negation first, use the new independent exercise, and retire the repeated counter prose and quiz from this route. No reviewer finding was rejected.

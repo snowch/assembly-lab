@@ -22,7 +22,7 @@ import {
   testCount,
 } from "@platform/lesson-schema";
 
-import { LESSONS } from ".";
+import { LESSONS, SOURCE_LESSONS } from ".";
 import { introducedBy } from "./introduced";
 import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
 import { PROSE } from "./subtracting-and-the-tick-counter.prose";
@@ -87,15 +87,13 @@ describe("the lesson", () => {
       expect(ids.indexOf(x.props["after"] as string), x.id).toBeLessThan(ids.indexOf(x.id));
   });
 
-  it("opens the worked counter subtraction locally in the arithmetic unit", () => {
-    const worked = arithmetic.sections
-      .flatMap((part) => part.interactives)
-      .find((part) => part.id === "subtract-own")!;
-    expect(worked.props["afterChallenge"]).toBeUndefined();
-    const call = worked.props["call"] as { args: number[] };
-    const c = challenge("write-elapsed");
-    if (c.tests.kind !== "answers") throw new Error("answers");
-    expect(c.tests.cases.map((t) => [t.given["w0"], t.given["w1"]])).toContainEqual(call.args);
+  it("keeps the following arithmetic page focused on carry and negation", () => {
+    const figures = arithmetic.sections.flatMap((part) => part.interactives);
+    expect(figures.some((part) => part.id === "carry-means-no-borrow")).toBe(true);
+    expect(
+      figures.some((part) => /subtract-(own|wrapped|no-wrap)|counter-ring/.test(part.id)),
+    ).toBe(false);
+    expect(arithmetic.challenges.map((part) => part.id)).toEqual(["negation-flags"]);
   });
 
   it("says nowhere that a subtraction, or C, counts or detects how many times a counter wrapped", () => {
@@ -108,8 +106,9 @@ describe("the lesson", () => {
         /\bwraps?\b|\bwrapped\b/i.test(t) &&
         /how many|number of|counts? (the )?wraps|detect/i.test(t),
     );
-    // The only such sentences are the denials.
-    expect(about.length).toBeGreaterThan(0);
+    // Any statements about counting wraps must be denials; the focused flags lesson
+    // no longer repeats the counter explanation just to satisfy this check.
+    expect(learnerText(lesson).join(" ")).toContain("less than one full turn");
     expect(about.every((t) => /not record|does not/.test(t))).toBe(true);
     // And it says what a borrow means only under the assumption.
     expect(PROSE.generalisation).toContain(
@@ -128,7 +127,7 @@ describe("the lesson", () => {
 });
 
 describe("the challenges", () => {
-  it.each(["write-elapsed", "one-step-past"])(
+  it.each(["write-elapsed", "negation-flags"])(
     "%s: the reference passes every test and the starting point does not",
     (id) => {
       const c = challenge(id);
@@ -176,9 +175,7 @@ describe("the challenges", () => {
     expect(introducedBy(LESSONS, LESSONS.indexOf(arithmetic))).toEqual(
       expect.arrayContaining(["neg", "negs"]),
     );
-    expect(learnerText(arithmetic).join("\n")).toContain(
-      "`neg w0, w0` sets a value to its negative",
-    );
+    expect(learnerText(arithmetic).join("\n")).toMatch(/`neg w0, w0`/);
   });
 
   it("write-elapsed: a wrong answer shows its values as unsigned numbers, not negative ones", () => {
@@ -215,7 +212,9 @@ describe("the challenges", () => {
   });
 
   it("one-step-past: a wrong result or a wrong C is told which it was, and never the value", () => {
-    const c = challenge("one-step-past");
+    const c = SOURCE_LESSONS.find((item) => item.id === lesson.id)!.challenges.find(
+      (item) => item.id === "one-step-past",
+    )!;
     const wrongResult = grade(c, { answers: { result: "4294967295", c: "0" } });
     expect(wrongResult.failures.map((f) => f.label)).toEqual([
       "The result of elapsed(0, 4294967295)",
@@ -228,7 +227,9 @@ describe("the challenges", () => {
   });
 
   it("one-step-past: both answers are asked for before anything is graded", () => {
-    const c = challenge("one-step-past");
+    const c = SOURCE_LESSONS.find((item) => item.id === lesson.id)!.challenges.find(
+      (item) => item.id === "one-step-past",
+    )!;
     expect(grade(c, { answers: { result: "1" } }).blocked).toContain("C after");
   });
 });
@@ -265,39 +266,19 @@ describe("the page", () => {
     expect(within(answer).getByText("Answer")).toBeTruthy();
   });
 
-  it("shows the arithmetic unit's worked subtraction without earlier saved work", () => {
+  it("shows the focused carry example and keeps the minimum trace gated", () => {
     const { container } = render(
       <LessonView book={book} lesson={arithmetic} storage={memoryStorage()} />,
     );
-    const own = container.querySelector("#ix-subtract-own") as HTMLElement;
-    expect(own.querySelector(".al-locked")).toBeNull();
-    expect(own.querySelector(".al-adder-note")?.textContent).toContain(
-      "A single 32-bit subtraction keeps the low 32 bits of now - then.",
+    const adder = container.querySelector("#ix-carry-means-no-borrow")!;
+    expect(adder.querySelector(".al-locked")).toBeNull();
+    expect(adder.querySelector('[data-line="result"]')?.textContent).toBe(
+      "Result: 0x00000005, which is 5",
     );
-    expect(own.querySelector('[data-line="result"]')?.textContent).toBe(
-      "Result: 0x000001f4, which is 500",
+    expect(adder.querySelector('[data-line="c"]')?.textContent).toBe("C = 1: no borrow");
+    expect(container.querySelector("#ix-step-negs .al-locked")).toBeTruthy();
+    expect(container.querySelectorAll(".interactive-problem, .interactive-missing")).toHaveLength(
+      0,
     );
-    expect(own.querySelector('[data-line="c"]')?.textContent).toBe("C = 0: a borrow was needed");
-  });
-
-  it("opens the two arithmetic examples at their final states with controls to trace each", () => {
-    const { container } = render(
-      <LessonView book={book} lesson={arithmetic} storage={memoryStorage()} />,
-    );
-    const line = (id: string, key: string) =>
-      container.querySelector(`#ix-${id} [data-line="${key}"]`)?.textContent;
-    expect(line("subtract-wrapped", "c")).toBe("C = 0: a borrow was needed");
-    expect(line("subtract-no-wrap", "c")).toBe("C = 1: no borrow");
-    expect(line("subtract-no-wrap", "result")).toBe("Result: 0x00001964, which is 6500");
-    expect(line("subtract-wrapped", "result")).toBe("Result: 0x000007d0, which is 2000");
-    const order = [...container.querySelectorAll("figure.interactive")].map((f) => f.id);
-    expect(order.indexOf("ix-subtract-wrapped")).toBeLessThan(order.indexOf("ix-subtract-no-wrap"));
-    // Each has its column-by-column view: the controls to step from the start.
-    for (const id of ["subtract-wrapped", "subtract-no-wrap"])
-      expect(
-        within(container.querySelector(`#ix-${id}`) as HTMLElement).getByRole("button", {
-          name: ARITH_STRINGS.adder.reset,
-        }),
-      ).toBeTruthy();
   });
 });

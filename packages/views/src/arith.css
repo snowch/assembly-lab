@@ -491,7 +491,7 @@
   font-weight: 700;
 }
 .answer-compact .answer-options {
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: var(--space-1);
 }
 /* A number or a word in a group is a text box with a sentence for a label: it takes the whole row,
@@ -557,4 +557,9 @@
   min-height: 44px;
   padding-block: 0.5rem;
   cursor: pointer;
+}
+
+/* This exercise has one retained result followed by two flag choices. */
+#challenge-negation-flags .answer-group-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
