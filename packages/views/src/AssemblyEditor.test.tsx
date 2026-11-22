@@ -51,6 +51,30 @@ beforeEach(() => {
   localStorage.clear();
 });
 
+it("keeps a short exercise in text without changing saved Tap work or other editors", async () => {
+  localStorage.setItem("assembly-lab:v1:editor-mode", "tap");
+  const saved = "sub w0, w0, w1\nret";
+  const simple = Challenge.parse({
+    ...written,
+    initial: { ...written.initial, data: { editor: { mode: "text", symbols: [] } } },
+  });
+  const view = render(<Harness start={{ text: saved }} challenge={simple} />);
+  expect(textBox()).toHaveValue(saved);
+  expect(screen.queryByRole("group", { name: S.editor.mode })).not.toBeInTheDocument();
+  expect(screen.queryByRole("group", { name: S.editor.symbols })).not.toBeInTheDocument();
+  expect(localStorage.getItem("assembly-lab:v1:editor-mode")).toBe("tap");
+  const user = userEvent.setup();
+  await user.type(textBox(), "\n// my note");
+  expect(textBox()).toHaveValue(`${saved}\n// my note`);
+  view.unmount();
+  render(<Harness start={{ text: saved }} />);
+  expect(mode(S.editor.tap)).toHaveAttribute("aria-pressed", "true");
+  expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+  await user.click(mode(S.editor.text));
+  expect(textBox()).toHaveValue(saved);
+  expect(group(S.editor.symbols)).toBeInTheDocument();
+});
+
 describe("tap mode", () => {
   it("builds `sub w0, w0, w1` and `ret` from chips alone, and the grader passes it", async () => {
     const user = userEvent.setup();

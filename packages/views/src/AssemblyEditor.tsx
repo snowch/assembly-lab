@@ -119,20 +119,22 @@ function TextMode({
   };
   return (
     <div className="asm-text-mode">
-      <div className="asm-bar" role="group" aria-label={S.editor.symbols}>
-        {symbols.map((c) => (
-          <button
-            key={c}
-            type="button"
-            className="button secondary asm-key"
-            aria-label={S.editor.insert(c)}
-            onMouseDown={keepFocus}
-            onClick={() => insert(c)}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
+      {symbols.length > 0 && (
+        <div className="asm-bar" role="group" aria-label={S.editor.symbols}>
+          {symbols.map((c) => (
+            <button
+              key={c}
+              type="button"
+              className="button secondary asm-key"
+              aria-label={S.editor.insert(c)}
+              onMouseDown={keepFocus}
+              onClick={() => insert(c)}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      )}
       <textarea
         ref={box}
         className="asm-text"
@@ -583,6 +585,7 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
     .filter((m) => !fragment || m !== "ret" || /^\s*ret\b/m.test(text))
     .flatMap((m) => (m === "b.cond" ? conditions.map((c) => `b.${c}`) : [m]));
   const [mode, setMode] = useHandoffState<Mode>("AssemblyEditor.mode", rememberedMode);
+  const activeMode = chosen.mode ?? mode;
   const introduced = useMemo(() => introducedOf(challenge), [challenge]);
   const errors = useMemo(
     () => assemble(text, { allowed: new Set(allowed), introduced }).errors,
@@ -612,7 +615,7 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
   return (
     <div
       className="asm-editor"
-      data-mode={mode}
+      data-mode={activeMode}
       onFocusCapture={() => help?.rememberChallenge(challenge.id)}
       onPointerDownCapture={() => help?.rememberChallenge(challenge.id)}
     >
@@ -642,20 +645,22 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
         </table>
       )}
       {calculator.success && <Calculator handoffKey={challenge.id} division="whole" />}
-      <div className="asm-mode" role="group" aria-label={S.editor.mode}>
-        <span className="asm-mode-label">{S.editor.mode}</span>
-        {(["text", "tap"] as const).map((m) => (
-          <button
-            key={m}
-            type="button"
-            className="button secondary"
-            aria-pressed={mode === m}
-            onClick={() => choose(m)}
-          >
-            {m === "text" ? S.editor.text : S.editor.tap}
-          </button>
-        ))}
-      </div>
+      {!chosen.mode && (
+        <div className="asm-mode" role="group" aria-label={S.editor.mode}>
+          <span className="asm-mode-label">{S.editor.mode}</span>
+          {(["text", "tap"] as const).map((m) => (
+            <button
+              key={m}
+              type="button"
+              className="button secondary"
+              aria-pressed={mode === m}
+              onClick={() => choose(m)}
+            >
+              {m === "text" ? S.editor.text : S.editor.tap}
+            </button>
+          ))}
+        </div>
+      )}
       {help && (
         <button
           type="button"
@@ -676,7 +681,7 @@ export const AssemblyEditor: ComponentType<ChallengeEditorProps> = ({
           {errorMnemonic ? HELP.syntax(errorMnemonic) : HELP.reference}
         </button>
       )}
-      {mode === "text" ? (
+      {activeMode === "text" ? (
         <TextMode
           text={text}
           setText={setText}

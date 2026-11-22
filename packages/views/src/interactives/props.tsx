@@ -46,6 +46,8 @@ export const DeleteSchema = z.object({ label: z.string(), text: z.string() });
  * whether the tap mode offers a number pad (`numberPad`, true unless it says false).
  */
 export const EditorKeysSchema = z.object({
+  /** Short exercises may present just the text editor without changing the saved mode. */
+  mode: z.literal("text").optional(),
   symbols: z.array(z.string().min(1)).optional(),
   registers: z.array(z.string().min(1)).optional(),
   numberPad: z.boolean().optional(),

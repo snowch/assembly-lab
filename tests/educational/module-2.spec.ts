@@ -80,8 +80,6 @@ const registerValue = (figure: Locator, name: string) =>
   figure.locator(`[data-register="${name}"] .al-reg-value`);
 const flagValues = (figure: Locator) =>
   figure.locator(".al-flag").evaluateAll((els) => els.map((e) => e.getAttribute("data-value")));
-const stored = (page: Page, id: string) =>
-  page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? "null"), key(id));
 
 /** Every prediction in a lesson: it commits before it reveals, and the model says what matches. */
 async function predictionCommitsBeforeItReveals(
@@ -250,8 +248,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
   });
 
   test.describe("the construction challenge", () => {
-    test("is completed by typing, at the desktop width", async ({ page }, info) => {
-      test.skip(info.project.name !== "desktop", "typing is the desktop width's way in");
+    test("is completed by typing on desktop and phone", async ({ page }) => {
       const errors = watchErrors(page);
       await openLesson(page, "subtracting-and-the-tick-counter");
       const c = challenge(page, WRITE);
@@ -267,50 +264,15 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       expect(errors).toEqual([]);
     });
 
-    test("is completed by tapping alone, at the phone width", async ({ page }, info) => {
-      test.skip(info.project.name !== "phone", "tapping is the phone width's way in");
-      const errors = watchErrors(page);
+    test("offers a direct text editor with the instruction reference", async ({ page }) => {
       await openLesson(page, "subtracting-and-the-tick-counter");
       const c = challenge(page, WRITE);
-      await c.scrollIntoViewIfNeeded();
-      await c.getByRole("button", { name: V.editor.tap, exact: true }).tap();
-      // No text box in this mode: nothing can be typed.
-      await expect(c.getByRole("textbox")).toHaveCount(0);
-      await c.getByRole("button", { name: V.editor.addFirst, exact: true }).tap();
-      const chip = (group: string, name: string) =>
-        c
-          .getByRole("group", { name: group, exact: true })
-          .getByRole("button", { name, exact: true });
-      await chip(V.editor.instruction, "sub").tap();
-      await chip(V.editor.operand(1), "w0").tap();
-      await chip(V.editor.operand(2), "w0").tap();
-      await chip(V.editor.operand(3), "w1").tap();
-      await expect(c.locator(".asm-line-button")).toHaveCount(1);
-      await expect(c.locator(".asm-line-button").first()).toContainText("sub w0, w0, w1");
-      await run(c).tap();
-      await expect(status(c)).toHaveText(passing(4));
-      await expect(c.locator(".challenge-complete")).toHaveText(S.challenge.complete);
-      expect(
-        (await stored(page, "subtracting-and-the-tick-counter")).challenges[WRITE].artifact.text,
-      ).toBe("sub w0, w0, w1");
-      expect(errors).toEqual([]);
-    });
-
-    test("offers the instructions of the gate and the two registers, and no other", async ({
-      page,
-    }) => {
-      await openLesson(page, "subtracting-and-the-tick-counter");
-      const c = challenge(page, WRITE);
-      await c.scrollIntoViewIfNeeded();
-      await press(page, c.getByRole("button", { name: V.editor.tap, exact: true }));
-      await press(page, c.getByRole("button", { name: V.editor.addFirst, exact: true }));
-      const chips = (group: string) =>
-        c.getByRole("group", { name: group, exact: true }).locator("button.chip");
-      // Start an arithmetic line; termination is supplied automatically.
-      await press(page, chips(V.editor.instruction).filter({ hasText: /^sub$/ }));
-      // neg is taught here but this challenge does not allow it, so the chips leave it out.
-      await expect(chips(V.editor.instruction)).toHaveText(["add", "sub", "adds", "subs"]);
-      await expect(chips(V.editor.operand(1))).toHaveText(["w0", "w1"]);
+      await expect(c.getByRole("textbox", { name: V.editor.textLabel })).toBeVisible();
+      await expect(c.getByRole("group", { name: V.editor.mode, exact: true })).toHaveCount(0);
+      await expect(c.getByRole("group", { name: V.editor.symbols })).toHaveCount(0);
+      await expect(
+        c.getByRole("button", { name: "Instruction reference", exact: true }),
+      ).toBeVisible();
     });
 
     test("fails unchanged input on all four pairs, and shows the resulting count", async ({
@@ -488,7 +450,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
     });
 
-    test("and so are the figures once they have been used, the tap editor open and verdicts shown", async ({
+    test("and so are the figures once they have been used, the text editor edited and verdicts shown", async ({
       page,
     }, info) => {
       const phone = info.project.name === "phone";
@@ -500,8 +462,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       await press(page, stepper.getByRole("button", { name: V.stepper.next }));
       await openLesson(page, "subtracting-and-the-tick-counter");
       const write = challenge(page, WRITE);
-      await press(page, write.getByRole("button", { name: V.editor.tap, exact: true }));
-      await press(page, write.getByRole("button", { name: V.editor.addFirst, exact: true }));
+      await write.getByRole("textbox", { name: V.editor.textLabel }).fill("add w0, w0, #0");
       await press(page, run(write));
       await openLesson(page, "subtraction-flags-and-negation");
       const step = challenge(page, STEP);
@@ -511,7 +472,6 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       await press(page, step.getByRole("button", { name: /Show hint/ }));
       expect(await designProblems(page, phone)).toEqual([]);
       await openLesson(page, "subtracting-and-the-tick-counter");
-      await press(page, write.getByRole("button", { name: V.editor.text, exact: true }));
       await write.getByRole("textbox", { name: V.editor.textLabel }).fill("cmp w0, w1");
       expect(await designProblems(page, phone)).toEqual([]);
     });

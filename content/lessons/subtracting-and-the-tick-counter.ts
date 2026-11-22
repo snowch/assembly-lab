@@ -225,12 +225,13 @@ export const subtractingAndTheTickCounter: LessonInput = {
       title: LABELS.challenges.elapsed.title,
       task: PROSE.elapsedTask,
       gradedDirection: "write",
-      // The registers the tap editor offers, and the instructions the lesson's assembler allows.
+      // Register palette and assembler gate; ret remains accepted for existing saved work.
       palette: ["w0", "w1"],
       allowedConstructs: ["add", "sub", "adds", "subs", "ret"],
       initial: {
         text: "",
         data: {
+          editor: { mode: "text", symbols: [] },
           exercise: {
             kind: "arithmetic-fragment",
             inputs: [
