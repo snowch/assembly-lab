@@ -37,6 +37,7 @@ import { ARITH_STRINGS as A } from "../strings.arith";
 import { VIEW_STRINGS as S } from "../strings";
 import { traceOf, type Trace } from "../trace";
 import { passedChallenge } from "./gate";
+import { SubtractionBridge } from "./SubtractionBridge";
 import { CallSchema, RecordedSchema, withProps } from "./props";
 
 const Props = z.object({
@@ -64,6 +65,8 @@ const Props = z.object({
   note: z.string().optional(),
   /** Lesson-specific calculation guidance, immediately beside the stepping controls. */
   guidance: z.string().optional(),
+  /** A worked four-bit view and explicit bridge to this same 32-bit subtraction. */
+  subtractionBridge: z.boolean().default(false),
 });
 
 /** The columns, left to right: the 33rd place for the carry out, then the groups the figure draws. */
@@ -369,6 +372,7 @@ export const AdderFigure = withProps(Props, function AdderFigure({ data, store, 
       role="group"
       aria-label={A.adder.rows}
     >
+      {data.subtractionBridge && <SubtractionBridge record={record} />}
       <div className="al-adder-instruction">
         <p className="al-adder-instruction-label">{A.adder.instructionLabel}</p>
         <code className="al-adder-instruction-code">{step.text}</code>

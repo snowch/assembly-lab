@@ -113,6 +113,7 @@ export const SUBTRACTION_FLAGS_PART: LessonPart = {
             detail: true,
             summary: true,
             opensAtEnd: true,
+            subtractionBridge: true,
             guidance: C.carryGuidance,
           },
         },
