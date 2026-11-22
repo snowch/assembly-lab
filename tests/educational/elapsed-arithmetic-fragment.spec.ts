@@ -8,9 +8,18 @@ for (const theme of ["light", "dark"])
   }) => {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
+    await page.addInitScript(() => localStorage.setItem("assembly-lab:v1:editor-mode", "tap"));
     await page.goto("#/lesson/subtracting-and-the-tick-counter");
     await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
     const exercise = page.locator("#challenge-write-elapsed");
+    await expect(exercise.getByRole("group", { name: "Edit as", exact: true })).toHaveCount(0);
+    await expect(exercise.getByRole("group", { name: "Characters for assembly" })).toHaveCount(0);
+    await expect(
+      exercise.getByRole("button", { name: "Instruction reference", exact: true }),
+    ).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem("assembly-lab:v1:editor-mode"))).toBe(
+      "tap",
+    );
     const table = exercise.getByRole("table");
     await expect(table.getByRole("row")).toHaveCount(5);
     await expect(table.getByRole("columnheader")).toHaveText(["now (w0)", "then (w1)"]);
@@ -39,10 +48,8 @@ for (const theme of ["light", "dark"])
     await page.reload();
     await expect(editor).toHaveValue("sub w0, w0, w1");
     await expect(exercise).toHaveAttribute("data-complete", "true");
-    // Legacy saved code survives both editor modes and still runs.
+    // Legacy saved code remains editable and still runs with a saved Tap preference.
     await editor.fill("sub w0, w0, w1\nret");
-    await exercise.getByRole("button", { name: "Tap", exact: true }).click();
-    await exercise.getByRole("button", { name: "Text", exact: true }).click();
     await expect(editor).toHaveValue("sub w0, w0, w1\nret");
     await run.click();
     await expect(exercise).toHaveAttribute("data-complete", "true");
