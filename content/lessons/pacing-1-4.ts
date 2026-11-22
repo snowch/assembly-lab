@@ -23,7 +23,7 @@ import { sectionOf, splitLesson } from "./pacing";
 import { shifts } from "./shifts";
 import { PROSE as SHIFT } from "./shifts.prose";
 import { subtractingAndTheTickCounter } from "./subtracting-and-the-tick-counter";
-import { PROSE as SUB } from "./subtracting-and-the-tick-counter.prose";
+import { NEGATION_CHALLENGE, SUBTRACTION_FLAGS_PART } from "./subtraction-flags-and-negation";
 
 type Section = LessonInput["sections"][number];
 type Figure = NonNullable<Section["interactives"]>[number];
@@ -337,125 +337,89 @@ const addition = splitLesson(addingAndTheFlags, [
 
 const counterInvestigation = section(subtractingAndTheTickCounter, "investigation");
 const counterConstruction = section(subtractingAndTheTickCounter, "construction");
-const counterNegation = section(subtractingAndTheTickCounter, "failureExperiment");
 const counterReflection = section(subtractingAndTheTickCounter, "reflection");
-const ownSubtraction = figure(subtractingAndTheTickCounter, "subtract-own");
-const subtraction = splitLesson(subtractingAndTheTickCounter, [
+const subtraction = splitLesson(
   {
-    id: subtractingAndTheTickCounter.id,
-    title: COPY.subtraction.title,
-    objectives: [...COPY.subtraction.objectives],
-    introduces: [],
-    originalityNote: {
-      ...subtractingAndTheTickCounter.originalityNote,
-      howThisDiffers: COPY.subtraction.originality,
-    },
-    sections: [
-      {
-        kind: "question",
-        title: COUNTER_WRAP.title,
-        prose: "",
-        interactives: [
-          {
-            id: "counter-wrap",
-            kind: "counter-wrap",
-            timeModel: "steps",
-            role: "experiment",
-            caption: COUNTER_WRAP.caption,
-            props: {},
-          },
-        ],
+    ...subtractingAndTheTickCounter,
+    challenges: [...(subtractingAndTheTickCounter.challenges ?? []), NEGATION_CHALLENGE],
+  },
+  [
+    {
+      id: subtractingAndTheTickCounter.id,
+      title: COPY.subtraction.title,
+      objectives: [...COPY.subtraction.objectives],
+      introduces: [],
+      originalityNote: {
+        ...subtractingAndTheTickCounter.originalityNote,
+        howThisDiffers: COPY.subtraction.originality,
       },
-      {
-        kind: "motivation",
-        title: COUNTER_SUB.title,
-        prose: "",
-        interactives: [
-          {
-            id: "counter-subtraction-reminder",
-            kind: "counter-subtraction",
-            timeModel: "none",
-            role: "diagram",
-            caption: COUNTER_SUB.caption,
-            props: {},
-          },
-        ],
-      },
-      {
-        ...section(subtractingAndTheTickCounter, "prediction"),
-        prose: [
-          section(subtractingAndTheTickCounter, "motivation").prose,
-          section(subtractingAndTheTickCounter, "prediction").prose,
-        ].join("\n\n"),
-      },
-      {
-        ...counterInvestigation,
-        title: COPY.subtraction.investigationTitle,
-        prose: COPY.subtraction.investigation,
-        interactives: [
-          {
-            ...figure(subtractingAndTheTickCounter, "counter-ring"),
-            props: {
-              ...figure(subtractingAndTheTickCounter, "counter-ring").props,
-              purpose: "elapsed",
+      sections: [
+        {
+          kind: "question",
+          title: COUNTER_WRAP.title,
+          prose: "",
+          interactives: [
+            {
+              id: "counter-wrap",
+              kind: "counter-wrap",
+              timeModel: "steps",
+              role: "experiment",
+              caption: COUNTER_WRAP.caption,
+              props: {},
             },
-          },
-        ],
-      },
-      {
-        ...counterConstruction,
-        prose: [counterConstruction.prose, COPY.subtraction.instructionNote].join("\n\n"),
-        interactives: [figure(subtractingAndTheTickCounter, "write-elapsed")],
-      },
-      {
-        ...counterReflection,
-        prose: COPY.subtraction.reflection,
-        details: { ...counterReflection.details!, prose: COPY.subtraction.reflectionAnswer },
-      },
-    ],
-  },
-  {
-    id: "subtraction-flags-and-negation",
-    title: COPY.subtractionArithmetic.title,
-    objectives: [...COPY.subtractionArithmetic.objectives],
-    introduces: ["borrow"],
-    sections: [
-      {
-        kind: "investigation",
-        title: COPY.subtraction.drilldownTitle,
-        prose: [
-          SUB.borrowIntroduction,
-          COPY.subtractionArithmetic.reminder,
-          SUB.subtractionInvestigation,
-        ].join("\n\n"),
-        interactives: [
-          ...(counterInvestigation.interactives ?? [])
-            .filter((part) => part.kind === "adder")
-            .map((part) => ({
-              ...part,
-              lead: undefined,
-              props: { ...part.props, after: undefined },
-            })),
-          {
-            ...ownSubtraction,
-            caption: COPY.subtractionArithmetic.exampleCaption,
-            props: { ...ownSubtraction.props, afterChallenge: undefined },
-          },
-        ],
-      },
-      counterNegation,
-      {
-        kind: "explanation",
-        title: section(subtractingAndTheTickCounter, "explanation").title,
-        prose: COPY.subtraction.explanation,
-        interactives: [],
-      },
-      section(subtractingAndTheTickCounter, "generalisation"),
-      section(subtractingAndTheTickCounter, "challenge"),
-      counterReflection,
-    ],
-  },
-]).map((lesson) =>
+          ],
+        },
+        {
+          kind: "motivation",
+          title: COUNTER_SUB.title,
+          prose: "",
+          interactives: [
+            {
+              id: "counter-subtraction-reminder",
+              kind: "counter-subtraction",
+              timeModel: "none",
+              role: "diagram",
+              caption: COUNTER_SUB.caption,
+              props: {},
+            },
+          ],
+        },
+        {
+          ...section(subtractingAndTheTickCounter, "prediction"),
+          prose: [
+            section(subtractingAndTheTickCounter, "motivation").prose,
+            section(subtractingAndTheTickCounter, "prediction").prose,
+          ].join("\n\n"),
+        },
+        {
+          ...counterInvestigation,
+          title: COPY.subtraction.investigationTitle,
+          prose: COPY.subtraction.investigation,
+          interactives: [
+            {
+              ...figure(subtractingAndTheTickCounter, "counter-ring"),
+              props: {
+                ...figure(subtractingAndTheTickCounter, "counter-ring").props,
+                purpose: "elapsed",
+              },
+            },
+          ],
+        },
+        {
+          ...counterConstruction,
+          prose: [counterConstruction.prose, COPY.subtraction.instructionNote].join("\n\n"),
+          interactives: [figure(subtractingAndTheTickCounter, "write-elapsed")],
+        },
+        {
+          ...counterReflection,
+          prose: COPY.subtraction.reflection,
+          details: { ...counterReflection.details!, prose: COPY.subtraction.reflectionAnswer },
+        },
+      ],
+    },
+    SUBTRACTION_FLAGS_PART,
+  ],
+).map((lesson) =>
   lesson.id === subtractingAndTheTickCounter.id
     ? {
         ...lesson,

@@ -13,7 +13,7 @@ import { describe, expect, it } from "vitest";
 import { additionSteps, bitAt, parseListing, ringReading, secondAsGiven, traceOf } from "@al/views";
 import { learnerText } from "@platform/lesson-schema";
 
-import { LESSONS } from ".";
+import { SOURCE_LESSONS } from ".";
 import {
   ELAPSED,
   ELAPSED_FIXED_TEXT,
@@ -36,14 +36,9 @@ import {
   recorded,
 } from "./module-2.runs";
 
-const units = ["subtracting-and-the-tick-counter", "subtraction-flags-and-negation"].map((id) =>
-  LESSONS.find((l) => l.id === id)!,
-);
-const lesson = {
-  ...units[0]!,
-  sections: units.flatMap((unit) => unit.sections),
-  challenges: units.flatMap((unit) => unit.challenges),
-};
+// Historical authoring group: native and compiler recordings remain intact when the public
+// lesson sequence replaces a duplicated example or assessment.
+const lesson = SOURCE_LESSONS.find((item) => item.id === "subtracting-and-the-tick-counter")!;
 
 const MAX = 0xffffffff;
 const elapsed = (now: number, then: number) =>
@@ -221,7 +216,7 @@ describe("the adder drawing elapsed_subs", () => {
     expect(elapsed(9000, 2500).w0).toBe(6500);
   });
 
-  it("uses calls outside the construction tests and opens the arithmetic examples without remote gates", () => {
+  it("keeps the archived calls outside the construction tests with their original prediction gates", () => {
     const calls = lesson.challenges.flatMap((c) =>
       c.tests.kind === "answers"
         ? c.tests.cases.map((t) => [t.given["w0"], t.given["w1"]].join(","))
@@ -231,7 +226,7 @@ describe("the adder drawing elapsed_subs", () => {
     // The wrapped call is the prediction's and the ring's, not a challenge's.
     expect(calls).not.toContain("1000,4294966296");
     for (const id of ["subtract-wrapped", "subtract-no-wrap"])
-      expect(figure(id).props["after"]).toBeUndefined();
+      expect(figure(id).props["after"]).toBe("predict-elapsed");
   });
 
   it("are in the differential test's corpus, as calls of elapsed_subs", () => {
@@ -527,7 +522,7 @@ describe("the final states the two subtraction figures open with", () => {
   it("opens both arithmetic examples at their final states, with the detail", () => {
     for (const id of ["subtract-wrapped", "subtract-no-wrap"]) {
       const figure = lesson.sections.flatMap((s) => s.interactives).find((x) => x.id === id)!;
-      expect(figure.props["after"]).toBeUndefined();
+      expect(figure.props["after"]).toBe("predict-elapsed");
       expect(figure.props["opensAtEnd"]).toBe(true);
       expect(figure.props["detail"]).toBe(true);
       expect(figure.props["summary"]).toBe(true);

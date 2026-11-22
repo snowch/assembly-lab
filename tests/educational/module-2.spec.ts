@@ -6,7 +6,7 @@
 // four-flag prediction and the smallest overflow reject wrong answers and accept the reference; a
 // completion survives a reload and is graded again; Clear work removes it; and the page keeps the look
 // the shell's own pages keep. Lesson 2: the same, and the construction challenge is completed by
-// typing (at the desktop width) and by tapping alone (at the phone width), the tempting answer is
+// typing at both widths, the tempting answer is
 // refused by the gate, and the ring and the stepper show the model's values.
 
 import { expect, test, type Locator, type Page } from "@playwright/test";
@@ -23,9 +23,10 @@ import { format } from "../../platform/lesson-runtime/src/strings";
 import { SUM_FLAGS } from "../../content/lessons/adding-and-the-flags.listings";
 import {
   ELAPSED,
-  ELAPSED_SUBS,
   NEGATE_FLAGS,
 } from "../../content/lessons/subtracting-and-the-tick-counter.listings";
+import { SUBTRACT_FLAGS } from "../../content/lessons/subtraction-flags-and-negation.listings";
+import { SUBTRACTION_FOCUS_COPY as FOCUS } from "../../content/lessons/subtraction-flags-and-negation.copy";
 import { designProblems } from "./design";
 const TWO = "subtracting-and-the-tick-counter";
 const lesson = (id: string) => LESSONS.find((l) => l.id === id)!;
@@ -147,7 +148,16 @@ test.describe("lesson 1, Adding, and the four flags", () => {
 
 const ELAPSED_CALL = { entry: "elapsed", args: [1000, 4294966296] };
 const WRITE = "write-elapsed";
-const STEP = "one-step-past";
+const STEP = "negation-flags";
+const negationReference = () =>
+  LESSONS.flatMap((unit) => unit.challenges).find((item) => item.id === STEP)!.reference.answers!;
+async function fillNegation(host: Locator, answers: Record<string, string>) {
+  for (const [field, value] of Object.entries(answers)) {
+    const box = host.locator(`[data-field="${field}"]`);
+    if (field.endsWith("result")) await box.locator("input").fill(value);
+    else await box.getByRole("radio", { name: value, exact: true }).check();
+  }
+}
 
 test.describe("lesson 2, Subtracting, and the tick counter", () => {
   test("loads with no console error, selected sections and two challenges", async ({ page }) => {
@@ -199,22 +209,19 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     expect(box.x + box.width).toBeLessThanOrEqual(page.viewportSize()!.width);
   });
 
-  test.describe("the adder drawing elapsed_subs", () => {
-    const SUBS = { c: "", listing: ELAPSED_SUBS.listing };
+  test.describe("the carry/no-borrow adder", () => {
+    const SUBS = SUBTRACT_FLAGS;
     const drawn = [
-      { id: "subtract-wrapped", args: [1000, 4294966296], flags: ["0", "0", "0", "0"], out: "0" },
-      { id: "subtract-no-wrap", args: [9000, 2500], flags: ["0", "0", "1", "0"], out: "1" },
+      { id: "carry-means-no-borrow", args: [8, 3], flags: ["0", "0", "1", "0"], out: "1" },
     ];
 
     for (const d of drawn) {
-      test(`${d.id}: shut until the prediction is checked, then draws the model's subtraction and C ${d.flags[2]}`, async ({
-        page,
-      }) => {
+      test(`${d.id}: opens with the model's subtraction and C ${d.flags[2]}`, async ({ page }) => {
         await openLesson(page, "subtraction-flags-and-negation");
         const adder = page.locator(`#ix-${d.id}`);
         await adder.scrollIntoViewIfNeeded();
         await expect(adder.locator(".al-locked")).toHaveCount(0);
-        const model = traceOf(SUBS, { entry: "elapsed_subs", args: d.args });
+        const model = traceOf(SUBS, { entry: "subtract_flags", args: d.args });
         const record = additionSteps(model)[0]!.addition!;
         expect(record.subtraction).toBe(true);
         const cell = (row: string, column: number) =>
@@ -374,71 +381,102 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
     await expect(stepper.getByRole("button", { name: V.stepper.next })).toBeDisabled();
   });
 
-  test.describe("one step past the top", () => {
-    const fill = async (c: Locator, result: string, flag: string) => {
-      await c.locator('[data-field="result"] input').fill(result);
-      await c.locator('[data-field="c"] input').fill(flag);
-    };
-
-    test("shows the subtraction it is about, and asks for two numbers", async ({ page }) => {
+  test.describe("fresh negation results and flags", () => {
+    test("shows the supplied instruction and two independent groups", async ({ page }) => {
       await openLesson(page, "subtraction-flags-and-negation");
-      const c = challenge(page, STEP);
-      await c.scrollIntoViewIfNeeded();
-      await expect(c.locator(".al-insn .al-text")).toHaveText(["subs w0, w0, w1", "ret"]);
-      await expect(c.locator(".answer-field")).toHaveCount(2);
+      const host = challenge(page, STEP);
+      await expect(host.locator(".al-insn .al-text")).toHaveText(["negs w0, w0", "ret"]);
+      await expect(host.locator(".answer-group")).toHaveCount(2);
+      await expect(host.locator(".answer-field")).toHaveCount(6);
+      await expect(page.locator('[data-challenge="one-step-past"]')).toHaveCount(0);
+      await expect(host).toContainText(FOCUS.zeroGroup);
+      await expect(host).toContainText(FOCUS.nearGroup);
     });
 
-    test("rejects a wrong result and a wrong C, naming which, and never saying the value", async ({
+    test("rejects wrong results and borrow/overflow confusion without revealing the answer", async ({
       page,
     }) => {
       await openLesson(page, "subtraction-flags-and-negation");
-      const c = challenge(page, STEP);
-      await c.scrollIntoViewIfNeeded();
-      await fill(c, "4294967295", "0");
-      await press(page, run(c));
-      await expect(status(c)).toHaveText(failing(1, 2));
-      await expect(c.locator(".verdict-failure h4")).toHaveText([
-        "The result of elapsed(0, 4294967295)",
+      const host = challenge(page, STEP);
+      await fillNegation(host, { ...negationReference(), "near-result": "2147483649" });
+      await press(page, run(host));
+      await expect(status(host)).toHaveText(failing(5, 6));
+      await expect(host.locator(".verdict-failure h4")).toHaveText([
+        `${FOCUS.nearGroup}: ${FOCUS.resultField}`,
       ]);
-      await fill(c, "1", "1");
-      await press(page, run(c));
-      await expect(c.locator(".verdict-failure h4")).toHaveText(["C after subs"]);
-      await expect(c.locator(".challenge-complete")).toHaveCount(0);
-      await expect(c.locator(".verdict")).not.toContainText(/\b1\b.*\b0\b/);
+      await expect(host.locator(".verdict-detail")).toHaveText(
+        FOCUS.feedback.result.replaceAll("`", ""),
+      );
+      await expect(host.locator(".verdict-values")).toHaveCount(0);
+      await fillNegation(host, { ...negationReference(), "zero-c": "0" });
+      await press(page, run(host));
+      await expect(host.locator(".verdict-failure h4")).toHaveText([
+        `${FOCUS.zeroGroup}: ${FOCUS.cField}`,
+      ]);
+      await fillNegation(host, { ...negationReference(), "near-v": "1" });
+      await press(page, run(host));
+      await expect(host.locator(".verdict-failure h4")).toHaveText([
+        `${FOCUS.nearGroup}: ${FOCUS.vField}`,
+      ]);
+      await expect(host.locator(".challenge-complete")).toHaveCount(0);
     });
 
-    test("asks for both numbers before it grades anything", async ({ page }) => {
+    test("asks for all six answers before grading", async ({ page }) => {
       await openLesson(page, "subtraction-flags-and-negation");
-      const c = challenge(page, STEP);
-      await c.scrollIntoViewIfNeeded();
-      await c.locator('[data-field="result"] input').fill("1");
-      await press(page, run(c));
-      await expect(status(c)).toHaveText(S.challenge.blocked);
-      await expect(c.locator(".verdict.blocked")).toContainText("C after");
+      const host = challenge(page, STEP);
+      await host.locator('[data-field="zero-result"] input').fill("0");
+      await press(page, run(host));
+      await expect(status(host)).toHaveText(S.challenge.blocked);
+      await expect(host.locator(".verdict.blocked")).toContainText(FOCUS.cField);
     });
 
-    test("accepts the reference, keeps it over a reload, and goes when the work is cleared", async ({
+    test("preserves old work, grades the new exercise independently, and resets only its answers", async ({
       page,
     }) => {
       await openLesson(page, "subtraction-flags-and-negation");
-      let c = challenge(page, STEP);
-      await c.scrollIntoViewIfNeeded();
-      const answers = LESSONS.flatMap((unit) => unit.challenges).find((x) => x.id === STEP)!
-        .reference.answers!;
-      await fill(c, answers["result"]!, answers["c"]!);
-      await press(page, run(c));
-      await expect(status(c)).toHaveText(passing(2));
-      await expect(c.locator(".challenge-complete")).toHaveText(S.challenge.complete);
+      await page.evaluate(
+        (key) =>
+          localStorage.setItem(
+            key,
+            JSON.stringify({
+              version: 1,
+              challenges: {
+                "one-step-past": {
+                  artifact: { answers: { result: "1", c: "0" } },
+                  attempts: 1,
+                  hintsRevealed: 1,
+                  firstPassedAt: "2026-11-21T12:00:00Z",
+                },
+              },
+              slots: {},
+            }),
+          ),
+        key("subtraction-flags-and-negation"),
+      );
       await page.reload();
-      c = challenge(page, STEP);
-      await expect(c.locator(".challenge-complete")).toBeVisible();
-      await expect(c.locator('[data-field="result"] input')).toHaveValue(answers["result"]!);
-      await press(page, c.getByRole("button", { name: new RegExp(`^${S.challenge.reset}`) }));
-      await press(page, c.getByRole("button", { name: S.challenge.resetConfirm }));
-      await expect(c.locator(".challenge-complete")).toHaveCount(0);
-      await expect(c.locator('[data-field="result"] input')).toHaveValue("");
+      const host = challenge(page, STEP);
+      await expect(host).toHaveAttribute("data-complete", "false");
+      await expect(host.locator('[data-field="zero-result"] input')).toHaveValue("");
+      await fillNegation(host, negationReference());
+      await press(page, run(host));
+      await expect(status(host)).toHaveText(passing(6));
+      await expect(host).toHaveAttribute("data-complete", "true");
       await page.reload();
-      await expect(challenge(page, STEP).locator(".challenge-complete")).toHaveCount(0);
+      await expect(host).toHaveAttribute("data-complete", "true");
+      await expect(host.locator('[data-field="near-result"] input')).toHaveValue("2147483647");
+      await press(page, host.getByRole("button", { name: new RegExp(`^${S.challenge.reset}`) }));
+      await press(page, host.getByRole("button", { name: S.challenge.resetConfirm }));
+      await expect(host).toHaveAttribute("data-complete", "false");
+      await expect(host.locator('[data-field="near-result"] input')).toHaveValue("");
+      expect(
+        await page.evaluate(
+          (key) =>
+            JSON.parse(localStorage.getItem(key)!).challenges["one-step-past"].artifact.answers,
+          key("subtraction-flags-and-negation"),
+        ),
+      ).toEqual({ result: "1", c: "0" });
+      await page.reload();
+      await expect(host).toHaveAttribute("data-complete", "false");
     });
   });
 
@@ -466,8 +504,7 @@ test.describe("lesson 2, Subtracting, and the tick counter", () => {
       await press(page, run(write));
       await openLesson(page, "subtraction-flags-and-negation");
       const step = challenge(page, STEP);
-      await step.locator('[data-field="result"] input').fill("2");
-      await step.locator('[data-field="c"] input').fill("1");
+      await fillNegation(step, { ...negationReference(), "zero-c": "0" });
       await press(page, run(step));
       await press(page, step.getByRole("button", { name: /Show hint/ }));
       expect(await designProblems(page, phone)).toEqual([]);

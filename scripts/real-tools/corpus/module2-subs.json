@@ -114,6 +114,49 @@
         ["0", 32],
         ["4294967295", 32]
       ]
+    },
+    {
+      "entry": "subtract_flags",
+      "args": [
+        ["8", 32],
+        ["3", 32]
+      ]
+    },
+    {
+      "entry": "subtract_flags",
+      "args": [
+        ["3", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "subtract_flags",
+      "args": [
+        ["8", 32],
+        ["0", 32]
+      ]
+    },
+    {
+      "entry": "subtract_flags",
+      "args": [
+        ["8", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "negate_flags",
+      "args": [["2147483649", 32]]
+    },
+    {
+      "entry": "negate_flags",
+      "args": [["7", 32]]
+    },
+    {
+      "entry": "negate_preserved_flags",
+      "args": [
+        ["3", 32],
+        ["2147483648", 32]
+      ]
     }
   ]
 }

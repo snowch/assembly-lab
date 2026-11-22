@@ -1,0 +1,57 @@
+// Copyright © 2026 Christopher Snow
+
+import { expect, test } from "@playwright/test";
+import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
+
+for (const theme of ["light", "dark"])
+  test(`focused negation starts from an ordinary value and keeps narrow flag choices inside their groups in ${theme}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 900 });
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    await page.goto("#/lesson/subtraction-flags-and-negation");
+    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe(
+      theme === "light" ? "rgb(247, 250, 248)" : "rgb(16, 27, 26)",
+    );
+    await expect(
+      page.locator(
+        "#ix-subtract-own, #ix-subtract-wrapped, #ix-counter-ring, #challenge-one-step-past",
+      ),
+    ).toHaveCount(0);
+    await expect(page.locator("#ix-step-negs .al-locked")).toBeVisible();
+    const ordinary = page.locator("#ix-negate-an-ordinary-value");
+    await expect(ordinary.locator('.al-reg[data-register="w0"] .al-reg-value')).toHaveText("5");
+    await ordinary.getByRole("button", { name: V.stepper.next, exact: true }).click();
+    await expect(ordinary.locator('.al-reg[data-register="w0"] .al-reg-value')).toHaveText(
+      "4294967291",
+    );
+    expect(await ordinary.locator(".al-flag .al-flag-value").allTextContents()).toEqual([
+      "1",
+      "0",
+      "0",
+      "0",
+    ]);
+    const challenge = page.locator("#challenge-negation-flags");
+    await expect(challenge.locator(".answer-group")).toHaveCount(2);
+    await expect(challenge.getByRole("radio", { checked: true })).toHaveCount(0);
+    const fields = challenge.locator("fieldset.answer-choice");
+    await expect(fields).toHaveCount(4);
+    for (const field of await fields.all()) {
+      const parent = (await field.boundingBox())!;
+      for (const option of await field.locator("label.answer-option").all()) {
+        const box = (await option.boundingBox())!;
+        expect(box.x).toBeGreaterThanOrEqual(parent.x - 1);
+        expect(box.x + box.width).toBeLessThanOrEqual(parent.x + parent.width + 1);
+        expect(box.height).toBeGreaterThanOrEqual(40);
+      }
+    }
+    await challenge.locator('[data-field="zero-c"] input[value="1"]').focus();
+    await page.keyboard.press("Space");
+    await expect(challenge.locator('[data-field="zero-c"] input[value="1"]')).toBeChecked();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    expect(errors).toEqual([]);
+  });
