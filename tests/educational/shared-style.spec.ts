@@ -53,3 +53,28 @@ for (const theme of ["light", "dark"] as const) {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(STRINGS.title);
   });
 }
+
+test("course outline expands below its location row and keeps the current simulation", async ({
+  page,
+}) => {
+  await page.goto("#/lesson/one-addition");
+  const operation = page.locator("#ix-worked-addition [data-figure='primitive-operation']");
+  await operation.getByRole("button", { name: "Run the instruction", exact: true }).click();
+  await expect(operation).toHaveAttribute("data-k", "1");
+  const trigger = page.getByRole("button", { name: "Course lessons", exact: true });
+  const before = await trigger.boundingBox();
+  await trigger.click();
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  const after = await trigger.boundingBox();
+  expect(after!.y).toBe(before!.y);
+  const row = await page.locator(".course-location-row").boundingBox();
+  const panel = page.locator("#course-lesson-panel");
+  expect((await panel.boundingBox())!.y).toBeGreaterThanOrEqual(row!.y + row!.height);
+  await panel.locator('a[aria-current="page"]').click();
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  await expect(operation).toHaveAttribute("data-k", "1");
+  await trigger.click();
+  await page.keyboard.press("Escape");
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  await expect(trigger).toBeFocused();
+});

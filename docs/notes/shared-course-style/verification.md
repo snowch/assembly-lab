@@ -9,3 +9,24 @@ Independent browser review identified inherited white homepage title text after 
 A first broad source command was interrupted after formatting/type stages and after Vitest started; its log does not establish a full unit result. The first combined browser lifecycle run had a shared Playwright output-directory ENOENT from a concurrent focused command and a cancellation case requiring isolated rerun. Those original runs remain interrupted/failed, separate from final checks. Subsequent suites use unique output paths.
 
 Final command results and publication evidence are appended below. Functional checks do not establish learning effectiveness.
+
+## Final integration handoff
+
+The bounded duplicate unit run was stopped deliberately when the exact `npm run
+check` pipeline began; neither interrupted unit command is a passing full-suite
+result. The final pipeline log is `/tmp/arm-check-final.log`. Browser suites use a
+unique output directory when run separately, avoiding the earlier shared trace
+output collision.
+
+Independent review is recorded in `independent-review.md`. The final integration
+accepts all three low-severity findings: the Course lessons control remains in the
+combined location row while only its outline expands below; the duplicated
+hash-navigation explanation was removed; the engine note now describes verified
+server retention and links the current optional-save contract. Selecting the
+already-current lesson also closes the outline without remounting its simulator.
+A browser regression checks row stability, preserved simulation, current-link
+closure and Escape focus return.
+
+Local formatting, copyright and platform-copy integrity stages of the final exact
+pipeline passed. Type checking and subsequent stages are still running; this is a
+progress record, not a full-suite success.
