@@ -13,6 +13,7 @@ const release = (marker: string) =>
     { path: "index.html", bytes: `<html>${marker}</html>` },
     { path: "native/example.s", bytes: marker },
     { path: "icon.svg", bytes: "<svg/>" },
+    { path: `assets/runtime-${marker}.js`, bytes: `console.log(${JSON.stringify(marker)})` },
   ]);
 const directories: string[] = [];
 afterEach(async () => {
@@ -114,6 +115,23 @@ describe("publication retention", () => {
         fetcher: site.fetcher,
       }),
     ).resolves.toEqual([site.current.metadata.buildId]);
+    expect(await readFile(join(directory, "assets/runtime-legacy.js"), "utf8")).toBe(
+      'console.log("legacy")',
+    );
+  });
+
+  it("does not overwrite a current canonical asset when an old URL collides", async () => {
+    const directory = await output();
+    const site = server();
+    await writeFile(join(directory, "assets/runtime-A.js"), "different current bytes");
+    await expect(
+      retainPublishedReleases(directory, "https://example.test/assembly-lab/", {
+        fetcher: site.fetcher,
+      }),
+    ).rejects.toThrow("URL collision");
+    expect(await readFile(join(directory, "assets/runtime-A.js"), "utf8")).toBe(
+      "different current bytes",
+    );
   });
 
   it("rejects mixed bytes and leaves current release metadata untouched", async () => {

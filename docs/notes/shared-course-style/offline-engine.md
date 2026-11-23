@@ -56,7 +56,9 @@ complete copy and report failure.
 
 The published artifact contains the current immutable tree. The publish retention
 adapter now verifies and retains the two prior server release trees and preserves
-the last pre-immutable deployment's compatibility assets. A failed verification
+the last pre-immutable deployment's compatibility assets, including original
+content-addressed `assets/` URLs for its existing tabs. Same-URL/different-byte
+collisions block publication instead of overwriting current assets. A failed verification
 blocks publication, except the first deployment's expected 404. Complete saved
 releases also remain in retained browser caches; they are not evicted by ordinary
 activation. A tab older than the server retention window can still lose an asset

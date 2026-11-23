@@ -71,6 +71,20 @@ export async function retainPublishedReleases(
             if (!matches(bytes, file))
               throw new Error(`Published asset failed verification: ${file.path}`);
           }
+          // Pre-immutable tabs still request Vite's content-addressed asset URLs.
+          // Keep those original URLs as well as the immutable tree. Never replace
+          // a current file: a same-URL/different-byte collision blocks publication.
+          if (file.path.startsWith("assets/")) {
+            const canonical = join(directory, file.path);
+            await mkdir(dirname(canonical), { recursive: true });
+            try {
+              await writeFile(canonical, bytes, { flag: "wx" });
+            } catch (error) {
+              if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+              if (!matches(await readFile(canonical), file))
+                throw new Error(`Retained asset URL collision: ${file.path}`);
+            }
+          }
           const path = join(directory, "releases", id, file.path);
           await mkdir(dirname(path), { recursive: true });
           await writeFile(path, bytes);

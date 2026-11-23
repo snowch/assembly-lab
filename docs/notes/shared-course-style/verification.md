@@ -30,3 +30,32 @@ closure and Escape focus return.
 Local formatting, copyright and platform-copy integrity stages of the final exact
 pipeline passed. Type checking and subsequent stages are still running; this is a
 progress record, not a full-suite success.
+
+The exact local pipeline subsequently passed TypeScript, all **224 unit/integration
+files (4,040 tests)** and the production build. It then started the complete
+**1,560-case desktop/phone browser suite**; completion is tracked in the PR checks
+and final handoff rather than inferred from the focused results below.
+
+The initial pushed CI run at `481864e` failed TypeScript because the already-tested
+`offline.ts` integration changes had been omitted from that intermediate commit.
+They were included in `9919d61`; the local complete type/unit/build stages above
+run with that integration present. That original CI command remains a failed run.
+Obsolete runs were cancelled after newer commits superseded them.
+
+The previously failing cancellation scenario was rerun alone with a unique trace
+output directory: **1/1 passed** (`/tmp/arm-cancel-isolated.log`). It cancelled a
+real transfer, reopened the prior complete course offline, resumed preparation
+and restarted to the intended replacement. Final independent disposition checks
+also passed **1/1** on the reviewed build; their exact identity and screenshots
+are recorded by the independent reviewer.
+
+A final publication-helper reread found that pre-immutable tabs still request
+original content-addressed `assets/` URLs. Keeping only the immutable copies was
+insufficient. Publication now preserves those original verified URLs too, and
+refuses an existing same-URL/different-byte collision rather than overwriting the
+current asset. The retention filesystem suite passed **7/7**, including legacy
+original URLs and refusal to overwrite current bytes
+(`/tmp/arm-retention-final.log`). This adapter-only change does not change the
+reviewed lesson/runtime layout. The final head's complete CI run, including this
+additional regression, is available under
+[PR 171 checks](https://github.com/snowch/assembly-lab/pull/171/checks).

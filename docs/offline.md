@@ -22,7 +22,7 @@ The build also emits exact immutable copies at `releases/<buildId>/`. Entry scri
 
 A document, published release, worker runtime and selected saved offline release are distinct identities. `course-build-id` records the loaded document. `savedVersion` identifies a selected, complete verified saved copy; `savedCurrent` compares it with the loaded document. Published metadata supplies freshness separately. Metadata checks bypass the saved course and reject stale or malformed responses.
 
-At publication, `apps/course/offline/retain.ts` retains two preceding verified release trees. It checks original byte counts and hashes, including compatibility with the deployment before immutable paths existed. A failed retention blocks publication rather than silently deleting older tabs' dependencies. This is bounded retention, not a promise to preserve every historical unsaved tab indefinitely.
+At publication, `apps/course/offline/retain.ts` retains two preceding verified release trees. It checks original byte counts and hashes, including compatibility with the deployment before immutable paths existed. Verified content-addressed files under `assets/` also remain at their original URLs for pre-immutable tabs; an existing same-URL/different-byte collision blocks publication. A failed retention blocks publication rather than silently deleting older tabs' dependencies. This is bounded retention, not a promise to preserve every historical unsaved tab indefinitely.
 
 ## Download, navigation and recovery
 
