@@ -24,6 +24,8 @@ import { BUILD_VERSION, commitHref } from "./build-version";
 import { HeaderCalculator } from "./HeaderCalculator";
 import { HeaderInstructionReference, type ReferenceRequest } from "./HeaderInstructionReference";
 import { THEME_TITLE } from "./strings.instruction-reference";
+import { CourseNavigation } from "./CourseNavigation";
+import { LAYOUT_STRINGS as L } from "./strings.layout";
 import { AppStatus } from "./AppStatus";
 import { STATUS_STRINGS } from "./strings.status";
 import { useOffline } from "./offline";
@@ -253,13 +255,6 @@ export function App() {
             onClose={closeReference}
             updating={offline?.updating}
           />
-          <a className="github-star" href={GITHUB_REPOSITORY}>
-            <span aria-hidden="true">☆</span>
-            <span>
-              {STRINGS.githubStar}{" "}
-              <span className="github-star-destination">{STRINGS.githubStarDestination}</span>
-            </span>
-          </a>
           <label className="theme-picker" title={THEME_TITLE(themeName)}>
             <span>{STRINGS.theme}</span>
             <svg
@@ -296,6 +291,7 @@ export function App() {
           {unsavedWork ? STRINGS.workNotSaved : ""}
         </div>
         <main id="main" className="shell-main" tabIndex={-1} inert={offline?.updating}>
+          {currentLesson && <CourseNavigation lesson={currentLesson} completion={completion} />}
           {page}
         </main>
         <footer className="shell-footer" inert={offline?.updating}>
@@ -320,6 +316,9 @@ export function App() {
               </li>
             </ul>
           </nav>
+          <p className="course-source">
+            <a href={GITHUB_REPOSITORY}>{L.sourceFooter}</a>
+          </p>
           <p className="copyright">{STRINGS.copyright}</p>
           {BUILD_VERSION && (
             <p className="build-version">

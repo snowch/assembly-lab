@@ -67,13 +67,14 @@ export async function deployment() {
       return;
     }
     const name = path.slice(base.length) || "index.html";
+    const controlPath = `${base}${name.replace(/^releases\/[a-f0-9]{64}\//, "")}`;
     if (name === "release.json" && metadata !== "valid") {
       if (metadata === "timeout") return;
       response.setHeader("Content-Type", "application/json");
       response.writeHead(metadata === "failure" ? 503 : 200).end('{"buildId":"invented"}');
       return;
     }
-    if (path === failedPath) {
+    if (path === failedPath || controlPath === failedPath) {
       response
         .writeHead(corruptResponse ? 200 : 503)
         .end(corruptResponse ? "Bytes from the wrong release" : "Temporarily unavailable");
@@ -101,7 +102,7 @@ export async function deployment() {
                 ? "application/json"
                 : "application/octet-stream",
     );
-    if (path === delayedPath)
+    if (path === delayedPath || controlPath === delayedPath)
       setTimeout(() => {
         if (!response.destroyed) response.end(bytes);
       }, delay);
@@ -143,6 +144,8 @@ export async function deployment() {
           : null,
       );
       files = new Map(built.files.map((file) => [file.path, Buffer.from(file.bytes)]));
+      for (const file of built.files)
+        files.set(`releases/${built.metadata.buildId}/${file.path}`, Buffer.from(file.bytes));
       files.set("sw.js", Buffer.from(built.worker));
       files.set("release.json", Buffer.from(JSON.stringify(built.metadata)));
       return built.metadata;

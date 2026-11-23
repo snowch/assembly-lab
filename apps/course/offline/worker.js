@@ -9,6 +9,7 @@ const settingsUrl = new URL("__offline_settings__", scope).href;
 const activeUrl = new URL("__active_release__", scope).href;
 const legacyUrl = new URL("__legacy_bootstrap__", scope).href;
 const clientModeUrl = (id) => new URL(`__client_release__/${encodeURIComponent(id)}`, scope).href;
+const manifestUrl = (version) => new URL(`__release__/${version}`, scope).href;
 let legacyBootstrap = false;
 async function setClientMode(id, value) {
   if (id)
@@ -90,6 +91,7 @@ function initialize(force = false) {
         }
         await writeRelease(activeUrl, release);
       }
+      await writeRelease(manifestUrl(release.version), release);
       const legacy = await (await caches.open(settingsName)).match(legacyUrl);
       legacyBootstrap = !saved?.migrationComplete && legacy?.ok && (await legacy.text()) === "true";
     })().catch((error) => {
@@ -104,6 +106,8 @@ async function servingCache() {
     else {
       for (const name of await caches.keys()) {
         if (!name.startsWith(cachePrefix) || name === nameFor(release)) continue;
+        const retained = await readRelease(manifestUrl(name.slice(cachePrefix.length)));
+        if (retained && !(await complete(retained))) continue;
         if (await (await caches.open(name)).match(index)) {
           servingCacheName = name;
           break;
@@ -120,6 +124,24 @@ async function verified(response, file) {
   if (bytes.byteLength !== file.bytes) return false;
   const hash = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
   return `sha256-${btoa(String.fromCharCode(...hash))}` === file.integrity;
+}
+
+async function networkResponse(request, signal) {
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  signal?.addEventListener("abort", abort, { once: true });
+  if (signal?.aborted) abort();
+  const timeout = setTimeout(abort, 8000);
+  try {
+    const response = await fetch(new Request(request, { signal: controller.signal }));
+    // Include body transfer in the deadline, so a stalled HTML response can use
+    // the saved fallback and an asset download cannot hold the operation forever.
+    await response.clone().arrayBuffer();
+    return response;
+  } finally {
+    clearTimeout(timeout);
+    signal?.removeEventListener("abort", abort);
+  }
 }
 
 async function inspect(target = release) {
@@ -171,6 +193,7 @@ async function download(job) {
   const files = filesFor(target);
   const cacheName = nameFor(target);
   const cache = await caches.open(cacheName);
+  await writeRelease(manifestUrl(target.version), target);
   if (job.stage) await writeRelease(pendingUrl, target);
   if (job.persistent) {
     await (await caches.open(settingsName)).put(settingsUrl, new Response("true"));
@@ -207,14 +230,26 @@ async function download(job) {
   progress();
   for (const file of pending) {
     if (job.controller.signal.aborted || removal) throw new Error("cancelled");
-    const response = await fetch(
-      new Request(file.url, {
-        cache: "no-store",
-        credentials: "same-origin",
-        integrity: file.integrity,
-        signal: job.controller.signal,
-      }),
-    );
+    let response;
+    // A saved old release can be repaired even after root URLs change. Root is
+    // only a compatibility fallback, and must still match the original hash.
+    for (const url of [new URL(`releases/${target.version}/${file.path}`, scope).href, file.url]) {
+      if (job.controller.signal.aborted || removal) throw new Error("cancelled");
+      try {
+        response = await networkResponse(
+          new Request(url, {
+            cache: "no-store",
+            credentials: "same-origin",
+            integrity: file.integrity,
+            signal: job.controller.signal,
+          }),
+          job.controller.signal,
+        );
+        if (await verified(response, file)) break;
+      } catch (error) {
+        if (job.controller.signal.aborted) throw error;
+      }
+    }
     if (!(await verified(response, file))) throw new Error("integrity");
     if (job.controller.signal.aborted || removal) throw new Error("cancelled");
     await cache.put(file.url, response);
@@ -241,17 +276,9 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
       await initialize(true);
-      // An unprepared worker must leave the previous complete copy intact.
-      if (!legacyBootstrap && (await complete())) {
-        for (const name of await caches.keys()) {
-          if (
-            name.startsWith(cachePrefix) &&
-            name !== nameFor(release) &&
-            name !== nameFor((await readRelease(pendingUrl)) || release)
-          )
-            await caches.delete(name);
-        }
-      }
+      // Open documents can use any retained release, independently of the offline
+      // selector. Explicit scoped removal owns deletion; activation never prunes
+      // assets from a tab that has not participated in a coordinated restart.
       await self.clients.claim();
       const committed = (await readRelease(activeUrl))?.commit;
       if (committed && typeof committed.id === "string" && Array.isArray(committed.clients)) {
@@ -293,51 +320,117 @@ self.addEventListener("fetch", (event) => {
     event.request.mode === "navigate" &&
     url.origin === new URL(scope).origin &&
     (url.pathname === new URL(scope).pathname || url.pathname === new URL(index).pathname);
-  const key = navigation ? index : url.href;
   if (!navigation && !url.href.startsWith(scope)) return;
   event.respondWith(
     (async () => {
       try {
         await initialize();
-        if (navigation && legacyBootstrap) {
-          // One-time escape from an old UI whose worker naturally activated after
-          // every window closed. The saved old copy remains the offline fallback.
-          try {
-            const response = await fetch(new Request(event.request, { cache: "no-store" }));
-            if (!response.ok) throw new Error("Navigation unavailable");
-            const html = await response.clone().text();
-            const buildId =
-              html.match(/name=["']course-build-id["'][^>]*content=["']([a-f0-9]{64})["']/)?.[1] ??
-              null;
-            await setClientMode(event.resultingClientId || event.clientId, {
-              mode: "network",
-              buildId,
-            });
-            return response;
-          } catch {
-            const cache = await servingCache();
-            const response = await cache.match(index);
-            if (response) {
+        if (navigation) {
+          // A coordinated Restart must open exactly the verified target, even if
+          // a third release is published between preparation and the reload.
+          const selected = await readRelease(activeUrl);
+          const restart = selected?.commit?.clients?.includes(
+            event.replacesClientId || event.clientId,
+          );
+          if (!restart) {
+            try {
+              const response = await networkResponse(
+                new Request(event.request, { cache: "no-store" }),
+              );
+              if (!response.ok) throw new Error("Navigation unavailable");
+              // Read the small HTML body before returning it: a broken stream must
+              // still have the opportunity to use the complete offline fallback.
+              const html = await response.clone().text();
+              const buildId =
+                html.match(
+                  /name=["']course-build-id["'][^>]*content=["']([a-f0-9]{64})["']/,
+                )?.[1] ?? null;
               await setClientMode(event.resultingClientId || event.clientId, {
-                mode: "legacy",
-                cache: servingCacheName,
-              });
+                mode: "network",
+                buildId,
+              }).catch(() => {});
               return response;
+            } catch {
+              // An older complete copy remains the fallback for ordinary visits.
             }
           }
+          const cache = await servingCache();
+          const response = await cache.match(index);
+          if (response) {
+            const cacheName = servingCacheName || nameFor(release);
+            const target =
+              cacheName === nameFor(release)
+                ? release
+                : await readRelease(manifestUrl(cacheName.slice(cachePrefix.length)));
+            const file = target?.files.find((file) => file.path === "index.html");
+            if (file && !(await verified(response, file))) throw new Error("Corrupt entry page");
+            await setClientMode(event.resultingClientId || event.clientId, {
+              mode: "saved",
+              cache: cacheName,
+              buildId: target?.version ?? null,
+            }).catch(() => {});
+            return response;
+          }
+        } else {
+          const path = url.pathname.slice(new URL(scope).pathname.length);
+          const pin = path.match(/^releases\/([a-f0-9]{64})\/(.+)$/);
+          const mode = await clientMode(event.clientId);
+          const version = pin?.[1] || mode?.buildId;
+          const key = pin ? new URL(pin[2], scope).href : url.href;
+          const selected = version ? await readRelease(manifestUrl(version)) : null;
+          const file = selected?.files.find((file) => new URL(file.path, scope).href === key);
+          const pinnedCache = version ? nameFor({ version }) : null;
+          const savedCache = mode?.mode === "saved" || mode?.mode === "legacy" ? mode.cache : null;
+          const names =
+            pin || version
+              ? [pinnedCache]
+              : savedCache
+                ? [savedCache]
+                : legacyBootstrap
+                  ? [servingCacheName || nameFor(release)]
+                  : [];
+          for (const name of names) {
+            if (!name?.startsWith(cachePrefix)) continue;
+            const response = await (await caches.open(name)).match(key);
+            if (response && (!file || (await verified(response, file)))) return response;
+          }
+          // Legacy documents used Vite's content-hashed paths directly. Preserve
+          // those exact old bytes across runtime activation as well.
+          if (!pin && /\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(?:js|css|woff2?)$/.test(url.pathname)) {
+            for (const name of await caches.keys()) {
+              if (!name.startsWith(cachePrefix)) continue;
+              const response = await (await caches.open(name)).match(key);
+              if (response) return response;
+            }
+          }
+          if (pin || (version && (file || /^(?:assets|fonts|native|examples)\//.test(path)))) {
+            const immutable = pin
+              ? event.request
+              : new Request(new URL(`releases/${version}/${file?.path || path}`, scope));
+            let response;
+            try {
+              response = await fetch(new Request(immutable, { cache: "no-store" }));
+            } catch {
+              /* A retained release may still have unchanged canonical bytes. */
+            }
+            if (file && !(await verified(response, file))) {
+              try {
+                response = await fetch(new Request(key, { cache: "no-store" }));
+              } catch {
+                /* Integrity failure is reported below. */
+              }
+              if (!(await verified(response, file)))
+                return new Response("Release asset unavailable", { status: 503 });
+              // Canonical response URLs must not redirect relative module imports.
+              response = new Response(response.body, {
+                status: response.status,
+                headers: response.headers,
+              });
+            }
+            if (response) return response;
+            return new Response("Release asset unavailable", { status: 503 });
+          }
         }
-        const mode = !navigation ? await clientMode(event.clientId) : null;
-        if (mode?.mode === "network" && mode.buildId !== release.version)
-          return fetch(event.request);
-        if (mode?.mode === "network" && !(await complete())) return fetch(event.request);
-        const cache =
-          mode?.mode === "legacy" &&
-          typeof mode.cache === "string" &&
-          mode.cache.startsWith(cachePrefix)
-            ? await caches.open(mode.cache)
-            : await servingCache();
-        const cached = await cache.match(key);
-        if (cached) return cached;
       } catch {
         /* Storage eviction must not prevent online use. */
       }
@@ -485,7 +578,9 @@ self.addEventListener("message", (event) => {
       !source?.id ||
       !source.url?.startsWith(scope) ||
       typeof event.data.id !== "string" ||
-      activation
+      activation ||
+      downloading ||
+      removal
     ) {
       event.ports[0].postMessage({ ok: false, error: "tabs" });
       return;
@@ -589,7 +684,7 @@ self.addEventListener("message", (event) => {
     return;
   }
   if (!["DOWNLOAD_OFFLINE", "OFFLINE_REPAIR", "PREPARE_RELEASE"].includes(type)) return;
-  if (downloading || removal) {
+  if (downloading || removal || activation) {
     port.postMessage({ ok: false, error: "busy" });
     return;
   }

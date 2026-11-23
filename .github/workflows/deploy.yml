@@ -44,6 +44,11 @@ jobs:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}/
         run: npm run build -w @al/course
 
+      - name: Retain verified assets for open tabs from the previous two releases
+        env:
+          PUBLISHED_COURSE_URL: ${{ steps.pages.outputs.base_url }}
+        run: node --experimental-strip-types --disable-warning=ExperimentalWarning apps/course/offline/retain.ts
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/course/dist

@@ -134,7 +134,6 @@ function Cover({ completion }: { completion: LessonCompletion }) {
           </p>
         )}
       </div>
-      <CoverFigure />
     </section>
   );
 }
@@ -205,6 +204,7 @@ export function FrontPage({ completion = EMPTY_COMPLETION }: { completion?: Less
           <Marked text={WHERE_NEXT.directoryText} />
         </p>
       </section>
+      <CoverFigure />
     </div>
   );
 }

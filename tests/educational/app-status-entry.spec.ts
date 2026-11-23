@@ -10,8 +10,7 @@ async function expectEmbeddedIdentity(page: import("@playwright/test").Page) {
   const href = await source.getAttribute("href");
   expect(href).toMatch(/\/commit\/[a-f0-9]{40}$/);
   expect(await source.innerText()).toBe(href!.split("/").at(-1)!.slice(0, 7));
-  await expect(panel.getByRole("heading", { name: "Version", exact: true })).toBeVisible();
-  await expect(panel.getByRole("heading", { name: "Offline access", exact: true })).toBeVisible();
+  await expect(panel.getByRole("heading", { name: "Course status", exact: true })).toBeVisible();
   await expect(panel).not.toContainText("Up to date");
 }
 
@@ -37,9 +36,10 @@ test("the embedded App status is usable before the bundle loads, then is replace
     await page.getByRole("heading", { level: 1, name: "One addition", exact: true }).waitFor();
     await expect(page.locator(".shell-header")).toHaveCount(1);
     await expect(page.locator(".app-status")).toHaveCount(1);
-    const panel = page.locator(".app-status");
-    if (!(await panel.evaluate((el) => (el as HTMLDetailsElement).open)))
-      await panel.locator("summary").click();
+    await page.locator("#app-status-open").click();
+    const panel = page.locator("#app-status-dialog");
+    await expect(panel).toBeVisible();
+    await panel.locator("#app-status-details > summary").click();
     await expect(
       panel.getByRole("button", { name: "Check for updates", exact: true }),
     ).toBeVisible();

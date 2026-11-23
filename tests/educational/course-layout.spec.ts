@@ -16,15 +16,12 @@ async function settledScroll(page: Page) {
 }
 
 async function outline(page: Page) {
-  const phone = page.viewportSize()!.width <= 760;
-  if (phone) {
-    const disclosure = page.locator(".lesson-outline-mobile");
-    if (!(await disclosure.evaluate((el) => (el as HTMLDetailsElement).open))) {
-      await disclosure.locator(":scope > summary").focus();
-      await page.keyboard.press("Enter");
-    }
+  const disclosure = page.locator(".lesson-outline-mobile");
+  if (!(await disclosure.evaluate((el) => (el as HTMLDetailsElement).open))) {
+    await disclosure.locator(":scope > summary").focus();
+    await page.keyboard.press("Enter");
   }
-  return page.locator(phone ? ".lesson-outline-mobile nav" : ".lesson-outline-desktop nav");
+  return page.locator(".lesson-outline-mobile nav");
 }
 
 async function selectSection(page: Page, edge: "first" | "last") {
@@ -44,8 +41,7 @@ async function selectSection(page: Page, edge: "first" | "last") {
     header: document.querySelector(".shell-header")!.getBoundingClientRect().bottom,
   }));
   expect(bounds.focus).toBeGreaterThanOrEqual(bounds.header - 1);
-  if (page.viewportSize()!.width <= 760)
-    await expect(page.locator(".lesson-outline-mobile")).not.toHaveAttribute("open");
+  await expect(page.locator(".lesson-outline-mobile")).not.toHaveAttribute("open");
 }
 
 for (const theme of ["light", "dark"] as const) {

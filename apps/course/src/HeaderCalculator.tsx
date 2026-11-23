@@ -33,7 +33,9 @@ export function HeaderCalculator({
     else panel.show();
     close.current?.focus({ preventScroll: true });
     const escape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && !event.defaultPrevented) {
+        const active = document.querySelector("dialog:modal");
+        if (active && active !== panel) return;
         event.preventDefault();
         panel.close();
         setOpen(false);

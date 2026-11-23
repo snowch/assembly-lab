@@ -13,6 +13,7 @@
 import { LESSONS, WHERE_NEXT } from "@al/content";
 import { PLAN, statusOf } from "@al/content/plan";
 
+import { LAYOUT_STRINGS as L } from "./strings.layout";
 import { STATUS_STRINGS as S } from "./strings.status";
 import { COMPANION_LINKS, GITHUB_REPOSITORY, STRINGS } from "./strings";
 import { commitHref, type BuildVersion } from "./build-version";
@@ -79,11 +80,13 @@ export function staticPage(html: string, base = "/", version: BuildVersion | nul
           `<p class="build-version">${escape(STRINGS.version.commit)} <a href="${escape(commitHref(version.sha))}">${escape(version.sha.slice(0, 7))}</a> · ${escape(STRINGS.version.committed)} <time datetime="${escape(version.committedAt)}">${escape(version.committedAt.slice(0, 10))}</time> ${escape(STRINGS.version.utc)}</p>`,
         ]
       : []),
+    `<p class="course-source"><a href="${escape(GITHUB_REPOSITORY)}">${escape(L.sourceFooter)}</a></p>`,
     `</footer>`,
   ];
   // The stylesheet is linked from the head, so it applies without scripts: the page gets the
   // app's gutter and width from the same classes.
-  const initialHeader = `<header class="shell-header"><a class="brand" href="#/">${escape(title)}</a><details class="app-status"><summary><span class="app-status-title">${escape(S.title)}</span></summary><div class="app-status-panel"><h2>${escape(S.versionHeading)}</h2><p>${escape(S.running)}: ${version ? `<a href="${escape(commitHref(version.sha))}">${escape(version.sha.slice(0, 7))}</a>` : escape(S.unknownBuild)}</p><h2>${escape(S.offlineHeading)}</h2><p>${escape(S.noScript)}</p></div></details><a class="github-star" href="${escape(GITHUB_REPOSITORY)}"><span aria-hidden="true">☆</span><span>${escape(STRINGS.githubStar)} <span class="github-star-destination">${escape(STRINGS.githubStarDestination)}</span></span></a></header>`;
+  const initialHeader = `<header class="shell-header"><a class="brand" href="#/">${escape(title)}</a><details class="app-status"><summary><span class="app-status-title">${escape(S.title)}</span></summary><div class="app-status-panel"><h2>${escape(S.courseHeading)}</h2><p>${escape(S.noScript)}</p><p>${escape(S.running)}: ${version ? `<a href="${escape(commitHref(version.sha))}">${escape(version.sha.slice(0, 7))}</a>` : escape(S.unknownBuild)}</p></div></details></header>`;
+
   const noScript = [
     "<noscript>",
     `<div class="noscript-page">`,

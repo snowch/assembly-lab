@@ -87,7 +87,9 @@ export function HeaderInstructionReference({
     else dialog.show();
     input.current?.focus({ preventScroll: true });
     const escape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && !event.defaultPrevented) {
+        const active = document.querySelector("dialog:modal");
+        if (active && active !== dialog) return;
         event.preventDefault();
         dismiss();
       }

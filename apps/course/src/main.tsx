@@ -4,9 +4,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import { App } from "./App";
-import "@fontsource-variable/source-sans-3";
-import "@fontsource-variable/archivo/wdth.css";
-import "@fontsource-variable/jetbrains-mono";
 import "./styles/tokens.css";
 import "./styles/app.css";
 import "./styles/lesson.css";
@@ -27,3 +24,5 @@ import "./styles/lesson-sources.css";
 import "./styles/header-calculator.css";
 
 import "./styles/instruction-reference.css";
+
+import "./styles/shared-course.css";
