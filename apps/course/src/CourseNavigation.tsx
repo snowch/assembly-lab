@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Lesson } from "@platform/lesson-schema";
 import { LESSONS } from "@al/content";
 import { PLAN, lessonsOf } from "@al/content/plan";
@@ -17,57 +17,36 @@ export function CourseNavigation({
   lesson: Lesson;
   completion: LessonCompletion;
 }) {
-  const outline = useRef<HTMLDetailsElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const [expanded, setExpanded] = useState(false);
   const modules = PLAN.flatMap((part) => part.modules);
   const current = modules.find((module) => module.lessonModule === lesson.module);
   useEffect(() => {
-    if (outline.current) outline.current.open = false;
+    setExpanded(false);
   }, [lesson.id]);
   return (
-    <section className="course-location" aria-label={S.courseLessons}>
+    <section
+      className="course-location"
+      aria-label={S.courseLessons}
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && expanded) {
+          event.preventDefault();
+          setExpanded(false);
+          trigger.current?.focus();
+        }
+      }}
+    >
       <div className="course-location-row">
-        <details
-          ref={outline}
-          className="course-lesson-menu"
-          onKeyDown={(event) => {
-            if (event.key === "Escape") {
-              event.preventDefault();
-              if (outline.current) {
-                outline.current.open = false;
-                outline.current.querySelector("summary")?.focus();
-              }
-            }
-          }}
+        <button
+          ref={trigger}
+          type="button"
+          className="course-lesson-trigger"
+          aria-expanded={expanded}
+          aria-controls="course-lesson-panel"
+          onClick={() => setExpanded(!expanded)}
         >
-          <summary>{S.courseLessons}</summary>
-          <div className="course-lesson-panel">
-            <a href="#/">{S.courseOverview}</a>
-            <div className="course-lesson-groups">
-              {modules.map((module) => (
-                <section key={module.id} id={"course-module-" + module.id}>
-                  <h2>
-                    {module.label} · {module.title}
-                  </h2>
-                  <ol>
-                    {orderLessons(lessonsOf(module, LESSONS)).map((item) => (
-                      <li key={item.id}>
-                        <a
-                          href={lessonHref(item.id)}
-                          aria-current={item.id === lesson.id ? "page" : undefined}
-                        >
-                          <span>{item.title}</span>
-                          {completion.completed.has(item.id) && (
-                            <span aria-label={STRINGS.completion.marked}>✓</span>
-                          )}
-                        </a>
-                      </li>
-                    ))}
-                  </ol>
-                </section>
-              ))}
-            </div>
-          </div>
-        </details>
+          {S.courseLessons}
+        </button>
         <span className="course-location-progress">
           {S.completed(completion.completed.size, LESSONS.length)}
         </span>
@@ -78,7 +57,7 @@ export function CourseNavigation({
               <button
                 type="button"
                 onClick={() => {
-                  if (outline.current) outline.current.open = true;
+                  setExpanded(true);
                   requestAnimationFrame(() =>
                     document
                       .getElementById("course-module-" + current.id)
@@ -93,6 +72,39 @@ export function CourseNavigation({
           <span aria-hidden="true">/</span>
           <span aria-current="page">{lesson.title}</span>
         </nav>
+      </div>
+      <div id="course-lesson-panel" className="course-lesson-panel" hidden={!expanded}>
+        <a href="#/" onClick={() => setExpanded(false)}>
+          {S.courseOverview}
+        </a>
+        <div className="course-lesson-groups">
+          {modules.map((module) => (
+            <section key={module.id} id={"course-module-" + module.id}>
+              <h2>
+                {module.label} · {module.title}
+              </h2>
+              <ol>
+                {orderLessons(lessonsOf(module, LESSONS)).map((item) => (
+                  <li key={item.id}>
+                    <a
+                      href={lessonHref(item.id)}
+                      onClick={() => {
+                        setExpanded(false);
+                        if (item.id === lesson.id) trigger.current?.focus();
+                      }}
+                      aria-current={item.id === lesson.id ? "page" : undefined}
+                    >
+                      <span>{item.title}</span>
+                      {completion.completed.has(item.id) && (
+                        <span aria-label={STRINGS.completion.marked}>✓</span>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ))}
+        </div>
       </div>
     </section>
   );

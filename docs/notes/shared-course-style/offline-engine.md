@@ -54,16 +54,18 @@ release caches favours correctness for existing tabs; accumulated versions consu
 storage until scoped removal or browser eviction. Quota failures keep the previous
 complete copy and report failure.
 
-The published artifact contains the current immutable tree. This patch does not
-change the deployment pipeline to retain every historical tree on the server.
-A complete saved/staged release remains available from its retained browser cache
-after the server removes that tree. An unsaved old online document keeps its
-already-loaded JavaScript in memory, but an unvisited native download or a later
-font load can fail if its old server tree is gone. Such a request must fail instead
-of receiving different release bytes. Saving a complete copy is the guarantee for
-all course assets without the server. Browser eviction and explicit removal still
-remove that guarantee. There is no WASM/native browser runner in Arm Assembly Lab;
-the assembler, simulator and small compiler run in JavaScript.
+The published artifact contains the current immutable tree. The publish retention
+adapter now verifies and retains the two prior server release trees and preserves
+the last pre-immutable deployment's compatibility assets. A failed verification
+blocks publication, except the first deployment's expected 404. Complete saved
+releases also remain in retained browser caches; they are not evicted by ordinary
+activation. A tab older than the server retention window can still lose an asset
+it has never loaded or saved, so a complete verified save is the offline guarantee,
+subject to browser eviction or explicit removal. The retention contract and hash
+navigation boundary are documented in `docs/offline.md`.
+
+There is no WASM/native browser runner in Arm Assembly Lab; the assembler,
+simulator and small compiler run in JavaScript.
 
 ## Restart transaction
 
@@ -89,8 +91,8 @@ and selected document release differ.
 ## Verification record
 
 Commands are run in `/workspace/assembly-lab` with Node 24.22.1. Dependencies were
-installed with `npm ci`; Playwright Chromium 1194 is available. No commit, push,
-merge or deployment was performed by this work session.
+installed with `npm ci`; Playwright Chromium 1194 is available. The initial engine author did not publish; integration status and independent review
+are tracked in `verification.md` and `independent-review.md`.
 
 - Initial focused unit command (`plugin.test.ts` and `latest-commit.test.tsx`):
   exit 1, 43 passed and 8 failed. The fixture did not serve immutable URLs and still
@@ -99,7 +101,7 @@ merge or deployment was performed by this work session.
   The fixture now models both paths; failure assertions still force both paths to
   fail, and cache/navigation expectations reflect the intended contract.
 - Focused reruns passed 51, then 55, then 58, then 59 tests as additional regressions
-  were added. Latest focused command passed **60/60**. Coverage includes current
+  were added. Latest engine-focused command passed **66/66**, including six publication-retention tests. Coverage includes current
   online HTML with older offline fallback; pinning HTML and CSS fonts; exact B
   restart after C publication; old-tab runtime retention; corrupted HTML/runtime;
   competing operations; cancellation/resume/progress; quota failure; staged-pointer
@@ -122,7 +124,6 @@ merge or deployment was performed by this work session.
 - Type checking passed before the final cancellation/pinning changes; a final
   typecheck and final desktop/phone lifecycle rerun are pending below.
 
-Final integration and independent technical/learner review results must be appended
-here before the branch is considered verified. The parent session owns the combined
-full-suite report and independent-review record. Ordinary `docs/offline.md` still
-contains the previous automatic-save contract and needs synchronising separately.
+Final integration command results are recorded in `verification.md`. The independent
+technical and learner review is in `independent-review.md`. `docs/offline.md` now
+describes the implemented optional-save and explicit-update contract.
