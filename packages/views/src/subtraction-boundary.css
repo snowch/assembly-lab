@@ -1,0 +1,71 @@
+/* Copyright © 2026 Christopher Snow */
+
+.al-sub-boundary.al-figure {
+  gap: var(--space-3);
+  min-width: 0;
+}
+.al-sub-boundary h3,
+.al-sub-boundary p {
+  margin: 0;
+}
+.al-sub-boundary h3 {
+  font-size: var(--text-lg);
+}
+.al-sub-boundary-grid {
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 24rem;
+  min-width: 0;
+}
+.al-sub-boundary-head,
+.al-sub-boundary-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 3rem 2.5rem 4.5rem;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.al-sub-boundary-head {
+  color: var(--fg-muted);
+  font-size: var(--text-xs);
+  text-align: center;
+  align-items: end;
+}
+.al-sub-boundary-row {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-2);
+  align-items: start;
+}
+.al-sub-boundary-input,
+.al-sub-boundary-kept {
+  display: grid;
+  gap: var(--space-1);
+  text-align: center;
+  min-width: 0;
+}
+.al-sub-boundary-row code,
+.al-sub-boundary-sum {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  box-sizing: border-box;
+}
+.al-sub-boundary-row small {
+  font-size: var(--text-sm);
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+}
+.al-sub-boundary-carry {
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+}
+.al-sub-boundary-kept code {
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  letter-spacing: 0.06em;
+}

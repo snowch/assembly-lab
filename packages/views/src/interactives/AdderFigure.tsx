@@ -38,6 +38,7 @@ import { VIEW_STRINGS as S } from "../strings";
 import { traceOf, type Trace } from "../trace";
 import { passedChallenge } from "./gate";
 import { SubtractionBridge } from "./SubtractionBridge";
+import { SubtractionBoundary } from "./SubtractionBoundary";
 import { CallSchema, RecordedSchema, withProps } from "./props";
 
 const Props = z.object({
@@ -574,6 +575,7 @@ export const AdderFigure = withProps(Props, function AdderFigure({ data, store, 
   return data.subtractionBridge ? (
     <div className="al-subtraction-panes">
       <SubtractionBridge record={record} />
+      <SubtractionBoundary program={data.program} call={data.call} which={data.which} />
       {calculation}
     </div>
   ) : (

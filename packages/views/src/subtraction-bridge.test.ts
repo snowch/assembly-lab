@@ -3,13 +3,37 @@
 import { describe, expect, it } from "vitest";
 import { traceOf } from "./trace";
 import { additionSteps } from "./arith";
-import { subtractionBridge } from "./subtraction-bridge";
+import { subtractionBoundary, subtractionBridge } from "./subtraction-bridge";
 
 const program = { listing: "calculate:\nsubs w0, w0, w1\nret", c: "" };
 const recordOf = (a: number, b: number) =>
   additionSteps(traceOf(program, { entry: "calculate", args: [a, b] }))[0]!.addition!;
 
 describe("the subtraction width bridge", () => {
+  it("holds b fixed and shows the exact carry boundary, including equality", () => {
+    const cases = subtractionBoundary(program, { entry: "calculate", args: [8, 3] });
+    expect(
+      cases.map(({ small }) => [
+        small.a,
+        small.b,
+        small.inverted,
+        small.fullSum,
+        small.carryOut,
+        small.patterns.result,
+        small.result,
+      ]),
+    ).toEqual([
+      [7n, 8n, 7n, 15n, 0, "1111", 15n],
+      [8n, 8n, 7n, 16n, 1, "0000", 0n],
+      [9n, 8n, 7n, 17n, 1, "0001", 1n],
+    ]);
+    expect(cases.map(({ wide }) => [wide.carryOut, wide.result])).toEqual([
+      [0, 4294967295n],
+      [1, 0n],
+      [1, 1n],
+    ]);
+  });
+
   it("reads the proposed 8 minus 3 diagram from the machine record", () => {
     const { small, wide } = subtractionBridge(recordOf(8, 3));
     expect(small).toMatchObject({

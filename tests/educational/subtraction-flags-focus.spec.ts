@@ -27,10 +27,24 @@ for (const theme of ["light", "dark"])
     await expect(wide).toContainText("4,294,967,296");
     await expect(
       page.locator("#ix-carry-means-no-borrow .al-subtraction-panes > .al-figure"),
-    ).toHaveCount(2);
+    ).toHaveCount(3);
+    const boundary = page.locator("#ix-carry-means-no-borrow .al-sub-boundary");
+    await expect(boundary).toBeVisible();
+    await expect(boundary.locator("[data-boundary-sum]")).toHaveText(["15", "16", "17"]);
+    await expect(boundary.locator("[data-boundary-carry]")).toHaveText(["0", "1", "1"]);
+    await expect(boundary.locator("[data-boundary-bits]")).toHaveText(["1111", "0000", "0001"]);
+    await expect(boundary.locator("[data-boundary-reading]")).toHaveText(["15", "0", "1"]);
+    for (const cell of await boundary
+      .locator(".al-sub-boundary-head > *, .al-sub-boundary-row > *")
+      .all()) {
+      expect(await cell.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+    }
     const firstPane = (await bridge.boundingBox())!;
     const secondPane = (await page.locator("#ix-carry-means-no-borrow .al-adder").boundingBox())!;
     expect(secondPane.y).toBeGreaterThan(firstPane.y + firstPane.height);
+    const boundaryBounds = (await boundary.boundingBox())!;
+    expect(boundaryBounds.y).toBeGreaterThan(firstPane.y + firstPane.height);
+    expect(secondPane.y).toBeGreaterThan(boundaryBounds.y + boundaryBounds.height);
     expect(
       await page
         .locator("#ix-carry-means-no-borrow .al-subtraction-panes")
