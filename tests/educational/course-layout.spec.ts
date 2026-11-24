@@ -163,7 +163,7 @@ test("the last outline entry stays current at a clamped page bottom and updates 
     )
     .toBeLessThanOrEqual(2);
   await selectSection(page, "first");
-  await expect(page.locator(".lesson-outline-desktop nav a").last()).not.toHaveAttribute(
+  await expect(page.locator(".lesson-outline-mobile nav a").last()).not.toHaveAttribute(
     "aria-current",
   );
 });
@@ -173,7 +173,8 @@ test("the compact header and keyboard skip link work without a preview strip", a
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   const header = await page.locator(".shell-header").boundingBox();
   expect(header!.y).toBe(0);
-  expect(header!.height).toBeLessThanOrEqual(page.viewportSize()!.width <= 760 ? 68 : 74);
+  // Shared header: measured 129.55px narrow / 92.5px wide, including both tools.
+  expect(header!.height).toBeLessThanOrEqual(page.viewportSize()!.width <= 600 ? 132 : 96);
   await page.locator(".skip-link").focus();
   expect(
     await page.locator(".skip-link").evaluate((el) => {

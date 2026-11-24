@@ -75,3 +75,36 @@ inventory, assertions, timeouts and zero retries remain unchanged. The exact
 `npm run check` script is unchanged and restarted as
 `/tmp/arm-check-parallel-final.log`. The same configuration applies locally and in
 CI; final results remain associated with their actual commands and head commits.
+
+## Flags integration assertions under the shared layout
+
+The first two-worker complete attempt passed all 4,041 unit tests/build stages,
+then exposed six flags-route browser failures (151 passed browser entries before
+it was deliberately stopped). It is an **interrupted, known-failing** complete
+attempt, not a full success. Three obsolete assumptions caused the failures in
+both themes: the helper clicked the hidden desktop sidebar, the header retained
+an old 68/74px ceiling, and the range test demanded stacked cards for every
+viewport below 1280px despite the wider reading area. Original traces were archived
+at `/tmp/arm-flags-failure-f3qnbw5x` before rerunning tests.
+
+An independent fresh-document 14-state matrix checked 320/375/834/920/1280px,
+both themes and DejaVu fallback at 375/920px. All complete bounds were single-line
+and contained; paired bounds shared baselines, cards remained separate/aligned,
+and the page had no horizontal overflow. Measured header heights matched the
+previously recorded 132/96px narrow/wide budget. The independent reviewer found
+no CSS defect; exact measurements and screenshots are recorded in its note.
+
+Corrections use the actual On this page disclosure at every width and preserve
+current-section, route and close assertions. The final-current check addresses
+that active nav. Header ceilings use the independently measured shared-header
+budget. The range test preserves exact text, containment, single-line complete
+bounds, paired baselines, 1280px pairing and submission/reset gates; it checks
+actual stacked order or paired separation instead of an obsolete viewport rule.
+These test-only corrections do not change the model or learner-facing layout.
+
+The focused corrective rerun completed successfully: **16/16 passed**, covering
+both projects, both themes, active outline use, header/skip-link behavior, complete
+range geometry and the model's existing prediction/check/reset controls
+(`/tmp/arm-flags-focused-final.log`). The exact complete pipeline is restarted as
+`/tmp/arm-check-reviewed-final.log`; its result will be reported separately from
+this focused success.
