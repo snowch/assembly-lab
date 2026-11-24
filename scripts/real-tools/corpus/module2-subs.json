@@ -144,6 +144,20 @@
       ]
     },
     {
+      "entry": "subtract_flags",
+      "args": [
+        ["7", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "subtract_flags",
+      "args": [
+        ["9", 32],
+        ["8", 32]
+      ]
+    },
+    {
       "entry": "negate_flags",
       "args": [["2147483649", 32]]
     },

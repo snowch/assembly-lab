@@ -1,6 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 import { describe, expect, it } from "vitest";
+import subtractionCorpus from "../../scripts/real-tools/corpus/module2-subs.json";
 import { additionSteps, traceOf } from "@al/views";
 import { NEGATE_FLAGS } from "./subtracting-and-the-tick-counter.listings";
 import {
@@ -61,4 +62,24 @@ describe("focused subtraction and negation facts", () => {
     ] as const)
       expect(functionIn(corpus, name)).toEqual(functionIn(assembly(program.listing), name));
   });
+
+  it.each([
+    [7, 8, 4294967295, "1000"],
+    [8, 8, 0, "0110"],
+    [9, 8, 1, "0010"],
+  ] as const)(
+    "checks boundary input %s minus %s in the model and native corpus",
+    (a, b, result, flags) => {
+      const outcome = callText(SUBTRACT_FLAGS.listing, "subtract_flags", [a, b]);
+      expect(outcome.w0).toBe(result);
+      expect(nzcv(outcome.flags)).toBe(flags);
+      expect(subtractionCorpus.calls).toContainEqual({
+        entry: "subtract_flags",
+        args: [
+          [String(a), 32],
+          [String(b), 32],
+        ],
+      });
+    },
+  );
 });

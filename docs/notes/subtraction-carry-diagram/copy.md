@@ -31,8 +31,8 @@ The `diagram` object supplies the worked four-bit view. `lessonCarry` replaces t
     "carryPlace": "Place value: {range}",
     "storedReading": "Unsigned reading: {result}",
     "fullSumReading": "Full sum: {sum} = {carryValue} from carry + {result} kept",
-    "wideTitle": "Use the same inputs at 32 bits",
-    "wideWhy": "At 32 bits, all ones is {wideMaximum}. Adding the carry in of 1 gives {wideRange}, the value of the first place beyond 32 bits. The same inputs give {a} + {wideRange} − {b}; keep only the low 32 bits.",
+    "wideTitle": "Return to the original example at 32 bits",
+    "wideWhy": "The original calculation is {a} − {b}. At 32 bits, all ones is {wideMaximum}. Adding the carry in of 1 gives {wideRange}, the value of the first place beyond 32 bits. The full sum is {a} + {wideRange} − {b}; keep only the low 32 bits.",
     "rule": "`subs` sets the carry flag C from the real 32-bit carry out. If `a` is at least `b`, the sum reaches that extra place: C = 1, no unsigned borrow. Otherwise C = 0: borrow needed."
   },
   "lessonCarry": {
