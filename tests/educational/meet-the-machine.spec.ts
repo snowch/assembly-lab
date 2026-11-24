@@ -4,6 +4,7 @@
 // register values, the gated missing-return experiment, the independent trace challenge,
 // saved answers and feedback, and legible layouts in both themes.
 
+import { returnToCourse } from "./course-navigation-helper";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { LESSONS } from "@al/content";
@@ -93,14 +94,14 @@ test("the lesson loads with no console error, selected sections, and its trace c
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
   await expect(page.locator("section.challenge")).toHaveCount(1);
   await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
-  await expect(page.locator("a.back-link").first()).toHaveAttribute("href", "#/");
+  await expect(page.locator('#course-lesson-panel > a[href="#/"]')).toHaveAttribute("href", "#/");
   await expect(page).toHaveTitle(`${lesson.title} / Arm Assembly Lab`);
   expect(errors).toEqual([]);
 });
 
 test("the way back leads to the front page", async ({ page }) => {
   await openLesson(page);
-  await press(page, page.locator("a.back-link").first());
+  await returnToCourse(page);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Arm Assembly Lab");
 });
 

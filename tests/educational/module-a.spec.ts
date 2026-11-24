@@ -8,6 +8,7 @@ import { RECORDED_STRINGS as R } from "../../packages/views/src/strings.recorded
 import { AVERAGE_TRIP_A64 } from "../../content/lessons/a32.listings";
 import { traceOf, wValue } from "../../packages/views/src/trace";
 import { designProblems } from "./design";
+import { showStatusDetails } from "./app-status-helper";
 import {
   challenge,
   commit,
@@ -44,11 +45,12 @@ for (const lesson of lessons) {
         await commit(page, "predict-a32-syntax", LABELS.options.syntax[0].label);
       }
       // Open teaching panels and app status; the responsive page outline is tested separately.
-      for (const summary of await page
-        .locator(".lesson details > summary, .app-status > summary")
-        .all())
+      for (const summary of await page.locator(".lesson details > summary").all())
         await summary.click();
+      await showStatusDetails(page);
       expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
+      await page.keyboard.press("Escape");
+      await expect(page.locator("#app-status-open")).toBeFocused();
       expect(await figureOverflow(page)).toEqual([]);
       expect(errors).toEqual([]);
     });

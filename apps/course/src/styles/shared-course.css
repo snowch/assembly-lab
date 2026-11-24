@@ -443,6 +443,9 @@
   :root .lesson-nav {
     grid-template-columns: 1fr;
   }
+  :root .lesson-nav-link[data-direction="next"] {
+    grid-column: auto;
+  }
   .course-lesson-groups {
     grid-template-columns: 1fr;
   }

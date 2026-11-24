@@ -7,6 +7,7 @@ import { PLAN, lessonsOf } from "@al/content/plan";
 import { orderLessons, type LessonCompletion } from "./lesson-completion";
 import { lessonHref } from "./route";
 import { STRINGS } from "./strings";
+import { COURSE_REFERENCES } from "./book";
 import { LAYOUT_STRINGS as S } from "./strings.layout";
 
 /** Course navigation is independent of the mounted lesson and its simulator state. */
@@ -94,7 +95,7 @@ export function CourseNavigation({
                       }}
                       aria-current={item.id === lesson.id ? "page" : undefined}
                     >
-                      <span>{item.title}</span>
+                      <span>{COURSE_REFERENCES.label(item.id)}</span>
                       {completion.completed.has(item.id) && (
                         <span aria-label={STRINGS.completion.marked}>✓</span>
                       )}

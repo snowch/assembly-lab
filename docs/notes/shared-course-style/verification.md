@@ -108,3 +108,50 @@ range geometry and the model's existing prediction/check/reset controls
 (`/tmp/arm-flags-focused-final.log`). The exact complete pipeline is restarted as
 `/tmp/arm-check-reviewed-final.log`; its result will be reported separately from
 this focused success.
+
+
+## Whole-suite assumption audit and final focused evidence
+
+The environment interruption ended `/tmp/arm-check-reviewed-final.log` after its
+complete **224 files / 4,041 unit tests**, build, and the first browser entries.
+That local complete attempt is interrupted; no 1,560-case success is inferred.
+The unchanged exact script in current-head CI supplies full-suite completion
+proof separately from these interrupted local runs.
+
+At the coordinator's request, all 62 browser specs and nine helpers were audited
+for old sidebar selectors, header ceilings, viewport-only stacking rules, legacy
+App status summaries, absolute card coordinates, footer counts, hidden back
+controls and global lesson-link counts. Correct checks of component containment,
+font fallback, complete values, focus, gating and learner state were retained.
+The remaining fixture changes use the visible Course lessons → Course overview
+path, actual modal/details, the six-link footer including Source, centred wide
+intro/live figure framing, and actual lesson-content bounds. Optional Module A
+still opens and checks status details, then checks Escape focus and figures.
+
+The audit identified two product corrections. New menu links now reuse the
+existing approved course-reference formatter, retaining the established M/L
+numbering contract. On phones, an inherited Next link `grid-column: 2` created an
+implicit second column despite the one-column footer rule, squeezing Previous to
+46px. A narrowly scoped column reset fixes that real defect. Equal widths remain
+required; narrow cards stack, wide cards retain equal row/height, and completion
+must precede the first card. Independent built-page checks verify the correction,
+including 343px phone cards with a 20px gap. See `independent-review.md` for the
+exact build, screenshots, measured frames and separate command results.
+
+The affected-suite command completed **exit 1: 109 passed, six failed, one
+skipped** (`/tmp/arm-audited-focused-final.log`). Four failures required an obsolete
+exact height match between separate completion/reset action groups; both controls
+already met the required 44px minimum. The independent viewport/theme and
+initial/marked matrix confirmed that no CSS change was appropriate. Two failures
+were this managing session's test ordering: Escape hid the menu before a role
+locator checked its return URL. Assertions now check both minimum targets and
+check the URL before Escape, preserving label/style, card geometry and keyboard
+navigation evidence. The corrective focused command then **passed 6/6**
+(`/tmp/arm-audited-corrections-final.log`). This does not turn the original failed
+command into a success.
+
+Final local formatting, copyright, untouched-platform integrity and strict types
+passed. The existing completion and course-reference unit files passed **12/12**
+(`/tmp/arm-audit-focused-units.log`). The final exact current-head CI result is
+reported in PR 171's checks and handoff; functional checks are not evidence of
+learning effectiveness.

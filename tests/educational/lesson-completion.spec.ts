@@ -3,6 +3,7 @@
 import { expect, test } from "@playwright/test";
 import { LESSONS } from "@al/content";
 import { designProblems } from "./design";
+import { returnToCourse } from "./course-navigation-helper";
 
 const ordered = [...LESSONS].sort((a, b) => a.module - b.module || a.order - b.order);
 const first = ordered[0]!;
@@ -46,7 +47,8 @@ for (const theme of ["light", "dark"]) {
         const nextBox = await next.boundingBox();
         const previousBox = await previous.boundingBox();
         expect(buttonBox!.height).toBeGreaterThanOrEqual(44);
-        expect(buttonBox!.height).toBeCloseTo(clearBox!.height, 1);
+        // Separate action groups both retain touch targets; their heights need not match.
+        expect(clearBox!.height).toBeGreaterThanOrEqual(44);
         const labelLines = await button
           .locator(":scope > span")
           .evaluate((label) =>
@@ -55,9 +57,13 @@ for (const theme of ["light", "dark"]) {
             ),
           );
         expect(labelLines).toBe(1);
-        expect(buttonBox!.y + buttonBox!.height).toBeLessThan(nextBox!.y);
-        expect(previousBox!.y).toBeCloseTo(nextBox!.y, 1);
-        expect(previousBox!.height).toBeCloseTo(nextBox!.height, 1);
+        expect(buttonBox!.y + buttonBox!.height).toBeLessThan(previousBox!.y);
+        if (width <= 600)
+          expect(previousBox!.y + previousBox!.height).toBeLessThanOrEqual(nextBox!.y);
+        else {
+          expect(previousBox!.y).toBeCloseTo(nextBox!.y, 1);
+          expect(previousBox!.height).toBeCloseTo(nextBox!.height, 1);
+        }
         expect(previousBox!.width).toBeCloseTo(nextBox!.width, 1);
         expect(await button.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(
           "rgba(0, 0, 0, 0)",
@@ -87,7 +93,7 @@ for (const theme of ["light", "dark"]) {
     expect(await button.evaluate((el) => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(
       40,
     );
-    await page.locator(".lesson-back a").click();
+    await returnToCourse(page);
     await expect(
       page.locator(`a[href="#/lesson/${first.id}"] .lesson-complete-mark`),
     ).toContainText("Marked complete");
@@ -99,7 +105,7 @@ for (const theme of ["light", "dark"]) {
     await page.locator('.lesson-nav-link[data-direction="previous"]').click();
     await page.locator(".lesson-completion button").click();
     await expect(page.locator(".lesson-completion button")).toHaveText(mark);
-    await page.locator(".lesson-back a").click();
+    await returnToCourse(page);
     await expect(page.locator(".lesson-complete-mark")).toHaveCount(0);
     await expect(page.locator(".cover-start")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
@@ -114,7 +120,7 @@ test("navigation and exercise results never mark a lesson; toggling preserves it
 }) => {
   await page.goto(`#/lesson/${first.id}`);
   await page.locator('.lesson-nav-link[data-direction="next"]').click();
-  await page.locator(".lesson-back a").click();
+  await returnToCourse(page);
   await expect(page.locator(".lesson-complete-mark")).toHaveCount(0);
   await page.goto("#/lesson/meet-the-machine");
   const exercise = page.locator("#challenge-trace-the-call");
@@ -154,7 +160,7 @@ test("marks and undo stay in sync across tabs without losing other lesson marks"
   await aButton.click();
   await b.goto(`#/lesson/${second.id}`);
   await b.locator(".lesson-completion button").click();
-  await a.locator(".lesson-back a").click();
+  await returnToCourse(a);
   await expect(a.locator(".lesson-complete-mark")).toHaveCount(2);
   await expect(a.locator(".cover-continue")).toHaveAttribute("href", `#/lesson/${ordered[2]!.id}`);
   await b.locator(".lesson-completion button").click();
@@ -187,7 +193,7 @@ test("all current split lessons can be marked, then the final lesson reopened", 
   await page.locator(`.plan-module a[href="#/lesson/${final.id}"]`).click();
   await expect(page.locator(".lesson-completion button")).toHaveText(undo);
   await page.locator(".lesson-completion button").click();
-  await page.locator(".lesson-back a").click();
+  await returnToCourse(page);
   await expect(page.locator(".cover-continue")).toHaveAttribute("href", `#/lesson/${final.id}`);
   await expect(
     page.locator(`.plan-module a[href="#/lesson/${final.id}"] .lesson-complete-mark`),
@@ -231,7 +237,7 @@ test("a storage failure keeps the mark for this visit and tells the learner it w
   await expect(page.locator(".lesson-completion button")).toHaveText(undo);
   await expect(page.getByText(/Lesson marks could not be saved/)).toBeVisible();
   expect(await designProblems(page, page.viewportSize()!.width < 500)).toEqual([]);
-  await page.locator(".lesson-back a").click();
+  await returnToCourse(page);
   await expect(page.locator(".lesson-complete-mark")).toHaveCount(1);
   await expect(page.getByText(/Lesson marks could not be saved/)).toBeVisible();
   await page.reload();

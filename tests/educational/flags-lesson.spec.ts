@@ -3,6 +3,8 @@
 // The approved full-page replacement: real examples, gates and registered challenge work.
 // Old grid-only checks are replaced here by checks of the same mechanisms in the new controls.
 import { expect, test, type Page, type Locator } from "@playwright/test";
+import { courseOverview } from "./course-navigation-helper";
+import { openStatus } from "./app-status-helper";
 import { S, FLAGS_LESSON_SECTIONS } from "../../packages/views/src/flags-lesson/strings";
 import { FLAGS_VIEW_SLOT } from "../../packages/views/src/flags-lesson/state";
 import { flagsModel } from "../../packages/views/src/flags-lesson/model";
@@ -854,12 +856,13 @@ for (const theme of ["light", "dark"] as const) {
 
 test("theme, keyboard and shared course navigation preserve flags work", async ({ page }) => {
   await open(page, "light");
-  const backToPlan = page.locator(".lesson-back .back-link");
+  const backToPlan = await courseOverview(page);
   await expect(backToPlan).toHaveCount(1);
-  await expect(backToPlan).toHaveText("Back to the course plan");
+  await expect(backToPlan).toHaveText("Course overview");
   await expect(backToPlan).toHaveAttribute("href", "#/");
-  await expect(page.locator('.shell-main a[href="#/lesson/register-widths"]')).toHaveCount(1);
-  await expect(page.locator('.shell-main a[href="#/lesson/flags-and-overflow"]')).toHaveCount(1);
+  await page.keyboard.press("Escape");
+  await expect(page.locator('.lesson-nav a[href="#/lesson/register-widths"]')).toHaveCount(1);
+  await expect(page.locator('.lesson-nav a[href="#/lesson/flags-and-overflow"]')).toHaveCount(1);
   await expect(page.locator(".al-flags-lesson .end a")).toHaveCount(0);
   await expect(page.locator("#recap li")).toHaveCount(4);
   await navigateOutline(page, "smallpractice");
@@ -871,7 +874,7 @@ test("theme, keyboard and shared course navigation preserve flags work", async (
   await page.locator(".theme-picker select").selectOption("dark");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator('input[name=mini-n][value="1"]')).toBeChecked();
-  await page.locator(".app-status>summary").click();
+  await openStatus(page);
   await expect(page.locator(".app-status-panel")).toBeVisible();
   await page.keyboard.press("Escape");
   await page.locator(".lesson-nav-link[data-direction=next]").click();
@@ -879,7 +882,7 @@ test("theme, keyboard and shared course navigation preserve flags work", async (
   await expect(page.locator(".al-flags-lesson")).toHaveCount(0);
   await page.locator(".lesson-nav-link[data-direction=previous]").click();
   await expect(page.locator('input[name=mini-n][value="1"]')).toBeChecked();
-  await page.locator(".lesson-back .back-link").focus();
+  await (await courseOverview(page)).focus();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/#\/$/);
   const courseModule = page.locator('.plan-module[data-module="adding-and-the-flags"]');
@@ -893,10 +896,12 @@ test("the approved layout stays legible, unclipped and follows the system theme"
   page,
 }) => {
   await open(page, "light");
-  const phone = page.viewportSize()!.width < 760;
+  const content = await page.locator(".lesson-layout-content").boundingBox();
   const card = await page.locator("#compare>.focus-card").boundingBox();
-  expect(card!.width).toBeCloseTo(phone ? 343 : 760, 0);
-  if (!phone) expect(card!.x).toBeCloseTo(339, 0);
+  expect(card!.width).toBeCloseTo(content!.width, 0);
+  expect(card!.x).toBeCloseTo(content!.x, 0);
+  expect(card!.x).toBeGreaterThanOrEqual(0);
+  expect(card!.x + card!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
   const bounds = await page.locator(".example-switcher").evaluate((el) => ({
     outer: el.getBoundingClientRect().toJSON(),
     children: [...el.querySelectorAll("button")].map((b) => b.getBoundingClientRect().toJSON()),
