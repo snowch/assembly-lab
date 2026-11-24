@@ -59,3 +59,19 @@ original URLs and refusal to overwrite current bytes
 reviewed lesson/runtime layout. The final head's complete CI run, including this
 additional regression, is available under
 [PR 171 checks](https://github.com/snowch/assembly-lab/pull/171/checks).
+
+## Supported parallel complete run
+
+Recent successful main CI runs took approximately 39–48 minutes (for example
+`45076545575`, 47m44s). The serial local run above was deliberately stopped after
+**114 passed browser cases**, with no assertion failure, while still early in its
+1,560-case inventory. It remains an interrupted full run, not a full success.
+
+At the coordinating session's request, Playwright now uses its supported two-worker
+setting. Browser contexts isolate their storage/workers; release fixtures bind
+independent ephemeral origins and keep releases in per-test memory. Tests do not
+modify shared source/build assets. Per-file order, complete desktop/phone
+inventory, assertions, timeouts and zero retries remain unchanged. The exact
+`npm run check` script is unchanged and restarted as
+`/tmp/arm-check-parallel-final.log`. The same configuration applies locally and in
+CI; final results remain associated with their actual commands and head commits.

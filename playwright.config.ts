@@ -18,7 +18,10 @@ const base = "/assembly-lab/";
 export default defineConfig({
   testDir: "tests/educational",
   fullyParallel: false,
-  workers: 1,
+  // Contexts are isolated, and release fixtures use independent ephemeral origins.
+  // Two workers keep the complete desktop/phone inventory practical on CI's two
+  // cores without changing assertions, timeouts, retries or per-file ordering.
+  workers: 2,
   retries: 0,
   timeout: 60_000,
   reporter: [["list"]],
