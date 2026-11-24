@@ -71,14 +71,26 @@ test("compact header, keyboard theme choice and calculator/reference coordinatio
   await page.goto("#/");
   for (const width of [320, 375, 414, 430, 768, 834, 1280]) {
     await page.setViewportSize({ width, height: 900 });
-    // Shared header keeps text status visible: measured 129.55 px on phones and 92.5 px wide.
+    await page.evaluate(() => document.fonts.ready);
+    // Visible brand/tool names and a native theme choice use deliberate wrapped rows.
+    // Independent measurements:233.55px at320;181.55px at375–430;
+    //140.5px at768/834 and92.5px at1280, in both themes.
+    const headerLimit = width === 320 ? 236 : width <= 430 ? 184 : width < 1000 ? 144 : 96;
     expect((await page.locator(".shell-header").boundingBox())!.height).toBeLessThanOrEqual(
-      width <= 600 ? 132 : 96,
+      headerLimit,
     );
+    await expect(page.locator(".shell-header .brand > span")).toBeVisible();
+    for (const name of ["Calculator", "Reference"]) {
+      const tool = page.getByRole("button", { name, exact: true });
+      await expect(tool.locator(":scope > span")).toBeVisible();
+      await expect(tool.locator(":scope > span")).toHaveText(name);
+    }
+    await expect(page.locator(".theme-picker > span")).toBeVisible();
     const themeControl = page.getByRole("combobox", { name: "Theme", exact: true });
     const themeBox = (await themeControl.boundingBox())!;
-    expect(themeBox.width).toBe(44);
+    expect(themeBox.width).toBeGreaterThanOrEqual(44);
     expect(themeBox.height).toBe(44);
+    expect(await themeControl.evaluate((element) => getComputedStyle(element).opacity)).toBe("1");
     for (const control of [
       page.getByRole("button", { name: "Calculator", exact: true }),
       page.getByRole("button", { name: "Reference", exact: true }),

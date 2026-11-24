@@ -2,6 +2,7 @@
 
 import { type LessonCompletionStore, useLessonCompletion } from "./lesson-completion";
 import { STRINGS } from "./strings";
+import { MaterialSymbol } from "./MaterialSymbol";
 
 export function LessonCompletionButton({
   store,
@@ -18,14 +19,15 @@ export function LessonCompletionButton({
         className="button"
         type="button"
         data-complete={complete}
+        aria-pressed={complete}
         onClick={() => store.set(lessonId, !complete)}
         aria-label={complete ? STRINGS.completion.undo : undefined}
         aria-describedby="lesson-completion-note"
       >
-        <svg className="lesson-completion-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" />
-          {complete && <path d="m7.5 12 3 3 6-6" />}
-        </svg>
+        <MaterialSymbol
+          name={complete ? "check_box" : "check_box_outline_blank"}
+          className="lesson-completion-icon"
+        />
         {complete ? (
           <span className="lesson-completion-label">
             <span>{STRINGS.completion.complete}</span>

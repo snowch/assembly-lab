@@ -65,27 +65,18 @@ export function staticPage(html: string, base = "/", version: BuildVersion | nul
   // The footer the app draws, with the classes the stylesheet gives it, so the two look alike.
   const footer = [
     `<footer class="shell-footer">`,
-    `<p class="footer-next"><a href="#where-next">${escape(WHERE_NEXT.linkLabel)}</a></p>`,
-    `<p class="footer-intro">${intro.join("")}</p>`,
-    `<nav aria-label="${escape(STRINGS.companions.label)}">`,
-    `<ul class="footer-links">`,
-    link(COMPANION_LINKS.digitalDesign, STRINGS.companions.digitalDesign),
-    link(COMPANION_LINKS.bitLab, STRINGS.companions.bitLab),
-    link(COMPANION_LINKS.hub, STRINGS.companions.hub),
-    `</ul>`,
-    `</nav>`,
     `<p class="copyright">${escape(STRINGS.copyright)}</p>`,
-    ...(version
-      ? [
-          `<p class="build-version">${escape(STRINGS.version.commit)} <a href="${escape(commitHref(version.sha))}">${escape(version.sha.slice(0, 7))}</a> · ${escape(STRINGS.version.committed)} <time datetime="${escape(version.committedAt)}">${escape(version.committedAt.slice(0, 10))}</time> ${escape(STRINGS.version.utc)}</p>`,
-        ]
-      : []),
-    `<p class="course-source"><a href="${escape(GITHUB_REPOSITORY)}">${escape(L.sourceFooter)}</a></p>`,
+    `<nav aria-label="${escape(STRINGS.footer.label)}"><ul class="footer-links">`,
+    link("#where-next", WHERE_NEXT.linkLabel),
+    link(GITHUB_REPOSITORY, L.sourceFooter),
+    link(`${GITHUB_REPOSITORY}/blob/main/docs/sources.md`, STRINGS.footer.licences),
+    link(`${GITHUB_REPOSITORY}/issues`, STRINGS.footer.report),
+    `</ul></nav>`,
     `</footer>`,
   ];
   // The stylesheet is linked from the head, so it applies without scripts: the page gets the
   // app's gutter and width from the same classes.
-  const initialHeader = `<header class="shell-header"><a class="brand" href="#/">${escape(title)}</a><details class="app-status"><summary><span class="app-status-title">${escape(S.title)}</span></summary><div class="app-status-panel"><h2>${escape(S.courseHeading)}</h2><p>${escape(S.noScript)}</p><p>${escape(S.running)}: ${version ? `<a href="${escape(commitHref(version.sha))}">${escape(version.sha.slice(0, 7))}</a>` : escape(S.unknownBuild)}</p></div></details></header>`;
+  const initialHeader = `<header class="shell-header"><a class="brand" href="#/">${escape(title)}</a><details class="app-status"><summary><span class="app-status-title">${escape(S.title)}</span></summary><div class="app-status-panel"><h2>${escape(S.courseHeading)}</h2><p>${escape(S.noScript)}</p><p>${escape(S.running)}: ${version ? `<a href="${escape(commitHref(version.sha))}">${escape(version.sha.slice(0, 7))}</a>` : escape(S.unknownBuild)}</p>${version ? `<p>${escape(S.committed)} <time datetime="${escape(version.committedAt)}">${escape(version.committedAt.slice(0, 10))}</time> ${escape(STRINGS.version.utc)}</p>` : ""}</div></details></header>`;
 
   const noScript = [
     "<noscript>",
@@ -96,7 +87,13 @@ export function staticPage(html: string, base = "/", version: BuildVersion | nul
     ...plan,
     `<section id="where-next"><h2>${escape(WHERE_NEXT.title)}</h2><p>${escape(WHERE_NEXT.lead)}</p>`,
     `<p><a class="button primary" href="https://aarch64-playground.com/playground" target="_blank" rel="noopener noreferrer">${escape(WHERE_NEXT.playground.openLabel)}</a></p>`,
-    `<p><a class="button secondary" href="${base}examples/trip-playground.s" download>${escape(WHERE_NEXT.playground.downloadLabel)}</a></p></section>`,
+    `<p><a class="button secondary" href="${base}examples/trip-playground.s" download>${escape(WHERE_NEXT.playground.downloadLabel)}</a></p>`,
+    `<h3>${escape(STRINGS.companions.label)}</h3><p>${intro.join("")}</p>`,
+    `<nav aria-label="${escape(STRINGS.companions.label)}"><ul>`,
+    link(COMPANION_LINKS.digitalDesign, STRINGS.companions.digitalDesign),
+    link(COMPANION_LINKS.bitLab, STRINGS.companions.bitLab),
+    link(COMPANION_LINKS.hub, STRINGS.companions.hub),
+    `</ul></nav></section>`,
     `<p>${escape(STRINGS.noScript)}</p>`,
     `</div>`,
     ...footer,

@@ -5,39 +5,48 @@
   border-block: 1px solid var(--border);
 }
 .lesson-source-references > summary {
-  display: flex;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 20px;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 64px;
-  padding: 16px 4px;
-  font-size: var(--text-lg);
-  font-weight: 700;
+  gap: 20px;
+  min-height: 92px;
+  padding: 20px 4px;
+  font-size: var(--text-base);
   cursor: pointer;
   list-style: none;
 }
 .lesson-source-references > summary::-webkit-details-marker {
   display: none;
 }
-.lesson-source-references > summary::after {
-  content: "";
-  flex: 0 0 8px;
-  width: 8px;
-  height: 8px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: rotate(-45deg);
+.lesson-source-references .resource-icon,
+.lesson-source-references .resource-chevron {
   color: var(--fg-muted);
 }
-.lesson-source-references[open] > summary::after {
-  transform: rotate(45deg);
+.lesson-source-references .resource-copy {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+.lesson-source-references .resource-copy strong {
+  font-size: var(--text-lg);
+  font-weight: 650;
+}
+.lesson-source-references .resource-scope {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--fg-muted);
+  overflow-wrap: anywhere;
+}
+.lesson-source-references[open] .resource-chevron {
+  transform: rotate(90deg);
 }
 .lesson-source-references > summary:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
 .lesson-source-reference-body {
-  padding: 0 4px 20px;
+  padding: 0 48px 20px;
   overflow-wrap: anywhere;
 }
 .lesson-source-reference-body h2 {
@@ -60,6 +69,15 @@
   align-items: center;
   min-height: 44px;
   padding: 8px 0;
+}
+
+@media (max-width: 600px) {
+  .lesson-source-references > summary {
+    gap: 14px;
+  }
+  .lesson-source-reference-body {
+    padding-inline: 4px;
+  }
 }
 
 .al-flags-lesson .instruction-reference-link {

@@ -3,8 +3,25 @@
 import { LessonProse } from "@al/views";
 import type { LessonSources, SourceReference } from "@al/content";
 import { LESSON_SOURCE_STRINGS as S } from "./strings.lesson-sources";
+import { MaterialSymbol } from "./MaterialSymbol";
 
-export function LessonSourceReferences({ sources }: { sources: LessonSources }) {
+export function LessonSourceReferences({
+  sources,
+  lessonTitle,
+}: {
+  sources: LessonSources;
+  lessonTitle: string;
+}) {
+  const scope =
+    [
+      ...new Set(
+        sources.instructions.flatMap((source) =>
+          source.mnemonic
+            ? [source.mnemonic.includes(".") ? source.label : source.mnemonic.toUpperCase()]
+            : [],
+        ),
+      ),
+    ].join(" · ") || lessonTitle;
   const links = (references: readonly SourceReference[]) => (
     <ul className="lesson-source-links">
       {references.map((reference) => (
@@ -19,7 +36,14 @@ export function LessonSourceReferences({ sources }: { sources: LessonSources }) 
     return null;
   return (
     <details className="lesson-source-references" id="lesson-source-references">
-      <summary>{S.summary}</summary>
+      <summary>
+        <MaterialSymbol name="menu_book" className="resource-icon" />
+        <span className="resource-copy">
+          <strong>{S.summary}</strong>
+          <span className="resource-scope">{scope}</span>
+        </span>
+        <MaterialSymbol name="chevron_right" className="resource-chevron" />
+      </summary>
       <div className="lesson-source-reference-body">
         {sources.authoredProse ? (
           <LessonProse markdown={sources.authoredProse} />

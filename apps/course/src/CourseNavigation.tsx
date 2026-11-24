@@ -9,6 +9,7 @@ import { lessonHref } from "./route";
 import { STRINGS } from "./strings";
 import { COURSE_REFERENCES } from "./book";
 import { LAYOUT_STRINGS as S } from "./strings.layout";
+import { MaterialSymbol } from "./MaterialSymbol";
 
 /** Course navigation is independent of the mounted lesson and its simulator state. */
 export function CourseNavigation({
@@ -47,6 +48,7 @@ export function CourseNavigation({
           onClick={() => setExpanded(!expanded)}
         >
           {S.courseLessons}
+          <MaterialSymbol name="expand_more" className="course-outline-chevron" />
         </button>
         <span className="course-location-progress">
           {S.completed(completion.completed.size, LESSONS.length)}
@@ -97,7 +99,10 @@ export function CourseNavigation({
                     >
                       <span>{COURSE_REFERENCES.label(item.id)}</span>
                       {completion.completed.has(item.id) && (
-                        <span aria-label={STRINGS.completion.marked}>✓</span>
+                        <span className="course-outline-complete">
+                          <MaterialSymbol name="check" />
+                          <span className="visually-hidden">{STRINGS.completion.marked}</span>
+                        </span>
                       )}
                     </a>
                   </li>

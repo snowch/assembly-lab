@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { CalculatorWorkspace, ViewHandoffScope } from "@al/views";
 import { HEADER_CALCULATOR as S } from "./strings.header-calculator";
+import { MaterialSymbol } from "./MaterialSymbol";
 
 /** One mounted scratch workspace, independent of routes and lesson artifacts. */
 export function HeaderCalculator({
@@ -66,18 +67,7 @@ export function HeaderCalculator({
         aria-controls={id}
         onClick={() => (open ? dismiss() : setOpen(true))}
       >
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 24 24"
-          width="21"
-          height="21"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.7"
-        >
-          <rect x="4" y="2" width="16" height="20" rx="3" />
-          <path d="M7 6h10M7 11h2m2 0h2m2 0h2M7 15h2m2 0h2m2 0h2M7 19h2m2 0h2m2 0h2" />
-        </svg>
+        <MaterialSymbol name="calculate" />
         <span>{S.button}</span>
       </button>
       <dialog

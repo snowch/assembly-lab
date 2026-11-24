@@ -622,7 +622,7 @@ ol {
 .lesson-ending {
   padding-top: var(--space-4);
   padding-bottom: var(--space-6);
-  border-top: 1px solid var(--border);
+  border-top: 0;
 }
 .lesson-completion-row {
   display: flex;

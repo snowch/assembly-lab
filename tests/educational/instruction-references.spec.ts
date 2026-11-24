@@ -29,6 +29,20 @@ for (const theme of ["light", "dark"] as const) {
       const row = page.locator(".lesson-source-references");
       await expect(row).toHaveCount(1);
       await expect(row).not.toHaveAttribute("open");
+      await expect(row.locator('summary [data-symbol="menu_book"]')).toBeVisible();
+      await expect(row.locator('summary [data-symbol="menu_book"]')).toHaveAttribute(
+        "aria-hidden",
+        "true",
+      );
+      await expect(row.locator(".resource-scope")).toContainText(word.toUpperCase());
+      const icon = await row.locator('summary [data-symbol="menu_book"]').boundingBox();
+      expect(icon!.width).toBe(24);
+      expect(icon!.height).toBe(24);
+      const chevron = row.locator('summary [data-symbol="chevron_right"]');
+      expect((await chevron.boundingBox())!.width).toBe(20);
+      const closedTransform = await chevron.evaluate(
+        (element) => getComputedStyle(element).transform,
+      );
       const link = page
         .locator(".lesson-layout-content a")
         .filter({ has: page.locator("code") })
@@ -44,6 +58,9 @@ for (const theme of ["light", "dark"] as const) {
       await summary.focus();
       await summary.press("Enter");
       await expect(row).toHaveAttribute("open");
+      expect(await chevron.evaluate((element) => getComputedStyle(element).transform)).not.toBe(
+        closedTransform,
+      );
       await expect(summary).toBeFocused();
       expect(await row.getByRole("link").count()).toBeGreaterThan(0);
       const geometry = await row.evaluate((node) => ({

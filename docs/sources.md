@@ -49,9 +49,9 @@ are recorded in `docs/notes/module-6/listings.md` and `docs/notes/module-6/facts
 
 | What | Licence |
 | --- | --- |
-| Source Sans 3, Archivo, JetBrains Mono, through `@fontsource-variable` | SIL Open Font License 1.1 |
+| IBM Plex Sans and Mono (bundled locally), and Source Sans 3, Archivo and JetBrains Mono through `@fontsource-variable` | SIL Open Font License 1.1 |
 | React | MIT |
-| three Material Icons (`info`, `expand_more`, `lock`), drawn as CSS masks | Apache License 2.0 (Google) |
+| Material Symbols Rounded for course controls, references and completion; official geometry at revision `10ecc14790612ca8fd164e3f4ffe9c16fc50d5b7`, [local source and licence](../apps/course/src/icons/material/README.md); existing view Material Icons (`info`, `expand_more`, `lock`) | Apache License 2.0 (Google) |
 | the learning platform's packages (`platform/`) | the author's own |
 
 The scaffold's build records the exact packages; a licence check like metadata-systems' joins

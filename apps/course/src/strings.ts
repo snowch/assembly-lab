@@ -117,6 +117,12 @@ export const STRINGS = {
   previousLesson: "Previous lesson",
   // DRAFT
   nextLesson: "Next lesson",
+  footer: {
+    label: "Site links",
+    licences: "Sources and licences",
+    report: "Report a problem",
+    chooseLesson: "Choose a lesson",
+  },
 
   // the cover's live figure: the name a screen reader gives it, and what it says as it runs.
   cover: {
