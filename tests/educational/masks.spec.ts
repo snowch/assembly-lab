@@ -61,7 +61,7 @@ test("the mask unit loads with no console error and its own closing check", asyn
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
   await expect(page.locator("section.challenge")).toHaveCount(1);
   await expect(page.locator(".interactive-problem, .interactive-missing")).toHaveCount(0);
-  await expect(page.locator("a.back-link").first()).toHaveAttribute("href", "#/");
+  await expect(page.locator('#course-lesson-panel > a[href="#/"]')).toHaveAttribute("href", "#/");
   await expect(page).toHaveTitle(`${lesson.title} / Arm Assembly Lab`);
   expect(errors).toEqual([]);
 });

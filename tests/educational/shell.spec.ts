@@ -16,7 +16,7 @@ import { VIEW_STRINGS } from "../../packages/views/src/strings";
 
 import { planLessonLabel, lessonLabel } from "./lesson-references";
 
-import { COMPANION_LINKS, STRINGS } from "../../apps/course/src/strings";
+import { COMPANION_LINKS, GITHUB_REPOSITORY, STRINGS } from "../../apps/course/src/strings";
 
 const THEME_KEY = "assembly-lab:v1:theme";
 const sourceSha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
@@ -429,7 +429,11 @@ test("the footer carries the copyright and links to the companion courses", asyn
   const footer = page.locator("footer.shell-footer");
   await expect(footer.locator(".copyright")).toHaveText(STRINGS.copyright);
   const links = footer.getByRole("link");
-  await expect(links).toHaveCount(5);
+  await expect(links).toHaveCount(6);
+  await expect(footer.getByRole("link", { name: "Source", exact: true })).toHaveAttribute(
+    "href",
+    GITHUB_REPOSITORY,
+  );
   await expect(
     footer.getByRole("navigation", { name: STRINGS.companions.label }).getByRole("link"),
   ).toHaveCount(3);
@@ -536,11 +540,10 @@ test("the skip link moves focus to the main content and leaves the plan on the p
   expect(errors).toEqual([]);
 });
 
-test("on a desk the cover and the plan share one centred column as wide as the page", async ({
+test("on a desk the intro and live figure share a centred page-width frame with the plan", async ({
   page,
 }, info) => {
-  // On a phone the cover is a band to both screen edges, by design; the plan keeps the gutter.
-  test.skip(info.project.name !== "desktop", "the phone's cover runs to the screen's edges");
+  test.skip(info.project.name !== "desktop", "the narrow page stacks the intro and live figure");
   await page.goto("#/");
   await ready(page);
   const edges = await page.evaluate(() => {
@@ -549,16 +552,19 @@ test("on a desk the cover and the plan share one centred column as wide as the p
       return { left: Math.round(r.left), right: Math.round(r.right) };
     };
     return {
-      cover: box(".cover-hero"),
+      frame: box(".front-column"),
+      intro: box(".cover-hero"),
+      figure: box(".cover-stepper"),
       list: box(".plan-modules"),
       width: document.documentElement.clientWidth,
     };
   });
-  expect(edges.list).toEqual(edges.cover);
-  // It uses the page's width, as digital-design's front page does, not the reading measure.
-  expect(edges.cover.right - edges.cover.left).toBeGreaterThan(900);
-  // The column is centred.
-  expect(edges.cover.left).toBe(edges.width - edges.cover.right);
+  expect(edges.list).toEqual(edges.frame);
+  expect(edges.frame.right - edges.frame.left).toBeGreaterThan(900);
+  expect(edges.frame.left).toBe(edges.width - edges.frame.right);
+  expect(edges.intro.left).toBe(edges.frame.left);
+  expect(edges.intro.right).toBeLessThan(edges.figure.left);
+  expect(edges.figure.right).toBeLessThanOrEqual(edges.frame.right);
 });
 
 test.describe("with scripts off", () => {
@@ -570,7 +576,10 @@ test.describe("with scripts off", () => {
     await expect(page.locator(".noscript-page h1")).toBeVisible();
     const heading = await page.locator(".noscript-page h1").boundingBox();
     expect(heading!.x).toBeGreaterThanOrEqual(gutter);
-    await expect(page.locator("footer.shell-footer").getByRole("link")).toHaveCount(5);
+    await expect(page.locator("footer.shell-footer").getByRole("link")).toHaveCount(6);
+    await expect(
+      page.locator("footer.shell-footer").getByRole("link", { name: "Source", exact: true }),
+    ).toHaveAttribute("href", GITHUB_REPOSITORY);
     await page
       .locator("footer.shell-footer")
       .getByRole("link", { name: WHERE_NEXT.linkLabel })

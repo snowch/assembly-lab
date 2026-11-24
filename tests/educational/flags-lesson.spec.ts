@@ -3,6 +3,8 @@
 // The approved full-page replacement: real examples, gates and registered challenge work.
 // Old grid-only checks are replaced here by checks of the same mechanisms in the new controls.
 import { expect, test, type Page, type Locator } from "@playwright/test";
+import { courseOverview } from "./course-navigation-helper";
+import { openStatus } from "./app-status-helper";
 import { S, FLAGS_LESSON_SECTIONS } from "../../packages/views/src/flags-lesson/strings";
 import { FLAGS_VIEW_SLOT } from "../../packages/views/src/flags-lesson/state";
 import { flagsModel } from "../../packages/views/src/flags-lesson/model";
@@ -43,16 +45,17 @@ async function stored(page: Page) {
 }
 
 async function navigateOutline(page: Page, id: string) {
-  const phone = page.viewportSize()!.width <= 760;
-  if (phone) await page.locator(".lesson-outline-mobile > summary").click();
-  const nav = page.locator(phone ? ".lesson-outline-mobile nav" : ".lesson-outline-desktop nav");
+  const disclosure = page.locator(".lesson-outline-mobile");
+  if (!(await disclosure.evaluate((element) => (element as HTMLDetailsElement).open)))
+    await disclosure.locator(":scope > summary").click();
+  const nav = disclosure.locator("nav");
   const link = nav.locator(`a[href="#${id}"]`);
   await link.click();
   await page.evaluate(
     () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
   );
   await expect(link).toHaveAttribute("aria-current", "location");
-  if (phone) await expect(page.locator(".lesson-outline-mobile")).not.toHaveAttribute("open");
+  await expect(disclosure).not.toHaveAttribute("open");
 }
 
 for (const theme of ["light", "dark"] as const) {
@@ -496,6 +499,8 @@ for (const theme of ["light", "dark"] as const) {
           return {
             left: rect.left,
             right: rect.right,
+            top: rect.top,
+            bottom: rect.bottom,
             contained: rect.left >= card.left && rect.right <= card.right,
             text: range.querySelector("strong")!.textContent,
             bounds,
@@ -519,8 +524,12 @@ for (const theme of ["light", "dark"] as const) {
         if (layout.ranges[0]!.left !== layout.ranges[1]!.left)
           expect(range.bounds[0]!.top).toBe(range.bounds[1]!.top);
       }
-      if (width < 1280) expect(layout.ranges[0]!.left).toBe(layout.ranges[1]!.left);
+      // The wider shared reading area can pair complete ranges at tablet widths.
+      // Preserve reading order and separation, rather than imposing the old sidebar breakpoint.
+      if (layout.ranges[0]!.left === layout.ranges[1]!.left)
+        expect(layout.ranges[0]!.bottom).toBeLessThanOrEqual(layout.ranges[1]!.top);
       else expect(layout.ranges[0]!.right).toBeLessThan(layout.ranges[1]!.left);
+      if (width === 1280) expect(layout.ranges[0]!.right).toBeLessThan(layout.ranges[1]!.left);
       await expect(page.locator("#armFeedback [data-fixed-result]")).toHaveCount(0);
       await choose(page, "arm-choice", 1);
       await page.locator("#armForm button[type=submit]").click();
@@ -553,7 +562,9 @@ for (const theme of ["light", "dark"] as const) {
     const widths = page.viewportSize()!;
     expect(
       await page.locator(".shell-header").evaluate((n) => n.getBoundingClientRect().height),
-    ).toBeLessThanOrEqual(widths.width < 760 ? 68 : 74);
+      // The shared header retains both tools and a two-line App status control:
+      // measured 129.55px at narrow widths and 92.5px at desktop.
+    ).toBeLessThanOrEqual(widths.width <= 600 ? 132 : 96);
     await page.locator("#tabZ").click();
     await expect(page.locator("#inspectVisualTitle")).toHaveText(S.zInspectHint);
     expect(
@@ -845,12 +856,13 @@ for (const theme of ["light", "dark"] as const) {
 
 test("theme, keyboard and shared course navigation preserve flags work", async ({ page }) => {
   await open(page, "light");
-  const backToPlan = page.locator(".lesson-back .back-link");
+  const backToPlan = await courseOverview(page);
   await expect(backToPlan).toHaveCount(1);
-  await expect(backToPlan).toHaveText("Back to the course plan");
+  await expect(backToPlan).toHaveText("Course overview");
   await expect(backToPlan).toHaveAttribute("href", "#/");
-  await expect(page.locator('.shell-main a[href="#/lesson/register-widths"]')).toHaveCount(1);
-  await expect(page.locator('.shell-main a[href="#/lesson/flags-and-overflow"]')).toHaveCount(1);
+  await page.keyboard.press("Escape");
+  await expect(page.locator('.lesson-nav a[href="#/lesson/register-widths"]')).toHaveCount(1);
+  await expect(page.locator('.lesson-nav a[href="#/lesson/flags-and-overflow"]')).toHaveCount(1);
   await expect(page.locator(".al-flags-lesson .end a")).toHaveCount(0);
   await expect(page.locator("#recap li")).toHaveCount(4);
   await navigateOutline(page, "smallpractice");
@@ -862,7 +874,7 @@ test("theme, keyboard and shared course navigation preserve flags work", async (
   await page.locator(".theme-picker select").selectOption("dark");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator('input[name=mini-n][value="1"]')).toBeChecked();
-  await page.locator(".app-status>summary").click();
+  await openStatus(page);
   await expect(page.locator(".app-status-panel")).toBeVisible();
   await page.keyboard.press("Escape");
   await page.locator(".lesson-nav-link[data-direction=next]").click();
@@ -870,7 +882,7 @@ test("theme, keyboard and shared course navigation preserve flags work", async (
   await expect(page.locator(".al-flags-lesson")).toHaveCount(0);
   await page.locator(".lesson-nav-link[data-direction=previous]").click();
   await expect(page.locator('input[name=mini-n][value="1"]')).toBeChecked();
-  await page.locator(".lesson-back .back-link").focus();
+  await (await courseOverview(page)).focus();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/#\/$/);
   const courseModule = page.locator('.plan-module[data-module="adding-and-the-flags"]');
@@ -884,10 +896,12 @@ test("the approved layout stays legible, unclipped and follows the system theme"
   page,
 }) => {
   await open(page, "light");
-  const phone = page.viewportSize()!.width < 760;
+  const content = await page.locator(".lesson-layout-content").boundingBox();
   const card = await page.locator("#compare>.focus-card").boundingBox();
-  expect(card!.width).toBeCloseTo(phone ? 343 : 760, 0);
-  if (!phone) expect(card!.x).toBeCloseTo(339, 0);
+  expect(card!.width).toBeCloseTo(content!.width, 0);
+  expect(card!.x).toBeCloseTo(content!.x, 0);
+  expect(card!.x).toBeGreaterThanOrEqual(0);
+  expect(card!.x + card!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
   const bounds = await page.locator(".example-switcher").evaluate((el) => ({
     outer: el.getBoundingClientRect().toJSON(),
     children: [...el.querySelectorAll("button")].map((b) => b.getBoundingClientRect().toJSON()),

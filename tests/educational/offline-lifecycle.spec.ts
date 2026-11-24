@@ -18,6 +18,7 @@ import {
   openStatus,
   prepareUpdate,
   restartUpdate,
+  showStatusDetails,
   waitForRuntime,
 } from "./app-status-helper";
 
@@ -60,17 +61,19 @@ test("checking the published release never downloads the course or reads GitHub 
     const panel = await checkForUpdates(page);
     await expect(panel.locator('[data-version="current"]')).toBeVisible();
     await expect(panel.locator('[data-offline="idle"]')).toBeVisible();
-    expect(site.requests).not.toContain(`GET ${base}native/assembly-lab-native.zip`);
-    expect(site.requests).not.toContain(`GET ${base}native/Makefile`);
+    expect(site.requests.some((path) => path.endsWith("/native/assembly-lab-native.zip"))).toBe(
+      false,
+    );
+    expect(site.requests.some((path) => /^GET .*\/native\/Makefile$/.test(path))).toBe(false);
     expect(external).toEqual([]);
     const published = site.publish("published");
     await checkForUpdates(page);
     await expect(panel.locator('[data-version="available"]')).toBeVisible();
     expect(await currentBuild(page)).toBe(site.initial.buildId);
     expect(published.buildId).not.toBe(site.initial.buildId);
-    expect(site.requests).not.toContain(`GET ${base}native/Makefile`);
-    await panel.locator("summary").first().click();
-    await expect(panel.locator("summary").first()).toContainText("Update available");
+    expect(site.requests.some((path) => /^GET .*\/native\/Makefile$/.test(path))).toBe(false);
+    await panel.getByRole("button", { name: "Close", exact: true }).click();
+    await expect(page.locator("#app-status-open")).toContainText("New version available");
   } finally {
     await context.close();
     await site.close();
@@ -92,7 +95,7 @@ test("cached CDN discovery retries an equivalent network path and never trusts c
     await checkForUpdates(page);
     await expect(panel.locator('[data-version="available"]')).toBeVisible();
     expect(await currentBuild(page)).toBe(site.initial.buildId);
-    expect(site.requests).not.toContain(`GET ${base}native/Makefile`);
+    expect(site.requests.some((path) => /^GET .*\/native\/Makefile$/.test(path))).toBe(false);
     site.cdnCache("all");
     await checkForUpdates(page);
     await expect(panel.locator('[data-version="error"]')).toBeVisible();
@@ -127,9 +130,10 @@ test("offline saving uses its matching validated inventory when freshness cannot
     const panel = await openStatus(page);
     await expect(panel.locator('[data-version="error"]')).toBeVisible();
     await expect(
-      panel.getByRole("button", { name: "Download for offline use", exact: true }),
+      panel.getByRole("button", { name: "Save offline copy", exact: true }),
     ).toBeEnabled();
     await downloadOffline(page);
+    await openStatus(page);
     await expect(panel.locator('[data-version="error"]')).toBeVisible();
     site.connected(false);
     await context.setOffline(true);
@@ -161,8 +165,9 @@ test("a retained older selection cannot be saved as the freshly loaded release w
     await waitForRuntime(observer, site.url, next.buildId);
     const reopened = await context.newPage();
     await controlled(reopened, site.url);
-    expect(await currentBuild(reopened)).toBe(site.initial.buildId);
+    expect(await currentBuild(reopened)).toBe(next.buildId);
     const panel = await openStatus(reopened);
+    await showStatusDetails(reopened);
     await panel.getByRole("button", { name: "Remove offline copy", exact: true }).click();
     await panel
       .locator(".remove-confirmation")
@@ -175,7 +180,7 @@ test("a retained older selection cannot be saved as the freshly loaded release w
     const refreshedPanel = await openStatus(reopened);
     await expect(refreshedPanel.locator('[data-version="error"]')).toBeVisible();
     await expect(
-      refreshedPanel.getByRole("button", { name: "Download for offline use", exact: true }),
+      refreshedPanel.getByRole("button", { name: "Save offline copy", exact: true }),
     ).toBeDisabled();
     site.metadata("valid");
     await checkForUpdates(reopened);
@@ -227,11 +232,11 @@ test("detect, download, defer and explicit restart reload every app tab while pr
     const oldCaches = await cacheNames(first);
     const next = site.publish("explicit-restart");
     const panel = await prepareUpdate(first);
-    expect(site.requests).toContain(`GET ${base}native/Makefile`);
+    expect(site.requests.some((path) => /^GET .*\/native\/Makefile$/.test(path))).toBe(true);
     await panel.getByRole("button", { name: "Later", exact: true }).click();
     expect(await currentBuild(first)).toBe(site.initial.buildId);
     expect(await currentBuild(second)).toBe(site.initial.buildId);
-    await expect(panel.locator("summary").first()).toContainText("Update ready");
+    await expect(first.locator("#app-status-open")).toContainText("Ready to restart");
     let firstReloads = 0;
     let secondReloads = 0;
     first.on("framenavigated", (frame) => {
@@ -322,6 +327,7 @@ test("restart refuses memory-only edits, input composition and an unsaved theme,
       expect(await currentBuild(page)).toBe(site.initial.buildId);
     }
     await expect(editor).toHaveValue("unsigned unsaved(unsigned value) { return value; }");
+    await second.getByRole("button", { name: "Close", exact: true }).click();
     await second.evaluate(() => window.dispatchEvent(new Event("restore-test-storage")));
     const savedCode = "unsigned saved(unsigned value) { return value; }";
     await editor.fill(savedCode);
@@ -343,11 +349,13 @@ test("restart refuses memory-only edits, input composition and an unsaved theme,
         { once: true },
       );
     });
+    await first.getByRole("button", { name: "Close", exact: true }).click();
     await first.getByLabel(STRINGS.theme).selectOption("dark");
     await restartUpdate(first);
     await expect(first.getByRole("alert")).toContainText(/saved|unsaved/i);
     await expect(first.locator("html")).toHaveAttribute("data-theme", "dark");
     await first.evaluate(() => window.dispatchEvent(new Event("restore-test-storage")));
+    await first.getByRole("button", { name: "Close", exact: true }).click();
     await first.getByLabel(STRINGS.theme).selectOption("auto");
     await restartUpdate(first);
     await expectRelease(second, "safe-retry", next.buildId);
@@ -393,7 +401,7 @@ for (const corrupt of [false, true]) {
       site.failure(`${base}native/Makefile`, corrupt);
       const panel = await checkForUpdates(page);
       await expect(panel.locator('[data-version="available"]')).toBeVisible();
-      await panel.getByRole("button", { name: "Update", exact: true }).click();
+      await panel.getByRole("button", { name: "Update offline copy", exact: true }).click();
       await expect(panel.getByRole("alert")).toBeVisible({ timeout: 30000 });
       expect(await currentBuild(page)).toBe(site.initial.buildId);
       site.connected(false);
@@ -432,9 +440,11 @@ test("an interrupted first download resumes verified assets and removal preserve
     }, unrelatedCache);
     site.delay(`${base}native/Makefile`, 10000);
     const panel = await openStatus(page);
-    await panel.getByRole("button", { name: "Download for offline use", exact: true }).click();
+    await panel.getByRole("button", { name: "Save offline copy", exact: true }).click();
     await expect(panel.locator('[data-offline="saving"]')).toBeVisible();
-    await expect.poll(() => site.requests.includes(`GET ${base}native/Makefile`)).toBe(true);
+    await expect
+      .poll(() => site.requests.some((path) => /^GET .*\/native\/Makefile$/.test(path)))
+      .toBe(true);
     const progress = panel.getByRole("progressbar");
     await expect(progress).toHaveAttribute("max", String(site.initial.totalBytes));
     const savedBytes = Number(await progress.getAttribute("value"));
@@ -442,9 +452,11 @@ test("an interrupted first download resumes verified assets and removal preserve
     expect(savedBytes).toBeLessThan(site.initial.totalBytes);
     await panel.getByRole("button", { name: /Cancel download/ }).click();
     await expect(panel.locator('[data-offline="incomplete"]')).toBeVisible();
+    await expect(panel.getByRole("alert")).toHaveCount(0);
     site.delay();
     await panel.getByRole("button", { name: "Resume download", exact: true }).click();
     await offlineReady(page);
+    await showStatusDetails(page);
     await panel.getByRole("button", { name: "Remove offline copy", exact: true }).click();
     // Removal requires a second explicit confirmation rather than deleting on opening.
     const confirm = panel
@@ -588,7 +600,7 @@ test("release checks bypass cached metadata and unrelated resources still reach 
   }
 });
 
-test("Later keeps the running release after every app window is closed and reopened", async ({
+test("Later keeps existing tabs unchanged while a fresh online document opens the published release", async ({
   context,
 }) => {
   const site = await deployment();
@@ -607,7 +619,7 @@ test("Later keeps the running release after every app window is closed and reope
     // Fresh document, not an SPA navigation, with no surviving app window.
     const reopened = await context.newPage();
     await controlled(reopened, `${site.url}#/lesson/one-addition`);
-    expect(await currentBuild(reopened)).toBe(site.initial.buildId);
+    expect(await currentBuild(reopened)).toBe(next.buildId);
     const status = await openStatus(reopened);
     await expect(status.locator('[data-version="ready"]')).toBeVisible();
     await restartUpdate(reopened);
@@ -678,7 +690,7 @@ test("storage exhaustion preserves the complete copy and the update can recover"
     const next = site.publish("after-quota");
     const panel = await checkForUpdates(page);
     await expect(panel.locator('[data-version="available"]')).toBeVisible();
-    await panel.getByRole("button", { name: "Update", exact: true }).click();
+    await panel.getByRole("button", { name: "Update offline copy", exact: true }).click();
     await expect(panel.getByRole("alert")).toBeVisible({ timeout: 30000 });
     expect(await currentBuild(page)).toBe(site.initial.buildId);
     await offlineReady(page);
@@ -695,7 +707,7 @@ test("storage exhaustion preserves the complete copy and the update can recover"
   }
 });
 
-test("an online-only refreshed app completes the published runtime update before saving offline", async ({
+test("an online-only refreshed app explicitly saves its published runtime before restarting", async ({
   context,
 }) => {
   const site = await deployment();
@@ -706,18 +718,20 @@ test("an online-only refreshed app completes the published runtime update before
     await page.reload();
     await expectRelease(page, "online-refresh", next.buildId);
     const mismatch = await openStatus(page);
+    await expect(mismatch.locator('[data-version="current"]')).toBeVisible();
+    await expect(mismatch.locator('[data-offline="idle"]')).toBeVisible();
+    await mismatch.getByRole("button", { name: "Save offline copy", exact: true }).click();
     await expect(
-      mismatch.getByRole("button", { name: "Download for offline use", exact: true }),
-    ).toBeDisabled();
-    await prepareUpdate(page);
+      mismatch.getByRole("button", { name: "Restart to update", exact: true }),
+    ).toBeVisible({ timeout: 30000 });
     // The loaded HTML already names B: its identity cannot signal completion of
     // this runtime-only restart. Wait for the new document before opening its panel.
     const restarted = page.waitForEvent("domcontentloaded");
     await restartUpdate(page);
     await restarted;
-    await expect(page.locator('.app-status [data-version="current"]')).toBeAttached();
-    await expect(page.locator('.app-status [data-offline="idle"]')).toBeAttached();
-    await downloadOffline(page);
+    await expect(page.locator('#app-status-dialog [data-version="current"]')).toBeAttached();
+    await expect(page.locator('.app-status [data-offline="ready"]')).toBeAttached();
+    await offlineReady(page);
     site.connected(false);
     await context.setOffline(true);
     expect((await page.reload())?.fromServiceWorker()).toBe(true);
@@ -756,7 +770,8 @@ test("a real in-flight compiler request blocks restart until processing finishes
     const compiler = second.locator("#ix-play-from-c-to-instructions");
     await compiler.locator("summary").filter({ hasText: C.playground.compare }).click();
     const next = site.publish("after-processing");
-    await prepareUpdate(first);
+    const preparedPanel = await prepareUpdate(first);
+    await preparedPanel.getByRole("button", { name: "Close", exact: true }).click();
     await compiler.getByRole("button", { name: C.playground.compare, exact: true }).click();
     await expect(compiler.locator('[aria-busy="true"]')).toBeVisible();
     await restartUpdate(first);
@@ -788,11 +803,14 @@ test("cancelling an update retains the complete release and permits preparation 
     site.delay(`${base}native/Makefile`, 10000);
     const panel = await checkForUpdates(page);
     await expect(panel.locator('[data-version="available"]')).toBeVisible();
-    await panel.getByRole("button", { name: "Update", exact: true }).click();
+    await panel.getByRole("button", { name: "Update offline copy", exact: true }).click();
     await expect(panel.locator('[data-version="downloading"]')).toBeVisible();
-    await expect.poll(() => site.requests.includes(`GET ${base}native/Makefile`)).toBe(true);
+    await expect
+      .poll(() => site.requests.some((path) => /^GET .*\/native\/Makefile$/.test(path)))
+      .toBe(true);
     await panel.getByRole("button", { name: "Cancel download", exact: true }).click();
     await expect(panel.locator('[data-version="downloading"]')).toHaveCount(0);
+    await expect(panel.getByRole("alert")).toHaveCount(0);
     expect(await currentBuild(page)).toBe(site.initial.buildId);
     site.connected(false);
     await context.setOffline(true);
@@ -882,6 +900,7 @@ test("saving and removing the app leaves a broader sibling worker registration i
       .toBe(site.url);
     await downloadOffline(page);
     const panel = await openStatus(page);
+    await showStatusDetails(page);
     await panel.getByRole("button", { name: "Remove offline copy", exact: true }).click();
     await panel
       .locator(".remove-confirmation")
@@ -921,8 +940,9 @@ test("removing an offline copy after deferred runtime replacement still permits 
     await waitForRuntime(observer, site.url, next.buildId);
     const reopened = await context.newPage();
     await controlled(reopened, `${site.url}#/lesson/cap-charge-in-c`);
-    expect(await currentBuild(reopened)).toBe(site.initial.buildId);
+    expect(await currentBuild(reopened)).toBe(next.buildId);
     const panel = await openStatus(reopened);
+    await showStatusDetails(reopened);
     await panel.getByRole("button", { name: "Remove offline copy", exact: true }).click();
     await panel
       .locator(".remove-confirmation")
@@ -940,12 +960,10 @@ test("removing an offline copy after deferred runtime replacement still permits 
     ).toBe(0);
     const editor = reopened.locator("#challenge-write-cap-charge").getByRole("textbox");
     await expect(editor).toHaveValue(code);
-    expect(await currentBuild(reopened)).toBe(site.initial.buildId);
-    await prepareUpdate(reopened);
-    await restartUpdate(reopened);
+    expect(await currentBuild(reopened)).toBe(next.buildId);
+    await downloadOffline(reopened);
     await expectRelease(reopened, "after-remove-pending", next.buildId);
     await expect(editor).toHaveValue(code);
-    await downloadOffline(reopened);
     site.connected(false);
     await context.setOffline(true);
     expect((await reopened.reload())?.fromServiceWorker()).toBe(true);
@@ -971,7 +989,7 @@ test("cancel is offered only when preparation reaches cancellable asset download
     site.delay(`${base}sw.js`, 3000);
     const panel = await checkForUpdates(page);
     await expect(panel.locator('[data-version="available"]')).toBeVisible();
-    await panel.getByRole("button", { name: "Update", exact: true }).click();
+    await panel.getByRole("button", { name: "Update offline copy", exact: true }).click();
     await expect(panel.locator('[data-version="downloading"]')).toBeVisible();
     await expect.poll(() => site.requests.includes(`GET ${base}sw.js`)).toBe(true);
     await expect(panel.getByRole("button", { name: "Cancel download", exact: true })).toHaveCount(
@@ -981,10 +999,13 @@ test("cancel is offered only when preparation reaches cancellable asset download
     // asset response so the cancellable phase is observable without a fake timer.
     site.delay(`${base}native/Makefile`, 10000);
     await expect
-      .poll(() => site.requests.includes(`GET ${base}native/Makefile`), { timeout: 10000 })
+      .poll(() => site.requests.some((path) => /^GET .*\/native\/Makefile$/.test(path)), {
+        timeout: 10000,
+      })
       .toBe(true);
     await panel.getByRole("button", { name: "Cancel download", exact: true }).click();
     await expect(panel.locator('[data-version="downloading"]')).toHaveCount(0);
+    await expect(panel.getByRole("alert")).toHaveCount(0);
     expect(await currentBuild(page)).toBe(site.initial.buildId);
     await offlineReady(page);
     site.delay();
@@ -1045,7 +1066,7 @@ test("a newer waiting release remains actionable after a deferred restart is ref
     // Refresh can rediscover the still-saved B preparation. It must not hide
     // the action that prepares the newer published C release.
     await checkForUpdates(page);
-    await panel.getByRole("button", { name: "Update", exact: true }).click();
+    await panel.getByRole("button", { name: "Update offline copy", exact: true }).click();
     await expect
       .poll(
         async () => {

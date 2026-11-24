@@ -1,96 +1,47 @@
-# Offline operation
+# Offline operation and updates
 
 Copyright © 2026 Christopher Snow.
 
-The production app saves its complete release on the first successful online visit.
-The status near the top of each page reports readiness after the controlling service
-worker confirms that all required files are present. Its expandable explanation names
-the automatic download and the message to wait for. Lessons, recorded listings,
-exercise grading, the assembler, simulator and small C compiler work without a
-connection. The optional Compiler Explorer
-comparison and links to other websites require internet access.
+The Arm adapter follows the [shared offline/update design](https://github.com/snowch/cuda-cpp-lab/blob/main/docs/offline-update-design.md). It preserves this course's existing artifact, simulation-view and theme handoff rather than replacing its storage schema.
 
-## Build and cache
+## What the learner sees
 
-`apps/course/offline/plugin.ts` emits `sw.js` after Vite has emitted the HTML, JavaScript,
-CSS, manifest and fonts. It also includes the icons from `public/`. Source maps and the
-worker itself are excluded. No runtime dependency or third-party cache service is used.
-The plugin supports an absolute base path ending in `/`, including `/` and the deployed
-`/assembly-lab/`. The worker derives its URLs from its registration scope.
+Opening or reloading the course online loads current published HTML. Moving among lessons in an already open tab changes its hash route and keeps that tab's coherent loaded release. Small metadata checks run on startup, focus/reconnect and periodically while visible; they do not save the course.
 
-Each asset has a SHA-256 integrity value. The release identifier covers those values,
-file names and the worker source. Installation fetches the complete release with
-integrity checking, bypassing the HTTP cache. Cache API `addAll` commits the batch only
-when all downloads succeed. A failed or mixed deployment cannot replace the old cache.
+App status provides one Course status section. An online-only reader with a newer published version can choose **Reload latest course**. It saves and checks this tab's work and view before reloading this window only. Unfinished composition, running work, an active download or failed/conflicting saving keeps the current window open with an explanation. This action does not download a complete offline copy or reload other windows.
 
-The worker serves known assets from its release cache. It serves the saved `index.html`
-for navigation to the app root or `index.html`, including query strings; lesson routes
-are in the URL fragment. It leaves unknown paths, other sites and non-GET requests to
-the network. A missing cached asset falls back to the network without adding an
-unverified response to the release cache.
+**Save offline copy** explicitly downloads the complete course. **Update offline copy** explicitly downloads and verifies a replacement, then offers **Restart to update**. An explicit offline update also grants offline consent when no earlier copy existed. Only a complete, currently verified saved inventory can be described as downloaded and ready to use offline. A current online document and an older usable offline copy are reported separately.
 
-## Updates and recovery
+Lessons, recorded listings, exercise grading, local assembler/simulator/compiler, fonts, icons and bundled example downloads are included. External documentation and optional Compare with GCC need internet access. Native example execution still requires separately installed tools or the specified hardware; its downloadable source is not a browser-native process.
 
-A newly installed release waits by default. The status area offers **Update now** only
-when a downloaded worker is waiting. Selecting it explicitly authorises reloading all
-Assembly Lab tabs and installed app windows; it does not try to close browser windows.
+## Build and immutable identities
 
-The waiting worker first asks every in-scope window to pause its controls. Each tab checks
-its edited lesson keys against durable local storage, and prepares its own theme handoff
-in session storage. Once all tabs have paused, a second verification round catches any
-same-lesson overwrite that occurred while a slower tab was still editing. In-progress
-input-method composition also blocks activation. Memory-only edits are never treated as
-saved. Conflicting tabs must resolve or back up their work; preparation does not overwrite
-another tab's value to force a save.
+`apps/course/offline/plugin.ts` generates SHA-256 integrity metadata after Vite emits the app. `release.json` describes actual canonical files, their byte counts and the worker. Source maps, the worker and previously emitted release trees are excluded from the course inventory. The build ID covers the normalized entry HTML, asset hashes, source version and worker template; the final HTML is then hashed with that ID embedded.
 
-After verifying the complete new cache and checking for newly opened clients, the worker
-uses `skipWaiting`. Its claim triggers one reload in each previously controlled tab,
-preserving lesson URLs, stored artifacts and each tab's theme. The initial installation
-claims clients without reloading them. Downloaded updates can be applied while offline.
-Request IDs isolate preparation, verification and cancellation. Participating tabs can
-cancel a slow preparation, but cannot unlock after activation has committed. If a newer
-waiting worker supersedes an update, tabs detect the old worker's terminal redundant state
-and safely unlock to offer the new update.
+The build also emits exact immutable copies at `releases/<buildId>/`. Entry script/styles and emitted CSS font/asset URLs use that tree. Immutable duplicates do not inflate the displayed complete-course download size. A first visit installs only the small worker, not the full course. There is no external runtime, font host or third-party cache dependency.
 
-Failed saving, unresponsive tabs and missing downloads leave the current release open.
-Tabs using an older app without the preparation handler block explicit activation rather
-than being forced to reload. Closing all course tabs and app windows still activates a
-downloaded update normally. Existing cached versions without **Update now** need this
-one-time close and reopen to pick up the button itself.
+A document, published release, worker runtime and selected saved offline release are distinct identities. `course-build-id` records the loaded document. `savedVersion` identifies a selected, complete verified saved copy; `savedCurrent` compares it with the loaded document. Published metadata supplies freshness separately. Metadata checks bypass the saved course and reject stale or malformed responses.
 
-On activation, cleanup deletes only older caches with this app's exact registration
-scope. Other courses on the same origin keep their caches.
+At publication, `apps/course/offline/retain.ts` retains two preceding verified release trees. It checks original byte counts and hashes, including compatibility with the deployment before immutable paths existed. Verified content-addressed files under `assets/` also remain at their original URLs for pre-immutable tabs; an existing same-URL/different-byte collision blocks publication. A failed retention blocks publication rather than silently deleting older tabs' dependencies. This is bounded retention, not a promise to preserve every historical unsaved tab indefinitely.
 
-The client asks the controlling worker about readiness through a MessageChannel.
-`OFFLINE_STATUS` checks that every required response exists. `OFFLINE_REPAIR` first
-tries to restore an incomplete cache using the same atomic, integrity-checked download.
-The app checks on registration, controller changes, connection changes and return to
-the tab. A failed update check does not hide a usable installed release.
+## Download, navigation and recovery
 
-Browsers can evict cached files, and clearing site data removes them. Clearing site data
-also removes locally saved exercise work and theme choices. Cache replacement itself
-does not change local storage. A cleared cache requires another online visit; an old
-release whose unhashed files have changed on the server cannot be repaired from a
-different release. Closing the old tabs allows a successfully downloaded update to take
-over. Offline availability is not a permanent backup.
+An explicit download resumes already verified files, including identical files in earlier caches. Download responses must match the selected release's exact byte count and SHA-256. Immutable paths are preferred; a canonical compatibility response is accepted only if its bytes verify. Cancellation retains completed files, reports cancellation separately from failure and leaves an older complete copy usable. A failed transfer never promotes an incomplete release.
 
-Service workers require HTTPS or localhost. Registration is enabled only in production
-builds. Browsers without support retain the online app and show that offline saving is
-unavailable. A development server does not register a worker; use a separate origin or
-port from a production preview to avoid an already registered worker on that origin.
+Normal online navigation is network-first, with a bounded deadline that covers headers and body. Failed or offline navigation falls back to a complete saved release. The worker records the resulting document's identity so later runtime/font/native requests use that document's release rather than mixing versions. Cached bodies are verified, including entry HTML; corrupt bytes are not silently served or described as ready. Readiness inspection does not start a repair download.
+
+Preparing an update leaves current documents and the selected saved release unchanged. After a verified update, Restart opens the exact prepared release even if another version is published in the meantime. A restart ticket applies only to the participating clients; an unrelated new online visit can still open the newest publication. Closing the app after preparation alone does not secretly promote the staged copy.
+
+## Saved work and coordinated restart
+
+The existing PREPARE_UPDATE → VERIFY_UPDATE → COMMIT_UPDATE / CANCEL_UPDATE protocol remains. Every open in-scope window pauses controls, checks edited artifacts against durable storage and prepares its own theme and simulation-view handoff. The second verification catches an overwrite while a slower tab was still editing. Composition, running operations, active file transfers, unresponsive tabs and memory-only/conflicting edits veto restart.
+
+Activation verifies the complete replacement and participants before it commits. Per-request IDs isolate cancellation and supersession. Unsafe saving or a missing update leaves the current release open; an older client without the handler blocks forced reload. A current-window online reload uses the same local save/view/theme guards but does not broadcast, activate an update or alter another window.
+
+Remove offline copy deletes this app's scoped downloaded files and consent, including partial/staged copies. It preserves all learner local/session/IndexedDB data and sibling app caches/registrations. Browsers can evict files or clear site data; readiness is checked from actual bodies, not a remembered percentage. Offline availability is not a permanent backup.
 
 ## Verification
 
-`npm run build` produces the offline release. `npm run preview` serves it on localhost.
-Open the app while connected, wait for the ready message near the top, then disconnect and
-reopen a lesson. A first-ever offline visit cannot download the app.
+`npm run check` runs formatting, copyright/platform integrity, types, unit tests, production build and educational browser tests. Focused engine tests cover first visit without automatic downloads; online B with saved offline A; fresh offline tabs and actual simulator work; corruption; cancel/resume/quota failure; exact B restart after C publishes; current-window online reload without full saving; two-tab work/theme/view preservation; composition/busy/saving vetoes; legacy migration; removal; and retained release integrity.
 
-The automated browser checks in `tests/educational/offline.spec.ts` exercise offline
-navigation through every lesson with the HTTP cache disabled, local compilation and
-grading, saved work after reopening, cache loss/repair and unsupported browsers.
-`offline-lifecycle.spec.ts` uses a temporary server to test successive deployments,
-failed downloads, coordinated offline activation, unsubmitted edits, distinct tab themes,
-storage and composition failures, unresponsive clients and superseded waiting workers.
-Build and worker unit tests live beside the plugin; storage and theme handoff tests live
-beside their modules. These checks are
-part of the normal `npm run check` suite.
+UI checks cover a persistent modal, focus/Escape/backdrop, one primary action, phone/desktop themes, readable status and header, and Calculator/Reference work under the top modal. Full-suite results, focused reruns, interrupted runs and independent review findings are recorded separately in [shared-course-style notes](notes/shared-course-style/). These are functional checks, not evidence of learning effectiveness.

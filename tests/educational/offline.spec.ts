@@ -59,7 +59,7 @@ for (const [batchIndex, offlineLessons] of offlineBatches.entries()) {
             : lesson.sections.length,
         );
         await offlineReady(page);
-        await expect(page.locator(".app-status > summary")).toBeVisible();
+        await expect(page.locator("#app-status-open")).toBeVisible();
       }
       const nextResponse = await page.goto(
         new URL("./?offline-check=where-next#/where-next", site.url).href,
@@ -179,10 +179,12 @@ test("losing cached files removes readiness and an explicit repair restores the 
     window.dispatchEvent(new Event("offline"));
   });
   const panel = await openStatus(page);
-  await expect(panel.getByText("Available offline", { exact: true })).toHaveCount(0);
+  await expect(panel.getByText("Downloaded and ready to use offline", { exact: true })).toHaveCount(
+    0,
+  );
   await context.setOffline(false);
   const repair = panel.getByRole("button", {
-    name: /Resume download|Download for offline use|Retry download/,
+    name: /Resume download|Save offline copy|Retry download/,
   });
   await repair.click();
   await offlineReady(page);
@@ -210,19 +212,17 @@ for (const theme of ["light", "dark"] as const) {
     await page.getByLabel(STRINGS.theme).selectOption(theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     const panel = page.locator(".app-status");
-    const summary = panel.locator("summary").first();
+    const summary = page.locator("#app-status-open");
     await summary.focus();
     await page.keyboard.press("Enter");
     await expect(panel).toHaveAttribute("open", "");
-    await expect(panel.getByRole("heading", { name: "Version", exact: true })).toBeVisible();
-    await expect(panel.getByRole("heading", { name: "Offline access", exact: true })).toBeVisible();
+    await expect(panel.getByRole("heading", { name: "Course status", exact: true })).toBeVisible();
     await expect(panel.getByRole("status").first()).toBeVisible();
     await expect(
-      panel.getByRole("button", { name: "Download for offline use", exact: true }),
+      panel.getByRole("button", { name: "Save offline copy", exact: true }),
     ).toBeVisible();
     expect(await designProblems(page, info.project.name === "phone")).toEqual([]);
-    await summary.focus();
-    await page.keyboard.press("Enter");
+    await page.keyboard.press("Escape");
     await expect(panel).not.toHaveAttribute("open");
     await expect(summary).toBeFocused();
   });

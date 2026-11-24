@@ -12,7 +12,10 @@ export const RELEASE_FILE = "release.json";
 export const BUILD_MARKER = "__COURSE_BUILD_ID__";
 const workerPath = fileURLToPath(new URL("./worker.js", import.meta.url));
 const excluded = (path: string) =>
-  path === WORKER_FILE || path === RELEASE_FILE || path.endsWith(".map");
+  path === WORKER_FILE ||
+  path === RELEASE_FILE ||
+  path.startsWith("releases/") ||
+  path.endsWith(".map");
 
 export interface OfflineFile {
   path: string;
@@ -37,6 +40,33 @@ export function renderRelease(
 ) {
   const sorted = [...files]
     .filter((file) => !excluded(file.path))
+    .map((file) =>
+      file.path === "index.html"
+        ? {
+            ...file,
+            // Pin runtime entry points before hashing; normalise an already built
+            // document too (release fixtures and reproducible packaging).
+            bytes: Buffer.from(file.bytes)
+              .toString("utf8")
+              .replace(/releases\/[a-f0-9]{64}\/(?=assets\/)/g, "")
+              .replace(
+                /((?:src|href)=["'][^"']*?)(assets\/[^"']+)(["'])/g,
+                `$1releases/${BUILD_MARKER}/$2$3`,
+              ),
+          }
+        : file.path.endsWith(".css")
+          ? {
+              ...file,
+              bytes: Buffer.from(file.bytes)
+                .toString("utf8")
+                .replace(/releases\/[a-f0-9]{64}\/(?=(?:assets|fonts)\/)/g, "")
+                .replace(
+                  /(url\(["']?)(\/[^)"']*?\/|\/)((?:assets|fonts)\/[^)"']+)(["']?\))/g,
+                  `$1$2releases/${BUILD_MARKER}/$3$4`,
+                ),
+            }
+          : file,
+    )
     .sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
   if (!sorted.some((file) => file.path === "index.html")) {
     throw new Error("Offline build requires index.html");
@@ -47,7 +77,7 @@ export function renderRelease(
     .update(JSON.stringify(source))
     .digest("hex");
   const embedded = sorted.map((file) =>
-    file.path === "index.html"
+    file.path === "index.html" || file.path.endsWith(".css")
       ? {
           ...file,
           bytes: Buffer.from(file.bytes).toString("utf8").replaceAll(BUILD_MARKER, buildId),
@@ -130,12 +160,29 @@ export function offlineApp(source: SourceVersion | null = null): Plugin {
         const finalHtml = release.files.find((file) => file.path === "index.html");
         if (html?.type !== "asset" || !finalHtml) throw new Error("Missing generated app HTML");
         html.source = finalHtml.bytes;
+        for (const file of release.files) {
+          const output = bundle[file.path];
+          if (output?.type === "asset") output.source = file.bytes;
+        }
         this.emitFile({ type: "asset", fileName: WORKER_FILE, source: release.worker });
         this.emitFile({
           type: "asset",
           fileName: RELEASE_FILE,
           source: `${JSON.stringify(release.metadata)}\n`,
         });
+        this.emitFile({
+          type: "asset",
+          fileName: `releases/${release.metadata.buildId}/${RELEASE_FILE}`,
+          source: `${JSON.stringify(release.metadata)}\n`,
+        });
+        // Immutable copies let a document finish loading its own runtime while
+        // the canonical URLs move to another deployment. Cache keys stay canonical.
+        for (const file of release.files)
+          this.emitFile({
+            type: "asset",
+            fileName: `releases/${release.metadata.buildId}/${file.path}`,
+            source: file.bytes,
+          });
       },
     },
   };

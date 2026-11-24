@@ -13,18 +13,11 @@ from the `main` branch by `.github/workflows/deploy.yml`.
 
 ## Offline use
 
-Open the course with an internet connection and wait until the status near the top says
-“Ready to use offline in this browser.” You can then reopen the course and use its
-lessons and exercises without a connection. Links to other websites and the optional
-“Compare with GCC” feature need an internet connection.
+Use **App status → Save offline copy** while connected. Wait for “Downloaded and ready to use offline” before disconnecting. The save includes the course, local browser tools and example downloads. External documentation and optional Compare with GCC still need internet access; native examples need separate tools or hardware.
 
-When a downloaded update is ready, **Update now** checks saved changes and reloads
-the course's open tabs and app windows. If changes cannot be preserved, it leaves
-the current app open and explains how to back up work before reopening.
+Opening or reloading online uses the current published course. Moving between lessons in an open tab keeps its loaded release. **Reload latest course** safely reloads this tab without saving the full course. **Update offline copy** saves and verifies a replacement; **Restart to update** then checks and preserves work across all open course windows.
 
-Clearing this site's browser data removes the saved course. Your browser may also
-remove it to free space. See [offline operation](docs/offline.md) for build, update
-and testing details.
+Browser storage can be cleared or evicted. Check App status before relying on a saved copy. See [offline operation](docs/offline.md) for release, update, preservation and verification details.
 
 **Status.** Checkpoint 1: the plan is proposed and under the author's review, and the scaffold is
 live. The front page lists the planned modules; no lesson is written until the plan's decisions

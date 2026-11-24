@@ -67,10 +67,12 @@ function worker(base = "/assembly-lab/") {
   const matchAll = vi.fn(async () => clients);
   let networkFiles = files;
   const fetch = vi.fn(async (request: Request) => {
+    const url = new URL(request.url);
+    url.search = "";
+    url.pathname = url.pathname.replace(/\/releases\/[a-f0-9]{64}\//, "/");
     const file = networkFiles.find(
       (file) =>
-        new URL(file.path, scope).href ===
-        (request.url === scope ? `${scope}index.html` : request.url),
+        new URL(file.path, scope).href === (url.href === scope ? `${scope}index.html` : url.href),
     );
     return new Response(file ? file.bytes : "network");
   });
@@ -106,6 +108,12 @@ function worker(base = "/assembly-lab/") {
     );
   boot();
   function dispatch(name: string, event: Record<string, unknown> = {}) {
+    if (name === "fetch" && !(event.request instanceof Request)) {
+      const original = event.request as { url: string; mode: string; method: string };
+      const request = new Request(original.url, { method: original.method });
+      Object.defineProperty(request, "mode", { value: original.mode });
+      event = { ...event, request };
+    }
     let result: Promise<unknown> | undefined;
     const waitUntil = (promise: Promise<unknown>) => {
       result = promise;
@@ -226,6 +234,57 @@ describe("offline release", () => {
 });
 
 describe("published release", () => {
+  it("pins public fonts inside CSS as well as emitted runtime assets", () => {
+    const built = renderRelease(template, [
+      ...files,
+      {
+        path: "assets/course.css",
+        bytes:
+          '@font-face{src:url(/assembly-lab/fonts/course.woff2)}.image{background:url("/assembly-lab/assets/image-12345678.svg")}',
+      },
+      { path: "fonts/course.woff2", bytes: "font bytes" },
+      { path: "assets/image-12345678.svg", bytes: "<svg/>" },
+    ]);
+    const css = built.files.find((file) => file.path === "assets/course.css")!.bytes;
+    expect(css).toContain(
+      `url(/assembly-lab/releases/${built.metadata.buildId}/fonts/course.woff2)`,
+    );
+    expect(css).toContain(
+      `url("/assembly-lab/releases/${built.metadata.buildId}/assets/image-12345678.svg")`,
+    );
+    expect(css).not.toContain(BUILD_MARKER);
+  });
+
+  it("pins HTML runtime entry points while keeping one canonical asset inventory", () => {
+    const input = [
+      {
+        path: "index.html",
+        bytes: `<meta name="course-build-id" content="${BUILD_MARKER}"><script src="/assembly-lab/assets/app-12345678.js"></script><link href="/assembly-lab/assets/app-12345678.css" rel="stylesheet">`,
+      },
+      { path: "assets/app-12345678.js", bytes: "export {};" },
+      { path: "assets/app-12345678.css", bytes: "body{}" },
+    ];
+    const result = renderRelease(template, input);
+    const html = result.files.find((file) => file.path === "index.html")!.bytes;
+    expect(html).toContain(
+      `/assembly-lab/releases/${result.metadata.buildId}/assets/app-12345678.js`,
+    );
+    expect(html).toContain(
+      `/assembly-lab/releases/${result.metadata.buildId}/assets/app-12345678.css`,
+    );
+    expect(result.metadata.assets.map((file) => file.path)).toEqual([
+      "assets/app-12345678.css",
+      "assets/app-12345678.js",
+      "index.html",
+    ]);
+    expect(
+      renderRelease(
+        template,
+        input.concat({ path: `releases/${result.metadata.buildId}/index.html`, bytes: "old copy" }),
+      ),
+    ).toEqual(result);
+  });
+
   it("embeds one deterministic identity while recording exact final HTML and worker bytes", () => {
     const source = { sha: "a".repeat(40), committedAt: "2026-10-24T00:00:00.000Z" };
     const input = [
@@ -253,6 +312,148 @@ describe("published release", () => {
 });
 
 describe("offline worker", () => {
+  it("never returns a corrupt saved entry page when the network is unavailable", async () => {
+    const w = worker();
+    await w.prepare();
+    w.entries.set(`${w.scope}index.html`, new Response("corrupt HTML"));
+    w.fetch.mockRejectedValue(new Error("offline"));
+    await expect(
+      w.dispatch("fetch", { request: { url: w.scope, method: "GET", mode: "navigate" } }),
+    ).rejects.toThrow("offline");
+    expect(await w.status()).toMatchObject({ ready: false, partial: true });
+  });
+
+  it("keeps modern unknown-client public requests fresh when client-mode persistence is unavailable", async () => {
+    const w = worker();
+    await w.prepare();
+    w.publish(
+      files.map((file) => (file.path === "icon.svg" ? { ...file, bytes: "B icon" } : file)),
+    );
+    const response = (await w.dispatch("fetch", {
+      request: new Request(`${w.scope}icon.svg`),
+    })) as Response;
+    expect(await response.text()).toBe("B icon");
+    expect(await w.status()).toMatchObject({ ready: true });
+  });
+
+  it("rejects a competing restart and preparation while a download owns the worker", async () => {
+    const w = worker();
+    const client = w.client("first");
+    const original = w.fetch.getMockImplementation()!;
+    let release!: () => void;
+    w.fetch.mockImplementationOnce(async (request) => {
+      await new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      return original(request);
+    });
+    const saving = w.request("DOWNLOAD_OFFLINE", { id: "save-A" });
+    await vi.waitFor(() => expect(w.fetch).toHaveBeenCalledOnce());
+    expect(await w.update(client.id)).toEqual({ ok: false, error: "tabs" });
+    expect(
+      (await w.request("PREPARE_RELEASE", { release: renderRelease(template, files).metadata })).at(
+        -1,
+      ),
+    ).toEqual({ ok: false, error: "busy" });
+    expect(client.postMessage).not.toHaveBeenCalled();
+    release();
+    expect((await saving).at(-1)).toMatchObject({ ok: true, ready: true });
+  });
+
+  it("verifies immutable cached runtime bytes and refuses mismatched replacement bytes", async () => {
+    const w = worker();
+    await w.prepare();
+    const version = (await w.status()).version;
+    w.entries.set(`${w.scope}assets/course.js`, new Response("corrupt"));
+    const original = w.fetch.getMockImplementation()!;
+    w.fetch.mockImplementation(async (request) =>
+      request.url.includes("course.js") ? new Response("wrong release") : original(request),
+    );
+    const response = (await w.dispatch("fetch", {
+      request: new Request(`${w.scope}releases/${version}/assets/course.js`),
+    })) as Response;
+    expect(response.status).toBe(503);
+    expect(await w.status()).toMatchObject({ ready: false, partial: true });
+    expect(w.caches.delete).not.toHaveBeenCalled();
+  });
+
+  it("opens the current published course online while keeping A as a complete offline fallback", async () => {
+    const w = worker();
+    await w.prepare();
+    const savedA = (await w.status()).version;
+    const publishedB = w.publish(
+      files.map((file) =>
+        file.path === "index.html"
+          ? { ...file, bytes: `<meta name="course-build-id" content="${BUILD_MARKER}">B` }
+          : file,
+      ),
+    );
+    const online = (await w.dispatch("fetch", {
+      request: { url: w.scope, method: "GET", mode: "navigate" },
+      resultingClientId: "online-B",
+    })) as Response;
+    expect(await online.text()).toContain(publishedB.buildId);
+    expect(await w.status()).toMatchObject({ version: savedA, ready: true, pendingVersion: null });
+    w.fetch.mockRejectedValueOnce(new Error("offline"));
+    const offline = (await w.dispatch("fetch", {
+      request: { url: w.scope, method: "GET", mode: "navigate" },
+      resultingClientId: "offline-A",
+    })) as Response;
+    expect(await offline.text()).toBe("<html>course</html>");
+    expect(await w.status()).toMatchObject({ version: savedA, ready: true });
+  });
+
+  it("keeps immutable old-tab assets available after a new runtime activates", async () => {
+    const w = worker();
+    await w.prepare();
+    const savedA = (await w.status()).version;
+    const revised = files.map((file) =>
+      file.path === "assets/course.js" ? { ...file, bytes: "console.log('B')" } : file,
+    );
+    const publishedB = w.publish(revised);
+    await w.request("PREPARE_RELEASE", { id: "stage-B", release: publishedB });
+    w.reboot(revised);
+    await w.dispatch("activate");
+    w.fetch.mockRejectedValue(new Error("offline"));
+    const oldAsset = (await w.dispatch("fetch", {
+      request: new Request(`${w.scope}releases/${savedA}/assets/course.js`),
+      clientId: "old-A",
+    })) as Response;
+    expect(await oldAsset.text()).toBe("console.log('course')");
+    expect(w.saved.has(w.oldCache)).toBe(true);
+  });
+
+  it("restarts to prepared B even if the network publishes C before the reload", async () => {
+    const w = worker();
+    const first = w.client("first");
+    await w.prepare();
+    const publishedB = w.publish(
+      files.map((file) =>
+        file.path === "index.html" ? { ...file, bytes: "<html>B</html>" } : file,
+      ),
+    );
+    await w.request("PREPARE_RELEASE", { id: "stage-B", release: publishedB });
+    await w.update(first.id);
+    w.publish(
+      files.map((file) =>
+        file.path === "index.html" ? { ...file, bytes: "<html>C</html>" } : file,
+      ),
+    );
+    const before = w.fetch.mock.calls.length;
+    const restarted = (await w.dispatch("fetch", {
+      request: { url: w.scope, method: "GET", mode: "navigate" },
+      replacesClientId: first.id,
+      resultingClientId: "after-restart",
+    })) as Response;
+    expect(await restarted.text()).toBe("<html>B</html>");
+    expect(w.fetch).toHaveBeenCalledTimes(before);
+    const freshVisit = (await w.dispatch("fetch", {
+      request: { url: w.scope, method: "GET", mode: "navigate" },
+      resultingClientId: "fresh-C",
+    })) as Response;
+    expect(await freshVisit.text()).toBe("<html>C</html>");
+  });
+
   it("activates only after all app clients acknowledge, leaving other apps alone", async () => {
     const w = worker();
     const first = w.client("first");
@@ -434,12 +635,13 @@ describe("offline worker", () => {
         ),
       ).toBe(true);
       for (const path of ["?source=bookmark", "index.html?source=bookmark"]) {
+        w.fetch.mockRejectedValueOnce(new Error("offline"));
         const response = (await w.dispatch("fetch", {
           request: { url: `${w.scope}${path}`, method: "GET", mode: "navigate" },
         })) as Response;
         expect(await response.text()).toBe("<html>course</html>");
       }
-      expect(w.fetch).toHaveBeenCalledTimes(files.length);
+      expect(w.fetch).toHaveBeenCalledTimes(files.length + 2);
     },
   );
 
@@ -472,7 +674,7 @@ describe("offline worker", () => {
 
   it("resumes partial downloads without losing the previous release on failure", async () => {
     const w = worker();
-    w.fetch.mockRejectedValueOnce(new Error("network"));
+    w.fetch.mockRejectedValueOnce(new Error("network")).mockRejectedValueOnce(new Error("network"));
     expect(await w.prepare()).toMatchObject({ ok: false, ready: false });
     expect(w.caches.delete).not.toHaveBeenCalled();
     expect(await w.prepare()).toMatchObject({ ok: true, ready: true });
@@ -488,7 +690,7 @@ describe("offline worker", () => {
     await w.prepare();
     w.entries.set(`${w.scope}icon.svg`, new Response("bad!!!"));
     expect(await w.status()).toMatchObject({ ready: false, partial: true });
-    w.fetch.mockResolvedValueOnce(new Response("bad"));
+    w.fetch.mockResolvedValueOnce(new Response("bad")).mockResolvedValueOnce(new Response("bad"));
     expect(await w.prepare()).toMatchObject({ ok: false, ready: false });
     expect(w.caches.delete).not.toHaveBeenCalledWith(w.oldCache);
   });
@@ -507,7 +709,7 @@ describe("offline worker", () => {
     expect(w.claim).toHaveBeenCalledOnce();
     await w.prepare();
     await w.dispatch("activate");
-    expect(w.caches.delete).toHaveBeenCalledExactlyOnceWith(w.oldCache);
+    expect(w.caches.delete).not.toHaveBeenCalled();
     expect(w.saved.has("other-app")).toBe(true);
   });
 
@@ -587,11 +789,12 @@ describe("offline worker", () => {
     const w = worker();
     w.saved.get(w.oldCache)!.set(`${w.scope}index.html`, new Response("legacy shell"));
     await w.dispatch("activate");
+    w.fetch.mockRejectedValueOnce(new Error("offline"));
     const response = (await w.dispatch("fetch", {
       request: { url: w.scope, method: "GET", mode: "navigate" },
     })) as Response;
     expect(await response.text()).toBe("legacy shell");
-    expect(w.fetch).not.toHaveBeenCalled();
+    expect(w.fetch).toHaveBeenCalledOnce();
     expect(await w.status()).toMatchObject({ ready: false });
   });
   it("keeps staged updates deferred across all windows closing and a newer worker activation", async () => {
@@ -621,6 +824,7 @@ describe("offline worker", () => {
       pendingVersion: published.buildId,
       pendingPrepared: true,
     });
+    w.fetch.mockRejectedValueOnce(new Error("offline"));
     const before = (await w.dispatch("fetch", {
       request: { url: w.scope, method: "GET", mode: "navigate" },
     })) as Response;
@@ -639,6 +843,7 @@ describe("offline worker", () => {
     w.reboot();
     await w.dispatch("activate");
     expect(await w.status()).toMatchObject({ version: published.buildId, ready: true });
+    w.fetch.mockRejectedValueOnce(new Error("offline"));
     const after = (await w.dispatch("fetch", {
       request: { url: w.scope, method: "GET", mode: "navigate" },
     })) as Response;

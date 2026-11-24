@@ -71,7 +71,10 @@ test("compact header, keyboard theme choice and calculator/reference coordinatio
   await page.goto("#/");
   for (const width of [320, 375, 414, 430, 768, 834, 1280]) {
     await page.setViewportSize({ width, height: 900 });
-    expect((await page.locator(".shell-header").boundingBox())!.height).toBeLessThanOrEqual(70);
+    // Shared header keeps text status visible: measured 129.55 px on phones and 92.5 px wide.
+    expect((await page.locator(".shell-header").boundingBox())!.height).toBeLessThanOrEqual(
+      width <= 600 ? 132 : 96,
+    );
     const themeControl = page.getByRole("combobox", { name: "Theme", exact: true });
     const themeBox = (await themeControl.boundingBox())!;
     expect(themeBox.width).toBe(44);

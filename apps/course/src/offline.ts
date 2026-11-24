@@ -58,6 +58,8 @@ export interface OfflineStatus {
   canDownloadSelected?: boolean;
   completedBytes?: number;
   totalBytes?: number;
+  savedVersion?: string | null;
+  savedCurrent?: boolean;
 }
 type UpdateError = "unsaved" | "tabs" | "download" | "changed";
 
@@ -69,7 +71,9 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
   );
   const [updating, setUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<UpdateError | null>(null);
+  const [reloadError, setReloadError] = useState<"offline" | "unsaved" | null>(null);
   const update = useRef(() => {});
+  const reloadOnline = useRef(() => {});
   const access = useRef<{
     download: (release?: PublishedRelease) => Promise<void>;
     prepare: (release: PublishedRelease) => Promise<void>;
@@ -78,6 +82,7 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
     refresh: () => void;
   } | null>(null);
   const [downloadError, setDownloadError] = useState(false);
+  const [downloadCancelled, setDownloadCancelled] = useState(false);
   const [preparing, setPreparing] = useState(false);
   const [canCancel, setCanCancel] = useState(false);
   const [updateProgress, setUpdateProgress] = useState<{
@@ -87,8 +92,6 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
   const [preparedVersion, setPreparedVersion] = useState<string | null>(null);
   const preparedRelease = useRef(preparedVersion);
   preparedRelease.current = preparedVersion;
-  const statusReady = useRef(false);
-  statusReady.current = status?.state === "ready";
   const readiness = useRef(canReload);
   const cancel = useRef(onCancel);
   useLayoutEffect(() => {
@@ -97,10 +100,6 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
   }, [canReload, onCancel]);
   useEffect(() => {
     if (!import.meta.env.PROD) return;
-    if (!navigator.serviceWorker || !window.isSecureContext) {
-      setStatus({ state: "unsupported", updateWaiting: false });
-      return;
-    }
     let disposed = false;
     let generation = 0;
     let registration: ServiceWorkerRegistration | undefined;
@@ -118,6 +117,47 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
       cleanups.push(() => target.removeEventListener(event, fn));
     };
     let transfer: { worker: ServiceWorker; id: string } | null = null;
+    let preparingRelease = false;
+    listen(document, "compositionstart", () => {
+      composing = true;
+    });
+    listen(document, "compositionend", () => {
+      composing = false;
+    });
+    reloadOnline.current = () => {
+      setReloadError(null);
+      if (!navigator.onLine) {
+        setReloadError("offline");
+        return;
+      }
+      if (reloading) return;
+      if (preparedWorker) {
+        setReloadError("unsaved");
+        return;
+      }
+      flushSync(() => setUpdating(true));
+      let ready = false;
+      try {
+        ready = !composing && !transfer && !preparingRelease && readiness.current();
+      } catch {
+        // A failed storage handoff must leave this document and its work open.
+      }
+      if (!ready) {
+        cancel.current();
+        setUpdating(false);
+        setReloadError("unsaved");
+        return;
+      }
+      reloading = true;
+      location.reload();
+    };
+    if (!navigator.serviceWorker || !window.isSecureContext) {
+      setStatus({ state: "unsupported", updateWaiting: false });
+      return () => {
+        reloadOnline.current = () => {};
+        for (const cleanup of cleanups) cleanup();
+      };
+    }
     const refresh = async () => {
       const current = ++generation;
       const controller = registration?.active ?? null;
@@ -138,6 +178,8 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
         completedBytes: snapshot?.completedBytes,
         totalBytes: snapshot?.totalBytes,
         updateWaiting: registration?.waiting != null,
+        savedVersion: ready ? (snapshot?.version ?? null) : null,
+        savedCurrent: ready && !!RUNNING_BUILD && snapshot?.version === RUNNING_BUILD,
         runtimeMismatch:
           !!controller &&
           !!snapshot &&
@@ -181,6 +223,8 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
       transfer = { worker, id };
       setCanCancel(true);
       setDownloadError(false);
+      setDownloadCancelled(false);
+      setUpdateError(null);
       try {
         const result = await workerRequest(worker, type, { ...payload, id }, (value) => {
           if (type === "PREPARE_RELEASE")
@@ -199,7 +243,13 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
                 },
             );
         });
-        if (!result.ok) throw new Error("Download incomplete");
+        if (!result.ok) {
+          if (result.error === "cancelled") {
+            setDownloadCancelled(true);
+            return null;
+          }
+          throw new Error("Download incomplete");
+        }
         return result;
       } finally {
         if (transfer?.id === id) {
@@ -241,6 +291,7 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
       prepare: async (release) => {
         if (!registration) await register();
         if (!registration) return;
+        preparingRelease = true;
         setPreparing(true);
         setUpdateProgress({});
         setUpdateError(null);
@@ -260,19 +311,23 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
             void inspect();
           });
           const result = await transferFiles(worker, "PREPARE_RELEASE", {
-            persistent: statusReady.current,
+            persistent: true,
             release,
           });
+          if (!result) return;
           if (!result.ok) throw new Error("Incomplete update");
           setPreparedVersion(release.buildId);
         } catch {
           setUpdateError("download");
         } finally {
+          preparingRelease = false;
           setPreparing(false);
           await refresh();
         }
       },
       remove: async () => {
+        setDownloadCancelled(false);
+        setDownloadError(false);
         if (transfer)
           await workerRequest(transfer.worker, "CANCEL_DOWNLOAD", { id: transfer.id }).catch(
             () => {},
@@ -344,7 +399,9 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
           setUpdating(true);
           setUpdateError(null);
         });
-        event.ports[0]?.postMessage({ ready: !composing && readiness.current() });
+        event.ports[0]?.postMessage({
+          ready: !composing && !transfer && !preparingRelease && readiness.current(),
+        });
         event.ports[0]?.close();
       } else if (
         event.data?.type === "COMMIT_UPDATE" &&
@@ -359,7 +416,9 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
         event.source === preparedWorker &&
         event.data.id === preparedId
       ) {
-        event.ports[0]?.postMessage({ ready: !composing && readiness.current() });
+        event.ports[0]?.postMessage({
+          ready: !composing && !transfer && !preparingRelease && readiness.current(),
+        });
         event.ports[0]?.close();
       } else if (
         event.data?.type === "CANCEL_UPDATE" &&
@@ -375,12 +434,6 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
       }
     };
     navigator.serviceWorker.addEventListener("message", message);
-    listen(document, "compositionstart", () => {
-      composing = true;
-    });
-    listen(document, "compositionend", () => {
-      composing = false;
-    });
     cleanups.push(() => navigator.serviceWorker.removeEventListener("message", message));
     update.current = async () => {
       const worker = registration?.waiting ?? registration?.active;
@@ -443,6 +496,7 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
     return () => {
       disposed = true;
       update.current = () => {};
+      reloadOnline.current = () => {};
       access.current = null;
       clearTimeout(updateTimeout);
       clearTimeout(participantTimeout);
@@ -456,12 +510,15 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
       ...status,
       updating,
       updateError,
+      reloadError,
+      reloadOnline: () => reloadOnline.current(),
       updateNow: () => update.current(),
       preparing,
       canCancel,
       updateProgress,
       preparedVersion,
       downloadError,
+      downloadCancelled,
       download: (release?: PublishedRelease) => access.current?.download(release),
       prepare: (release: PublishedRelease) => access.current?.prepare(release),
       remove: () => access.current?.remove(),

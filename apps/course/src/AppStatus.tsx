@@ -8,99 +8,213 @@ import { STRINGS } from "./strings";
 import { STATUS_STRINGS as S } from "./strings.status";
 
 type Offline = ReturnType<typeof useOffline>;
+
+/** A single course state and primary action; technical identity stays optional. */
 export function AppStatus({ offline }: { offline: Offline }) {
   const published = usePublishedRelease();
+  const [open, setOpen] = useState(false);
   const [remove, setRemove] = useState(false);
   const [removed, setRemoved] = useState(false);
   const [removeError, setRemoveError] = useState(false);
-  const downloadButton = useRef<HTMLButtonElement>(null);
-  const details = useRef<HTMLDetailsElement>(null);
-  useEffect(() => {
-    const element = details.current;
-    const header = element?.closest("header");
-    if (!element || !header) return;
-    const resize = () => {
-      const viewport = window.visualViewport;
-      const bottom = (viewport?.height ?? innerHeight) + (viewport?.offsetTop ?? 0);
-      const available = Math.max(0, bottom - header.getBoundingClientRect().bottom - 8);
-      element.style.setProperty("--status-panel-space", `${available}px`);
-    };
-    resize();
-    const observer = typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(resize);
-    observer?.observe(header);
-    window.addEventListener("resize", resize);
-    window.addEventListener("scroll", resize, { passive: true });
-    window.visualViewport?.addEventListener("resize", resize);
-    window.visualViewport?.addEventListener("scroll", resize);
-    return () => {
-      observer?.disconnect();
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("scroll", resize);
-      window.visualViewport?.removeEventListener("resize", resize);
-      window.visualViewport?.removeEventListener("scroll", resize);
-    };
-  }, []);
-  useEffect(() => {
-    if (removed) downloadButton.current?.focus();
-  }, [removed]);
-  const [open, setOpen] = useState(false);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
   const pending = offline?.preparedVersion;
+  const saving = Boolean(offline?.preparing || offline?.state === "saving");
+  const supported = Boolean(offline && offline.state !== "unsupported");
   const currentManifest =
     published.release?.buildId === RUNNING_BUILD ? published.release : undefined;
-  const version = offline?.preparing
-    ? "downloading"
-    : pending
-      ? "ready"
-      : offline?.runtimeMismatch
-        ? "available"
-        : published.state;
+  const savedCurrent =
+    offline?.savedCurrent ?? (offline?.state === "ready" && !offline.runtimeMismatch);
+  const olderSaved = offline?.state === "ready" && !savedCurrent;
+  const newer = published.state === "available" || Boolean(offline?.runtimeMismatch) || olderSaved;
+  const version = saving ? "downloading" : pending ? "ready" : published.state;
   const identity = BUILD_VERSION?.sha.slice(0, 7) ?? RUNNING_BUILD?.slice(0, 7) ?? S.unknownBuild;
+  const size = published.release?.totalBytes ?? offline?.totalBytes;
+  const progress = offline?.preparing ? offline.updateProgress : offline;
+  const canSave =
+    supported &&
+    offline?.totalBytes !== undefined &&
+    navigator.onLine &&
+    !saving &&
+    (Boolean(published.release) || Boolean(offline?.canDownloadSelected));
+  const replacementAvailable = Boolean(
+    pending &&
+    published.release &&
+    published.release.buildId !== pending &&
+    published.release.buildId !== RUNNING_BUILD,
+  );
+  const showSave =
+    supported &&
+    !saving &&
+    ((!pending && (offline?.state !== "ready" || newer)) || replacementAvailable);
+  const hasSavedCopy = offline?.state === "ready" || offline?.state === "incomplete";
+  const reloadAvailable =
+    published.state === "available" && !pending && !saving && navigator.onLine;
+  const reloadPrimary = reloadAvailable && !hasSavedCopy;
+  const primary =
+    newer && hasSavedCopy
+      ? S.actions.update
+      : offline?.state === "incomplete"
+        ? S.actions.resume
+        : S.actions.download;
+  const close = () => {
+    dialog.current?.close();
+    setOpen(false);
+    trigger.current?.focus({ preventScroll: true });
+  };
+  useEffect(() => {
+    const panel = dialog.current;
+    if (!panel) return;
+    if (open && !panel.open) panel.showModal();
+    else if (!open && panel.open) panel.close();
+  }, [open]);
+  const openStatus = () => {
+    setOpen(true);
+    void published.check();
+    offline?.refresh();
+  };
+  const save = () => {
+    setRemoved(false);
+    const target = published.release;
+    if (target && (target.buildId !== RUNNING_BUILD || offline?.runtimeMismatch || olderSaved))
+      void offline?.prepare(target);
+    else void offline?.download(currentManifest);
+  };
   return (
     <>
-      <span className="status-announcement" role="status" aria-live="polite">
-        {!open
-          ? `${S.title}: ${S.versionStates[version]}. ${S.offlineStates[offline?.state ?? "unsupported"]}`
-          : ""}
-      </span>
-      <details
-        ref={details}
-        onKeyDown={(event) => {
-          if (event.key === "Escape") {
-            event.currentTarget.open = false;
-            event.currentTarget.querySelector("summary")?.focus();
-          }
-        }}
-        className="app-status"
-        onToggle={(event) => {
-          setOpen(event.currentTarget.open);
-          if (event.currentTarget.open) {
-            void published.check();
-            offline?.refresh();
-          }
+      <button
+        id="app-status-open"
+        className="app-status-trigger"
+        type="button"
+        ref={trigger}
+        aria-haspopup="dialog"
+        aria-controls="app-status-dialog"
+        onClick={openStatus}
+      >
+        <span>{S.title}</span>
+        <span className="app-status-header-state" data-version-status={version}>
+          {S.versionStates[version]}
+        </span>
+      </button>
+      <dialog
+        id="app-status-dialog"
+        ref={dialog}
+        className="app-status app-status-dialog"
+        aria-labelledby="app-status-title"
+        onClose={() => {
+          setOpen(false);
+          trigger.current?.focus({ preventScroll: true });
         }}
       >
-        <summary>
-          <span className="app-status-title">
-            {S.title}{" "}
-            <span className="status-chevron" aria-hidden="true">
-              ▾
-            </span>
-          </span>
-          <span className="app-status-compact">
-            <span className="status-indicator" data-version-status={version}>
-              {S.versionStates[version]}
-            </span>
-            <span
-              className="status-indicator"
-              data-offline-status={offline?.state ?? "unsupported"}
-            >
-              {S.compactOfflineStates[offline?.state ?? "unsupported"]}
-            </span>
-          </span>
-        </summary>
+        <div className="app-status-heading">
+          <h2 id="app-status-title">{S.title}</h2>
+          <button type="button" autoFocus onClick={close}>
+            {S.close}
+          </button>
+        </div>
         <div className="app-status-panel">
-          <section aria-labelledby="app-version-heading" data-version={version}>
-            <h2 id="app-version-heading">{S.versionHeading}</h2>
+          <section
+            aria-labelledby="course-status-heading"
+            data-version={version}
+            data-offline={offline?.state ?? "unsupported"}
+            data-published-state={published.state}
+          >
+            <h3 id="course-status-heading">{S.courseHeading}</h3>
+            <p className="course-status-main" role="status">
+              {S.versionStates[version]}
+            </p>
+            {pending ? (
+              <p>{S.offlineDownloadReady}</p>
+            ) : (
+              !saving && (
+                <p className="course-status-offline" role="status">
+                  {olderSaved
+                    ? S.offlineCopyOlder
+                    : S.offlineStates[offline?.state ?? "unsupported"]}
+                </p>
+              )
+            )}
+            {pending ? (
+              <p>{S.restartExplanation}</p>
+            ) : (
+              !saving && (
+                <>
+                  {olderSaved && <p>{S.olderOfflineExplanation}</p>}
+                  {!supported ? (
+                    <p>{S.unsupportedExplanation}</p>
+                  ) : offline?.state === "incomplete" ? (
+                    <p>{S.incompleteExplanation}</p>
+                  ) : offline?.state !== "ready" ? (
+                    <p>{S.offlineExplanation}</p>
+                  ) : null}
+                  {newer && hasSavedCopy && <p>{S.updateExplanation}</p>}
+                  {reloadAvailable && <p>{S.reloadOnlineExplanation}</p>}
+                  {size !== undefined && showSave && (
+                    <p className="download-size">{S.bytes(size)}</p>
+                  )}
+                </>
+              )
+            )}
+            <div className="status-actions">
+              {pending && (
+                <>
+                  <button className="primary" type="button" onClick={offline?.updateNow}>
+                    {S.actions.restart}
+                  </button>
+                  <button type="button" onClick={close}>
+                    {S.actions.later}
+                  </button>
+                </>
+              )}
+              {reloadAvailable && (
+                <button
+                  className={reloadPrimary ? "primary" : undefined}
+                  type="button"
+                  onClick={offline?.reloadOnline}
+                >
+                  {S.actions.reloadOnline}
+                </button>
+              )}
+              {showSave && (
+                <button
+                  className={
+                    pending || reloadPrimary ? "status-download" : "primary status-download"
+                  }
+                  type="button"
+                  disabled={!canSave}
+                  onClick={save}
+                >
+                  {primary}
+                </button>
+              )}
+              {saving && offline?.canCancel && (
+                <button type="button" onClick={offline.cancelDownload}>
+                  {S.actions.cancel}
+                </button>
+              )}
+            </div>
+            {saving && (
+              <div className="course-download-progress">
+                <progress
+                  aria-label={S.offlineStates.saving}
+                  max={progress?.totalBytes || undefined}
+                  value={progress?.totalBytes ? progress.completedBytes : undefined}
+                />
+                <p role="status">
+                  {progress?.totalBytes
+                    ? S.progress(progress.completedBytes ?? 0, progress.totalBytes)
+                    : S.offlineStates.saving}
+                </p>
+              </div>
+            )}
+            {offline?.reloadError && <p role="alert">{S.reloadErrors[offline.reloadError]}</p>}
+            {offline?.updateError && <p role="alert">{S.updateErrors[offline.updateError]}</p>}
+            {offline?.downloadError && <p role="alert">{S.downloadFailed}</p>}
+            {offline?.downloadCancelled && !saving && <p role="status">{S.cancelled}</p>}
+            {removed && <p role="status">{S.removed}</p>}
+          </section>
+          <details id="app-status-details">
+            <summary>{S.detailHeading}</summary>
             <p>
               {S.running}:{" "}
               {BUILD_VERSION ? (
@@ -125,205 +239,73 @@ export function AppStatus({ offline }: { offline: Offline }) {
                 {STRINGS.version.utc}
               </p>
             )}
-            <p role="status" aria-live="polite">
-              {S.versionStates[version]}
-            </p>
-            <div className="status-actions">
-              <button
-                type="button"
-                onClick={() => {
-                  void published.check();
-                  offline?.refresh();
-                }}
-                disabled={published.state === "checking"}
-              >
-                {published.state === "error" ? S.actions.retry : S.actions.check}
-              </button>
-              {published.release &&
-                (published.release.buildId !== RUNNING_BUILD || offline?.runtimeMismatch) &&
-                (!pending || pending !== published.release.buildId) && (
-                  <button
-                    type="button"
-                    disabled={
-                      offline?.preparing ||
-                      !offline ||
-                      offline.state === "unsupported" ||
-                      !navigator.onLine
-                    }
-                    onClick={() => void offline?.prepare(published.release!)}
-                  >
-                    {S.actions.update}
-                  </button>
-                )}
-              {offline?.preparing && offline.canCancel && (
-                <button type="button" onClick={offline.cancelDownload}>
-                  {S.actions.cancel}
-                </button>
-              )}
-            </div>
-            {offline?.preparing && (
-              <>
-                <progress
-                  aria-label={S.versionStates.downloading}
-                  max={offline.updateProgress.totalBytes || undefined}
-                  value={
-                    offline.updateProgress.totalBytes
-                      ? offline.updateProgress.completedBytes
-                      : undefined
-                  }
-                />
-                {offline.updateProgress.totalBytes && (
-                  <p>
-                    {S.progress(
-                      offline.updateProgress.completedBytes ?? 0,
-                      offline.updateProgress.totalBytes,
-                    )}
-                  </p>
-                )}
-              </>
-            )}
-            {pending && (
-              <>
-                <p>{S.restartExplanation}</p>
-                <div className="status-actions">
-                  <button type="button" onClick={offline.updateNow}>
-                    {S.actions.restart}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      const details = event.currentTarget.closest("details");
-                      details?.removeAttribute("open");
-                      details?.querySelector("summary")?.focus();
-                    }}
-                  >
-                    {S.actions.later}
-                  </button>
-                </div>
-              </>
-            )}
-            {offline?.updateError && <p role="alert">{S.updateErrors[offline.updateError]}</p>}
-          </section>
-          <section
-            aria-labelledby="app-offline-heading"
-            data-offline={offline?.state ?? "unsupported"}
-          >
-            <h2 id="app-offline-heading">{S.offlineHeading}</h2>
-            <p role="status" aria-live="polite">
-              {S.offlineStates[offline?.state ?? "unsupported"]}
-            </p>
-            <p>
-              {offline?.state === "unsupported" || !offline
-                ? S.unsupportedExplanation
-                : S.offlineExplanation}
-            </p>
-            {offline && offline.state !== "unsupported" && (
-              <>
-                {(offline.totalBytes ?? published.release?.totalBytes) !== undefined && (
-                  <p className="download-size">
-                    {S.bytes(offline.totalBytes ?? published.release!.totalBytes)}
-                  </p>
-                )}
-                {offline.runtimeMismatch && <p>{S.offlineRequiresUpdate}</p>}
-                {offline.state === "incomplete" && <p>{S.incompleteExplanation}</p>}
-                {offline.state === "saving" ? (
-                  <>
-                    <progress
-                      aria-label={S.offlineStates.saving}
-                      max={offline.totalBytes || undefined}
-                      value={offline.totalBytes ? offline.completedBytes : undefined}
-                    />
-                    <p>
-                      {offline.totalBytes
-                        ? S.progress(offline.completedBytes ?? 0, offline.totalBytes)
-                        : S.offlineStates.saving}
-                    </p>
-                    <button type="button" onClick={offline.cancelDownload}>
-                      {S.actions.cancel}
-                    </button>
-                  </>
-                ) : (
-                  <div className="status-actions">
-                    {offline.state !== "ready" && (
-                      <button
-                        type="button"
-                        ref={downloadButton}
-                        className="status-download"
-                        disabled={
-                          !navigator.onLine ||
-                          offline.preparing ||
-                          (!currentManifest && !offline.canDownloadSelected) ||
-                          offline.runtimeMismatch ||
-                          offline.totalBytes === undefined
-                        }
-                        onClick={() => {
-                          setRemoved(false);
-                          void offline.download(currentManifest);
-                        }}
-                      >
-                        {offline.state === "incomplete" ? S.actions.resume : S.actions.download}
-                      </button>
-                    )}
-                    {(offline.state === "ready" || offline.state === "incomplete") && !remove && (
-                      <button
-                        className="status-remove"
-                        type="button"
-                        onClick={() => {
-                          setRemoveError(false);
-                          setRemove(true);
-                        }}
-                      >
-                        {S.actions.remove}
-                      </button>
-                    )}
-                  </div>
-                )}
-                {offline.downloadError && <p role="alert">{S.downloadFailed}</p>}
-                {remove && (
-                  <div className="remove-confirmation">
-                    <p>{S.removeQuestion}</p>
-                    <p>{S.removeExplanation}</p>
-                    <div className="status-actions">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          void offline
-                            .remove()
-                            ?.then(() => {
-                              setRemove(false);
-                              setRemoved(true);
-                            })
-                            .catch(() => setRemoveError(true));
-                        }}
-                      >
-                        {S.actions.confirmRemove}
-                      </button>
-                      <button
-                        type="button"
-                        autoFocus
-                        onClick={() => {
-                          setRemove(false);
-                          queueMicrotask(() =>
-                            document
-                              .querySelector<HTMLButtonElement>(".app-status .status-remove")
-                              ?.focus(),
-                          );
-                        }}
-                      >
-                        {S.actions.keep}
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {removeError && <p role="alert">{S.removeFailed}</p>}
-                {removed && <p role="status">{S.removed}</p>}
-              </>
-            )}
+            {size !== undefined && <p>{S.exactBytes(size)}</p>}
+            <p>{S.automaticChecks}</p>
+            <p>{S.onlineExplanation}</p>
+            <p>{S.hashNavigationExplanation}</p>
+            <button
+              type="button"
+              onClick={() => {
+                void published.check();
+                offline?.refresh();
+              }}
+              disabled={published.state === "checking"}
+            >
+              {published.state === "error" ? S.actions.retry : S.actions.check}
+            </button>
             <p>{S.limits}</p>
             <p>{S.storage}</p>
-          </section>
+            {supported &&
+              (offline?.state === "ready" || offline?.state === "incomplete") &&
+              !remove && (
+                <button
+                  className="status-remove"
+                  type="button"
+                  onClick={() => {
+                    setRemoveError(false);
+                    setRemove(true);
+                  }}
+                >
+                  {S.actions.remove}
+                </button>
+              )}
+            {remove && (
+              <div className="remove-confirmation">
+                <p>{S.removeQuestion}</p>
+                <p>{S.removeExplanation}</p>
+                <div className="status-actions">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void offline
+                        ?.remove()
+                        ?.then(() => {
+                          setRemove(false);
+                          setRemoved(true);
+                        })
+                        .catch(() => setRemoveError(true));
+                    }}
+                  >
+                    {S.actions.confirmRemove}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRemove(false);
+                      queueMicrotask(() =>
+                        dialog.current?.querySelector<HTMLButtonElement>(".status-remove")?.focus(),
+                      );
+                    }}
+                  >
+                    {S.actions.keep}
+                  </button>
+                </div>
+              </div>
+            )}
+            {removeError && <p role="alert">{S.removeFailed}</p>}
+          </details>
         </div>
-      </details>
+      </dialog>
     </>
   );
 }

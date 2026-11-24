@@ -2,6 +2,7 @@
 
 import { expect, test } from "@playwright/test";
 import { inspectCalculator } from "./calculator-helpers";
+import { GITHUB_REPOSITORY } from "../../apps/course/src/strings";
 
 for (const theme of ["light", "dark"] as const) {
   test(`header calculator in ${theme}: scratch work, focus and lesson isolation`, async ({
@@ -99,19 +100,24 @@ test("phone modal traps focus and changing to desktop keeps work", async ({ page
 });
 
 for (const theme of ["light", "dark"] as const) {
-  test(`calculator rows, editing and header star reflow in ${theme}`, async ({ page }) => {
+  test(`calculator rows, editing and header tools reflow in ${theme}`, async ({ page }) => {
     for (const width of [320, 375, 834, 1280]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("#/");
       await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
-      const star = page
-        .locator("header")
-        .getByRole("link", { name: "Star on GitHub", exact: true });
-      await expect(star).toHaveAttribute("href", "https://github.com/snowch/assembly-lab");
-      const starBox = (await star.boundingBox())!;
-      expect(starBox.height).toBeGreaterThanOrEqual(44);
-      expect(starBox.x).toBeGreaterThanOrEqual(0);
-      expect(starBox.x + starBox.width).toBeLessThanOrEqual(width);
+      const source = page.locator("footer").getByRole("link", { name: "Source", exact: true });
+      await expect(source).toHaveAttribute("href", GITHUB_REPOSITORY);
+      const sourceBox = (await source.boundingBox())!;
+      expect(sourceBox.height).toBeGreaterThanOrEqual(44);
+      expect(sourceBox.x).toBeGreaterThanOrEqual(0);
+      expect(sourceBox.x + sourceBox.width).toBeLessThanOrEqual(width);
+      for (const name of ["Calculator", "Reference"]) {
+        const tool = page.locator("header").getByRole("button", { name, exact: true });
+        const box = (await tool.boundingBox())!;
+        expect(box.height).toBeGreaterThanOrEqual(44);
+        expect(box.x).toBeGreaterThanOrEqual(0);
+        expect(box.x + box.width).toBeLessThanOrEqual(width);
+      }
       await page.getByRole("button", { name: "Calculator", exact: true }).click();
       const panel = page.getByRole("dialog", { name: "Programmer calculator" });
       const scroll = panel.getByRole("region", { name: "Calculation", exact: true });
@@ -221,18 +227,18 @@ for (const theme of ["light", "dark"] as const) {
   });
 }
 
-test("the GitHub star remains a normal keyboard link and works without scripts", async ({
+test("the Source footer remains a normal keyboard link and works without scripts", async ({
   page,
   browser,
 }) => {
   await page.goto("#/");
-  const star = page.locator("header .github-star");
-  await star.focus();
-  await expect(star).toBeFocused();
+  const source = page.locator("footer").getByRole("link", { name: "Source", exact: true });
+  await source.focus();
+  await expect(source).toBeFocused();
   await page.route("https://github.com/snowch/assembly-lab", (route) =>
     route.fulfill({ body: "repository" }),
   );
-  await star.press("Enter");
+  await source.press("Enter");
   await expect(page).toHaveURL("https://github.com/snowch/assembly-lab");
   const context = await browser.newContext({
     javaScriptEnabled: false,
@@ -240,9 +246,7 @@ test("the GitHub star remains a normal keyboard link and works without scripts",
   });
   const plain = await context.newPage();
   await plain.goto(test.info().project.use.baseURL as string);
-  const initial = plain
-    .locator("header")
-    .getByRole("link", { name: "Star on GitHub", exact: true });
+  const initial = plain.locator("footer").getByRole("link", { name: "Source", exact: true });
   await expect(initial).toBeVisible();
   await expect(initial).toHaveAttribute("href", "https://github.com/snowch/assembly-lab");
   expect(await plain.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);

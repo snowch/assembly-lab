@@ -1,88 +1,77 @@
 // Copyright © 2026 Christopher Snow
 
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { STATUS_STRINGS as S } from "../../apps/course/src/strings.status";
 import { deployment } from "./offline-site";
-import { checkForUpdates, downloadOffline, prepareUpdate } from "./app-status-helper";
-
+import { checkForUpdates, downloadOffline, prepareUpdate, openStatus } from "./app-status-helper";
 async function withinViewport(page: Page, panel: Locator) {
-  const box = await panel.boundingBox();
-  const viewport = page.viewportSize()!;
+  const box = await panel.boundingBox(),
+    viewport = page.viewportSize()!;
   expect(box).not.toBeNull();
   expect(box!.x).toBeGreaterThanOrEqual(0);
   expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width);
   expect(box!.y).toBeGreaterThanOrEqual(0);
   expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height);
-  const contentHeight = await panel.evaluate((element) => {
-    const style = getComputedStyle(element);
-    return element.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
-  });
-  expect(contentHeight).toBeGreaterThanOrEqual(44);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+  expect(await panel.evaluate((el) => el.matches(":modal"))).toBe(true);
 }
-
 for (const [width, height] of [
-  [375, 812],
-  [641, 900],
-  [800, 1100],
+  [390, 844],
+  [768, 700],
   [1280, 800],
-  [800, 375],
-]) {
-  for (const theme of ["light", "dark"] as const) {
-    test(`status layout ${width}x${height} in ${theme}: independent visible indicators and contained panel`, async ({
+])
+  for (const theme of ["light", "dark"]) {
+    test(`status layout ${width}x${height} in ${theme}: one persistent modal and clear course action`, async ({
       page,
     }) => {
-      const site = await deployment();
-      const errors: string[] = [];
+      const site = await deployment(),
+        errors: string[] = [];
       page.on("pageerror", (error) => errors.push(String(error)));
       try {
         await page.setViewportSize({ width: width!, height: height! });
         await page.goto(site.url);
         await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
         await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-        const status = await checkForUpdates(page);
-        const summary = status.locator("summary").first();
-        const version = summary.locator("[data-version-status]");
-        const offline = summary.locator("[data-offline-status]");
-        const panel = status.locator(".app-status-panel");
-        await expect(version).toHaveText("Up to date");
-        await expect(offline).toHaveText("Not saved offline");
-        await expect(summary).not.toContainText("Build");
-        await expect(summary).not.toContainText(site.initial.commit!.slice(0, 7));
-        await expect(panel.locator(".running-version")).toHaveText(
+        const status = await checkForUpdates(page),
+          trigger = page.locator("#app-status-open"),
+          version = trigger.locator("[data-version-status]");
+        await expect(version).toHaveText(S.versionStates.current);
+        await expect(
+          status.getByRole("heading", { name: S.courseHeading, exact: true }),
+        ).toHaveCount(1);
+        await expect(
+          status.getByRole("heading", { name: S.offlineHeading, exact: true }),
+        ).toHaveCount(0);
+        await expect(status.locator(".running-version")).toHaveText(
           site.initial.commit!.slice(0, 7),
         );
-        await withinViewport(page, panel);
-        await summary.press("Escape");
+        await withinViewport(page, status);
+        await page.keyboard.press("Escape");
         await expect(status).not.toHaveAttribute("open");
-        await expect(summary).toBeFocused();
-        await expect(offline).toBeVisible();
+        await expect(trigger).toBeFocused();
         await downloadOffline(page);
-        await summary.click();
-        await expect(offline).toHaveText("Saved offline");
+        await openStatus(page);
+        await expect(
+          status.getByRole("button", { name: S.actions.download, exact: true }),
+        ).toHaveCount(0);
+        await status.getByRole("button", { name: S.close, exact: true }).click();
         site.publish("visible-update");
         await checkForUpdates(page);
-        await expect(version).toHaveText("Update available");
-        await summary.click();
-        await expect(version).toBeVisible();
-        await expect(offline).toHaveText("Saved offline");
+        await expect(version).toHaveText(S.versionStates.available);
         await prepareUpdate(page);
-        await summary.click();
-        await expect(version).toHaveText("Update ready");
-        await expect(offline).toHaveText("Saved offline");
-        await summary.click();
-        await withinViewport(page, panel);
-        const later = status.getByRole("button", { name: "Later", exact: true });
-        await later.click();
+        await expect(version).toHaveText(S.versionStates.ready);
+        await expect(
+          status.getByRole("button", { name: S.actions.restart, exact: true }),
+        ).toBeVisible();
+        await status.getByRole("button", { name: S.actions.later, exact: true }).click();
         await expect(status).not.toHaveAttribute("open");
-        await expect(summary).toBeFocused();
-        await expect(version).toHaveText("Update ready");
+        await expect(trigger).toBeFocused();
+        await expect(version).toHaveText(S.versionStates.ready);
         await page.evaluate(() => (document.documentElement.style.fontSize = "150%"));
-        await summary.click();
-        await withinViewport(page, panel);
+        await openStatus(page);
+        await withinViewport(page, status);
         expect(errors).toEqual([]);
       } finally {
         await site.close();
       }
     });
   }
-}

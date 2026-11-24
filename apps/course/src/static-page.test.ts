@@ -43,11 +43,9 @@ describe("the page before any script runs", () => {
     expect(html.match(/class="app-status"/g)).toHaveLength(1);
   });
 
-  it("keeps the GitHub star as a plain header link before scripts run", () => {
-    expect(page.match(/class="github-star"/g)).toHaveLength(1);
-    expect(page).toContain(`class="github-star" href="${GITHUB_REPOSITORY}"`);
-    expect(text(page)).toContain(STRINGS.githubStar);
-    expect(text(page)).toContain(STRINGS.githubStarDestination);
+  it("keeps source access in the footer before scripts run", () => {
+    expect(page).not.toContain('class="github-star"');
+    expect(page).toContain(`<a href="${GITHUB_REPOSITORY}">Source</a>`);
     expect(page).not.toContain("api.github.com");
   });
 
