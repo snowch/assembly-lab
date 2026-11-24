@@ -109,13 +109,16 @@ it("marks and undoes a reading-only lesson by keyboard without moving focus", as
     </StrictMode>,
   );
   const button = getByRole("button", { name: STRINGS.completion.mark });
+  expect(button).toHaveAttribute("aria-pressed", "false");
   button.focus();
   await user.keyboard("{Enter}");
   expect(button).toHaveFocus();
+  expect(button).toHaveAttribute("aria-pressed", "true");
   expect(button).toHaveAccessibleName(STRINGS.completion.undo);
   expect(localStorage.getItem(completionKey("reading-only"))).toBe("true");
   await user.keyboard(" ");
   expect(button).toHaveFocus();
+  expect(button).toHaveAttribute("aria-pressed", "false");
   expect(button).toHaveAccessibleName(STRINGS.completion.mark);
   expect(store.get().completed.size).toBe(0);
 });

@@ -4,7 +4,15 @@
 // the course's book; the shell itself knows nothing about the machine. The front page lists the
 // plan, a lesson address shows the lesson with a way back, and an address with no lesson says so.
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 
 import {
   FlagsLesson,
@@ -20,7 +28,6 @@ import { LessonView } from "@platform/lesson-runtime";
 
 import { createBook, COURSE_SOURCES } from "./book";
 import { LessonSourceReferences } from "./LessonSourceReferences";
-import { BUILD_VERSION, commitHref } from "./build-version";
 import { HeaderCalculator } from "./HeaderCalculator";
 import { HeaderInstructionReference, type ReferenceRequest } from "./HeaderInstructionReference";
 import { THEME_TITLE } from "./strings.instruction-reference";
@@ -36,9 +43,10 @@ import { WhereNextPage } from "./pages/WhereNextPage";
 import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
 import { RUNTIME_STRINGS } from "./runtime-strings";
-import { COMPANION_LINKS, GITHUB_REPOSITORY, STRINGS } from "./strings";
+import { GITHUB_REPOSITORY, STRINGS } from "./strings";
 import { clearThemeUpdate, saveThemeForUpdate, useTheme, type Theme } from "./theme";
 import { LessonLayout } from "./LessonLayout";
+import { MaterialSymbol } from "./MaterialSymbol";
 
 /**
  * The skip link moves focus to the main content and leaves the address alone: its `#main` is not a
@@ -69,7 +77,32 @@ export function App() {
   const [referenceRequest, setReferenceRequest] = useState<ReferenceRequest | null>(null);
   const [activeChallengeId, rememberChallenge] = useState<string>();
   const referenceFocus = useRef<HTMLElement | null>(null);
+  const shellHeader = useRef<HTMLElement>(null);
   const requestSerial = useRef(0);
+  useLayoutEffect(() => {
+    const header = shellHeader.current;
+    if (!header) return;
+    const root = document.documentElement;
+    const previous = root.style.getPropertyValue("--course-header-height");
+    let active = true;
+    const measure = () => {
+      if (!active) return;
+      const height = header.getBoundingClientRect().height;
+      if (height > 0) root.style.setProperty("--course-header-height", `${height}px`);
+    };
+    measure();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    observer?.observe(header);
+    window.addEventListener("resize", measure);
+    void document.fonts?.ready.then(measure);
+    return () => {
+      active = false;
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+      if (previous) root.style.setProperty("--course-header-height", previous);
+      else root.style.removeProperty("--course-header-height");
+    };
+  }, []);
   const currentLesson =
     route.kind === "lesson" ? book.lessons.find((item) => item.id === route.id) : undefined;
   const openReference = useCallback((request: InstructionHelpRequest) => {
@@ -172,7 +205,11 @@ export function App() {
           </aside>
         )}
         <div className="lesson-ending">
-          <LessonSourceReferences key={lesson.id} sources={COURSE_SOURCES.get(lesson.id)!} />
+          <LessonSourceReferences
+            key={lesson.id}
+            sources={COURSE_SOURCES.get(lesson.id)!}
+            lessonTitle={lesson.title}
+          />
           <div className="lesson-completion-row">
             <LessonCompletionButton store={completionStore} lessonId={lesson.id} />
             <p id="lesson-completion-note" className="lesson-completion-note" role="status">
@@ -191,7 +228,12 @@ export function App() {
                 </span>
                 <span className="lesson-nav-title">{book.references.label(previous.id)}</span>
               </a>
-            ) : null}
+            ) : (
+              <a className="lesson-nav-link" data-direction="previous" href="#/">
+                <span className="lesson-nav-direction">{L.courseOverview}</span>
+                <span className="lesson-nav-title">{STRINGS.footer.chooseLesson}</span>
+              </a>
+            )}
             {next ? (
               <a className="lesson-nav-link" data-direction="next" href={lessonHref(next.id)}>
                 <span className="lesson-nav-direction">
@@ -199,7 +241,12 @@ export function App() {
                 </span>
                 <span className="lesson-nav-title">{book.references.label(next.id)}</span>
               </a>
-            ) : null}
+            ) : (
+              <a className="lesson-nav-link" data-direction="next" href="#/">
+                <span className="lesson-nav-direction">{L.courseOverview}</span>
+                <span className="lesson-nav-title">{STRINGS.footer.chooseLesson}</span>
+              </a>
+            )}
           </nav>
         </div>
       </>
@@ -237,7 +284,7 @@ export function App() {
             {STATUS_STRINGS.restarting}
           </p>
         )}
-        <header className="shell-header" inert={offline?.updating}>
+        <header className="shell-header" ref={shellHeader} inert={offline?.updating}>
           <a className="brand" href="#/" aria-label={STRINGS.title}>
             <span>{STRINGS.title}</span>
           </a>
@@ -257,29 +304,9 @@ export function App() {
           />
           <label className="theme-picker" title={THEME_TITLE(themeName)}>
             <span>{STRINGS.theme}</span>
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              width="21"
-              height="21"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-            >
-              {theme === "auto" ? (
-                <>
-                  <rect x="3" y="4" width="18" height="13" rx="2" />
-                  <path d="M8 21h8m-4-4v4" />
-                </>
-              ) : theme === "light" ? (
-                <>
-                  <circle cx="12" cy="12" r="4" />
-                  <path d="M12 1v3m0 16v3M1 12h3m16 0h3M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2" />
-                </>
-              ) : (
-                <path d="M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z" />
-              )}
-            </svg>
+            <MaterialSymbol
+              name={theme === "auto" ? "contrast" : theme === "light" ? "light_mode" : "dark_mode"}
+            />
             <select value={theme} onChange={(e) => setTheme(e.target.value as Theme)}>
               <option value="auto">{STRINGS.themeAuto}</option>
               <option value="light">{STRINGS.themeLight}</option>
@@ -295,43 +322,25 @@ export function App() {
           {page}
         </main>
         <footer className="shell-footer" inert={offline?.updating}>
-          <p className="footer-next">
-            <a href="#/where-next">{WHERE_NEXT.linkLabel}</a>
-          </p>
-          <p className="footer-intro">
-            {STRINGS.companions.intro.map((part, i) =>
-              typeof part === "string" ? part : <em key={i}>{part.title}</em>,
-            )}
-          </p>
-          <nav aria-label={STRINGS.companions.label}>
+          <p className="copyright">{STRINGS.copyright}</p>
+          <nav aria-label={STRINGS.footer.label}>
             <ul className="footer-links">
               <li>
-                <a href={COMPANION_LINKS.digitalDesign}>{STRINGS.companions.digitalDesign}</a>
+                <a href="#/where-next">{WHERE_NEXT.linkLabel}</a>
               </li>
               <li>
-                <a href={COMPANION_LINKS.bitLab}>{STRINGS.companions.bitLab}</a>
+                <a href={GITHUB_REPOSITORY}>{L.sourceFooter}</a>
               </li>
               <li>
-                <a href={COMPANION_LINKS.hub}>{STRINGS.companions.hub}</a>
+                <a href={`${GITHUB_REPOSITORY}/blob/main/docs/sources.md`}>
+                  {STRINGS.footer.licences}
+                </a>
+              </li>
+              <li>
+                <a href={`${GITHUB_REPOSITORY}/issues`}>{STRINGS.footer.report}</a>
               </li>
             </ul>
           </nav>
-          <p className="course-source">
-            <a href={GITHUB_REPOSITORY}>{L.sourceFooter}</a>
-          </p>
-          <p className="copyright">{STRINGS.copyright}</p>
-          {BUILD_VERSION && (
-            <p className="build-version">
-              {STRINGS.version.commit}{" "}
-              <a href={commitHref(BUILD_VERSION.sha)}>{BUILD_VERSION.sha.slice(0, 7)}</a>
-              {" · "}
-              {STRINGS.version.committed}{" "}
-              <time dateTime={BUILD_VERSION.committedAt}>
-                {BUILD_VERSION.committedAt.slice(0, 10)}
-              </time>{" "}
-              {STRINGS.version.utc}
-            </p>
-          )}
         </footer>
       </LessonReferenceProvider>
     </InstructionHelpProvider>

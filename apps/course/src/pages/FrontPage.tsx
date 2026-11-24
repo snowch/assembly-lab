@@ -10,6 +10,7 @@ import { COURSE_REFERENCES } from "../book";
 
 import { lessonHref } from "../route";
 import { STRINGS } from "../strings";
+import { MaterialSymbol } from "../MaterialSymbol";
 import { orderLessons, type LessonCompletion } from "../lesson-completion";
 import { CoverFigure, MODULE_ICONS } from "./icons";
 import "../styles/module-lessons.css";
@@ -99,7 +100,7 @@ function CompletionMark() {
   return (
     <span className="lesson-complete-mark">
       {" "}
-      <span aria-hidden="true">✓</span>
+      <MaterialSymbol name="check" />
       <span className="visually-hidden">{STRINGS.completion.marked}</span>
     </span>
   );

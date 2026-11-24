@@ -105,21 +105,26 @@ describe("the page before any script runs", () => {
     expect(written.has("3")).toBe(true);
   });
 
-  it("shows the footer: companion links, optional next page and copyright", () => {
+  it("keeps a quiet footer and preserves companion descriptions in optional Where next", () => {
     const footer = /<footer[^>]*>([\s\S]*)<\/footer>/.exec(noscript)?.[1] ?? "";
+    const optional = /<section id="where-next">([\s\S]*?)<\/section>/.exec(noscript)?.[1] ?? "";
     const sentence = STRINGS.companions.intro.map((p) => (typeof p === "string" ? p : p.title));
-    expect(text(footer)).toContain(sentence.join(""));
-    expect(footer).toContain(`<em>${STRINGS.companions.digitalDesign}</em>`);
-    expect(footer).toContain(`<em>${STRINGS.companions.bitLab}</em>`);
+    expect(text(footer)).not.toContain(sentence.join(""));
+    expect(footer).not.toContain("build-version");
+    expect(text(optional)).toContain(sentence.join(""));
+    expect(optional).toContain(`<em>${STRINGS.companions.digitalDesign}</em>`);
+    expect(optional).toContain(`<em>${STRINGS.companions.bitLab}</em>`);
     for (const [key, href] of Object.entries(COMPANION_LINKS)) {
       const name = STRINGS.companions[key as keyof typeof COMPANION_LINKS];
-      expect(footer, key).toContain(`<a href="${href}">${name}</a>`);
+      expect(optional, key).toContain(`<a href="${href}">${name}</a>`);
     }
-    expect(footer).toContain(`aria-label="${STRINGS.companions.label}"`);
+    expect(optional).toContain(`aria-label="${STRINGS.companions.label}"`);
     expect(text(footer)).toContain(STRINGS.copyright);
     expect(footer).toContain(`<a href="#where-next">${WHERE_NEXT.linkLabel}</a>`);
-    const nav = /<nav[^>]*>([\s\S]*?)<\/nav>/.exec(footer)?.[1] ?? "";
-    expect(nav).not.toContain("#where-next");
+    expect(footer).toContain(
+      `<a href="${GITHUB_REPOSITORY}/blob/main/docs/sources.md">${STRINGS.footer.licences}</a>`,
+    );
+    expect(footer).toContain(`<a href="${GITHUB_REPOSITORY}/issues">${STRINGS.footer.report}</a>`);
     expect(noscript).toContain(`<section id="where-next"><h2>${WHERE_NEXT.title}</h2>`);
   });
 

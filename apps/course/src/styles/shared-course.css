@@ -206,18 +206,8 @@
   gap: 8px;
   list-style: none;
 }
-.course-lesson-trigger::after {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: rotate(45deg);
-  margin: 0 2px 4px 6px;
-}
-.course-lesson-trigger[aria-expanded="true"]::after {
-  transform: rotate(225deg);
-  margin-top: 6px;
+.course-lesson-trigger[aria-expanded="true"] .course-outline-chevron {
+  transform: rotate(180deg);
 }
 .course-location-progress {
   font-size: 14px;
@@ -539,4 +529,109 @@
 }
 :root .cover-hero .cover-completion-note {
   color: var(--fg-muted);
+}
+
+/* Official local Rounded assets retain one family and inherit their control's colour. */
+.material-symbol {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  fill: currentColor;
+  stroke: none;
+  vertical-align: middle;
+}
+.material-symbol.material-symbol-compact {
+  width: 20px;
+  height: 20px;
+  flex-basis: 20px;
+}
+:root .shell-header .material-symbol {
+  width: 24px;
+  height: 24px;
+}
+:root .lesson-completion-icon {
+  width: 24px;
+  height: 24px;
+  flex-basis: 24px;
+  fill: currentColor;
+  stroke: none;
+}
+:root .shell-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 32px;
+  padding: 20px max(24px, calc((100vw - 1280px) / 2));
+  text-align: left;
+  font-size: 14px;
+}
+:root .shell-footer .footer-links {
+  justify-content: flex-start;
+  gap: 0 24px;
+}
+.where-next-companions nav a,
+#where-next nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+/* Keep tool names discoverable at phone widths, where the old icon-only bar hid them. */
+:root .shell-header :is(.header-calculator-button, .header-reference-button) {
+  flex: 0 0 auto;
+  width: auto;
+}
+:root .shell-header :is(.header-calculator-button, .header-reference-button) > span {
+  display: inline;
+}
+:root .shell-header .theme-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  border: 0;
+  background: transparent;
+}
+:root .shell-header .theme-picker > span {
+  position: static;
+  width: auto;
+  height: auto;
+  clip-path: none;
+  overflow: visible;
+}
+:root .shell-header .theme-picker select {
+  position: static;
+  inset: auto;
+  opacity: 1;
+  width: auto;
+  min-width: 5.5em;
+  height: 44px;
+  min-height: 44px;
+  padding: 4px 24px 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-raised);
+  color: var(--fg);
+  font: inherit;
+}
+:root .shell-header .brand > span {
+  display: inline;
+}
+
+/* Wide-screen tools stay nonmodal while leaving every wrapped header control usable. */
+@media (width > 760px) {
+  :root :is(.header-calculator-dialog, .instruction-reference-dialog) {
+    top: calc(var(--course-header-height, 92px) + 12px);
+    bottom: 12px;
+    height: calc(100dvh - var(--course-header-height, 92px) - 24px);
+  }
+}
+
+/* Companion prose follows the same readable measure as the optional route prose. */
+:root .where-next-companions > p {
+  max-width: 70ch;
 }

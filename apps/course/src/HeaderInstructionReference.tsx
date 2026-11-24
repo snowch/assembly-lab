@@ -8,6 +8,7 @@ import type { InstructionHelpRequest } from "@al/views";
 import { INSTRUCTION_QUICK_REFERENCE, QUICK_REFERENCE_NOTATION } from "@al/content";
 import { REFERENCE_STRINGS as S } from "./strings.instruction-reference";
 import { ReferenceInstructionForms } from "./ReferenceInstructionForms";
+import { MaterialSymbol } from "./MaterialSymbol";
 
 export interface ReferenceRequest extends InstructionHelpRequest {
   readonly serial: number;
@@ -133,17 +134,7 @@ export function HeaderInstructionReference({
         aria-controls={id}
         onClick={() => (request ? dismiss() : onOpen({}))}
       >
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 24 24"
-          width="21"
-          height="21"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.7"
-        >
-          <path d="M12 5c-3-2-6-2-10-1v15c4-1 7-1 10 1 3-2 6-2 10-1V4c-4-1-7-1-10 1Zm0 0v15" />
-        </svg>
+        <MaterialSymbol name="menu_book" />
         <span>{S.button}</span>
       </button>
       {request &&

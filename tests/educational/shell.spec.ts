@@ -15,6 +15,7 @@ import { MODULES, PLAN, lessonsOf, statusOf } from "@al/content/plan";
 import { VIEW_STRINGS } from "../../packages/views/src/strings";
 
 import { planLessonLabel, lessonLabel } from "./lesson-references";
+import { openStatus } from "./app-status-helper";
 
 import { COMPANION_LINKS, GITHUB_REPOSITORY, STRINGS } from "../../apps/course/src/strings";
 
@@ -24,15 +25,31 @@ const sourceDate = new Date(
   execFileSync("git", ["show", "-s", "--format=%cI", "HEAD"], { encoding: "utf8" }).trim(),
 ).toISOString();
 
-async function expectSourceVersion(page: Page) {
-  const version = page.locator("footer.shell-footer .build-version");
-  await expect(version.getByRole("link")).toHaveText(sourceSha.slice(0, 7));
-  await expect(version.getByRole("link")).toHaveAttribute(
-    "href",
-    `https://github.com/snowch/assembly-lab/commit/${sourceSha}`,
-  );
-  await expect(version.locator("time")).toHaveAttribute("datetime", sourceDate);
-  await expect(version.locator("time")).toHaveText(sourceDate.slice(0, 10));
+async function expectSourceVersion(page: Page, scripts = true) {
+  await expect(page.locator("footer.shell-footer .build-version")).toHaveCount(0);
+  if (scripts) {
+    const panel = await openStatus(page);
+    await panel.locator("#app-status-details > summary").click();
+    const version = panel.locator("#app-status-details");
+    await expect(version.locator(".running-version")).toHaveText(sourceSha.slice(0, 7));
+    await expect(version.locator(".running-version")).toHaveAttribute(
+      "href",
+      `https://github.com/snowch/assembly-lab/commit/${sourceSha}`,
+    );
+    await expect(version.locator("time")).toHaveAttribute("datetime", sourceDate);
+    await expect(version.locator("time")).toHaveText(sourceDate.slice(0, 10));
+    await page.keyboard.press("Escape");
+  } else {
+    const version = page.locator("header .app-status");
+    await version.locator("summary").click();
+    await expect(version.getByRole("link")).toHaveText(sourceSha.slice(0, 7));
+    await expect(version.getByRole("link")).toHaveAttribute(
+      "href",
+      `https://github.com/snowch/assembly-lab/commit/${sourceSha}`,
+    );
+    await expect(version.locator("time")).toHaveAttribute("datetime", sourceDate);
+    await expect(version.locator("time")).toHaveText(sourceDate.slice(0, 10));
+  }
 }
 
 /** Everything the page logs as an error, or throws, until the test ends. */
@@ -185,10 +202,13 @@ test("each lesson foot names the lesson before it and the one after, in course o
   page,
 }) => {
   const errors = watchErrors(page);
-  // The first lesson has no previous, and the last has no next: the missing side keeps its place.
+  // Boundary cards return to the course overview; adjacent lessons retain the recorded order.
   await page.goto("#/lesson/one-addition");
   const nav = page.getByRole("navigation", { name: STRINGS.lessonNav });
-  await expect(nav.locator('[data-direction="previous"]')).toHaveCount(0);
+  await expect(nav.locator('[data-direction="previous"]')).toHaveAttribute("href", "#/");
+  await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
+    STRINGS.footer.chooseLesson,
+  );
   await expect(nav.locator('[data-direction="next"] .lesson-nav-title')).toHaveText(
     lessonLabel(LESSONS[1]!.id),
   );
@@ -221,7 +241,10 @@ test("each lesson foot names the lesson before it and the one after, in course o
     await page.getByRole("link", { name: new RegExp(STRINGS.nextLesson) }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(lesson.title);
   }
-  await expect(nav.locator('[data-direction="next"]')).toHaveCount(0);
+  await expect(nav.locator('[data-direction="next"]')).toHaveAttribute("href", "#/");
+  await expect(nav.locator('[data-direction="next"] .lesson-nav-title')).toHaveText(
+    STRINGS.footer.chooseLesson,
+  );
   await expect(nav.locator('[data-direction="previous"] .lesson-nav-title')).toHaveText(
     lessonLabel(LESSONS.at(-2)!.id),
   );
@@ -423,42 +446,46 @@ test("the cover runs fuel_on_board(38, 6, 10) live, one instruction at a time", 
   expect(errors).toEqual([]);
 });
 
-test("the footer carries the copyright and links to the companion courses", async ({ page }) => {
+test("the quiet footer retains source, licences, reporting and optional companion access", async ({
+  page,
+}) => {
   await page.goto("#/");
   await ready(page);
   const footer = page.locator("footer.shell-footer");
   await expect(footer.locator(".copyright")).toHaveText(STRINGS.copyright);
-  const links = footer.getByRole("link");
-  await expect(links).toHaveCount(6);
+  await expect(footer.getByRole("link")).toHaveCount(4);
+  await expect(footer.getByRole("navigation", { name: STRINGS.footer.label })).toBeVisible();
   await expect(footer.getByRole("link", { name: "Source", exact: true })).toHaveAttribute(
     "href",
     GITHUB_REPOSITORY,
   );
-  await expect(
-    footer.getByRole("navigation", { name: STRINGS.companions.label }).getByRole("link"),
-  ).toHaveCount(3);
+  await expect(footer.getByRole("link", { name: STRINGS.footer.licences })).toHaveAttribute(
+    "href",
+    `${GITHUB_REPOSITORY}/blob/main/docs/sources.md`,
+  );
+  await expect(footer.getByRole("link", { name: STRINGS.footer.report })).toHaveAttribute(
+    "href",
+    `${GITHUB_REPOSITORY}/issues`,
+  );
   await expect(footer.getByRole("link", { name: WHERE_NEXT.linkLabel })).toHaveAttribute(
     "href",
     "#/where-next",
   );
+  await expect(footer.locator(".footer-intro")).toHaveCount(0);
   await expectSourceVersion(page);
+  await footer.getByRole("link", { name: WHERE_NEXT.linkLabel }).click();
+  const companions = page.locator(".where-next-companions");
   await expect(
-    footer.getByRole("link", { name: STRINGS.companions.digitalDesign }),
-  ).toHaveAttribute("href", COMPANION_LINKS.digitalDesign);
-  await expect(footer.getByRole("link", { name: STRINGS.companions.bitLab })).toHaveAttribute(
-    "href",
-    COMPANION_LINKS.bitLab,
-  );
-  await expect(footer.getByRole("link", { name: STRINGS.companions.hub })).toHaveAttribute(
-    "href",
-    COMPANION_LINKS.hub,
-  );
-  // Both companion titles are set in italics in the sentence.
-  await expect(footer.locator(".footer-intro em")).toHaveText([
+    companions.getByRole("navigation", { name: STRINGS.companions.label }).getByRole("link"),
+  ).toHaveCount(3);
+  for (const [key, href] of Object.entries(COMPANION_LINKS)) {
+    const name = STRINGS.companions[key as keyof typeof COMPANION_LINKS];
+    await expect(companions.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
+  }
+  await expect(companions.locator("em")).toHaveText([
     STRINGS.companions.digitalDesign,
     STRINGS.companions.bitLab,
   ]);
-  // The copyright is in the footer of a page that is not the front page too.
   await page.goto("#/nowhere");
   await expect(page.locator("footer.shell-footer .copyright")).toHaveText(STRINGS.copyright);
   await expectSourceVersion(page);
@@ -576,7 +603,7 @@ test.describe("with scripts off", () => {
     await expect(page.locator(".noscript-page h1")).toBeVisible();
     const heading = await page.locator(".noscript-page h1").boundingBox();
     expect(heading!.x).toBeGreaterThanOrEqual(gutter);
-    await expect(page.locator("footer.shell-footer").getByRole("link")).toHaveCount(6);
+    await expect(page.locator("footer.shell-footer").getByRole("link")).toHaveCount(4);
     await expect(
       page.locator("footer.shell-footer").getByRole("link", { name: "Source", exact: true }),
     ).toHaveAttribute("href", GITHUB_REPOSITORY);
@@ -589,8 +616,8 @@ test.describe("with scripts off", () => {
     await expect(
       page.locator("#where-next").getByRole("link", { name: WHERE_NEXT.playground.downloadLabel }),
     ).toHaveAttribute("href", /examples\/trip-playground\.s$/);
-    await expectSourceVersion(page);
-    await expect(page.locator("footer.shell-footer em")).toHaveText([
+    await expectSourceVersion(page, false);
+    await expect(page.locator("#where-next em")).toHaveText([
       STRINGS.companions.digitalDesign,
       STRINGS.companions.bitLab,
     ]);

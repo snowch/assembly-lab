@@ -173,8 +173,17 @@ test("the compact header and keyboard skip link work without a preview strip", a
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   const header = await page.locator(".shell-header").boundingBox();
   expect(header!.y).toBe(0);
-  // Shared header: measured 129.55px narrow / 92.5px wide, including both tools.
-  expect(header!.height).toBeLessThanOrEqual(page.viewportSize()!.width <= 600 ? 132 : 96);
+  // Named tools and a visible native Theme selector deliberately wrap on phones.
+  // Measured181.55px at375px and92.5px at1280px, with less than3.5px headroom.
+  expect(header!.height).toBeLessThanOrEqual(page.viewportSize()!.width <= 430 ? 184 : 96);
+  await expect(page.locator(".shell-header .brand > span")).toBeVisible();
+  for (const name of ["Calculator", "Reference"]) {
+    await expect(
+      page.getByRole("button", { name, exact: true }).locator(":scope > span"),
+    ).toBeVisible();
+  }
+  await expect(page.locator(".theme-picker > span")).toBeVisible();
+  await expect(page.getByRole("combobox", { name: "Theme", exact: true })).toBeVisible();
   await page.locator(".skip-link").focus();
   expect(
     await page.locator(".skip-link").evaluate((el) => {

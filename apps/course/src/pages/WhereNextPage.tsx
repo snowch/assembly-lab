@@ -3,7 +3,7 @@
 import { WHERE_NEXT, PLAYGROUND_STARTER } from "@al/content";
 import { LessonProse as Prose, LessonReferenceProvider } from "@al/views";
 import { COURSE_REFERENCES } from "../book";
-import { STRINGS } from "../strings";
+import { COMPANION_LINKS, STRINGS } from "../strings";
 import "../styles/where-next.css";
 
 export function WhereNextPage() {
@@ -56,6 +56,27 @@ export function WhereNextPage() {
         <section aria-labelledby="routes-heading">
           <h2 id="routes-heading">{P.routes.title}</h2>
           <Prose markdown={P.routes.prose} />
+        </section>
+        <section aria-labelledby="companions-heading" className="where-next-companions">
+          <h2 id="companions-heading">{STRINGS.companions.label}</h2>
+          <p>
+            {STRINGS.companions.intro.map((part, i) =>
+              typeof part === "string" ? part : <em key={i}>{part.title}</em>,
+            )}
+          </p>
+          <nav aria-label={STRINGS.companions.label}>
+            <ul>
+              <li>
+                <a href={COMPANION_LINKS.digitalDesign}>{STRINGS.companions.digitalDesign}</a>
+              </li>
+              <li>
+                <a href={COMPANION_LINKS.bitLab}>{STRINGS.companions.bitLab}</a>
+              </li>
+              <li>
+                <a href={COMPANION_LINKS.hub}>{STRINGS.companions.hub}</a>
+              </li>
+            </ul>
+          </nav>
         </section>
       </article>
     </LessonReferenceProvider>
