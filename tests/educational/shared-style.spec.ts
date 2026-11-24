@@ -62,6 +62,8 @@ test("course outline expands below its location row and keeps the current simula
   await operation.getByRole("button", { name: "Run the instruction", exact: true }).click();
   await expect(operation).toHaveAttribute("data-k", "1");
   const trigger = page.getByRole("button", { name: "Course lessons", exact: true });
+  await trigger.scrollIntoViewIfNeeded();
+  await expect(trigger).toBeInViewport();
   const before = await trigger.boundingBox();
   await trigger.click();
   await expect(trigger).toHaveAttribute("aria-expanded", "true");

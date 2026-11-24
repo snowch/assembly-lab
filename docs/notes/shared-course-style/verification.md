@@ -155,3 +155,43 @@ passed. The existing completion and course-reference unit files passed **12/12**
 (`/tmp/arm-audit-focused-units.log`). The final exact current-head CI result is
 reported in PR 171's checks and handoff; functional checks are not evidence of
 learning effectiveness.
+
+## Complete CI at d249868 and final six-scenario corrections
+
+Both exact complete CI attempts at `d249868` finished **exit 1** with the same
+**1,530 passed, 18 skipped and 12 failed** browser result (six scenarios in both
+projects). Run `45299877781` took 33m6s overall; run `45299884430` reported 37.8m
+for browsers. Native and differential jobs passed. These complete failures remain
+recorded separately from the corrective focused run.
+
+The remaining header-calculator checks still required the removed header GitHub
+star. They now verify the ordinary Source footer link, its destination, keyboard
+activation, no-script availability, 44px target and viewport containment, while
+retaining calculator editing/geometry and explicit bounds for both preserved
+header tools. The online-only refreshed-runtime case now asserts no offline copy
+exists and chooses the actual first-save control, **Save offline copy**. All
+prepared/restart/exact-release and host-refused offline assertions remain; no
+production readiness state was changed to satisfy the test.
+
+The new row-stability test had measured its trigger while it was offscreen after
+running the model. Playwright then scrolled the trigger into view to click it.
+The test now explicitly scrolls and verifies that precondition before keeping the
+same exact row/panel and simulation-state assertions.
+
+The invalid-hex geometry case independently reproduced 1/64px (desktop) and
+2/64px (phone) differences with fonts fully loaded. A 24-state normal/fallback,
+light/dark, desktop/phone matrix traced the differences to quantization between
+reserved `lh` space and a rendered error line. Only relative action position and
+challenge height receive a bounded 0.05 CSS-pixel allowance; action width/height,
+invalidity, unchanged stored bits and valid recovery remain exact. An independent
+negative-control journey confirmed that a deliberate 1px shift is still rejected.
+The original negative-control harness failure and corrected pass are retained in
+the independent review note.
+
+The initial focused correction command exited 1 before running tests because its
+fixed port was already occupied. It correctly refused an unrelated preview
+(`/tmp/arm-ci-corrections-final.log`). A fresh free-port command with a separate
+output directory then **passed all 12/12** corrective cases
+(`/tmp/arm-ci-corrections-rerun.log`). No runtime, CSS or learner-facing wording was
+changed by these final test corrections. Exact full CI on the new head remains
+the merge gate.

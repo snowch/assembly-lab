@@ -719,7 +719,8 @@ test("an online-only refreshed app explicitly saves its published runtime before
     await expectRelease(page, "online-refresh", next.buildId);
     const mismatch = await openStatus(page);
     await expect(mismatch.locator('[data-version="current"]')).toBeVisible();
-    await mismatch.getByRole("button", { name: "Update offline copy", exact: true }).click();
+    await expect(mismatch.locator('[data-offline="idle"]')).toBeVisible();
+    await mismatch.getByRole("button", { name: "Save offline copy", exact: true }).click();
     await expect(
       mismatch.getByRole("button", { name: "Restart to update", exact: true }),
     ).toBeVisible({ timeout: 30000 });
