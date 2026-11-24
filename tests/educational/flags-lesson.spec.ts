@@ -562,9 +562,15 @@ for (const theme of ["light", "dark"] as const) {
     const widths = page.viewportSize()!;
     expect(
       await page.locator(".shell-header").evaluate((n) => n.getBoundingClientRect().height),
-      // The shared header retains both tools and a two-line App status control:
-      // measured 129.55px at narrow widths and 92.5px at desktop.
-    ).toBeLessThanOrEqual(widths.width <= 600 ? 132 : 96);
+      // Visible tool names/native Theme selector wrap to181.55px at375px;
+      // desktop remains92.5px. Preserve a measured compactness bound.
+    ).toBeLessThanOrEqual(widths.width <= 430 ? 184 : 96);
+    for (const name of ["Calculator", "Reference"]) {
+      await expect(
+        page.getByRole("button", { name, exact: true }).locator(":scope > span"),
+      ).toBeVisible();
+    }
+    await expect(page.locator(".theme-picker > span")).toBeVisible();
     await page.locator("#tabZ").click();
     await expect(page.locator("#inspectVisualTitle")).toHaveText(S.zInspectHint);
     expect(

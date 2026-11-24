@@ -4,7 +4,15 @@
 // the course's book; the shell itself knows nothing about the machine. The front page lists the
 // plan, a lesson address shows the lesson with a way back, and an address with no lesson says so.
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 
 import {
   FlagsLesson,
@@ -69,7 +77,32 @@ export function App() {
   const [referenceRequest, setReferenceRequest] = useState<ReferenceRequest | null>(null);
   const [activeChallengeId, rememberChallenge] = useState<string>();
   const referenceFocus = useRef<HTMLElement | null>(null);
+  const shellHeader = useRef<HTMLElement>(null);
   const requestSerial = useRef(0);
+  useLayoutEffect(() => {
+    const header = shellHeader.current;
+    if (!header) return;
+    const root = document.documentElement;
+    const previous = root.style.getPropertyValue("--course-header-height");
+    let active = true;
+    const measure = () => {
+      if (!active) return;
+      const height = header.getBoundingClientRect().height;
+      if (height > 0) root.style.setProperty("--course-header-height", `${height}px`);
+    };
+    measure();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    observer?.observe(header);
+    window.addEventListener("resize", measure);
+    void document.fonts?.ready.then(measure);
+    return () => {
+      active = false;
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+      if (previous) root.style.setProperty("--course-header-height", previous);
+      else root.style.removeProperty("--course-header-height");
+    };
+  }, []);
   const currentLesson =
     route.kind === "lesson" ? book.lessons.find((item) => item.id === route.id) : undefined;
   const openReference = useCallback((request: InstructionHelpRequest) => {
@@ -251,7 +284,7 @@ export function App() {
             {STATUS_STRINGS.restarting}
           </p>
         )}
-        <header className="shell-header" inert={offline?.updating}>
+        <header className="shell-header" ref={shellHeader} inert={offline?.updating}>
           <a className="brand" href="#/" aria-label={STRINGS.title}>
             <span>{STRINGS.title}</span>
           </a>

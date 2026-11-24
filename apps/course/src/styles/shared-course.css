@@ -621,3 +621,17 @@
 :root .shell-header .brand > span {
   display: inline;
 }
+
+/* Wide-screen tools stay nonmodal while leaving every wrapped header control usable. */
+@media (width > 760px) {
+  :root :is(.header-calculator-dialog, .instruction-reference-dialog) {
+    top: calc(var(--course-header-height, 92px) + 12px);
+    bottom: 12px;
+    height: calc(100dvh - var(--course-header-height, 92px) - 24px);
+  }
+}
+
+/* Companion prose follows the same readable measure as the optional route prose. */
+:root .where-next-companions > p {
+  max-width: 70ch;
+}

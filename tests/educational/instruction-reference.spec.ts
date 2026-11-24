@@ -133,3 +133,56 @@ test("compact header, keyboard theme choice and calculator/reference coordinatio
   await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
   await page.keyboard.press("Escape");
 });
+
+for (const theme of ["light", "dark"] as const) {
+  test(`desktop tools leave the wrapped header usable in ${theme}`, async ({ page }) => {
+    await page.setViewportSize({ width: 768, height: 1000 });
+    await page.goto("#/lesson/one-addition");
+    const themeControl = page.getByRole("combobox", { name: "Theme", exact: true });
+    await themeControl.selectOption(theme);
+    await page.evaluate(() => document.fonts.ready);
+    const operation = page.locator("#ix-worked-addition [data-figure='primitive-operation']");
+    await operation.getByRole("button", { name: "Run the instruction", exact: true }).click();
+    await expect(operation).toHaveAttribute("data-k", "1");
+    const calculator = page.getByRole("dialog", { name: "Programmer calculator", exact: true });
+    const reference = page.getByRole("dialog", { name: "Instruction reference", exact: true });
+    const belowHeader = async (panel: import("@playwright/test").Locator) => {
+      await expect(panel).toBeVisible();
+      expect(await panel.evaluate((node) => node.matches(":modal"))).toBe(false);
+      await expect
+        .poll(async () => {
+          const header = await page.locator(".shell-header").boundingBox();
+          const box = await panel.boundingBox();
+          return box!.y - (header!.y + header!.height);
+        })
+        .toBeGreaterThanOrEqual(11.5);
+    };
+    for (const width of [768, 834, 1280]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.getByRole("button", { name: "Calculator", exact: true }).click();
+      await belowHeader(calculator);
+      await calculator.getByRole("textbox", { name: "Value A", exact: true }).fill("42");
+      // selectOption alone bypasses hit testing; a real pointer click must reach this control.
+      await themeControl.click();
+      await page.keyboard.press("Home");
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.press("Enter");
+      await expect(themeControl).toHaveValue("light");
+      await themeControl.selectOption(theme);
+      await expect(calculator.getByRole("textbox", { name: "Value A", exact: true })).toHaveValue(
+        "42",
+      );
+      await page.getByRole("button", { name: "Reference", exact: true }).click();
+      await belowHeader(reference);
+      await reference.getByRole("searchbox").fill("add");
+      await page.getByRole("button", { name: "Calculator", exact: true }).click();
+      await expect(reference).toHaveCount(0);
+      await belowHeader(calculator);
+      await expect(calculator.getByRole("textbox", { name: "Value A", exact: true })).toHaveValue(
+        "42",
+      );
+      await calculator.getByRole("button", { name: "Close calculator", exact: true }).click();
+      await expect(operation).toHaveAttribute("data-k", "1");
+    }
+  });
+}
