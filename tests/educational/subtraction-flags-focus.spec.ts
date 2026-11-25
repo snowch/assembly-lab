@@ -12,6 +12,7 @@ for (const theme of ["light", "dark"])
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("#/lesson/subtraction-flags-and-negation");
     await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await page.evaluate(() => document.fonts.ready);
     expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe(
       theme === "light" ? "rgb(247, 250, 248)" : "rgb(16, 27, 26)",
     );
@@ -30,10 +31,46 @@ for (const theme of ["light", "dark"])
     ).toHaveCount(3);
     const boundary = page.locator("#ix-carry-means-no-borrow .al-sub-boundary");
     await expect(boundary).toBeVisible();
-    await expect(boundary.locator("[data-boundary-sum]")).toHaveText(["15", "16", "17"]);
-    await expect(boundary.locator("[data-boundary-carry]")).toHaveText(["0", "1", "1"]);
-    await expect(boundary.locator("[data-boundary-bits]")).toHaveText(["1111", "0000", "0001"]);
-    await expect(boundary.locator("[data-boundary-reading]")).toHaveText(["15", "0", "1"]);
+    await expect(boundary.locator("[data-boundary-sum]")).toHaveText(["14", "15", "16", "17"]);
+    await expect(boundary.locator("[data-boundary-carry]")).toHaveText(["0", "0", "1", "1"]);
+    await expect(boundary.locator("[data-boundary-bits]")).toHaveText([
+      "1110",
+      "1111",
+      "0000",
+      "0001",
+    ]);
+    await expect(boundary.locator("[data-boundary-reading]")).toHaveText(["14", "15", "0", "1"]);
+    await expect(boundary.locator(".al-sub-boundary-weights > span")).toHaveText([
+      "8",
+      "4",
+      "2",
+      "1",
+    ]);
+    await expect(boundary.locator("[data-boundary-place]")).toHaveText("16");
+    await expect(boundary.locator("[data-boundary-increase]")).toContainText("+1 in adder sum");
+    const alignment = await boundary.evaluate((node) => {
+      const centers = [...node.querySelectorAll(".al-sub-boundary-weights > span")].map(
+        (weight) => {
+          const box = weight.getBoundingClientRect();
+          return box.x + box.width / 2;
+        },
+      );
+      return [...node.querySelectorAll("[data-boundary-bits]")].flatMap((bits) => {
+        const carry = bits
+          .closest("[data-boundary-a]")!
+          .querySelector("[data-boundary-carry]")!
+          .getBoundingClientRect();
+        return [...bits.children].map((digit, index) => {
+          const box = digit.getBoundingClientRect();
+          return [
+            box.x + box.width / 2 - centers[index]!,
+            box.y + box.height / 2 - carry.y - carry.height / 2,
+          ];
+        });
+      });
+    });
+    for (const offsets of alignment)
+      for (const offset of offsets) expect(Math.abs(offset)).toBeLessThanOrEqual(1);
     for (const cell of await boundary
       .locator(".al-sub-boundary-head > *, .al-sub-boundary-row > *")
       .all()) {

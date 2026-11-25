@@ -70,11 +70,29 @@ describe("the visible subtraction bridge", () => {
         row.querySelector("[data-boundary-reading]")!.textContent,
       ]),
     ).toEqual([
+      ["6", "14", "0", "1110", "14"],
       ["7", "15", "0", "1111", "15"],
       ["8", "16", "1", "0000", "0"],
       ["9", "17", "1", "0001", "1"],
     ]);
+    expect(
+      [...boundary.querySelectorAll("[data-boundary-a]")].map((row) =>
+        row.getAttribute("aria-label"),
+      ),
+    ).toEqual(["Below b", "Below b", "Equal to b", "Above b"]);
     expect(boundary.querySelector("button,details")).toBeNull();
+    expect(boundary).toHaveTextContent("The adder calculates a + 7 + 1");
+    expect(boundary).toHaveTextContent("At 15, all four kept digits are 1");
+    expect(boundary.querySelector("[data-boundary-place]")).toHaveTextContent("16");
+    expect(
+      [...boundary.querySelectorAll(".al-sub-boundary-weights span")].map(
+        (node) => node.textContent,
+      ),
+    ).toEqual(["8", "4", "2", "1"]);
+    const increase = boundary.querySelector("[data-boundary-increase]")!;
+    expect(increase).toHaveTextContent("+1 in adder sum");
+    expect(increase.previousElementSibling).toHaveAttribute("data-boundary-a", "7");
+    expect(increase.nextElementSibling).toHaveAttribute("data-boundary-a", "8");
     expect(boundary.textContent).not.toMatch(/\{\w+\}/);
     const pattern = (row: string) =>
       bridge.querySelector(`[data-bridge-row="${row}"] code`)?.textContent;
