@@ -146,6 +146,13 @@
     {
       "entry": "subtract_flags",
       "args": [
+        ["6", 32],
+        ["8", 32]
+      ]
+    },
+    {
+      "entry": "subtract_flags",
+      "args": [
         ["7", 32],
         ["8", 32]
       ]

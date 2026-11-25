@@ -6,12 +6,13 @@ import type { RecordedProgram } from "./listing";
 import { traceOf, type TraceCall } from "./trace";
 
 export const SUBTRACTION_BOUNDARY_INPUTS = [
+  [6, 8],
   [7, 8],
   [8, 8],
   [9, 8],
 ] as const;
 
-/** Independent runs of the same recorded instruction, one on each side of equality. */
+/** Independent runs of the same recorded instruction around equality. */
 export function subtractionBoundary(program: RecordedProgram, call: TraceCall, which = 0) {
   return SUBTRACTION_BOUNDARY_INPUTS.map(([a, b]) => {
     const trace = traceOf(program, { ...call, args: [a, b] });

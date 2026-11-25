@@ -19,9 +19,10 @@
   min-width: 0;
 }
 .al-sub-boundary-head,
+.al-sub-boundary-places,
 .al-sub-boundary-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 3rem 2.5rem 4.5rem;
+  grid-template-columns: minmax(0, 1fr) 3rem 2.5rem minmax(4.5rem, 1fr);
   gap: 0.35rem;
   min-width: 0;
 }
@@ -30,6 +31,36 @@
   font-size: var(--text-xs);
   text-align: center;
   align-items: end;
+}
+.al-sub-boundary-places {
+  align-items: center;
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+  text-align: center;
+}
+.al-sub-boundary-place-label {
+  grid-column: span 2;
+  text-align: right;
+}
+.al-sub-boundary-weights,
+.al-sub-boundary-kept code {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 0.25rem;
+}
+.al-sub-boundary-weights {
+  border: 2px solid transparent;
+  font-family: var(--font-mono);
+}
+.al-sub-boundary-increase {
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+  text-align: center;
+}
+.al-sub-boundary-carry[data-on="true"] {
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 700;
 }
 .al-sub-boundary-row {
   border-top: 1px solid var(--border);
@@ -51,6 +82,7 @@
   min-height: 2rem;
   font-family: var(--font-mono);
   font-size: var(--text-md);
+  line-height: 1.25;
   box-sizing: border-box;
 }
 .al-sub-boundary-row small {
@@ -64,8 +96,15 @@
   background: var(--bg-sunken);
 }
 .al-sub-boundary-kept code {
+  display: grid;
   border: 2px solid var(--accent);
   border-radius: var(--radius);
+  background: var(--bg-raised);
+}
+.al-sub-boundary-kept code span {
+  text-align: center;
+}
+.al-sub-boundary-kept code span[data-on="true"] {
   background: var(--accent-soft);
-  letter-spacing: 0.06em;
+  font-weight: 700;
 }

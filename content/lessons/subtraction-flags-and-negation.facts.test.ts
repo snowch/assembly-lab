@@ -64,6 +64,7 @@ describe("focused subtraction and negation facts", () => {
   });
 
   it.each([
+    [6, 8, 4294967294, "1000"],
     [7, 8, 4294967295, "1000"],
     [8, 8, 0, "0110"],
     [9, 8, 1, "0010"],

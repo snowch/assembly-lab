@@ -23,11 +23,13 @@ describe("the subtraction width bridge", () => {
         small.result,
       ]),
     ).toEqual([
+      [6n, 8n, 7n, 14n, 0, "1110", 14n],
       [7n, 8n, 7n, 15n, 0, "1111", 15n],
       [8n, 8n, 7n, 16n, 1, "0000", 0n],
       [9n, 8n, 7n, 17n, 1, "0001", 1n],
     ]);
     expect(cases.map(({ wide }) => [wide.carryOut, wide.result])).toEqual([
+      [0, 4294967294n],
       [0, 4294967295n],
       [1, 0n],
       [1, 1n],

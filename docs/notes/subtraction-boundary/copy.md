@@ -6,27 +6,31 @@ Drafted from `brief.md`, the existing subtraction bridge and lesson strings, and
 
 ## Copy for integration
 
-The three rows are separate calculations, with the second input, its inverse and carry in held constant. Their subtraction expressions, full sums, outgoing carries, retained bits and unsigned readings come from the checked model. The rows remain visible together.
+The four rows are separate calculations, with the second input, its inverse and carry in held constant. Their subtraction expressions, full sums, outgoing carries, retained bits and unsigned readings come from the checked model. The rows remain visible together.
 
 ```json
 {
   "title": "When does carry out become 1?",
-  "setup": "Only `a` changes in these independent four-bit views. Each uses `b = {b}`, inverted `b = {inverted}` and carry in `{carryIn}`. All readings are unsigned.",
+  "setup": "Only `a` changes in these independent four-bit views. With `b = {b}`, inverted `b` is `{inverted}` and carry in is `{carryIn}`. The adder calculates `a + {inverted} + {carryIn}`. All readings are unsigned.",
   "calculation": "Subtract",
-  "fullSum": "Full sum",
+  "fullSum": "Adder sum",
   "carryOut": "Carry out",
+  "carryPlace": "{range}’s place",
   "keptBits": "Four bits kept",
   "unsigned": "Unsigned",
   "less": "Below b",
   "equal": "Equal to b",
   "greater": "Above b",
-  "takeaway": "Equality reaches the extra place, worth {range}: carry out is 1 even though the kept result is zero. The real 32-bit `subs` uses the same no-borrow boundary for C."
+  "takeaway": "Equality already needs that extra place, even though the kept result is zero. The real 32-bit `subs` uses the same no-borrow boundary for C.",
+  "increase": "+{increase} in adder sum",
+  "placeValues": "Place values",
+  "visualCaption": "At {maximum}, all four kept digits are 1: no higher sum fits there. The next sum needs the outside place, worth {range}, giving carry out 1 and four kept zeros."
 }
 ```
 
 ## Teaching and presentation checks
 
-The approved heading asks a question answered by all three visible rows. Each row's relationship label describes its first input relative to the fixed second input `b`; its adjacent subtraction expression identifies both operands. The equality label does not depend on colour.
+The approved heading asks a question answered by all four visible rows. Each row's relationship label describes its first input relative to the fixed second input `b`; its adjacent subtraction expression identifies both operands. The equality label does not depend on colour.
 
 The setup identifies independent calculations, the four-bit teaching width and unsigned readings. Its parameters must come from the model. It preserves the existing worked example before this pane and the unchanged real 32-bit calculation after it.
 
@@ -48,3 +52,11 @@ The inserted comparison changes the second input to eight. The following real-wi
   "wideWhy": "The original calculation is {a} − {b}. At 32 bits, all ones is {wideMaximum}. Adding the carry in of 1 gives {wideRange}, the value of the first place beyond 32 bits. The full sum is {a} + {wideRange} − {b}; keep only the low 32 bits."
 }
 ```
+
+## Follow-up mechanism draft, 25 November 2026
+
+The reader requested a second below-boundary case and an explanation of why carry appears. A separate drafting pass supplied the integrated setup, Adder sum label, maximum/next-place mechanism, carry place-value label and shorter takeaway. The two below-boundary rows keep different patterns. Essential arithmetic and width guidance stay visible before the grid; the outgoing bit’s place value sits under its column heading. Model-derived parameters supply every displayed example value. This is copy provenance, not browser or learning-effectiveness evidence.
+
+## Follow-up visual reason
+
+The reader asked to see the reason in the diagram. A separate copy pass supplied a shared place-value label, a connector naming the increase in independent adder sums, and a causal caption about the four kept ones at the maximum. The same four computed rows now align each digit with its weight. The outside16-place remains separate from the kept8/4/2/1 places. This replaces the prose-only mechanism paragraph; it does not add a second worked example, another instruction or a control.
