@@ -2,7 +2,7 @@
 
 import { createHash } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
-import { join } from "node:path";
+import { join, posix } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { Plugin } from "vite";
@@ -10,6 +10,8 @@ import type { Plugin } from "vite";
 export const WORKER_FILE = "sw.js";
 export const RELEASE_FILE = "release.json";
 export const BUILD_MARKER = "__COURSE_BUILD_ID__";
+// Migrate away from filenames whose old bytes embedded a particular release ID.
+export const CSS_ASSET_PATTERN = "assets/[name]-[hash]-relative-v1[extname]";
 const workerPath = fileURLToPath(new URL("./worker.js", import.meta.url));
 const excluded = (path: string) =>
   path === WORKER_FILE ||
@@ -59,10 +61,16 @@ export function renderRelease(
               ...file,
               bytes: Buffer.from(file.bytes)
                 .toString("utf8")
-                .replace(/releases\/[a-f0-9]{64}\/(?=(?:assets|fonts)\/)/g, "")
                 .replace(
                   /(url\(["']?)(\/[^)"']*?\/|\/)((?:assets|fonts)\/[^)"']+)(["']?\))/g,
-                  `$1$2releases/${BUILD_MARKER}/$3$4`,
+                  (original, open: string, prefix: string, target: string, close: string) => {
+                    if (prefix.startsWith("//")) return original;
+                    const separator = target.search(/[?#]/);
+                    const path = separator < 0 ? target : target.slice(0, separator);
+                    const suffix = separator < 0 ? "" : target.slice(separator);
+                    // The same bytes resolve inside canonical and immutable trees.
+                    return `${open}${posix.relative(posix.dirname(file.path), path)}${suffix}${close}`;
+                  },
                 ),
             }
           : file,
@@ -77,7 +85,7 @@ export function renderRelease(
     .update(JSON.stringify(source))
     .digest("hex");
   const embedded = sorted.map((file) =>
-    file.path === "index.html" || file.path.endsWith(".css")
+    file.path === "index.html"
       ? {
           ...file,
           bytes: Buffer.from(file.bytes).toString("utf8").replaceAll(BUILD_MARKER, buildId),

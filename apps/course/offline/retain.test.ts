@@ -55,6 +55,44 @@ function server(
 }
 
 describe("publication retention", () => {
+  it("retains text-only releases sharing unchanged CSS and release-relative fonts", async () => {
+    const version = (label: string) =>
+      renderRelease(template, [
+        { path: "index.html", bytes: `<html>${label}</html>` },
+        { path: `assets/runtime-${label}.js`, bytes: `console.log('${label}')` },
+        {
+          path: "assets/styles-relative-v1.css",
+          bytes: "@font-face{src:url(/assembly-lab/fonts/course.woff2)}",
+        },
+        { path: "fonts/course.woff2", bytes: "same font" },
+      ]);
+    const current = version("current"),
+      previous = version("previous"),
+      local = version("new");
+    const directory = await output(local);
+    const site = server(current, previous);
+    await expect(
+      retainPublishedReleases(directory, "https://example.test/assembly-lab/", {
+        fetcher: site.fetcher,
+      }),
+    ).resolves.toEqual([current.metadata.buildId, previous.metadata.buildId]);
+    const stylesheet = "assets/styles-relative-v1.css";
+    expect(await readFile(join(directory, stylesheet), "utf8")).toBe(
+      "@font-face{src:url(../fonts/course.woff2)}",
+    );
+    for (const build of [current, previous]) {
+      expect(
+        await readFile(join(directory, "releases", build.metadata.buildId, stylesheet), "utf8"),
+      ).toBe(await readFile(join(directory, stylesheet), "utf8"));
+      expect(
+        await readFile(
+          join(directory, "releases", build.metadata.buildId, "fonts/course.woff2"),
+          "utf8",
+        ),
+      ).toBe("same font");
+    }
+  });
+
   it("retains the two previous verified immutable trees and limits history", async () => {
     const directory = await output();
     const site = server();
