@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { ADJUSTED_DIFFERENCE } from "../../content/lessons/transfer.listings";
 
@@ -10,7 +12,7 @@ for (const theme of ["light", "dark"])
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("#/lesson/moving-to-riscv");
-    await page.locator("select").first().selectOption(theme);
+    await setTheme(page, theme);
     await expect(
       page.getByRole("heading", { name: "Moving from Arm to RISC-V", exact: true }),
     ).toBeVisible();

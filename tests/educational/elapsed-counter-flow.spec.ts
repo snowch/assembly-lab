@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import { COUNTER_WRAP_STRINGS as W } from "../../packages/views/src/strings.counter-wrap";
@@ -11,7 +13,7 @@ for (const theme of ["light", "dark"])
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("#/lesson/subtracting-and-the-tick-counter");
-    await page.locator("select").first().selectOption(theme);
+    await setTheme(page, theme);
     const ring = page.locator("#ix-counter-ring");
     const summary = ring.locator('[data-reading="elapsed-summary"]');
     const reminder = page.locator("#ix-counter-subtraction-reminder");

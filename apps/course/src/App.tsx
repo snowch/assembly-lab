@@ -30,7 +30,6 @@ import { createBook, COURSE_SOURCES } from "./book";
 import { LessonSourceReferences } from "./LessonSourceReferences";
 import { HeaderCalculator } from "./HeaderCalculator";
 import { HeaderInstructionReference, type ReferenceRequest } from "./HeaderInstructionReference";
-import { THEME_TITLE } from "./strings.instruction-reference";
 import { CourseNavigation } from "./CourseNavigation";
 import { LAYOUT_STRINGS as L } from "./strings.layout";
 import { AppStatus } from "./AppStatus";
@@ -44,9 +43,9 @@ import { FrontPage } from "./pages/FrontPage";
 import { lessonHref, pageTitle, useRoute } from "./route";
 import { RUNTIME_STRINGS } from "./runtime-strings";
 import { GITHUB_REPOSITORY, STRINGS } from "./strings";
-import { clearThemeUpdate, saveThemeForUpdate, useTheme, type Theme } from "./theme";
+import { clearThemeUpdate, saveThemeForUpdate, useTheme } from "./theme";
 import { LessonLayout } from "./LessonLayout";
-import { MaterialSymbol } from "./MaterialSymbol";
+import { ThemeButton } from "./ThemeButton";
 
 /**
  * The skip link moves focus to the main content and leaves the address alone: its `#main` is not a
@@ -127,12 +126,6 @@ export function App() {
     setReferenceRequest(null);
     rememberChallenge(undefined);
   }, [currentLesson?.id]);
-  const themeName =
-    theme === "auto"
-      ? STRINGS.themeAuto
-      : theme === "light"
-        ? STRINGS.themeLight
-        : STRINGS.themeDark;
   const canReload = useCallback(
     () =>
       !document.querySelector('[aria-busy="true"], [data-app-busy="true"]') &&
@@ -288,7 +281,7 @@ export function App() {
           <a className="brand" href="#/" aria-label={STRINGS.title}>
             <span>{STRINGS.title}</span>
           </a>
-          <AppStatus offline={offline} />
+          <AppStatus offline={offline} theme={theme} onThemeChange={setTheme} />
           <HeaderCalculator
             updating={offline?.updating}
             open={calculatorOpen}
@@ -302,17 +295,7 @@ export function App() {
             onClose={closeReference}
             updating={offline?.updating}
           />
-          <label className="theme-picker" title={THEME_TITLE(themeName)}>
-            <span>{STRINGS.theme}</span>
-            <MaterialSymbol
-              name={theme === "auto" ? "contrast" : theme === "light" ? "light_mode" : "dark_mode"}
-            />
-            <select value={theme} onChange={(e) => setTheme(e.target.value as Theme)}>
-              <option value="auto">{STRINGS.themeAuto}</option>
-              <option value="light">{STRINGS.themeLight}</option>
-              <option value="dark">{STRINGS.themeDark}</option>
-            </select>
-          </label>
+          <ThemeButton theme={theme} onChange={setTheme} />
         </header>
         <div className="work-save-notice" role="status">
           {unsavedWork ? STRINGS.workNotSaved : ""}

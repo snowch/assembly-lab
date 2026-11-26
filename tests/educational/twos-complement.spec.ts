@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test, type Locator } from "@playwright/test";
 import { fourBitReadings } from "@al/views";
 import { shown } from "../../packages/views/src/readings";
@@ -34,7 +36,7 @@ for (const theme of ["light", "dark"] as const) {
       if (message.type() === "error") errors.push(message.text());
     });
     await page.goto("#/");
-    await page.locator("select").selectOption(theme);
+    await setTheme(page, theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await expect(
       page.getByRole("link", { name: planLessonLabel("twos-complement"), exact: true }),

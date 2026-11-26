@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 
@@ -11,7 +13,7 @@ for (const theme of ["light", "dark"])
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("#/lesson/subtraction-flags-and-negation");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     await page.evaluate(() => document.fonts.ready);
     expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe(
       theme === "light" ? "rgb(247, 250, 248)" : "rgb(16, 27, 26)",

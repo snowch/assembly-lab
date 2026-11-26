@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { designProblems } from "./design";
 import { watchErrors } from "./module1";
@@ -11,7 +13,7 @@ for (const theme of ["light", "dark"] as const) {
   }) => {
     const errors = watchErrors(page);
     await page.goto("#/lesson/register-widths");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     const c = page.locator("#ix-predict-two-registers"),
       notes = c.locator(".al-working-notes");

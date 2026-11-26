@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 // Check the temporal annotation beside actual lesson banks, across each executing renderer.
 // Prediction and solution gates are opened through their existing controls.
 import { expect, test } from "@playwright/test";
@@ -56,7 +58,7 @@ for (const example of examples) {
             (!example.mode || f.props["mode"] === example.mode),
         )!;
       await openLesson(page, lesson.id);
-      await page.locator(".theme-picker select").selectOption(theme);
+      await setTheme(page, theme);
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       const gate = item.props["after"];
       if (typeof gate === "string") {

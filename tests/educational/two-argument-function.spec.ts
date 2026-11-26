@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { PRIMITIVE_STRINGS as S } from "../../packages/views/src/strings.primitive";
 import { designProblems } from "./design";
@@ -12,7 +14,7 @@ for (const theme of ["light", "dark"] as const) {
   }) => {
     const errors = watchErrors(page);
     await page.goto("#/lesson/tiny-function");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     const one = page.locator("#ix-worked-function");
     const two = page.locator("#ix-worked-two-argument-function");

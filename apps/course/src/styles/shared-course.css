@@ -623,6 +623,94 @@
 }
 
 /* Wide-screen tools stay nonmodal while leaving every wrapped header control usable. */
+:root .shell-header .header-icon-control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 48px;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  min-height: 48px;
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+  box-shadow: none;
+}
+:root .shell-header .header-icon-control:hover {
+  background: var(--bg);
+}
+:root .shell-header .header-icon-control:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.header-control-state {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.header-offline-badge {
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--bg-raised);
+  color: var(--accent);
+}
+:root .shell-header .header-offline-badge .material-symbol {
+  width: 14px;
+  height: 14px;
+  flex-basis: 14px;
+}
+.header-update-badge {
+  position: absolute;
+  top: 5px;
+  right: 4px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--bg-raised);
+  border-radius: 50%;
+  background: var(--accent);
+}
+:root .app-status-dialog .theme-settings > summary {
+  min-height: 48px;
+  padding: 10px 0;
+}
+:root .app-status-dialog .theme-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 12px 0;
+}
+:root .app-status-dialog .theme-picker select {
+  width: 8em;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 48px;
+  padding: 8px 28px 8px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--bg-raised);
+  color: var(--fg);
+  font: inherit;
+}
+
 @media (width > 760px) {
   :root :is(.header-calculator-dialog, .instruction-reference-dialog) {
     top: calc(var(--course-header-height, 92px) + 12px);

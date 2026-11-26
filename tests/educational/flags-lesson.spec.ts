@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 // The approved full-page replacement: real examples, gates and registered challenge work.
 // Old grid-only checks are replaced here by checks of the same mechanisms in the new controls.
 import { expect, test, type Page, type Locator } from "@playwright/test";
@@ -562,15 +564,14 @@ for (const theme of ["light", "dark"] as const) {
     const widths = page.viewportSize()!;
     expect(
       await page.locator(".shell-header").evaluate((n) => n.getBoundingClientRect().height),
-      // Visible tool names/native Theme selector wrap to181.55px at375px;
-      // desktop remains92.5px. Preserve a measured compactness bound.
+      // Preserve the existing compactness bound and visible subject-tool names.
     ).toBeLessThanOrEqual(widths.width <= 430 ? 184 : 96);
     for (const name of ["Calculator", "Reference"]) {
       await expect(
         page.getByRole("button", { name, exact: true }).locator(":scope > span"),
       ).toBeVisible();
     }
-    await expect(page.locator(".theme-picker > span")).toBeVisible();
+    await expect(page.locator("#theme-toggle")).toBeVisible();
     await page.locator("#tabZ").click();
     await expect(page.locator("#inspectVisualTitle")).toHaveText(S.zInspectHint);
     expect(
@@ -877,7 +878,7 @@ test("theme, keyboard and shared course navigation preserve flags work", async (
   await n.focus();
   await page.keyboard.press("ArrowRight");
   await expect(page.locator('input[name=mini-n][value="1"]')).toBeChecked();
-  await page.locator(".theme-picker select").selectOption("dark");
+  await setTheme(page, "dark");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator('input[name=mini-n][value="1"]')).toBeChecked();
   await openStatus(page);
@@ -937,7 +938,7 @@ test("the approved layout stays legible, unclipped and follows the system theme"
     );
   hitRegions.forEach((r) => expect(r.height, r.text ?? "control").toBeGreaterThanOrEqual(40));
   await page.emulateMedia({ colorScheme: "dark" });
-  await page.locator(".theme-picker select").selectOption("auto");
+  await setTheme(page, "auto");
   await expect(page.locator("html")).not.toHaveAttribute("data-theme");
   expect(
     await page

@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 // The course's execution highlighting, in a browser, on the built site, at desktop and phone
 // widths, in both themes: after the second `add` has run, the C line it carries out and the
 // instruction itself carry the same primary treatment (the same fill and the same solid left
@@ -65,7 +67,7 @@ for (const theme of themes) {
   test.describe(`the executed and next rows, ${theme.name} theme`, () => {
     test.beforeEach(async ({ page }) => {
       await openLesson(page);
-      await page.getByLabel(STRINGS.theme).selectOption({ label: theme.label });
+      await setTheme(page, { label: theme.label });
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme.value);
     });
 

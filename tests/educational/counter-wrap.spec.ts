@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { COUNTER_WRAP_STRINGS as S } from "../../packages/views/src/strings.counter-wrap";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
@@ -11,7 +13,7 @@ for (const theme of ["light", "dark"])
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("#/lesson/subtracting-and-the-tick-counter");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     const wrap = page.locator("#ix-counter-wrap");
     const forward = wrap.locator('[data-counter-pane="forward"]');
     const borrow = wrap.locator('[data-counter-pane="borrow"]');
@@ -108,7 +110,7 @@ for (const theme of ["light", "dark"])
   test(`both panes keep controls below results at 320px in ${theme}`, async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 900 });
     await page.goto("#/lesson/subtracting-and-the-tick-counter");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     const wrap = page.locator("#ix-counter-wrap");
     for (const direction of ["forward", "borrow"]) {
       if (direction === "borrow") await wrap.locator("summary").click();

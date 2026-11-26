@@ -1,9 +1,10 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 // Exercise the production worker contract without depending on status-panel copy.
 import { expect, test, type Page } from "@playwright/test";
 import { deployment } from "./offline-site";
-import { STRINGS } from "../../apps/course/src/strings";
 
 type Snapshot = {
   ok?: boolean;
@@ -109,8 +110,8 @@ test("preparing B keeps both tabs open, then coordinated restart opens exact B e
     await open(first, `${site.url}#/lesson/one-addition`);
     const second = await context.newPage();
     await open(second, `${site.url}#/lesson/meet-the-machine`);
-    await first.getByLabel(STRINGS.theme).selectOption("dark");
-    await second.getByLabel(STRINGS.theme).selectOption("light");
+    await setTheme(first, "dark");
+    await setTheme(second, "light");
     const next = site.publish("exact-prepared-B");
     await first.evaluate(async () => (await navigator.serviceWorker.getRegistration())!.update());
     await expect
@@ -176,7 +177,7 @@ test("Reload latest course updates only this online tab without saving the cours
   try {
     const first = await context.newPage();
     await open(first, `${site.url}#/lesson/one-addition`);
-    await first.getByLabel(STRINGS.theme).selectOption("dark");
+    await setTheme(first, "dark");
     const operation = first.locator("#ix-worked-addition [data-figure='primitive-operation']");
     await operation.getByRole("button", { name: "Run the instruction", exact: true }).click();
     const answer = first.locator("#challenge-trace-addition").getByRole("textbox").first();

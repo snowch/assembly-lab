@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { fourBitReadings } from "@al/views";
 import { readingsOfPattern, patternOf, shown } from "../../packages/views/src/readings";
@@ -32,7 +34,7 @@ for (const theme of ["light", "dark"] as const) {
   }) => {
     const errors = watchErrors(page);
     await page.goto("#/");
-    await page.locator("select").selectOption(theme);
+    await setTheme(page, theme);
     await openLesson(page, "same-bits-two-readings");
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     expect(
@@ -101,7 +103,7 @@ for (const theme of ["light", "dark"] as const) {
     page,
   }) => {
     await page.goto("#/");
-    await page.locator("select").selectOption(theme);
+    await setTheme(page, theme);
     await openLesson(page, "same-bits-two-readings");
     const form = task(page, "practice");
     const explore = figure(page, "explore");
@@ -140,7 +142,7 @@ for (const theme of ["light", "dark"] as const) {
     page,
   }) => {
     await page.goto("#/");
-    await page.locator("select").selectOption(theme);
+    await setTheme(page, theme);
     await openLesson(page, "same-bits-two-readings");
     const small = task(page, "practice");
     const large = task(page, "transfer");
@@ -199,7 +201,7 @@ for (const theme of ["light", "dark"] as const) {
   test(`the sequence and submitted feedback fit 320px in ${theme}`, async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 900 });
     await page.goto("#/");
-    await page.locator("select").selectOption(theme);
+    await setTheme(page, theme);
     await openLesson(page, "same-bits-two-readings");
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     expect(await designProblems(page, true)).toEqual([]);

@@ -104,6 +104,10 @@ export const STRINGS = {
   themeAuto: "System",
   themeLight: "Light",
   themeDark: "Dark",
+  themeSwitchLight: "Switch to light theme",
+  themeSwitchDark: "Switch to dark theme",
+  themeSettings: "Theme settings",
+  themeSettingsHint: "Choose System to follow your device’s theme.",
 
   // the pages for an address the course does not have.
   missing: (path: string) => `The course has no page at the address ${path}.`,

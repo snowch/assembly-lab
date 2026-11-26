@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { LESSONS } from "@al/content";
 import { SMALL_CALL } from "../../content/lessons/prerequisite-bridges";
@@ -13,7 +15,7 @@ for (const theme of ["light", "dark"] as const) {
   test(`register OR before field writing in ${theme}`, async ({ page, isMobile }) => {
     const errors = watchErrors(page);
     await page.goto("#/lesson/masks");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     const fig = page.locator("#ix-register-source-or");
     await expect(fig.locator('[data-row="detail-second"]')).toHaveAttribute("data-value", "8");
@@ -54,7 +56,7 @@ for (const theme of ["light", "dark"] as const) {
   test(`smaller returning caller before the reserve in ${theme}`, async ({ page, isMobile }) => {
     const errors = watchErrors(page);
     await page.goto("#/lesson/calls-and-returns");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     const fig = page.locator("#ix-step-small-returning-call");
     const full = page.locator("#ix-calls-and-returns-listing");

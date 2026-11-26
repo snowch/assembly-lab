@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { designProblems } from "./design";
 import { watchErrors } from "./module3";
@@ -8,7 +10,7 @@ for (const theme of ["light", "dark"] as const) {
   test(`Pi 5 prerequisites and source schematics in ${theme}`, async ({ page, isMobile }) => {
     const errors = watchErrors(page);
     await page.goto("#/lesson/raspberry-pi-5");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(
@@ -39,7 +41,7 @@ for (const theme of ["light", "dark"] as const) {
   }) => {
     const errors = watchErrors(page);
     await page.goto("#/lesson/raspberry-pi-boot");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const link = page.getByRole("link", { name: "Download the Pi 5 source bundle", exact: true });
@@ -67,7 +69,7 @@ for (const theme of ["light", "dark"] as const) {
   for (const route of ["capture-pi-boot", "restore-pi-boot"]) {
     test(`${route}: complete physical workflow in ${theme}`, async ({ page, isMobile }) => {
       await page.goto(`#/lesson/${route}`);
-      await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+      await setTheme(page, theme);
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       await expect(page.locator("main")).toContainText(
         /Hardware verification (?:is|remains) pending/,

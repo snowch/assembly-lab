@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test, type Locator } from "@playwright/test";
 import { designProblems } from "./design";
 import { planLessonLabel, lessonLabel } from "./lesson-references";
@@ -85,7 +87,7 @@ for (const theme of ["light", "dark"] as const) {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("#/");
-    await page.locator("select").selectOption(theme);
+    await setTheme(page, theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await page
       .getByRole("link", { name: planLessonLabel("four-bit-arithmetic"), exact: true })

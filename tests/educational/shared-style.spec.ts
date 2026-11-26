@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { STRINGS } from "../../apps/course/src/strings";
 import { openStatus } from "./app-status-helper";
@@ -9,7 +11,7 @@ for (const theme of ["light", "dark"] as const) {
     page,
   }) => {
     await page.goto("#/");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     const contrast = await page.locator(".cover-hero h1").evaluate((el) => {
       const rgb = (value: string) =>
         value

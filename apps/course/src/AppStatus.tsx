@@ -6,11 +6,21 @@ import { RUNNING_BUILD, usePublishedRelease } from "./latest-commit";
 import type { useOffline } from "./offline";
 import { STRINGS } from "./strings";
 import { STATUS_STRINGS as S } from "./strings.status";
+import { MaterialSymbol } from "./MaterialSymbol";
+import type { Theme } from "./theme";
 
 type Offline = ReturnType<typeof useOffline>;
 
 /** A single course state and primary action; technical identity stays optional. */
-export function AppStatus({ offline }: { offline: Offline }) {
+export function AppStatus({
+  offline,
+  theme,
+  onThemeChange,
+}: {
+  offline: Offline;
+  theme: Theme;
+  onThemeChange: (theme: Theme) => void;
+}) {
   const published = usePublishedRelease();
   const [open, setOpen] = useState(false);
   const [remove, setRemove] = useState(false);
@@ -28,6 +38,18 @@ export function AppStatus({ offline }: { offline: Offline }) {
   const olderSaved = offline?.state === "ready" && !savedCurrent;
   const newer = published.state === "available" || Boolean(offline?.runtimeMismatch) || olderSaved;
   const version = saving ? "downloading" : pending ? "ready" : published.state;
+  const headerBadge =
+    published.state === "available" || pending || olderSaved
+      ? "update"
+      : !saving && offline?.state === "ready" && savedCurrent
+        ? "ready"
+        : undefined;
+  const headerOfflineState = pending
+    ? S.offlineDownloadReady
+    : olderSaved
+      ? S.offlineCopyOlder
+      : S.offlineStates[offline?.state ?? "unsupported"];
+  const headerState = `${S.versionStates[version]}. ${headerOfflineState}`;
   const identity = BUILD_VERSION?.sha.slice(0, 7) ?? RUNNING_BUILD?.slice(0, 7) ?? S.unknownBuild;
   const size = published.release?.totalBytes ?? offline?.totalBytes;
   const progress = offline?.preparing ? offline.updateProgress : offline;
@@ -84,16 +106,33 @@ export function AppStatus({ offline }: { offline: Offline }) {
     <>
       <button
         id="app-status-open"
-        className="app-status-trigger"
+        className="app-status-trigger header-icon-control"
         type="button"
         ref={trigger}
         aria-haspopup="dialog"
         aria-controls="app-status-dialog"
+        aria-label={S.headerLabel}
+        aria-describedby="app-status-header-state app-status-header-offline"
+        title={`${S.headerLabel}: ${headerState}`}
+        data-header-badge={headerBadge}
         onClick={openStatus}
       >
-        <span>{S.title}</span>
-        <span className="app-status-header-state" data-version-status={version}>
+        <MaterialSymbol name="cloud_download" />
+        {headerBadge === "ready" && (
+          <span className="header-offline-badge" aria-hidden="true">
+            <MaterialSymbol name="check" />
+          </span>
+        )}
+        {headerBadge === "update" && <span className="header-update-badge" aria-hidden="true" />}
+        <span
+          id="app-status-header-state"
+          className="app-status-header-state header-control-state"
+          data-version-status={version}
+        >
           {S.versionStates[version]}
+        </span>
+        <span id="app-status-header-offline" className="header-control-state">
+          {headerOfflineState}
         </span>
       </button>
       <dialog
@@ -213,6 +252,21 @@ export function AppStatus({ offline }: { offline: Offline }) {
             {offline?.downloadCancelled && !saving && <p role="status">{S.cancelled}</p>}
             {removed && <p role="status">{S.removed}</p>}
           </section>
+          <details className="theme-settings">
+            <summary>{STRINGS.themeSettings}</summary>
+            <label className="theme-picker">
+              <span>{STRINGS.theme}</span>
+              <select
+                value={theme}
+                onChange={(event) => onThemeChange(event.target.value as Theme)}
+              >
+                <option value="auto">{STRINGS.themeAuto}</option>
+                <option value="light">{STRINGS.themeLight}</option>
+                <option value="dark">{STRINGS.themeDark}</option>
+              </select>
+            </label>
+            <p>{STRINGS.themeSettingsHint}</p>
+          </details>
           <details id="app-status-details">
             <summary>{S.detailHeading}</summary>
             <p>
