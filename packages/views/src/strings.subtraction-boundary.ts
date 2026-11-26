@@ -19,5 +19,5 @@ export const SUBTRACTION_BOUNDARY_STRINGS = {
   equalColumn:
     "For `{equalA} − {b}`, `{equalTopA} + {equalTopB} + {equalTopCarryIn} = {equalTopBinary}` in binary. Keep the right digit, `{equalTopKept}`; the left digit, `{equalTopCarryOut}`, is carry out.",
   takeaway:
-    "At equality and above, no unsigned borrow is needed. The real {realWidth}-bit `subs` takes C from its own carry out. Plain `sub` preserves C.",
+    "For unsigned inputs:\n\n- **`a >= b` → carry out {equalTopCarryOut}:** no borrow needed.\n- **`a < b` → carry out {belowTopCarryOut}:** borrow needed.\n\nEquality gives carry out {equalTopCarryOut} even though the kept result is zero.\n\nThe real {realWidth}-bit `subs` updates carry flag C from its own carry out. Plain `sub` preserves C.",
 } as const;
