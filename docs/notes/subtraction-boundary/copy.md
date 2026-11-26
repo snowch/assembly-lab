@@ -22,7 +22,7 @@ The four rows are separate calculations, with the second input, its inverse and 
   "topColumn": "Look at the highest kept column, worth {topPlace}. Add its input bits and the carry arriving from the columns on its right. The add-one row supplies the initial carry at the lowest column.",
   "belowColumn": "For `{belowA} − {b}`, `{belowTopA} + {belowTopB} + {belowTopCarryIn} = {belowTopBinary}`. The total fits in the highest kept column, so carry out is `{belowTopCarryOut}`.",
   "equalColumn": "For `{equalA} − {b}`, `{equalTopA} + {equalTopB} + {equalTopCarryIn} = {equalTopBinary}` in binary. Keep the right digit, `{equalTopKept}`; the left digit, `{equalTopCarryOut}`, is carry out.",
-  "takeaway": "At equality and above, no unsigned borrow is needed. The real {realWidth}-bit `subs` takes C from its own carry out. Plain `sub` preserves C."
+  "takeaway": "For unsigned inputs:\n\n- **`a >= b` → carry out {equalTopCarryOut}:** no borrow needed.\n- **`a < b` → carry out {belowTopCarryOut}:** borrow needed.\n\nEquality gives carry out {equalTopCarryOut} even though the kept result is zero.\n\nThe real {realWidth}-bit `subs` updates carry flag C from its own carry out. Plain `sub` preserves C."
 }
 ```
 
@@ -62,3 +62,8 @@ The reader asked to see the reason in the diagram. A separate copy pass supplied
 ## Full-working follow-up, 26 November 2026
 
 The reader reported calculating the examples by hand before the rule made sense, then approved four complete vertical workings. The current canonical block above replaces the earlier comparison-table copy; those earlier presentation notes are historical. A separate drafting pass supplied the working-first heading, independent teaching-view setup, three addend labels and post-working column explanation. Mathematical values come from the existing traces and their top-column records. Optional relation labels were omitted because the complete expressions and later rule provide the comparison. No result is a new executed instruction. The responsive implementation has one representation with two narrow-container columns or four wide-container columns, with unsigned decimals beneath the retained bits. The original8−3 and real-width contexts remain separate and unchanged.
+
+
+## Explicit comparison follow-up, 26 November 2026
+
+The reader found the local generalisation too implicit after the four-working redesign. A separate pass supplied two bold unsigned comparison rules with their model-derived carry values, explicit equality, and the real-width subs carry-flag qualification. The following32-bit pane already retained the rule; this correction restores its local emphasis without another pane or control. See emphasis-brief.md for the checked facts and verification scope.
