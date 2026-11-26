@@ -99,7 +99,9 @@ The tests include equal and descending endpoints, and an interval that ends at t
 
 ## 6. Changing bne to beq
 
-The program below has its backward branch changed from `bne .L3` to `beq .L3`. The other instructions are unchanged. Predict its result for `dim_up(128, 2, 5)`.
+The program below has its backward branch changed from `bne .L3` to `beq .L3`. The other instructions are unchanged.
+
+Before answering, predict the body count and returned brightness for both `dim_up(128, 2, 5)` and `dim_up(128, 4, 5)`. The question below checks only the first call. After answering it, inspect both completed runs. Choose `dim_up(128, 4, 5)` to see its `w0` history. Use the branch condition to explain when the body repeats. Would the original `bne` repeat at the same point?
 
 **What brightness does the changed function return?**
 
@@ -178,7 +180,7 @@ Write and test your counting loop.
 
 Predict the result after changing the backward bne to beq.
 
-See how many dimming operations the changed loop runs and the brightness after each one.
+Compare the body counts. Choose a call to inspect w0 after each dimming operation, then explain the backward beq.
 
 Give a result and an instruction count for each call.
 
@@ -187,6 +189,8 @@ dim_up(128, 2, 5)
 dim_up(128, 5, 5)
 
 dim_up(128, 5, 2)
+
+dim_up(128, 4, 5)
 
 15
 
@@ -241,6 +245,7 @@ instructions run for `dim_up(128, 7, 9)`
 Adding consecutive integers or computing a factorial with a counting loop.
 
 A dashboard brightness setting is halved for an interval of idle ticks. The learner follows repeated shifts and handles empty, descending and boundary intervals.
+
 
 # Lesson 2: Counting down, and knowing when to stop
 

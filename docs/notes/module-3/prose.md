@@ -277,6 +277,10 @@ With a constant, `lsl`, `lsr` and `asr` are names for more general instructions.
 
 *One word, shifted by the instruction you choose; the bits that fall off, and what fills the gap.*
 
+Choose `lsl` under **Instruction** and **1** under **Shift by**. Before entering each value, predict **After** and **Fell off**. In **Value of w0 when the call starts**, try `0x7fffffff`, `0x80000000` and `0x80000001` separately. The figure updates as you type. Use **Fell off** and **Filled with** to explain what remains in **After**.
+
+Then enter `0x100000000`. Why is that input rejected, while a valid input can still lose a bit during the shift? Return to a valid input to continue.
+
 **Shift an input before adding**
 
 `lsl #1` shifts the value read from `w1` one bit left before the addition. It does not write `w1`. The sum goes to `w2`; both input registers keep their values.

@@ -11,7 +11,7 @@ The four rows are separate calculations, with the second input, its inverse and 
 ```json
 {
   "title": "Each subtraction, worked in binary",
-  "setup": "Only `a` changes in these independent {width}-bit teaching views. With fixed `b = {b}`, inverted `b` is `{inverted}`. Each stack adds `a`, inverted `b` and `{carryIn}` for one subtraction. All readings are unsigned.",
+  "setup": "{width} bits have {range} patterns, from `{zeroPattern}` to `{maxPattern}`. Read as unsigned, **both `a` and `b` can represent {minimum}–{maximum}**. Larger inputs need more bits. The teaching result keeps only the low {width} bits; an out-of-range result wraps into that range.\n\nThese fixed, independent examples keep `b = {b}` and change only `a`. Inverted `b` is `{inverted}`; each stack adds `a`, inverted `b` and `{carryIn}` for one subtraction. This {width}-bit limit belongs to the teaching view. The real Arm instruction here uses {realWidth} bits.",
   "inputA": "a",
   "invertedB": "Inverted b",
   "addOne": "Add {carryIn}",
@@ -67,3 +67,8 @@ The reader reported calculating the examples by hand before the rule made sense,
 ## Explicit comparison follow-up, 26 November 2026
 
 The reader found the local generalisation too implicit after the four-working redesign. A separate pass supplied two bold unsigned comparison rules with their model-derived carry values, explicit equality, and the real-width subs carry-flag qualification. The following32-bit pane already retained the rule; this correction restores its local emphasis without another pane or control. See emphasis-brief.md for the checked facts and verification scope.
+
+
+## Input-range clarification, 26 November 2026
+
+The reader asked how both inputs are bounded and what happens beyond those bounds. A separate draft now puts the unsigned range and bit-pattern count before the workings, distinguishes fixed examples from the full representable range, and explains retained result bits separately from input acceptance. The real 32-bit scope remains visible. Checked values and review scope are recorded in range-brief.md.

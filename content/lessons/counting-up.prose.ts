@@ -38,7 +38,7 @@ export const PROSE = {
     "Use `cmp w1, w2` and `b.cs done` before `again:`. Under `again:`, put `lsr w0, w0, #1`, `add w1, w1, #1`, `cmp w1, w2` and `b.cc again`. Under `done:`, put `ret`.",
   ] as const,
   failureExperiment:
-    "The program below has its backward branch changed from `bne .L3` to `beq .L3`. The other instructions are unchanged. Predict its result for `dim_up(128, 2, 5)`.",
+    "The program below has its backward branch changed from `bne .L3` to `beq .L3`. The other instructions are unchanged.\n\nBefore answering, predict the body count and returned brightness for both `dim_up(128, 2, 5)` and `dim_up(128, 4, 5)`. The question below checks only the first call. After answering it, inspect both completed runs. Choose `dim_up(128, 4, 5)` to see its `w0` history. Use the branch condition to explain when the body repeats. Would the original `bne` repeat at the same point?",
   failureQuestion: "**What brightness does the changed function return?**",
   failureExplain:
     "The changed function returns 64 after one iteration and seven instructions. The first shift changes the brightness from 128 to 64. The increment changes the tick from 2 to 3.\n\n" +

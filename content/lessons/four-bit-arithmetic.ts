@@ -4,6 +4,14 @@ import type { LessonInput } from "@platform/lesson-schema";
 import { fourBitSubtraction } from "@al/views";
 import { FOUR_BIT_PROSE as P } from "./four-bit-arithmetic.prose";
 
+const storageValues: Record<string, number> = {
+  smallWidth: 4,
+  largeWidth: 8,
+  inside: 14,
+  boundaryMaximum: 15,
+  outside: 16,
+  defaultInput: 100,
+};
 const practice = fourBitSubtraction(6, 3);
 const fields = ["negated", "result", "carry"] as const;
 export const fourBitArithmetic: LessonInput = {
@@ -16,6 +24,24 @@ export const fourBitArithmetic: LessonInput = {
   objectives: [...P.objectives],
   introduces: ["carry", "invert", "flag"],
   sections: [
+    {
+      kind: "question",
+      title: P.storage.title,
+      prose: P.storage.before,
+      interactives: [
+        {
+          id: "four-bit-storage",
+          kind: "four-bit-arithmetic",
+          timeModel: "none",
+          role: "experiment",
+          caption: P.storage.caption,
+          props: { mode: "storage" },
+          after: P.storage.after.replace(/\{(\w+)\}/g, (_, key: string) =>
+            String(storageValues[key]),
+          ),
+        },
+      ],
+    },
     {
       kind: "motivation",
       title: P.addition.title,

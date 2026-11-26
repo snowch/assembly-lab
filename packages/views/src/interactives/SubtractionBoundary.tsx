@@ -23,6 +23,11 @@ export function SubtractionBoundary({
   const equal = cases.find(({ small }) => small.fullSum === fixed.range)!.small;
   const values: Record<string, string> = {
     width: String(fixed.width),
+    minimum: String(fixed.minimum),
+    maximum: String(fixed.maximum),
+    range: String(fixed.range),
+    zeroPattern: fixed.patterns.minimum,
+    maxPattern: fixed.patterns.allOnes,
     realWidth: String(cases[0]!.wide.width),
     b: String(fixed.b),
     inverted: String(fixed.inverted),

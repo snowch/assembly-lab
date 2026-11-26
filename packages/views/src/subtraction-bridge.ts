@@ -45,6 +45,8 @@ export function subtractionBridge(record: Addition) {
     const bits = (value: bigint) => value.toString(2).padStart(width, "0");
     return {
       width,
+      minimum: 0n,
+      maximum: mask,
       a,
       b,
       inverted,
@@ -56,6 +58,7 @@ export function subtractionBridge(record: Addition) {
       carryOut,
       top: columnWork(record, width - 1),
       patterns: {
+        minimum: bits(0n),
         a: bits(a),
         b: bits(b),
         inverted: bits(inverted),

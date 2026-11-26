@@ -44,6 +44,25 @@ const corpus = (name: string) =>
     "utf8",
   );
 
+it("shows a one-step interval counterexample to the broken branch stopping after one body", () => {
+  const original = call(DIM_UP.listing, [128, 4, 5]);
+  const changed = call(DIM_UP_BEQ.listing, [128, 4, 5]);
+  expect([bodyVisits(original), value(original), original.steps.length]).toEqual([1, 64, 7]);
+  expect([bodyVisits(changed), value(changed), changed.steps.length]).toEqual([2, 32, 11]);
+  for (const fixture of ["dim-up", "dim-up-beq"]) {
+    const cases = JSON.parse(
+      readFileSync(`scripts/real-tools/corpus/module5-${fixture}.json`, "utf8"),
+    ).calls;
+    expect(cases).toContainEqual({
+      args: [
+        ["128", 32],
+        ["4", 32],
+        ["5", 32],
+      ],
+    });
+  }
+});
+
 describe("Module 5 compiler records and shown programs", () => {
   it.each([
     ["dim_up", DIM_UP],
