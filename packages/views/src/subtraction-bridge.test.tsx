@@ -70,29 +70,46 @@ describe("the visible subtraction bridge", () => {
         row.querySelector("[data-boundary-reading]")!.textContent,
       ]),
     ).toEqual([
-      ["6", "14", "0", "1110", "14"],
-      ["7", "15", "0", "1111", "15"],
-      ["8", "16", "1", "0000", "0"],
-      ["9", "17", "1", "0001", "1"],
+      ["6", "01110", "0", "1110", "14"],
+      ["7", "01111", "0", "1111", "15"],
+      ["8", "10000", "1", "0000", "0"],
+      ["9", "10001", "1", "0001", "1"],
     ]);
     expect(
       [...boundary.querySelectorAll("[data-boundary-a]")].map((row) =>
         row.getAttribute("aria-label"),
       ),
-    ).toEqual(["Below b", "Below b", "Equal to b", "Above b"]);
-    expect(boundary.querySelector("button,details")).toBeNull();
-    expect(boundary).toHaveTextContent("The adder calculates a + 7 + 1");
-    expect(boundary).toHaveTextContent("At 15, all four kept digits are 1");
-    expect(boundary.querySelector("[data-boundary-place]")).toHaveTextContent("16");
+    ).toEqual(["6 − 8", "7 − 8", "8 − 8", "9 − 8"]);
     expect(
-      [...boundary.querySelectorAll(".al-sub-boundary-weights span")].map(
-        (node) => node.textContent,
+      [...boundary.querySelectorAll("[data-boundary-a]")].map((row) =>
+        [...row.querySelectorAll("[data-boundary-operand] .al-sub-boundary-digits")].map(
+          (bits) => bits.textContent,
+        ),
       ),
-    ).toEqual(["8", "4", "2", "1"]);
-    const increase = boundary.querySelector("[data-boundary-increase]")!;
-    expect(increase).toHaveTextContent("+1 in adder sum");
-    expect(increase.previousElementSibling).toHaveAttribute("data-boundary-a", "7");
-    expect(increase.nextElementSibling).toHaveAttribute("data-boundary-a", "8");
+    ).toEqual([
+      ["0110", "0111", "0001"],
+      ["0111", "0111", "0001"],
+      ["1000", "0111", "0001"],
+      ["1001", "0111", "0001"],
+    ]);
+    for (const example of boundary.querySelectorAll("[data-boundary-a]")) {
+      const addends = [
+        ...example.querySelectorAll("[data-boundary-operand] .al-sub-boundary-digits"),
+      ].map((node) => parseInt(node.textContent!, 2));
+      expect(addends.reduce((a, b) => a + b, 0)).toBe(
+        parseInt(example.querySelector("[data-boundary-sum]")!.textContent!, 2),
+      );
+    }
+    expect(boundary.querySelector("button,details")).toBeNull();
+    const reason = boundary.querySelector(".al-sub-boundary-reason")!;
+    expect(reason).toHaveTextContent("0 + 0 + 1 = 1");
+    expect(reason).toHaveTextContent("1 + 0 + 1 = 10");
+    expect(reason).toHaveTextContent("columns on its right");
+    expect(reason).toHaveTextContent("initial carry at the lowest column");
+    expect(
+      boundary.querySelector('[data-boundary-a="9"]')!.compareDocumentPosition(reason) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(boundary.textContent).not.toMatch(/\{\w+\}/);
     const pattern = (row: string) =>
       bridge.querySelector(`[data-bridge-row="${row}"] code`)?.textContent;

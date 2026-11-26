@@ -10,21 +10,19 @@ The four rows are separate calculations, with the second input, its inverse and 
 
 ```json
 {
-  "title": "When does carry out become 1?",
-  "setup": "Only `a` changes in these independent four-bit views. With `b = {b}`, inverted `b` is `{inverted}` and carry in is `{carryIn}`. The adder calculates `a + {inverted} + {carryIn}`. All readings are unsigned.",
-  "calculation": "Subtract",
-  "fullSum": "Adder sum",
+  "title": "Each subtraction, worked in binary",
+  "setup": "Only `a` changes in these independent {width}-bit teaching views. With fixed `b = {b}`, inverted `b` is `{inverted}`. Each stack adds `a`, inverted `b` and `{carryIn}` for one subtraction. All readings are unsigned.",
+  "inputA": "a",
+  "invertedB": "Inverted b",
+  "addOne": "Add {carryIn}",
   "carryOut": "Carry out",
-  "carryPlace": "{range}’s place",
-  "keptBits": "Four bits kept",
+  "keptBits": "Kept bits",
   "unsigned": "Unsigned",
-  "less": "Below b",
-  "equal": "Equal to b",
-  "greater": "Above b",
-  "takeaway": "Equality already needs that extra place, even though the kept result is zero. The real 32-bit `subs` uses the same no-borrow boundary for C.",
-  "increase": "+{increase} in adder sum",
-  "placeValues": "Place values",
-  "visualCaption": "At {maximum}, all four kept digits are 1: no higher sum fits there. The next sum needs the outside place, worth {range}, giving carry out 1 and four kept zeros."
+  "reasonTitle": "Why carry out changes",
+  "topColumn": "Look at the highest kept column, worth {topPlace}. Add its input bits and the carry arriving from the columns on its right. The add-one row supplies the initial carry at the lowest column.",
+  "belowColumn": "For `{belowA} − {b}`, `{belowTopA} + {belowTopB} + {belowTopCarryIn} = {belowTopBinary}`. The total fits in the highest kept column, so carry out is `{belowTopCarryOut}`.",
+  "equalColumn": "For `{equalA} − {b}`, `{equalTopA} + {equalTopB} + {equalTopCarryIn} = {equalTopBinary}` in binary. Keep the right digit, `{equalTopKept}`; the left digit, `{equalTopCarryOut}`, is carry out.",
+  "takeaway": "At equality and above, no unsigned borrow is needed. The real {realWidth}-bit `subs` takes C from its own carry out. Plain `sub` preserves C."
 }
 ```
 
@@ -60,3 +58,7 @@ The reader requested a second below-boundary case and an explanation of why carr
 ## Follow-up visual reason
 
 The reader asked to see the reason in the diagram. A separate copy pass supplied a shared place-value label, a connector naming the increase in independent adder sums, and a causal caption about the four kept ones at the maximum. The same four computed rows now align each digit with its weight. The outside16-place remains separate from the kept8/4/2/1 places. This replaces the prose-only mechanism paragraph; it does not add a second worked example, another instruction or a control.
+
+## Full-working follow-up, 26 November 2026
+
+The reader reported calculating the examples by hand before the rule made sense, then approved four complete vertical workings. The current canonical block above replaces the earlier comparison-table copy; those earlier presentation notes are historical. A separate drafting pass supplied the working-first heading, independent teaching-view setup, three addend labels and post-working column explanation. Mathematical values come from the existing traces and their top-column records. Optional relation labels were omitted because the complete expressions and later rule provide the comparison. No result is a new executed instruction. The responsive implementation has one representation with two narrow-container columns or four wide-container columns, with unsigned decimals beneath the retained bits. The original8−3 and real-width contexts remain separate and unchanged.

@@ -34,6 +34,12 @@ describe("the subtraction width bridge", () => {
       [1, 0n],
       [1, 1n],
     ]);
+    expect(cases.map(({ small }) => small.top)).toEqual([
+      { bit: 3, a: 0, b: 0, carryIn: 1, total: 1, kept: 1, carryOut: 0 },
+      { bit: 3, a: 0, b: 0, carryIn: 1, total: 1, kept: 1, carryOut: 0 },
+      { bit: 3, a: 1, b: 0, carryIn: 1, total: 2, kept: 0, carryOut: 1 },
+      { bit: 3, a: 1, b: 0, carryIn: 1, total: 2, kept: 0, carryOut: 1 },
+    ]);
   });
 
   it("reads the proposed 8 minus 3 diagram from the machine record", () => {
@@ -66,6 +72,8 @@ describe("the subtraction width bridge", () => {
           expect(BigInt(view.carryOut) * view.range + view.result).toBe(view.fullSum);
           expect(view.carryOut).toBe(record.carryOut);
           expect(view.carryOut).toBe(a >= b ? 1 : 0);
+          expect(view.top.carryOut).toBe(view.carryOut);
+          expect(view.top.total).toBe(view.top.kept + 2 * view.top.carryOut);
           expect(view.b & view.inverted).toBe(0n);
           expect(view.patterns.result).toHaveLength(view.width);
         }

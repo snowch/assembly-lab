@@ -31,7 +31,12 @@ for (const theme of ["light", "dark"])
     ).toHaveCount(3);
     const boundary = page.locator("#ix-carry-means-no-borrow .al-sub-boundary");
     await expect(boundary).toBeVisible();
-    await expect(boundary.locator("[data-boundary-sum]")).toHaveText(["14", "15", "16", "17"]);
+    await expect(boundary.locator("[data-boundary-sum]")).toHaveText([
+      "01110",
+      "01111",
+      "10000",
+      "10001",
+    ]);
     await expect(boundary.locator("[data-boundary-carry]")).toHaveText(["0", "0", "1", "1"]);
     await expect(boundary.locator("[data-boundary-bits]")).toHaveText([
       "1110",
@@ -40,42 +45,60 @@ for (const theme of ["light", "dark"])
       "0001",
     ]);
     await expect(boundary.locator("[data-boundary-reading]")).toHaveText(["14", "15", "0", "1"]);
-    await expect(boundary.locator(".al-sub-boundary-weights > span")).toHaveText([
-      "8",
-      "4",
-      "2",
-      "1",
-    ]);
-    await expect(boundary.locator("[data-boundary-place]")).toHaveText("16");
-    await expect(boundary.locator("[data-boundary-increase]")).toContainText("+1 in adder sum");
-    const alignment = await boundary.evaluate((node) => {
-      const centers = [...node.querySelectorAll(".al-sub-boundary-weights > span")].map(
-        (weight) => {
-          const box = weight.getBoundingClientRect();
-          return box.x + box.width / 2;
-        },
+    await expect(
+      boundary.locator('[data-boundary-operand="a"] .al-sub-boundary-digits'),
+    ).toHaveText(["0110", "0111", "1000", "1001"]);
+    await expect(
+      boundary.locator('[data-boundary-operand="inverted"] .al-sub-boundary-digits'),
+    ).toHaveText(["0111", "0111", "0111", "0111"]);
+    await expect(
+      boundary.locator('[data-boundary-operand="one"] .al-sub-boundary-digits'),
+    ).toHaveText(["0001", "0001", "0001", "0001"]);
+    for (const width of [320, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      expect(
+        await boundary
+          .locator(".al-sub-boundary-grid")
+          .evaluate((node) => getComputedStyle(node).gridTemplateColumns.split(" ").length),
+      ).toBe(width === 320 ? 2 : 4);
+      const alignment = await boundary.evaluate((node) =>
+        [...node.querySelectorAll("[data-boundary-a]")].flatMap((example) => {
+          const result = [
+            ...example.querySelectorAll("[data-boundary-bits] .al-sub-boundary-digits > span"),
+          ].map((digit) => {
+            const box = digit.getBoundingClientRect();
+            return box.x + box.width / 2;
+          });
+          const outgoing = example.querySelector("[data-boundary-carry]")!.getBoundingClientRect();
+          const reading = example.querySelector("[data-boundary-reading]")!.getBoundingClientRect();
+          const bits = example.querySelector("[data-boundary-bits]")!.getBoundingClientRect();
+          const offsets = [reading.x + reading.width / 2 - bits.x - bits.width / 2];
+          for (const digit of example.querySelectorAll(
+            "[data-boundary-bits] .al-sub-boundary-digits > span",
+          )) {
+            const box = digit.getBoundingClientRect();
+            offsets.push(box.y + box.height / 2 - outgoing.y - outgoing.height / 2);
+          }
+          for (const operand of example.querySelectorAll("[data-boundary-operand]"))
+            [...operand.querySelectorAll(".al-sub-boundary-digits > span")].forEach(
+              (digit, index) => {
+                const box = digit.getBoundingClientRect();
+                offsets.push(box.x + box.width / 2 - result[index]!);
+              },
+            );
+          return offsets;
+        }),
       );
-      return [...node.querySelectorAll("[data-boundary-bits]")].flatMap((bits) => {
-        const carry = bits
-          .closest("[data-boundary-a]")!
-          .querySelector("[data-boundary-carry]")!
-          .getBoundingClientRect();
-        return [...bits.children].map((digit, index) => {
-          const box = digit.getBoundingClientRect();
-          return [
-            box.x + box.width / 2 - centers[index]!,
-            box.y + box.height / 2 - carry.y - carry.height / 2,
-          ];
-        });
-      });
-    });
-    for (const offsets of alignment)
-      for (const offset of offsets) expect(Math.abs(offset)).toBeLessThanOrEqual(1);
-    for (const cell of await boundary
-      .locator(".al-sub-boundary-head > *, .al-sub-boundary-row > *")
-      .all()) {
-      expect(await cell.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+      for (const offset of alignment) expect(Math.abs(offset)).toBeLessThanOrEqual(1);
+      for (const label of await boundary
+        .locator(".al-sub-boundary-label, .al-sub-boundary-number")
+        .all())
+        expect(await label.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
     }
+    await page.setViewportSize({ width: 320, height: 900 });
     const firstPane = (await bridge.boundingBox())!;
     const secondPane = (await page.locator("#ix-carry-means-no-borrow .al-adder").boundingBox())!;
     expect(secondPane.y).toBeGreaterThan(firstPane.y + firstPane.height);

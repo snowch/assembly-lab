@@ -54,6 +54,7 @@ export function subtractionBridge(record: Addition) {
       result,
       carryIn: record.carryIn,
       carryOut,
+      top: columnWork(record, width - 1),
       patterns: {
         a: bits(a),
         b: bits(b),
