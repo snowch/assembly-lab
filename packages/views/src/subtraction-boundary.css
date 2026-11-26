@@ -1,10 +1,12 @@
 /* Copyright © 2026 Christopher Snow */
 
 .al-sub-boundary.al-figure {
+  container-type: inline-size;
   gap: var(--space-3);
   min-width: 0;
 }
 .al-sub-boundary h3,
+.al-sub-boundary h4,
 .al-sub-boundary p {
   margin: 0;
 }
@@ -13,98 +15,118 @@
 }
 .al-sub-boundary-grid {
   display: grid;
-  gap: var(--space-2);
-  width: 100%;
-  max-width: 24rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-3);
   min-width: 0;
 }
-.al-sub-boundary-head,
-.al-sub-boundary-places,
-.al-sub-boundary-row {
+@container (min-width: 40rem) {
+  .al-sub-boundary-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.al-sub-boundary-case {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 3rem 2.5rem minmax(4.5rem, 1fr);
-  gap: 0.35rem;
+  gap: var(--space-2);
+  align-content: start;
+  min-width: 0;
+  width: 100%;
+  max-width: 9rem;
+  justify-self: center;
+}
+.al-sub-boundary-case h4 {
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  text-align: center;
+}
+.al-sub-boundary-working {
+  display: grid;
+  gap: var(--space-1);
+}
+.al-sub-boundary-work-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  gap: var(--space-1);
+  align-items: center;
   min-width: 0;
 }
-.al-sub-boundary-head {
-  color: var(--fg-muted);
+.al-sub-boundary-label {
+  font-family: var(--font-text);
   font-size: var(--text-xs);
-  text-align: center;
-  align-items: end;
-}
-.al-sub-boundary-places {
-  align-items: center;
-  font-size: var(--text-xs);
+  line-height: 1.35;
   color: var(--fg-muted);
-  text-align: center;
+  min-width: 0;
 }
-.al-sub-boundary-place-label {
-  grid-column: span 2;
+[data-boundary-operand] > .al-sub-boundary-label {
   text-align: right;
 }
-.al-sub-boundary-weights,
-.al-sub-boundary-kept code {
+.al-sub-boundary-case .al-sub-boundary-number,
+.al-sub-boundary-result-value {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  padding: 0.25rem;
-}
-.al-sub-boundary-weights {
-  border: 2px solid transparent;
+  grid-template-columns: 1.5ch 4ch;
+  column-gap: 0.25ch;
   font-family: var(--font-mono);
+  font-size: var(--text-md);
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+  width: max-content;
+  min-width: 0;
 }
-.al-sub-boundary-increase {
-  font-size: var(--text-sm);
-  color: var(--fg-muted);
-  text-align: center;
+.al-sub-boundary-case .al-sub-boundary-number {
+  padding: 0;
+  min-height: 2rem;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+}
+.al-sub-boundary-prefix,
+.al-sub-boundary-digits > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+}
+.al-sub-boundary-digits {
+  display: grid;
+  grid-template-columns: repeat(4, 1ch);
+  align-self: stretch;
+}
+.al-sub-boundary-answer {
+  display: grid;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+}
+.al-sub-boundary-result-value > code {
+  grid-column: 1 / -1;
+}
+.al-sub-boundary-carry {
+  outline: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
 }
 .al-sub-boundary-carry[data-on="true"] {
   color: var(--accent);
   background: var(--accent-soft);
   font-weight: 700;
 }
-.al-sub-boundary-row {
-  border-top: 1px solid var(--border);
-  padding-top: var(--space-2);
-  align-items: start;
-}
-.al-sub-boundary-input,
 .al-sub-boundary-kept {
   display: grid;
-  gap: var(--space-1);
-  text-align: center;
-  min-width: 0;
+  outline: 1px solid var(--accent);
+  border-radius: var(--radius);
 }
-.al-sub-boundary-row code,
-.al-sub-boundary-sum {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-md);
-  line-height: 1.25;
-  box-sizing: border-box;
-}
-.al-sub-boundary-row small {
+.al-sub-boundary-reading {
+  grid-column: 2;
+  margin-top: var(--space-1);
+  font-family: var(--font-text);
   font-size: var(--text-sm);
   line-height: 1.35;
-  font-variant-numeric: tabular-nums;
-}
-.al-sub-boundary-carry {
-  border: 1px dashed var(--border-strong);
-  border-radius: var(--radius);
-  background: var(--bg-sunken);
-}
-.al-sub-boundary-kept code {
-  display: grid;
-  border: 2px solid var(--accent);
-  border-radius: var(--radius);
-  background: var(--bg-raised);
-}
-.al-sub-boundary-kept code span {
   text-align: center;
+  color: var(--fg-muted);
 }
-.al-sub-boundary-kept code span[data-on="true"] {
-  background: var(--accent-soft);
-  font-weight: 700;
+.al-sub-boundary-reason {
+  display: grid;
+  gap: var(--space-2);
+}
+.al-sub-boundary-reason h4 {
+  font-size: var(--text-md);
 }
