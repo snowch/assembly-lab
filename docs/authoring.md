@@ -51,6 +51,34 @@ the explanation: a paragraph can use short, ordinary words and still omit a nece
 Editing is allowed to improve clarity as well as accuracy. Recheck technical claims after an
 edit changes their meaning or qualifications.
 
+## Experiments at meaningful limits
+
+When a lesson introduces a meaningful limit, include one short **predict → run → explain**
+experiment unless the existing activity already serves that purpose. Choose cases just inside,
+at and just beyond the relevant boundary when that comparison helps explain the mechanism.
+Do not add the same checklist to every page.
+
+Name which limit applies: the tool’s accepted input, an instruction’s encoding, the retained
+result width, a C precondition, a supplied memory contract or an execution budget. Rejected
+input has no computed result. A valid input may produce a truncated result. A run stopped by
+a budget is incomplete evidence, not proof that the program never terminates.
+
+Use the actual controls. A live figure may recompute on editing; a stepper executes with Next;
+an editable exercise runs supplied tests; the C playground has its own execution control.
+Name the editable field or prepared call, the action and the output to inspect. Do not ask
+learners to edit read-only setup or imply that revealing arithmetic columns executes another
+instruction. Label miniature widths and recorded native output separately from browser execution.
+
+Ask learners to explain the observed difference. A short informal prediction can be enough;
+extra forms and gates need their own teaching purpose. Retain fresh assessment cases and saved
+learner work. An edited experiment is not an error merely because it differs from the original
+example. Execution diagnostics, original-example checks and understanding checks have different jobs.
+
+Check both the original example and the suggested edits. Pin authored values in model and native
+checks where applicable, and verify the actual interaction at phone and desktop widths in both
+themes. Functional verification and independent reviews do not establish learning effectiveness;
+that needs observation of learners using a fresh example without coaching.
+
 ## Independent reviews
 
 Use reviewers who did not write or edit the material. Give each reviewer the actual lesson,

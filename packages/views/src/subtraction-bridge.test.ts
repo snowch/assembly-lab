@@ -45,21 +45,26 @@ describe("the subtraction width bridge", () => {
   it("reads the proposed 8 minus 3 diagram from the machine record", () => {
     const { small, wide } = subtractionBridge(recordOf(8, 3));
     expect(small).toMatchObject({
+      minimum: 0n,
+      maximum: 15n,
       inverted: 12n,
       allOnes: 15n,
       range: 16n,
       fullSum: 21n,
       result: 5n,
       carryOut: 1,
-      patterns: { b: "0011", inverted: "1100", allOnes: "1111", result: "0101" },
+      patterns: { minimum: "0000", b: "0011", inverted: "1100", allOnes: "1111", result: "0101" },
     });
     expect(wide).toMatchObject({
+      minimum: 0n,
+      maximum: 4294967295n,
       inverted: 4294967292n,
       allOnes: 4294967295n,
       range: 4294967296n,
       fullSum: 4294967301n,
       result: 5n,
       carryOut: 1,
+      patterns: { minimum: "00000000000000000000000000000000" },
     });
   });
 

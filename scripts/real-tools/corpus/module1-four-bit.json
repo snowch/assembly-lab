@@ -126,6 +126,62 @@
         ["0", 32],
         ["13", 32]
       ]
+    },
+    {
+      "entry": "keep_four",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "keep_four",
+      "args": [["14", 32]]
+    },
+    {
+      "entry": "keep_four",
+      "args": [["15", 32]]
+    },
+    {
+      "entry": "keep_four",
+      "args": [["16", 32]]
+    },
+    {
+      "entry": "keep_four",
+      "args": [["19", 32]]
+    },
+    {
+      "entry": "keep_four",
+      "args": [["100", 32]]
+    },
+    {
+      "entry": "keep_four",
+      "args": [["255", 32]]
+    },
+    {
+      "entry": "keep_eight",
+      "args": [["0", 32]]
+    },
+    {
+      "entry": "keep_eight",
+      "args": [["14", 32]]
+    },
+    {
+      "entry": "keep_eight",
+      "args": [["15", 32]]
+    },
+    {
+      "entry": "keep_eight",
+      "args": [["16", 32]]
+    },
+    {
+      "entry": "keep_eight",
+      "args": [["19", 32]]
+    },
+    {
+      "entry": "keep_eight",
+      "args": [["100", 32]]
+    },
+    {
+      "entry": "keep_eight",
+      "args": [["255", 32]]
     }
   ]
 }

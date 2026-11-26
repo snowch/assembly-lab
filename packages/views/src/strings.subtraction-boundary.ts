@@ -4,7 +4,7 @@
 export const SUBTRACTION_BOUNDARY_STRINGS = {
   title: "Each subtraction, worked in binary",
   setup:
-    "Only `a` changes in these independent {width}-bit teaching views. With fixed `b = {b}`, inverted `b` is `{inverted}`. Each stack adds `a`, inverted `b` and `{carryIn}` for one subtraction. All readings are unsigned.",
+    "{width} bits have {range} patterns, from `{zeroPattern}` to `{maxPattern}`. Read as unsigned, **both `a` and `b` can represent {minimum}–{maximum}**. Larger inputs need more bits. The teaching result keeps only the low {width} bits; an out-of-range result wraps into that range.\n\nThese fixed, independent examples keep `b = {b}` and change only `a`. Inverted `b` is `{inverted}`; each stack adds `a`, inverted `b` and `{carryIn}` for one subtraction. This {width}-bit limit belongs to the teaching view. The real Arm instruction here uses {realWidth} bits.",
   inputA: "a",
   invertedB: "Inverted b",
   addOne: "Add {carryIn}",

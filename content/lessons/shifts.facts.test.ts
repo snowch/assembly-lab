@@ -11,6 +11,7 @@ import { describe, expect, it } from "vitest";
 
 import { assemble, run, stateAfter, type Program } from "@al/machine";
 import { assemblyOf, parseListing, traceOf, viewAt, wValue, wValueAsInt } from "@al/views";
+import { parseWord } from "../../packages/views/src/bits";
 import { learnerText } from "@platform/lesson-schema";
 
 import { LESSONS } from ".";
@@ -91,6 +92,18 @@ describe("what a shift does", () => {
     expect(w0(shift("lsl", 1), "f", 21)).toBe(42);
     for (const n of WORDS) expect(w0(gcc, "halve_count", n)).toBe(Math.floor(n / 2));
     expect(w0(gcc, "halve_count", 7)).toBe(3);
+  });
+
+  it("distinguishes valid shifted inputs from the rejected 33-bit input", () => {
+    for (const [input, expected] of [
+      [0x7fffffff, 0xfffffffe],
+      [0x80000000, 0],
+      [0x80000001, 2],
+    ]) {
+      expect(parseWord(`0x${input!.toString(16)}`)).toBe(input);
+      expect(w0(shift("lsl", 1), "f", input!)).toBe(expected);
+    }
+    expect(parseWord("0x100000000")).toBeNull();
   });
 
   it("loses the bits that move past the end, and lsl fills the bottom with zeros", () => {
@@ -253,7 +266,16 @@ describe("every number the lesson states", () => {
     [2147483644, "lsr of -7 by 1, unsigned reading"],
   ]);
   // 0xf is the constant of movk w0, 0xf, lsl 16 (held by the model, above).
-  const hexes = new Set(["0xfffffff9", "0xfffffffc", "0x7ffffffc", "0xf"]);
+  const hexes = new Set([
+    "0xfffffff9",
+    "0xfffffffc",
+    "0x7ffffffc",
+    "0xf",
+    "0x7fffffff",
+    "0x80000000",
+    "0x80000001",
+    "0x100000000",
+  ]);
 
   const stated = statedNumbers([
     // Reference issue dates identify documents, rather than arithmetic values.
@@ -291,6 +313,10 @@ describe("every number the lesson states", () => {
     for (const [n, got] of model) expect(got, String(n)).toBe(n);
     expect(hexes).toEqual(
       new Set([
+        "0x7fffffff",
+        "0x80000000",
+        "0x80000001",
+        `0x${(2 ** 32).toString(16)}`, // rejected parser boundary, checked above
         hex(-7),
         hex(w0(gcc, "halve_gradient", -7)),
         hex(w0(gcc, "halve_count", -7)),

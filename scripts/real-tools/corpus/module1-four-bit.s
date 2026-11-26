@@ -7,3 +7,9 @@ calculate_add:
 calculate_sub:
   sub w0, w0, w1
   ret
+keep_four:
+  and w0, w0, #15
+  ret
+keep_eight:
+  and w0, w0, #255
+  ret

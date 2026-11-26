@@ -95,6 +95,7 @@ export const shifts: LessonInput = {
       prose: PROSE.investigation,
       interactives: [
         {
+          after: PROSE.boundaryExperiment,
           id: "shift-word",
           kind: "shift",
           timeModel: STEPS,

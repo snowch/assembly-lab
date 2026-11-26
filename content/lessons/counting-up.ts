@@ -168,7 +168,10 @@ export const countingUp: LessonInput = {
             program: DIM_UP_BEQ,
             bodyLabel: ".L3",
             after: "predict-dim-up-beq",
-            runs: [{ label: LABELS.runs[0], call: CALL }],
+            runs: [
+              { label: LABELS.runs[0], call: CALL },
+              { label: LABELS.failureBoundaryRun, call: { entry: "dim_up", args: [128, 4, 5] } },
+            ],
           },
         },
       ],

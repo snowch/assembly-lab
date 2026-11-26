@@ -28,9 +28,10 @@ export const LABELS = {
     write: "Write and test your counting loop.",
     predictFailure: "Predict the result after changing the backward bne to beq.",
     failureRuns:
-      "See how many dimming operations the changed loop runs and the brightness after each one.",
+      "Compare the body counts. Choose a call to inspect w0 after each dimming operation, then explain the backward beq.",
     final: "Give a result and an instruction count for each call.",
   },
+  failureBoundaryRun: "dim_up(128, 4, 5)",
   runs: ["dim_up(128, 2, 5)", "dim_up(128, 5, 5)", "dim_up(128, 5, 2)"],
   options: {
     prediction: [

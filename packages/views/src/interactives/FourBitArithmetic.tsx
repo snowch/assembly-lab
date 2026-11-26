@@ -7,8 +7,9 @@ import { shown } from "../readings";
 import { FOUR_BIT_STRINGS as S } from "../strings.four-bit-arithmetic";
 import { useHandoffState } from "../update-handoff";
 import { withProps } from "./props";
+import { RetainedBitsFigure } from "./RetainedBitsFigure";
 
-const Props = z.object({ mode: z.enum(["addition", "width", "subtraction"]) });
+const Props = z.object({ mode: z.enum(["addition", "width", "subtraction", "storage"]) });
 type Sum = ReturnType<typeof fourBitAddition>;
 
 function CarryWalkthrough({
@@ -244,23 +245,23 @@ function CarryWalkthrough({
   );
 }
 
-export const FourBitArithmetic = withProps(Props, function FourBitArithmetic({ data }) {
-  const [revealed, setRevealed] = useHandoffState(`FourBitArithmetic.${data.mode}.columns`, 0);
+function ArithmeticView({ mode }: { mode: "addition" | "width" | "subtraction" }) {
+  const [revealed, setRevealed] = useHandoffState(`FourBitArithmetic.${mode}.columns`, 0);
   const worked = useMemo(() => {
-    const { a, b } = FOUR_BIT_EXAMPLES[data.mode];
-    return data.mode === "subtraction" ? fourBitSubtraction(a, b) : fourBitAddition(a, b);
-  }, [data.mode]);
+    const { a, b } = FOUR_BIT_EXAMPLES[mode];
+    return mode === "subtraction" ? fourBitSubtraction(a, b) : fourBitAddition(a, b);
+  }, [mode]);
   const subtraction = "negation" in worked ? worked : null;
   const sum = subtraction ? subtraction.addition : (worked as Sum);
   const done = Number.isInteger(revealed) ? Math.max(0, Math.min(sum.columns.length, revealed)) : 0;
   return (
     <div
       className="al-figure al-four-arithmetic"
-      data-mode={data.mode}
-      data-done={data.mode === "addition" ? done : sum.columns.length}
+      data-mode={mode}
+      data-done={mode === "addition" ? done : sum.columns.length}
     >
-      {data.mode === "addition" && <CarryWalkthrough sum={sum} done={done} reveal={setRevealed} />}
-      {data.mode === "width" && (
+      {mode === "addition" && <CarryWalkthrough sum={sum} done={done} reveal={setRevealed} />}
+      {mode === "width" && (
         <>
           <div className="al-four-width-sum" role="group" aria-label={S.widthSum}>
             <code>
@@ -340,4 +341,15 @@ export const FourBitArithmetic = withProps(Props, function FourBitArithmetic({ d
       )}
     </div>
   );
-});
+}
+
+export const FourBitArithmetic = withProps(
+  Props,
+  function FourBitArithmetic({ data, store, interactive }) {
+    return data.mode === "storage" ? (
+      <RetainedBitsFigure store={store} interactive={interactive} />
+    ) : (
+      <ArithmeticView mode={data.mode} />
+    );
+  },
+);

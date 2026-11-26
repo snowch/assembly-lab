@@ -4,10 +4,19 @@
 export const FOUR_BIT_PROSE = {
   title: "Arithmetic with four bits",
   objectives: [
+    "Predict and explain what remains when only the low bits are kept.",
     "Add bit patterns one column at a time.",
     "Subtract by inverting the second input, adding one, then adding that opposite to the first input.",
     "Keep the available bits when an extra carry appears.",
   ],
+  storage: {
+    title: "Keep only the low bits",
+    before:
+      "Keeping low bits discards any higher bits. Read the remaining pattern as unsigned. What will remain at the selected width? You can enter an optional prediction. Choose **Keep low bits** with the controls unchanged, then inspect **Value removed** and **Kept value**.",
+    caption: "One decimal input with its original bit weights and a chosen width to keep.",
+    after:
+      "Set **Kept width** to {smallWidth} bits. Try decimal {inside}, {boundaryMaximum} and {outside} in **Full decimal value**. Predict before each **Keep low bits** run. Which input first exceeds the kept range, and what remains?\n\nThen enter decimal {defaultInput}, keep {largeWidth} bits, predict and run again. How does the wider choice change **Value removed** and **Kept value**?",
+  },
   addition: {
     title: "Adding columns",
     before:

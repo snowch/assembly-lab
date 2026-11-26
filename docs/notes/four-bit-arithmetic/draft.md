@@ -191,3 +191,18 @@ export const FOUR_BIT_STRINGS = {
 ## Drafting check
 
 Read both closing style passes. Column carrying, its initial zero and control guidance precede the first figure; inversion and the extra one precede subtraction. The worked example and width example are distinct from the fresh exercise. Full fresh-exercise patterns appear only in the fifth hint and post-grade explanation. Numbers and examples come from the checked brief. Independent learner and technical review remain with the managing agent.
+
+
+## Retaining bits: separately drafted addition, November 2026
+
+Predict and explain what remains when only the low bits are kept.
+
+Keep only the low bits
+
+Keeping low bits discards any higher bits. Read the remaining pattern as unsigned. What will remain at the selected width? You can enter an optional prediction. Choose **Keep low bits** with the controls unchanged, then inspect **Value removed** and **Kept value**.
+
+One decimal input with its original bit weights and a chosen width to keep.
+
+Set **Kept width** to {smallWidth} bits. Try decimal {inside}, {boundaryMaximum} and {outside} in **Full decimal value**. Predict before each **Keep low bits** run. Which input first exceeds the kept range, and what remains?
+
+Then enter decimal {defaultInput}, keep {largeWidth} bits, predict and run again. How does the wider choice change **Value removed** and **Kept value**?
