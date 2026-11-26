@@ -1,12 +1,14 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 
 for (const theme of ["light", "dark"] as const) {
   test(`reference lookup, exercise scope and diagnostic recovery in ${theme}`, async ({ page }) => {
     await page.goto("#/lesson/subtracting-and-the-tick-counter");
-    const themeControl = page.getByRole("combobox", { name: "Theme", exact: true });
-    await themeControl.selectOption(theme);
+    const themeControl = page.locator(".theme-settings select");
+    await setTheme(page, theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     const box = page.locator('.asm-editor[data-mode="text"] textarea').first();
     await box.fill("add w0, w0, 4294966296");
@@ -72,9 +74,7 @@ test("compact header, keyboard theme choice and calculator/reference coordinatio
   for (const width of [320, 375, 414, 430, 768, 834, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     await page.evaluate(() => document.fonts.ready);
-    // Visible brand/tool names and a native theme choice use deliberate wrapped rows.
-    // Independent measurements:233.55px at320;181.55px at375–430;
-    //140.5px at768/834 and92.5px at1280, in both themes.
+    // Keep the original compactness bounds while retaining named subject tools.
     const headerLimit = width === 320 ? 236 : width <= 430 ? 184 : width < 1000 ? 144 : 96;
     expect((await page.locator(".shell-header").boundingBox())!.height).toBeLessThanOrEqual(
       headerLimit,
@@ -85,11 +85,11 @@ test("compact header, keyboard theme choice and calculator/reference coordinatio
       await expect(tool.locator(":scope > span")).toBeVisible();
       await expect(tool.locator(":scope > span")).toHaveText(name);
     }
-    await expect(page.locator(".theme-picker > span")).toBeVisible();
-    const themeControl = page.getByRole("combobox", { name: "Theme", exact: true });
+    const themeControl = page.locator("#theme-toggle");
+    await expect(themeControl).toHaveAccessibleName(/Switch to (light|dark) theme/);
     const themeBox = (await themeControl.boundingBox())!;
-    expect(themeBox.width).toBeGreaterThanOrEqual(44);
-    expect(themeBox.height).toBe(44);
+    expect(themeBox.width).toBeGreaterThanOrEqual(48);
+    expect(themeBox.height).toBe(48);
     expect(await themeControl.evaluate((element) => getComputedStyle(element).opacity)).toBe("1");
     for (const control of [
       page.getByRole("button", { name: "Calculator", exact: true }),
@@ -105,12 +105,11 @@ test("compact header, keyboard theme choice and calculator/reference coordinatio
       false,
     );
   }
-  const themeControl = page.getByRole("combobox", { name: "Theme", exact: true });
+  await setTheme(page, "dark");
+  const themeControl = page.locator("#theme-toggle");
   await themeControl.focus();
-  await page.keyboard.press("Home");
-  await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Enter");
-  await expect(themeControl).toHaveValue("light");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.getByRole("button", { name: "Calculator", exact: true }).click();
   const calculator = page.getByRole("dialog", { name: "Programmer calculator" });
   await calculator.getByRole("textbox", { name: "Value A", exact: true }).fill("42");
@@ -138,8 +137,8 @@ for (const theme of ["light", "dark"] as const) {
   test(`desktop tools leave the wrapped header usable in ${theme}`, async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1000 });
     await page.goto("#/lesson/one-addition");
-    const themeControl = page.getByRole("combobox", { name: "Theme", exact: true });
-    await themeControl.selectOption(theme);
+    const themeControl = page.locator("#theme-toggle");
+    await setTheme(page, theme);
     await page.evaluate(() => document.fonts.ready);
     const operation = page.locator("#ix-worked-addition [data-figure='primitive-operation']");
     await operation.getByRole("button", { name: "Run the instruction", exact: true }).click();
@@ -162,13 +161,14 @@ for (const theme of ["light", "dark"] as const) {
       await page.getByRole("button", { name: "Calculator", exact: true }).click();
       await belowHeader(calculator);
       await calculator.getByRole("textbox", { name: "Value A", exact: true }).fill("42");
-      // selectOption alone bypasses hit testing; a real pointer click must reach this control.
+      // A real pointer must reach the direct action while the tool is open.
       await themeControl.click();
-      await page.keyboard.press("Home");
-      await page.keyboard.press("ArrowDown");
-      await page.keyboard.press("Enter");
-      await expect(themeControl).toHaveValue("light");
-      await themeControl.selectOption(theme);
+      await expect(page.locator("html")).toHaveAttribute(
+        "data-theme",
+        theme === "dark" ? "light" : "dark",
+      );
+      await themeControl.click();
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       await expect(calculator.getByRole("textbox", { name: "Value A", exact: true })).toHaveValue(
         "42",
       );

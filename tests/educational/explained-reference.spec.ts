@@ -1,11 +1,13 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 
 for (const theme of ["light", "dark"] as const) {
   test(`explained forms, boundaries and prepared contexts in ${theme}`, async ({ page }) => {
     await page.goto("#/lesson/subtracting-and-the-tick-counter");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     const source = page.locator(".asm-editor textarea").first();
     await source.fill("add w0, w0, 4294966296");
     const syntax = page.getByRole("button", { name: "Syntax for add", exact: true });

@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 // The built site, driven in a browser at desktop and phone widths, under the course's base path:
 // the front page lists the plan, nothing logs an error, the theme control works and its choice
 // persists, text is legible, controls are reachable on a phone, nothing scrolls sideways, the
@@ -259,7 +261,7 @@ test("the theme control cycles through its choices, and the choice survives a re
   const errors = watchErrors(page);
   await page.goto("#/");
   await ready(page);
-  const picker = page.getByLabel(STRINGS.theme);
+  const picker = page.locator(".theme-settings select");
   const html = page.locator("html");
   await expect(picker).toHaveValue("auto");
   await expect(html).not.toHaveAttribute("data-theme", /.*/);
@@ -270,7 +272,7 @@ test("the theme control cycles through its choices, and the choice survives a re
     ["auto", STRINGS.themeAuto],
   ] as const;
   for (const [value, label] of choices) {
-    await picker.selectOption({ label });
+    await setTheme(page, { label });
     await expect(picker).toHaveValue(value);
     if (value === "auto") await expect(html).not.toHaveAttribute("data-theme", /.*/);
     else await expect(html).toHaveAttribute("data-theme", value);
@@ -284,11 +286,11 @@ test("the theme control cycles through its choices, and the choice survives a re
   }
 
   // The page's colours change with the theme: its ground in each is the token's.
-  await picker.selectOption({ label: STRINGS.themeDark });
+  await setTheme(page, { label: STRINGS.themeDark });
   const ground = (theme: string) =>
     page.evaluate(() => getComputedStyle(document.body).backgroundColor).then((c) => [theme, c]);
   const dark = await ground("dark");
-  await picker.selectOption({ label: STRINGS.themeLight });
+  await setTheme(page, { label: STRINGS.themeLight });
   const light = await ground("light");
   expect(dark[1]).not.toBe(light[1]);
   expect(errors).toEqual([]);
@@ -305,7 +307,7 @@ test("the cover stays contained and companion links remain full targets with alt
       content: `:root { --font-text: "${family}"; --font-display: "${family}"; }`,
     });
     for (const theme of ["light", "dark"]) {
-      await page.getByLabel(STRINGS.theme).selectOption(theme);
+      await setTheme(page, theme);
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       for (const size of ["100%", "150%"]) {
         await page.evaluate((size) => (document.documentElement.style.fontSize = size), size);
@@ -327,7 +329,7 @@ test("the cover stays contained and companion links remain full targets with alt
 test("every learner state key the course writes starts assembly-lab:v1:", async ({ page }) => {
   await page.goto("#/");
   await ready(page);
-  await page.getByLabel(STRINGS.theme).selectOption({ label: STRINGS.themeDark });
+  await setTheme(page, { label: STRINGS.themeDark });
   await page.locator(".cover-start").click();
   await page.getByRole("button", { name: STRINGS.completion.mark, exact: true }).click();
   const keys = await page.evaluate(() => Object.keys(localStorage));

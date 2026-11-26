@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { STATUS_STRINGS as S } from "../../apps/course/src/strings.status";
 import { deployment } from "./offline-site";
@@ -29,12 +31,13 @@ for (const [width, height] of [
       try {
         await page.setViewportSize({ width: width!, height: height! });
         await page.goto(site.url);
-        await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+        await setTheme(page, theme);
         await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
         const status = await checkForUpdates(page),
           trigger = page.locator("#app-status-open"),
           version = trigger.locator("[data-version-status]");
         await expect(version).toHaveText(S.versionStates.current);
+        await expect(trigger).not.toHaveAttribute("data-header-badge", "ready");
         await expect(
           status.getByRole("heading", { name: S.courseHeading, exact: true }),
         ).toHaveCount(1);
@@ -50,6 +53,7 @@ for (const [width, height] of [
         await expect(trigger).toBeFocused();
         await downloadOffline(page);
         await openStatus(page);
+        await expect(trigger).toHaveAttribute("data-header-badge", "ready");
         await expect(
           status.getByRole("button", { name: S.actions.download, exact: true }),
         ).toHaveCount(0);
@@ -57,8 +61,10 @@ for (const [width, height] of [
         site.publish("visible-update");
         await checkForUpdates(page);
         await expect(version).toHaveText(S.versionStates.available);
+        await expect(trigger).toHaveAttribute("data-header-badge", "update");
         await prepareUpdate(page);
         await expect(version).toHaveText(S.versionStates.ready);
+        await expect(trigger).toHaveAttribute("data-header-badge", "update");
         await expect(
           status.getByRole("button", { name: S.actions.restart, exact: true }),
         ).toBeVisible();

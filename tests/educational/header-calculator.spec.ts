@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { inspectCalculator } from "./calculator-helpers";
 import { GITHUB_REPOSITORY } from "../../apps/course/src/strings";
@@ -9,7 +11,7 @@ for (const theme of ["light", "dark"] as const) {
     page,
   }) => {
     await page.goto("#/lesson/adding-and-the-flags");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     const trigger = page.getByRole("button", { name: "Calculator", exact: true });
     await trigger.click();
     const panel = page.getByRole("dialog", { name: "Programmer calculator" });
@@ -104,7 +106,7 @@ for (const theme of ["light", "dark"] as const) {
     for (const width of [320, 375, 834, 1280]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("#/");
-      await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+      await setTheme(page, theme);
       const source = page.locator("footer").getByRole("link", { name: "Source", exact: true });
       await expect(source).toHaveAttribute("href", GITHUB_REPOSITORY);
       const sourceBox = (await source.boundingBox())!;

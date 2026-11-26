@@ -10,6 +10,7 @@ import calculate from "./icons/material/calculate.svg?raw";
 import darkMode from "./icons/material/dark_mode.svg?raw";
 import lightMode from "./icons/material/light_mode.svg?raw";
 import contrast from "./icons/material/contrast.svg?raw";
+import cloudDownload from "./icons/material/cloud_download.svg?raw";
 
 const symbols = {
   menu_book: menuBook,
@@ -22,6 +23,7 @@ const symbols = {
   dark_mode: darkMode,
   light_mode: lightMode,
   contrast,
+  cloud_download: cloudDownload,
 } as const;
 
 /** Only checked, bundled official SVGs enter this component; never learner HTML. */

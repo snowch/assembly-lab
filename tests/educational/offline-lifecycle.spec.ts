@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 // Real production assets, release manifests and service workers run behind a private
 // origin. Release variants are rebuilt through the production manifest generator;
 // no fake worker, download progress or activation timer stands in for the browser.
@@ -7,8 +9,8 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import { deployment } from "./offline-site";
-import { STRINGS } from "../../apps/course/src/strings";
 import { LESSONS } from "@al/content";
+import { STATUS_STRINGS as S } from "../../apps/course/src/strings.status";
 import { COMPILER_STRINGS as C } from "../../packages/views/src/strings.compiler";
 import { VIEW_STRINGS as V } from "../../packages/views/src/strings";
 import {
@@ -205,7 +207,7 @@ test("detect, download, defer and explicit restart reload every app tab while pr
     const first = await context.newPage();
     await controlled(first, `${site.url}#/lesson/cap-charge-in-c`);
     await downloadOffline(first);
-    await first.getByLabel(STRINGS.theme).selectOption("dark");
+    await setTheme(first, "dark");
     const code = "unsigned cap_charge(unsigned a, unsigned b) { return a + b; }";
     const editor = first.locator("#challenge-write-cap-charge").getByRole("textbox");
     await editor.fill(code);
@@ -215,7 +217,7 @@ test("detect, download, defer and explicit restart reload every app tab while pr
     const answer = second.locator("#challenge-trace-the-call").getByRole("textbox").first();
     await answer.fill("123");
     await second.getByRole("button", { name: "Mark lesson complete", exact: true }).click();
-    await second.getByLabel(STRINGS.theme).selectOption("light");
+    await setTheme(second, "light");
     // Another tab can undo a mark without making the first tab's update guard stale.
     await second.goto(`${site.url}#/lesson/cap-charge-in-c`);
     await second.getByRole("button", { name: "Lesson complete · Undo", exact: true }).click();
@@ -350,13 +352,13 @@ test("restart refuses memory-only edits, input composition and an unsaved theme,
       );
     });
     await first.getByRole("button", { name: "Close", exact: true }).click();
-    await first.getByLabel(STRINGS.theme).selectOption("dark");
+    await setTheme(first, "dark");
     await restartUpdate(first);
     await expect(first.getByRole("alert")).toContainText(/saved|unsaved/i);
     await expect(first.locator("html")).toHaveAttribute("data-theme", "dark");
     await first.evaluate(() => window.dispatchEvent(new Event("restore-test-storage")));
     await first.getByRole("button", { name: "Close", exact: true }).click();
-    await first.getByLabel(STRINGS.theme).selectOption("auto");
+    await setTheme(first, "auto");
     await restartUpdate(first);
     await expectRelease(second, "safe-retry", next.buildId);
     await expect(editor).toHaveValue(savedCode);
@@ -724,6 +726,15 @@ test("an online-only refreshed app explicitly saves its published runtime before
     await expect(
       mismatch.getByRole("button", { name: "Restart to update", exact: true }),
     ).toBeVisible({ timeout: 30000 });
+    const header = page.locator("#app-status-open");
+    await expect(header).toHaveAttribute("data-header-badge", "update");
+    await expect(header).toHaveAccessibleDescription(
+      `${S.versionStates.ready} ${S.offlineDownloadReady}`,
+    );
+    await expect(header).toHaveAttribute(
+      "title",
+      `${S.headerLabel}: ${S.versionStates.ready}. ${S.offlineDownloadReady}`,
+    );
     // The loaded HTML already names B: its identity cannot signal completion of
     // this runtime-only restart. Wait for the new document before opening its panel.
     const restarted = page.waitForEvent("domcontentloaded");
@@ -930,7 +941,7 @@ test("removing an offline copy after deferred runtime replacement still permits 
     await downloadOffline(page);
     const code = "unsigned preserved(unsigned value) { return value + 23; }";
     await page.locator("#challenge-write-cap-charge").getByRole("textbox").fill(code);
-    await page.getByLabel(STRINGS.theme).selectOption("dark");
+    await setTheme(page, "dark");
     const next = site.publish("after-remove-pending");
     const firstPanel = await prepareUpdate(page);
     await firstPanel.getByRole("button", { name: "Later", exact: true }).click();

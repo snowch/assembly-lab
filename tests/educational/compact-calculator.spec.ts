@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { COMPACT_CALCULATOR as D } from "../../packages/views/src/strings.compact-calculator";
 import { inspectCalculator } from "./calculator-helpers";
@@ -30,7 +32,7 @@ for (const theme of ["light", "dark"] as const) {
       await page.goto("#/lesson/adding-and-the-flags");
       // A same-route visit retains the global tool. Each geometry case needs a fresh document.
       await page.reload();
-      await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+      await setTheme(page, theme);
       await page.getByRole("button", { name: "Calculator", exact: true }).click();
       const panel = page.getByRole("dialog", { name: "Programmer calculator", exact: true });
       const calculate = panel.getByRole("button", { name: "Calculate", exact: true });

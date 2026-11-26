@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { LESSONS, WHERE_NEXT, PLAYGROUND_STARTER } from "@al/content";
 import { STRINGS } from "../../apps/course/src/strings";
@@ -100,7 +102,7 @@ test("offline compilation, exercise grading and saved work survive closing and r
   try {
     await page.goto(site.url);
     await downloadOffline(page);
-    await page.getByLabel(STRINGS.theme).selectOption("dark");
+    await setTheme(page, "dark");
     site.connected(false);
     await context.setOffline(true);
     const url = new URL("./#/lesson/cap-charge-in-c", page.url()).href;
@@ -111,7 +113,7 @@ test("offline compilation, exercise grading and saved work survive closing and r
     await session.send("Network.enable");
     await session.send("Network.setCacheDisabled", { cacheDisabled: true });
     expect((await reopened.goto(url))?.fromServiceWorker()).toBe(true);
-    await expect(reopened.getByLabel(STRINGS.theme)).toHaveValue("dark");
+    await expect(reopened.locator(".theme-settings select")).toHaveValue("dark");
 
     const lesson = LESSONS.find((l) => l.id === "cap-charge-in-c")!;
     const exercise = lesson.challenges.find((c) => c.id === "write-cap-charge")!;
@@ -209,7 +211,7 @@ for (const theme of ["light", "dark"] as const) {
   }, info) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("#/lesson/one-addition");
-    await page.getByLabel(STRINGS.theme).selectOption(theme);
+    await setTheme(page, theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     const panel = page.locator(".app-status");
     const summary = page.locator("#app-status-open");

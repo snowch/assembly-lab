@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 
 for (const theme of ["light", "dark"])
@@ -10,7 +12,7 @@ for (const theme of ["light", "dark"])
     page.on("pageerror", (error) => errors.push(error.message));
     await page.addInitScript(() => localStorage.setItem("assembly-lab:v1:editor-mode", "tap"));
     await page.goto("#/lesson/subtracting-and-the-tick-counter");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     const exercise = page.locator("#challenge-write-elapsed");
     await expect(exercise.getByRole("group", { name: "Edit as", exact: true })).toHaveCount(0);
     await expect(exercise.getByRole("group", { name: "Characters for assembly" })).toHaveCount(0);

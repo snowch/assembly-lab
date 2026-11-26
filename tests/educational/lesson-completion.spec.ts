@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { LESSONS } from "@al/content";
 import { designProblems } from "./design";
@@ -18,7 +20,7 @@ for (const theme of ["light", "dark"]) {
     isMobile,
   }) => {
     await page.goto("#/lesson/one-pattern-three-readings");
-    await page.locator(".theme-picker select").selectOption(theme);
+    await setTheme(page, theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await page.evaluate(() => document.fonts.ready);
 
@@ -78,7 +80,7 @@ for (const theme of ["light", "dark"]) {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto("#/");
-    await page.locator(".theme-picker select").selectOption(theme);
+    await setTheme(page, theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await expect(page.locator(".lesson-complete-mark")).toHaveCount(0);
     await page.locator(".cover-start").click();

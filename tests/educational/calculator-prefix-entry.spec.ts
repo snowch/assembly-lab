@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { COMPACT_CALCULATOR as D } from "../../packages/views/src/strings.compact-calculator";
 import { CALCULATOR_ENTRY as E } from "../../packages/views/src/strings.calculator-entry";
@@ -18,7 +20,7 @@ for (const theme of ["light", "dark"] as const) {
     for (const width of [320, 375, 834, 1280]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("#/lesson/adding-and-the-flags");
-      await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+      await setTheme(page, theme);
       await page.getByRole("button", { name: "Calculator", exact: true }).click();
       const panel = page.getByRole("dialog", { name: "Programmer calculator", exact: true });
       await expect(panel.getByRole("combobox")).toHaveCount(1);

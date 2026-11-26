@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { lessonForFigure } from "./pacing";
 import { expect, test } from "@playwright/test";
 import { designProblems } from "./design";
@@ -43,7 +45,7 @@ for (const theme of ["light", "dark"] as const) {
     }) => {
       const errors = watchErrors(page);
       await page.goto(`#/lesson/${lessonForFigure(item.lesson, item.figure)}`);
-      await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+      await setTheme(page, theme);
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
       const figure = page.locator(`#ix-${item.figure}`);
       await expect(figure.locator(".al-instruction-choice")).toHaveCount(0);

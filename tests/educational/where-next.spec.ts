@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 import { LESSONS, WHERE_NEXT, PLAYGROUND_STARTER } from "@al/content";
 import { designProblems } from "./design";
@@ -12,7 +14,7 @@ for (const theme of ["light", "dark"] as const) {
   }) => {
     const errors = watchErrors(page);
     await page.goto("#/");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     const home = page.locator(".where-next-discovery");
     await home.getByRole("link", { name: WHERE_NEXT.linkLabel }).click();

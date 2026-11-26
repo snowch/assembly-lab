@@ -1,5 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
+import { setTheme } from "./theme-helper";
+
 import { expect, test } from "@playwright/test";
 
 for (const theme of ["light", "dark"] as const) {
@@ -87,7 +89,7 @@ test("reference disclosure resets on a new lesson and preserves flags work throu
   await page.locator('#caseTabs button[data-case="2"]').click();
   await page.locator('input[name="practice-n"][value="0"]').locator("..").click();
   await row.locator("summary").click();
-  await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption("dark");
+  await setTheme(page, "dark");
   await expect(row).toHaveAttribute("open");
   await expect(page.locator('input[name="practice-n"][value="0"]')).toBeChecked();
   await expect(page.locator("#practicePosition")).toHaveText("Case 3 of 6");
