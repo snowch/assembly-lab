@@ -20,7 +20,7 @@ import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { createServer, defineConfig, type Plugin } from "vite";
 
-import { offlineApp } from "./offline/plugin";
+import { CSS_ASSET_PATTERN, offlineApp } from "./offline/plugin";
 import { MANIFEST_FILE, webManifest } from "./src/web-manifest";
 import type { BuildVersion } from "./src/build-version";
 
@@ -97,6 +97,14 @@ export default defineConfig({
     outDir: "dist",
     sourcemap: true,
     target: "es2022",
+    rollupOptions: {
+      output: {
+        assetFileNames: ({ names }) =>
+          names.some((name) => name.endsWith(".css"))
+            ? CSS_ASSET_PATTERN
+            : "assets/[name]-[hash][extname]",
+      },
+    },
   },
   server: { port: 5173, strictPort: true },
   preview: { port: 4173, strictPort: true },

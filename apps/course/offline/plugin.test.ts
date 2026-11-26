@@ -234,7 +234,7 @@ describe("offline release", () => {
 });
 
 describe("published release", () => {
-  it("pins public fonts inside CSS as well as emitted runtime assets", () => {
+  it("resolves CSS resources inside both canonical and immutable release trees", () => {
     const built = renderRelease(template, [
       ...files,
       {
@@ -246,13 +246,66 @@ describe("published release", () => {
       { path: "assets/image-12345678.svg", bytes: "<svg/>" },
     ]);
     const css = built.files.find((file) => file.path === "assets/course.css")!.bytes;
-    expect(css).toContain(
-      `url(/assembly-lab/releases/${built.metadata.buildId}/fonts/course.woff2)`,
-    );
-    expect(css).toContain(
-      `url("/assembly-lab/releases/${built.metadata.buildId}/assets/image-12345678.svg")`,
-    );
+    expect(css).toContain("url(../fonts/course.woff2)");
+    expect(css).toContain('url("image-12345678.svg")');
+    for (const prefix of ["", `releases/${built.metadata.buildId}/`]) {
+      const stylesheet = `https://example.test/assembly-lab/${prefix}assets/course.css`;
+      expect(new URL("../fonts/course.woff2", stylesheet).pathname).toBe(
+        `/assembly-lab/${prefix}fonts/course.woff2`,
+      );
+      expect(new URL("image-12345678.svg", stylesheet).pathname).toBe(
+        `/assembly-lab/${prefix}assets/image-12345678.svg`,
+      );
+    }
     expect(css).not.toContain(BUILD_MARKER);
+  });
+
+  it("keeps unchanged CSS bytes stable when text, source identity or worker changes", () => {
+    const input = [
+      ...files,
+      { path: "assets/course.css", bytes: "body{background:url(/fonts/course.woff2)}" },
+      { path: "fonts/course.woff2", bytes: "font bytes" },
+    ];
+    const original = renderRelease(template, input);
+    const revised = input.map((file) =>
+      file.path === "assets/course.js" ? { ...file, bytes: "console.log('new lesson')" } : file,
+    );
+    const candidates = [
+      renderRelease(template, revised),
+      renderRelease(`${template}\n// updated worker`, input),
+      renderRelease(template, input, {
+        sha: "b".repeat(40),
+        committedAt: "2026-11-26T00:00:00.000Z",
+      }),
+    ];
+    const css = (release: ReturnType<typeof renderRelease>) =>
+      release.files.find((file) => file.path === "assets/course.css")!;
+    for (const candidate of candidates) {
+      expect(candidate.metadata.buildId).not.toBe(original.metadata.buildId);
+      expect(css(candidate)).toEqual(css(original));
+      expect(candidate.metadata.assets.find((file) => file.path === "assets/course.css")).toEqual(
+        original.metadata.assets.find((file) => file.path === "assets/course.css"),
+      );
+    }
+  });
+
+  it("preserves URL suffixes and external resources while supporting nested and old pinned CSS", () => {
+    const css = [
+      'a{src:url("/assembly-lab/fonts/course.woff2?next=../../a/../b#face")}',
+      `b{src:url(/assembly-lab/releases/${"a".repeat(64)}/assets/picture.svg#part)}`,
+      'c{src:url("//cdn.test/assets/outside.svg")}',
+      'd{src:url("https://cdn.test/fonts/outside.woff2")}',
+      'e{src:url("../relative.svg")}',
+      'f{src:url("data:image/svg+xml;base64,AAAA")}',
+    ].join("");
+    const built = renderRelease(template, [
+      ...files,
+      { path: "assets/nested/course.css", bytes: css },
+    ]);
+    const result = String(built.files.find((file) => file.path.endsWith(".css"))!.bytes);
+    expect(result).toContain('url("../../fonts/course.woff2?next=../../a/../b#face")');
+    expect(result).toContain("url(../picture.svg#part)");
+    for (const rule of css.split("}").slice(2, 6)) expect(result).toContain(rule);
   });
 
   it("pins HTML runtime entry points while keeping one canonical asset inventory", () => {
