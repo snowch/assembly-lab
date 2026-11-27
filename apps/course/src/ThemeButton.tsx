@@ -35,7 +35,12 @@ export function ThemeButton({
       aria-label={label}
       onClick={() => onChange(dark ? "light" : "dark")}
     >
-      <MaterialSymbol name={dark ? "light_mode" : "dark_mode"} />
+      <span className="header-control-icon" aria-hidden="true">
+        <MaterialSymbol name={dark ? "light_mode" : "dark_mode"} />
+      </span>
+      <span className="header-control-label" data-header-label="">
+        {STRINGS.theme}
+      </span>
     </button>
   );
 }

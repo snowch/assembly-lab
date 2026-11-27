@@ -20,11 +20,23 @@ for (const colourScheme of ["light", "dark"] as const) {
     );
     await expect(status).toHaveAccessibleName(S.headerLabel);
     await expect(page.locator("html")).not.toHaveAttribute("data-theme", /.*/);
-    for (const width of [320, 390, 820, 1280]) {
+    for (const width of [320, 390, 820, 1440]) {
       await page.setViewportSize({ width, height: 920 });
       for (const control of [toggle, status]) {
         const box = (await control.boundingBox())!;
-        expect(box.width).toBe(48);
+        const visibleLabel = control.locator(".header-control-label");
+        await expect(visibleLabel).toBeVisible();
+        await expect(visibleLabel).toHaveText(
+          control === toggle ? STRINGS.theme : S.headerShortLabel,
+        );
+        const icon = (await control.locator(".header-control-icon").boundingBox())!;
+        const label = (await visibleLabel.boundingBox())!;
+        expect(icon.width).toBe(24);
+        expect(icon.height).toBe(24);
+        expect(label.x - (icon.x + icon.width)).toBe(8);
+        expect(label.width).toBeGreaterThan(0);
+        expect(box.width).toBeGreaterThanOrEqual(24 + 8 + label.width);
+        expect(label.x + label.width).toBeLessThanOrEqual(box.x + box.width);
         expect(box.height).toBe(48);
         expect(box.x).toBeGreaterThanOrEqual(0);
         expect(box.x + box.width).toBeLessThanOrEqual(width);
@@ -39,6 +51,22 @@ for (const colourScheme of ["light", "dark"] as const) {
       );
       await expect(page.getByRole("button", { name: "Calculator", exact: true })).toBeVisible();
       await expect(page.getByRole("button", { name: "Reference", exact: true })).toBeVisible();
+      if (width <= 600) {
+        const tools = [
+          status,
+          page.locator(".header-calculator-button"),
+          page.locator(".header-reference-button"),
+          toggle,
+        ];
+        const [offlineBox, calculatorBox, referenceBox, themeBox] = await Promise.all(
+          tools.map(async (tool) => (await tool.boundingBox())!),
+        );
+        expect(offlineBox!.y).toBe(calculatorBox!.y);
+        expect(referenceBox!.y).toBe(themeBox!.y);
+        expect(referenceBox!.y).toBeGreaterThan(offlineBox!.y);
+        expect(offlineBox!.x).toBe(referenceBox!.x);
+        expect(calculatorBox!.x).toBe(themeBox!.x);
+      }
     }
     await toggle.focus();
     await page.keyboard.press("Enter");

@@ -54,6 +54,9 @@ for (const [width, height] of [
         await downloadOffline(page);
         await openStatus(page);
         await expect(trigger).toHaveAttribute("data-header-badge", "ready");
+        const labelBox = (await trigger.locator("[data-header-label]").boundingBox())!;
+        const checkBox = (await trigger.locator(".header-offline-badge").boundingBox())!;
+        expect(checkBox.x + checkBox.width).toBeLessThanOrEqual(labelBox.x);
         await expect(
           status.getByRole("button", { name: S.actions.download, exact: true }),
         ).toHaveCount(0);
@@ -61,6 +64,8 @@ for (const [width, height] of [
         site.publish("visible-update");
         await checkForUpdates(page);
         await expect(version).toHaveText(S.versionStates.available);
+        const updateBox = (await trigger.locator(".header-update-badge").boundingBox())!;
+        expect(updateBox.x + updateBox.width).toBeLessThanOrEqual(labelBox.x);
         await expect(trigger).toHaveAttribute("data-header-badge", "update");
         await prepareUpdate(page);
         await expect(version).toHaveText(S.versionStates.ready);

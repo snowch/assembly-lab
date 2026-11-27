@@ -2,6 +2,8 @@
 
 Copyright © 2026 Christopher Snow.
 
+The current header keeps visible Theme and Offline labels beside these icons; see the [visible-label adoption](header-labels.md). This record preserves the initial icon migration and its verification.
+
 ## Checked brief and scope
 
 The shared header rule replaces the visible theme selector and App status label with local Material Symbols Rounded icon buttons. Each button has a 48px target, an action label, a native tooltip and a visible keyboard outline. Calculator and Reference retain their names, order and behaviour. Lessons, routes, editors, simulator state and runtime/offline protocols are unchanged.

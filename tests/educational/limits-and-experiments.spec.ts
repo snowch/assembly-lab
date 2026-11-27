@@ -2,13 +2,14 @@
 
 import { expect, test } from "@playwright/test";
 import { designProblems } from "./design";
+import { setTheme } from "./theme-helper";
 
 for (const theme of ["light", "dark"]) {
   test(`kept bits: predictions, limits, restoration and local reset, ${theme}`, async ({
     page,
   }, info) => {
     await page.goto("#/lesson/four-bit-arithmetic");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     const storage = page.locator(".al-retained-bits");
     await expect(storage.locator("[data-storage-value]")).toHaveText("—");
     await expect(storage.locator("[data-storage-full]")).toHaveText("1100100");
@@ -59,7 +60,7 @@ for (const theme of ["light", "dark"]) {
     await page.reload();
     await expect(storage.getByLabel("Kept width")).toHaveValue("8");
     await expect(storage.locator("[data-storage-value]")).toHaveText("100");
-    await expect(page.getByRole("combobox", { name: "Theme", exact: true })).toHaveValue(theme);
+    await expect(page.locator(".theme-settings select")).toHaveValue(theme);
     await storage.getByLabel("Full decimal value").fill("256");
     await keep.click();
     await expect(storage.getByRole("alert")).toContainText(
@@ -87,7 +88,7 @@ for (const theme of ["light", "dark"]) {
 
   test(`shift result width is separate from accepted input, ${theme}`, async ({ page }, info) => {
     await page.goto("#/lesson/shifts");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     const prediction = page.locator("#ix-predict-fill");
     await prediction.getByRole("radio").first().check();
     await prediction.getByRole("button", { name: /Check your prediction/ }).click();
@@ -117,7 +118,7 @@ for (const theme of ["light", "dark"]) {
   });
   test(`loop counterexample stays behind its prediction, ${theme}`, async ({ page }, info) => {
     await page.goto("#/lesson/writing-an-upward-loop");
-    await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption(theme);
+    await setTheme(page, theme);
     const prediction = page.locator("#ix-predict-dim-up-beq");
     const runs = page.locator("#ix-dim-up-beq-runs");
     await expect(runs.locator(".al-loop-bar-row")).toHaveCount(0);
