@@ -679,6 +679,211 @@ test("evicted prepared bytes block restart and repairing the update permits a sa
   }
 });
 
+type HeldRestartStatus = {
+  received: boolean;
+  runtimeVersion: string | null;
+  activationRequests: number;
+  release: () => void;
+  restore: () => void;
+};
+type HeldRestartWindow = Window & { __armHeldRestartStatus?: HeldRestartStatus };
+
+/** Hold one actual waiting-worker response; all other requests still reach the real worker. */
+async function holdRestartStatus(page: Page) {
+  await page.evaluate(async () => {
+    const registration = await navigator.serviceWorker.getRegistration();
+    const target = registration?.waiting ?? registration?.active;
+    if (!target) throw new Error("Missing restart worker");
+    const original = ServiceWorker.prototype.postMessage;
+    let armed = true;
+    let release: (() => void) | undefined;
+    const state: HeldRestartStatus = {
+      received: false,
+      runtimeVersion: null,
+      activationRequests: 0,
+      release: () => {
+        if (!release) throw new Error("Restart status response has not arrived");
+        release();
+        release = undefined;
+      },
+      restore: () => {
+        ServiceWorker.prototype.postMessage = original;
+      },
+    };
+    ServiceWorker.prototype.postMessage = function (
+      this: ServiceWorker,
+      message: unknown,
+      transfer?: Transferable[] | StructuredSerializeOptions,
+    ) {
+      const type = (message as { type?: string } | null)?.type;
+      if (type === "ACTIVATE_UPDATE") state.activationRequests++;
+      if (
+        armed &&
+        this === target &&
+        type === "OFFLINE_STATUS" &&
+        Array.isArray(transfer) &&
+        transfer[0] instanceof MessagePort
+      ) {
+        armed = false;
+        const destination = transfer[0];
+        const bridge = new MessageChannel();
+        bridge.port1.onmessage = (event) => {
+          state.received = true;
+          state.runtimeVersion = event.data.runtimeVersion ?? null;
+          release = () => {
+            destination.postMessage(event.data);
+            bridge.port1.close();
+          };
+        };
+        Reflect.apply(original, this, [message, [bridge.port2]]);
+        return;
+      }
+      Reflect.apply(original, this, [message, transfer]);
+    };
+    (window as HeldRestartWindow).__armHeldRestartStatus = state;
+  });
+}
+
+for (const change of ["eviction", "removal", "replacement"] as const)
+  test(`held restart status preserves ${change} refusal and recovery`, async ({ context }) => {
+    const site = await deployment();
+    try {
+      const page = await context.newPage();
+      await controlled(page, site.url);
+      await downloadOffline(page);
+      const preparedMarker = `held-status-${change}`;
+      let target = site.publish(preparedMarker);
+      let targetMarker = preparedMarker;
+      const panel = await prepareUpdate(page);
+      await holdRestartStatus(page);
+      await restartUpdate(page);
+      await expect
+        .poll(() =>
+          page.evaluate(() => (window as HeldRestartWindow).__armHeldRestartStatus?.received),
+        )
+        .toBe(true);
+      expect(
+        await page.evaluate(
+          () => (window as HeldRestartWindow).__armHeldRestartStatus?.runtimeVersion,
+        ),
+      ).toBe(target.buildId);
+
+      if (change === "eviction") {
+        await page.evaluate(async (buildId) => {
+          const name = (await caches.keys()).find(
+            (key) => key.startsWith("assembly-lab-offline:") && key.endsWith(buildId),
+          );
+          if (!name) throw new Error("Missing prepared cache");
+          const cache = await caches.open(name);
+          const file = (await cache.keys()).find((request) =>
+            request.url.endsWith("/native/Makefile"),
+          );
+          if (!file) throw new Error("Missing prepared asset");
+          await cache.delete(file);
+        }, target.buildId);
+      } else if (change === "removal") {
+        // This is the real scoped worker command used by another window's Remove action.
+        await page.evaluate(async () => {
+          const worker = (await navigator.serviceWorker.getRegistration())?.active;
+          if (!worker) throw new Error("Missing active worker");
+          const result = await new Promise<{ ok?: boolean }>((resolve) => {
+            const channel = new MessageChannel();
+            channel.port1.onmessage = (event) => {
+              channel.port1.close();
+              resolve(event.data);
+            };
+            worker.postMessage({ type: "REMOVE_OFFLINE" }, [channel.port2]);
+          });
+          if (!result.ok) throw new Error("Scoped removal failed");
+        });
+      } else {
+        targetMarker = "held-status-newer-worker";
+        target = site.publish(targetMarker);
+        await page.evaluate(async () => {
+          await (await navigator.serviceWorker.getRegistration())?.update();
+        });
+        await expect
+          .poll(() =>
+            page.evaluate(async () => {
+              const registration = await navigator.serviceWorker.getRegistration();
+              const worker = registration?.waiting ?? registration?.active;
+              if (!worker) return null;
+              return new Promise<string | null>((resolve) => {
+                const channel = new MessageChannel();
+                const timer = setTimeout(() => {
+                  channel.port1.close();
+                  resolve(null);
+                }, 1000);
+                channel.port1.onmessage = (event) => {
+                  clearTimeout(timer);
+                  channel.port1.close();
+                  resolve(event.data.runtimeVersion ?? null);
+                };
+                worker.postMessage({ type: "OFFLINE_STATUS" }, [channel.port2]);
+              });
+            }),
+          )
+          .toBe(target.buildId);
+      }
+      await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+      if (change !== "replacement")
+        await expect(panel.locator('[data-version="ready"]')).toHaveCount(0);
+      await page.evaluate(() => (window as HeldRestartWindow).__armHeldRestartStatus!.release());
+      await expect(panel.getByRole("alert")).toHaveText(
+        change === "replacement" ? S.updateErrors.changed : S.updateErrors.download,
+      );
+      await expect(page.locator("main")).not.toHaveAttribute("inert");
+      expect(await currentBuild(page)).toBe(site.initial.buildId);
+      expect(
+        await page.evaluate(
+          () => (window as HeldRestartWindow).__armHeldRestartStatus?.activationRequests,
+        ),
+      ).toBe(0);
+      await page.evaluate(() => (window as HeldRestartWindow).__armHeldRestartStatus!.restore());
+      if (change === "replacement") {
+        // A complete B remains staged while the real C asset transfer is in progress.
+        await page.evaluate(async (buildId) => {
+          const name = (await caches.keys()).find(
+            (key) => key.startsWith("assembly-lab-offline:") && key.endsWith(buildId),
+          );
+          if (!name) return;
+          const cache = await caches.open(name);
+          for (const request of await cache.keys())
+            if (new URL(request.url).pathname.endsWith("/index.html")) await cache.delete(request);
+        }, target.buildId);
+        const previousAssetRequests = site.requests.filter((path) =>
+          path.endsWith("/index.html"),
+        ).length;
+        site.delay(`${base}index.html`, 10000);
+        await checkForUpdates(page);
+        await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+        await expect(panel.locator('[data-version="ready"]')).toBeVisible();
+        await panel.getByRole("button", { name: S.actions.update, exact: true }).click();
+        await expect(panel.locator('[data-version="downloading"]')).toBeVisible();
+        await expect
+          .poll(() => site.requests.filter((path) => path.endsWith("/index.html")).length)
+          .toBeGreaterThan(previousAssetRequests);
+        await expect(
+          panel.getByRole("button", { name: S.actions.restart, exact: true }),
+        ).toHaveCount(0);
+        await expect(panel.getByText(S.offlineDownloadReady, { exact: true })).toHaveCount(0);
+        await expect(page.locator("#app-status-open")).toHaveAccessibleDescription(
+          `${S.versionStates.downloading} ${S.offlineStates.saving}`,
+        );
+        await page.screenshot({ path: test.info().outputPath("preparing-newer-copy.png") });
+        site.delay();
+        await expect(
+          panel.getByRole("button", { name: S.actions.restart, exact: true }),
+        ).toBeVisible({ timeout: 30000 });
+      } else await prepareUpdate(page);
+      await restartUpdate(page);
+      await expectRelease(page, targetMarker, target.buildId);
+    } finally {
+      await context.close();
+      await site.close();
+    }
+  });
+
 test("storage exhaustion preserves the complete copy and the update can recover", async ({
   context,
 }) => {

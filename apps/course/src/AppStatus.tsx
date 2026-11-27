@@ -30,6 +30,7 @@ export function AppStatus({
   const dialog = useRef<HTMLDialogElement>(null);
   const pending = offline?.preparedVersion;
   const saving = Boolean(offline?.preparing || offline?.state === "saving");
+  const restartReady = Boolean(pending && !saving);
   const supported = Boolean(offline && offline.state !== "unsupported");
   const currentManifest =
     published.release?.buildId === RUNNING_BUILD ? published.release : undefined;
@@ -44,11 +45,13 @@ export function AppStatus({
       : !saving && offline?.state === "ready" && savedCurrent
         ? "ready"
         : undefined;
-  const headerOfflineState = pending
-    ? S.offlineDownloadReady
-    : olderSaved
-      ? S.offlineCopyOlder
-      : S.offlineStates[offline?.state ?? "unsupported"];
+  const headerOfflineState = saving
+    ? S.offlineStates.saving
+    : pending
+      ? S.offlineDownloadReady
+      : olderSaved
+        ? S.offlineCopyOlder
+        : S.offlineStates[offline?.state ?? "unsupported"];
   const headerState = `${S.versionStates[version]}. ${headerOfflineState}`;
   const identity = BUILD_VERSION?.sha.slice(0, 7) ?? RUNNING_BUILD?.slice(0, 7) ?? S.unknownBuild;
   const size = published.release?.totalBytes ?? offline?.totalBytes;
@@ -117,13 +120,18 @@ export function AppStatus({
         data-header-badge={headerBadge}
         onClick={openStatus}
       >
-        <MaterialSymbol name="cloud_download" />
-        {headerBadge === "ready" && (
-          <span className="header-offline-badge" aria-hidden="true">
-            <MaterialSymbol name="check" />
-          </span>
-        )}
-        {headerBadge === "update" && <span className="header-update-badge" aria-hidden="true" />}
+        <span className="header-control-icon" aria-hidden="true">
+          <MaterialSymbol name="cloud_download" />
+          {headerBadge === "ready" && (
+            <span className="header-offline-badge">
+              <MaterialSymbol name="check" />
+            </span>
+          )}
+          {headerBadge === "update" && <span className="header-update-badge" />}
+        </span>
+        <span className="header-control-label" data-header-label="">
+          {S.headerShortLabel}
+        </span>
         <span
           id="app-status-header-state"
           className="app-status-header-state header-control-state"
@@ -162,7 +170,7 @@ export function AppStatus({
             <p className="course-status-main" role="status">
               {S.versionStates[version]}
             </p>
-            {pending ? (
+            {restartReady ? (
               <p>{S.offlineDownloadReady}</p>
             ) : (
               !saving && (
@@ -173,7 +181,7 @@ export function AppStatus({
                 </p>
               )
             )}
-            {pending ? (
+            {restartReady ? (
               <p>{S.restartExplanation}</p>
             ) : (
               !saving && (
@@ -195,7 +203,7 @@ export function AppStatus({
               )
             )}
             <div className="status-actions">
-              {pending && (
+              {restartReady && (
                 <>
                   <button className="primary" type="button" onClick={offline?.updateNow}>
                     {S.actions.restart}

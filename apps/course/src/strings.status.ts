@@ -7,6 +7,7 @@ const megabytes = (value: number) =>
 export const STATUS_STRINGS = {
   title: "App status",
   headerLabel: "App status and offline access",
+  headerShortLabel: "Offline",
   courseHeading: "Course status",
   detailHeading: "Version and download details",
   close: "Close",

@@ -438,14 +438,28 @@ export function useOffline(canReload: () => boolean, onCancel: () => void) {
     update.current = async () => {
       const worker = registration?.waiting ?? registration?.active;
       if (!worker || preparedWorker) return;
+      const requestedVersion = preparedRelease.current;
       setUpdating(true);
       setUpdateError(null);
       try {
         const snapshot = await workerRequest(worker, "OFFLINE_STATUS");
-        if (!preparedRelease.current || snapshot.runtimeVersion !== preparedRelease.current) {
+        const currentPrepared = preparedRelease.current;
+        if (
+          !requestedVersion ||
+          snapshot.runtimeVersion !== requestedVersion ||
+          worker !== (registration?.waiting ?? registration?.active) ||
+          (currentPrepared !== null && currentPrepared !== requestedVersion)
+        ) {
           setUpdating(false);
           setUpdateError("changed");
           setPreparedVersion(null);
+          return;
+        }
+        if (!currentPrepared) {
+          // Refresh can withdraw readiness while this status request is in flight.
+          // Do not activate a removed/cancelled copy or mislabel missing bytes as a new release.
+          setUpdating(false);
+          setUpdateError("download");
           return;
         }
       } catch {
